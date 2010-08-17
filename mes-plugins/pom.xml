@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.qcadoo.mes</groupId>
+		<artifactId>mes</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.qcadoo.mes.plugins</groupId>
+	<artifactId>mes-plugins</artifactId>
+	<packaging>pom</packaging>
+
+	<name>Qcadoo MES :: Plugins</name>
+
+	<modules>
+		<module>mes-plugins-rad-crud</module>
+		<!-- <module>mes-plugins-rad-management</module> -->
+		<!-- <module>mes-plugins-users-management</module> -->
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes.core</groupId>
+			<artifactId>mes-core-data</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes.core</groupId>
+			<artifactId>mes-core-modularity</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes.core</groupId>
+			<artifactId>mes-core-security</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes.core</groupId>
+			<artifactId>mes-core-utils</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes.core</groupId>
+			<artifactId>mes-core-test</artifactId>
+			<version>${pom.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>8.4-701.jdbc4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
