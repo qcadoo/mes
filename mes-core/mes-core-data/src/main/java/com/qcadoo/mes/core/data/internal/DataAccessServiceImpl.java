@@ -72,8 +72,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         List<Entity> genericResults = new ArrayList<Entity>();
 
-        for (Object object : results) {
-
+        for (Object databaseEntity : results) {
+            genericResults.add(getGenericEntity(dataDefinition, databaseEntity));
         }
 
         ResultSetImpl resultSet = new ResultSetImpl();
