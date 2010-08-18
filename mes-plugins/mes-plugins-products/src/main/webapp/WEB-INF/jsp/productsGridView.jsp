@@ -12,6 +12,8 @@
 	<link rel="stylesheet" href="../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
 
+
+	<script type="text/javascript" src="../js/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
 	<!-- <script type="text/javascript" src="../js/jquery-ui-1.8.2.custom.min.js"></script>
 	<script type="text/javascript" src="../js/jquery.event.drag-2.0.min.js"></script>
@@ -71,6 +73,12 @@
 	<script type="text/javascript">
 		jQuery(document).ready(function(){
 
+
+			  //  $.getJSON("data.html", null, function(availability) {
+			  //     alert(availability);
+			  //  });
+
+
 			var colNames = new Array();
 			var colModel = new Array();
 			<c:forEach items="${gridDefinition.columns}" var="column">
@@ -89,7 +97,7 @@
 			 
 			jQuery("#list").jqGrid({
 				datatype: "local", 
-				height: 550, 
+				height: 500, 
 				/*colNames:['Inv No','Date', 'Client', 'Amount','Tax','Total','Notes'],
 				colModel:[ 
 					{name:'id',index:'id', width:60, sorttype:"int"}, 
@@ -101,7 +109,8 @@
 					{name:'note',index:'note', width:150, sortable:false} 
 				] */
 				colNames: colNames,
-				colModel: colModel
+				colModel: colModel,
+				
 				//multiselect: true 
 				//caption: "Manipulating Array Data" 
 			}); 
@@ -118,9 +127,35 @@
 				{id:"9",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00"} 
 			]; 
 			*/
-			for(var i=0;i<=mydata.length;i++)
-				jQuery("#list").jqGrid('addRowData',i+1,mydata[i]);
+			 $.getJSON("listData.html", {'maxResults' : 10, 'firstResult': 20}, function(response) {
+			       for (var entityNo in response) {
+				       var entity = response[entityNo];
+				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
+			       }
+			    });
+			//for(var i=0;i<=mydata.length;i++)
+				//jQuery("#list").jqGrid('addRowData',i+1,mydata[i]);
+
+			
 		}); 
+
+		var thisFirst = 0;
+		
+		function prev() {
+			alert("prev");
+		}
+
+		function next() {
+			 $.getJSON("listData.html", {'maxResults' : 10, 'firstResult': thisFirst}, function(response) {
+			       for (var entityNo in response) {
+				       var entity = response[entityNo];
+				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
+			       }
+			       thisFirst += 10;
+			    });
+		}
+
+		
 	</script>
 		
 
@@ -133,8 +168,9 @@
 	
 	
 	<table id="list"></table> 
-	<div id="pager"></div> 
 	
+	<button onClick="prev()">prev</button>
+	<button onClick="next()">next</button>
 	
 	<!-- <div id="myGrid" style="width:600px;height:500px;"></div> -->
 	

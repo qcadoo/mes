@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -53,5 +55,27 @@ public class ProductsListControler {
         mav.addObject("entities", entities);
 
         return mav;
+    }
+
+    @RequestMapping(value = "/products/listData", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Entity> getListData(@RequestParam String maxResults, @RequestParam String firstResult) {
+        // String maxResultsStr = "10";
+        // /String firstResultStr = "20";
+        logger.info("MAX RES: " + maxResults);
+        logger.info("FIRST RES: " + firstResult);
+        try {
+            int max = Integer.parseInt(maxResults);
+            int first = Integer.parseInt(firstResult);
+            if (max < 0 || first < 0) {
+                throw new IllegalArgumentException();
+            }
+            SearchCriteria searchCriteria = new SearchCriteriaMock("product", max, first);
+            ResultSet rs = dataAccessService.find("product", searchCriteria);
+            List<Entity> entities = rs.getResults();
+            return entities;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }
