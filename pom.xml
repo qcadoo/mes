@@ -97,6 +97,16 @@
 				<artifactId>hibernate-annotations</artifactId>
 				<version>${hibernate.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-mapper-lgpl</artifactId>
+				<version>1.5.6</version>
+			</dependency>
+			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>8.4-701.jdbc4</version>
+			</dependency>
 			<!-- Test -->
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -215,6 +225,10 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>codehaus-repository</id>
+			<url>http://repository.codehaus.org/</url>
 		</repository>
 	</repositories>
 
