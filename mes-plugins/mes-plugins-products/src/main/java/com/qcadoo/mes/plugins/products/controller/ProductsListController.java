@@ -19,7 +19,7 @@ import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
-import com.qcadoo.mes.plugins.products.data.mock.SearchCriteriaMock;
+import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 
 @Controller
 public class ProductsListController {
@@ -62,7 +62,9 @@ public class ProductsListController {
             if (max < 0 || first < 0) {
                 throw new IllegalArgumentException();
             }
-            SearchCriteria searchCriteria = new SearchCriteriaMock("product", max, first);
+            SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("product").withMaxResults(max).withFirstResult(first)
+                    .build();
+
             ResultSet rs = dataAccessService.find("product", searchCriteria);
             List<Entity> entities = rs.getResults();
             return entities;

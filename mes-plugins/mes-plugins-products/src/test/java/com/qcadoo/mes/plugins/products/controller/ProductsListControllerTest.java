@@ -11,9 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.plugins.products.data.mock.DataAccessServiceMock;
 import com.qcadoo.mes.plugins.products.data.mock.DataDefinitionServiceMock;
-import com.qcadoo.mes.plugins.products.data.mock.GridDefinitionMock;
 
 public class ProductsListControllerTest extends TestCase {
 
@@ -41,10 +41,10 @@ public class ProductsListControllerTest extends TestCase {
         assertEquals("Produkty:", modelAndView.getModel().get("headerContent"));
 
         assertNotNull(modelAndView.getModel().get("gridDefinition"));
-        assertEquals(GridDefinitionMock.class, modelAndView.getModel().get("gridDefinition").getClass());
+        assertEquals(GridDefinition.class, modelAndView.getModel().get("gridDefinition").getClass());
         assertEquals(dds.get("product").getGrids().get(0), modelAndView.getModel().get("gridDefinition"));
         assertEquals(dds.get("product").getGrids().get(0).getColumns(),
-                ((GridDefinitionMock) modelAndView.getModel().get("gridDefinition")).getColumns());
+                ((GridDefinition) modelAndView.getModel().get("gridDefinition")).getColumns());
 
     }
 
