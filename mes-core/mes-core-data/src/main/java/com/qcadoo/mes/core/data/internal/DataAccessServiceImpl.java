@@ -38,12 +38,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return null;
         }
 
-        Entity genericEntity = new Entity(getLongProperty(entity, "id"));
+        Entity genericEntity = new Entity((Long) getProperty(entity, "id"));
 
         for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            String fieldName = fieldDefinition.getName();
-            Object fieldValue = PropertyUtils.getProperty(entity, fieldDefinition.getName());
-            genericEntity.setField(fieldName, fieldValue);
+            genericEntity.setField(fieldDefinition.getName(), getProperty(entity, fieldDefinition.getName()));
         }
 
         return genericEntity;
@@ -59,9 +57,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
         throw new UnsupportedOperationException("implement me");
     }
 
-    private Long getLongProperty(final Object entity, final String property) {
+    private Object getProperty(final Object entity, final String property) {
         try {
-            return (Long) PropertyUtils.getProperty(entity, property);
+            return PropertyUtils.getProperty(entity, property);
         } catch (Exception e) {
             throw new IllegalStateException("cannot get value of the property: " + entity.getClass().getSimpleName() + ", "
                     + property, e);
@@ -75,7 +73,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             String fullyQualifiedClassName = dataDefinition.getFullyQualifiedClassName();
 
             try {
-                return Class.forName(fullyQualifiedClassName);
+                return ClassLoader.getSystemClassLoader().loadClass(fullyQualifiedClassName);
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("cannot find mapping class for definition: "
                         + dataDefinition.getFullyQualifiedClassName(), e);
