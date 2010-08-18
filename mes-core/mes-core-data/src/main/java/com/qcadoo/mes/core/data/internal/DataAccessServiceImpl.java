@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
@@ -25,7 +24,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private HibernateTemplate hibernateTemplate;
+    private SessionFactory sessionFactory;
 
     @Override
     public void save(final String entityName, final Entity entity) {
@@ -37,7 +36,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        Object databaseEntity = hibernateTemplate.get(entityClass, entityId);
+        Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
 
         if (databaseEntity == null) {
             return null;
@@ -65,10 +64,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(entityClass);
-
-        List<?> results = hibernateTemplate.findByCriteria(detachedCriteria, searchCriteria.getFirstResult(),
-                searchCriteria.getMaxResults());
+        List<?> results = sessionFactory.getCurrentSession().createCriteria(entityClass)
+                .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults()).list();
 
         List<Entity> genericResults = new ArrayList<Entity>();
 

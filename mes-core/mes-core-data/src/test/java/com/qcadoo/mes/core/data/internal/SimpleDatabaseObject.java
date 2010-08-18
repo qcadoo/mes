@@ -1,4 +1,4 @@
-package com.qcadoo.mes.data.internal;
+package com.qcadoo.mes.core.data.internal;
 
 public class SimpleDatabaseObject {
 

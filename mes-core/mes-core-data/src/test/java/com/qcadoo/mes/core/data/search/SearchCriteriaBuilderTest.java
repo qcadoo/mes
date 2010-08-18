@@ -1,4 +1,4 @@
-package com.qcadoo.mes.data.search;
+package com.qcadoo.mes.core.data.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
