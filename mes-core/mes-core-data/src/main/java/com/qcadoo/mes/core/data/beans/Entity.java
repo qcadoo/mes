@@ -37,4 +37,8 @@ public final class Entity {
         fields.put(fieldName, fieldValue);
     }
 
+    public Map<String, Object> getFields() {
+        return fields;
+    }
+
 }
