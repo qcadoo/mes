@@ -17,9 +17,8 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.8.3</version>
+		    <groupId>c3p0</groupId>
+		    <artifactId>c3p0</artifactId>
 		</dependency>
 	</dependencies>
 	

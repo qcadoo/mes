@@ -61,6 +61,10 @@
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-lgpl</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
