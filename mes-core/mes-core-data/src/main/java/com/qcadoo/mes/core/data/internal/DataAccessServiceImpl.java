@@ -37,18 +37,21 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        Object entity = hibernateTemplate.get(entityClass, entityId);
+        Object databaseEntity = hibernateTemplate.get(entityClass, entityId);
 
-        if (entity == null) {
+        if (databaseEntity == null) {
             return null;
         }
 
+        return getGenericEntity(dataDefinition, databaseEntity);
+    }
+
+    private Entity getGenericEntity(DataDefinition dataDefinition, Object entity) {
         Entity genericEntity = new Entity(getIdProperty(entity));
 
         for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
             genericEntity.setField(fieldDefinition.getName(), getProperty(entity, fieldDefinition));
         }
-
         return genericEntity;
     }
 
