@@ -22,36 +22,40 @@ import com.qcadoo.mes.plugins.products.data.mock.SearchCriteriaMock;
 @Controller
 public class ProductsListControler {
 
-    private DataDefinitionService dataDefinitionService;
+	private DataDefinitionService dataDefinitionService;
 
-    private DataAccessService dataAccessService;
+	private DataAccessService dataAccessService;
 
-    private Logger logger = LoggerFactory.getLogger(ProductsListControler.class);
+	private Logger logger = LoggerFactory
+			.getLogger(ProductsListControler.class);
 
-    @Autowired
-    public ProductsListControler(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
-        this.dataDefinitionService = dataDefinitionService;
-        this.dataAccessService = dataAccessService;
-        logger.info("constructor - " + dataDefinitionService);
-    }
+	@Autowired
+	public ProductsListControler(DataDefinitionService dataDefinitionService,
+			DataAccessService dataAccessService) {
+		this.dataDefinitionService = dataDefinitionService;
+		this.dataAccessService = dataAccessService;
+		logger.info("constructor - " + dataDefinitionService);
+	}
 
-    @RequestMapping(value = "/products/list", method = RequestMethod.GET)
-    public ModelAndView productsList() {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("productsGridView");
-        mav.addObject("headerContent", "Produkty:");
+	@RequestMapping(value = "/products/list", method = RequestMethod.GET)
+	public ModelAndView productsList() {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("productsGridView");
+		mav.addObject("headerContent", "Produkty:");
 
-        DataDefinition dataDefinition = dataDefinitionService.get("product");
-        List<GridDefinition> grids = dataDefinition.getGrids();
-        GridDefinition gridDefinition = grids.get(0);
-        mav.addObject("gridDefinition", gridDefinition);
+		DataDefinition dataDefinition = dataDefinitionService.get("product");
+		List<GridDefinition> grids = dataDefinition.getGrids();
+		GridDefinition gridDefinition = grids.get(0);
+		mav.addObject("gridDefinition", gridDefinition);
 
-        SearchCriteria searchCriteria = new SearchCriteriaMock("product", 100, 0);
-        ResultSet rs = dataAccessService.find("product", searchCriteria);
-        List<Entity> entities = rs.getResults();
+		SearchCriteria searchCriteria = new SearchCriteriaMock("product", 100,
+				0);
+		ResultSet rs = dataAccessService.find("product", searchCriteria);
+		List<Entity> entities = rs.getResults();
 
-        mav.addObject("entities", entities);
+		mav.addObject("entities", entities);
 
-        return mav;
-    }
+		return mav;
+	}
+
 }
