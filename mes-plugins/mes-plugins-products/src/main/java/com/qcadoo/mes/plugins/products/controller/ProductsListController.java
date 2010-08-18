@@ -48,22 +48,14 @@ public class ProductsListController {
         GridDefinition gridDefinition = grids.get(0);
         mav.addObject("gridDefinition", gridDefinition);
 
-        SearchCriteria searchCriteria = new SearchCriteriaMock("product", 100, 0);
-        ResultSet rs = dataAccessService.find("product", searchCriteria);
-        List<Entity> entities = rs.getResults();
-
-        mav.addObject("entities", entities);
-
         return mav;
     }
 
     @RequestMapping(value = "/products/listData", method = RequestMethod.GET)
     @ResponseBody
     public List<Entity> getListData(@RequestParam String maxResults, @RequestParam String firstResult) {
-        // String maxResultsStr = "10";
-        // /String firstResultStr = "20";
-        logger.info("MAX RES: " + maxResults);
-        logger.info("FIRST RES: " + firstResult);
+        logger.debug("MAX RES: " + maxResults);
+        logger.debug("FIRST RES: " + firstResult);
         try {
             int max = Integer.parseInt(maxResults);
             int first = Integer.parseInt(firstResult);
