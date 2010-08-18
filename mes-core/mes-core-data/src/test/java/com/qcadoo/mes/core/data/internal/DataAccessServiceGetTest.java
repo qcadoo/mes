@@ -11,9 +11,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -21,13 +21,12 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.internal.DataAccessServiceImpl;
 
 public class DataAccessServiceGetTest {
 
     private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-    private HibernateTemplate hibernateTemplate = mock(HibernateTemplate.class);
+    private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
     private DataAccessService dataAccessService = null;
 
@@ -35,7 +34,7 @@ public class DataAccessServiceGetTest {
     public void init() {
         dataAccessService = new DataAccessServiceImpl();
         ReflectionTestUtils.setField(dataAccessService, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(dataAccessService, "hibernateTemplate", hibernateTemplate);
+        ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
     }
 
     @Test(expected = NullPointerException.class)
@@ -79,7 +78,7 @@ public class DataAccessServiceGetTest {
         simpleDatabaseObject.setId(1L);
         simpleDatabaseObject.setName("Mr T");
         simpleDatabaseObject.setAge(66);
-        given(hibernateTemplate.get(SimpleDatabaseObject.class, 1L)).willReturn(simpleDatabaseObject);
+        given(sessionFactory.getCurrentSession().get(SimpleDatabaseObject.class, 1L)).willReturn(simpleDatabaseObject);
 
         // when
         Entity entity = dataAccessService.get("entityWithClass", 1L);

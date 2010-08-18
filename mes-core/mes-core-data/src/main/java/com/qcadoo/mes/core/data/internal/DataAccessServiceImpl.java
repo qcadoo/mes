@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
@@ -18,6 +19,7 @@ import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 
+@Service
 public final class DataAccessServiceImpl implements DataAccessService {
 
     @Autowired

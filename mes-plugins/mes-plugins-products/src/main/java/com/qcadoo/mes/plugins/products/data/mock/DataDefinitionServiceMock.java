@@ -2,12 +2,9 @@ package com.qcadoo.mes.plugins.products.data.mock;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 
-@Component
 public class DataDefinitionServiceMock implements DataDefinitionService {
 
     public void save(DataDefinition dataDefinition) {
