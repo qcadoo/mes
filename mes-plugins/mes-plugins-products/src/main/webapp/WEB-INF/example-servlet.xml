@@ -17,4 +17,31 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
+	<!-- Maps incoming requests to the appropriate controller based on the annotations 
+		on the controller methods. -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+					<property name="objectMapper" ref="jacksonObjectMapper" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- The Jackson view that uses the Jackson object mapper for serialization. -->
+	<bean id="restJsonMarshalView"
+		class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+		<property name="objectMapper" ref="jacksonObjectMapper" />
+	</bean>
+
+	<!-- Jackson ObjectMapper that can serialize and deserialize to and from 
+		JSON. The ObjectMapper is similar to JAXB marshallers. -->
+	<bean class="org.codehaus.jackson.map.ObjectMapper" id="jacksonObjectMapper" />
+
+
 </beans>
