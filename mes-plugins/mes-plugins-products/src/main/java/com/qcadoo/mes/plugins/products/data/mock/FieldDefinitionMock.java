@@ -49,4 +49,22 @@ public class FieldDefinitionMock implements FieldDefinition {
         return false;
     }
 
+    @Override
+    public boolean isHidden() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Object getDefaultValue() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isUnique() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }
