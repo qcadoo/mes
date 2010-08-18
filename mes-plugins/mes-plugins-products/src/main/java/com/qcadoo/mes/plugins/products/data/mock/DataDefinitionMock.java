@@ -69,4 +69,28 @@ public class DataDefinitionMock implements DataDefinition {
 		return false;
 	}
 
+    @Override
+    public boolean isPluginTable() {
+        return false;
+    }
+
+    @Override
+    public String getDiscriminator() {
+        return null;
+    }
+
+    @Override
+    public String getFullyQualifiedClassName() {
+        return null;
+    }
+
+    @Override
+    public boolean isVirtualTable() {
+        return false;
+    }
+
+    @Override
+    public boolean isCoreTable() {
+        return false;
+    }
 }
