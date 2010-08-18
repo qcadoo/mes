@@ -15,20 +15,4 @@
 
 	<name>Qcadoo MES :: Plugins :: Rapid Application Development CRUD</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.codehaus.jackson</groupId>
-		    <artifactId>jackson-mapper-lgpl</artifactId>
-		    <version>1.5.5</version>
-		</dependency>
-
-				
-	</dependencies>
-	
-
 </project>
