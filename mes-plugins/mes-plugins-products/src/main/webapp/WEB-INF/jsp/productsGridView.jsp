@@ -110,6 +110,10 @@
 				] */
 				colNames: colNames,
 				colModel: colModel,
+				ondblClickRow: function(id){
+			        // alert(id);
+			        window.location='editEntity.html?entityId='+id
+		        }
 				
 				//multiselect: true 
 				//caption: "Manipulating Array Data" 
@@ -127,31 +131,37 @@
 				{id:"9",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00"} 
 			]; 
 			*/
-			 $.getJSON("listData.html", {'maxResults' : 10, 'firstResult': 20}, function(response) {
-			       for (var entityNo in response) {
-				       var entity = response[entityNo];
-				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
-			       }
-			    });
-			//for(var i=0;i<=mydata.length;i++)
-				//jQuery("#list").jqGrid('addRowData',i+1,mydata[i]);
-
+			jQuery("#recordsNumberSelect").val(10)
+			refresh();
 			
 		}); 
 
 		var thisFirst = 0;
+		var thisMax = 10;
 		
 		function prev() {
-			alert("prev");
+			thisFirst -= thisMax;
+			refresh();
 		}
 
 		function next() {
-			 $.getJSON("listData.html", {'maxResults' : 10, 'firstResult': thisFirst}, function(response) {
+			thisFirst += thisMax;
+			refresh();
+		}
+
+		function selectChange() {
+			thisMax = parseInt(jQuery("#recordsNumberSelect").val());
+			refresh();
+		}
+
+		function refresh() {
+			jQuery("#list").jqGrid('clearGridData');
+			 $.getJSON("listData.html", {'maxResults' : thisMax, 'firstResult': thisFirst}, function(response) {
 			       for (var entityNo in response) {
 				       var entity = response[entityNo];
 				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
 			       }
-			       thisFirst += 10;
+			       
 			    });
 		}
 
@@ -164,13 +174,19 @@
 
 	<h2>${headerContent}</h2>
 	
-	<a href="#" class="fg-button ui-state-default ui-corner-all">New</a>
+	<button onClick="window.location='editEntity.html'">New</button>
 	
 	
 	<table id="list"></table> 
 	
 	<button onClick="prev()">prev</button>
 	<button onClick="next()">next</button>
+	<select id="recordsNumberSelect" onChange="selectChange()">
+		<option value=10>10</option>
+		<option value=20>20</option>
+		<option value=50>50</option>
+		<option value=100>100</option>
+	</select>
 	
 	<!-- <div id="myGrid" style="width:600px;height:500px;"></div> -->
 	
