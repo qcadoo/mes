@@ -37,18 +37,21 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        Object entity = hibernateTemplate.get(entityClass, entityId);
+        Object databaseEntity = hibernateTemplate.get(entityClass, entityId);
 
-        if (entity == null) {
+        if (databaseEntity == null) {
             return null;
         }
 
-        Entity genericEntity = new Entity((Long) getProperty(entity, "id"));
+        return getGenericEntity(dataDefinition, databaseEntity);
+    }
+
+    private Entity getGenericEntity(DataDefinition dataDefinition, Object entity) {
+        Entity genericEntity = new Entity(getIdProperty(entity));
 
         for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            genericEntity.setField(fieldDefinition.getName(), getProperty(entity, fieldDefinition.getName()));
+            genericEntity.setField(fieldDefinition.getName(), getProperty(entity, fieldDefinition));
         }
-
         return genericEntity;
     }
 
@@ -80,12 +83,29 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return resultSet;
     }
 
-    private Object getProperty(final Object entity, final String property) {
+    private Long getIdProperty(final Object entity) {
         try {
-            return PropertyUtils.getProperty(entity, property);
+            return (Long) PropertyUtils.getProperty(entity, "id");
         } catch (Exception e) {
-            throw new IllegalStateException("cannot get value of the property: " + entity.getClass().getSimpleName() + ", "
-                    + property, e);
+            throw new IllegalStateException("cannot get value of the id: " + entity.getClass().getSimpleName(), e);
+        }
+    }
+
+    private Object getProperty(final Object entity, final FieldDefinition fieldDefinition) {
+        if (fieldDefinition.isCustomField()) {
+            throw new UnsupportedOperationException("custom fields are not supported");
+        } else {
+            try {
+                Object value = PropertyUtils.getProperty(entity, fieldDefinition.getName());
+                if (!fieldDefinition.getType().isValidType(value)) {
+                    throw new IllegalStateException("value of the property: " + entity.getClass().getSimpleName()
+                            + " has value with invalid type: " + value.getClass().getSimpleName());
+                }
+                return value;
+            } catch (Exception e) {
+                throw new IllegalStateException("cannot get value of the property: " + entity.getClass().getSimpleName() + ", "
+                        + fieldDefinition.getName(), e);
+            }
         }
     }
 
