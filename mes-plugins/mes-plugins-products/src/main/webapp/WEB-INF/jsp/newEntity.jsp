@@ -6,15 +6,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Modify entity</title>
+<title>New entity</title>
 </head>
 <body>
 	<h2>${headerContent }</h2>
-		<form action="list.html">
-			<c:forEach items="${entity}" var="entry">
-				<tr><td>${entry.key}</td><td><input type="text" value="${entry.value}" /></td><br/></tr>
+		<form action="modify.html">
+			<c:forEach items="${fieldsDefinition}" var="fields">
+				<tr><td>${fields.name}</td><td><input type="text" /></td><br/></tr>
 			</c:forEach>
-			<input type="submit" value="edytuj" />
+			<input type="submit" value="dodaj" />
 		</form>
 	
 </body>

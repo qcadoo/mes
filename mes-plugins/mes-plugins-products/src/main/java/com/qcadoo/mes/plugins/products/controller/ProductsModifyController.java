@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -36,47 +37,42 @@ public class ProductsModifyController {
 	}
 
 	@RequestMapping(value = "/products/editEntity", method = RequestMethod.GET)
-	public ModelAndView editEntity() {
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("modifyEntity");
-		mav.addObject("headerContent", "Produkt:");
+	public ModelAndView editEntity(@RequestParam String entityId) {
+		try {
+			ModelAndView mav = new ModelAndView();
+			mav.setViewName("modifyEntity");
+			mav.addObject("headerContent", "Produkt:");
 
-		DataDefinition dataDefinition = dataDefinitionService.get("product");
-		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
-		mav.addObject("fieldsDefinition", fieldsDefinition);
-		Entity entity = dataAccessService.get("product", new Long(1));
-		mav.addObject("entity", entity.getFields());
+			DataDefinition dataDefinition = dataDefinitionService
+					.get("product");
+			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
+			mav.addObject("fieldsDefinition", fieldsDefinition);
+			Entity entity = dataAccessService.get("product",
+					Long.parseLong(entityId));
+			mav.addObject("entity", entity.getFields());
+			return mav;
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException(e);
+		}
 
-		return mav;
 	}
 
 	@RequestMapping(value = "/products/modifyEntity", method = RequestMethod.GET)
 	public ModelAndView modifyEntity() {
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("modifyEntity");
-		mav.addObject("headerContent", "Produkt:");
-
-		DataDefinition dataDefinition = dataDefinitionService.get("product");
-		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
-		mav.addObject("fieldsDefinition", fieldsDefinition);
-		Entity entity = dataAccessService.get("product", new Long(1));
-		mav.addObject("entity", entity.getFields());
-
+		mav.setViewName("productsGridView");
 		return mav;
 	}
 
 	@RequestMapping(value = "/products/newEntity", method = RequestMethod.GET)
 	public ModelAndView newEntity() {
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("modifyEntity");
+		mav.setViewName("newEntity");
 		mav.addObject("headerContent", "Produkt:");
 
 		DataDefinition dataDefinition = dataDefinitionService.get("product");
 		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 		mav.addObject("fieldsDefinition", fieldsDefinition);
-		Entity entity = dataAccessService.get("product", new Long(1));
-		mav.addObject("entity", entity.getFields());
-
 		return mav;
 	}
 }

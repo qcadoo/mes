@@ -22,8 +22,8 @@ public class DataAccessServiceMock implements DataAccessService {
 	@Override
 	public Entity get(String entityName, Long entityId) {
 		Map<String, Object> entityFields = new HashMap<String, Object>();
-		entityFields.put("Numer", "1");
-		entityFields.put("Nazwa", "produkt 1");
+		entityFields.put("Numer", entityId);
+		entityFields.put("Nazwa", "produkt " + entityId);
 		entityFields.put("Typ materialu", "produkt koncowy");
 		entityFields.put("EAN", "0");
 		entityFields.put("Kategoria", "niesklasyfikowany");
