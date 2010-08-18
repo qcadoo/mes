@@ -13,6 +13,6 @@
 	<artifactId>mes-plugins-products</artifactId>
 	<packaging>war</packaging>
 
-	<name>Qcadoo MES :: Plugins :: Rapid Application Development CRUD</name>
+	<name>Qcadoo MES :: Plugins :: Products</name>
 
 </project>

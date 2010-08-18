@@ -4,80 +4,17 @@
 
 <html>
 <head>
-
-	<!--  <link rel="stylesheet" href="../css/slick.grid.css" type="text/css" />
-	
-	<link rel="stylesheet" href="../css/examples.css" type="text/css" />-->
 	
 	<link rel="stylesheet" href="../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
 
-
 	<script type="text/javascript" src="../js/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
-	<!-- <script type="text/javascript" src="../js/jquery-ui-1.8.2.custom.min.js"></script>
-	<script type="text/javascript" src="../js/jquery.event.drag-2.0.min.js"></script>
-	<script type="text/javascript" src="../js/slick.grid.js"></script> -->
+	<script type="text/javascript" src="../js/jquery.blockUI.js"></script>
 	<script type="text/javascript" src="../js/jquery.jqGrid.min.js"></script>
 
-	<!--  <script>
-
-		var grid;
-
-		var columns = [
-			<c:forEach items="${gridDefinition.columns}" var="column">
-				{id:"${column.name}", name:"${column.name}", field:"${column.name}"},
-			</c:forEach>
-			/*{id:"title", name:"Title", field:"title"},
-			{id:"duration", name:"Duration", field:"duration"},
-			{id:"%", name:"% Complete", field:"percentComplete"},
-			{id:"start", name:"Start", field:"start"},
-			{id:"finish", name:"Finish", field:"finish"},
-			{id:"effort-driven", name:"Effort Driven", field:"effortDriven"}*/
-			
-		];
-
-		var options = {
-				editable: true,
-				enableAddRow: false,
-				enableCellNavigation: true
-		};
-
-		$(function() {
-            var data = [];
-            var i = 0;
-            <c:forEach items="${entities}" var="entity">
-	    		var o = new Object();
-	    		<c:forEach items="${gridDefinition.columns}" var="column">
-	    			o["${column.name}"] = "${entity.fields[column.name]}";
-	    		</c:forEach>
-	    		data[i] = o;
-	    		i++;
-	        </c:forEach>
-	        
-			grid = new Slick.Grid($("#myGrid"), data, columns, options);
-			
-			//grid.ondblClickRow = function(id){
-			grid.click = function(id){
-		        alert(id);
-		    };
-
-		    grid.beforeSelectRow = function(rowid, status) {
-		        alert("11");
-		    }
-		    		    
-		})
-
-		</script>-->
-		
 	<script type="text/javascript">
 		jQuery(document).ready(function(){
-
-
-			  //  $.getJSON("data.html", null, function(availability) {
-			  //     alert(availability);
-			  //  });
-
 
 			var colNames = new Array();
 			var colModel = new Array();
@@ -98,60 +35,64 @@
 			jQuery("#list").jqGrid({
 				datatype: "local", 
 				height: 500, 
-				/*colNames:['Inv No','Date', 'Client', 'Amount','Tax','Total','Notes'],
-				colModel:[ 
-					{name:'id',index:'id', width:60, sorttype:"int"}, 
-					{name:'invdate',index:'invdate', width:90, sorttype:"date"}, 
-					{name:'name',index:'name', width:100}, 
-					{name:'amount',index:'amount', width:80, align:"right",sorttype:"float"}, 
-					{name:'tax',index:'tax', width:80, align:"right",sorttype:"float"}, 
-					{name:'total',index:'total', width:80,align:"right",sorttype:"float"}, 
-					{name:'note',index:'note', width:150, sortable:false} 
-				] */
 				colNames: colNames,
 				colModel: colModel,
-				
-				//multiselect: true 
-				//caption: "Manipulating Array Data" 
-			}); 
-			/*
-			var mydata = [ 
-				{id:"1",invdate:"2007-10-01",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00"}, 
-				{id:"2",invdate:"2007-10-02",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00"}, 
-				{id:"3",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00"}, 
-				{id:"4",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00"}, 
-				{id:"5",invdate:"2007-10-05",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00"}, 
-				{id:"6",invdate:"2007-09-06",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00"}, 
-				{id:"7",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00"}, 
-				{id:"8",invdate:"2007-10-03",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00"}, 
-				{id:"9",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00"} 
-			]; 
-			*/
-			 $.getJSON("listData.html", {'maxResults' : 10, 'firstResult': 20}, function(response) {
-			       for (var entityNo in response) {
-				       var entity = response[entityNo];
-				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
-			       }
-			    });
-			//for(var i=0;i<=mydata.length;i++)
-				//jQuery("#list").jqGrid('addRowData',i+1,mydata[i]);
+				ondblClickRow: function(id){
+			        window.location='editEntity.html?entityId='+id
+		        }
 
+			}); 
+
+			jQuery("#recordsNumberSelect").val(10)
+			refresh();
 			
 		}); 
 
 		var thisFirst = 0;
+		var thisMax = 10;
 		
 		function prev() {
-			alert("prev");
+			thisFirst -= thisMax;
+			if (thisFirst < 0) {
+				thisFirst = 0;
+			}
+			refresh();
 		}
 
 		function next() {
-			 $.getJSON("listData.html", {'maxResults' : 10, 'firstResult': thisFirst}, function(response) {
+			thisFirst += thisMax;
+			refresh();
+		}
+
+		function selectChange() {
+			thisMax = parseInt(jQuery("#recordsNumberSelect").val());
+			refresh();
+		}
+
+		function refresh() {
+			jQuery("#previousPageButton").attr("disabled", true);
+			jQuery("#nextPageButton").attr("disabled", true);
+			jQuery("#recordsNumberSelect").attr("disabled", true);
+			jQuery("#list").jqGrid('clearGridData');
+			jQuery('#list').block({ message: 'Wczytuje...', showOverlay: false,  fadeOut: 1000, fadeIn: 0,css: { 
+	            border: 'none', 
+	            padding: '15px', 
+	            backgroundColor: '#000', 
+	            '-webkit-border-radius': '10px', 
+	            '-moz-border-radius': '10px', 
+	            opacity: .5, 
+	            color: '#fff' } });
+			 $.getJSON("listData.html", {'maxResults' : thisMax, 'firstResult': thisFirst}, function(response) {
 			       for (var entityNo in response) {
 				       var entity = response[entityNo];
 				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
 			       }
-			       thisFirst += 10;
+			       jQuery('#list').unblock();
+			       if (thisFirst > 0) {
+			       	jQuery("#previousPageButton").attr("disabled", false);
+			       }
+					jQuery("#nextPageButton").attr("disabled", false);
+					jQuery("#recordsNumberSelect").attr("disabled", false);
 			    });
 		}
 
@@ -164,15 +105,19 @@
 
 	<h2>${headerContent}</h2>
 	
-	<a href="#" class="fg-button ui-state-default ui-corner-all">New</a>
+	<button onClick="window.location='newEntity.html'">New</button>
 	
 	
 	<table id="list"></table> 
 	
-	<button onClick="prev()">prev</button>
-	<button onClick="next()">next</button>
-	
-	<!-- <div id="myGrid" style="width:600px;height:500px;"></div> -->
+	<button id="previousPageButton" onClick="prev()">prev</button>
+	<button id="nextPageButton" onClick="next()">next</button>
+	<select id="recordsNumberSelect" onChange="selectChange()">
+		<option value=10>10</option>
+		<option value=20>20</option>
+		<option value=50>50</option>
+		<option value=100>100</option>
+	</select>
 	
 </body>
 </html>

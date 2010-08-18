@@ -41,4 +41,10 @@ public class ColumnDefinitionMock implements ColumnDefinition {
         return null;
     }
 
+    @Override
+    public Integer getWidth() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

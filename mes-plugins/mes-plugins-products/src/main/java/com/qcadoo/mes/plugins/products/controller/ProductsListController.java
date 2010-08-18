@@ -22,16 +22,16 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.plugins.products.data.mock.SearchCriteriaMock;
 
 @Controller
-public class ProductsListControler {
+public class ProductsListController {
 
     private DataDefinitionService dataDefinitionService;
 
     private DataAccessService dataAccessService;
 
-    private Logger logger = LoggerFactory.getLogger(ProductsListControler.class);
+    private Logger logger = LoggerFactory.getLogger(ProductsListController.class);
 
     @Autowired
-    public ProductsListControler(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
+    public ProductsListController(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
         this.dataDefinitionService = dataDefinitionService;
         this.dataAccessService = dataAccessService;
         logger.info("constructor - " + dataDefinitionService);

@@ -26,4 +26,10 @@ public interface FieldDefinition {
 
     boolean isCustomField();
 
+    boolean isHidden();
+
+    Object getDefaultValue();
+
+    boolean isUnique();
+
 }

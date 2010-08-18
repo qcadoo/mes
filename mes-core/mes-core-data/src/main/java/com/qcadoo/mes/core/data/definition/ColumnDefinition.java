@@ -10,6 +10,8 @@ import java.util.List;
  * Aggregation is displayed under the column. It aggregate all values for given column, from all pages. Aggregation is available
  * only for column which one-field column field column with aggregable type - {@link FieldType#isAggregable()}.
  * 
+ * Width is % of width grid for presentation given column
+ * 
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.has com.qcadoo.mes.core.data.definition.ColumnAggregationMode
  */
@@ -22,5 +24,7 @@ public interface ColumnDefinition {
     ColumnAggregationMode getAggregationMode();
 
     String getExpression();
+
+    Integer getWidth();
 
 }

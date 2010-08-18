@@ -37,11 +37,6 @@
 	<bean id="restJsonMarshalView"
 		class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
 		<property name="objectMapper" ref="jacksonObjectMapper" />
-		<!-- <property name="renderedAttributes">
-			<list>
-				<value>response</value>
-			</list>
-		</property>-->
 	</bean>
 
 	<!-- Jackson ObjectMapper that can serialize and deserialize to and from 
