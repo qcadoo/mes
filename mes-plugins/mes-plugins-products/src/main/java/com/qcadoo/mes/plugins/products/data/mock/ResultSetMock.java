@@ -20,7 +20,7 @@ public class ResultSetMock implements ResultSet {
     @Override
     public List<Entity> getResults() {
         List<Entity> entities = new LinkedList<Entity>();
-        for (int i = 0; i < criteria.getMaxResults(); i++) {
+        for (int i = criteria.getFirstResult(); i < criteria.getFirstResult() + criteria.getMaxResults(); i++) {
             Map<String, Object> entityFields = new HashMap<String, Object>();
             entityFields.put("Numer", "" + i);
             entityFields.put("Nazwa", "produkt " + i);
