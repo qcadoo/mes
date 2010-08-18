@@ -7,7 +7,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 
-public class ResultSetImpl implements ResultSet {
+public final class ResultSetImpl implements ResultSet {
 
     private SearchCriteria searchCriteria;
 

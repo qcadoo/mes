@@ -2,7 +2,11 @@ package com.qcadoo.mes.core.data.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
@@ -11,6 +15,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 
@@ -54,7 +59,25 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     public ResultSet find(final String entityName, final SearchCriteria searchCriteria) {
-        throw new UnsupportedOperationException("implement me");
+        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = getClassForEntity(dataDefinition);
+
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(entityClass);
+
+        List<?> results = hibernateTemplate.findByCriteria(detachedCriteria, searchCriteria.getFirstResult(),
+                searchCriteria.getMaxResults());
+
+        List<Entity> genericResults = new ArrayList<Entity>();
+
+        for (Object object : results) {
+
+        }
+
+        ResultSetImpl resultSet = new ResultSetImpl();
+        resultSet.setResults(genericResults);
+        resultSet.setCriteria(searchCriteria);
+
+        return resultSet;
     }
 
     private Object getProperty(final Object entity, final String property) {
