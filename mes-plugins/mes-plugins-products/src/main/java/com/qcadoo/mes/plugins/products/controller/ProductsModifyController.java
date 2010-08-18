@@ -25,7 +25,7 @@ public class ProductsModifyController {
 	private DataAccessService dataAccessService;
 
 	private Logger logger = LoggerFactory
-			.getLogger(ProductsListControler.class);
+			.getLogger(ProductsModifyController.class);
 
 	@Autowired
 	public ProductsModifyController(
