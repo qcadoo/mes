@@ -12,24 +12,96 @@ import java.util.Set;
  * @apiviz.has com.qcadoo.mes.core.data.definition.FieldType
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldValidator
  */
-public interface FieldDefinition {
+public final class FieldDefinition {
 
-    String getName();
+    private String name;
 
-    FieldType getType();
+    private FieldType type;
 
-    Set<FieldValidator> getValidators();
+    private Set<FieldValidator> validators;
 
-    boolean isEditable();
+    private boolean editable;
 
-    boolean isRequired();
+    private boolean required;
 
-    boolean isCustomField();
+    private boolean customField;
 
-    boolean isHidden();
+    private boolean hidden;
 
-    Object getDefaultValue();
+    private Object defaultValue;
 
-    boolean isUnique();
+    private boolean unique;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public FieldType getType() {
+        return type;
+    }
+
+    public void setType(final FieldType type) {
+        this.type = type;
+    }
+
+    public Set<FieldValidator> getValidators() {
+        return validators;
+    }
+
+    public void setValidators(final Set<FieldValidator> validators) {
+        this.validators = validators;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(final boolean editable) {
+        this.editable = editable;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(final boolean required) {
+        this.required = required;
+    }
+
+    public boolean isCustomField() {
+        return customField;
+    }
+
+    public void setCustomField(final boolean customField) {
+        this.customField = customField;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(final Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public boolean isUnique() {
+        return unique;
+    }
+
+    public void setUnique(final boolean unique) {
+        this.unique = unique;
+    }
 
 }
