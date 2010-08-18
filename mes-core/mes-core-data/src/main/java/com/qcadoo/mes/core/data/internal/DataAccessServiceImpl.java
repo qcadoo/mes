@@ -2,7 +2,11 @@ package com.qcadoo.mes.core.data.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
@@ -11,6 +15,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 
@@ -32,18 +37,21 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        Object entity = hibernateTemplate.get(entityClass, entityId);
+        Object databaseEntity = hibernateTemplate.get(entityClass, entityId);
 
-        if (entity == null) {
+        if (databaseEntity == null) {
             return null;
         }
 
-        Entity genericEntity = new Entity((Long) getProperty(entity, "id"));
+        return getGenericEntity(dataDefinition, databaseEntity);
+    }
+
+    private Entity getGenericEntity(DataDefinition dataDefinition, Object entity) {
+        Entity genericEntity = new Entity(getIdProperty(entity));
 
         for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            genericEntity.setField(fieldDefinition.getName(), getProperty(entity, fieldDefinition.getName()));
+            genericEntity.setField(fieldDefinition.getName(), getProperty(entity, fieldDefinition));
         }
-
         return genericEntity;
     }
 
@@ -54,15 +62,50 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     public ResultSet find(final String entityName, final SearchCriteria searchCriteria) {
-        throw new UnsupportedOperationException("implement me");
+        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = getClassForEntity(dataDefinition);
+
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(entityClass);
+
+        List<?> results = hibernateTemplate.findByCriteria(detachedCriteria, searchCriteria.getFirstResult(),
+                searchCriteria.getMaxResults());
+
+        List<Entity> genericResults = new ArrayList<Entity>();
+
+        for (Object databaseEntity : results) {
+            genericResults.add(getGenericEntity(dataDefinition, databaseEntity));
+        }
+
+        ResultSetImpl resultSet = new ResultSetImpl();
+        resultSet.setResults(genericResults);
+        resultSet.setCriteria(searchCriteria);
+
+        return resultSet;
     }
 
-    private Object getProperty(final Object entity, final String property) {
+    private Long getIdProperty(final Object entity) {
         try {
-            return PropertyUtils.getProperty(entity, property);
+            return (Long) PropertyUtils.getProperty(entity, "id");
         } catch (Exception e) {
-            throw new IllegalStateException("cannot get value of the property: " + entity.getClass().getSimpleName() + ", "
-                    + property, e);
+            throw new IllegalStateException("cannot get value of the id: " + entity.getClass().getSimpleName(), e);
+        }
+    }
+
+    private Object getProperty(final Object entity, final FieldDefinition fieldDefinition) {
+        if (fieldDefinition.isCustomField()) {
+            throw new UnsupportedOperationException("custom fields are not supported");
+        } else {
+            try {
+                Object value = PropertyUtils.getProperty(entity, fieldDefinition.getName());
+                if (!fieldDefinition.getType().isValidType(value)) {
+                    throw new IllegalStateException("value of the property: " + entity.getClass().getSimpleName()
+                            + " has value with invalid type: " + value.getClass().getSimpleName());
+                }
+                return value;
+            } catch (Exception e) {
+                throw new IllegalStateException("cannot get value of the property: " + entity.getClass().getSimpleName() + ", "
+                        + fieldDefinition.getName(), e);
+            }
         }
     }
 

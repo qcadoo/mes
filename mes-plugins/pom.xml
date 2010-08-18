@@ -17,7 +17,7 @@
 	<name>Qcadoo MES :: Plugins</name>
 
 	<modules>
-		<module>mes-plugins-rad-crud</module>
+		<module>mes-plugins-products</module>
 		<!-- <module>mes-plugins-rad-management</module> -->
 		<!-- <module>mes-plugins-users-management</module> -->
 	</modules>
