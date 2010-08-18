@@ -17,16 +17,56 @@ import com.qcadoo.mes.core.data.search.Restriction;
  * @apiviz.uses com.qcadoo.mes.core.data.search.Order
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
  */
-public interface GridDefinition {
+public final class GridDefinition {
 
-    String getName();
+    private String name;
 
-    Set<FieldDefinition> getSearchableFields();
+    private Set<FieldDefinition> searchableFields;
 
-    List<ColumnDefinition> getColumns();
+    private List<ColumnDefinition> columns;
 
-    Order getDefaultOrder();
+    private Order defaultOrder;
 
-    Set<Restriction> getDefaultRestrictions();
+    private Set<Restriction> defaultRestrictions;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public Set<FieldDefinition> getSearchableFields() {
+        return searchableFields;
+    }
+
+    public void setSearchableFields(final Set<FieldDefinition> searchableFields) {
+        this.searchableFields = searchableFields;
+    }
+
+    public List<ColumnDefinition> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(final List<ColumnDefinition> columns) {
+        this.columns = columns;
+    }
+
+    public Order getDefaultOrder() {
+        return defaultOrder;
+    }
+
+    public void setDefaultOrder(final Order defaultOrder) {
+        this.defaultOrder = defaultOrder;
+    }
+
+    public Set<Restriction> getDefaultRestrictions() {
+        return defaultRestrictions;
+    }
+
+    public void setDefaultRestrictions(final Set<Restriction> defaultRestrictions) {
+        this.defaultRestrictions = defaultRestrictions;
+    }
 
 }
