@@ -10,7 +10,7 @@
 </head>
 <body>
 	<h2>${headerContent }</h2>
-		<form action="modify.html">
+		<form action="list.html">
 			<c:forEach items="${fieldsDefinition}" var="fields">
 				<tr><td>${fields.name}</td><td><input type="text" /></td><br/></tr>
 			</c:forEach>
