@@ -46,15 +46,16 @@ public class ProductsModifyControllerTest extends TestCase {
 
 	@Test
 	public void testAddEntity() {
-		assertEquals(testAddEntity("1", "a", "a", "a", "a", "a"), "Dodano");
-		assertEquals(testAddEntity("2", "a", "", "a", "a", "a"),
+		assertEquals(testAddEntity("1", "a", "a", "a", "a", "a", "a"), "Dodano");
+		assertEquals(testAddEntity("2", "a", "", "a", "a", "a", "a"),
 				"Wystapil blad");
 	}
 
 	private String testAddEntity(String number, String type,
-			String typeOfMaterial, String ean, String category, String unit) {
+			String typeOfMaterial, String ean, String category, String unit,
+			String name) {
 		ModelAndView modelAndView = controller.addEntity(number, type,
-				typeOfMaterial, ean, category, unit);
+				typeOfMaterial, ean, category, unit, name);
 		assertNotNull(modelAndView.getModel().get("data"));
 		assertNotNull(modelAndView.getModel().get("message"));
 		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
@@ -63,16 +64,17 @@ public class ProductsModifyControllerTest extends TestCase {
 
 	@Test
 	public void testModifyEntity() {
-		assertEquals(testModifyEntity("1", "a", "a", "a", "a", "a"),
+		assertEquals(testModifyEntity("1", "a", "a", "a", "a", "a", "a", "1"),
 				"Zedytowano");
-		assertEquals(testModifyEntity("2", "a", "", "a", "a", "a"),
+		assertEquals(testModifyEntity("2", "a", "", "a", "a", "a", "a", "1"),
 				"Wystapil blad");
 	}
 
 	private String testModifyEntity(String number, String type,
-			String typeOfMaterial, String ean, String category, String unit) {
+			String typeOfMaterial, String ean, String category, String unit,
+			String name, String id) {
 		ModelAndView modelAndView = controller.modifyEntity(number, type,
-				typeOfMaterial, ean, category, unit);
+				typeOfMaterial, ean, category, unit, name, id);
 		assertNotNull(modelAndView.getModel().get("data"));
 		assertNotNull(modelAndView.getModel().get("message"));
 		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));

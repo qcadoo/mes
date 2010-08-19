@@ -49,6 +49,7 @@ public class ProductsModifyController {
 					.get("product");
 			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 			mav.addObject("fieldsDefinition", fieldsDefinition);
+			mav.addObject("entityId", entityId);
 			Entity entity = dataAccessService.get("product",
 					Long.parseLong(entityId));
 			mav.addObject("entity", entity.getFields());
@@ -64,24 +65,30 @@ public class ProductsModifyController {
 	public ModelAndView addEntity(@RequestParam String number,
 			@RequestParam String type, @RequestParam String typeOfMaterial,
 			@RequestParam String ean, @RequestParam String category,
-			@RequestParam String unit) {
+			@RequestParam String unit, @RequestParam String name) {
 		ModelAndView mav = new ModelAndView();
 		String message = "Dodano";
-		if (number != null && number.length() != 0 && type != null
-				&& type.length() != 0 && typeOfMaterial != null
-				&& typeOfMaterial.length() != 0 && ean != null
-				&& ean.length() != 0 && category != null
-				&& category.length() != 0 && unit != null && unit.length() != 0) {
-		} else {
-			message = "Wystapil blad";
-		}
-		Map<String, String> data = new HashMap<String, String>();
+		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("number", number);
 		data.put("type", type);
 		data.put("typeOfMaterial", typeOfMaterial);
 		data.put("ean", ean);
 		data.put("category", category);
 		data.put("unit", unit);
+		data.put("name", name);
+		Entity entity = new Entity(null, data);
+
+		if (number != null && number.length() != 0 && type != null
+				&& type.length() != 0 && typeOfMaterial != null
+				&& typeOfMaterial.length() != 0 && ean != null
+				&& ean.length() != 0 && category != null
+				&& category.length() != 0 && unit != null && unit.length() != 0
+				&& name != null && name.length() != 0) {
+			dataAccessService.save("product", entity);
+		} else {
+			message = "Wystapil blad";
+		}
+
 		mav.addObject("data", data);
 		mav.addObject("message", message);
 		DataDefinition dataDefinition = dataDefinitionService.get("product");
@@ -95,24 +102,30 @@ public class ProductsModifyController {
 	public ModelAndView modifyEntity(@RequestParam String number,
 			@RequestParam String type, @RequestParam String typeOfMaterial,
 			@RequestParam String ean, @RequestParam String category,
-			@RequestParam String unit) {
+			@RequestParam String unit, @RequestParam String name,
+			@RequestParam String entityId) {
 		ModelAndView mav = new ModelAndView();
 		String message = "Zedytowano";
-		if (number != null && number.length() != 0 && type != null
-				&& type.length() != 0 && typeOfMaterial != null
-				&& typeOfMaterial.length() != 0 && ean != null
-				&& ean.length() != 0 && category != null
-				&& category.length() != 0 && unit != null && unit.length() != 0) {
-		} else {
-			message = "Wystapil blad";
-		}
-		Map<String, String> data = new HashMap<String, String>();
+		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("number", number);
 		data.put("type", type);
 		data.put("typeOfMaterial", typeOfMaterial);
 		data.put("ean", ean);
 		data.put("category", category);
 		data.put("unit", unit);
+		data.put("name", name);
+		Entity entity = new Entity(Long.parseLong(entityId), data);
+		if (number != null && number.length() != 0 && type != null
+				&& type.length() != 0 && typeOfMaterial != null
+				&& typeOfMaterial.length() != 0 && ean != null
+				&& ean.length() != 0 && category != null
+				&& category.length() != 0 && unit != null && unit.length() != 0
+				&& name != null && name.length() != 0) {
+			dataAccessService.save("product", entity);
+		} else {
+			message = "Wystapil blad";
+		}
+
 		mav.addObject("data", data);
 		mav.addObject("message", message);
 		DataDefinition dataDefinition = dataDefinitionService.get("product");
