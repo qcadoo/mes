@@ -48,10 +48,10 @@ public class DataAccessServiceGetTest {
         dataDefinition.setFullyQualifiedClassName("not.existing.class.Name");
 
         // when
-        given(dataDefinitionService.get("entityWithNoClass")).willReturn(dataDefinition);
+        given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
 
         // then
-        dataAccessService.get("entityWithNoClass", 1L);
+        dataAccessService.get("test.Entity", 1L);
     }
 
     @Test
@@ -62,14 +62,12 @@ public class DataAccessServiceGetTest {
 
         List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
 
-        FieldDefinition fieldDefinitionName = new FieldDefinition();
-        fieldDefinitionName.setName("name");
+        FieldDefinition fieldDefinitionName = new FieldDefinition("name");
         fieldDefinitionName.setType(FieldTypes.stringType());
         fieldDefinitions.add(fieldDefinitionName);
 
-        FieldDefinition fieldDefinitionAge = new FieldDefinition();
-        fieldDefinitionName.setName("age");
-        fieldDefinitionName.setType(FieldTypes.intType());
+        FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
+        fieldDefinitionAge.setType(FieldTypes.intType());
         fieldDefinitions.add(fieldDefinitionAge);
 
         dataDefinition.setFields(fieldDefinitions);

@@ -27,12 +27,12 @@ public final class ColumnDefinition {
 
     private Integer width;
 
-    public String getName() {
-        return name;
+    public ColumnDefinition(final String name) {
+        this.name = name;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public String getName() {
+        return name;
     }
 
     public List<FieldDefinition> getFields() {

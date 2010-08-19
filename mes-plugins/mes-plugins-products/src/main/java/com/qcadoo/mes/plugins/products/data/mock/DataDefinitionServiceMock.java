@@ -18,27 +18,21 @@ public class DataDefinitionServiceMock implements DataDefinitionService {
         if (!"product".equals(entityName)) {
             return null;
         }
-        DataDefinition dataDef = new DataDefinition();
+        DataDefinition dataDef = new DataDefinition("Produkt");
         List<GridDefinition> grids = new LinkedList<GridDefinition>();
-        GridDefinition gridDef = new GridDefinition();
+        GridDefinition gridDef = new GridDefinition("Grid");
         List<ColumnDefinition> columns = new LinkedList<ColumnDefinition>();
-        ColumnDefinition c1 = new ColumnDefinition();
-        c1.setName("Numer");
+        ColumnDefinition c1 = new ColumnDefinition("Numer");
         columns.add(c1);
-        ColumnDefinition c2 = new ColumnDefinition();
-        c2.setName("Nazwa");
+        ColumnDefinition c2 = new ColumnDefinition("Nazwa");
         columns.add(c2);
-        ColumnDefinition c3 = new ColumnDefinition();
-        c3.setName("Typ materialu");
+        ColumnDefinition c3 = new ColumnDefinition("Typ materialu");
         columns.add(c3);
-        ColumnDefinition c4 = new ColumnDefinition();
-        c4.setName("EAN");
+        ColumnDefinition c4 = new ColumnDefinition("EAN");
         columns.add(c4);
-        ColumnDefinition c5 = new ColumnDefinition();
-        c5.setName("Kategoria");
+        ColumnDefinition c5 = new ColumnDefinition("Kategoria");
         columns.add(c5);
-        ColumnDefinition c6 = new ColumnDefinition();
-        c6.setName("Jednostka");
+        ColumnDefinition c6 = new ColumnDefinition("Jednostka");
         columns.add(c6);
         gridDef.setColumns(columns);
         grids.add(gridDef);

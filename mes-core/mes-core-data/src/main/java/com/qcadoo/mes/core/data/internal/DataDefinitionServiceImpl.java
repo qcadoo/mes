@@ -51,15 +51,13 @@ public class DataDefinitionServiceImpl implements DataDefinitionService {
     }
 
     private ColumnDefinition createColumnDefinition(String name, FieldDefinition field) {
-        ColumnDefinition columnDefinition = new ColumnDefinition();
-        columnDefinition.setName(name);
+        ColumnDefinition columnDefinition = new ColumnDefinition(name);
         columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
         return columnDefinition;
     }
 
     private FieldDefinition createStringFieldDefinition(String name) {
-        FieldDefinition fieldDefinition = new FieldDefinition();
-        fieldDefinition.setName(name);
+        FieldDefinition fieldDefinition = new FieldDefinition(name);
         fieldDefinition.setType(FieldTypes.stringType());
         return fieldDefinition;
     }

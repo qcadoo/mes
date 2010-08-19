@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public final class FieldDefinition {
 
-    private String name;
+    private final String name;
 
     private FieldType type;
 
@@ -32,12 +32,12 @@ public final class FieldDefinition {
 
     private Object defaultValue;
 
-    public String getName() {
-        return name;
+    public FieldDefinition(final String name) {
+        this.name = name;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public String getName() {
+        return name;
     }
 
     public FieldType getType() {
