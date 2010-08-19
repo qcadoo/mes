@@ -25,6 +25,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("products.Product");
         GridDefinition gridDefinition = new GridDefinition("Products");
 
+        FieldDefinition fieldName = createStringFieldDefinition("name");
         FieldDefinition fieldNumber = createStringFieldDefinition("number");
         FieldDefinition fieldType = createStringFieldDefinition("type");
         FieldDefinition fieldTypeOfMaterial = createStringFieldDefinition("typeOfMaterial");
@@ -34,9 +35,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Product");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
-        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldNumber, fieldType, fieldTypeOfMaterial, fieldEan,
-                fieldCategory, fieldUnit }));
+        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldName, fieldNumber, fieldType, fieldTypeOfMaterial,
+                fieldEan, fieldCategory, fieldUnit }));
 
+        ColumnDefinition columnName = createColumnDefinition("name", fieldName);
         ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber);
         ColumnDefinition columnType = createColumnDefinition("type", fieldType);
         ColumnDefinition columnTypeOfMaterial = createColumnDefinition("typeOfMaterial", fieldTypeOfMaterial);
@@ -44,8 +46,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         ColumnDefinition columnCategory = createColumnDefinition("category", fieldCategory);
         ColumnDefinition columnUnit = createColumnDefinition("unit", fieldUnit);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnType, columnTypeOfMaterial,
-                columnEan, columnCategory, columnUnit }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnNumber, columnType,
+                columnTypeOfMaterial, columnEan, columnCategory, columnUnit }));
 
         return dataDefinition;
     }
