@@ -13,6 +13,8 @@ public final class ResultSetImpl implements ResultSet {
 
     private List<Entity> results;
 
+    private int totalNumberOfEntities;
+
     @Override
     public List<Entity> getResults() {
         return results;
@@ -24,7 +26,6 @@ public final class ResultSetImpl implements ResultSet {
 
     @Override
     public Map<String, Integer> getAggregations() {
-        // TODO KRNA Auto-generated method stub
         return null;
     }
 
@@ -39,8 +40,11 @@ public final class ResultSetImpl implements ResultSet {
 
     @Override
     public int getTotalNumberOfEntities() {
-        // TODO KRNA Auto-generated method stub
-        return 0;
+        return totalNumberOfEntities;
+    }
+
+    public void setTotalNumberOfEntities(int totalNumberOfEntities) {
+        this.totalNumberOfEntities = totalNumberOfEntities;
     }
 
 }

@@ -67,7 +67,7 @@ public final class DataAccessServiceGetTest {
         fieldDefinitions.add(fieldDefinitionName);
 
         FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
-        fieldDefinitionAge.setType(FieldTypes.intType());
+        fieldDefinitionAge.setType(FieldTypes.integerType());
         fieldDefinitions.add(fieldDefinitionAge);
 
         dataDefinition.setFields(fieldDefinitions);

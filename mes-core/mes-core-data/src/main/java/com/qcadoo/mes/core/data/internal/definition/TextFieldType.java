@@ -2,26 +2,26 @@ package com.qcadoo.mes.core.data.internal.definition;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
 
-public final class IntFieldType implements FieldType {
+public class TextFieldType implements FieldType {
 
     @Override
     public boolean isSearchable() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isOrderable() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isAggregable() {
-        return true;
+        return false;
     }
 
     @Override
-    public boolean isValidType(final Object value) {
-        return value instanceof Integer;
+    public boolean isValidType(Object value) {
+        return value instanceof String;
     }
 
 }

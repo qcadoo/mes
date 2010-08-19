@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,6 +90,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
+        Long totalNumberOfEntities = (Long) sessionFactory.getCurrentSession().createCriteria(entityClass)
+                .setProjection(Projections.rowCount()).uniqueResult();
+
         List<?> results = sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults())
                 .add(Restrictions.ne(fieldName, true)).list();
@@ -102,6 +106,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         ResultSetImpl resultSet = new ResultSetImpl();
         resultSet.setResults(genericResults);
         resultSet.setCriteria(searchCriteria);
+        resultSet.setTotalNumberOfEntities(totalNumberOfEntities.intValue());
 
         return resultSet;
     }
