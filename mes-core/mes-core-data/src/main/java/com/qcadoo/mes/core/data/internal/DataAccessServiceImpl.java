@@ -1,11 +1,12 @@
 package com.qcadoo.mes.core.data.internal;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -25,8 +26,6 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {
 
-    private static final String fieldName = "deleted";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -34,38 +33,45 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private SessionFactory sessionFactory;
 
     @Override
+    @Transactional
     public void save(final String entityName, final Entity entity) {
-        throw new UnsupportedOperationException("implement me");
+        checkArgument(entity != null, "entity must be given");
+        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = getClassForEntity(dataDefinition);
+
+        Object existingDatabaseEntity = null;
+
+        if (entity.getId() != null) {
+            existingDatabaseEntity = getDatabaseEntity(entityClass, entity.getId());
+            checkState(existingDatabaseEntity != null, "cannot find entity %s with id=%s", entityClass.getSimpleName(),
+                    entity.getId());
+        }
+
+        Object databaseEntity = convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity);
+
+        sessionFactory.getCurrentSession().save(databaseEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Entity get(final String entityName, final Long entityId) {
+        checkArgument(entityId != null, "entityId must be given");
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        Object databaseEntity = sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .add(Restrictions.ne(fieldName, true)).add(Restrictions.idEq(entityId)).uniqueResult();
+        Object databaseEntity = getDatabaseEntity(entityClass, entityId);
 
         if (databaseEntity == null) {
             return null;
         }
 
-        return getGenericEntity(dataDefinition, databaseEntity);
-    }
-
-    private Entity getGenericEntity(final DataDefinition dataDefinition, final Object entity) {
-        Entity genericEntity = new Entity(getIdProperty(entity));
-
-        for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            genericEntity.setField(fieldDefinition.getName(), getProperty(entity, fieldDefinition));
-        }
-        return genericEntity;
+        return convertToGenericEntity(dataDefinition, databaseEntity);
     }
 
     @Override
     @Transactional
     public void delete(final String entityName, final Long entityId) {
+        checkArgument(entityId != null, "entityId must be given");
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
@@ -75,12 +81,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return;
         }
 
-        try {
-            PropertyUtils.setProperty(databaseEntity, fieldName, true);
-        } catch (Exception e) {
-            throw new IllegalStateException("cannot set value of the property: " + databaseEntity.getClass().getSimpleName()
-                    + ", " + fieldName, e);
-        }
+        FieldUtils.setDeleted(databaseEntity);
 
         sessionFactory.getCurrentSession().update(databaseEntity);
     }
@@ -88,6 +89,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Override
     @Transactional(readOnly = true)
     public ResultSet find(final String entityName, final SearchCriteria searchCriteria) {
+        checkArgument(searchCriteria != null, "searchCriteria must be given");
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
@@ -96,12 +98,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         List<?> results = sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults())
-                .add(Restrictions.ne(fieldName, true)).list();
+                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).list();
 
         List<Entity> genericResults = new ArrayList<Entity>();
 
         for (Object databaseEntity : results) {
-            genericResults.add(getGenericEntity(dataDefinition, databaseEntity));
+            genericResults.add(convertToGenericEntity(dataDefinition, databaseEntity));
         }
 
         ResultSetImpl resultSet = new ResultSetImpl();
@@ -112,30 +114,37 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return resultSet;
     }
 
-    private Long getIdProperty(final Object entity) {
-        try {
-            return (Long) PropertyUtils.getProperty(entity, "id");
-        } catch (Exception e) {
-            throw new IllegalStateException("cannot get value of the id: " + entity.getClass().getSimpleName(), e);
-        }
+    private Object getDatabaseEntity(final Class<?> entityClass, final Long entityId) {
+        return sessionFactory.getCurrentSession().createCriteria(entityClass).add(Restrictions.idEq(entityId))
+                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).uniqueResult();
     }
 
-    private Object getProperty(final Object entity, final FieldDefinition fieldDefinition) {
-        if (fieldDefinition.isCustomField()) {
-            throw new UnsupportedOperationException("custom fields are not supported");
-        } else {
-            try {
-                Object value = PropertyUtils.getProperty(entity, fieldDefinition.getName());
-                if (!fieldDefinition.getType().isValidType(value)) {
-                    throw new IllegalStateException("value of the property: " + entity.getClass().getSimpleName()
-                            + " has value with invalid type: " + value.getClass().getSimpleName());
-                }
-                return value;
-            } catch (Exception e) {
-                throw new IllegalStateException("cannot get value of the property: " + entity.getClass().getSimpleName() + ", "
-                        + fieldDefinition.getName(), e);
-            }
+    private Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object entity) {
+        Entity genericEntity = new Entity(FieldUtils.getId(entity));
+
+        for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
+            genericEntity.setField(fieldDefinition.getName(), FieldUtils.getField(entity, fieldDefinition));
         }
+
+        return genericEntity;
+    }
+
+    private Object convertToDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+            final Object existingDatabaseEntity) {
+        Object databaseEntity = null;
+
+        if (existingDatabaseEntity != null) {
+            databaseEntity = existingDatabaseEntity;
+        } else {
+            databaseEntity = getInstanceForEntity(dataDefinition);
+            FieldUtils.setId(databaseEntity, genericEntity.getId());
+        }
+
+        for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
+            FieldUtils.setField(databaseEntity, fieldDefinition, genericEntity.getField(fieldDefinition.getName()));
+        }
+
+        return databaseEntity;
     }
 
     private Class<?> getClassForEntity(final DataDefinition dataDefinition) {
@@ -150,6 +159,17 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 throw new IllegalStateException("cannot find mapping class for definition: "
                         + dataDefinition.getFullyQualifiedClassName(), e);
             }
+        }
+    }
+
+    private Object getInstanceForEntity(DataDefinition dataDefinition) {
+        Class<?> entityClass = getClassForEntity(dataDefinition);
+        try {
+            return entityClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new IllegalStateException("cannot instantiate class: " + dataDefinition.getFullyQualifiedClassName(), e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("cannot instantiate class: " + dataDefinition.getFullyQualifiedClassName(), e);
         }
     }
 
