@@ -1,6 +1,8 @@
 package com.qcadoo.mes.plugins.products.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +33,8 @@ public class ProductsModifyController {
 	public ProductsModifyController(
 			DataDefinitionService dataDefinitionService,
 			DataAccessService dataAccessService) {
-		this.dataDefinitionService = dataDefinitionService;
 		this.dataAccessService = dataAccessService;
+		this.dataDefinitionService = dataDefinitionService;
 		logger.info("constructor - " + dataDefinitionService);
 	}
 
@@ -50,6 +52,7 @@ public class ProductsModifyController {
 			Entity entity = dataAccessService.get("product",
 					Long.parseLong(entityId));
 			mav.addObject("entity", entity.getFields());
+
 			return mav;
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException(e);
@@ -57,10 +60,65 @@ public class ProductsModifyController {
 
 	}
 
-	@RequestMapping(value = "/products/modifyEntity", method = RequestMethod.GET)
-	public ModelAndView modifyEntity() {
+	@RequestMapping(value = "/products/addEntity", method = RequestMethod.GET)
+	public ModelAndView addEntity(@RequestParam String number,
+			@RequestParam String type, @RequestParam String typeOfMaterial,
+			@RequestParam String ean, @RequestParam String category,
+			@RequestParam String unit) {
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("productsGridView");
+		String message = "Dodano";
+		if (number != null && number.length() != 0 && type != null
+				&& type.length() != 0 && typeOfMaterial != null
+				&& typeOfMaterial.length() != 0 && ean != null
+				&& ean.length() != 0 && category != null
+				&& category.length() != 0 && unit != null && unit.length() != 0) {
+		} else {
+			message = "Wystapil blad";
+		}
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("number", number);
+		data.put("type", type);
+		data.put("typeOfMaterial", typeOfMaterial);
+		data.put("ean", ean);
+		data.put("category", category);
+		data.put("unit", unit);
+		mav.addObject("data", data);
+		mav.addObject("message", message);
+		DataDefinition dataDefinition = dataDefinitionService.get("product");
+		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
+		mav.addObject("fieldsDefinition", fieldsDefinition);
+		mav.setViewName("result");
+		return mav;
+	}
+
+	@RequestMapping(value = "/products/modifyEntity", method = RequestMethod.GET)
+	public ModelAndView modifyEntity(@RequestParam String number,
+			@RequestParam String type, @RequestParam String typeOfMaterial,
+			@RequestParam String ean, @RequestParam String category,
+			@RequestParam String unit) {
+		ModelAndView mav = new ModelAndView();
+		String message = "Zedytowano";
+		if (number != null && number.length() != 0 && type != null
+				&& type.length() != 0 && typeOfMaterial != null
+				&& typeOfMaterial.length() != 0 && ean != null
+				&& ean.length() != 0 && category != null
+				&& category.length() != 0 && unit != null && unit.length() != 0) {
+		} else {
+			message = "Wystapil blad";
+		}
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("number", number);
+		data.put("type", type);
+		data.put("typeOfMaterial", typeOfMaterial);
+		data.put("ean", ean);
+		data.put("category", category);
+		data.put("unit", unit);
+		mav.addObject("data", data);
+		mav.addObject("message", message);
+		DataDefinition dataDefinition = dataDefinitionService.get("product");
+		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
+		mav.addObject("fieldsDefinition", fieldsDefinition);
+		mav.setViewName("result");
 		return mav;
 	}
 
@@ -75,4 +133,5 @@ public class ProductsModifyController {
 		mav.addObject("fieldsDefinition", fieldsDefinition);
 		return mav;
 	}
+
 }

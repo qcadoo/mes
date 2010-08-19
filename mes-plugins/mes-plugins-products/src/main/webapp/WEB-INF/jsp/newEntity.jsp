@@ -10,10 +10,24 @@
 </head>
 <body>
 	<h2>${headerContent }</h2>
-		<form action="list.html">
-			<c:forEach items="${fieldsDefinition}" var="fields">
-				<tr><td>${fields.name}</td><td><input type="text" /></td> <br/></tr>
-			</c:forEach>
+		<form action="addEntity.html">
+			<c:forEach items="${fieldsDefinition}" var="entry" varStatus="rowCounter">
+				<tr>
+					<c:choose>
+						<c:when test="${entry.hidden=='false'}">
+								<td>${entry.name}</td><td>
+								<input type="text" name="${entry.name}"
+								<c:if test="${entry.editable=='true'}">
+									readonly="readonly"
+								</c:if> />
+								</td><br/>
+						</c:when> 
+						<c:otherwise>
+							<input type="hidden" name="${entry.name}" />
+						</c:otherwise> 
+					</c:choose>  
+				</tr>
+			</c:forEach>		
 			<input type="submit" value="dodaj" />
 		</form>
 	

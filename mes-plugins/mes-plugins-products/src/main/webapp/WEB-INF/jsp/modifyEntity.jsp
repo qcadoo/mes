@@ -10,12 +10,27 @@
 </head>
 <body>
 	<h2>${headerContent }</h2>
-		<form action="list.html">
-			<c:forEach items="${entity}" var="entry">
-				<tr><td>${entry.key}</td><td><input type="text" value="${entry.value}" /></td><br/></tr>
-			</c:forEach>
+		<form action="modifyEntity.html">
+			<c:forEach items="${fieldsDefinition}" var="entry" varStatus="rowCounter">
+				<tr>
+					<c:choose>
+						<c:when test="${entry.hidden=='false'}">
+								<td>${entry.name}</td><td>
+								<input type="text" name="${entry.name}"
+								<c:if test="${entry.editable=='true'}">
+									readonly="readonly"
+								</c:if> 
+								value="${entity[entry.name]}" />
+								</td><br/>
+						</c:when> 
+						<c:otherwise>
+							<input type="hidden" name="${entry.name}" value="${entity[entry.name]}" />
+						</c:otherwise> 
+					</c:choose>  
+				</tr>
+			</c:forEach>		
 			<input type="submit" value="edytuj" />
 		</form>
-	
+		
 </body>
 </html>
