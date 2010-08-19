@@ -25,7 +25,7 @@ public final class FieldUtils {
         setField(entity, FIELD_DELETED, true);
     }
 
-    public static void setField(final Object entity, final FieldDefinition fieldDefinition, Object value) {
+    public static void setField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else {
@@ -50,7 +50,7 @@ public final class FieldUtils {
         }
     }
 
-    private static void setField(final Object entity, final String fieldName, Object value) {
+    private static void setField(final Object entity, final String fieldName, final Object value) {
         try {
             PropertyUtils.setProperty(entity, fieldName, value);
         } catch (Exception e) {

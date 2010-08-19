@@ -95,7 +95,7 @@ public final class Product {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 

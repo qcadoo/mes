@@ -2,6 +2,9 @@ package com.qcadoo.mes.core.data.definition;
 
 import java.util.Set;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Field defines database field or custom field (according to {@link FieldDefinition#isCustomField()}).
  * 
@@ -106,60 +109,26 @@ public final class FieldDefinition {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (customField ? 1231 : 1237);
-        result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
-        result = prime * result + (editable ? 1231 : 1237);
-        result = prime * result + (hidden ? 1231 : 1237);
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + (required ? 1231 : 1237);
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + (unique ? 1231 : 1237);
-        result = prime * result + ((validators == null) ? 0 : validators.hashCode());
-        return result;
+        return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(editable).append(hidden).append(name)
+                .append(required).append(type).append(unique).append(validators).toHashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
             return true;
-        if (obj == null)
+        }
+        if (!(obj instanceof FieldDefinition)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
+        }
         FieldDefinition other = (FieldDefinition) obj;
-        if (customField != other.customField)
-            return false;
-        if (defaultValue == null) {
-            if (other.defaultValue != null)
-                return false;
-        } else if (!defaultValue.equals(other.defaultValue))
-            return false;
-        if (editable != other.editable)
-            return false;
-        if (hidden != other.hidden)
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (required != other.required)
-            return false;
-        if (type == null) {
-            if (other.type != null)
-                return false;
-        } else if (!type.equals(other.type))
-            return false;
-        if (unique != other.unique)
-            return false;
-        if (validators == null) {
-            if (other.validators != null)
-                return false;
-        } else if (!validators.equals(other.validators))
-            return false;
-        return true;
+        return new EqualsBuilder().append(customField, other.customField).append(defaultValue, other.defaultValue)
+                .append(editable, other.editable).append(hidden, other.hidden).append(name, other.name)
+                .append(required, other.required).append(type, other.type).append(unique, other.unique)
+                .append(validators, other.validators).isEquals();
     }
 
 }

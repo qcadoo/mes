@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
 
-public class EnumFieldType implements FieldType {
+public final class EnumFieldType implements FieldType {
 
     private final List<String> values;
 
-    public EnumFieldType(String... values) {
+    public EnumFieldType(final String... values) {
         this.values = Arrays.asList(values);
     }
 
@@ -29,7 +29,7 @@ public class EnumFieldType implements FieldType {
     }
 
     @Override
-    public boolean isValidType(Object value) {
+    public boolean isValidType(final Object value) {
         if (!(value instanceof String)) {
             return false;
         }

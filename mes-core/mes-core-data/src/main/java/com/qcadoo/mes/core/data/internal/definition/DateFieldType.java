@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
 
-public class DateFieldType implements FieldType {
+public final class DateFieldType implements FieldType {
 
     @Override
     public boolean isSearchable() {
@@ -22,7 +22,7 @@ public class DateFieldType implements FieldType {
     }
 
     @Override
-    public boolean isValidType(Object value) {
+    public boolean isValidType(final Object value) {
         return value instanceof Date;
     }
 
