@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.data.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -79,7 +81,9 @@ public final class DataAccessServiceGetTest {
         simpleDatabaseObject.setName("Mr T");
         simpleDatabaseObject.setAge(66);
 
-        given(sessionFactory.getCurrentSession().get(SimpleDatabaseObject.class, 1L)).willReturn(simpleDatabaseObject);
+        given(
+                sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(any(Criterion.class))
+                        .add(any(Criterion.class)).uniqueResult()).willReturn(simpleDatabaseObject);
 
         // when
         Entity entity = dataAccessService.get("test.Entity", 1L);
