@@ -1,0 +1,25 @@
+body {
+	
+}
+
+#pageHeader {
+	color: 777777;
+	border-bottom: dotted black 1px;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	font-size: 25px;
+}
+
+#topButtons {
+	margin-top: 10px;
+	margin-bottom: 10px;	
+}
+
+#bottomButtons {
+	margin-top: 10px;
+	margin-bottom: 10px;	
+}
+
+#pageInfoSpan {
+	color: 777777;
+}

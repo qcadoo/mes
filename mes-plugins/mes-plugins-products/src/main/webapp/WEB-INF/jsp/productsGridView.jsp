@@ -7,6 +7,7 @@
 	
 	<link rel="stylesheet" href="../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
+	<link rel="stylesheet" href="../css/productGrid.css" type="text/css" />
 
 	<script type="text/javascript" src="../js/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
@@ -23,6 +24,7 @@
 				colModel.push({name:"${column.name}",index:"${column.name}", width:100});
 			</c:forEach>
 
+			/*
 			var mydata = new Array();
 			<c:forEach items="${entities}" var="entity">
 	    		var o = new Object();
@@ -30,11 +32,11 @@
 	    			o["${column.name}"] = "${entity.fields[column.name]}";
 	    		</c:forEach>
 	    		mydata.push(o);
-	        </c:forEach>
+	        </c:forEach>*/
 			 
 			jQuery("#list").jqGrid({
 				datatype: "local", 
-				height: 500, 
+				height: 450, 
 				colNames: colNames,
 				colModel: colModel,
 				multiselect: true,
@@ -137,31 +139,34 @@
 </head>
 <body>
 
-	<h2>${headerContent}</h2>
+	<div id="pageHeader">${headerContent}</div>
 	
-	<button onClick="window.location='newEntity.html'">New</button>
-	
-	<button onClick="refresh()">refresh</button>
-	
-	<button onClick="deleteSelectedRecords()">delete</button>
-	
+	<div id="topButtons">
+		<button onClick="window.location='newEntity.html'">New</button>
+		<button onClick="refresh()">refresh</button>
+		<button onClick="deleteSelectedRecords()">delete</button>
+	</div>
 	
 	<table id="list"></table> 
 	
-	<button id="previousPageButton" onClick="prev()">prev</button>
-	
-	<select id="recordsNumberSelect" onChange="selectChange()">
-		<option value=10>10</option>
-		<option value=20>20</option>
-		<option value=50>50</option>
-		<option value=100>100</option>
-	</select>
-	<span>page</span>
-	<span id="pageNoSpan"></span>
-	<span>/</span>
-	<span id="allPagesNoSpan"></span>
-	
-	<button id="nextPageButton" onClick="next()">next</button>
-	
+	<div id="bottomButtons">
+		<button id="previousPageButton" onClick="prev()">prev</button>
+		
+		<select id="recordsNumberSelect" onChange="selectChange()">
+			<option value=10>10</option>
+			<option value=20>20</option>
+			<option value=50>50</option>
+			<option value=100>100</option>
+		</select>
+		
+		<span id="pageInfoSpan">
+			<span>page</span>
+			<span id="pageNoSpan"></span>
+			<span>/</span>
+			<span id="allPagesNoSpan"></span>
+		</span>
+		
+		<button id="nextPageButton" onClick="next()">next</button>
+	</div>
 </body>
 </html>
