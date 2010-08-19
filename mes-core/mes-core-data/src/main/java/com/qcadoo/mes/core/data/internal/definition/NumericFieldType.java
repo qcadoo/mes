@@ -4,7 +4,13 @@ import com.qcadoo.mes.core.data.definition.FieldType;
 
 public final class NumericFieldType implements FieldType {
 
-    public NumericFieldType(int i, int j) {
+    private final int precision;
+
+    private final int scale;
+
+    public NumericFieldType(final int scale, final int precision) {
+        this.scale = scale;
+        this.precision = precision;
     }
 
     @Override
