@@ -6,11 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.search.Order;
-import com.qcadoo.mes.core.data.search.Restrictions;
-import com.qcadoo.mes.core.data.search.SearchCriteria;
-import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
-
 public final class SearchCriteriaBuilderTest {
 
     @Test

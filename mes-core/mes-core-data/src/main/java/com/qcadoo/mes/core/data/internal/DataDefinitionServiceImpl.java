@@ -13,15 +13,15 @@ import com.qcadoo.mes.core.data.definition.FieldTypes;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 
 @Service
-public class DataDefinitionServiceImpl implements DataDefinitionService {
+public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     @Override
-    public void save(DataDefinition dataDefinition) {
+    public void save(final DataDefinition dataDefinition) {
         throw new UnsupportedOperationException("implement me");
     }
 
     @Override
-    public DataDefinition get(String entityName) {
+    public DataDefinition get(final String entityName) {
         DataDefinition dataDefinition = new DataDefinition("products.Product");
         GridDefinition gridDefinition = new GridDefinition("Products");
 
@@ -50,20 +50,20 @@ public class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ColumnDefinition createColumnDefinition(String name, FieldDefinition field) {
+    private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field) {
         ColumnDefinition columnDefinition = new ColumnDefinition(name);
         columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
         return columnDefinition;
     }
 
-    private FieldDefinition createStringFieldDefinition(String name) {
+    private FieldDefinition createStringFieldDefinition(final String name) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);
         fieldDefinition.setType(FieldTypes.stringType());
         return fieldDefinition;
     }
 
     @Override
-    public void delete(String entityName) {
+    public void delete(final String entityName) {
         throw new UnsupportedOperationException("implement me");
     }
 

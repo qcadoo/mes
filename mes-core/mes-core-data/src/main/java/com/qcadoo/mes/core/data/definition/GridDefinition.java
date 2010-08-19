@@ -29,7 +29,7 @@ public final class GridDefinition {
 
     private Set<Restriction> defaultRestrictions;
 
-    public GridDefinition(String name) {
+    public GridDefinition(final String name) {
         this.name = name;
     }
 

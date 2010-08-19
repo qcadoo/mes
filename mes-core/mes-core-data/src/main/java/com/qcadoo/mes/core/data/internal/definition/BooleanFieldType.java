@@ -20,7 +20,7 @@ public final class BooleanFieldType implements FieldType {
     }
 
     @Override
-    public boolean isValidType(Object value) {
+    public boolean isValidType(final Object value) {
         return value instanceof Boolean;
     }
 

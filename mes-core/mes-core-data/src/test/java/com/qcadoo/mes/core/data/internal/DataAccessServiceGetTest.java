@@ -20,7 +20,7 @@ import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.definition.FieldTypes;
 
-public class DataAccessServiceGetTest {
+public final class DataAccessServiceGetTest {
 
     private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 

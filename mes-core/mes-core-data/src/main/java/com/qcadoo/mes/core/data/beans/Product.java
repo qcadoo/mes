@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Product {
+public final class Product {
 
     @Id
     @GeneratedValue
@@ -17,6 +17,8 @@ public class Product {
 
     private String typeOfMaterial;
 
+    private String type;
+
     private String ean;
 
     private String category;
@@ -27,7 +29,7 @@ public class Product {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -35,7 +37,7 @@ public class Product {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -43,7 +45,7 @@ public class Product {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -51,7 +53,7 @@ public class Product {
         return typeOfMaterial;
     }
 
-    public void setTypeOfMaterial(String typeOfMaterial) {
+    public void setTypeOfMaterial(final String typeOfMaterial) {
         this.typeOfMaterial = typeOfMaterial;
     }
 
@@ -59,7 +61,7 @@ public class Product {
         return ean;
     }
 
-    public void setEan(String ean) {
+    public void setEan(final String ean) {
         this.ean = ean;
     }
 
@@ -67,7 +69,7 @@ public class Product {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(final String category) {
         this.category = category;
     }
 
@@ -75,8 +77,16 @@ public class Product {
         return unit;
     }
 
-    public void setUnit(String unit) {
+    public void setUnit(final String unit) {
         this.unit = unit;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(final String type) {
+        this.type = type;
     }
 
 }

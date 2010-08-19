@@ -9,6 +9,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
@@ -34,6 +35,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Entity get(final String entityName, final Long entityId) {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
@@ -47,7 +49,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return getGenericEntity(dataDefinition, databaseEntity);
     }
 
-    private Entity getGenericEntity(DataDefinition dataDefinition, Object entity) {
+    private Entity getGenericEntity(final DataDefinition dataDefinition, final Object entity) {
         Entity genericEntity = new Entity(getIdProperty(entity));
 
         for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
@@ -62,6 +64,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResultSet find(final String entityName, final SearchCriteria searchCriteria) {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
@@ -115,7 +118,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             String fullyQualifiedClassName = dataDefinition.getFullyQualifiedClassName();
 
             try {
-                return ClassLoader.getSystemClassLoader().loadClass(fullyQualifiedClassName);
+                return getClass().getClassLoader().loadClass(fullyQualifiedClassName);
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("cannot find mapping class for definition: "
                         + dataDefinition.getFullyQualifiedClassName(), e);
