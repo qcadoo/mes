@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -129,6 +130,24 @@ public final class DataAccessServiceGetTest {
 
         // when
         dataAccessService.get("test.Entity", 1L);
+    }
+
+    public void shouldReturnNullIfEntityNotFound() throws Exception {
+        // given
+        DataDefinition dataDefinition = new DataDefinition("test.Entity");
+        dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
+
+        given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
+
+        given(
+                sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(any(Criterion.class))
+                        .add(any(Criterion.class)).uniqueResult()).willReturn(null);
+
+        // when
+        Entity entity = dataAccessService.get("test.Entity", 1L);
+
+        // then
+        assertNull(entity);
     }
 
 }
