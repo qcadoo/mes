@@ -3,6 +3,9 @@ package com.qcadoo.mes.core.data.definition;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
 
@@ -71,50 +74,24 @@ public final class GridDefinition {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((columns == null) ? 0 : columns.hashCode());
-        result = prime * result + ((defaultOrder == null) ? 0 : defaultOrder.hashCode());
-        result = prime * result + ((defaultRestrictions == null) ? 0 : defaultRestrictions.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((searchableFields == null) ? 0 : searchableFields.hashCode());
-        return result;
+        return new HashCodeBuilder(11, 37).append(columns).append(defaultOrder).append(defaultRestrictions).append(name)
+                .append(searchableFields).toHashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
             return true;
-        if (obj == null)
+        }
+        if (!(obj instanceof GridDefinition)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
+        }
         GridDefinition other = (GridDefinition) obj;
-        if (columns == null) {
-            if (other.columns != null)
-                return false;
-        } else if (!columns.equals(other.columns))
-            return false;
-        if (defaultOrder == null) {
-            if (other.defaultOrder != null)
-                return false;
-        } else if (!defaultOrder.equals(other.defaultOrder))
-            return false;
-        if (defaultRestrictions == null) {
-            if (other.defaultRestrictions != null)
-                return false;
-        } else if (!defaultRestrictions.equals(other.defaultRestrictions))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (searchableFields == null) {
-            if (other.searchableFields != null)
-                return false;
-        } else if (!searchableFields.equals(other.searchableFields))
-            return false;
-        return true;
+        return new EqualsBuilder().append(columns, other.columns).append(defaultOrder, other.defaultOrder)
+                .append(defaultRestrictions, other.defaultRestrictions).append(name, other.name)
+                .append(searchableFields, other.searchableFields).isEquals();
     }
 }

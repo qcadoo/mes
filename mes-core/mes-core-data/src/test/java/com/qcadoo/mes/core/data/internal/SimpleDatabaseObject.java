@@ -1,5 +1,8 @@
 package com.qcadoo.mes.core.data.internal;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public final class SimpleDatabaseObject {
 
     private Long id;
@@ -34,44 +37,22 @@ public final class SimpleDatabaseObject {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + age;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
+        return new HashCodeBuilder(17, 37).append(name).append(age).append(id).toHashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
+        }
+        if (obj == this) {
+            return true;
         }
         if (!(obj instanceof SimpleDatabaseObject)) {
             return false;
         }
         SimpleDatabaseObject other = (SimpleDatabaseObject) obj;
-        if (age != other.age) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
+        return new EqualsBuilder().append(name, other.name).append(age, other.age).append(id, other.id).isEquals();
     }
 
 }

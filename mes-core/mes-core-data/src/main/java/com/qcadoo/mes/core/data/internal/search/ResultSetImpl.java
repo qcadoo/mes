@@ -43,7 +43,7 @@ public final class ResultSetImpl implements ResultSet {
         return totalNumberOfEntities;
     }
 
-    public void setTotalNumberOfEntities(int totalNumberOfEntities) {
+    public void setTotalNumberOfEntities(final int totalNumberOfEntities) {
         this.totalNumberOfEntities = totalNumberOfEntities;
     }
 

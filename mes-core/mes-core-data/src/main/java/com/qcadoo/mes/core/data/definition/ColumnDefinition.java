@@ -2,6 +2,9 @@ package com.qcadoo.mes.core.data.definition;
 
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Columns defines one column on grid. It can be a one-field column or composite column.
  * 
@@ -69,48 +72,24 @@ public final class ColumnDefinition {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((aggregationMode == null) ? 0 : aggregationMode.hashCode());
-        result = prime * result + ((expression == null) ? 0 : expression.hashCode());
-        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((width == null) ? 0 : width.hashCode());
-        return result;
+        return new HashCodeBuilder(17, 31).append(aggregationMode).append(expression).append(fields).append(name).append(width)
+                .toHashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
             return true;
-        if (obj == null)
+        }
+        if (!(obj instanceof ColumnDefinition)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
+        }
         ColumnDefinition other = (ColumnDefinition) obj;
-        if (aggregationMode != other.aggregationMode)
-            return false;
-        if (expression == null) {
-            if (other.expression != null)
-                return false;
-        } else if (!expression.equals(other.expression))
-            return false;
-        if (fields == null) {
-            if (other.fields != null)
-                return false;
-        } else if (!fields.equals(other.fields))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (width == null) {
-            if (other.width != null)
-                return false;
-        } else if (!width.equals(other.width))
-            return false;
-        return true;
+        return new EqualsBuilder().append(aggregationMode, other.aggregationMode).append(expression, other.expression)
+                .append(name, other.name).append(width, other.width).append(fields, other.fields).isEquals();
     }
 
 }
