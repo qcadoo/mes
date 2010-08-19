@@ -64,6 +64,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     @Override
+    @Transactional
     public void delete(final String entityName, final Long entityId) {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
