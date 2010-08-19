@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {
+
+    private static final String fieldName = "deleted";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -40,7 +43,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
+        Object databaseEntity = sessionFactory.getCurrentSession().createCriteria(entityClass)
+                .add(Restrictions.ne(fieldName, true)).add(Restrictions.idEq(entityId)).uniqueResult();
 
         if (databaseEntity == null) {
             return null;
@@ -60,7 +64,23 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     public void delete(final String entityName, final Long entityId) {
-        throw new UnsupportedOperationException("implement me");
+        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = getClassForEntity(dataDefinition);
+
+        Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
+
+        if (databaseEntity == null) {
+            return;
+        }
+
+        try {
+            PropertyUtils.setProperty(databaseEntity, fieldName, true);
+        } catch (Exception e) {
+            throw new IllegalStateException("cannot set value of the property: " + databaseEntity.getClass().getSimpleName()
+                    + ", " + fieldName, e);
+        }
+
+        sessionFactory.getCurrentSession().update(databaseEntity);
     }
 
     @Override
@@ -70,7 +90,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
         List<?> results = sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults()).list();
+                .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults())
+                .add(Restrictions.ne(fieldName, true)).list();
 
         List<Entity> genericResults = new ArrayList<Entity>();
 

@@ -25,6 +25,8 @@ public final class Product {
 
     private String unit;
 
+    private boolean deleted;
+
     public Long getId() {
         return id;
     }
@@ -87,6 +89,14 @@ public final class Product {
 
     public void setType(final String type) {
         this.type = type;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
 }
