@@ -25,6 +25,10 @@ public final class Entity {
         this(id, new HashMap<String, Object>());
     }
 
+    public Entity() {
+        this(null, new HashMap<String, Object>());
+    }
+
     public Long getId() {
         return id;
     }

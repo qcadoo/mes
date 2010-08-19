@@ -48,12 +48,16 @@ public final class DataAccessServiceGetTest {
         // given
         DataDefinition dataDefinition = new DataDefinition("test.Entity");
         dataDefinition.setFullyQualifiedClassName("not.existing.class.Name");
-
-        // when
         given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
 
-        // then
+        // when
         dataAccessService.get("test.Entity", 1L);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailIfIdIsNull() throws Exception {
+        // when
+        dataAccessService.get("test.Entity", null);
     }
 
     @Test
@@ -92,6 +96,39 @@ public final class DataAccessServiceGetTest {
         assertEquals(1L, entity.getId().longValue());
         assertEquals("Mr T", entity.getField("name"));
         assertEquals(66, entity.getField("age"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldFailIfFieldTypeIsNotValid() throws Exception {
+        // given
+        DataDefinition dataDefinition = new DataDefinition("test.Entity");
+        dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
+
+        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
+
+        FieldDefinition fieldDefinitionName = new FieldDefinition("name");
+        fieldDefinitionName.setType(FieldTypes.integerType());
+        fieldDefinitions.add(fieldDefinitionName);
+
+        FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
+        fieldDefinitionAge.setType(FieldTypes.integerType());
+        fieldDefinitions.add(fieldDefinitionAge);
+
+        dataDefinition.setFields(fieldDefinitions);
+
+        given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
+
+        SimpleDatabaseObject simpleDatabaseObject = new SimpleDatabaseObject();
+        simpleDatabaseObject.setId(1L);
+        simpleDatabaseObject.setName("Mr T");
+        simpleDatabaseObject.setAge(66);
+
+        given(
+                sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(any(Criterion.class))
+                        .add(any(Criterion.class)).uniqueResult()).willReturn(simpleDatabaseObject);
+
+        // when
+        dataAccessService.get("test.Entity", 1L);
     }
 
 }
