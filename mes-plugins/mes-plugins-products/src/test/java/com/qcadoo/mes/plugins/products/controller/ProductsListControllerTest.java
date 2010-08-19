@@ -74,36 +74,12 @@ public class ProductsListControllerTest extends TestCase {
 
     @Test
     public void testListDataIllegalArgumentExceptionForTestListData() {
-        try {
-            controller.getListData("-30", "10");
-            fail();
-        } catch (IllegalArgumentException e) {
-        }
-        try {
-            controller.getListData("30", "-10");
-            fail();
-        } catch (IllegalArgumentException e) {
-        }
-        try {
-            controller.getListData("-30", "-10");
-            fail();
-        } catch (IllegalArgumentException e) {
-        }
-        try {
-            controller.getListData("3a0", "10");
-            fail();
-        } catch (IllegalArgumentException e) {
-        }
-        try {
-            controller.getListData("30", "1a0");
-            fail();
-        } catch (IllegalArgumentException e) {
-        }
-        try {
-            controller.getListData("3a0", "1a0");
-            fail();
-        } catch (IllegalArgumentException e) {
-        }
+        assertNull(controller.getListData("-30", "10"));
+        assertNull(controller.getListData("30", "-10"));
+        assertNull(controller.getListData("-30", "-10"));
+        assertNull(controller.getListData("3a0", "10"));
+        assertNull(controller.getListData("30", "1a0"));
+        assertNull(controller.getListData("3a0", "1a0"));
     }
 
     @Test
