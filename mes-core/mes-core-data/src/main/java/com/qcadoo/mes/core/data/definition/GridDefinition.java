@@ -29,12 +29,12 @@ public final class GridDefinition {
 
     private Set<Restriction> defaultRestrictions;
 
-    public String getName() {
-        return name;
+    public GridDefinition(String name) {
+        this.name = name;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public String getName() {
+        return name;
     }
 
     public Set<FieldDefinition> getSearchableFields() {

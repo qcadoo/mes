@@ -28,9 +28,9 @@ public final class FieldDefinition {
 
     private boolean hidden;
 
-    private Object defaultValue;
-
     private boolean unique;
+
+    private Object defaultValue;
 
     public String getName() {
         return name;

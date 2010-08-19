@@ -16,7 +16,7 @@ import java.util.List;
  */
 public final class DataDefinition {
 
-    private String entityName;
+    private final String entityName;
 
     private String fullyQualifiedClassName;
 
@@ -26,18 +26,12 @@ public final class DataDefinition {
 
     private List<GridDefinition> grids;
 
-    private boolean virtualTable;
-
-    private boolean coreTable;
-
-    private boolean pluginTable;
+    public DataDefinition(final String entityName) {
+        this.entityName = entityName;
+    }
 
     public String getEntityName() {
         return entityName;
-    }
-
-    public void setEntityName(final String entityName) {
-        this.entityName = entityName;
     }
 
     public String getFullyQualifiedClassName() {
@@ -73,27 +67,15 @@ public final class DataDefinition {
     }
 
     public boolean isVirtualTable() {
-        return virtualTable;
-    }
-
-    public void setVirtualTable(final boolean virtualTable) {
-        this.virtualTable = virtualTable;
+        return entityName.startsWith("virtual.");
     }
 
     public boolean isCoreTable() {
-        return coreTable;
-    }
-
-    public void setCoreTable(final boolean coreTable) {
-        this.coreTable = coreTable;
+        return entityName.startsWith("core.");
     }
 
     public boolean isPluginTable() {
-        return pluginTable;
-    }
-
-    public void setPluginTable(final boolean pluginTable) {
-        this.pluginTable = pluginTable;
+        return !isCoreTable() && !isVirtualTable();
     }
 
 }

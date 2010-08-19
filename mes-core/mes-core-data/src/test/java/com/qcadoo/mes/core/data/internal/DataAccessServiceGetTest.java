@@ -1,15 +1,12 @@
 package com.qcadoo.mes.core.data.internal;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.hibernate.SessionFactory;
 import org.junit.Before;
@@ -21,6 +18,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.FieldTypes;
 
 public class DataAccessServiceGetTest {
 
@@ -46,47 +44,52 @@ public class DataAccessServiceGetTest {
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfThereIsNoClassForGivenEntityName() throws Exception {
         // given
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(dataDefinitionService.get("entityWithNoClass")).willReturn(dataDefinition);
-        given(dataDefinition.isVirtualTable()).willReturn(false);
-        given(dataDefinition.getFullyQualifiedClassName()).willReturn("not.existing.class.Name");
+        DataDefinition dataDefinition = new DataDefinition("test.Entity");
+        dataDefinition.setFullyQualifiedClassName("not.existing.class.Name");
 
         // when
+        given(dataDefinitionService.get("entityWithNoClass")).willReturn(dataDefinition);
+
+        // then
         dataAccessService.get("entityWithNoClass", 1L);
     }
 
     @Test
     public void shouldReturnValidEntity() throws Exception {
         // given
-        DataDefinition dataDefinition = mock(DataDefinition.class);
+        DataDefinition dataDefinition = new DataDefinition("test.Entity");
+        dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
+
         List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
-        FieldDefinition fieldDefinitionName = mock(FieldDefinition.class, RETURNS_DEEP_STUBS);
-        given(fieldDefinitionName.getName()).willReturn("name");
-        given(fieldDefinitionName.isCustomField()).willReturn(false);
-        given(fieldDefinitionName.getType().isValidType(anyString())).willReturn(true);
-        FieldDefinition fieldDefinitionAge = mock(FieldDefinition.class, RETURNS_DEEP_STUBS);
-        given(fieldDefinitionAge.getName()).willReturn("age");
-        given(fieldDefinitionAge.isCustomField()).willReturn(false);
-        given(fieldDefinitionAge.getType().isValidType(anyInt())).willReturn(true);
+
+        FieldDefinition fieldDefinitionName = new FieldDefinition();
+        fieldDefinitionName.setName("name");
+        fieldDefinitionName.setType(FieldTypes.stringType());
         fieldDefinitions.add(fieldDefinitionName);
+
+        FieldDefinition fieldDefinitionAge = new FieldDefinition();
+        fieldDefinitionName.setName("age");
+        fieldDefinitionName.setType(FieldTypes.intType());
         fieldDefinitions.add(fieldDefinitionAge);
-        given(dataDefinitionService.get("entityWithClass")).willReturn(dataDefinition);
-        given(dataDefinition.isVirtualTable()).willReturn(false);
-        given(dataDefinition.getFullyQualifiedClassName()).willReturn(SimpleDatabaseObject.class.getCanonicalName());
-        given(dataDefinition.getFields()).willReturn(fieldDefinitions);
+
+        dataDefinition.setFields(fieldDefinitions);
+
+        given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
+
         SimpleDatabaseObject simpleDatabaseObject = new SimpleDatabaseObject();
         simpleDatabaseObject.setId(1L);
         simpleDatabaseObject.setName("Mr T");
         simpleDatabaseObject.setAge(66);
+
         given(sessionFactory.getCurrentSession().get(SimpleDatabaseObject.class, 1L)).willReturn(simpleDatabaseObject);
 
         // when
-        Entity entity = dataAccessService.get("entityWithClass", 1L);
+        Entity entity = dataAccessService.get("test.Entity", 1L);
 
         // then
-        Assert.assertEquals(1L, entity.getId().longValue());
-        Assert.assertEquals("Mr T", entity.getField("name"));
-        Assert.assertEquals(66, entity.getField("age"));
+        assertEquals(1L, entity.getId().longValue());
+        assertEquals("Mr T", entity.getField("name"));
+        assertEquals(66, entity.getField("age"));
     }
 
 }
