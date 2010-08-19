@@ -1,7 +1,10 @@
 package com.qcadoo.mes.plugins.products.controller;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.plugins.products.data.ListData;
 
 @Controller
 public class ProductsListController {
@@ -34,6 +38,8 @@ public class ProductsListController {
     public ProductsListController(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
         this.dataDefinitionService = dataDefinitionService;
         this.dataAccessService = dataAccessService;
+        // this.dataDefinitionService = new DataDefinitionServiceMock();
+        // this.dataAccessService = new DataAccessServiceMock();
         logger.info("constructor - " + dataDefinitionService);
     }
 
@@ -53,23 +59,56 @@ public class ProductsListController {
 
     @RequestMapping(value = "/products/listData", method = RequestMethod.GET)
     @ResponseBody
-    public List<Entity> getListData(@RequestParam String maxResults, @RequestParam String firstResult) {
-        logger.debug("MAX RES: " + maxResults);
-        logger.debug("FIRST RES: " + firstResult);
+    public ListData getListData(@RequestParam String maxResults, @RequestParam String firstResult) {
         try {
-            int max = Integer.parseInt(maxResults);
-            int first = Integer.parseInt(firstResult);
-            if (max < 0 || first < 0) {
-                throw new IllegalArgumentException();
-            }
-            SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("product").withMaxResults(max).withFirstResult(first)
-                    .build();
+            logger.debug("MAX RES: " + maxResults);
+            logger.debug("FIRST RES: " + firstResult);
+            try {
+                int max = Integer.parseInt(maxResults);
+                int first = Integer.parseInt(firstResult);
+                if (max < 0 || first < 0) {
+                    throw new IllegalArgumentException();
+                }
+                SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("product").withMaxResults(max)
+                        .withFirstResult(first).build();
 
-            ResultSet rs = dataAccessService.find("product", searchCriteria);
-            List<Entity> entities = rs.getResults();
-            return entities;
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(e);
+                ResultSet rs = dataAccessService.find("product", searchCriteria);
+                List<Entity> entities = rs.getResults();
+                int totalNumberOfEntities = rs.getTotalNumberOfEntities();
+                return new ListData(totalNumberOfEntities, entities);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(e);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
+    }
+
+    @RequestMapping(value = "/products/deleteData", method = RequestMethod.POST)
+    @ResponseBody
+    public String deleteData(@RequestParam("selectedRows") String selectedRowsJson) {
+        logger.debug("SELECTED ROWS: " + selectedRowsJson);
+        List<Long> recordsToDelete = new LinkedList<Long>();
+        try {
+            JSONArray jsonArray = new JSONArray(selectedRowsJson);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                long recordId = jsonArray.getLong(i);
+                recordsToDelete.add(recordId);
+            }
+        } catch (JSONException e) {
+            logger.error("JSON EXCEPTION");
+            return "error";
+        }
+        try {
+            for (Long recordId : recordsToDelete) {
+                dataAccessService.delete("product", recordId);
+                logger.debug("ROW " + recordId + " DELETED");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+        return "ok";
     }
 }

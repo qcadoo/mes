@@ -37,6 +37,7 @@
 				height: 500, 
 				colNames: colNames,
 				colModel: colModel,
+				multiselect: true,
 				ondblClickRow: function(id){
 			        window.location='editEntity.html?entityId='+id
 		        }
@@ -50,6 +51,7 @@
 
 		var thisFirst = 0;
 		var thisMax = 10;
+		var totalNumberOfEntities;
 		
 		function prev() {
 			thisFirst -= thisMax;
@@ -70,10 +72,33 @@
 		}
 
 		function refresh() {
-			jQuery("#previousPageButton").attr("disabled", true);
-			jQuery("#nextPageButton").attr("disabled", true);
-			jQuery("#recordsNumberSelect").attr("disabled", true);
 			jQuery("#list").jqGrid('clearGridData');
+			blockList();
+			 $.getJSON("listData.html", {'maxResults' : thisMax, 'firstResult': thisFirst}, function(response) {
+				 totalNumberOfEntities = response.totalNumberOfEntities;
+			     for (var entityNo in response.entities) {
+				       var entity = response.entities[entityNo];
+				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
+			       }
+			       unblockList();
+			    });
+		}
+
+		function deleteSelectedRecords() {
+			if (window.confirm("delete?")) {
+				blockList();
+				var selectedRows = jQuery("#list").getGridParam("selarrrow");
+				var dataString = JSON.stringify(selectedRows);
+				$.post("deleteData.html", {'selectedRows': dataString}, function(response) {
+					if (response != "ok") {
+						alert(response);
+					}
+					refresh();
+				});
+			}
+		}
+
+		function blockList() {
 			jQuery('#list').block({ message: 'Wczytuje...', showOverlay: false,  fadeOut: 1000, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
@@ -82,20 +107,29 @@
 	            '-moz-border-radius': '10px', 
 	            opacity: .5, 
 	            color: '#fff' } });
-			 $.getJSON("listData.html", {'maxResults' : thisMax, 'firstResult': thisFirst}, function(response) {
-			       for (var entityNo in response) {
-				       var entity = response[entityNo];
-				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
-			       }
-			       jQuery('#list').unblock();
-			       if (thisFirst > 0) {
-			       	jQuery("#previousPageButton").attr("disabled", false);
-			       }
-					jQuery("#nextPageButton").attr("disabled", false);
-					jQuery("#recordsNumberSelect").attr("disabled", false);
-			    });
+			jQuery("#previousPageButton").attr("disabled", true);
+			jQuery("#nextPageButton").attr("disabled", true);
+			jQuery("#recordsNumberSelect").attr("disabled", true);
 		}
 
+		function unblockList() {
+			jQuery('#list').unblock();
+			refreshBottomButtons();
+		}
+
+		function refreshBottomButtons() {
+			if (thisFirst > 0) {
+				jQuery("#previousPageButton").attr("disabled", false);
+			}
+			if (thisFirst + thisMax < totalNumberOfEntities) {
+				jQuery("#nextPageButton").attr("disabled", false);
+			}
+			jQuery("#recordsNumberSelect").attr("disabled", false);
+			var pagesNo = Math.ceil(totalNumberOfEntities / thisMax);
+			var currPage = Math.ceil(thisFirst / thisMax) + 1;
+			jQuery("#pageNoSpan").html(currPage);
+			jQuery("#allPagesNoSpan").html(pagesNo);
+		}
 		
 	</script>
 		
@@ -107,17 +141,27 @@
 	
 	<button onClick="window.location='newEntity.html'">New</button>
 	
+	<button onClick="refresh()">refresh</button>
+	
+	<button onClick="deleteSelectedRecords()">delete</button>
+	
 	
 	<table id="list"></table> 
 	
 	<button id="previousPageButton" onClick="prev()">prev</button>
-	<button id="nextPageButton" onClick="next()">next</button>
+	
 	<select id="recordsNumberSelect" onChange="selectChange()">
 		<option value=10>10</option>
 		<option value=20>20</option>
 		<option value=50>50</option>
 		<option value=100>100</option>
 	</select>
+	<span>page</span>
+	<span id="pageNoSpan"></span>
+	<span>/</span>
+	<span id="allPagesNoSpan"></span>
+	
+	<button id="nextPageButton" onClick="next()">next</button>
 	
 </body>
 </html>
