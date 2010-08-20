@@ -92,12 +92,26 @@
 				blockList();
 				var selectedRows = jQuery("#list").getGridParam("selarrrow");
 				var dataString = JSON.stringify(selectedRows);
-				$.post("deleteData.html", {'selectedRows': dataString}, function(response) {
+				/*$.post("deleteData.html", {'selectedRows': dataString}, function(response) {
 					if (response != "ok") {
 						alert(response);
 					}
 					refresh();
-				});
+				})*/
+				 $.ajax({
+			            url: 'deleteData.html',
+			            type: 'POST',
+			            dataType: 'json',
+			            data: dataString,
+			            contentType: 'application/json; charset=utf-8',
+			            success: function(response) {
+			            	if (response != "ok") {
+								alert(response);
+							}
+							refresh();
+			            }
+			        });
+							;
 			}
 		}
 

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -89,7 +90,7 @@ public class ProductsListControllerTest extends TestCase {
         ProductsListController controller = new ProductsListController(null, dasMock);
         controller.setPrintException(false);
 
-        String r1 = controller.deleteData("[1,2,3]");
+        String r1 = controller.deleteData(Arrays.asList(new String[] { "1", "2", "3" }));
         assertEquals("ok", r1);
         verify(dasMock).delete("product", (long) 1);
         verify(dasMock).delete("product", (long) 3);
@@ -97,23 +98,23 @@ public class ProductsListControllerTest extends TestCase {
         verifyNoMoreInteractions(dasMock);
         reset(dasMock);
 
-        String r2 = controller.deleteData("[]");
+        String r2 = controller.deleteData(Arrays.asList(new String[] {}));
         assertEquals("ok", r2);
         verifyNoMoreInteractions(dasMock);
         reset(dasMock);
 
-        String r3 = controller.deleteData("[123]");
+        String r3 = controller.deleteData(Arrays.asList(new String[] { "123" }));
         assertEquals("ok", r3);
         verify(dasMock).delete("product", (long) 123);
         verifyNoMoreInteractions(dasMock);
         reset(dasMock);
 
-        String r4 = controller.deleteData("aa");
+        String r4 = controller.deleteData(Arrays.asList(new String[] { "aa" }));
         assertEquals("error", r4);
         verifyNoMoreInteractions(dasMock);
         reset(dasMock);
 
-        String r5 = controller.deleteData("[1,2,a]");
+        String r5 = controller.deleteData(Arrays.asList(new String[] { "1", "2", "a" }));
         assertEquals("error", r5);
         verifyNoMoreInteractions(dasMock);
         reset(dasMock);

@@ -3,12 +3,11 @@ package com.qcadoo.mes.plugins.products.controller;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,8 +39,6 @@ public class ProductsListController {
     public ProductsListController(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
         this.dataDefinitionService = dataDefinitionService;
         this.dataAccessService = dataAccessService;
-        // this.dataDefinitionService = new DataDefinitionServiceMock();
-        // this.dataAccessService = new DataAccessServiceMock();
         logger.info("constructor - " + dataDefinitionService);
     }
 
@@ -90,21 +87,14 @@ public class ProductsListController {
 
     @RequestMapping(value = "/products/deleteData", method = RequestMethod.POST)
     @ResponseBody
-    public String deleteData(@RequestParam("selectedRows") String selectedRowsJson) {
-        logger.debug("SELECTED ROWS: " + selectedRowsJson);
-        List<Long> recordsToDelete = new LinkedList<Long>();
+    public String deleteData(@RequestBody List<String> selectedRows) {
+        logger.debug("SELECTED ROWS: " + selectedRows);
         try {
-            JSONArray jsonArray = new JSONArray(selectedRowsJson);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                long recordId = jsonArray.getLong(i);
-                recordsToDelete.add(recordId);
+            List<Long> rowsToDelete = new LinkedList<Long>();
+            for (String recordIdStr : selectedRows) {
+                rowsToDelete.add(Long.parseLong(recordIdStr));
             }
-        } catch (JSONException e) {
-            logger.error("JSON EXCEPTION");
-            return "error";
-        }
-        try {
-            for (Long recordId : recordsToDelete) {
+            for (Long recordId : rowsToDelete) {
                 dataAccessService.delete("product", recordId);
                 logger.debug("ROW " + recordId + " DELETED");
             }
@@ -113,6 +103,7 @@ public class ProductsListController {
                 e.printStackTrace();
             return "error";
         }
+
         return "ok";
     }
 
