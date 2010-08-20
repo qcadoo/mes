@@ -40,6 +40,7 @@
 				colNames: colNames,
 				colModel: colModel,
 				multiselect: true,
+				emptyDataText:'There are no records. If you would like to add one, click the "Add New ...',
 				ondblClickRow: function(id){
 			        window.location='editEntity.html?entityId='+id
 		        }
@@ -76,14 +77,14 @@
 		function refresh() {
 			jQuery("#list").jqGrid('clearGridData');
 			blockList();
-			 $.getJSON("listData.html", {'maxResults' : thisMax, 'firstResult': thisFirst}, function(response) {
-				 totalNumberOfEntities = response.totalNumberOfEntities;
-			     for (var entityNo in response.entities) {
-				       var entity = response.entities[entityNo];
-				       jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
-			       }
-			       unblockList();
-			    });
+			$.getJSON("listData.html", {'maxResults' : thisMax, 'firstResult': thisFirst}, function(response) {
+				totalNumberOfEntities = response.totalNumberOfEntities;
+				for (var entityNo in response.entities) {
+					var entity = response.entities[entityNo];
+					jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
+				}	       
+				unblockList();
+			});
 		}
 
 		function deleteSelectedRecords() {
@@ -128,10 +129,13 @@
 			}
 			jQuery("#recordsNumberSelect").attr("disabled", false);
 			var pagesNo = Math.ceil(totalNumberOfEntities / thisMax);
+			if (pagesNo == 0) {
+				pagesNo = 1;
+			}
 			var currPage = Math.ceil(thisFirst / thisMax) + 1;
 			jQuery("#pageNoSpan").html(currPage);
 			jQuery("#allPagesNoSpan").html(pagesNo);
-		}
+		}		
 		
 	</script>
 		

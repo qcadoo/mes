@@ -14,5 +14,7 @@
 	<c:forEach items="${fieldsDefinition}" var="entry" varStatus="rowCounter">
 		${entry.name }: ${data[entry.name] } <br />
 	</c:forEach>
+	<br />
+	<a href="list.html">Powrot do listy</a>
 </body>
 </html>

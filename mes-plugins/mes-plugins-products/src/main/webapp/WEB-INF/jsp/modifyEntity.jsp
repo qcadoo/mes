@@ -29,6 +29,7 @@
 					</c:choose>  
 				</tr>
 			</c:forEach>		
+			<input type="hidden" name="entityId" value="${entityId }"/>
 			<input type="submit" value="edytuj" />
 		</form>
 		
