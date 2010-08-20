@@ -1,6 +1,5 @@
 package com.qcadoo.mes.plugins.products.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +42,7 @@ public class ProductsModifyController {
 	public ModelAndView editEntity(@RequestParam String entityId) {
 		try {
 			ModelAndView mav = new ModelAndView();
-			mav.setViewName("modifyEntity");
+			mav.setViewName("addModifyEntity");
 			mav.addObject("headerContent", "Produkt:");
 
 			DataDefinition dataDefinition = dataDefinitionService
@@ -53,6 +53,7 @@ public class ProductsModifyController {
 			Entity entity = dataAccessService.get("product",
 					Long.parseLong(entityId));
 			mav.addObject("entity", entity.getFields());
+			mav.addObject("button", "Zatwierdz");
 
 			return mav;
 		} catch (NumberFormatException e) {
@@ -61,90 +62,56 @@ public class ProductsModifyController {
 
 	}
 
-	@RequestMapping(value = "/products/addEntity", method = RequestMethod.GET)
-	public ModelAndView addEntity(@RequestParam String number,
-			@RequestParam String type, @RequestParam String typeOfMaterial,
-			@RequestParam String ean, @RequestParam String category,
-			@RequestParam String unit, @RequestParam String name) {
-		ModelAndView mav = new ModelAndView();
-		String message = "Dodano";
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("number", number);
-		data.put("type", type);
-		data.put("typeOfMaterial", typeOfMaterial);
-		data.put("ean", ean);
-		data.put("category", category);
-		data.put("unit", unit);
-		data.put("name", name);
-		Entity entity = new Entity(null, data);
+	@RequestMapping(value = "/products/addModifyEntity", method = RequestMethod.POST)
+	public ModelAndView addModifyEntity(@ModelAttribute Entity entity) {
 
-		if (number != null && number.length() != 0 && type != null
-				&& type.length() != 0 && typeOfMaterial != null
-				&& typeOfMaterial.length() != 0 && ean != null
-				&& ean.length() != 0 && category != null
-				&& category.length() != 0 && unit != null && unit.length() != 0
-				&& name != null && name.length() != 0) {
+		String message = "";
+		if (checkFields(entity)) {
 			dataAccessService.save("product", entity);
+			if (entity.getId() == null) {
+				message = "Dodano";
+			} else {
+				message = "Zmodyfikowano";
+			}
+			return new ModelAndView("redirect:list.html?message=" + message);
 		} else {
-			message = "Wystapil blad";
+			ModelAndView mav = new ModelAndView();
+			mav.setViewName("addModifyEntity");
+			mav.addObject("headerContent", "Produkt:");
+			mav.addObject("entity", entity.getFields());
+			DataDefinition dataDefinition = dataDefinitionService
+					.get("product");
+			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
+			mav.addObject("fieldsDefinition", fieldsDefinition);
+			mav.addObject("entityId", entity.getId());
+			mav.addObject("button", "Zatwierdz");
+			return mav;
 		}
 
-		mav.addObject("data", data);
-		mav.addObject("message", message);
-		DataDefinition dataDefinition = dataDefinitionService.get("product");
-		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
-		mav.addObject("fieldsDefinition", fieldsDefinition);
-		mav.setViewName("result");
-		return mav;
-	}
-
-	@RequestMapping(value = "/products/modifyEntity", method = RequestMethod.GET)
-	public ModelAndView modifyEntity(@RequestParam String number,
-			@RequestParam String type, @RequestParam String typeOfMaterial,
-			@RequestParam String ean, @RequestParam String category,
-			@RequestParam String unit, @RequestParam String name,
-			@RequestParam String entityId) {
-		ModelAndView mav = new ModelAndView();
-		String message = "Zedytowano";
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("number", number);
-		data.put("type", type);
-		data.put("typeOfMaterial", typeOfMaterial);
-		data.put("ean", ean);
-		data.put("category", category);
-		data.put("unit", unit);
-		data.put("name", name);
-		Entity entity = new Entity(Long.parseLong(entityId), data);
-		if (number != null && number.length() != 0 && type != null
-				&& type.length() != 0 && typeOfMaterial != null
-				&& typeOfMaterial.length() != 0 && ean != null
-				&& ean.length() != 0 && category != null
-				&& category.length() != 0 && unit != null && unit.length() != 0
-				&& name != null && name.length() != 0) {
-			dataAccessService.save("product", entity);
-		} else {
-			message = "Wystapil blad";
-		}
-
-		mav.addObject("data", data);
-		mav.addObject("message", message);
-		DataDefinition dataDefinition = dataDefinitionService.get("product");
-		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
-		mav.addObject("fieldsDefinition", fieldsDefinition);
-		mav.setViewName("result");
-		return mav;
 	}
 
 	@RequestMapping(value = "/products/newEntity", method = RequestMethod.GET)
 	public ModelAndView newEntity() {
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("newEntity");
+		mav.setViewName("addModifyEntity");
 		mav.addObject("headerContent", "Produkt:");
 
 		DataDefinition dataDefinition = dataDefinitionService.get("product");
 		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 		mav.addObject("fieldsDefinition", fieldsDefinition);
+		mav.addObject("button", "Zatwierdz");
 		return mav;
+	}
+
+	public boolean checkFields(Entity entity) {
+		boolean result = true;
+		Map<String, Object> map = entity.getFields();
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			if (entry.getValue() == null || entry.getValue() == "")
+				result = false;
+		}
+		return result;
+
 	}
 
 }
