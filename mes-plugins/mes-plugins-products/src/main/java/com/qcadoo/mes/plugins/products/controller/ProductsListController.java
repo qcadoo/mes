@@ -34,6 +34,8 @@ public class ProductsListController {
 
     private Logger logger = LoggerFactory.getLogger(ProductsListController.class);
 
+    private boolean printException = true;
+
     @Autowired
     public ProductsListController(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
         this.dataDefinitionService = dataDefinitionService;
@@ -80,7 +82,8 @@ public class ProductsListController {
                 throw new IllegalArgumentException(e);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (printException)
+                e.printStackTrace();
             return null;
         }
     }
@@ -106,9 +109,14 @@ public class ProductsListController {
                 logger.debug("ROW " + recordId + " DELETED");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (printException)
+                e.printStackTrace();
             return "error";
         }
         return "ok";
+    }
+
+    public void setPrintException(boolean printException) {
+        this.printException = printException;
     }
 }

@@ -94,7 +94,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
         Long totalNumberOfEntities = (Long) sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .setProjection(Projections.rowCount()).uniqueResult();
+                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).setProjection(Projections.rowCount()).uniqueResult();
 
         List<?> results = sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults())

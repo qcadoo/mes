@@ -73,7 +73,7 @@ public class DataAccessServiceFindTest {
         }
 
         given(
-                sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class)
+                sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(any(Criterion.class))
                         .setProjection(any(Projection.class)).uniqueResult()).willReturn(Long.valueOf(count - 1));
 
         given(
