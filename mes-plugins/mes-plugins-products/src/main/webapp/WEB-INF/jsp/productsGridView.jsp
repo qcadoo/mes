@@ -21,7 +21,7 @@
 			var colModel = new Array();
 			<c:forEach items="${gridDefinition.columns}" var="column">
 				colNames.push("${column.name}");
-				colModel.push({name:"${column.name}",index:"${column.name}", width:100});
+				colModel.push({name:"${column.fields[0].name}", index:"${column.fields[0].name}", width:100, sortable: false});
 			</c:forEach>
 
 			/*
@@ -34,7 +34,7 @@
 	    		mydata.push(o);
 	        </c:forEach>*/
 			 
-			jQuery("#list").jqGrid({
+			$("#list").jqGrid({
 				datatype: "local", 
 				height: 450, 
 				colNames: colNames,
@@ -47,7 +47,7 @@
 
 			}); 
 
-			jQuery("#recordsNumberSelect").val(10)
+			$("#recordsNumberSelect").val(10)
 			refresh();
 			
 		}); 
@@ -70,7 +70,7 @@
 		}
 
 		function selectChange() {
-			thisMax = parseInt(jQuery("#recordsNumberSelect").val());
+			thisMax = parseInt($("#recordsNumberSelect").val());
 			refresh();
 		}
 
@@ -81,7 +81,7 @@
 				totalNumberOfEntities = response.totalNumberOfEntities;
 				for (var entityNo in response.entities) {
 					var entity = response.entities[entityNo];
-					jQuery("#list").jqGrid('addRowData',entity.id,entity.fields);
+					$("#list").jqGrid('addRowData',entity.id,entity.fields);
 				}	       
 				unblockList();
 			});
@@ -92,31 +92,24 @@
 				blockList();
 				var selectedRows = jQuery("#list").getGridParam("selarrrow");
 				var dataString = JSON.stringify(selectedRows);
-				/*$.post("deleteData.html", {'selectedRows': dataString}, function(response) {
-					if (response != "ok") {
-						alert(response);
+				$.ajax({
+					url: 'deleteData.html',
+					type: 'POST',
+					dataType: 'json',
+					data: dataString,
+					contentType: 'application/json; charset=utf-8',
+					success: function(response) {
+						if (response != "ok") {
+							alert(response);
+						}
+						refresh();
 					}
-					refresh();
-				})*/
-				 $.ajax({
-			            url: 'deleteData.html',
-			            type: 'POST',
-			            dataType: 'json',
-			            data: dataString,
-			            contentType: 'application/json; charset=utf-8',
-			            success: function(response) {
-			            	if (response != "ok") {
-								alert(response);
-							}
-							refresh();
-			            }
-			        });
-							;
+				});
 			}
 		}
 
 		function blockList() {
-			jQuery('#list').block({ message: 'Wczytuje...', showOverlay: false,  fadeOut: 1000, fadeIn: 0,css: { 
+			$('#list').block({ message: 'Wczytuje...', showOverlay: false,  fadeOut: 1000, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 
@@ -124,31 +117,31 @@
 	            '-moz-border-radius': '10px', 
 	            opacity: .5, 
 	            color: '#fff' } });
-			jQuery("#previousPageButton").attr("disabled", true);
-			jQuery("#nextPageButton").attr("disabled", true);
-			jQuery("#recordsNumberSelect").attr("disabled", true);
+			$("#previousPageButton").attr("disabled", true);
+			$("#nextPageButton").attr("disabled", true);
+			$("#recordsNumberSelect").attr("disabled", true);
 		}
 
 		function unblockList() {
-			jQuery('#list').unblock();
+			$('#list').unblock();
 			refreshBottomButtons();
 		}
 
 		function refreshBottomButtons() {
 			if (thisFirst > 0) {
-				jQuery("#previousPageButton").attr("disabled", false);
+				$("#previousPageButton").attr("disabled", false);
 			}
 			if (thisFirst + thisMax < totalNumberOfEntities) {
-				jQuery("#nextPageButton").attr("disabled", false);
+				$("#nextPageButton").attr("disabled", false);
 			}
-			jQuery("#recordsNumberSelect").attr("disabled", false);
+			$("#recordsNumberSelect").attr("disabled", false);
 			var pagesNo = Math.ceil(totalNumberOfEntities / thisMax);
 			if (pagesNo == 0) {
 				pagesNo = 1;
 			}
 			var currPage = Math.ceil(thisFirst / thisMax) + 1;
-			jQuery("#pageNoSpan").html(currPage);
-			jQuery("#allPagesNoSpan").html(pagesNo);
+			$("#pageNoSpan").html(currPage);
+			$("#allPagesNoSpan").html(pagesNo);
 		}		
 		
 	</script>
@@ -158,6 +151,8 @@
 <body>
 
 	<div id="pageHeader">${headerContent}</div>
+	
+	<div id="messageBox">${message}</div>
 	
 	<div id="topButtons">
 		<button onClick="window.location='newEntity.html'">New</button>

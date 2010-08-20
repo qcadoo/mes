@@ -10,6 +10,12 @@ body {
 	font-size: 25px;
 }
 
+#messageBox {
+	color: green;
+	width: 300px;
+	padding-left: 10px;	
+}
+
 #topButtons {
 	margin-top: 10px;
 	margin-bottom: 10px;	

@@ -38,16 +38,16 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldName, fieldNumber, fieldType, fieldTypeOfMaterial,
                 fieldEan, fieldCategory, fieldUnit }));
 
-        ColumnDefinition columnName = createColumnDefinition("name", fieldName);
-        ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber);
-        ColumnDefinition columnType = createColumnDefinition("type", fieldType);
-        ColumnDefinition columnTypeOfMaterial = createColumnDefinition("typeOfMaterial", fieldTypeOfMaterial);
-        ColumnDefinition columnEan = createColumnDefinition("ean", fieldEan);
-        ColumnDefinition columnCategory = createColumnDefinition("category", fieldCategory);
-        ColumnDefinition columnUnit = createColumnDefinition("unit", fieldUnit);
+        ColumnDefinition columnNumber = createColumnDefinition("Nr", fieldNumber);
+        ColumnDefinition columnName = createColumnDefinition("Nazwa", fieldName);
+        ColumnDefinition columnTypeOfMaterial = createColumnDefinition("Typ materialu", fieldTypeOfMaterial);
+        ColumnDefinition columnEan = createColumnDefinition("Kod EAN", fieldEan);
+        // ColumnDefinition columnType = createColumnDefinition("type", fieldType);
+        // ColumnDefinition columnCategory = createColumnDefinition("category", fieldCategory);
+        // ColumnDefinition columnUnit = createColumnDefinition("unit", fieldUnit);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnNumber, columnType,
-                columnTypeOfMaterial, columnEan, columnCategory, columnUnit }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnTypeOfMaterial,
+                columnEan }));
 
         return dataDefinition;
     }

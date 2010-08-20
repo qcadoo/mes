@@ -40,7 +40,7 @@ public class ProductsListControllerTest extends TestCase {
     @Test
     public void testProductsList() {
 
-        ModelAndView modelAndView = controller.productsList();
+        ModelAndView modelAndView = controller.productsList(null);
 
         assertEquals("productsGridView", modelAndView.getViewName());
 

@@ -43,11 +43,14 @@ public class ProductsListController {
     }
 
     @RequestMapping(value = "/products/list", method = RequestMethod.GET)
-    public ModelAndView productsList() {
+    public ModelAndView productsList(@RequestParam(required = false) String message) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("productsGridView");
         mav.addObject("headerContent", "Produkty:");
-
+        if (message != null) {
+            mav.addObject("message", message);
+        }
+        mav.addObject("message", message);
         DataDefinition dataDefinition = dataDefinitionService.get("product");
         List<GridDefinition> grids = dataDefinition.getGrids();
         GridDefinition gridDefinition = grids.get(0);
