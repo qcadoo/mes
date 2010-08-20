@@ -11,6 +11,8 @@ public final class SimpleDatabaseObject {
 
     private int age;
 
+    private boolean deleted;
+
     public Long getId() {
         return id;
     }
@@ -35,9 +37,17 @@ public final class SimpleDatabaseObject {
         this.name = name;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(age).append(id).toHashCode();
+        return new HashCodeBuilder(17, 37).append(name).append(age).append(id).append(deleted).toHashCode();
     }
 
     @Override
@@ -52,7 +62,8 @@ public final class SimpleDatabaseObject {
             return false;
         }
         SimpleDatabaseObject other = (SimpleDatabaseObject) obj;
-        return new EqualsBuilder().append(name, other.name).append(age, other.age).append(id, other.id).isEquals();
+        return new EqualsBuilder().append(name, other.name).append(age, other.age).append(id, other.id)
+                .append(deleted, other.deleted).isEquals();
     }
 
 }
