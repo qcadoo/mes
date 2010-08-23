@@ -247,4 +247,9 @@
 		</repository>
 	</repositories>
 
+	<scm>
+		<connection>scm:git://192.168.0.4/Users/git/mes.git</connection>
+		<developerConnection>scm:git:ssh://192.168.0.4/Users/git/mes.git</developerConnection>
+	</scm>
+
 </project>
