@@ -10,8 +10,9 @@
 </head>
 <body>
 	<h2>${headerContent }</h2>
+		${message } <br/>
 		<form action="addModifyEntity.html" method="POST">
-			<c:forEach items="${fieldsDefinition}" var="entry" varStatus="rowCounter">
+			<c:forEach items="${fieldsDefinition}" var="entry">
 				<tr>
 					<c:choose>
 						<c:when test="${entry.hidden=='false'}">
