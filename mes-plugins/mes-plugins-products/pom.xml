@@ -32,7 +32,7 @@
 					<hostName>localhost</hostName>
 					<port>8181</port>
 					<fileNames>
-						<fileName>target/${pom.artifactId}.war</fileName>
+						<fileName>${basedir}/target/${pom.artifactId}.war</fileName>
 					</fileNames>
 				</configuration>
 			</plugin>
