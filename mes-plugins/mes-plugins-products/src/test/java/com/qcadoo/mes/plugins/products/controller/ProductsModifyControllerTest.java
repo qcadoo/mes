@@ -48,17 +48,28 @@ public class ProductsModifyControllerTest extends TestCase {
 	@Test
 	public void testAddModifyEntity() {
 		Entity entity = new Entity();
-		entity.setField("pole", "pole");
+		entity.setField("number", "number");
+		entity.setField("type", "type");
+		entity.setField("typeOfMaterial", "typeOfMaterial");
+		entity.setField("ean", "ean");
+		entity.setField("category", "category");
+		entity.setField("unit", "unit");
 		ModelAndView modelAndView = controller.addModifyEntity(entity);
 		assertNull(modelAndView.getModel().get("headerContent"));
 		assertEquals("redirect:list.html?message=Dodano",
 				modelAndView.getViewName());
 		entity = new Entity((long) 1);
+		entity.setField("number", "number");
+		entity.setField("type", "type");
+		entity.setField("typeOfMaterial", "typeOfMaterial");
+		entity.setField("ean", "ean");
+		entity.setField("category", "category");
+		entity.setField("unit", "unit");
 		modelAndView = controller.addModifyEntity(entity);
 		assertNull(modelAndView.getModel().get("headerContent"));
 		assertEquals("redirect:list.html?message=Zmodyfikowano",
 				modelAndView.getViewName());
-		entity.setField("pole2", null);
+		entity.setField("number", null);
 		modelAndView = controller.addModifyEntity(entity);
 		assertNotNull(modelAndView.getModel().get("headerContent"));
 
