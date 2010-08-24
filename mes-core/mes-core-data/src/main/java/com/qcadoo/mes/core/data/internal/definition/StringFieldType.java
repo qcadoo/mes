@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.internal.definition;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.qcadoo.mes.core.data.definition.FieldType;
 
 public final class StringFieldType implements FieldType {
@@ -21,7 +23,13 @@ public final class StringFieldType implements FieldType {
 
     @Override
     public boolean isValidType(final Object value) {
-        return value instanceof String;
+        if (!(value instanceof String)) {
+            return false;
+        }
+        if (StringUtils.length((String) value) > 255) {
+            return false;
+        }
+        return true;
     }
 
 }

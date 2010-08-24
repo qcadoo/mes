@@ -30,8 +30,8 @@ public final class FieldUtils {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else {
             if (!fieldDefinition.getType().isValidType(value)) {
-                throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName()
-                        + " has invalid type: " + value.getClass().getSimpleName());
+                throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
+                        + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
             }
             setField(entity, fieldDefinition.getName(), value);
         }
@@ -43,8 +43,8 @@ public final class FieldUtils {
         } else {
             Object value = getField(entity, fieldDefinition.getName());
             if (!fieldDefinition.getType().isValidType(value)) {
-                throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName()
-                        + " has invalid type: " + value.getClass().getSimpleName());
+                throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
+                        + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
             }
             return value;
         }

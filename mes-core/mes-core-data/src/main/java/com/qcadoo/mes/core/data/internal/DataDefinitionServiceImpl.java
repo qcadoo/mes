@@ -3,17 +3,21 @@ package com.qcadoo.mes.core.data.internal;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldTypes;
+import com.qcadoo.mes.core.data.definition.FieldType;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 
 @Service
 public final class DataDefinitionServiceImpl implements DataDefinitionService {
+
+    @Autowired
+    private FieldTypeFactory fieldTypeFactory;
 
     @Override
     public void save(final DataDefinition dataDefinition) {
@@ -22,16 +26,24 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     @Override
     public DataDefinition get(final String entityName) {
-        DataDefinition dataDefinition = new DataDefinition("products.Product");
-        GridDefinition gridDefinition = new GridDefinition("Products");
+        if ("products.product".equals(entityName)) {
+            return createProductDefinition();
+        }
+        return null;
+    }
 
-        FieldDefinition fieldName = createStringFieldDefinition("name");
-        FieldDefinition fieldNumber = createStringFieldDefinition("number");
-        FieldDefinition fieldType = createStringFieldDefinition("type");
-        FieldDefinition fieldTypeOfMaterial = createStringFieldDefinition("typeOfMaterial");
-        FieldDefinition fieldEan = createStringFieldDefinition("ean");
-        FieldDefinition fieldCategory = createStringFieldDefinition("category");
-        FieldDefinition fieldUnit = createStringFieldDefinition("unit");
+    private DataDefinition createProductDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("products.product");
+        GridDefinition gridDefinition = new GridDefinition("products");
+
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
+        FieldDefinition fieldType = createFieldDefinition("type", fieldTypeFactory.stringType());
+        FieldDefinition fieldTypeOfMaterial = createFieldDefinition("typeOfMaterial",
+                fieldTypeFactory.enumType("product", "intermediate", "component"));
+        FieldDefinition fieldEan = createFieldDefinition("ean", fieldTypeFactory.stringType());
+        FieldDefinition fieldCategory = createFieldDefinition("category", fieldTypeFactory.dictionaryType("categories"));
+        FieldDefinition fieldUnit = createFieldDefinition("unit", fieldTypeFactory.stringType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Product");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
@@ -40,14 +52,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber);
         ColumnDefinition columnName = createColumnDefinition("name", fieldName);
-        ColumnDefinition columnTypeOfMaterial = createColumnDefinition("typeOfMaterial", fieldTypeOfMaterial);
-        ColumnDefinition columnEan = createColumnDefinition("ean", fieldEan);
         ColumnDefinition columnType = createColumnDefinition("type", fieldType);
-        ColumnDefinition columnCategory = createColumnDefinition("category", fieldCategory);
-        ColumnDefinition columnUnit = createColumnDefinition("unit", fieldUnit);
+        ColumnDefinition columnEan = createColumnDefinition("ean", fieldEan);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnTypeOfMaterial,
-                columnEan, columnType, columnCategory, columnUnit }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
 
         return dataDefinition;
     }
@@ -58,9 +66,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return columnDefinition;
     }
 
-    private FieldDefinition createStringFieldDefinition(final String name) {
+    private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);
-        fieldDefinition.setType(FieldTypes.stringType());
+        fieldDefinition.setType(type);
         return fieldDefinition;
     }
 

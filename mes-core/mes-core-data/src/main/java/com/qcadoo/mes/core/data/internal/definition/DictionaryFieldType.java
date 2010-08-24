@@ -1,16 +1,19 @@
 package com.qcadoo.mes.core.data.internal.definition;
 
-import java.util.Arrays;
 import java.util.List;
 
+import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
 
-public final class EnumFieldType implements EnumeratedFieldType {
+public final class DictionaryFieldType implements EnumeratedFieldType {
 
-    private final List<String> values;
+    private final String dictionaryName;
 
-    public EnumFieldType(final String... values) {
-        this.values = Arrays.asList(values);
+    private final DictionaryService dictionaryService;
+
+    public DictionaryFieldType(final String dictionaryName, final DictionaryService dictionaryService) {
+        this.dictionaryName = dictionaryName;
+        this.dictionaryService = dictionaryService;
     }
 
     @Override
@@ -33,7 +36,7 @@ public final class EnumFieldType implements EnumeratedFieldType {
         if (!(value instanceof String)) {
             return false;
         }
-        if (!values.contains(value)) {
+        if (!values().contains(value)) {
             return false;
         }
         return true;
@@ -41,7 +44,7 @@ public final class EnumFieldType implements EnumeratedFieldType {
 
     @Override
     public List<String> values() {
-        return values;
+        return dictionaryService.values(dictionaryName);
     }
 
 }

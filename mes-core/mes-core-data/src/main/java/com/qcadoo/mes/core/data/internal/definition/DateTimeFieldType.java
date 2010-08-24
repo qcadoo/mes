@@ -1,19 +1,19 @@
 package com.qcadoo.mes.core.data.internal.definition;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.Date;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
 
-public final class TextFieldType implements FieldType {
+public final class DateTimeFieldType implements FieldType {
 
     @Override
     public boolean isSearchable() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isOrderable() {
-        return false;
+        return true;
     }
 
     @Override
@@ -23,13 +23,7 @@ public final class TextFieldType implements FieldType {
 
     @Override
     public boolean isValidType(final Object value) {
-        if (!(value instanceof String)) {
-            return false;
-        }
-        if (StringUtils.length((String) value) > 2048) {
-            return false;
-        }
-        return true;
+        return value instanceof Date;
     }
 
 }

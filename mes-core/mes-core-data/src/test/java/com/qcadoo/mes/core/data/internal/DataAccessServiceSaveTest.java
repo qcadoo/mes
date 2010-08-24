@@ -19,13 +19,14 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldTypes;
 
 public final class DataAccessServiceSaveTest {
 
     private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
     private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+
+    private FieldTypeFactory fieldTypeFactory = new FieldTypeFactory();
 
     private DataAccessService dataAccessService = null;
 
@@ -40,11 +41,11 @@ public final class DataAccessServiceSaveTest {
         List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
 
         FieldDefinition fieldDefinitionName = new FieldDefinition("name");
-        fieldDefinitionName.setType(FieldTypes.stringType());
+        fieldDefinitionName.setType(fieldTypeFactory.stringType());
         fieldDefinitions.add(fieldDefinitionName);
 
         FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
-        fieldDefinitionAge.setType(FieldTypes.integerType());
+        fieldDefinitionAge.setType(fieldTypeFactory.integerType());
         fieldDefinitions.add(fieldDefinitionAge);
 
         dataDefinition.setFields(fieldDefinitions);

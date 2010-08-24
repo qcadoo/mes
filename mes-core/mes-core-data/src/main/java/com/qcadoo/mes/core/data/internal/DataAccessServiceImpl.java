@@ -174,7 +174,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
     }
 
-    private Object getInstanceForEntity(DataDefinition dataDefinition) {
+    private Object getInstanceForEntity(final DataDefinition dataDefinition) {
         Class<?> entityClass = getClassForEntity(dataDefinition);
         try {
             return entityClass.newInstance();

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -16,6 +17,7 @@ import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Dictionary;
 import com.qcadoo.mes.core.data.beans.DictionaryItem;
 
+@Service
 public final class DictionaryServiceImpl implements DictionaryService {
 
     @Autowired
