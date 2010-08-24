@@ -1,7 +1,6 @@
 package com.qcadoo.mes.plugins.products.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +64,11 @@ public class ProductsModifyController {
 	@RequestMapping(value = "/products/addModifyEntity", method = RequestMethod.POST)
 	public ModelAndView addModifyEntity(@ModelAttribute Entity entity) {
 
-		String message = "";
-		if (checkFields(entity)) {
+		DataDefinition dataDefinition = dataDefinitionService.get("product");
+		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
+
+		if (checkFields(entity, fieldsDefinition)) {
+			String message = "";
 			dataAccessService.save("product", entity);
 			if (entity.getId() == null) {
 				message = "Dodano";
@@ -77,11 +79,9 @@ public class ProductsModifyController {
 		} else {
 			ModelAndView mav = new ModelAndView();
 			mav.setViewName("addModifyEntity");
+			mav.addObject("message", "Uzupelnij wszystkie pola");
 			mav.addObject("headerContent", "Produkt:");
 			mav.addObject("entity", entity.getFields());
-			DataDefinition dataDefinition = dataDefinitionService
-					.get("product");
-			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 			mav.addObject("fieldsDefinition", fieldsDefinition);
 			mav.addObject("entityId", entity.getId());
 			mav.addObject("button", "Zatwierdz");
@@ -103,15 +103,19 @@ public class ProductsModifyController {
 		return mav;
 	}
 
-	public boolean checkFields(Entity entity) {
-		boolean result = true;
-		Map<String, Object> map = entity.getFields();
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			if (entry.getValue() == null || entry.getValue() == "")
-				result = false;
-		}
-		return result;
+	public boolean checkFields(Entity entity,
+			List<FieldDefinition> fieldsDefinition) {
 
+		boolean result = true;
+		for (FieldDefinition field : fieldsDefinition) {
+			String formField = (String) entity.getField(field.getName());
+			if (formField == null || formField.equals("")) {
+				result = false;
+			}
+
+		}
+
+		return result;
 	}
 
 }

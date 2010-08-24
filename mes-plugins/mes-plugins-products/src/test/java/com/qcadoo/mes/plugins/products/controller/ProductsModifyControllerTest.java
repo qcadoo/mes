@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.plugins.products.data.mock.DataAccessServiceMock;
 import com.qcadoo.mes.plugins.products.data.mock.DataDefinitionServiceMock;
 
@@ -44,20 +45,35 @@ public class ProductsModifyControllerTest extends TestCase {
 
 	}
 
-	// @Test
-	// public void testAddModifyEntity() {
-	// assertEquals(testAddEntity("1", "a", "a", "a", "a", "a", "a"), "Dodano");
-	// assertEquals(testAddEntity("2", "a", "", "a", "a", "a", "a"),
-	// "Wystapil blad");
-	// }
-	//
-	// private String testAddEntity(Entity entity) {
-	// ModelAndView modelAndView = controller.addModifyEntity(entity);
-	// assertNotNull(modelAndView.getModel().get("data"));
-	// assertNotNull(modelAndView.getModel().get("message"));
-	// assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
-	// return (String) modelAndView.getModel().get("message");
-	// }
+	@Test
+	public void testAddModifyEntity() {
+		Entity entity = new Entity();
+		entity.setField("number", "number");
+		entity.setField("type", "type");
+		entity.setField("typeOfMaterial", "typeOfMaterial");
+		entity.setField("ean", "ean");
+		entity.setField("category", "category");
+		entity.setField("unit", "unit");
+		ModelAndView modelAndView = controller.addModifyEntity(entity);
+		assertNull(modelAndView.getModel().get("headerContent"));
+		assertEquals("redirect:list.html?message=Dodano",
+				modelAndView.getViewName());
+		entity = new Entity((long) 1);
+		entity.setField("number", "number");
+		entity.setField("type", "type");
+		entity.setField("typeOfMaterial", "typeOfMaterial");
+		entity.setField("ean", "ean");
+		entity.setField("category", "category");
+		entity.setField("unit", "unit");
+		modelAndView = controller.addModifyEntity(entity);
+		assertNull(modelAndView.getModel().get("headerContent"));
+		assertEquals("redirect:list.html?message=Zmodyfikowano",
+				modelAndView.getViewName());
+		entity.setField("number", null);
+		modelAndView = controller.addModifyEntity(entity);
+		assertNotNull(modelAndView.getModel().get("headerContent"));
+
+	}
 
 	@Test
 	public void testNewEntity() {

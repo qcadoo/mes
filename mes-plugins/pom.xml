@@ -10,7 +10,6 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
-	<groupId>com.qcadoo.mes.plugins</groupId>
 	<artifactId>mes-plugins</artifactId>
 	<packaging>pom</packaging>
 
@@ -24,27 +23,27 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.qcadoo.mes.core</groupId>
+			<groupId>${pom.groupId}</groupId>
 			<artifactId>mes-core-data</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.qcadoo.mes.core</groupId>
+			<groupId>${pom.groupId}</groupId>
 			<artifactId>mes-core-modularity</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.qcadoo.mes.core</groupId>
+			<groupId>${pom.groupId}</groupId>
 			<artifactId>mes-core-security</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.qcadoo.mes.core</groupId>
+			<groupId>${pom.groupId}</groupId>
 			<artifactId>mes-core-utils</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.qcadoo.mes.core</groupId>
+			<groupId>${pom.groupId}</groupId>
 			<artifactId>mes-core-test</artifactId>
 			<version>${pom.version}</version>
 			<scope>test</scope>

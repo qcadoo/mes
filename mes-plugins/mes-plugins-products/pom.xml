@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.qcadoo.mes.plugins</groupId>
+		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
@@ -17,10 +17,26 @@
 
 	<dependencies>
 		<dependency>
-		    <groupId>org.json</groupId>
-		    <artifactId>json</artifactId>
-		    <version>20090211</version>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-maven-plugin</artifactId>
+				<configuration>
+					<hostName>localhost</hostName>
+					<port>8181</port>
+					<fileNames>
+						<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
+					</fileNames>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

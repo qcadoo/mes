@@ -117,6 +117,12 @@
 				<artifactId>c3p0</artifactId>
 				<version>0.9.1.2</version>
 			</dependency>
+			<dependency>
+        		<groupId>xml-apis</groupId>
+        		<artifactId>xml-apis</artifactId>
+        		<version>1.0.b2</version>
+        		<scope>provided</scope>
+      		</dependency>
 			<!-- Test -->
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -246,5 +252,10 @@
 			<url>http://repository.codehaus.org/</url>
 		</repository>
 	</repositories>
+
+	<scm>
+		<connection>scm:git://192.168.0.4/Users/git/mes.git</connection>
+		<developerConnection>scm:git:ssh://192.168.0.4/Users/git/mes.git</developerConnection>
+	</scm>
 
 </project>
