@@ -63,7 +63,7 @@
 
 	<div id="pageHeader">${headerContent}</div>
 	
-	<div id="messageBox">${message}</div>
+	<div id="messageBox"><c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="productsGridView.${message }"/> <br/></c:otherwise></c:choose></div>
 	
 	<div id="topButtons">
 		<button onClick="window.location='addModifyEntityForm.html'"><spring:message code="productsGridView.new"/></button>
