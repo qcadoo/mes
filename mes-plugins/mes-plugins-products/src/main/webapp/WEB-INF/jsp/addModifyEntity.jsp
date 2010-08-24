@@ -22,7 +22,7 @@
 									readonly="readonly"
 								</c:if> 
 								value="${entity[entry.name]}" />
-								</td><br/>
+								</td><td>${fieldsValidationInfo[entry.name] }</td><br/>
 						</c:when> 
 						<c:otherwise>
 							<input type="hidden" name="fields[${entry.name}]" value="${entity[entry.name]}" />

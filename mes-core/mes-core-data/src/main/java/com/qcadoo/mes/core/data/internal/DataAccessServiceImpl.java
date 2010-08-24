@@ -7,7 +7,9 @@ import static com.google.common.base.Preconditions.checkState;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,16 +98,26 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Long totalNumberOfEntities = (Long) sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).setProjection(Projections.rowCount()).uniqueResult();
 
-        List<?> results = sessionFactory.getCurrentSession().createCriteria(entityClass)
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults())
-                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).list();
+                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true));
+
+        if (searchCriteria.getOrder() != null) {
+            Order order = null;
+            if (searchCriteria.getOrder().isAsc()) {
+                order = Order.asc(searchCriteria.getOrder().getFieldName());
+            } else {
+                order = Order.desc(searchCriteria.getOrder().getFieldName());
+            }
+            criteria = criteria.addOrder(order);
+        }
+        List<?> results = criteria.list();
 
         List<Entity> genericResults = new ArrayList<Entity>();
 
         for (Object databaseEntity : results) {
             genericResults.add(convertToGenericEntity(dataDefinition, databaseEntity));
         }
-
         ResultSetImpl resultSet = new ResultSetImpl();
         resultSet.setResults(genericResults);
         resultSet.setCriteria(searchCriteria);
