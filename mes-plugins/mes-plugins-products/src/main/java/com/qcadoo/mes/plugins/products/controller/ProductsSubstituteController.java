@@ -97,13 +97,13 @@ public class ProductsSubstituteController {
                 List<Entity> entities = new LinkedList<Entity>();
                 Entity e1 = new Entity();
                 e1.setId((long) 1);
-                e1.setField("f11", "p11-" + pId + "-" + substituteId);
-                e1.setField("f12", "t12-" + pId + "-" + substituteId);
+                e1.setField("f11", "p11-" + pId + "-" + sId);
+                e1.setField("f12", "t12-" + pId + "-" + sId);
                 entities.add(e1);
                 Entity e2 = new Entity();
                 e2.setId((long) 2);
-                e2.setField("f11", "t21-" + pId + "-" + substituteId);
-                e2.setField("f12", "t22-" + pId + "-" + substituteId);
+                e2.setField("f11", "t21-" + pId + "-" + sId);
+                e2.setField("f12", "t22-" + pId + "-" + sId);
                 entities.add(e2);
                 int totalNumberOfEntities = 2;
                 return new ListData(totalNumberOfEntities, entities);

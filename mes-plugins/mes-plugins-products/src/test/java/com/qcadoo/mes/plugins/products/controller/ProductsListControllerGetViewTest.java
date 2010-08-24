@@ -27,7 +27,6 @@ public class ProductsListControllerGetViewTest {
         dds = new DataDefinitionServiceMock();
         das = new DataAccessServiceMock();
         controller = new ProductsListController(dds, das);
-        controller.setPrintException(false);
     }
 
     @Test
@@ -47,8 +46,8 @@ public class ProductsListControllerGetViewTest {
 
         assertNotNull(modelAndView.getModel().get("gridDefinition"));
         assertEquals(GridDefinition.class, modelAndView.getModel().get("gridDefinition").getClass());
-        assertEquals(dds.get("product").getGrids().get(0), modelAndView.getModel().get("gridDefinition"));
-        assertEquals(dds.get("product").getGrids().get(0).getColumns(),
+        assertEquals(dds.get("products.product").getGrids().get(0), modelAndView.getModel().get("gridDefinition"));
+        assertEquals(dds.get("products.product").getGrids().get(0).getColumns(),
                 ((GridDefinition) modelAndView.getModel().get("gridDefinition")).getColumns());
     }
 

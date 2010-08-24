@@ -1,7 +1,7 @@
 package com.qcadoo.mes.plugins.products.controller;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -32,13 +32,13 @@ public class ProductsListControllerGetListData {
         DataAccessService dasMock = mock(DataAccessService.class);
         ProductsListController controller = new ProductsListController(null, dasMock);
 
-        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("product").withMaxResults(maxRes)
+        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("products.product").withMaxResults(maxRes)
                 .withFirstResult(firstRes).build();
 
-        given(dasMock.find("product", searchCriteria)).willReturn(new ResultSetMock(searchCriteria));
+        given(dasMock.find("products.product", searchCriteria)).willReturn(new ResultSetMock(searchCriteria));
 
         // when
-        List<Entity> entities = controller.getProductsListData("" + maxRes, "" + firstRes, null, null).getEntities();
+        List<Entity> entities = controller.getProductsListData(maxRes, firstRes, null, null).getEntities();
 
         // then
         assertTrue(entities.size() == maxRes);
@@ -56,13 +56,13 @@ public class ProductsListControllerGetListData {
         DataAccessService dasMock = mock(DataAccessService.class);
         ProductsListController controller = new ProductsListController(null, dasMock);
 
-        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("product").withMaxResults(maxRes)
+        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("products.product").withMaxResults(maxRes)
                 .withFirstResult(firstRes).orderBy(Order.asc(colName)).build();
 
-        given(dasMock.find("product", searchCriteria)).willReturn(new ResultSetMock(searchCriteria));
+        given(dasMock.find("products.product", searchCriteria)).willReturn(new ResultSetMock(searchCriteria));
 
         // when
-        List<Entity> entities = controller.getProductsListData("" + maxRes, "" + firstRes, colName, "asc").getEntities();
+        List<Entity> entities = controller.getProductsListData(maxRes, firstRes, colName, "asc").getEntities();
 
         // then
         assertTrue(entities.size() == maxRes);
@@ -80,13 +80,13 @@ public class ProductsListControllerGetListData {
         DataAccessService dasMock = mock(DataAccessService.class);
         ProductsListController controller = new ProductsListController(null, dasMock);
 
-        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("product").withMaxResults(maxRes)
+        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("products.product").withMaxResults(maxRes)
                 .withFirstResult(firstRes).orderBy(Order.desc(colName)).build();
 
-        given(dasMock.find("product", searchCriteria)).willReturn(new ResultSetMock(searchCriteria));
+        given(dasMock.find("products.product", searchCriteria)).willReturn(new ResultSetMock(searchCriteria));
 
         // when
-        List<Entity> entities = controller.getProductsListData("" + maxRes, "" + firstRes, colName, "desc").getEntities();
+        List<Entity> entities = controller.getProductsListData(maxRes, firstRes, colName, "desc").getEntities();
 
         // then
         assertTrue(entities.size() == maxRes);
@@ -96,14 +96,21 @@ public class ProductsListControllerGetListData {
     }
 
     @Test
-    public void shouldReturnNullWhenIllegalArgument() {
+    public void shouldThrowExceptionWhenIllegalArgument() {
+        testIllegalArgument(-30, 10);
+        testIllegalArgument(30, -10);
+        testIllegalArgument(-30, -10);
+    }
+
+    private void testIllegalArgument(int s1, int s2) {
+        // given
         ProductsListController controller = new ProductsListController(null, null);
-        controller.setPrintException(false);
-        assertNull(controller.getProductsListData("-30", "10", null, null));
-        assertNull(controller.getProductsListData("30", "-10", null, null));
-        assertNull(controller.getProductsListData("-30", "-10", null, null));
-        assertNull(controller.getProductsListData("3a0", "10", null, null));
-        assertNull(controller.getProductsListData("30", "1a0", null, null));
-        assertNull(controller.getProductsListData("3a0", "1a0", null, null));
+        try {
+            // when
+            controller.getProductsListData(s1, s2, null, null);
+            // then
+            fail();
+        } catch (Exception e) {
+        }
     }
 }

@@ -181,13 +181,25 @@ QCDGrid = function(opts) {
 			parameters.sortColumn = sortColumn;
 			parameters.sortOrder = sortOrder;
 		}
-		$.getJSON(options.dataSource, parameters, function(response) {
-			totalNumberOfEntities = response.totalNumberOfEntities;
-			for (var entityNo in response.entities) {
-				var entity = response.entities[entityNo];
-				grid.jqGrid('addRowData',entity.id,entity.fields);
-			}	       
-			unblockList();
+		$.ajax({
+			url: options.dataSource,
+			type: 'GET',
+			data: parameters,
+			dataType: 'json',
+			data: parameters,
+			contentType: 'application/json; charset=utf-8',
+			success: function(response) {
+				totalNumberOfEntities = response.totalNumberOfEntities;
+				for (var entityNo in response.entities) {
+					var entity = response.entities[entityNo];
+					grid.jqGrid('addRowData',entity.id,entity.fields);
+				}	       
+				unblockList();
+			},
+			error: function(xhr, textStatus, errorThrown){
+				alert(textStatus);
+			}
+
 		});
 	}
 	
@@ -198,8 +210,11 @@ QCDGrid = function(opts) {
 			debug("delete");
 			blockList();
 			var selectedRows = grid.getGridParam("selarrrow");
-			
-			var dataString = JSON.stringify(selectedRows);
+			var dataArray = new Array();
+			for (var i in selectedRows) {
+				dataArray.push(parseInt(selectedRows[i]));
+			}
+			var dataString = JSON.stringify(dataArray);
 			debug(dataString);
 			$.ajax({
 				url: options.deleteUrl,
@@ -208,11 +223,12 @@ QCDGrid = function(opts) {
 				data: dataString,
 				contentType: 'application/json; charset=utf-8',
 				success: function(response) {
-					if (response != "ok") {
-						alert(response);
-					}
 					refresh();
+				},
+				error: function(xhr, textStatus, errorThrown){
+					alert(textStatus);
 				}
+
 			});
 		}
 	}
