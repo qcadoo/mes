@@ -21,11 +21,15 @@ body {
 	margin-bottom: 10px;	
 }
 
-#bottomButtons {
+#sortButtons {
+	margin-bottom: 10px;	
+}
+
+.qcdGrid_paging {
 	margin-top: 10px;
 	margin-bottom: 10px;	
 }
 
-#pageInfoSpan {
+.qcdGrid_paging_pageInfo {
 	color: 777777;
 }

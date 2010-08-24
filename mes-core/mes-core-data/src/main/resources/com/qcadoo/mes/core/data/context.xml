@@ -20,7 +20,7 @@
 		<property name="driverClass" value="org.postgresql.Driver" />
 		<property name="jdbcUrl" value="jdbc:postgresql:mes" />
 		<property name="user" value="postgres" />
-		<property name="password" value="root" />
+		<property name="password" value="postgres123" />
 	</bean>
 
 	<bean id="sessionFactory"

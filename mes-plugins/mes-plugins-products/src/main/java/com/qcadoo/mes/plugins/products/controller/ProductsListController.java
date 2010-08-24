@@ -19,6 +19,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
+import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
@@ -39,11 +40,13 @@ public class ProductsListController {
     public ProductsListController(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
         this.dataDefinitionService = dataDefinitionService;
         this.dataAccessService = dataAccessService;
-        logger.info("constructor - " + dataDefinitionService);
+        if (logger.isDebugEnabled()) {
+            logger.info("constructor - " + dataDefinitionService);
+        }
     }
 
     @RequestMapping(value = "/products/list", method = RequestMethod.GET)
-    public ModelAndView productsList(@RequestParam(required = false) String message) {
+    public ModelAndView getProductsListView(@RequestParam(required = false) String message) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("productsGridView");
         mav.addObject("headerContent", "Produkty:");
@@ -59,20 +62,31 @@ public class ProductsListController {
         return mav;
     }
 
-    @RequestMapping(value = "/products/listData", method = RequestMethod.GET)
+    @RequestMapping(value = "/products/list/data", method = RequestMethod.GET)
     @ResponseBody
-    public ListData getListData(@RequestParam String maxResults, @RequestParam String firstResult) {
+    public ListData getProductsListData(@RequestParam String maxResults, @RequestParam String firstResult,
+            @RequestParam(required = false) String sortColumn, @RequestParam(required = false) String sortOrder) {
         try {
-            logger.debug("MAX RES: " + maxResults);
-            logger.debug("FIRST RES: " + firstResult);
+            if (logger.isDebugEnabled()) {
+                logger.debug("getListData - MAX RES: " + maxResults + ", FIRST RES: " + firstResult + ", SORT COL: " + sortColumn
+                        + ", SORT ORDER: " + sortOrder);
+            }
             try {
                 int max = Integer.parseInt(maxResults);
                 int first = Integer.parseInt(firstResult);
                 if (max < 0 || first < 0) {
                     throw new IllegalArgumentException();
                 }
-                SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("product").withMaxResults(max)
-                        .withFirstResult(first).build();
+                SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("product").withMaxResults(max)
+                        .withFirstResult(first);
+                if (sortColumn != null && sortOrder != null) {
+                    if ("desc".equals(sortOrder)) {
+                        searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(sortColumn));
+                    } else {
+                        searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(sortColumn));
+                    }
+                }
+                SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
                 ResultSet rs = dataAccessService.find("product", searchCriteria);
                 List<Entity> entities = rs.getResults();
@@ -88,7 +102,7 @@ public class ProductsListController {
         }
     }
 
-    @RequestMapping(value = "/products/deleteData", method = RequestMethod.POST)
+    @RequestMapping(value = "/products/list/delete", method = RequestMethod.POST)
     @ResponseBody
     public String deleteData(@RequestBody List<String> selectedRows) {
         logger.debug("SELECTED ROWS: " + selectedRows);
@@ -99,7 +113,9 @@ public class ProductsListController {
             }
             for (Long recordId : rowsToDelete) {
                 dataAccessService.delete("product", recordId);
-                logger.debug("ROW " + recordId + " DELETED");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("ROW " + recordId + " DELETED");
+                }
             }
         } catch (Exception e) {
             if (printException)

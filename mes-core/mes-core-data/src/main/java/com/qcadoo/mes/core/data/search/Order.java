@@ -1,5 +1,8 @@
 package com.qcadoo.mes.core.data.search;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public final class Order {
 
     private static final Order DEFAULT_ORDER = Order.asc("id");
@@ -35,6 +38,16 @@ public final class Order {
 
     public static Order asc() {
         return DEFAULT_ORDER;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
 }
