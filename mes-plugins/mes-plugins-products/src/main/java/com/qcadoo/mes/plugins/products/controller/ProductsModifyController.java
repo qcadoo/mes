@@ -47,12 +47,12 @@ public class ProductsModifyController {
 			mav.setViewName("addModifyEntity");
 
 			DataDefinition dataDefinition = dataDefinitionService
-					.get("product");
+					.get("products.product");
 			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 			mav.addObject("fieldsDefinition", fieldsDefinition);
 			if (entityId != null && !entityId.equals("")) {
 				mav.addObject("entityId", entityId);
-				Entity entity = dataAccessService.get("product",
+				Entity entity = dataAccessService.get("products.product",
 						Long.parseLong(entityId));
 				mav.addObject("entity", entity.getFields());
 			}
@@ -67,12 +67,13 @@ public class ProductsModifyController {
 	@RequestMapping(value = "/products/addModifyEntity", method = RequestMethod.POST)
 	public ModelAndView addModifyEntity(@ModelAttribute Entity entity) {
 
-		DataDefinition dataDefinition = dataDefinitionService.get("product");
+		DataDefinition dataDefinition = dataDefinitionService
+				.get("products.product");
 		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 		ModelAndView mav = new ModelAndView();
 		if (checkFields(entity, fieldsDefinition, mav)) {
 			String message = "";
-			dataAccessService.save("product", entity);
+			dataAccessService.save("products.product", entity);
 			if (entity.getId() == null) {
 				message = "added";
 			} else {

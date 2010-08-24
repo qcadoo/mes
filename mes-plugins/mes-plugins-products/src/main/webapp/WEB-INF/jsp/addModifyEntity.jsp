@@ -118,16 +118,16 @@
 		
 		<div>
 			Substytuty:
-			<button id="newSubstituteButton" onClick="console.info('not implemented')">New</button>
-			<button id="deleteSubstituteButton" onClick="console.info('not implemented')">delete</button>
-			<button id="upSubstituteButton" onClick="console.info('not implemented')">up</button>
-			<button id="downSubstituteButton" onClick="console.info('not implemented')">down</button>
+			<button id="newSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
+			<button id="deleteSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.delete"/></button>
+			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.up"/></button>
+			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.down"/></button>
 		</div>
 		<table id="substitutesGrid"></table>
 		<div>
 			Produkty substytutu:
-			<button id="newSubstituteProductButton" onClick="console.info('not implemented')">New</button>
-			<button id="deleteSubstituteProductButton" onClick="console.info('not implemented')">delete</button>
+			<button id="newSubstituteProductButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
+			<button id="deleteSubstituteProductButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.delete"/></button>
 		</div>
 		<table id="substituteProductsGrid"></table> 
 </body>
