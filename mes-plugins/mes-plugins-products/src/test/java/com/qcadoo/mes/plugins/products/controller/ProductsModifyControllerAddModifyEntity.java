@@ -40,7 +40,7 @@ public class ProductsModifyControllerAddModifyEntity {
 		// when
 		ModelAndView modelAndView = controller.addModifyEntity(entity);
 		// then
-		assertEquals("redirect:list.html?message=Dodano",
+		assertEquals("redirect:list.html?message=added",
 				modelAndView.getViewName());
 
 	}
@@ -58,7 +58,7 @@ public class ProductsModifyControllerAddModifyEntity {
 		// when
 		ModelAndView modelAndView = controller.addModifyEntity(entity);
 		// then
-		assertEquals("redirect:list.html?message=Zmodyfikowano",
+		assertEquals("redirect:list.html?message=modified",
 				modelAndView.getViewName());
 
 	}

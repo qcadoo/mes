@@ -74,9 +74,9 @@ public class ProductsModifyController {
 			String message = "";
 			dataAccessService.save("product", entity);
 			if (entity.getId() == null) {
-				message = "Dodano";
+				message = "added";
 			} else {
-				message = "Zmodyfikowano";
+				message = "modified";
 			}
 			return new ModelAndView("redirect:list.html?message=" + message);
 		} else {
