@@ -85,28 +85,31 @@
 </head>
 <body>
 	<h2 id="pageHeader"><spring:message code="addModifyEntity.header"/></h2>
-		${message } <br/>
+	
+	
+		<c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="addModifyEntity.${message }"/> <br/></c:otherwise></c:choose>
+		
 		<form action="addModifyEntity.html" method="POST">
 			<table>
-			<c:forEach items="${fieldsDefinition}" var="entry">
-				<tr>
-					<c:choose>
-						<c:when test="${entry.hidden=='false'}">
-								<td><spring:message code="products.field.${entry.name}"/>:</td><td>
-								<input type="text" name="fields[${entry.name}]"
-								<c:if test="${entry.editable=='true'}">
-									readonly="readonly"
-								</c:if> 
-								value="${entity[entry.name]}" />
-								</td><td>${fieldsValidationInfo[entry.name] }</td>
-						</c:when> 
-						<c:otherwise>
-							<input type="hidden" name="fields[${entry.name}]" value="${entity[entry.name]}" />
-						</c:otherwise> 
-					</c:choose>  
-				</tr>
-			</c:forEach>
-			</table>		
+				<c:forEach items="${fieldsDefinition}" var="entry">
+					<tr>
+						<c:choose>
+							<c:when test="${entry.hidden=='false'}">
+									<td><spring:message code="products.field.${entry.name}"/></td><td>
+									<input type="text" name="fields[${entry.name}]"
+									<c:if test="${entry.editable=='true'}">
+										readonly="readonly"
+									</c:if> 
+									value="${entity[entry.name]}" />
+									</td><c:choose><c:when test="${fieldsValidationInfo[entry.name] == null}"> </c:when><c:otherwise><td><spring:message code="addModifyEntity.${fieldsValidationInfo[entry.name] }"/></td> </c:otherwise></c:choose>
+							</c:when> 
+							<c:otherwise>
+								<input type="hidden" name="fields[${entry.name}]" value="${entity[entry.name]}" />
+							</c:otherwise> 
+						</c:choose>  
+					</tr>
+				</c:forEach>	
+			</table>	
 			<input type="hidden" name="id" value="${entityId }"/>
 			<input type="submit" name="button" value="<spring:message code="addModifyEntity.button"/>" />
 			<input type="button" name="button" value="<spring:message code="addModifyEntity.cancel"/>" onClick="window.location='list.html'" />
@@ -129,9 +132,6 @@
 		<table id="substituteProductsGrid"></table> 
 </body>
 </html>
-
-
-
 
 
 

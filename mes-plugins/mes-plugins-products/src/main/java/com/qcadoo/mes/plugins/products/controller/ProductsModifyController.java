@@ -82,7 +82,7 @@ public class ProductsModifyController {
 		} else {
 
 			mav.setViewName("addModifyEntity");
-			mav.addObject("message", "Uzupelnij wszystkie pola");
+			mav.addObject("message", "fullFillFields");
 			mav.addObject("entity", entity.getFields());
 			mav.addObject("fieldsDefinition", fieldsDefinition);
 			mav.addObject("entityId", entity.getId());
@@ -99,13 +99,8 @@ public class ProductsModifyController {
 		for (FieldDefinition field : fieldsDefinition) {
 			String formField = (String) entity.getField(field.getName());
 			if (formField == null || formField.equals("")) {
-				String fieldValidationInfo = fieldsValidationInfo.get(field
-						.getName());
-				if (fieldValidationInfo == null) {
-					fieldValidationInfo = "";
-				}
-				fieldValidationInfo = fieldValidationInfo
-						+ ": field is required";
+
+				String fieldValidationInfo = "requiredField";
 				fieldsValidationInfo.put(field.getName(), fieldValidationInfo);
 				result = false;
 			}

@@ -20,7 +20,7 @@
 		var colNames = new Array();
 		var colModel = new Array();
 		<c:forEach items="${gridDefinition.columns}" var="column">
-			colNames.push("${column.name}");
+			colNames.push("<spring:message code="products.column.${column.name}"/>");
 			colModel.push({name:"${column.fields[0].name}", index:"${column.fields[0].name}", width:100, sortable: false});
 		</c:forEach>
 
@@ -66,21 +66,21 @@
 	<div id="messageBox">${message}</div>
 	
 	<div id="topButtons">
-		<button onClick="window.location='addModifyEntityForm.html'">New</button>
-		<button onClick="productsGrid.refresh()">refresh</button>
-		<button onClick="productsGrid.deleteSelectedRecords()">delete</button>
+		<button onClick="window.location='addModifyEntityForm.html'"><spring:message code="productsGridView.new"/></button>
+		<button onClick="productsGrid.refresh()"><spring:message code="productsGridView.refresh"/></button>
+		<button onClick="productsGrid.deleteSelectedRecords()"><spring:message code="productsGridView.delete"/></button>
 	</div>
 	<div id="sortButtons">
 		<select id='sortColumnChooser'>
 			<c:forEach items="${gridDefinition.columns}" var="column">
-				<option value='${column.fields[0].name}'>${column.name}</option>
+				<option value='${column.fields[0].name}'><spring:message code="products.column.${column.name}"/></option>
 			</c:forEach>
 		</select>
 		<select id='sortOrderChooser'>
-			<option value='asc'>asc</option>
-			<option value='desc'>desc</option>
+			<option value='asc'><spring:message code="productsGridView.asc"/></option>
+			<option value='desc'><spring:message code="productsGridView.desc"/></option>
 		</select>
-		<button onClick="sort()">sort</button>
+		<button onClick="sort()"><spring:message code="productsGridView.sort"/></button>
 	</div>
 	
 	<table id="productsGrid"></table> 
