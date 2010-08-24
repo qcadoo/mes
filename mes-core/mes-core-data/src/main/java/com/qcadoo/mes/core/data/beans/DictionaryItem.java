@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class DictionaryItem {
+public final class DictionaryItem {
 
     @Id
     @GeneratedValue
@@ -21,7 +21,7 @@ public class DictionaryItem {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -29,7 +29,7 @@ public class DictionaryItem {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -37,7 +37,7 @@ public class DictionaryItem {
         return dictionary;
     }
 
-    public void setDictionary(Dictionary dictionary) {
+    public void setDictionary(final Dictionary dictionary) {
         this.dictionary = dictionary;
     }
 

@@ -98,7 +98,7 @@ public final class SearchCriteriaImpl implements SearchCriteria {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 

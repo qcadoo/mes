@@ -15,72 +15,63 @@ import com.qcadoo.mes.core.data.definition.GridDefinition;
 @Service
 public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
-	@Override
-	public void save(final DataDefinition dataDefinition) {
-		throw new UnsupportedOperationException("implement me");
-	}
+    @Override
+    public void save(final DataDefinition dataDefinition) {
+        throw new UnsupportedOperationException("implement me");
+    }
 
-	@Override
-	public DataDefinition get(final String entityName) {
-		DataDefinition dataDefinition = new DataDefinition("products.Product");
-		GridDefinition gridDefinition = new GridDefinition("Products");
+    @Override
+    public DataDefinition get(final String entityName) {
+        DataDefinition dataDefinition = new DataDefinition("products.Product");
+        GridDefinition gridDefinition = new GridDefinition("Products");
 
-		FieldDefinition fieldName = createStringFieldDefinition("name");
-		FieldDefinition fieldNumber = createStringFieldDefinition("number");
-		FieldDefinition fieldType = createStringFieldDefinition("type");
-		FieldDefinition fieldTypeOfMaterial = createStringFieldDefinition("typeOfMaterial");
-		FieldDefinition fieldEan = createStringFieldDefinition("ean");
-		FieldDefinition fieldCategory = createStringFieldDefinition("category");
-		FieldDefinition fieldUnit = createStringFieldDefinition("unit");
+        FieldDefinition fieldName = createStringFieldDefinition("name");
+        FieldDefinition fieldNumber = createStringFieldDefinition("number");
+        FieldDefinition fieldType = createStringFieldDefinition("type");
+        FieldDefinition fieldTypeOfMaterial = createStringFieldDefinition("typeOfMaterial");
+        FieldDefinition fieldEan = createStringFieldDefinition("ean");
+        FieldDefinition fieldCategory = createStringFieldDefinition("category");
+        FieldDefinition fieldUnit = createStringFieldDefinition("unit");
 
-		dataDefinition
-				.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Product");
-		dataDefinition.setGrids(Arrays
-				.asList(new GridDefinition[] { gridDefinition }));
-		dataDefinition.setFields(Arrays.asList(new FieldDefinition[] {
-				fieldName, fieldNumber, fieldType, fieldTypeOfMaterial,
-				fieldEan, fieldCategory, fieldUnit }));
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Product");
+        dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
+        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldName, fieldNumber, fieldType, fieldTypeOfMaterial,
+                fieldEan, fieldCategory, fieldUnit }));
 
-		ColumnDefinition columnNumber = createColumnDefinition("number",
-				fieldNumber);
-		ColumnDefinition columnName = createColumnDefinition("name", fieldName);
-		ColumnDefinition columnTypeOfMaterial = createColumnDefinition(
-				"typeOfMaterial", fieldTypeOfMaterial);
-		ColumnDefinition columnEan = createColumnDefinition("ean", fieldEan);
-		ColumnDefinition columnType = createColumnDefinition("type", fieldType);
-		ColumnDefinition columnCategory = createColumnDefinition("category",
-				fieldCategory);
-		ColumnDefinition columnUnit = createColumnDefinition("unit", fieldUnit);
+        ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber);
+        ColumnDefinition columnName = createColumnDefinition("name", fieldName);
+        ColumnDefinition columnTypeOfMaterial = createColumnDefinition("typeOfMaterial", fieldTypeOfMaterial);
+        ColumnDefinition columnEan = createColumnDefinition("ean", fieldEan);
+        ColumnDefinition columnType = createColumnDefinition("type", fieldType);
+        ColumnDefinition columnCategory = createColumnDefinition("category", fieldCategory);
+        ColumnDefinition columnUnit = createColumnDefinition("unit", fieldUnit);
 
-		gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] {
-				columnNumber, columnName, columnTypeOfMaterial, columnEan,
-				columnType, columnCategory, columnUnit }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnTypeOfMaterial,
+                columnEan, columnType, columnCategory, columnUnit }));
 
-		return dataDefinition;
-	}
+        return dataDefinition;
+    }
 
-	private ColumnDefinition createColumnDefinition(final String name,
-			final FieldDefinition field) {
-		ColumnDefinition columnDefinition = new ColumnDefinition(name);
-		columnDefinition.setFields(Arrays
-				.asList(new FieldDefinition[] { field }));
-		return columnDefinition;
-	}
+    private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field) {
+        ColumnDefinition columnDefinition = new ColumnDefinition(name);
+        columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
+        return columnDefinition;
+    }
 
-	private FieldDefinition createStringFieldDefinition(final String name) {
-		FieldDefinition fieldDefinition = new FieldDefinition(name);
-		fieldDefinition.setType(FieldTypes.stringType());
-		return fieldDefinition;
-	}
+    private FieldDefinition createStringFieldDefinition(final String name) {
+        FieldDefinition fieldDefinition = new FieldDefinition(name);
+        fieldDefinition.setType(FieldTypes.stringType());
+        return fieldDefinition;
+    }
 
-	@Override
-	public void delete(final String entityName) {
-		throw new UnsupportedOperationException("implement me");
-	}
+    @Override
+    public void delete(final String entityName) {
+        throw new UnsupportedOperationException("implement me");
+    }
 
-	@Override
-	public List<DataDefinition> list() {
-		throw new UnsupportedOperationException("implement me");
-	}
+    @Override
+    public List<DataDefinition> list() {
+        throw new UnsupportedOperationException("implement me");
+    }
 
 }

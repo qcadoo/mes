@@ -51,7 +51,7 @@ public final class FieldTypes {
         return TEXT_FIELD_TYPE;
     }
 
-    public static FieldType enumType(String... values) {
+    public static FieldType enumType(final String... values) {
         return new EnumFieldType(values);
     }
 

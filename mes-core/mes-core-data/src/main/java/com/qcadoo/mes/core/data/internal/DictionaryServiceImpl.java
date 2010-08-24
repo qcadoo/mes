@@ -24,7 +24,7 @@ public final class DictionaryServiceImpl implements DictionaryService {
     @Override
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public List<String> values(String dictionaryName) {
+    public List<String> values(final String dictionaryName) {
         checkArgument(StringUtils.hasText(dictionaryName), "dictionary name must be given");
         List<DictionaryItem> items = (List<DictionaryItem>) sessionFactory.getCurrentSession()
                 .createQuery("from DictionaryItem where dictionary.name = :dictionaryName order by name")
