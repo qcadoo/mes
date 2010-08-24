@@ -39,8 +39,9 @@ public class ProductsModifyController {
 		logger.info("constructor - " + dataDefinitionService);
 	}
 
-	@RequestMapping(value = "/products/editEntity", method = RequestMethod.GET)
-	public ModelAndView editEntity(@RequestParam String entityId) {
+	@RequestMapping(value = "/products/addModifyEntityForm", method = RequestMethod.GET)
+	public ModelAndView addModifyEntityForm(
+			@RequestParam(required = false) String entityId) {
 		try {
 			ModelAndView mav = new ModelAndView();
 			mav.setViewName("addModifyEntity");
@@ -50,10 +51,12 @@ public class ProductsModifyController {
 					.get("product");
 			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 			mav.addObject("fieldsDefinition", fieldsDefinition);
-			mav.addObject("entityId", entityId);
-			Entity entity = dataAccessService.get("product",
-					Long.parseLong(entityId));
-			mav.addObject("entity", entity.getFields());
+			if (entityId != null && !entityId.equals("")) {
+				mav.addObject("entityId", entityId);
+				Entity entity = dataAccessService.get("product",
+						Long.parseLong(entityId));
+				mav.addObject("entity", entity.getFields());
+			}
 			mav.addObject("button", "Zatwierdz");
 
 			return mav;
@@ -90,19 +93,6 @@ public class ProductsModifyController {
 			return mav;
 		}
 
-	}
-
-	@RequestMapping(value = "/products/newEntity", method = RequestMethod.GET)
-	public ModelAndView newEntity() {
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("addModifyEntity");
-		mav.addObject("headerContent", "Produkt:");
-
-		DataDefinition dataDefinition = dataDefinitionService.get("product");
-		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
-		mav.addObject("fieldsDefinition", fieldsDefinition);
-		mav.addObject("button", "Zatwierdz");
-		return mav;
 	}
 
 	public boolean checkFields(Entity entity,

@@ -38,4 +38,9 @@ public final class EnumFieldType implements FieldType {
         }
         return true;
     }
+
+    public List<String> values() {
+        return values;
+    }
+
 }

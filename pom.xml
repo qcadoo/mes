@@ -20,7 +20,7 @@
 
 	<properties>
 		<spring.version>3.0.3.RELEASE</spring.version>
-		<slf4j.version>1.6.1</slf4j.version>
+		<slf4j.version>1.5.6</slf4j.version>
 		<hibernate.version>3.5.4-Final</hibernate.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -118,11 +118,11 @@
 				<version>0.9.1.2</version>
 			</dependency>
 			<dependency>
-        		<groupId>xml-apis</groupId>
-        		<artifactId>xml-apis</artifactId>
-        		<version>1.0.b2</version>
-        		<scope>provided</scope>
-      		</dependency>
+				<groupId>xml-apis</groupId>
+				<artifactId>xml-apis</artifactId>
+				<version>1.0.b2</version>
+				<scope>provided</scope>
+			</dependency>
 			<!-- Test -->
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -140,6 +140,16 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.0.2.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jmx</artifactId>
+			<version>3.5.1-Final</version>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
