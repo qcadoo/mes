@@ -24,4 +24,9 @@ public final class BooleanFieldType implements FieldType {
         return value instanceof Boolean;
     }
 
+    @Override
+    public int getNumericType() {
+        return NUMERIC_TYPE_BOOLEAN;
+    }
+
 }

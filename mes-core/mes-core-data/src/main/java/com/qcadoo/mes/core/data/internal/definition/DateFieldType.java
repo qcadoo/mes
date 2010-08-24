@@ -26,4 +26,9 @@ public final class DateFieldType implements FieldType {
         return value instanceof Date;
     }
 
+    @Override
+    public int getNumericType() {
+        return NUMERIC_TYPE_DATE;
+    }
+
 }

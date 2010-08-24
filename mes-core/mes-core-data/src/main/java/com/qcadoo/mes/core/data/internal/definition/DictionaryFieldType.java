@@ -47,4 +47,9 @@ public final class DictionaryFieldType implements EnumeratedFieldType {
         return dictionaryService.values(dictionaryName);
     }
 
+    @Override
+    public int getNumericType() {
+        return NUMERIC_TYPE_DICTIONARY;
+    }
+
 }

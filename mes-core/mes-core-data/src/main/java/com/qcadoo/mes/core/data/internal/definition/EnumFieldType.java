@@ -44,4 +44,9 @@ public final class EnumFieldType implements EnumeratedFieldType {
         return values;
     }
 
+    @Override
+    public int getNumericType() {
+        return NUMERIC_TYPE_ENUM;
+    }
+
 }

@@ -51,6 +51,7 @@ public class FieldTypeFactoryTest {
         Assert.assertFalse(fieldType.isAggregable());
         Assert.assertTrue(fieldType.isValidType("val1"));
         Assert.assertFalse(fieldType.isValidType("val4"));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_ENUM));
     }
 
     @Test
@@ -69,6 +70,7 @@ public class FieldTypeFactoryTest {
         Assert.assertFalse(fieldType.isAggregable());
         Assert.assertTrue(fieldType.isValidType("val1"));
         Assert.assertFalse(fieldType.isValidType("val4"));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_DICTIONARY));
     }
 
     @Test
@@ -82,6 +84,7 @@ public class FieldTypeFactoryTest {
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
         Assert.assertTrue(fieldType.isValidType(false));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_BOOLEAN));
     }
 
     @Test
@@ -95,6 +98,7 @@ public class FieldTypeFactoryTest {
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
         Assert.assertTrue(fieldType.isValidType(new Date()));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_DATE));
     }
 
     @Test
@@ -108,6 +112,7 @@ public class FieldTypeFactoryTest {
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
         Assert.assertTrue(fieldType.isValidType(new Date()));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_DATE_TIME));
     }
 
     @Test
@@ -125,6 +130,7 @@ public class FieldTypeFactoryTest {
         Assert.assertTrue(fieldType.isValidType(1));
         Assert.assertTrue(fieldType.isValidType(1234567));
         Assert.assertFalse(fieldType.isValidType(12345678));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_DECIMAL));
     }
 
     @Test
@@ -140,6 +146,7 @@ public class FieldTypeFactoryTest {
         Assert.assertTrue(fieldType.isValidType(1));
         Assert.assertTrue(fieldType.isValidType(1234567890L));
         Assert.assertFalse(fieldType.isValidType(12345678900L));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_INTEGER));
     }
 
     @Test
@@ -155,6 +162,7 @@ public class FieldTypeFactoryTest {
         Assert.assertTrue(fieldType.isValidType("test"));
         Assert.assertTrue(fieldType.isValidType(StringUtils.repeat("a", 255)));
         Assert.assertFalse(fieldType.isValidType(StringUtils.repeat("a", 256)));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_STRING));
     }
 
     @Test
@@ -170,6 +178,7 @@ public class FieldTypeFactoryTest {
         Assert.assertTrue(fieldType.isValidType("test"));
         Assert.assertTrue(fieldType.isValidType(StringUtils.repeat("a", 2048)));
         Assert.assertFalse(fieldType.isValidType(StringUtils.repeat("a", 2049)));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldType.NUMERIC_TYPE_TEXT));
     }
 
 }

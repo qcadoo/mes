@@ -55,4 +55,13 @@ public final class NumericFieldType implements FieldType {
         return true;
     }
 
+    @Override
+    public int getNumericType() {
+        if (precision == 0) {
+            return NUMERIC_TYPE_INTEGER;
+        } else {
+            return NUMERIC_TYPE_DECIMAL;
+        }
+    }
+
 }

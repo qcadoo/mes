@@ -32,4 +32,9 @@ public final class StringFieldType implements FieldType {
         return true;
     }
 
+    @Override
+    public int getNumericType() {
+        return NUMERIC_TYPE_STRING;
+    }
+
 }
