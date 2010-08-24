@@ -59,10 +59,12 @@
 	    class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 	    <property name="paramName" value="lang" />
 	</bean>
+
 	<bean id="localeResolver"
 	    class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 	    <property name="defaultLocale" value="pl"/>
 	</bean>
+
 	<bean id="handlerMapping"
 	    class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 	    <property name="interceptors">

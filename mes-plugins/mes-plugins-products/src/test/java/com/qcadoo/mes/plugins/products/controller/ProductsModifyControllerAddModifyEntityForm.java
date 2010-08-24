@@ -34,8 +34,6 @@ public class ProductsModifyControllerAddModifyEntityForm {
 		ModelAndView modelAndView = controller.addModifyEntityForm(null);
 		// then
 		assertEquals("addModifyEntity", modelAndView.getViewName());
-		assertNotNull(modelAndView.getModel().get("headerContent"));
-		assertEquals("Produkt:", modelAndView.getModel().get("headerContent"));
 		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
 
 	}
@@ -48,8 +46,6 @@ public class ProductsModifyControllerAddModifyEntityForm {
 		ModelAndView modelAndView = controller.addModifyEntityForm("1");
 		// then
 		assertEquals("addModifyEntity", modelAndView.getViewName());
-		assertNotNull(modelAndView.getModel().get("headerContent"));
-		assertEquals("Produkt:", modelAndView.getModel().get("headerContent"));
 		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
 		assertEquals(das.get("product", Long.parseLong("1")).getFields(),
 				modelAndView.getModel().get("entity"));

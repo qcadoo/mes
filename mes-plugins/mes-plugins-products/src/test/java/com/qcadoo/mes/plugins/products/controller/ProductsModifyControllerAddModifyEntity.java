@@ -2,7 +2,6 @@ package com.qcadoo.mes.plugins.products.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +40,6 @@ public class ProductsModifyControllerAddModifyEntity {
 		// when
 		ModelAndView modelAndView = controller.addModifyEntity(entity);
 		// then
-		assertNull(modelAndView.getModel().get("headerContent"));
 		assertEquals("redirect:list.html?message=Dodano",
 				modelAndView.getViewName());
 
@@ -60,14 +58,32 @@ public class ProductsModifyControllerAddModifyEntity {
 		// when
 		ModelAndView modelAndView = controller.addModifyEntity(entity);
 		// then
-		assertNull(modelAndView.getModel().get("headerContent"));
 		assertEquals("redirect:list.html?message=Zmodyfikowano",
 				modelAndView.getViewName());
 
 	}
 
 	@Test
-	public void shouldRedirectToFormIfRequiredDataIsIncomplete() {
+	public void shouldRedirectToFormIfRequiredDataIsIncompleteAndOnNewForm() {
+		// given
+		Entity entity = new Entity((long) 1);
+		entity.setField("number", null);
+		entity.setField("type", "type");
+		entity.setField("typeOfMaterial", "typeOfMaterial");
+		entity.setField("ean", "ean");
+		entity.setField("category", "category");
+		entity.setField("unit", "unit");
+		// when
+		ModelAndView modelAndView = controller.addModifyEntity(entity);
+		// then
+		assertNotNull(modelAndView.getModel().get("message"));
+		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
+		assertNotNull(modelAndView.getModel().get("entity"));
+		assertNotNull(modelAndView.getModel().get("entityId"));
+	}
+
+	@Test
+	public void shouldRedirectToFormIfRequiredDataIsIncompleteAndOnModifyForm() {
 		// given
 		Entity entity = new Entity();
 		entity.setField("number", null);
@@ -79,7 +95,8 @@ public class ProductsModifyControllerAddModifyEntity {
 		// when
 		ModelAndView modelAndView = controller.addModifyEntity(entity);
 		// then
-		assertNotNull(modelAndView.getModel().get("headerContent"));
-	}
+		assertNotNull(modelAndView.getModel().get("message"));
+		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
 
+	}
 }

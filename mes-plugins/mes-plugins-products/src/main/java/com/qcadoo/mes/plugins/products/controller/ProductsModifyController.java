@@ -45,7 +45,6 @@ public class ProductsModifyController {
 		try {
 			ModelAndView mav = new ModelAndView();
 			mav.setViewName("addModifyEntity");
-			mav.addObject("headerContent", "Produkt:");
 
 			DataDefinition dataDefinition = dataDefinitionService
 					.get("product");
@@ -57,7 +56,6 @@ public class ProductsModifyController {
 						Long.parseLong(entityId));
 				mav.addObject("entity", entity.getFields());
 			}
-			mav.addObject("button", "Zatwierdz");
 
 			return mav;
 		} catch (NumberFormatException e) {
@@ -85,11 +83,9 @@ public class ProductsModifyController {
 
 			mav.setViewName("addModifyEntity");
 			mav.addObject("message", "Uzupelnij wszystkie pola");
-			mav.addObject("headerContent", "Produkt:");
 			mav.addObject("entity", entity.getFields());
 			mav.addObject("fieldsDefinition", fieldsDefinition);
 			mav.addObject("entityId", entity.getId());
-			mav.addObject("button", "Zatwierdz");
 			return mav;
 		}
 

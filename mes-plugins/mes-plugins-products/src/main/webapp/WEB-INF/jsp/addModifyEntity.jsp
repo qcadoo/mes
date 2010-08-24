@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-2"
+    pageEncoding="ISO-8859-2"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -66,14 +66,14 @@
 	</script>
 </head>
 <body>
-	<h2 id="pageHeader">${headerContent }</h2>
+	<h2 id="pageHeader"><spring:message code="addModifyEntity.header"/></h2>
 		${message } <br/>
 		<form action="addModifyEntity.html" method="POST">
 			<c:forEach items="${fieldsDefinition}" var="entry">
 				<tr>
 					<c:choose>
 						<c:when test="${entry.hidden=='false'}">
-								<td>${entry.name}</td><td>
+								<td><spring:message code="products.field.${entry.name}"/></td><td>
 								<input type="text" name="fields[${entry.name}]"
 								<c:if test="${entry.editable=='true'}">
 									readonly="readonly"
@@ -88,9 +88,9 @@
 				</tr>
 			</c:forEach>		
 			<input type="hidden" name="id" value="${entityId }"/>
-			<input type="submit" name="button" value="${button }" />
+			<input type="submit" name="button" value="<spring:message code="addModifyEntity.button"/>" />
 		</form><br />
-		<a href="list.html">Anuluj</a>
+		<a href="list.html"><spring:message code="addModifyEntity.cancel"/></a>
 		
 		<h3>Substytuty:</h3>
 		<table id="substitutesGrid"></table>
@@ -98,3 +98,9 @@
 		<table id="substituteProductsGrid"></table> 
 </body>
 </html>
+
+
+
+
+
+
