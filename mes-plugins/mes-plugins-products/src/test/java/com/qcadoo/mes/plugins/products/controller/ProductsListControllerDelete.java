@@ -22,7 +22,6 @@ public class ProductsListControllerDelete {
     public void setUp() {
         dasMock = mock(DataAccessService.class);
         controller = new ProductsListController(null, dasMock);
-        controller.setPrintException(false);
     }
 
     @Test
@@ -30,11 +29,11 @@ public class ProductsListControllerDelete {
         // given
 
         // when
-        String r = controller.deleteData(Arrays.asList(new String[] { "123" }));
+        String r = controller.deleteData(Arrays.asList(new Integer[] { 123 }));
 
         // then
         assertEquals("ok", r);
-        verify(dasMock).delete("product", (long) 123);
+        verify(dasMock).delete("products.product", (long) 123);
         verifyNoMoreInteractions(dasMock);
     }
 
@@ -43,13 +42,13 @@ public class ProductsListControllerDelete {
         // given
 
         // when
-        String r = controller.deleteData(Arrays.asList(new String[] { "1", "2", "3" }));
+        String r = controller.deleteData(Arrays.asList(new Integer[] { 1, 2, 3 }));
 
         // then
         assertEquals("ok", r);
-        verify(dasMock).delete("product", (long) 1);
-        verify(dasMock).delete("product", (long) 3);
-        verify(dasMock).delete("product", (long) 2);
+        verify(dasMock).delete("products.product", (long) 1);
+        verify(dasMock).delete("products.product", (long) 3);
+        verify(dasMock).delete("products.product", (long) 2);
         verifyNoMoreInteractions(dasMock);
     }
 
@@ -58,34 +57,10 @@ public class ProductsListControllerDelete {
         // given
 
         // when
-        String r = controller.deleteData(Arrays.asList(new String[] {}));
+        String r = controller.deleteData(Arrays.asList(new Integer[] {}));
 
         // then
         assertEquals("ok", r);
-        verifyNoMoreInteractions(dasMock);
-    }
-
-    @Test
-    public void shouldDoNothingAndReturnErrorWhenListWithOneString() {
-        // given
-
-        // when
-        String r = controller.deleteData(Arrays.asList(new String[] { "aa" }));
-
-        // then
-        assertEquals("error", r);
-        verifyNoMoreInteractions(dasMock);
-    }
-
-    @Test
-    public void shouldDoNothingAndReturnErrorWhenListWithTwoNumbersAndOneString() {
-        // given
-
-        // when
-        String r = controller.deleteData(Arrays.asList(new String[] { "1", "2", "a" }));
-
-        // then
-        assertEquals("error", r);
         verifyNoMoreInteractions(dasMock);
     }
 

@@ -1,6 +1,5 @@
 package com.qcadoo.mes.plugins.products.controller;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -34,8 +33,6 @@ public class ProductsListController {
 
     private Logger logger = LoggerFactory.getLogger(ProductsListController.class);
 
-    private boolean printException = true;
-
     @Autowired
     public ProductsListController(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService) {
         this.dataDefinitionService = dataDefinitionService;
@@ -54,7 +51,7 @@ public class ProductsListController {
             mav.addObject("message", message);
         }
         mav.addObject("message", message);
-        DataDefinition dataDefinition = dataDefinitionService.get("product");
+        DataDefinition dataDefinition = dataDefinitionService.get("products.product");
         List<GridDefinition> grids = dataDefinition.getGrids();
         GridDefinition gridDefinition = grids.get(0);
         mav.addObject("gridDefinition", gridDefinition);
@@ -64,69 +61,47 @@ public class ProductsListController {
 
     @RequestMapping(value = "/products/list/data", method = RequestMethod.GET)
     @ResponseBody
-    public ListData getProductsListData(@RequestParam String maxResults, @RequestParam String firstResult,
+    public ListData getProductsListData(@RequestParam int maxResults, @RequestParam int firstResult,
             @RequestParam(required = false) String sortColumn, @RequestParam(required = false) String sortOrder) {
-        try {
-            if (logger.isDebugEnabled()) {
-                logger.debug("getListData - MAX RES: " + maxResults + ", FIRST RES: " + firstResult + ", SORT COL: " + sortColumn
-                        + ", SORT ORDER: " + sortOrder);
-            }
-            try {
-                int max = Integer.parseInt(maxResults);
-                int first = Integer.parseInt(firstResult);
-                if (max < 0 || first < 0) {
-                    throw new IllegalArgumentException();
-                }
-                SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("product").withMaxResults(max)
-                        .withFirstResult(first);
-                if (sortColumn != null && sortOrder != null) {
-                    if ("desc".equals(sortOrder)) {
-                        searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(sortColumn));
-                    } else {
-                        searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(sortColumn));
-                    }
-                }
-                SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
-                ResultSet rs = dataAccessService.find("product", searchCriteria);
-                List<Entity> entities = rs.getResults();
-                int totalNumberOfEntities = rs.getTotalNumberOfEntities();
-                return new ListData(totalNumberOfEntities, entities);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(e);
-            }
-        } catch (Exception e) {
-            if (printException)
-                e.printStackTrace();
-            return null;
+        if (logger.isDebugEnabled()) {
+            logger.debug("getListData - MAX RES: " + maxResults + ", FIRST RES: " + firstResult + ", SORT COL: " + sortColumn
+                    + ", SORT ORDER: " + sortOrder);
         }
+
+        if (maxResults < 0 || firstResult < 0) {
+            throw new IllegalArgumentException();
+        }
+        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("products.product")
+                .withMaxResults(maxResults).withFirstResult(firstResult);
+        if (sortColumn != null && sortOrder != null) {
+            if ("desc".equals(sortOrder)) {
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(sortColumn));
+            } else {
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(sortColumn));
+            }
+        }
+        SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+
+        ResultSet rs = dataAccessService.find("products.product", searchCriteria);
+        List<Entity> entities = rs.getResults();
+        int totalNumberOfEntities = rs.getTotalNumberOfEntities();
+        return new ListData(totalNumberOfEntities, entities);
+
     }
 
     @RequestMapping(value = "/products/list/delete", method = RequestMethod.POST)
     @ResponseBody
-    public String deleteData(@RequestBody List<String> selectedRows) {
-        logger.debug("SELECTED ROWS: " + selectedRows);
-        try {
-            List<Long> rowsToDelete = new LinkedList<Long>();
-            for (String recordIdStr : selectedRows) {
-                rowsToDelete.add(Long.parseLong(recordIdStr));
-            }
-            for (Long recordId : rowsToDelete) {
-                dataAccessService.delete("product", recordId);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("ROW " + recordId + " DELETED");
-                }
-            }
-        } catch (Exception e) {
-            if (printException)
-                e.printStackTrace();
-            return "error";
+    public String deleteData(@RequestBody List<Integer> selectedRows) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("SELECTED ROWS: " + selectedRows);
         }
-
+        for (Integer recordId : selectedRows) {
+            dataAccessService.delete("products.product", (long) recordId);
+            if (logger.isDebugEnabled()) {
+                logger.debug("ROW " + recordId + " DELETED");
+            }
+        }
         return "ok";
-    }
-
-    public void setPrintException(boolean printException) {
-        this.printException = printException;
     }
 }

@@ -38,7 +38,7 @@ public class DataAccessServiceMock implements DataAccessService {
 
     @Override
     public ResultSet find(String entityName, SearchCriteria searchCriteria) {
-        if (!"product".equals(entityName)) {
+        if (!"products.product".equals(entityName)) {
             return null;
         }
         ResultSet rs = new ResultSetMock(searchCriteria);
