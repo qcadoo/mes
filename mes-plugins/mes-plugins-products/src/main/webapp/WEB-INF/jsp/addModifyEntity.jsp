@@ -46,11 +46,14 @@
 				loadingText: 'Wczytuje...',
 				onSelectRow: function(id){
 			        console.debug('row '+id);
-			        substituteProductsGrid.setOption('dataSource','substitute/data.html');
+			        substituteProductsGrid.setOption('dataSource','substitute/products.html?productId=${entityId }&substituteId='+id);
 			        substituteProductsGrid.refresh();
+			        $("#newSubstituteProductButton").attr("disabled", false);
+			        $("#deleteSubstituteButton").attr("disabled", false);
+			        $("#upSubstituteButton").attr("disabled", false);
+			        $("#downSubstituteButton").attr("disabled", false);
 		        }
 			});
-			substitutesGrid.refresh();
 
 			substituteProductsGrid = new QCDGrid({
 				element: 'substituteProductsGrid',
@@ -59,7 +62,22 @@
 				colNames: spColNames,
 				colModel: spColModel,
 				loadingText: 'Wczytuje...',
+				onSelectRow: function(id){
+					$("#deleteSubstituteProductButton").attr("disabled", false);
+				}
 			});
+
+			 $("#newSubstituteProductButton").attr("disabled", true);
+			 $("#deleteSubstituteProductButton").attr("disabled", true);
+			 $("#deleteSubstituteButton").attr("disabled", true);
+			 $("#upSubstituteButton").attr("disabled", true);
+			 $("#downSubstituteButton").attr("disabled", true);
+
+			 if ("${entityId }") {
+			 	substitutesGrid.refresh();
+			 } else {
+				 $("#newSubstituteButton").attr("disabled", true);
+			 }
 		});
 		
 	
@@ -69,32 +87,45 @@
 	<h2 id="pageHeader"><spring:message code="addModifyEntity.header"/></h2>
 		${message } <br/>
 		<form action="addModifyEntity.html" method="POST">
+			<table>
 			<c:forEach items="${fieldsDefinition}" var="entry">
 				<tr>
 					<c:choose>
 						<c:when test="${entry.hidden=='false'}">
-								<td><spring:message code="products.field.${entry.name}"/></td><td>
+								<td><spring:message code="products.field.${entry.name}"/>:</td><td>
 								<input type="text" name="fields[${entry.name}]"
 								<c:if test="${entry.editable=='true'}">
 									readonly="readonly"
 								</c:if> 
 								value="${entity[entry.name]}" />
-								</td><td>${fieldsValidationInfo[entry.name] }</td><br/>
+								</td><td>${fieldsValidationInfo[entry.name] }</td>
 						</c:when> 
 						<c:otherwise>
 							<input type="hidden" name="fields[${entry.name}]" value="${entity[entry.name]}" />
 						</c:otherwise> 
 					</c:choose>  
 				</tr>
-			</c:forEach>		
+			</c:forEach>
+			</table>		
 			<input type="hidden" name="id" value="${entityId }"/>
 			<input type="submit" name="button" value="<spring:message code="addModifyEntity.button"/>" />
+			<input type="button" name="button" value="<spring:message code="addModifyEntity.cancel"/>" onClick="window.location='list.html'" />
 		</form><br />
-		<a href="list.html"><spring:message code="addModifyEntity.cancel"/></a>
 		
-		<h3>Substytuty:</h3>
+		
+		<div>
+			Substytuty:
+			<button id="newSubstituteButton" onClick="console.info('not implemented')">New</button>
+			<button id="deleteSubstituteButton" onClick="console.info('not implemented')">delete</button>
+			<button id="upSubstituteButton" onClick="console.info('not implemented')">up</button>
+			<button id="downSubstituteButton" onClick="console.info('not implemented')">down</button>
+		</div>
 		<table id="substitutesGrid"></table>
-		<h3>Produkty substytutu:</h3>
+		<div>
+			Produkty substytutu:
+			<button id="newSubstituteProductButton" onClick="console.info('not implemented')">New</button>
+			<button id="deleteSubstituteProductButton" onClick="console.info('not implemented')">delete</button>
+		</div>
 		<table id="substituteProductsGrid"></table> 
 </body>
 </html>

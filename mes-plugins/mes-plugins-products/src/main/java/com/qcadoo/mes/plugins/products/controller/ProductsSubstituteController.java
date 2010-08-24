@@ -54,18 +54,18 @@ public class ProductsSubstituteController {
                 List<Entity> entities = new LinkedList<Entity>();
                 Entity e1 = new Entity();
                 e1.setId((long) 1);
-                e1.setField("f1", "t11");
-                e1.setField("f2", "t12");
+                e1.setField("f1", "t11-" + pId);
+                e1.setField("f2", "t12-" + pId);
                 entities.add(e1);
                 Entity e2 = new Entity();
                 e2.setId((long) 2);
-                e2.setField("f1", "t21");
-                e2.setField("f2", "t22");
+                e2.setField("f1", "t21-" + pId);
+                e2.setField("f2", "t22-" + pId);
                 entities.add(e2);
                 Entity e3 = new Entity();
                 e3.setId((long) 3);
-                e3.setField("f1", "t31");
-                e3.setField("f2", "t32");
+                e3.setField("f1", "t31-" + pId);
+                e3.setField("f2", "t32-" + pId);
                 entities.add(e3);
                 int totalNumberOfEntities = 3;
                 return new ListData(totalNumberOfEntities, entities);
@@ -78,4 +78,43 @@ public class ProductsSubstituteController {
             return null;
         }
     }
+
+    @RequestMapping(value = "/products/substitute/products", method = RequestMethod.GET)
+    @ResponseBody
+    public ListData getSubstituteProductsData(@RequestParam String productId, @RequestParam String substituteId) {
+        try {
+            if (logger.isDebugEnabled()) {
+                logger.debug("getSubstituteProductsData - PRODUCT ID: " + productId + ", SUBSTITUTE ID: " + substituteId);
+            }
+            try {
+                int pId = Integer.parseInt(productId);
+                int sId = Integer.parseInt(substituteId);
+                // SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("productSubstitute");
+
+                // SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+
+                // ResultSet rs = dataAccessService.find("productSubstitute", searchCriteria);
+                List<Entity> entities = new LinkedList<Entity>();
+                Entity e1 = new Entity();
+                e1.setId((long) 1);
+                e1.setField("f11", "p11-" + pId + "-" + substituteId);
+                e1.setField("f12", "t12-" + pId + "-" + substituteId);
+                entities.add(e1);
+                Entity e2 = new Entity();
+                e2.setId((long) 2);
+                e2.setField("f11", "t21-" + pId + "-" + substituteId);
+                e2.setField("f12", "t22-" + pId + "-" + substituteId);
+                entities.add(e2);
+                int totalNumberOfEntities = 2;
+                return new ListData(totalNumberOfEntities, entities);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(e);
+            }
+        } catch (Exception e) {
+            // if (printException)
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
