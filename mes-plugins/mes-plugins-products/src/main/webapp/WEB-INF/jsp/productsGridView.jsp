@@ -27,7 +27,9 @@
 		var productsGrid;
 		
 		jQuery(document).ready(function(){
-			productsGrid = $("#productsGrid").qcdGrid({
+
+			productsGrid = new QCDGrid({
+				element: 'productsGrid',
 				dataSource: "list/data.html",
 				deleteUrl: "list/delete.html", 
 				height: 450, 
@@ -39,6 +41,7 @@
 			        window.location='editEntity.html?entityId='+id
 		        }
 			});
+			productsGrid.refresh();
 
 			$('#sortColumnChooser').val("${gridDefinition.columns[0].fields[0].name}");
 			$('#sortOrderChooser').val('asc');
