@@ -1,6 +1,8 @@
 package com.qcadoo.mes.plugins.products.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +68,8 @@ public class ProductsModifyController {
 
 		DataDefinition dataDefinition = dataDefinitionService.get("product");
 		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
-
-		if (checkFields(entity, fieldsDefinition)) {
+		ModelAndView mav = new ModelAndView();
+		if (checkFields(entity, fieldsDefinition, mav)) {
 			String message = "";
 			dataAccessService.save("product", entity);
 			if (entity.getId() == null) {
@@ -77,7 +79,7 @@ public class ProductsModifyController {
 			}
 			return new ModelAndView("redirect:list.html?message=" + message);
 		} else {
-			ModelAndView mav = new ModelAndView();
+
 			mav.setViewName("addModifyEntity");
 			mav.addObject("message", "Uzupelnij wszystkie pola");
 			mav.addObject("headerContent", "Produkt:");
@@ -104,16 +106,26 @@ public class ProductsModifyController {
 	}
 
 	public boolean checkFields(Entity entity,
-			List<FieldDefinition> fieldsDefinition) {
+			List<FieldDefinition> fieldsDefinition, ModelAndView mav) {
 
 		boolean result = true;
+		Map<String, String> fieldsValidationInfo = new HashMap<String, String>();
 		for (FieldDefinition field : fieldsDefinition) {
 			String formField = (String) entity.getField(field.getName());
 			if (formField == null || formField.equals("")) {
+				String fieldValidationInfo = fieldsValidationInfo.get(field
+						.getName());
+				if (fieldValidationInfo == null) {
+					fieldValidationInfo = "";
+				}
+				fieldValidationInfo = fieldValidationInfo
+						+ ": field is required";
+				fieldsValidationInfo.put(field.getName(), fieldValidationInfo);
 				result = false;
 			}
 
 		}
+		mav.addObject("fieldsValidationInfo", fieldsValidationInfo);
 
 		return result;
 	}
