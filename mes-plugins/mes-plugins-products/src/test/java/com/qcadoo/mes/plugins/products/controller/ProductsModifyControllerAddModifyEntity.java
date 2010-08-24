@@ -1,6 +1,8 @@
 package com.qcadoo.mes.plugins.products.controller;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +14,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.plugins.products.data.mock.DataAccessServiceMock;
 import com.qcadoo.mes.plugins.products.data.mock.DataDefinitionServiceMock;
 
-public class ProductsModifyControllerTest extends TestCase {
+public class ProductsModifyControllerAddModifyEntity {
 
 	private ProductsModifyController controller;
 
@@ -27,26 +29,8 @@ public class ProductsModifyControllerTest extends TestCase {
 	}
 
 	@Test
-	public void testEditEntity() {
-		testEditEntity("1");
-		testEditEntity("2");
-	}
-
-	private void testEditEntity(String entityId) {
-		ModelAndView modelAndView = controller.editEntity(entityId);
-		assertEquals("addModifyEntity", modelAndView.getViewName());
-
-		assertNotNull(modelAndView.getModel().get("headerContent"));
-		assertEquals("Produkt:", modelAndView.getModel().get("headerContent"));
-
-		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
-		assertEquals(das.get("product", Long.parseLong(entityId)).getFields(),
-				modelAndView.getModel().get("entity"));
-
-	}
-
-	@Test
-	public void testAddModifyEntity() {
+	public void shouldReturnAddConfirmationWhenRequiredDataIsGiven() {
+		// given
 		Entity entity = new Entity();
 		entity.setField("number", "number");
 		entity.setField("type", "type");
@@ -54,37 +38,48 @@ public class ProductsModifyControllerTest extends TestCase {
 		entity.setField("ean", "ean");
 		entity.setField("category", "category");
 		entity.setField("unit", "unit");
+		// when
 		ModelAndView modelAndView = controller.addModifyEntity(entity);
+		// then
 		assertNull(modelAndView.getModel().get("headerContent"));
 		assertEquals("redirect:list.html?message=Dodano",
 				modelAndView.getViewName());
-		entity = new Entity((long) 1);
+
+	}
+
+	@Test
+	public void shouldReturnEditConfirmationWhenRequiredDataIsGiven() {
+		// given
+		Entity entity = new Entity((long) 1);
 		entity.setField("number", "number");
 		entity.setField("type", "type");
 		entity.setField("typeOfMaterial", "typeOfMaterial");
 		entity.setField("ean", "ean");
 		entity.setField("category", "category");
 		entity.setField("unit", "unit");
-		modelAndView = controller.addModifyEntity(entity);
+		// when
+		ModelAndView modelAndView = controller.addModifyEntity(entity);
+		// then
 		assertNull(modelAndView.getModel().get("headerContent"));
 		assertEquals("redirect:list.html?message=Zmodyfikowano",
 				modelAndView.getViewName());
-		entity.setField("number", null);
-		modelAndView = controller.addModifyEntity(entity);
-		assertNotNull(modelAndView.getModel().get("headerContent"));
 
 	}
 
 	@Test
-	public void testNewEntity() {
-		ModelAndView modelAndView = controller.newEntity();
-		assertEquals("addModifyEntity", modelAndView.getViewName());
-
+	public void shouldRedirectToFormIfRequiredDataIsIncomplete() {
+		// given
+		Entity entity = new Entity();
+		entity.setField("number", null);
+		entity.setField("type", "type");
+		entity.setField("typeOfMaterial", "typeOfMaterial");
+		entity.setField("ean", "ean");
+		entity.setField("category", "category");
+		entity.setField("unit", "unit");
+		// when
+		ModelAndView modelAndView = controller.addModifyEntity(entity);
+		// then
 		assertNotNull(modelAndView.getModel().get("headerContent"));
-		assertEquals("Produkt:", modelAndView.getModel().get("headerContent"));
-
-		assertNotNull(modelAndView.getModel().get("fieldsDefinition"));
-
 	}
 
 }

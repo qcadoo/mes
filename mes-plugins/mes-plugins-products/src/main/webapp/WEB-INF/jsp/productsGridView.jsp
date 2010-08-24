@@ -36,7 +36,7 @@
 				multiselect: true,
 				loadingText: 'Wczytuje...',
 				ondblClickRow: function(id){
-			        window.location='editEntity.html?entityId='+id
+			        window.location='addModifyEntityForm.html?entityId='+id
 		        }
 			});
 
@@ -63,7 +63,7 @@
 	<div id="messageBox">${message}</div>
 	
 	<div id="topButtons">
-		<button onClick="window.location='newEntity.html'">New</button>
+		<button onClick="window.location='addModifyEntityForm.html'">New</button>
 		<button onClick="productsGrid.refresh()">refresh</button>
 		<button onClick="productsGrid.deleteSelectedRecords()">delete</button>
 	</div>
