@@ -26,10 +26,10 @@ public class Substitute {
 
     private String name;
 
-    @Temporal(TemporalType.TIME)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date effectiveDateFrom;
 
-    @Temporal(TemporalType.TIME)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date effectiveDateTo;
 
     private boolean deleted;
