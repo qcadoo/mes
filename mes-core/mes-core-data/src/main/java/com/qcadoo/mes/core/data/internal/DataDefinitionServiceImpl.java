@@ -95,7 +95,11 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         GridDefinition gridDefinition = new GridDefinition("substituteComponents");
 
         FieldDefinition fieldProduct = createFieldDefinition("product",
+<<<<<<< HEAD
                 fieldTypeFactory.belongsToType("products.product", "name", "name", "number"));
+=======
+                fieldTypeFactory.belongsToType("products.product", "name"));
+>>>>>>> 3e45392f0eca004c3677f8250ee998b422a17a58
         FieldDefinition fieldSubstitute = createFieldDefinition("substitute",
                 fieldTypeFactory.belongsToType("products.substitute", "name"));
         FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType());
@@ -105,7 +109,11 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldProduct, fieldSubstitute, fieldQuantity }));
 
         ColumnDefinition columnSubstituteNumber = createColumnDefinition("number", fieldProduct, "${product.number}");
+<<<<<<< HEAD
         ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "${product.name");
+=======
+        ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "${product.name}");
+>>>>>>> 3e45392f0eca004c3677f8250ee998b422a17a58
         ColumnDefinition columnQuantity = createColumnDefinition("quantity", fieldQuantity, null);
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber, columnProductName,
                 columnQuantity }));

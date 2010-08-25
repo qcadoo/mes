@@ -2,56 +2,59 @@
 	
 	<script type="text/javascript">
 
-		var colNames = new Array();
-		var colModel = new Array();
-			colNames.push("f1");
-			colModel.push({name:"f1", index:"f1", width:100, sortable: false});
-			colNames.push("f2");
-			colModel.push({name:"f2", index:"f2", width:100, sortable: false});
+		var substitutesColNames = new Array();
+		var substitutesColModel = new Array();
+		<c:forEach items="${substituteGridDefinition.columns}" var="column">
+			substitutesColNames.push("<spring:message code="substitutes.column.${column.name}"/>");
+			substitutesColModel.push({name:"${column.name}", index:"${column.name}", width:100, sortable: false});
+		</c:forEach>
 		var substitutesGrid;
 
-		var spColNames = new Array();
-		var spColModel = new Array();
-			spColNames.push("f11");
-			spColModel.push({name:"f11", index:"f11", width:100, sortable: false});
-			spColNames.push("f12");
-			spColModel.push({name:"f12", index:"f12", width:100, sortable: false});
-		var substituteProductsGrid;
+		var substituteComponentsColNames = new Array();
+		var substituteComponentsColModel = new Array();
+		<c:forEach items="${substituteComponentGridDefinition.columns}" var="column">
+			substituteComponentsColNames.push("<spring:message code="substitutes.column.${column.name}"/>");
+			substituteComponentsColModel.push({name:"${column.name}", index:"${column.name}", width:100, sortable: false});
+			console.info("${column.fields[0].name}");
+		</c:forEach>
+		var substituteComponentsGrid;
 		
 		jQuery(document).ready(function(){
-			var substitutesGrid = new QCDGrid({
+			substitutesGrid = new QCDGrid({
 				element: 'substitutesGrid',
 				dataSource: "substitute/data.html?productId=${entityId }",
+				deleteUrl: "substitute/deleteSubstitute.html",
 				height: 150, 
 				paging: false,
-				colNames: colNames,
-				colModel: colModel,
+				colNames: substitutesColNames,
+				colModel: substitutesColModel,
 				loadingText: 'Wczytuje...',
 				onSelectRow: function(id){
 			        console.debug('row '+id);
-			        substituteProductsGrid.setOption('dataSource','substitute/products.html?productId=${entityId }&substituteId='+id);
-			        substituteProductsGrid.refresh();
-			        $("#newSubstituteProductButton").attr("disabled", false);
+			        substituteComponentsGrid.setOption('dataSource','substitute/components.html?productId=${entityId }&substituteId='+id);
+			        substituteComponentsGrid.refresh();
+			        $("#newSubstituteComponentButton").attr("disabled", false);
 			        $("#deleteSubstituteButton").attr("disabled", false);
 			        $("#upSubstituteButton").attr("disabled", false);
 			        $("#downSubstituteButton").attr("disabled", false);
 		        }
 			});
 
-			substituteProductsGrid = new QCDGrid({
-				element: 'substituteProductsGrid',
+			substituteComponentsGrid = new QCDGrid({
+				element: 'substituteComponentsGrid',
+				deleteUrl: "substitute/deleteSubstituteComponent.html",
 				height: 150, 
 				paging: false,
-				colNames: spColNames,
-				colModel: spColModel,
+				colNames: substituteComponentsColNames,
+				colModel: substituteComponentsColModel,
 				loadingText: 'Wczytuje...',
 				onSelectRow: function(id){
-					$("#deleteSubstituteProductButton").attr("disabled", false);
+					$("#deleteSubstituteComponentButton").attr("disabled", false);
 				}
 			});
 
-			 $("#newSubstituteProductButton").attr("disabled", true);
-			 $("#deleteSubstituteProductButton").attr("disabled", true);
+			 $("#newSubstituteComponentButton").attr("disabled", true);
+			 $("#deleteSubstituteComponentButton").attr("disabled", true);
 			 $("#deleteSubstituteButton").attr("disabled", true);
 			 $("#upSubstituteButton").attr("disabled", true);
 			 $("#downSubstituteButton").attr("disabled", true);
@@ -70,17 +73,17 @@
 		<div>
 			Substytuty:
 			<button id="newSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
-			<button id="deleteSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.delete"/></button>
+			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="addModifyEntity.delete"/></button>
 			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.up"/></button>
 			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.down"/></button>
 		</div>
 		<table id="substitutesGrid"></table>
 		<div>
 			Produkty substytutu:
-			<button id="newSubstituteProductButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
-			<button id="deleteSubstituteProductButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.delete"/></button>
+			<button id="newSubstituteComponentButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
+			<button id="deleteSubstituteComponentButton" onClick="substituteComponentsGrid.deleteSelectedRecords()"><spring:message code="addModifyEntity.delete"/></button>
 		</div>
-		<table id="substituteProductsGrid"></table> 
+		<table id="substituteComponentsGrid"></table> 
 
 
 
