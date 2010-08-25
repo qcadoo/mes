@@ -31,6 +31,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
             return createProductDefinition();
         } else if ("products.substitute".equals(entityName)) {
             return createSubstituteDefinition();
+        } else if ("products.substituteProduct".equals(entityName)) {
+            return createSubstituteProductDefinition();
         }
         return null;
     }
@@ -83,6 +85,28 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         ColumnDefinition columnName = createColumnDefinition("name", fieldName);
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNo, columnNumber, columnName }));
+
+        return dataDefinition;
+    }
+
+    private DataDefinition createSubstituteProductDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("products.substituteProduct");
+        GridDefinition gridDefinition = new GridDefinition("substituteProducts");
+
+        /*
+         * FieldDefinition fieldNo = createFieldDefinition("no", fieldTypeFactory.stringType()); FieldDefinition fieldNumber =
+         * createFieldDefinition("number", fieldTypeFactory.stringType()); FieldDefinition fieldName =
+         * createFieldDefinition("name", fieldTypeFactory.textType()); FieldDefinition fieldEffectiveDateFrom =
+         * createFieldDefinition("effectiveDateFrom", fieldTypeFactory.stringType()); FieldDefinition fieldEffectiveDateTo =
+         * createFieldDefinition("effectiveDateTo", fieldTypeFactory.stringType());
+         * dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
+         * dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
+         * dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldNo, fieldNumber, fieldName, fieldEffectiveDateFrom,
+         * fieldEffectiveDateTo })); ColumnDefinition columnNo = createColumnDefinition("no", fieldNo); ColumnDefinition
+         * columnNumber = createColumnDefinition("number", fieldNumber); ColumnDefinition columnName =
+         * createColumnDefinition("name", fieldName); gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNo,
+         * columnNumber, columnName }));
+         */
 
         return dataDefinition;
     }
