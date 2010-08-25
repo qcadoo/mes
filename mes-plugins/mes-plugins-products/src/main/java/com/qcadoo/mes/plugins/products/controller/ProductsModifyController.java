@@ -18,7 +18,9 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.GridDefinition;
 
 @Controller
 public class ProductsModifyController {
@@ -48,8 +50,24 @@ public class ProductsModifyController {
 
 			DataDefinition dataDefinition = dataDefinitionService
 					.get("products.product");
+			DataDefinition dataDefinition2 = dataDefinitionService
+					.get("products.substitute");
+			GridDefinition substituteGridDefinition = dataDefinition2
+					.getGrids().get(0);
+			mav.addObject("substituteGridDefinition", substituteGridDefinition);
 			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 			mav.addObject("fieldsDefinition", fieldsDefinition);
+			Map<String, String> lists = new HashMap<String, String>();
+			for (FieldDefinition fieldDef : fieldsDefinition) {
+				if (fieldDef.getType().getNumericType() == 4
+						|| fieldDef.getType().getNumericType() == 5) {
+					EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDef
+							.getType();
+					List<String> options = enumeratedField.values();
+
+				}
+			}
+
 			if (entityId != null && !entityId.equals("")) {
 				mav.addObject("entityId", entityId);
 				Entity entity = dataAccessService.get("products.product",
