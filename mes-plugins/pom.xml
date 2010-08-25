@@ -76,7 +76,7 @@
 			    <groupId>org.codehaus.mojo</groupId>
 			    <artifactId>jboss-maven-plugin</artifactId>
 			    <configuration>
-			        <serverName>minimal</serverName>
+			        <serverName>${jboss.serverName}</serverName>
 			    </configuration>
 			</plugin>
 		</plugins>
