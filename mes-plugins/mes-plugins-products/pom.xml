@@ -31,9 +31,7 @@
 				<configuration>
 					<jbossHome>/Library/jboss</jbossHome>
 					<serverName>web</serverName>
-					<fileNames>
-						<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
-					</fileNames>
+					<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
 				</configuration>
 			</plugin>
 		</plugins>
