@@ -21,7 +21,7 @@ public class SubstituteComponent {
     @ManyToOne
     private Substitute substitute;
 
-    @Column(scale = 7, precision = 3)
+    @Column(scale = 3, precision = 10)
     public BigDecimal quantity;
 
     public Long getId() {
