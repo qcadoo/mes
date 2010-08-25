@@ -7,16 +7,16 @@ import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class NumericFieldType implements FieldType {
 
-    private final int precision;
-
     private final int scale;
+
+    private final int precision;
 
     private final long maxValue;
 
-    public NumericFieldType(final int scale, final int precision) {
+    public NumericFieldType(final int precision, final int scale) {
         this.scale = scale;
         this.precision = precision;
-        this.maxValue = (long) Math.pow(10, scale) - 1;
+        this.maxValue = (long) Math.pow(10, precision - scale) - 1;
     }
 
     @Override
@@ -39,7 +39,7 @@ public final class NumericFieldType implements FieldType {
         if (!(value instanceof Number)) {
             return false;
         }
-        if (precision == 0) {
+        if (scale == 0) {
             if (value instanceof Float) {
                 return false;
             }
@@ -58,7 +58,7 @@ public final class NumericFieldType implements FieldType {
 
     @Override
     public int getNumericType() {
-        if (precision == 0) {
+        if (scale == 0) {
             return FieldTypeFactory.NUMERIC_TYPE_INTEGER;
         } else {
             return FieldTypeFactory.NUMERIC_TYPE_DECIMAL;

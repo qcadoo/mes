@@ -30,7 +30,7 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     private static final FieldType INTEGER_FIELD_TYPE = new NumericFieldType(10, 0);
 
-    private static final FieldType DECIMAL_FIELD_TYPE = new NumericFieldType(7, 3);
+    private static final FieldType DECIMAL_FIELD_TYPE = new NumericFieldType(10, 3);
 
     private static final FieldType STRING_FIELD_TYPE = new StringFieldType();
 
