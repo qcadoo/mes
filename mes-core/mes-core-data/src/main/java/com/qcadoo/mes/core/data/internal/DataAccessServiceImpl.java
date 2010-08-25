@@ -95,7 +95,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
         Class<?> entityClass = getClassForEntity(dataDefinition);
 
-        Long totalNumberOfEntities = (Long) sessionFactory.getCurrentSession().createCriteria(entityClass)
+        int totalNumberOfEntities = (Integer) sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).setProjection(Projections.rowCount()).uniqueResult();
 
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
@@ -121,7 +121,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         ResultSetImpl resultSet = new ResultSetImpl();
         resultSet.setResults(genericResults);
         resultSet.setCriteria(searchCriteria);
-        resultSet.setTotalNumberOfEntities(totalNumberOfEntities.intValue());
+        resultSet.setTotalNumberOfEntities(totalNumberOfEntities);
 
         return resultSet;
     }
