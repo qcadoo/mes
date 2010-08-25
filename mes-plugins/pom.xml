@@ -71,9 +71,13 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
-				<configuration>
-          			<serverName>minimal</serverName>
-        		</configuration>
+			</plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>jboss-maven-plugin</artifactId>
+			    <configuration>
+			        <serverName>minimal</serverName>
+			    </configuration>
 			</plugin>
 		</plugins>
 	</build>
