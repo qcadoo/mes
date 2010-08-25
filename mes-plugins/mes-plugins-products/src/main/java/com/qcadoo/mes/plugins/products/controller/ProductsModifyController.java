@@ -44,30 +44,14 @@ public class ProductsModifyController {
             ModelAndView mav = new ModelAndView();
             mav.setViewName("addModifyEntity");
 
-            DataDefinition dataDefinition = dataDefinitionService.get("products.product");
-
-            DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
-            GridDefinition substituteGridDefinition = substituteDataDefinition.getGrids().get(0);
+            DataDefinition dataDefinitionProduct = dataDefinitionService.get("products.product");
+            List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
+            mav.addObject("fieldsDefinition", fieldsDefinition);
+            DataDefinition dataDefinitionSubstitute = dataDefinitionService.get("products.substitute");
+            GridDefinition substituteGridDefinition = dataDefinitionSubstitute.getGrids().get(0);
             mav.addObject("substituteGridDefinition", substituteGridDefinition);
 
-            DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
-            GridDefinition substituteComponentGridDefinition = substituteComponentDataDefinition.getGrids().get(0);
-            mav.addObject("substituteComponentGridDefinition", substituteComponentGridDefinition);
-
-            List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
-            mav.addObject("fieldsDefinition", fieldsDefinition);
-            Map<String, List<String>> lists = new HashMap<String, List<String>>();
-            Map<String, Integer> fieldsTypes = new HashMap<String, Integer>();
-            for (FieldDefinition fieldDef : fieldsDefinition) {
-                fieldsTypes.put(fieldDef.getName(), fieldDef.getType().getNumericType());
-                if (fieldDef.getType().getNumericType() == 4 || fieldDef.getType().getNumericType() == 5) {
-                    EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDef.getType();
-                    List<String> options = enumeratedField.values();
-                    lists.put(fieldDef.getName(), options);
-                }
-            }
-            mav.addObject("fieldsTypes", fieldsTypes);
-            mav.addObject("lists", lists);
+            getFieldTypesAndEnumeratedFields(mav, fieldsDefinition);
 
             if (entityId != null && !entityId.equals("")) {
                 mav.addObject("entityId", entityId);
@@ -85,8 +69,8 @@ public class ProductsModifyController {
     @RequestMapping(value = "/products/addModifyEntity", method = RequestMethod.POST)
     public ModelAndView addModifyEntity(@ModelAttribute Entity entity) {
 
-        DataDefinition dataDefinition = dataDefinitionService.get("products.product");
-        List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
+        DataDefinition dataDefinitionProduct = dataDefinitionService.get("products.product");
+        List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
 
         ModelAndView mav = new ModelAndView();
         if (checkFields(entity, fieldsDefinition, mav)) {
@@ -100,26 +84,10 @@ public class ProductsModifyController {
             return new ModelAndView("redirect:list.html?message=" + message);
         } else {
 
-            DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
-            GridDefinition substituteGridDefinition = substituteDataDefinition.getGrids().get(0);
+            DataDefinition dataDefinitionSubstitute = dataDefinitionService.get("products.substitute");
+            GridDefinition substituteGridDefinition = dataDefinitionSubstitute.getGrids().get(0);
+            getFieldTypesAndEnumeratedFields(mav, fieldsDefinition);
             mav.addObject("substituteGridDefinition", substituteGridDefinition);
-
-            DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
-            GridDefinition substituteComponentGridDefinition = substituteComponentDataDefinition.getGrids().get(0);
-            mav.addObject("substituteComponentGridDefinition", substituteComponentGridDefinition);
-
-            Map<String, List<String>> lists = new HashMap<String, List<String>>();
-            Map<String, Integer> fieldsTypes = new HashMap<String, Integer>();
-            for (FieldDefinition fieldDef : fieldsDefinition) {
-                fieldsTypes.put(fieldDef.getName(), fieldDef.getType().getNumericType());
-                if (fieldDef.getType().getNumericType() == 4 || fieldDef.getType().getNumericType() == 5) {
-                    EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDef.getType();
-                    List<String> options = enumeratedField.values();
-                    lists.put(fieldDef.getName(), options);
-                }
-            }
-            mav.addObject("fieldsTypes", fieldsTypes);
-            mav.addObject("lists", lists);
             mav.setViewName("addModifyEntity");
             mav.addObject("message", "fullFillFields");
             mav.addObject("entity", entity.getFields());
@@ -149,4 +117,21 @@ public class ProductsModifyController {
         return result;
     }
 
+    private void getFieldTypesAndEnumeratedFields(ModelAndView mav, List<FieldDefinition> fieldsDefinition) {
+
+        Map<String, List<String>> lists = new HashMap<String, List<String>>();
+        Map<String, Integer> fieldsTypes = new HashMap<String, Integer>();
+        for (FieldDefinition fieldDef : fieldsDefinition) {
+            fieldsTypes.put(fieldDef.getName(), fieldDef.getType().getNumericType());
+            if (fieldDef.getType().getNumericType() == 4 || fieldDef.getType().getNumericType() == 5) {
+                EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDef.getType();
+                List<String> options = enumeratedField.values();
+                lists.put(fieldDef.getName(), options);
+            }
+        }
+
+        mav.addObject("fieldsTypes", fieldsTypes);
+        mav.addObject("lists", lists);
+
+    }
 }
