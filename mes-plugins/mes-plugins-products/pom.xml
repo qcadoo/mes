@@ -31,8 +31,6 @@
 				<configuration>
 					<jbossHome>/Library/jboss</jbossHome>
 					<serverName>web</serverName>
-					<!--  <hostName>localhost</hostName>
-					<port>8181</port>-->
 					<fileNames>
 						<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
 					</fileNames>
