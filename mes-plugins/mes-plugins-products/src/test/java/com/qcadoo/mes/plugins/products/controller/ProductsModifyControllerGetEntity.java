@@ -12,7 +12,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.plugins.products.data.mock.DataAccessServiceMock;
 import com.qcadoo.mes.plugins.products.data.mock.DataDefinitionServiceMock;
 
-public class ProductsModifyControllerAddModifyEntityForm {
+public class ProductsModifyControllerGetEntity {
 
     private ProductsModifyController controller;
 

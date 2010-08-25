@@ -13,7 +13,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.plugins.products.data.mock.DataAccessServiceMock;
 import com.qcadoo.mes.plugins.products.data.mock.DataDefinitionServiceMock;
 
-public class ProductsModifyControllerAddModifyEntity {
+public class ProductsModifyControllerSaveEntity {
 
     private ProductsModifyController controller;
 
