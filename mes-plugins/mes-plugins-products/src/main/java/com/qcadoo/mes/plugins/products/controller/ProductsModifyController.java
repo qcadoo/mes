@@ -41,6 +41,9 @@ public class ProductsModifyController {
     @RequestMapping(value = "/products/getEntity", method = RequestMethod.GET)
     public ModelAndView getEntity(@RequestParam(required = false) String entityId) {
         try {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Get product, product id: " + entityId);
+            }
             ModelAndView mav = new ModelAndView();
             mav.setViewName("productsFormView");
 
@@ -48,7 +51,7 @@ public class ProductsModifyController {
             List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
             mav.addObject("fieldsDefinition", fieldsDefinition);
 
-            getFieldTypesAndEnumeratedFields(mav, fieldsDefinition);
+            insertCommonsModelData(mav, fieldsDefinition);
 
             if (entityId != null && !entityId.equals("")) {
                 mav.addObject("entityId", entityId);
@@ -78,15 +81,21 @@ public class ProductsModifyController {
             } else {
                 message = "modified";
             }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Product had been saved, product fields: " + entity.getFields());
+            }
             return new ModelAndView("redirect:list.html?message=" + message);
         } else {
 
-            getFieldTypesAndEnumeratedFields(mav, fieldsDefinition);
+            insertCommonsModelData(mav, fieldsDefinition);
             mav.setViewName("productsFormView");
             mav.addObject("message", "fullFillFields");
             mav.addObject("entity", entity.getFields());
             mav.addObject("fieldsDefinition", fieldsDefinition);
             mav.addObject("entityId", entity.getId());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Product had not been saved due to fail in fields validation");
+            }
             return mav;
         }
 
@@ -111,7 +120,7 @@ public class ProductsModifyController {
         return result;
     }
 
-    private void getFieldTypesAndEnumeratedFields(ModelAndView mav, List<FieldDefinition> fieldsDefinition) {
+    private void insertCommonsModelData(ModelAndView mav, List<FieldDefinition> fieldsDefinition) {
 
         Map<String, List<String>> lists = new HashMap<String, List<String>>();
         Map<String, Integer> fieldsTypes = new HashMap<String, Integer>();
