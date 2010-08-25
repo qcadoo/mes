@@ -47,9 +47,6 @@ public class ProductsModifyController {
             DataDefinition dataDefinitionProduct = dataDefinitionService.get("products.product");
             List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
             mav.addObject("fieldsDefinition", fieldsDefinition);
-            DataDefinition dataDefinitionSubstitute = dataDefinitionService.get("products.substitute");
-            GridDefinition substituteGridDefinition = dataDefinitionSubstitute.getGrids().get(0);
-            mav.addObject("substituteGridDefinition", substituteGridDefinition);
 
             getFieldTypesAndEnumeratedFields(mav, fieldsDefinition);
 
@@ -84,10 +81,7 @@ public class ProductsModifyController {
             return new ModelAndView("redirect:list.html?message=" + message);
         } else {
 
-            DataDefinition dataDefinitionSubstitute = dataDefinitionService.get("products.substitute");
-            GridDefinition substituteGridDefinition = dataDefinitionSubstitute.getGrids().get(0);
             getFieldTypesAndEnumeratedFields(mav, fieldsDefinition);
-            mav.addObject("substituteGridDefinition", substituteGridDefinition);
             mav.setViewName("productsFormView");
             mav.addObject("message", "fullFillFields");
             mav.addObject("entity", entity.getFields());
@@ -129,6 +123,14 @@ public class ProductsModifyController {
                 lists.put(fieldDef.getName(), options);
             }
         }
+
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
+        GridDefinition substituteGridDefinition = substituteDataDefinition.getGrids().get(0);
+        mav.addObject("substituteGridDefinition", substituteGridDefinition);
+
+        DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
+        GridDefinition substituteComponentGridDefinition = substituteComponentDataDefinition.getGrids().get(0);
+        mav.addObject("substituteComponentGridDefinition", substituteComponentGridDefinition);
 
         mav.addObject("fieldsTypes", fieldsTypes);
         mav.addObject("lists", lists);
