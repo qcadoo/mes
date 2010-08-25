@@ -29,7 +29,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-maven-plugin</artifactId>
 				<configuration>
-					<serverName>minimal</serverName>
+					<serverName>web</serverName>
 					<hostName>localhost</hostName>
 					<port>8181</port>
 					<fileNames>
