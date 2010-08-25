@@ -1,27 +1,28 @@
 package com.qcadoo.mes.core.data.beans;
 
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class SubstituteProduct {
+public class SubstituteComponent {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "substitute_id")
     private Substitute substitute;
 
-    private String quantity;
+    @Column(scale = 7, precision = 3)
+    public BigDecimal quantity;
 
     public Long getId() {
         return id;
@@ -47,11 +48,11 @@ public class SubstituteProduct {
         this.substitute = substitute;
     }
 
-    public String getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 

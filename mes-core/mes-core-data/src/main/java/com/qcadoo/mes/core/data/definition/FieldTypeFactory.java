@@ -20,6 +20,8 @@ public interface FieldTypeFactory {
 
     int NUMERIC_TYPE_TEXT = 9;
 
+    int NUMERIC_TYPE_BELONGS_TO = 10;
+
     FieldType booleanType();
 
     FieldType stringType();
@@ -38,4 +40,5 @@ public interface FieldTypeFactory {
 
     EnumeratedFieldType dictionaryType(final String dictionaryName);
 
+    LookupedFieldType belongsToType(final String entityName, final String lookupFieldName, final String... eagerLoadingFieldNames);
 }

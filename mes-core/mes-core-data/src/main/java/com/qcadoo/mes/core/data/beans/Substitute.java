@@ -1,10 +1,13 @@
 package com.qcadoo.mes.core.data.beans;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 public class Substitute {
@@ -14,18 +17,19 @@ public class Substitute {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
     private Product product;
 
-    private String no;
+    private Integer no;
 
     private String number;
 
     private String name;
 
-    private String effectiveDateFrom;
+    @Temporal(TemporalType.TIME)
+    private Date effectiveDateFrom;
 
-    private String effectiveDateTo;
+    @Temporal(TemporalType.TIME)
+    private Date effectiveDateTo;
 
     private boolean deleted;
 
@@ -37,11 +41,11 @@ public class Substitute {
         this.id = id;
     }
 
-    public String getNo() {
+    public Integer getNo() {
         return no;
     }
 
-    public void setNo(String no) {
+    public void setNo(Integer no) {
         this.no = no;
     }
 
@@ -61,19 +65,19 @@ public class Substitute {
         this.name = name;
     }
 
-    public String getEffectiveDateFrom() {
+    public Date getEffectiveDateFrom() {
         return effectiveDateFrom;
     }
 
-    public void setEffectiveDateFrom(String effectiveDateFrom) {
+    public void setEffectiveDateFrom(Date effectiveDateFrom) {
         this.effectiveDateFrom = effectiveDateFrom;
     }
 
-    public String getEffectiveDateTo() {
+    public Date getEffectiveDateTo() {
         return effectiveDateTo;
     }
 
-    public void setEffectiveDateTo(String effectiveDateTo) {
+    public void setEffectiveDateTo(Date effectiveDateTo) {
         this.effectiveDateTo = effectiveDateTo;
     }
 
