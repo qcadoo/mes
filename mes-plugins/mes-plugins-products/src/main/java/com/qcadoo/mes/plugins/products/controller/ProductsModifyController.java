@@ -57,16 +57,21 @@ public class ProductsModifyController {
 			mav.addObject("substituteGridDefinition", substituteGridDefinition);
 			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 			mav.addObject("fieldsDefinition", fieldsDefinition);
-			Map<String, String> lists = new HashMap<String, String>();
+			Map<String, List<String>> lists = new HashMap<String, List<String>>();
+			Map<String, Integer> fieldsTypes = new HashMap<String, Integer>();
 			for (FieldDefinition fieldDef : fieldsDefinition) {
+				fieldsTypes.put(fieldDef.getName(), fieldDef.getType()
+						.getNumericType());
 				if (fieldDef.getType().getNumericType() == 4
 						|| fieldDef.getType().getNumericType() == 5) {
 					EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDef
 							.getType();
 					List<String> options = enumeratedField.values();
-
+					lists.put(fieldDef.getName(), options);
 				}
 			}
+			mav.addObject("fieldsTypes", fieldsTypes);
+			mav.addObject("lists", lists);
 
 			if (entityId != null && !entityId.equals("")) {
 				mav.addObject("entityId", entityId);
