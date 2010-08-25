@@ -65,6 +65,18 @@
 				 $("#newSubstituteButton").attr("disabled", true);
 			 }
 		});
+
+		newSubstituteClicked = function() {
+			console.info('new');
+			 $.blockUI({ forceIframe: true, iframeSrc:'google.pl', message: 'aa', showOverlay: true,  fadeOut: 0, fadeIn: 0,css: { 
+	            border: 'none', 
+	            padding: '15px', 
+	            backgroundColor: '#000', 
+	            '-webkit-border-radius': '10px', 
+	            '-moz-border-radius': '10px', 
+	            opacity: .5, 
+	            color: '#fff' } });
+		}
 		
 	
 	</script>
@@ -72,7 +84,7 @@
 		
 		<div>
 			Substytuty:
-			<button id="newSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
+			<button id="newSubstituteButton" onClick="newSubstituteClicked()"><spring:message code="addModifyEntity.new"/></button>
 			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="addModifyEntity.delete"/></button>
 			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.up"/></button>
 			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.down"/></button>

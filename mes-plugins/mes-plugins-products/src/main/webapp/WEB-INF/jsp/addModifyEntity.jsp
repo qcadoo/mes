@@ -10,12 +10,14 @@
 	<link rel="stylesheet" href="../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../css/productGrid.css" type="text/css" />
+	<link rel="stylesheet" href="../css/jqModal.css" type="text/css" />
 	
 	<script type="text/javascript" src="../js/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="../js/jquery.blockUI.js"></script>
 	<script type="text/javascript" src="../js/jquery.jqGrid.min.js"></script>
 	<script type="text/javascript" src="../js/qcdGrid.js"></script>
+	<script type="text/javascript" src="../js/jqModal.js"></script>
 
 </head>
 <body>
