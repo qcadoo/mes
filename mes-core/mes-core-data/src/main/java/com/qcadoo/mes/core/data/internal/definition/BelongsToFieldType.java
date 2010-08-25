@@ -67,4 +67,12 @@ public class BelongsToFieldType implements LookupedFieldType {
         return possibleValues;
     }
 
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public String[] getEagerLoadingFieldNames() {
+        return eagerLoadingFieldNames;
+    }
+
 }

@@ -1,7 +1,6 @@
 package com.qcadoo.mes.core.data.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
@@ -17,10 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
@@ -29,17 +26,17 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 public final class DataAccessServiceImpl implements DataAccessService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private SessionFactory sessionFactory;
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private EntityServiceImpl entityService;
 
     @Override
     @Transactional
     public void save(final String entityName, final Entity entity) {
         checkArgument(entity != null, "entity must be given");
-        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
 
         Object existingDatabaseEntity = null;
 
@@ -49,7 +46,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     entity.getId());
         }
 
-        Object databaseEntity = convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity);
+        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity);
 
         sessionFactory.getCurrentSession().save(databaseEntity);
     }
@@ -58,8 +55,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional(readOnly = true)
     public Entity get(final String entityName, final Long entityId) {
         checkArgument(entityId != null, "entityId must be given");
-        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
 
         Object databaseEntity = getDatabaseEntity(entityClass, entityId);
 
@@ -67,15 +64,15 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return null;
         }
 
-        return convertToGenericEntity(dataDefinition, databaseEntity);
+        return entityService.convertToGenericEntity(dataDefinition, databaseEntity);
     }
 
     @Override
     @Transactional
     public void delete(final String entityName, final Long entityId) {
         checkArgument(entityId != null, "entityId must be given");
-        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
 
         Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
 
@@ -83,7 +80,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return;
         }
 
-        FieldUtils.setDeleted(databaseEntity);
+        entityService.setDeleted(databaseEntity);
 
         sessionFactory.getCurrentSession().update(databaseEntity);
     }
@@ -92,16 +89,16 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional(readOnly = true)
     public ResultSet find(final String entityName, final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
-        DataDefinition dataDefinition = getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
+        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
 
         int totalNumberOfEntities = Integer.valueOf(sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).setProjection(Projections.rowCount()).uniqueResult()
+                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true)).setProjection(Projections.rowCount()).uniqueResult()
                 .toString());
 
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults())
-                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true));
+                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true));
 
         if (searchCriteria.getOrder() != null) {
             Order order = null;
@@ -117,7 +114,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         List<Entity> genericResults = new ArrayList<Entity>();
 
         for (Object databaseEntity : results) {
-            genericResults.add(convertToGenericEntity(dataDefinition, databaseEntity));
+            genericResults.add(entityService.convertToGenericEntity(dataDefinition, databaseEntity));
         }
         ResultSetImpl resultSet = new ResultSetImpl();
         resultSet.setResults(genericResults);
@@ -129,67 +126,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private Object getDatabaseEntity(final Class<?> entityClass, final Long entityId) {
         return sessionFactory.getCurrentSession().createCriteria(entityClass).add(Restrictions.idEq(entityId))
-                .add(Restrictions.ne(FieldUtils.FIELD_DELETED, true)).uniqueResult();
-    }
-
-    private Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object entity) {
-        Entity genericEntity = new Entity(FieldUtils.getId(entity));
-
-        for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            genericEntity.setField(fieldDefinition.getName(), FieldUtils.getField(entity, fieldDefinition));
-        }
-
-        return genericEntity;
-    }
-
-    private Object convertToDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
-            final Object existingDatabaseEntity) {
-        Object databaseEntity = null;
-
-        if (existingDatabaseEntity != null) {
-            databaseEntity = existingDatabaseEntity;
-        } else {
-            databaseEntity = getInstanceForEntity(dataDefinition);
-            FieldUtils.setId(databaseEntity, genericEntity.getId());
-        }
-
-        for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            FieldUtils.setField(databaseEntity, fieldDefinition, genericEntity.getField(fieldDefinition.getName()));
-        }
-
-        return databaseEntity;
-    }
-
-    private Class<?> getClassForEntity(final DataDefinition dataDefinition) {
-        if (dataDefinition.isVirtualTable()) {
-            throw new UnsupportedOperationException("virtual tables are not supported");
-        } else {
-            String fullyQualifiedClassName = dataDefinition.getFullyQualifiedClassName();
-
-            try {
-                return getClass().getClassLoader().loadClass(fullyQualifiedClassName);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("cannot find mapping class for definition: "
-                        + dataDefinition.getFullyQualifiedClassName(), e);
-            }
-        }
-    }
-
-    private Object getInstanceForEntity(final DataDefinition dataDefinition) {
-        Class<?> entityClass = getClassForEntity(dataDefinition);
-        try {
-            return entityClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalStateException("cannot instantiate class: " + dataDefinition.getFullyQualifiedClassName(), e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException("cannot instantiate class: " + dataDefinition.getFullyQualifiedClassName(), e);
-        }
-    }
-
-    private DataDefinition getDataDefinitionForEntity(final String entityName) {
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
-        checkNotNull(dataDefinition, "data definition has't been found");
-        return dataDefinition;
+                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true)).uniqueResult();
     }
 
 }
