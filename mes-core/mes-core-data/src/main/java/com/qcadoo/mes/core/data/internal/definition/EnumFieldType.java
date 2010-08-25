@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class EnumFieldType implements EnumeratedFieldType {
 
@@ -46,7 +47,7 @@ public final class EnumFieldType implements EnumeratedFieldType {
 
     @Override
     public int getNumericType() {
-        return NUMERIC_TYPE_ENUM;
+        return FieldTypeFactory.NUMERIC_TYPE_ENUM;
     }
 
 }

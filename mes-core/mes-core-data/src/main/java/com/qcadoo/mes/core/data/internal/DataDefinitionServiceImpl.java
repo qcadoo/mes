@@ -11,6 +11,7 @@ import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.definition.FieldType;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 
 @Service

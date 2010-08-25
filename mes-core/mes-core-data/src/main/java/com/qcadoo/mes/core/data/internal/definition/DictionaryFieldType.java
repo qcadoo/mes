@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class DictionaryFieldType implements EnumeratedFieldType {
 
@@ -49,7 +50,7 @@ public final class DictionaryFieldType implements EnumeratedFieldType {
 
     @Override
     public int getNumericType() {
-        return NUMERIC_TYPE_DICTIONARY;
+        return FieldTypeFactory.NUMERIC_TYPE_DICTIONARY;
     }
 
 }
