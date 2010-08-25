@@ -38,11 +38,11 @@ public class ProductsModifyController {
         logger.info("constructor - " + dataDefinitionService);
     }
 
-    @RequestMapping(value = "/products/addModifyEntityForm", method = RequestMethod.GET)
-    public ModelAndView addModifyEntityForm(@RequestParam(required = false) String entityId) {
+    @RequestMapping(value = "/products/getEntity", method = RequestMethod.GET)
+    public ModelAndView getEntity(@RequestParam(required = false) String entityId) {
         try {
             ModelAndView mav = new ModelAndView();
-            mav.setViewName("addModifyEntity");
+            mav.setViewName("productsFormView");
 
             DataDefinition dataDefinitionProduct = dataDefinitionService.get("products.product");
             List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
@@ -66,8 +66,8 @@ public class ProductsModifyController {
 
     }
 
-    @RequestMapping(value = "/products/addModifyEntity", method = RequestMethod.POST)
-    public ModelAndView addModifyEntity(@ModelAttribute Entity entity) {
+    @RequestMapping(value = "/products/saveEntity", method = RequestMethod.POST)
+    public ModelAndView saveEntity(@ModelAttribute Entity entity) {
 
         DataDefinition dataDefinitionProduct = dataDefinitionService.get("products.product");
         List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
@@ -88,7 +88,7 @@ public class ProductsModifyController {
             GridDefinition substituteGridDefinition = dataDefinitionSubstitute.getGrids().get(0);
             getFieldTypesAndEnumeratedFields(mav, fieldsDefinition);
             mav.addObject("substituteGridDefinition", substituteGridDefinition);
-            mav.setViewName("addModifyEntity");
+            mav.setViewName("productsFormView");
             mav.addObject("message", "fullFillFields");
             mav.addObject("entity", entity.getFields());
             mav.addObject("fieldsDefinition", fieldsDefinition);

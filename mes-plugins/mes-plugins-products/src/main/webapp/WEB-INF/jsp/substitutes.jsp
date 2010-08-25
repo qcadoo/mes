@@ -96,16 +96,16 @@
 		
 		<div>
 			Substytuty:
-			<button id="newSubstituteButton" onClick="newSubstituteClicked()"><spring:message code="addModifyEntity.new"/></button>
-			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="addModifyEntity.delete"/></button>
-			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.up"/></button>
-			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.down"/></button>
+			<button id="newSubstituteButton" onClick="newSubstituteClicked()"><spring:message code="productsFormView.new"/></button>
+			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="productsFormView.delete"/></button>
+			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.up"/></button>
+			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.down"/></button>
 		</div>
 		<table id="substitutesGrid"></table>
 		<div>
 			Produkty substytutu:
-			<button id="newSubstituteComponentButton" onClick="newSubstituteComponentClicked()"><spring:message code="addModifyEntity.new"/></button>
-			<button id="deleteSubstituteComponentButton" onClick="substituteComponentsGrid.deleteSelectedRecords()"><spring:message code="addModifyEntity.delete"/></button>
+			<button id="newSubstituteComponentButton" onClick="newSubstituteComponentClicked()"><spring:message code="productsFormView.new"/></button>
+			<button id="deleteSubstituteComponentButton" onClick="substituteComponentsGrid.deleteSelectedRecords()"><spring:message code="productsFormView.delete"/></button>
 		</div>
 		<table id="substituteComponentsGrid"></table> 
 		
