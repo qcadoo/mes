@@ -241,6 +241,9 @@ QCDGrid = function(opts) {
 		}
 	}
 	
+	this.getSelectedRow = function() {
+		return parseInt(grid.getGridParam('selrow'));
+	}
 	
 	constructor(opts);
 	

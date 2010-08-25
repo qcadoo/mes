@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
@@ -35,6 +36,24 @@ public class ProductsSubstituteController {
         if (logger.isDebugEnabled()) {
             logger.debug("constructor - " + dataDefinitionService);
         }
+    }
+
+    @RequestMapping(value = "/products/substitute/editSubstitute", method = RequestMethod.GET)
+    public ModelAndView getEditSubstituteView(@RequestParam(required = false) Long substituteId) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("editSubstitute");
+        mav.addObject("substituteId", substituteId);
+        return mav;
+    }
+
+    @RequestMapping(value = "/products/substitute/editSubstituteComponent", method = RequestMethod.GET)
+    public ModelAndView getEditSubstituteComponentView(@RequestParam Long substituteId,
+            @RequestParam(required = false) Long componentId) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("editSubstituteComponent");
+        mav.addObject("substituteId", substituteId);
+        mav.addObject("componentId", componentId);
+        return mav;
     }
 
     @RequestMapping(value = "/products/substitute/data", method = RequestMethod.GET)

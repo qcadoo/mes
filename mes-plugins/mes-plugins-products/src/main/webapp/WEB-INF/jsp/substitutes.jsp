@@ -18,6 +18,9 @@
 			console.info("${column.fields[0].name}");
 		</c:forEach>
 		var substituteComponentsGrid;
+
+		var editSubstituteWindow;
+		var editSubstituteComponentWindow;
 		
 		jQuery(document).ready(function(){
 			substitutesGrid = new QCDGrid({
@@ -30,13 +33,16 @@
 				colModel: substitutesColModel,
 				loadingText: 'Wczytuje...',
 				onSelectRow: function(id){
-			        console.debug('row '+id);
 			        substituteComponentsGrid.setOption('dataSource','substitute/components.html?productId=${entityId }&substituteId='+id);
 			        substituteComponentsGrid.refresh();
 			        $("#newSubstituteComponentButton").attr("disabled", false);
 			        $("#deleteSubstituteButton").attr("disabled", false);
 			        $("#upSubstituteButton").attr("disabled", false);
 			        $("#downSubstituteButton").attr("disabled", false);
+		        },
+				ondblClickRow: function(id){
+		        	editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?substituteId='+id});
+		        	editSubstituteWindow.jqmShow();
 		        }
 			});
 
@@ -50,6 +56,12 @@
 				loadingText: 'Wczytuje...',
 				onSelectRow: function(id){
 					$("#deleteSubstituteComponentButton").attr("disabled", false);
+				},
+				ondblClickRow: function(id){
+					editSubstituteComponentWindow = $('#editSubstituteComponentWindow').jqm({
+						ajax: 'substitute/editSubstituteComponent.html?substituteId='+substitutesGrid.getSelectedRow()+'&componentId='+id
+					});
+					editSubstituteComponentWindow.jqmShow();
 				}
 			});
 
@@ -64,26 +76,46 @@
 			 } else {
 				 $("#newSubstituteButton").attr("disabled", true);
 			 }
+
+			 editSubstituteWindow = $('#editSubstituteWindow').jqm({modal: true});
+			 editSubstituteComponentWindow = $('#editSubstituteComponentWindow').jqm({modal: true});
 		});
+
+		newSubstituteClicked = function() {
+			editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html'});
+			editSubstituteWindow.jqmShow();
+		}
+
+		newSubstituteComponentClicked = function() {
+			editSubstituteComponentWindow = $('#editSubstituteComponentWindow').jqm({ajax: 'substitute/editSubstituteComponent.html?substituteId='+substitutesGrid.getSelectedRow()});
+			editSubstituteComponentWindow.jqmShow();
+		}
 		
-	
 	</script>
 		
 		
 		<div>
 			Substytuty:
-			<button id="newSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
-			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="addModifyEntity.delete"/></button>
-			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.up"/></button>
-			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.down"/></button>
+			<button id="newSubstituteButton" onClick="newSubstituteClicked()"><spring:message code="productsFormView.new"/></button>
+			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="productsFormView.delete"/></button>
+			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.up"/></button>
+			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.down"/></button>
 		</div>
 		<table id="substitutesGrid"></table>
 		<div>
 			Produkty substytutu:
-			<button id="newSubstituteComponentButton" onClick="console.info('not implemented')"><spring:message code="addModifyEntity.new"/></button>
-			<button id="deleteSubstituteComponentButton" onClick="substituteComponentsGrid.deleteSelectedRecords()"><spring:message code="addModifyEntity.delete"/></button>
+			<button id="newSubstituteComponentButton" onClick="newSubstituteComponentClicked()"><spring:message code="productsFormView.new"/></button>
+			<button id="deleteSubstituteComponentButton" onClick="substituteComponentsGrid.deleteSelectedRecords()"><spring:message code="productsFormView.delete"/></button>
 		</div>
 		<table id="substituteComponentsGrid"></table> 
+		
+		<div class="jqmWindow" id="editSubstituteWindow">
+			Please wait...
+		</div>
+		
+		<div class="jqmWindow" id="editSubstituteComponentWindow">
+			Please wait...
+		</div>
 
 
 

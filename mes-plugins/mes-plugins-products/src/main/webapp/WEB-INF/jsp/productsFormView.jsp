@@ -10,21 +10,23 @@
 	<link rel="stylesheet" href="../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../css/productGrid.css" type="text/css" />
+	<link rel="stylesheet" href="../css/jqModal.css" type="text/css" />
 	
 	<script type="text/javascript" src="../js/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="../js/jquery.blockUI.js"></script>
 	<script type="text/javascript" src="../js/jquery.jqGrid.min.js"></script>
 	<script type="text/javascript" src="../js/qcdGrid.js"></script>
+	<script type="text/javascript" src="../js/jqModal.js"></script>
 
 </head>
 <body>
-	<h2 id="pageHeader"><spring:message code="addModifyEntity.header"/></h2>
+	<h2 id="pageHeader"><spring:message code="productsFormView.header"/></h2>
 	
 	
-		<c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="addModifyEntity.${message }"/> <br/></c:otherwise></c:choose>
+		<c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="productsFormView.${message }"/> <br/></c:otherwise></c:choose>
 		
-		<form action="addModifyEntity.html" method="POST">
+		<form action="saveEntity.html" method="POST">
 			<table>
 				<c:forEach items="${fieldsDefinition}" var="entry">
 					<tr>
@@ -66,7 +68,7 @@
 									
 									<c:choose>
 										<c:when test="${fieldsValidationInfo[entry.name] == null}"> </c:when>
-										<c:otherwise><td><spring:message code="addModifyEntity.${fieldsValidationInfo[entry.name] }"/></td> </c:otherwise>
+										<c:otherwise><td><spring:message code="productsFormView.${fieldsValidationInfo[entry.name] }"/></td> </c:otherwise>
 									</c:choose>
 							</c:when> 
 							<c:otherwise>
@@ -77,8 +79,8 @@
 				</c:forEach>	
 			</table>	
 			<input type="hidden" name="id" value="${entityId }"/>
-			<input type="submit" name="button" value="<spring:message code="addModifyEntity.button"/>" />
-			<input type="button" name="button" value="<spring:message code="addModifyEntity.cancel"/>" onClick="window.location='list.html'" />
+			<input type="submit" name="button" value="<spring:message code="productsFormView.button"/>" />
+			<input type="button" name="button" value="<spring:message code="productsFormView.cancel"/>" onClick="window.location='list.html'" />
 		</form><br />
 		
 		<%@ include file="substitutes.jsp" %>

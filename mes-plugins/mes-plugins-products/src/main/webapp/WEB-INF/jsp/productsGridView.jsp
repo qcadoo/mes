@@ -38,7 +38,7 @@
 				multiselect: true,
 				loadingText: 'Wczytuje...',
 				ondblClickRow: function(id){
-			        window.location='addModifyEntityForm.html?entityId='+id
+			        window.location='getEntity.html?entityId='+id
 		        }
 			});
 			productsGrid.refresh();
@@ -66,7 +66,7 @@
 	<div id="messageBox"><c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="productsGridView.${message }"/> <br/></c:otherwise></c:choose></div>
 	
 	<div id="topButtons">
-		<button onClick="window.location='addModifyEntityForm.html'"><spring:message code="productsGridView.new"/></button>
+		<button onClick="window.location='getEntity.html'"><spring:message code="productsGridView.new"/></button>
 		<button onClick="productsGrid.refresh()"><spring:message code="productsGridView.refresh"/></button>
 		<button onClick="productsGrid.deleteSelectedRecords()"><spring:message code="productsGridView.delete"/></button>
 	</div>
