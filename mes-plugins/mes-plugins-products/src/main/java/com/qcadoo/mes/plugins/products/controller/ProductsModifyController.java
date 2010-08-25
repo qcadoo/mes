@@ -19,6 +19,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.GridDefinition;
 
 @Controller
 public class ProductsModifyController {
@@ -48,8 +49,12 @@ public class ProductsModifyController {
 
 			DataDefinition dataDefinition = dataDefinitionService
 					.get("products.product");
+			List<GridDefinition> grids = dataDefinition.getGrids();
+			GridDefinition gridDefinition = grids.get(0);
+			mav.addObject("gridDefinition", gridDefinition);
 			List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
 			mav.addObject("fieldsDefinition", fieldsDefinition);
+
 			if (entityId != null && !entityId.equals("")) {
 				mav.addObject("entityId", entityId);
 				Entity entity = dataAccessService.get("products.product",
