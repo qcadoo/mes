@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.internal.definition;
 import org.apache.commons.lang.StringUtils;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class StringFieldType implements FieldType {
 
@@ -34,7 +35,7 @@ public final class StringFieldType implements FieldType {
 
     @Override
     public int getNumericType() {
-        return NUMERIC_TYPE_STRING;
+        return FieldTypeFactory.NUMERIC_TYPE_STRING;
     }
 
 }

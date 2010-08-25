@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.internal.definition;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class BooleanFieldType implements FieldType {
 
@@ -26,7 +27,7 @@ public final class BooleanFieldType implements FieldType {
 
     @Override
     public int getNumericType() {
-        return NUMERIC_TYPE_BOOLEAN;
+        return FieldTypeFactory.NUMERIC_TYPE_BOOLEAN;
     }
 
 }

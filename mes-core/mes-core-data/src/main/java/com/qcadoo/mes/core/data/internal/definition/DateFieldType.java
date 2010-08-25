@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.internal.definition;
 import java.util.Date;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class DateFieldType implements FieldType {
 
@@ -28,7 +29,7 @@ public final class DateFieldType implements FieldType {
 
     @Override
     public int getNumericType() {
-        return NUMERIC_TYPE_DATE;
+        return FieldTypeFactory.NUMERIC_TYPE_DATE;
     }
 
 }

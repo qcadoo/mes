@@ -21,6 +21,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class DataAccessServiceGetTest {
 
@@ -28,7 +29,7 @@ public final class DataAccessServiceGetTest {
 
     private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
-    private FieldTypeFactory fieldTypeFactory = new FieldTypeFactory();
+    private FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
 
     private DataAccessService dataAccessService = null;
 

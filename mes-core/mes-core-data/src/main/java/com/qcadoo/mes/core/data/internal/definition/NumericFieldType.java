@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.internal.definition;
 import java.math.BigDecimal;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
+import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
 public final class NumericFieldType implements FieldType {
 
@@ -58,9 +59,9 @@ public final class NumericFieldType implements FieldType {
     @Override
     public int getNumericType() {
         if (precision == 0) {
-            return NUMERIC_TYPE_INTEGER;
+            return FieldTypeFactory.NUMERIC_TYPE_INTEGER;
         } else {
-            return NUMERIC_TYPE_DECIMAL;
+            return FieldTypeFactory.NUMERIC_TYPE_DECIMAL;
         }
     }
 
