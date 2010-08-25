@@ -29,9 +29,11 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-maven-plugin</artifactId>
 				<configuration>
-					<jbossHome>/Library/jboss</jbossHome>
-					<serverName>web</serverName>
-					<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
+					<hostName>localhost</hostName>
+					<port>8181</port>
+					<fileNames>
+						<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
+					</fileNames>
 				</configuration>
 			</plugin>
 		</plugins>
