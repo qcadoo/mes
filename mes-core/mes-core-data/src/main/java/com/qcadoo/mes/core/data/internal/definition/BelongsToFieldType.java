@@ -15,17 +15,17 @@ public class BelongsToFieldType implements LookupedFieldType {
 
     private final String entityName;
 
-    private final String[] eagerLoadingFieldNames;
-
     private final DataAccessService dataAccessService;
 
     private final String lookupFieldName;
 
-    public BelongsToFieldType(final String entityName, final String lookupFieldName, final String[] eagerLoadingFieldNames,
+    private final boolean eagerFetch;
+
+    public BelongsToFieldType(final String entityName, final String lookupFieldName, final boolean eagerFetch,
             final DataAccessService dataAccessService) {
         this.entityName = entityName;
         this.lookupFieldName = lookupFieldName;
-        this.eagerLoadingFieldNames = eagerLoadingFieldNames;
+        this.eagerFetch = eagerFetch;
         this.dataAccessService = dataAccessService;
     }
 
@@ -71,8 +71,8 @@ public class BelongsToFieldType implements LookupedFieldType {
         return entityName;
     }
 
-    public String[] getEagerLoadingFieldNames() {
-        return eagerLoadingFieldNames;
+    public boolean isEagerFetch() {
+        return eagerFetch;
     }
 
 }

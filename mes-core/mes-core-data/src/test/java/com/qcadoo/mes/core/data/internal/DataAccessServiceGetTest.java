@@ -27,6 +27,8 @@ public final class DataAccessServiceGetTest {
 
     private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
+    private EntityServiceImpl entityService = new EntityServiceImpl();
+
     private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
     private FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
@@ -36,7 +38,8 @@ public final class DataAccessServiceGetTest {
     @Before
     public void init() {
         dataAccessService = new DataAccessServiceImpl();
-        ReflectionTestUtils.setField(dataAccessService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(dataAccessService, "entityService", entityService);
         ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
     }
 

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -18,11 +19,13 @@ public class SubstituteComponent {
     @ManyToOne
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Substitute substitute;
 
     @Column(scale = 3, precision = 10)
     public BigDecimal quantity;
+
+    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -54,6 +57,14 @@ public class SubstituteComponent {
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

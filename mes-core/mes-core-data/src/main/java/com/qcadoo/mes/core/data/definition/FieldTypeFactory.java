@@ -40,5 +40,7 @@ public interface FieldTypeFactory {
 
     EnumeratedFieldType dictionaryType(final String dictionaryName);
 
-    LookupedFieldType belongsToType(final String entityName, final String lookupFieldName, final String... eagerLoadingFieldNames);
+    LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName);
+
+    LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName);
 }

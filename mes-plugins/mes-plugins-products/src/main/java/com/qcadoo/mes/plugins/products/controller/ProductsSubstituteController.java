@@ -1,6 +1,5 @@
 package com.qcadoo.mes.plugins.products.controller;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,7 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.search.ResultSet;
+import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.plugins.products.data.ListData;
 
 @Controller
@@ -46,22 +47,22 @@ public class ProductsSubstituteController {
             try {
                 int pId = Integer.parseInt(productId);
 
-                // SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("products.substitute");
-                // SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-                // ResultSet rs = dataAccessService.find("products.substitute", searchCriteria);
-                // return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
+                SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("products.substitute");
+                SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+                ResultSet rs = dataAccessService.find("products.substitute", searchCriteria);
+                return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
 
-                List<Entity> entities = new LinkedList<Entity>();
-                for (int i = 1; i < 4; i++) {
-                    Entity e = new Entity();
-                    e.setId((long) i);
-                    e.setField("no", "no-" + i + "-" + pId);
-                    e.setField("number", "number-" + i + "-" + pId);
-                    e.setField("name", "name-" + i + "-" + pId);
-                    entities.add(e);
-                }
-                int totalNumberOfEntities = 3;
-                return new ListData(totalNumberOfEntities, entities);
+                // List<Entity> entities = new LinkedList<Entity>();
+                // for (int i = 1; i < 4; i++) {
+                // Entity e = new Entity();
+                // e.setId((long) i);
+                // e.setField("no", "no-" + i + "-" + pId);
+                // e.setField("number", "number-" + i + "-" + pId);
+                // e.setField("name", "name-" + i + "-" + pId);
+                // entities.add(e);
+                // }
+                // int totalNumberOfEntities = 3;
+                // return new ListData(totalNumberOfEntities, entities);
 
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException(e);
@@ -83,22 +84,25 @@ public class ProductsSubstituteController {
             try {
                 int pId = Integer.parseInt(productId);
                 int sId = Integer.parseInt(substituteId);
-                // SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("productSubstitute");
+                SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("products.substituteComponent");
 
-                // SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+                SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
-                // ResultSet rs = dataAccessService.find("productSubstitute", searchCriteria);
-                List<Entity> entities = new LinkedList<Entity>();
-                for (int i = 1; i < 3; i++) {
-                    Entity e = new Entity();
-                    e.setId((long) i);
-                    e.setField("number", "number-" + i + "-" + pId + "-" + sId);
-                    e.setField("name", "name-" + i + "-" + pId + "-" + sId);
-                    e.setField("quantity", "no-" + i + "-" + pId + "-" + sId);
-                    entities.add(e);
-                }
-                int totalNumberOfEntities = 2;
-                return new ListData(totalNumberOfEntities, entities);
+                ResultSet rs = dataAccessService.find("products.substituteComponent", searchCriteria);
+
+                return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
+
+                // List<Entity> entities = new LinkedList<Entity>();
+                // for (int i = 1; i < 3; i++) {
+                // Entity e = new Entity();
+                // e.setId((long) i);
+                // e.setField("number", "number-" + i + "-" + pId + "-" + sId);
+                // e.setField("name", "name-" + i + "-" + pId + "-" + sId);
+                // e.setField("quantity", "no-" + i + "-" + pId + "-" + sId);
+                // entities.add(e);
+                // }
+                // int totalNumberOfEntities = 2;
+                // return new ListData(totalNumberOfEntities, entities);
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException(e);
             }

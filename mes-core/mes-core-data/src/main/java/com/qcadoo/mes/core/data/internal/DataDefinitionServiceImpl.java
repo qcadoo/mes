@@ -74,7 +74,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
-                fieldTypeFactory.belongsToType("products.products", "name"));
+                fieldTypeFactory.eagerBelongsToType("products.product", "name"));
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
@@ -95,25 +95,17 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         GridDefinition gridDefinition = new GridDefinition("substituteComponents");
 
         FieldDefinition fieldProduct = createFieldDefinition("product",
-<<<<<<< HEAD
-                fieldTypeFactory.belongsToType("products.product", "name", "name", "number"));
-=======
-                fieldTypeFactory.belongsToType("products.product", "name"));
->>>>>>> 3e45392f0eca004c3677f8250ee998b422a17a58
+                fieldTypeFactory.eagerBelongsToType("products.product", "name"));
         FieldDefinition fieldSubstitute = createFieldDefinition("substitute",
-                fieldTypeFactory.belongsToType("products.substitute", "name"));
+                fieldTypeFactory.eagerBelongsToType("products.substitute", "name"));
         FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
         dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldProduct, fieldSubstitute, fieldQuantity }));
 
-        ColumnDefinition columnSubstituteNumber = createColumnDefinition("number", fieldProduct, "${product.number}");
-<<<<<<< HEAD
-        ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "${product.name");
-=======
-        ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "${product.name}");
->>>>>>> 3e45392f0eca004c3677f8250ee998b422a17a58
+        ColumnDefinition columnSubstituteNumber = createColumnDefinition("number", fieldProduct, "product['number']");
+        ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "product['name']");
         ColumnDefinition columnQuantity = createColumnDefinition("quantity", fieldQuantity, null);
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber, columnProductName,
                 columnQuantity }));

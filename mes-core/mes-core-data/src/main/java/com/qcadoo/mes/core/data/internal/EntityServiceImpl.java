@@ -24,7 +24,7 @@ public final class EntityServiceImpl {
 
     public DataDefinition getDataDefinitionForEntity(final String entityName) {
         DataDefinition dataDefinition = dataDefinitionService.get(entityName);
-        checkNotNull(dataDefinition, "data definition has't been found");
+        checkNotNull(dataDefinition, "data definition for %s cannot be found", entityName);
         return dataDefinition;
     }
 
@@ -120,9 +120,13 @@ public final class EntityServiceImpl {
 
     private Object getBelongsToField(final Object entity, final FieldDefinition fieldDefinition) {
         BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
-        Object value = getField(entity, fieldDefinition.getName());
-        DataDefinition dataDefinition = dataDefinitionService.get(belongsToFieldType.getEntityName());
-        return convertToGenericEntity(dataDefinition, value);
+        DataDefinition dataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
+        if (belongsToFieldType.isEagerFetch()) {
+            Object value = getField(entity, fieldDefinition.getName());
+            return convertToGenericEntity(dataDefinition, value);
+        } else {
+            throw new IllegalStateException("belongsTo type with lazy loading is not supported yet");
+        }
     }
 
     private void setField(final Object entity, final String fieldName, final Object value) {
