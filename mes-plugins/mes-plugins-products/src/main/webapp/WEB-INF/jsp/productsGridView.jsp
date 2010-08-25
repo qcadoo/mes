@@ -21,7 +21,7 @@
 		var colModel = new Array();
 		<c:forEach items="${gridDefinition.columns}" var="column">
 			colNames.push("<spring:message code="products.column.${column.name}"/>");
-			colModel.push({name:"${column.fields[0].name}", index:"${column.fields[0].name}", width:100, sortable: false});
+			colModel.push({name:"${column.name}", index:"${column.name}", width:100, sortable: false});
 		</c:forEach>
 
 		var productsGrid;

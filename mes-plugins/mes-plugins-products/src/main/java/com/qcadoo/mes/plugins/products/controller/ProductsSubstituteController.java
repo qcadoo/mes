@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.search.SearchCriteria;
-import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.plugins.products.data.ListData;
 
 @Controller
@@ -46,29 +45,24 @@ public class ProductsSubstituteController {
             }
             try {
                 int pId = Integer.parseInt(productId);
-                SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("productSubstitute");
 
-                SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+                // SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("products.substitute");
+                // SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+                // ResultSet rs = dataAccessService.find("products.substitute", searchCriteria);
+                // return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
 
-                // ResultSet rs = dataAccessService.find("productSubstitute", searchCriteria);
                 List<Entity> entities = new LinkedList<Entity>();
-                Entity e1 = new Entity();
-                e1.setId((long) 1);
-                e1.setField("f1", "t11-" + pId);
-                e1.setField("f2", "t12-" + pId);
-                entities.add(e1);
-                Entity e2 = new Entity();
-                e2.setId((long) 2);
-                e2.setField("f1", "t21-" + pId);
-                e2.setField("f2", "t22-" + pId);
-                entities.add(e2);
-                Entity e3 = new Entity();
-                e3.setId((long) 3);
-                e3.setField("f1", "t31-" + pId);
-                e3.setField("f2", "t32-" + pId);
-                entities.add(e3);
+                for (int i = 1; i < 4; i++) {
+                    Entity e = new Entity();
+                    e.setId((long) i);
+                    e.setField("no", "no-" + i + "-" + pId);
+                    e.setField("number", "number-" + i + "-" + pId);
+                    e.setField("name", "name-" + i + "-" + pId);
+                    entities.add(e);
+                }
                 int totalNumberOfEntities = 3;
                 return new ListData(totalNumberOfEntities, entities);
+
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -79,9 +73,9 @@ public class ProductsSubstituteController {
         }
     }
 
-    @RequestMapping(value = "/products/substitute/products", method = RequestMethod.GET)
+    @RequestMapping(value = "/products/substitute/components", method = RequestMethod.GET)
     @ResponseBody
-    public ListData getSubstituteProductsData(@RequestParam String productId, @RequestParam String substituteId) {
+    public ListData getSubstituteComponentsData(@RequestParam String productId, @RequestParam String substituteId) {
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("getSubstituteProductsData - PRODUCT ID: " + productId + ", SUBSTITUTE ID: " + substituteId);
@@ -95,16 +89,14 @@ public class ProductsSubstituteController {
 
                 // ResultSet rs = dataAccessService.find("productSubstitute", searchCriteria);
                 List<Entity> entities = new LinkedList<Entity>();
-                Entity e1 = new Entity();
-                e1.setId((long) 1);
-                e1.setField("f11", "p11-" + pId + "-" + sId);
-                e1.setField("f12", "t12-" + pId + "-" + sId);
-                entities.add(e1);
-                Entity e2 = new Entity();
-                e2.setId((long) 2);
-                e2.setField("f11", "t21-" + pId + "-" + sId);
-                e2.setField("f12", "t22-" + pId + "-" + sId);
-                entities.add(e2);
+                for (int i = 1; i < 3; i++) {
+                    Entity e = new Entity();
+                    e.setId((long) i);
+                    e.setField("number", "number-" + i + "-" + pId + "-" + sId);
+                    e.setField("name", "name-" + i + "-" + pId + "-" + sId);
+                    e.setField("quantity", "no-" + i + "-" + pId + "-" + sId);
+                    entities.add(e);
+                }
                 int totalNumberOfEntities = 2;
                 return new ListData(totalNumberOfEntities, entities);
             } catch (NumberFormatException e) {
@@ -115,6 +107,36 @@ public class ProductsSubstituteController {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @RequestMapping(value = "/products/substitute/deleteSubstitute", method = RequestMethod.POST)
+    @ResponseBody
+    public String deleteSubstitute(@RequestBody List<Integer> selectedRows) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("deleteSubstitute - SELECTED SUBSTITUTES: " + selectedRows);
+        }
+        for (Integer recordId : selectedRows) {
+            dataAccessService.delete("products.substitute", (long) recordId);
+            if (logger.isDebugEnabled()) {
+                logger.debug("SUBSTITUTE " + recordId + " DELETED");
+            }
+        }
+        return "ok";
+    }
+
+    @RequestMapping(value = "/products/substitute/deleteSubstituteComponent", method = RequestMethod.POST)
+    @ResponseBody
+    public String deleteSubstituteComponent(@RequestBody List<Integer> selectedRows) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("deleteSubstitute - SELECTED SUBSTITUTE COMPONENTS: " + selectedRows);
+        }
+        for (Integer recordId : selectedRows) {
+            dataAccessService.delete("products.substituteComponent", (long) recordId);
+            if (logger.isDebugEnabled()) {
+                logger.debug("SUBSTITUTE COMPONENT" + recordId + " DELETED");
+            }
+        }
+        return "ok";
     }
 
 }

@@ -198,6 +198,7 @@ QCDGrid = function(opts) {
 			},
 			error: function(xhr, textStatus, errorThrown){
 				alert(textStatus);
+				unblockList();
 			}
 
 		});
@@ -209,7 +210,13 @@ QCDGrid = function(opts) {
 		if (window.confirm("delete?")) {
 			debug("delete");
 			blockList();
-			var selectedRows = grid.getGridParam("selarrrow");
+			var selectedRows;
+			if (options.multiselect) {
+				selectedRows = grid.getGridParam("selarrrow");
+			} else {
+				selectedRows = new Array();
+				selectedRows.push(grid.getGridParam('selrow'));
+			}
 			var dataArray = new Array();
 			for (var i in selectedRows) {
 				dataArray.push(parseInt(selectedRows[i]));
@@ -227,6 +234,7 @@ QCDGrid = function(opts) {
 				},
 				error: function(xhr, textStatus, errorThrown){
 					alert(textStatus);
+					unblockList();
 				}
 
 			});
