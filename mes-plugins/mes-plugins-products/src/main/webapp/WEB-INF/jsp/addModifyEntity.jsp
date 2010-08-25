@@ -30,13 +30,44 @@
 					<tr>
 						<c:choose>
 							<c:when test="${entry.hidden=='false'}">
-									<td><spring:message code="products.field.${entry.name}"/></td><td>
-									<input type="text" name="fields[${entry.name}]"
-									<c:if test="${entry.editable=='true'}">
-										readonly="readonly"
-									</c:if> 
-									value="${entity[entry.name]}" />
-									</td><c:choose><c:when test="${fieldsValidationInfo[entry.name] == null}"> </c:when><c:otherwise><td><spring:message code="addModifyEntity.${fieldsValidationInfo[entry.name] }"/></td> </c:otherwise></c:choose>
+									<td><spring:message code="products.field.${entry.name}"/></td>
+									<c:choose>
+										<c:when test='${(fieldsTypes[entry.name] == "4") || (fieldsTypes[entry.name] == "5") }'>
+											<td>
+												<select name="fields[${entry.name}]">
+													<c:forEach items="${lists[entry.name] }" var="listEntry">
+														<c:choose>
+															<c:when test='${listEntry  == entity[entry.name]}'>
+																<option selected="selected">${listEntry } </option>
+															</c:when>
+															<c:otherwise>
+																<option>${listEntry }</option>
+															</c:otherwise>
+														</c:choose>		
+													</c:forEach>
+												</select>
+											</td>
+										</c:when>
+										<c:when test='${(fieldsTypes[entry.name] == "9") }'>
+											<td>
+												<textarea name="fields[${entry.name}]">${entity[entry.name]}</textarea>
+											</td>
+										</c:when>
+										<c:otherwise>
+											<td>
+											<input type="text" name="fields[${entry.name}]"
+											<c:if test="${entry.editable=='true'}">
+												readonly="readonly"
+											</c:if> 
+											value="${entity[entry.name]}" />
+											</td>
+										</c:otherwise>
+									</c:choose>
+									
+									<c:choose>
+										<c:when test="${fieldsValidationInfo[entry.name] == null}"> </c:when>
+										<c:otherwise><td><spring:message code="addModifyEntity.${fieldsValidationInfo[entry.name] }"/></td> </c:otherwise>
+									</c:choose>
 							</c:when> 
 							<c:otherwise>
 								<input type="hidden" name="fields[${entry.name}]" value="${entity[entry.name]}" />
