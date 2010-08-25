@@ -54,7 +54,7 @@ public class DataAccessServiceFindTest {
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(any(Criterion.class))
-                        .setProjection(any(Projection.class)).uniqueResult()).willReturn(Long.valueOf(count - 1));
+                        .setProjection(any(Projection.class)).uniqueResult()).willReturn(Integer.valueOf(count - 1));
 
         given(
         // hibernate Order has no 'equals' implemented so we can't test with order is used by DataAccessService
@@ -90,7 +90,7 @@ public class DataAccessServiceFindTest {
         reset(sessionFactory);
         given(
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(any(Criterion.class))
-                        .setProjection(any(Projection.class)).uniqueResult()).willReturn(Long.valueOf(count - 1));
+                        .setProjection(any(Projection.class)).uniqueResult()).willReturn(Integer.valueOf(count - 1));
         given(
         // hibernate Order has no 'equals' implemented so we can't test with order is used by DataAccessService
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).setFirstResult(1).setMaxResults(4)
