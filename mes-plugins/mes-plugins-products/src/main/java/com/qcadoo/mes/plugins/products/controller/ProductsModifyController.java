@@ -93,6 +93,7 @@ public class ProductsModifyController {
 		DataDefinition dataDefinition = dataDefinitionService
 				.get("products.product");
 		List<FieldDefinition> fieldsDefinition = dataDefinition.getFields();
+
 		ModelAndView mav = new ModelAndView();
 		if (checkFields(entity, fieldsDefinition, mav)) {
 			String message = "";
@@ -105,10 +106,30 @@ public class ProductsModifyController {
 			return new ModelAndView("redirect:list.html?message=" + message);
 		} else {
 
+			DataDefinition dataDefinition2 = dataDefinitionService
+					.get("products.substitute");
+			GridDefinition substituteGridDefinition = dataDefinition2
+					.getGrids().get(0);
+			Map<String, List<String>> lists = new HashMap<String, List<String>>();
+			Map<String, Integer> fieldsTypes = new HashMap<String, Integer>();
+			for (FieldDefinition fieldDef : fieldsDefinition) {
+				fieldsTypes.put(fieldDef.getName(), fieldDef.getType()
+						.getNumericType());
+				if (fieldDef.getType().getNumericType() == 4
+						|| fieldDef.getType().getNumericType() == 5) {
+					EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDef
+							.getType();
+					List<String> options = enumeratedField.values();
+					lists.put(fieldDef.getName(), options);
+				}
+			}
+			mav.addObject("fieldsTypes", fieldsTypes);
+			mav.addObject("lists", lists);
 			mav.setViewName("addModifyEntity");
 			mav.addObject("message", "fullFillFields");
 			mav.addObject("entity", entity.getFields());
 			mav.addObject("fieldsDefinition", fieldsDefinition);
+			mav.addObject("substituteGridDefinition", substituteGridDefinition);
 			mav.addObject("entityId", entity.getId());
 			return mav;
 		}

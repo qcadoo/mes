@@ -36,13 +36,23 @@
 											<td>
 												<select name="fields[${entry.name}]">
 													<c:forEach items="${lists[entry.name] }" var="listEntry">
-														
-														<option>${listEntry }</option>
+														<c:choose>
+															<c:when test='${listEntry  == entity[entry.name]}'>
+																<option selected="selected">${listEntry } </option>
+															</c:when>
+															<c:otherwise>
+																<option>${listEntry }</option>
+															</c:otherwise>
+														</c:choose>		
 													</c:forEach>
 												</select>
 											</td>
 										</c:when>
-
+										<c:when test='${(fieldsTypes[entry.name] == "9") }'>
+											<td>
+												<textarea name="fields[${entry.name}]">${entity[entry.name]}</textarea>
+											</td>
+										</c:when>
 										<c:otherwise>
 											<td>
 											<input type="text" name="fields[${entry.name}]"
