@@ -52,7 +52,7 @@ public class ExpressionUtilTest {
     }
 
     @Test
-    public void shouldUseExpressionForGeneretingValueOfTheSingleFieldColumn() throws Exception {
+    public void shouldGenerateValueOfTheSingleFieldColumn() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", "Mr T");
@@ -71,7 +71,7 @@ public class ExpressionUtilTest {
     }
 
     @Test
-    public void shouldUseExpressionForGeneretingValueOfTheMultiFieldColumn() throws Exception {
+    public void shouldGenerateValueOfTheMultiFieldColumn() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", "Mr T");
@@ -92,6 +92,28 @@ public class ExpressionUtilTest {
 
         // then
         assertEquals("Mr T -> (34) -> female", value);
+    }
+
+    @Test
+    public void shouldGenerateValueOfTheBelongsToColumn() throws Exception {
+        // given
+        Entity product = new Entity(1L);
+        product.setField("name", "P1");
+
+        Entity entity = new Entity(1L);
+        entity.setField("product", product);
+
+        FieldDefinition fieldDefinition = new FieldDefinition("product");
+
+        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
+        columnDefinition.setExpression("fields['product'].fields['name']");
+
+        // when
+        String value = ExpressionUtil.getValue(entity, columnDefinition);
+
+        // then
+        assertEquals("P1", value);
     }
 
 }

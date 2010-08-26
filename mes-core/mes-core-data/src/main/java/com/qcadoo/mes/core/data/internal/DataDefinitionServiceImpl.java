@@ -68,9 +68,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("products.substitute");
         GridDefinition gridDefinition = new GridDefinition("substitutes");
 
-        FieldDefinition fieldNo = createFieldDefinition("no", fieldTypeFactory.integerType(), true);
-        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType(), true);
-        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType(), true);
+        FieldDefinition fieldNo = createFieldDefinition("no", fieldTypeFactory.integerType());
+        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
@@ -105,8 +105,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
         dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldProduct, fieldSubstitute, fieldQuantity }));
 
-        ColumnDefinition columnSubstituteNumber = createColumnDefinition("number", fieldProduct, "product['number']");
-        ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "product['name']");
+        ColumnDefinition columnSubstituteNumber = createColumnDefinition("number", fieldProduct,
+                "fields['product'].fields['number']");
+        ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "fields['product'].fields['name']");
         ColumnDefinition columnQuantity = createColumnDefinition("quantity", fieldQuantity, null);
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber, columnProductName,
                 columnQuantity }));
@@ -124,13 +125,6 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);
         fieldDefinition.setType(type);
-        return fieldDefinition;
-    }
-
-    private FieldDefinition createFieldDefinition(final String name, final FieldType type, final boolean required) {
-        FieldDefinition fieldDefinition = new FieldDefinition(name);
-        fieldDefinition.setType(type);
-        fieldDefinition.setRequired(required);
         return fieldDefinition;
     }
 
