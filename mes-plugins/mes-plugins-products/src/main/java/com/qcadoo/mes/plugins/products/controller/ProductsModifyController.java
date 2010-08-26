@@ -106,10 +106,13 @@ public class ProductsModifyController {
             String formField = (String) entity.getField(field.getName());
             if (field.isRequired()) {
                 if (formField == null || formField.equals("")) {
-
                     String fieldValidationInfo = "requiredField";
                     fieldsValidationInfo.put(field.getName(), fieldValidationInfo);
                     result = false;
+                }
+            } else {
+                if (formField == null || formField.equals("")) {
+                    entity.setField(field.getName(), null);
                 }
             }
 

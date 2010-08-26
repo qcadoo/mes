@@ -10,6 +10,11 @@ body {
 	font-size: 25px;
 }
 
+#languageSection {
+	text-align: right;	
+	
+}
+
 #messageBox {
 	color: green;
 	width: 300px;
