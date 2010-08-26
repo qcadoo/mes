@@ -11,7 +11,7 @@ import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 
-public class BelongsToFieldType implements LookupedFieldType {
+public final class BelongsToFieldType implements LookupedFieldType {
 
     private final String entityName;
 
@@ -50,12 +50,12 @@ public class BelongsToFieldType implements LookupedFieldType {
     }
 
     @Override
-    public boolean isValidType(Object value) {
+    public boolean isValidType(final Object value) {
         return true;
     }
 
     @Override
-    public Map<Long, String> lookup(String prefix) {
+    public Map<Long, String> lookup(final String prefix) {
         ResultSet resultSet = dataAccessService.find(entityName,
                 SearchCriteriaBuilder.forEntity(entityName).orderBy(Order.asc(lookupFieldName)).build());
         Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();

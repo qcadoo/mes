@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class SubstituteComponent {
+public final class SubstituteComponent {
 
     @Id
     @GeneratedValue
@@ -23,7 +23,7 @@ public class SubstituteComponent {
     private Substitute substitute;
 
     @Column(scale = 3, precision = 10)
-    public BigDecimal quantity;
+    private BigDecimal quantity;
 
     private boolean deleted;
 
@@ -31,7 +31,7 @@ public class SubstituteComponent {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -39,7 +39,7 @@ public class SubstituteComponent {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(final Product product) {
         this.product = product;
     }
 
@@ -47,7 +47,7 @@ public class SubstituteComponent {
         return substitute;
     }
 
-    public void setSubstitute(Substitute substitute) {
+    public void setSubstitute(final Substitute substitute) {
         this.substitute = substitute;
     }
 
@@ -55,7 +55,7 @@ public class SubstituteComponent {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(final BigDecimal quantity) {
         this.quantity = quantity;
     }
 
@@ -63,7 +63,7 @@ public class SubstituteComponent {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
