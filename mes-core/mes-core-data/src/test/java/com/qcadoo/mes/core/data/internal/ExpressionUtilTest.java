@@ -84,15 +84,14 @@ public class ExpressionUtilTest {
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex));
-        // columnDefinition
-        // .setExpression("fields['name'] + \" -> (\" + (fields['age']+1) + \") -> \" + (fields['sex'] == \"F\" ? \"female\" : \"male\")");
-        // columnDefinition.setExpression("name");
+        columnDefinition
+                .setExpression("fields['name'] + \" -> (\" + (fields['age']+1) + \") -> \" + (fields['sex'] == \"F\" ? \"female\" : \"male\")");
 
         // when
         String value = ExpressionUtil.getValue(entity, columnDefinition);
 
         // then
-        // assertEquals("Mr T -> (34) -> female", value);
+        assertEquals("Mr T -> (34) -> female", value);
     }
 
 }
