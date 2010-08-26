@@ -41,17 +41,20 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("products.product");
         GridDefinition gridDefinition = new GridDefinition("products");
 
-        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
+        fieldNumber.setRequired(true);
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        fieldName.setRequired(true);
         FieldDefinition fieldTypeOfMaterial = createFieldDefinition("typeOfMaterial",
                 fieldTypeFactory.enumType("product", "intermediate", "component"));
+        fieldTypeOfMaterial.setRequired(true);
         FieldDefinition fieldEan = createFieldDefinition("ean", fieldTypeFactory.stringType());
         FieldDefinition fieldCategory = createFieldDefinition("category", fieldTypeFactory.dictionaryType("categories"));
         FieldDefinition fieldUnit = createFieldDefinition("unit", fieldTypeFactory.stringType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Product");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
-        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldName, fieldNumber, fieldTypeOfMaterial, fieldEan,
+        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldNumber, fieldName, fieldTypeOfMaterial, fieldEan,
                 fieldCategory, fieldUnit }));
 
         ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber, null);
