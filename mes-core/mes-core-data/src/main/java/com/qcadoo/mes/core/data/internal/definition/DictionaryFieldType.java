@@ -34,6 +34,9 @@ public final class DictionaryFieldType implements EnumeratedFieldType {
 
     @Override
     public boolean isValidType(final Object value) {
+        if (value == null) {
+            return true;
+        }
         if (!(value instanceof String)) {
             return false;
         }

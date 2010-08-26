@@ -31,6 +31,9 @@ public final class EnumFieldType implements EnumeratedFieldType {
 
     @Override
     public boolean isValidType(final Object value) {
+        if (value == null) {
+            return true;
+        }
         if (!(value instanceof String)) {
             return false;
         }
