@@ -8,47 +8,7 @@
 <html>
 <head>
 
-	<link rel="stylesheet" href="../css/jqModal.css" type="text/css" />
-
-	<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="../js/jquery.ba-serializeobject.min.js"></script>
-
-	<script type="text/javascript">
-
-		$('#ajaxSubmit').click(function() {
-			var substituteData = $('#substituteForm').serializeObject();
-			console.info(substituteData);
-			//var dataString = JSON.stringify(substituteData);
-			$(".validatorGlobalMessage").html('');
-			$(".fieldValidatorMessage").html('');
-			$.ajax({
-				url: 'substitute/editSubstitute/save.html',
-				type: 'POST',
-				//dataType: 'json',
-				data: substituteData,
-				//contentType: 'application/json; charset=utf-8',
-				success: function(response) {
-					//refresh();
-					console.info(response);
-					if (response.valid) {
-						console.info("ok");
-					} else {
-						$(".validatorGlobalMessage").html(response.globalMessage);
-						for (var field in response.fieldMessages) {
-							$("#"+field+"_validateMessage").html(response.fieldMessages[field]);
-						}
-					}
-				},
-				error: function(xhr, textStatus, errorThrown){
-					alert(textStatus);
-					//unblockList();
-				}
-
-			});
-			return false;
-		});
 	
-	</script>
 </head>
 <body>
 	<div class="modalHeader">substitute</div>
@@ -110,7 +70,7 @@
 		</form>
 	</div>
 	<div class="modalFooter">
-		<button id="ajaxSubmit">Apply</button>
+		<button id="ajaxSubmit" onclick="applyClick()">Apply</button>
 		<button class="jqmClose">zamknij</button>
 	</div>
 	

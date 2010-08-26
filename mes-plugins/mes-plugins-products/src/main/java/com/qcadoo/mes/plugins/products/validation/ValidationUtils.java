@@ -17,11 +17,24 @@ import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 public class ValidationUtils {
 
     public static ValidationResult validateEntity(Entity entity, List<FieldDefinition> fields) {
+        ValidationResult validationResult = translateEntity(entity, fields);
+        if (validationResult.isValid()) {
+            validationResult = validateRequiredFields(validationResult.getValidEntity(), fields);
+        }
+        return validationResult;
+    }
+
+    public static ValidationResult translateEntity(Entity entity, List<FieldDefinition> fields) {
         Entity validEntity = new Entity(entity.getId());
         Map<String, String> fieldMessages = new HashMap<String, String>();
 
         for (FieldDefinition fieldDefinition : fields) {
             Object fieldValue = entity.getField(fieldDefinition.getName());
+            String fieldValueStr = (String) fieldValue;
+            if (fieldValueStr == null || "".equals(fieldValueStr.trim())) {
+                validEntity.setField(fieldDefinition.getName(), null);
+                continue;
+            }
             switch (fieldDefinition.getType().getNumericType()) {
 
                 case FieldTypeFactory.NUMERIC_TYPE_BOOLEAN:
@@ -100,6 +113,22 @@ public class ValidationUtils {
             return ValidationResultFactory.getInstance().createValidResult(validEntity);
         } else {
             return ValidationResultFactory.getInstance().createInvalidResult("wrongFieldTypesValidateMessage", fieldMessages);
+        }
+    }
+
+    public static ValidationResult validateRequiredFields(Entity entity, List<FieldDefinition> fields) {
+        Map<String, String> fieldMessages = new HashMap<String, String>();
+        for (FieldDefinition fieldDefinition : fields) {
+            if (fieldDefinition.isRequired()) {
+                if (entity.getField(fieldDefinition.getName()) == null) {
+                    fieldMessages.put(fieldDefinition.getName(), "nullFieldValidateMessage");
+                }
+            }
+        }
+        if (fieldMessages.size() == 0) {
+            return ValidationResultFactory.getInstance().createValidResult(entity);
+        } else {
+            return ValidationResultFactory.getInstance().createInvalidResult("nullMandatoryFieldsValidateMessage", fieldMessages);
         }
     }
 }

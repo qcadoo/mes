@@ -68,9 +68,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("products.substitute");
         GridDefinition gridDefinition = new GridDefinition("substitutes");
 
-        FieldDefinition fieldNo = createFieldDefinition("no", fieldTypeFactory.integerType());
-        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
-        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        FieldDefinition fieldNo = createFieldDefinition("no", fieldTypeFactory.integerType(), true);
+        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType(), true);
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType(), true);
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
@@ -124,6 +124,13 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);
         fieldDefinition.setType(type);
+        return fieldDefinition;
+    }
+
+    private FieldDefinition createFieldDefinition(final String name, final FieldType type, final boolean required) {
+        FieldDefinition fieldDefinition = new FieldDefinition(name);
+        fieldDefinition.setType(type);
+        fieldDefinition.setRequired(required);
         return fieldDefinition;
     }
 

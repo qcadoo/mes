@@ -45,17 +45,22 @@ public class ProductsSubstituteController {
     }
 
     @RequestMapping(value = "/products/substitute/editSubstitute", method = RequestMethod.GET)
-    public ModelAndView getEditSubstituteView(@RequestParam(required = false) Long substituteId) {
+    public ModelAndView getEditSubstituteView(@RequestParam Long productId, @RequestParam(required = false) Long substituteId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("editSubstitute");
 
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         mav.addObject("substituteFieldsDefinition", substituteDataDefinition.getFields());
 
+        Entity substitute = null;
         if (substituteId != null) {
-            Entity substitute = dataAccessService.get("products.substitute", substituteId);
-            mav.addObject("substitute", substitute);
+            substitute = dataAccessService.get("products.substitute", substituteId);
+        } else {
+            substitute = new Entity();
+            Entity product = new Entity(productId);
+            substitute.setField("product", product);
         }
+        mav.addObject("substitute", substitute);
 
         return mav;
     }
@@ -63,13 +68,9 @@ public class ProductsSubstituteController {
     @RequestMapping(value = "/products/substitute/editSubstitute/save", method = RequestMethod.POST)
     @ResponseBody
     public ValidationResult saveSubstitute(@ModelAttribute Entity substitute) {
-        // logger.info(substitute.getId() + "");
-        // logger.info(substitute.getFields().toString());
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         ValidationResult validationResult = ValidationUtils.validateEntity(substitute, substituteDataDefinition.getFields());
         if (validationResult.isValid()) {
-            // save
-            logger.info("save");
             dataAccessService.save("products.substitute", validationResult.getValidEntity());
         }
         return validationResult;
