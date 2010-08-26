@@ -18,6 +18,8 @@ import com.qcadoo.mes.core.data.internal.ExpressionUtil;
  * 
  * Width is % of grid width for presentation given column
  * 
+ * Method {@link ColumnDefinition#getValue(Entity)} returns value of the column for given entity.
+ * 
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.has com.qcadoo.mes.core.data.definition.ColumnAggregationMode
  */
@@ -65,7 +67,7 @@ public final class ColumnDefinition {
         this.expression = expression;
     }
 
-    public String getValueUsingExpression(final Entity entity) {
+    public String getValue(final Entity entity) {
         return ExpressionUtil.getValue(entity, this);
     }
 
