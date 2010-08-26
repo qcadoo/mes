@@ -39,30 +39,26 @@ public class ProductsModifyController {
     }
 
     @RequestMapping(value = "/products/getEntity", method = RequestMethod.GET)
-    public ModelAndView getEntity(@RequestParam(required = false) String entityId) {
-        try {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Get product, product id: " + entityId);
-            }
-            ModelAndView mav = new ModelAndView();
-            mav.setViewName("productsFormView");
-
-            DataDefinition dataDefinitionProduct = dataDefinitionService.get("products.product");
-            List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
-            mav.addObject("fieldsDefinition", fieldsDefinition);
-
-            insertCommonsModelData(mav, fieldsDefinition);
-
-            if (entityId != null && !entityId.equals("")) {
-                mav.addObject("entityId", entityId);
-                Entity entity = dataAccessService.get("products.product", Long.parseLong(entityId));
-                mav.addObject("entity", entity.getFields());
-            }
-
-            return mav;
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(e);
+    public ModelAndView getEntity(@RequestParam(required = false) Long entityId) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Get product, product id: " + entityId);
         }
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("productsFormView");
+
+        DataDefinition dataDefinitionProduct = dataDefinitionService.get("products.product");
+        List<FieldDefinition> fieldsDefinition = dataDefinitionProduct.getFields();
+        mav.addObject("fieldsDefinition", fieldsDefinition);
+
+        insertCommonsModelData(mav, fieldsDefinition);
+
+        if (entityId != null && !entityId.equals("")) {
+            mav.addObject("entityId", entityId);
+            Entity entity = dataAccessService.get("products.product", entityId);
+            mav.addObject("entity", entity.getFields());
+        }
+
+        return mav;
 
     }
 
@@ -74,6 +70,7 @@ public class ProductsModifyController {
 
         ModelAndView mav = new ModelAndView();
         if (checkFields(entity, fieldsDefinition, mav)) {
+
             String message = "";
             dataAccessService.save("products.product", entity);
             if (entity.getId() == null) {
@@ -107,11 +104,13 @@ public class ProductsModifyController {
         Map<String, String> fieldsValidationInfo = new HashMap<String, String>();
         for (FieldDefinition field : fieldsDefinition) {
             String formField = (String) entity.getField(field.getName());
-            if (formField == null || formField.equals("")) {
+            if (field.isRequired()) {
+                if (formField == null || formField.equals("")) {
 
-                String fieldValidationInfo = "requiredField";
-                fieldsValidationInfo.put(field.getName(), fieldValidationInfo);
-                result = false;
+                    String fieldValidationInfo = "requiredField";
+                    fieldsValidationInfo.put(field.getName(), fieldValidationInfo);
+                    result = false;
+                }
             }
 
         }
