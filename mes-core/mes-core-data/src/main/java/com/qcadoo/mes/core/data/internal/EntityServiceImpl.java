@@ -108,11 +108,25 @@ public final class EntityServiceImpl {
     }
 
     private void setPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
-        if (value != null && !fieldDefinition.getType().isValidType(value)) {
-            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
-        }
+        validateValue(databaseEntity, fieldDefinition, value);
         setField(databaseEntity, fieldDefinition.getName(), value);
+    }
+
+    private void validateValue(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
+        if (value == null) {
+            return;
+        }
+        ValidatableFieldType validatableFieldType = (ValidatableFieldType) fieldDefinition.getType();
+        if (!validatableFieldType.getType().isInstance(value)) {
+            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
+                    + fieldDefinition.getName() + " has invalid type " + value.getClass().getSimpleName() + ", should be "
+                    + validatableFieldType.getType().getSimpleName());
+        }
+        String error = validatableFieldType.validateValue(value);
+        if (error != null) {
+            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
+                    + fieldDefinition.getName() + " is invalid: " + error);
+        }
     }
 
     private void setBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
@@ -122,10 +136,7 @@ public final class EntityServiceImpl {
             DataDefinition referencedDataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
             Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
-            if (!fieldDefinition.getType().isValidType(referencedEntity)) {
-                throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
-                        + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
-            }
+            validateValue(databaseEntity, fieldDefinition, referencedEntity);
             setField(databaseEntity, fieldDefinition.getName(), referencedEntity);
         } else {
             setField(databaseEntity, fieldDefinition.getName(), null);
@@ -134,10 +145,7 @@ public final class EntityServiceImpl {
 
     private Object getPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         Object value = getField(databaseEntity, fieldDefinition.getName());
-        if (value != null && !fieldDefinition.getType().isValidType(value)) {
-            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
-        }
+        validateValue(databaseEntity, fieldDefinition, value);
         return value;
     }
 

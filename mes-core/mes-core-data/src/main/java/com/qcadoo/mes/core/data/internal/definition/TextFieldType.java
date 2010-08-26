@@ -4,8 +4,9 @@ import org.apache.commons.lang.StringUtils;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
 import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.internal.ValidatableFieldType;
 
-public final class TextFieldType implements FieldType {
+public final class TextFieldType implements FieldType, ValidatableFieldType {
 
     @Override
     public boolean isSearchable() {
@@ -23,14 +24,16 @@ public final class TextFieldType implements FieldType {
     }
 
     @Override
-    public boolean isValidType(final Object value) {
-        if (!(value instanceof String)) {
-            return false;
-        }
+    public Class<?> getType() {
+        return String.class;
+    }
+
+    @Override
+    public String validateValue(final Object value) {
         if (StringUtils.length((String) value) > 2048) {
-            return false;
+            return "value is too long, " + StringUtils.length((String) value) + " > 2048";
         }
-        return true;
+        return null;
     }
 
     @Override

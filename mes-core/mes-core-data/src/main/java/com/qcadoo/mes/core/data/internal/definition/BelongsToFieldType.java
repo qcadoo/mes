@@ -7,11 +7,12 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 import com.qcadoo.mes.core.data.definition.LookupedFieldType;
+import com.qcadoo.mes.core.data.internal.ValidatableFieldType;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 
-public final class BelongsToFieldType implements LookupedFieldType {
+public final class BelongsToFieldType implements LookupedFieldType, ValidatableFieldType {
 
     private final String entityName;
 
@@ -36,7 +37,7 @@ public final class BelongsToFieldType implements LookupedFieldType {
 
     @Override
     public boolean isSearchable() {
-        return true;
+        return false;
     }
 
     @Override
@@ -50,8 +51,13 @@ public final class BelongsToFieldType implements LookupedFieldType {
     }
 
     @Override
-    public boolean isValidType(final Object value) {
-        return true;
+    public Class<?> getType() {
+        return Object.class;
+    }
+
+    @Override
+    public String validateValue(final Object value) {
+        return null;
     }
 
     @Override
