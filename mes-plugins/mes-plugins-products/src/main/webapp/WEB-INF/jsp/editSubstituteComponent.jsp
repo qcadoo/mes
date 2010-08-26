@@ -11,7 +11,7 @@
 
 </head>
 <body>
-	<div class="modalHeader">substitute component</div>
+	<div class="modalHeader"><spring:message code="substituteComponent.form.header"/></div>
 	<div class="modalContent">
 		<div class="validatorGlobalMessage"></div>
 		<form id="substituteComponentForm">
@@ -93,8 +93,8 @@
 		</form>
 	</div>
 	<div class="modalFooter">
-		<button id="ajaxSubmit" onclick="editSubstituteComponentApplyClick()">Apply</button>
-		<button class="jqmClose">zamknij</button>
+		<button id="ajaxSubmit" onclick="editSubstituteComponentApplyClick()"><spring:message code="substituteComponent.form.apply"/></button>
+		<button class="jqmClose"><spring:message code="substituteComponent.form.cancel"/></button>
 	</div>
 </body>
 </html>

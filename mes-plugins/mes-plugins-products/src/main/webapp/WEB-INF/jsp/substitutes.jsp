@@ -148,7 +148,7 @@
 		
 		
 		<div>
-			Substytuty:
+			<spring:message code="substitutes.info.header"/>
 			<button id="newSubstituteButton" onClick="newSubstituteClicked()"><spring:message code="productsFormView.new"/></button>
 			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="productsFormView.delete"/></button>
 			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.up"/></button>
@@ -156,18 +156,16 @@
 		</div>
 		<table id="substitutesGrid"></table>
 		<div>
-			Produkty substytutu:
+			<spring:message code="substituteComponent.info.header"/>
 			<button id="newSubstituteComponentButton" onClick="newSubstituteComponentClicked()"><spring:message code="productsFormView.new"/></button>
 			<button id="deleteSubstituteComponentButton" onClick="substituteComponentsGrid.deleteSelectedRecords()"><spring:message code="productsFormView.delete"/></button>
 		</div>
 		<table id="substituteComponentsGrid"></table> 
 		
 		<div class="jqmWindow" id="editSubstituteWindow">
-			Please wait...
 		</div>
 		
 		<div class="jqmWindow" id="editSubstituteComponentWindow">
-			Please wait...
 		</div>
 
 

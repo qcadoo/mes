@@ -46,7 +46,7 @@ public class ValidationUtils {
                         Date date = dateFormat.parse((String) fieldValue);
                         validEntity.setField(fieldDefinition.getName(), date);
                     } catch (ParseException e) {
-                        fieldMessages.put(fieldDefinition.getName(), "notDateValidateMessage");
+                        fieldMessages.put(fieldDefinition.getName(), "form.validate.notDateValidateMessage");
                     }
                     break;
 
@@ -56,7 +56,7 @@ public class ValidationUtils {
                         Date date = dateTimeFormat.parse((String) fieldValue);
                         validEntity.setField(fieldDefinition.getName(), date);
                     } catch (ParseException e) {
-                        fieldMessages.put(fieldDefinition.getName(), "notDateValidateMessage");
+                        fieldMessages.put(fieldDefinition.getName(), "form.validate.notDateTimeValidateMessage");
                     }
                     break;
 
@@ -65,7 +65,7 @@ public class ValidationUtils {
                     EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefinition.getType();
                     List<String> options = enumeratedField.values();
                     if (!options.contains(fieldValue)) {
-                        fieldMessages.put(fieldDefinition.getName(), "notInDictionaryValidateMessage");
+                        fieldMessages.put(fieldDefinition.getName(), "form.validate.notInDictionaryValidateMessage");
                     } else {
                         validEntity.setField(fieldDefinition.getName(), (String) fieldValue);
                     }
@@ -76,7 +76,7 @@ public class ValidationUtils {
                         Integer intVal = Integer.parseInt((String) fieldValue);
                         validEntity.setField(fieldDefinition.getName(), intVal);
                     } catch (NumberFormatException e) {
-                        fieldMessages.put(fieldDefinition.getName(), "notIntegerValidateMessage");
+                        fieldMessages.put(fieldDefinition.getName(), "form.validate.notIntegerValidateMessage");
                     }
                     break;
 
@@ -85,7 +85,7 @@ public class ValidationUtils {
                         BigDecimal bd = new BigDecimal((String) fieldValue);
                         validEntity.setField(fieldDefinition.getName(), bd);
                     } catch (NumberFormatException e) {
-                        fieldMessages.put(fieldDefinition.getName(), "notBigDecimalValidateMessage");
+                        fieldMessages.put(fieldDefinition.getName(), "form.validate.notBigDecimalValidateMessage");
                     }
                     break;
 
@@ -103,7 +103,7 @@ public class ValidationUtils {
                         Long entityId = Long.parseLong((String) ifFieldValue);
                         validEntity.setField(fieldDefinition.getName(), new Entity(entityId));
                     } catch (NumberFormatException e) {
-                        fieldMessages.put(fieldDefinition.getName(), "notIdValidateMessage");
+                        fieldMessages.put(fieldDefinition.getName(), "form.validate.notIdValidateMessage");
                     }
                     break;
             }
@@ -111,7 +111,8 @@ public class ValidationUtils {
         if (fieldMessages.size() == 0) {
             return ValidationResultFactory.getInstance().createValidResult(validEntity);
         } else {
-            return ValidationResultFactory.getInstance().createInvalidResult("wrongFieldTypesValidateMessage", fieldMessages);
+            return ValidationResultFactory.getInstance().createInvalidResult("form.validate.wrongFieldTypesValidateMessage",
+                    fieldMessages);
         }
     }
 
@@ -120,14 +121,15 @@ public class ValidationUtils {
         for (FieldDefinition fieldDefinition : fields) {
             if (fieldDefinition.isRequired()) {
                 if (entity.getField(fieldDefinition.getName()) == null) {
-                    fieldMessages.put(fieldDefinition.getName(), "nullFieldValidateMessage");
+                    fieldMessages.put(fieldDefinition.getName(), "form.validate.nullFieldValidateMessage");
                 }
             }
         }
         if (fieldMessages.size() == 0) {
             return ValidationResultFactory.getInstance().createValidResult(entity);
         } else {
-            return ValidationResultFactory.getInstance().createInvalidResult("nullMandatoryFieldsValidateMessage", fieldMessages);
+            return ValidationResultFactory.getInstance().createInvalidResult("form.validate.nullMandatoryFieldsValidateMessage",
+                    fieldMessages);
         }
     }
 }
