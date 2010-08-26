@@ -75,6 +75,9 @@ public class ProductsSubstituteController {
     @RequestMapping(value = "/products/substitute/editSubstitute/save", method = RequestMethod.POST)
     @ResponseBody
     public ValidationResult saveSubstitute(@ModelAttribute Entity substitute) {
+        for (String s : substitute.getFields().keySet()) {
+            System.out.println(s + " - " + substitute.getField(s));
+        }
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         ValidationResult validationResult = ValidationUtils.validateEntity(substitute, substituteDataDefinition.getFields());
         if (validationResult.isValid()) {

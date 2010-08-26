@@ -71,9 +71,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("products.substitute");
         GridDefinition gridDefinition = new GridDefinition("substitutes");
 
-        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
-        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
-        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType());
+        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType(), true);
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType(), true);
+        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType(), true);
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
@@ -99,11 +99,11 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         GridDefinition gridDefinition = new GridDefinition("substituteComponents");
 
         FieldDefinition fieldProduct = createFieldDefinition("product",
-                fieldTypeFactory.eagerBelongsToType("products.product", "name"));
+                fieldTypeFactory.eagerBelongsToType("products.product", "name"), true);
         FieldDefinition fieldSubstitute = createFieldDefinition("substitute",
                 fieldTypeFactory.eagerBelongsToType("products.substitute", "name"));
         fieldSubstitute.setHidden(true);
-        FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType());
+        FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType(), true);
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
@@ -129,6 +129,13 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);
         fieldDefinition.setType(type);
+        return fieldDefinition;
+    }
+
+    private FieldDefinition createFieldDefinition(final String name, final FieldType type, final boolean required) {
+        FieldDefinition fieldDefinition = new FieldDefinition(name);
+        fieldDefinition.setType(type);
+        fieldDefinition.setRequired(required);
         return fieldDefinition;
     }
 
