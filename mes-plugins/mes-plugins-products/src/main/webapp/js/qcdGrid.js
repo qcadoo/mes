@@ -108,7 +108,6 @@ QCDGrid = function(opts) {
 	// CONSTRUCTOR
 	
 	function constructor(opts) {
-		console.info("constructor");
 		
 		options = parseOptions(opts);
 		
@@ -208,7 +207,6 @@ QCDGrid = function(opts) {
 	
 	this.deleteSelectedRecords = function() {
 		if (window.confirm("delete?")) {
-			debug("delete");
 			blockList();
 			var selectedRows;
 			if (options.multiselect) {
@@ -222,7 +220,6 @@ QCDGrid = function(opts) {
 				dataArray.push(parseInt(selectedRows[i]));
 			}
 			var dataString = JSON.stringify(dataArray);
-			debug(dataString);
 			$.ajax({
 				url: options.deleteUrl,
 				type: 'POST',
