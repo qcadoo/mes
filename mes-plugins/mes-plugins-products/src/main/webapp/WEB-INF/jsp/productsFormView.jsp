@@ -18,6 +18,7 @@
 	<script type="text/javascript" src="../js/jquery.jqGrid.min.js"></script>
 	<script type="text/javascript" src="../js/qcdGrid.js"></script>
 	<script type="text/javascript" src="../js/jqModal.js"></script>
+	<script type="text/javascript" src="../js/jquery.ba-serializeobject.min.js"></script>
 
 </head>
 <body>

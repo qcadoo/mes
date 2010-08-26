@@ -41,7 +41,7 @@
 			        $("#downSubstituteButton").attr("disabled", false);
 		        },
 				ondblClickRow: function(id){
-		        	editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?substituteId='+id});
+		        	editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId=${entityId }&substituteId='+id});
 		        	editSubstituteWindow.jqmShow();
 		        }
 			});
@@ -82,13 +82,49 @@
 		});
 
 		newSubstituteClicked = function() {
-			editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html'});
+			editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId=${entityId }'});
+			
+			//$('#editSubstituteWindow').html('').attr('src', 'substitute/editSubstitute.html');
 			editSubstituteWindow.jqmShow();
 		}
 
 		newSubstituteComponentClicked = function() {
 			editSubstituteComponentWindow = $('#editSubstituteComponentWindow').jqm({ajax: 'substitute/editSubstituteComponent.html?substituteId='+substitutesGrid.getSelectedRow()});
 			editSubstituteComponentWindow.jqmShow();
+		}
+
+		applyClick = function() {
+			//alert("click");
+			var substituteData = $('#substituteForm').serializeObject();
+			console.info(substituteData);
+			//var dataString = JSON.stringify(substituteData);
+			$(".validatorGlobalMessage").html('');
+			$(".fieldValidatorMessage").html('');
+			$.ajax({
+				url: 'substitute/editSubstitute/save.html',
+				type: 'POST',
+				//dataType: 'json',
+				data: substituteData,
+				//contentType: 'application/json; charset=utf-8',
+				success: function(response) {
+					//refresh();
+					console.info(response);
+					if (response.valid) {
+						console.info("ok");
+					} else {
+						$(".validatorGlobalMessage").html(response.globalMessage);
+						for (var field in response.fieldMessages) {
+							$("#"+field+"_validateMessage").html(response.fieldMessages[field]);
+						}
+					}
+				},
+				error: function(xhr, textStatus, errorThrown){
+					alert(textStatus);
+					//unblockList();
+				}
+	
+			});
+			return false;
 		}
 		
 	</script>
@@ -110,7 +146,6 @@
 		<table id="substituteComponentsGrid"></table> 
 		
 		<div class="jqmWindow" id="editSubstituteWindow">
-			Please wait...
 		</div>
 		
 		<div class="jqmWindow" id="editSubstituteComponentWindow">
