@@ -105,7 +105,7 @@ public class ProductsModifyController {
         for (FieldDefinition field : fieldsDefinition) {
             String formField = (String) entity.getField(field.getName());
             if (field.isRequired()) {
-                if (formField == null || formField.equals("")) {
+                if (formField == null || formField.trim().equals("")) {
                     String fieldValidationInfo = "requiredField";
                     fieldsValidationInfo.put(field.getName(), fieldValidationInfo);
                     result = false;
