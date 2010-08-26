@@ -108,7 +108,7 @@ public final class EntityServiceImpl {
     }
 
     private void setPrimitiveField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
-        if (!fieldDefinition.getType().isValidType(value)) {
+        if (value != null && !fieldDefinition.getType().isValidType(value)) {
             throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
                     + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
         }
@@ -116,20 +116,25 @@ public final class EntityServiceImpl {
     }
 
     private void setBelongsToField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
-        BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
-        DataDefinition referencedDataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
-        Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
-        Entity referencedEntity = (Entity) sessionFactory.getCurrentSession().get(referencedClass, (Long) value);
-        if (!fieldDefinition.getType().isValidType(referencedEntity)) {
-            throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
+        if (value != null) {
+            Long referencedEntityId = ((Entity) value).getId();
+            BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
+            DataDefinition referencedDataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
+            Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
+            Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
+            if (!fieldDefinition.getType().isValidType(referencedEntity)) {
+                throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
+                        + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
+            }
+            setField(entity, fieldDefinition.getName(), referencedEntity);
+        } else {
+            setField(entity, fieldDefinition.getName(), null);
         }
-        setField(entity, fieldDefinition.getName(), referencedEntity);
     }
 
     private Object getPrimitiveField(final Object entity, final FieldDefinition fieldDefinition) {
         Object value = getField(entity, fieldDefinition.getName());
-        if (!fieldDefinition.getType().isValidType(value)) {
+        if (value != null && !fieldDefinition.getType().isValidType(value)) {
             throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
                     + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
         }
@@ -141,7 +146,11 @@ public final class EntityServiceImpl {
         DataDefinition dataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
         if (belongsToFieldType.isEagerFetch()) {
             Object value = getField(entity, fieldDefinition.getName());
-            return convertToGenericEntity(dataDefinition, value);
+            if (value != null) {
+                return convertToGenericEntity(dataDefinition, value);
+            } else {
+                return null;
+            }
         } else {
             throw new IllegalStateException("belongsTo type with lazy loading is not supported yet");
         }

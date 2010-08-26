@@ -5,6 +5,9 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.ExpressionUtil;
+
 /**
  * Columns defines one column on grid. It can be a one-field column or composite column.
  * 
@@ -60,6 +63,10 @@ public final class ColumnDefinition {
 
     public void setExpression(final String expression) {
         this.expression = expression;
+    }
+
+    public String getValueUsingExpression(final Entity entity) {
+        return ExpressionUtil.getValue(entity, this);
     }
 
     public Integer getWidth() {
