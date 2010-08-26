@@ -35,22 +35,24 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void save(final String entityName, final Entity entity) {
-        checkArgument(entity != null, "entity must be given");
+    public void save(final String entityName, final Entity... entities) {
+        checkArgument(entities.length > 0, "entity must be given");
         DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
         Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
 
         Object existingDatabaseEntity = null;
 
-        if (entity.getId() != null) {
-            existingDatabaseEntity = getDatabaseEntity(entityClass, entity.getId());
-            checkState(existingDatabaseEntity != null, "cannot find entity %s with id=%s", entityClass.getSimpleName(),
-                    entity.getId());
+        for (Entity entity : entities) {
+            if (entity.getId() != null) {
+                existingDatabaseEntity = getDatabaseEntity(entityClass, entity.getId());
+                checkState(existingDatabaseEntity != null, "cannot find entity %s with id=%s", entityClass.getSimpleName(),
+                        entity.getId());
+            }
+
+            Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity);
+
+            sessionFactory.getCurrentSession().save(databaseEntity);
         }
-
-        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity);
-
-        sessionFactory.getCurrentSession().save(databaseEntity);
     }
 
     @Override
