@@ -1,8 +1,9 @@
 package com.qcadoo.mes.core.data.internal.search.restrictions;
 
+import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Restriction;
 
-public abstract class BaseRestriction implements Restriction {
+public abstract class BaseRestriction implements Restriction, HibernateRestriction {
 
     private final String fieldName;
 

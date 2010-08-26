@@ -11,7 +11,7 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
  */
 public interface DataAccessService {
 
-    void save(String entityName, Entity entity);
+    void save(String entityName, Entity... entities);
 
     Entity get(String entityName, Long entityId);
 

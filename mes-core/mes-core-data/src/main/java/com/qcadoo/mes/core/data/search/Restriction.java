@@ -8,4 +8,5 @@ public interface Restriction {
     String getFieldName();
 
     Object getValue();
+
 }

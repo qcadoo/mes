@@ -20,8 +20,8 @@ public final class Restrictions {
         return new LikeRestriction(fieldName, expectedValue);
     }
 
-    public static Restriction belongsTo(final String entityName, final Long id) {
-        return new BelongsToRestriction(entityName, id);
+    public static Restriction belongsTo(final String belongsToFieldName, final Long id) {
+        return new BelongsToRestriction(belongsToFieldName, id);
     }
 
 }

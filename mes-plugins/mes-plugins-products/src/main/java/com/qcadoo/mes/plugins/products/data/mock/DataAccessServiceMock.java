@@ -11,7 +11,7 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 public class DataAccessServiceMock implements DataAccessService {
 
     @Override
-    public void save(String entityName, Entity entity) {
+    public void save(String entityName, Entity... entities) {
         // TODO Auto-generated method stub
 
     }

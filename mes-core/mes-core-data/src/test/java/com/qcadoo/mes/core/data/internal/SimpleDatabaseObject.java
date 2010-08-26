@@ -13,6 +13,13 @@ public final class SimpleDatabaseObject {
 
     private boolean deleted;
 
+    public SimpleDatabaseObject() {
+    }
+
+    public SimpleDatabaseObject(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

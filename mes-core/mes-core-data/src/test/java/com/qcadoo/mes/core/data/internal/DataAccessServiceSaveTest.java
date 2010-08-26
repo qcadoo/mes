@@ -85,7 +85,7 @@ public final class DataAccessServiceSaveTest {
     }
 
     @Test
-    public void shouldSaveExitingEntity() throws Exception {
+    public void shouldSaveExistingEntity() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", "Mr T");

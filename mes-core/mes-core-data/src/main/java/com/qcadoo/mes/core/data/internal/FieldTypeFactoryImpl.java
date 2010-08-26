@@ -91,11 +91,13 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Override
     public LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName) {
+        // TODO masz don't create new fieltType every time, use some cache
         return new BelongsToFieldType(entityName, lookupFieldName, false, dataAccessService);
     }
 
     @Override
     public LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName) {
+        // TODO masz don't create new fieltType every time, use some cache
         return new BelongsToFieldType(entityName, lookupFieldName, true, dataAccessService);
     }
 
