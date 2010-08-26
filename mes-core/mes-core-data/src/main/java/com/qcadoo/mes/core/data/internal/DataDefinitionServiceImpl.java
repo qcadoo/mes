@@ -75,6 +75,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
+        fieldProduct.setHidden(true);
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));

@@ -79,7 +79,7 @@
 				</c:forEach>	
 			</table>	
 			<input type="hidden" name="id" value="${entityId }"/>
-			<input type="submit" name="button" value="<spring:message code="productsFormView.button"/>" />
+			<input type="submit" name="button" value="<spring:message code="productsFormView.button"/>" onClick="window.location='list.html'"/>
 			<input type="button" name="button" value="<spring:message code="productsFormView.cancel"/>" onClick="window.location='list.html'" />
 		</form><br />
 		
