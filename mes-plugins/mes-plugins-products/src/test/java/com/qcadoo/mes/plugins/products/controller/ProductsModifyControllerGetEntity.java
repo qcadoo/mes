@@ -44,7 +44,7 @@ public class ProductsModifyControllerGetEntity {
         // given
 
         // when
-        ModelAndView modelAndView = controller.getEntity("1");
+        ModelAndView modelAndView = controller.getEntity((long) 1);
         // then
         assertEquals("productsFormView", modelAndView.getViewName());
         assertNotNull(modelAndView.getModel().get("fieldsDefinition"));

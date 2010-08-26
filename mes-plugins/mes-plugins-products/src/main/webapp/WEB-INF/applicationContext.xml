@@ -20,7 +20,11 @@
 	<!-- Maps incoming requests to the appropriate controller based on the annotations 
 		on the controller methods. -->
 	<bean
-		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" >
+				<property name="interceptors">
+		                <ref bean="localeChangeInterceptor" />
+		</property>
+		</bean>
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
@@ -31,6 +35,7 @@
 				</bean>
 			</list>
 		</property>
+
 	</bean>
 	
 
@@ -58,6 +63,7 @@
 	<bean id="localeChangeInterceptor"
 	    class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 	    <property name="paramName" value="lang" />
+
 	</bean>
 
 	<bean id="localeResolver"
@@ -65,14 +71,6 @@
 	    <property name="defaultLocale" value="pl"/>
 	</bean>
 
-	<bean id="handlerMapping"
-	    class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-	    <property name="interceptors">
-	        <ref bean="localeChangeInterceptor" />
-	    </property>
-	</bean>
-
-
-
+	<bean id="contextApplicationContextProvider" class="com.qcadoo.mes.plugins.products.utils.ApplicationContextProvider"></bean>  
 
 </beans>

@@ -38,6 +38,7 @@
 										<c:when test='${(fieldsTypes[entry.name] == "4") || (fieldsTypes[entry.name] == "5") }'>
 											<td>
 												<select name="fields[${entry.name}]">
+													<option></option>
 													<c:forEach items="${lists[entry.name] }" var="listEntry">
 														<c:choose>
 															<c:when test='${listEntry  == entity[entry.name]}'>
