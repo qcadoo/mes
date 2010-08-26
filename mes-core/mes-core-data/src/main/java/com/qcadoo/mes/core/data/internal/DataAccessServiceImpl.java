@@ -10,6 +10,8 @@ import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Autowired
     private EntityServiceImpl entityService;
 
+    private final static Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
+
     @Override
     @Transactional
     public void save(final String entityName, final Entity... entities) {
@@ -52,6 +56,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
             Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity);
 
             sessionFactory.getCurrentSession().save(databaseEntity);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Object with id: " + entity.getId() + " has been saved");
+            }
         }
     }
 
@@ -87,6 +95,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
         entityService.setDeleted(databaseEntity);
 
         sessionFactory.getCurrentSession().update(databaseEntity);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Object with id: " + entityId + " marked as deleted");
+        }
     }
 
     @Override
@@ -98,12 +110,25 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         int totalNumberOfEntities = getTotalNumberOfEntities(getCriteriaWithRestriction(searchCriteria, entityClass));
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Get total number of entities: " + totalNumberOfEntities);
+        }
+
         Criteria criteria = getCriteriaWithRestriction(searchCriteria, entityClass).setFirstResult(
                 searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults());
 
         criteria = addOrderToCriteria(searchCriteria.getOrder(), criteria);
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Searching elements with criteria: firstResults = " + searchCriteria.getFirstResult() + ", maxResults = "
+                    + searchCriteria.getMaxResults() + ", order is asc = " + searchCriteria.getOrder().isAsc());
+        }
+
         List<?> results = criteria.list();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Find " + results.size() + " elements");
+        }
 
         return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, results);
     }
