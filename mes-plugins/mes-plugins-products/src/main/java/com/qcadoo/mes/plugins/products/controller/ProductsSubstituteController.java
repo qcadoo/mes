@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
@@ -66,8 +67,8 @@ public class ProductsSubstituteController {
             try {
                 int pId = Integer.parseInt(productId);
 
-                SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("products.substitute");
-                SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+                SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("products.substitute")
+                        .restrictedWith(Restrictions.belongsTo("product", Long.valueOf(pId))).build();
                 ResultSet rs = dataAccessService.find("products.substitute", searchCriteria);
                 return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
 
@@ -103,12 +104,10 @@ public class ProductsSubstituteController {
             try {
                 int pId = Integer.parseInt(productId);
                 int sId = Integer.parseInt(substituteId);
-                SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity("products.substituteComponent");
 
-                SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-
+                SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("products.substituteComponent")
+                        .restrictedWith(Restrictions.belongsTo("substitute", Long.valueOf(sId))).build();
                 ResultSet rs = dataAccessService.find("products.substituteComponent", searchCriteria);
-
                 return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
 
                 // List<Entity> entities = new LinkedList<Entity>();

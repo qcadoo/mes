@@ -3,6 +3,9 @@ package com.qcadoo.mes.core.data.beans;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Object represents data from the database tables - with and without custom fields - and virtual tables - build using only custom
  * fields. All fields - database's fields and custom fields - are aggregated into key-value map. The key is the name of the field
@@ -47,6 +50,26 @@ public final class Entity {
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(23, 41).append(id).append(fields).toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Entity)) {
+            return false;
+        }
+        Entity other = (Entity) obj;
+        return new EqualsBuilder().append(id, other.id).append(fields, other.fields).isEquals();
     }
 
 }

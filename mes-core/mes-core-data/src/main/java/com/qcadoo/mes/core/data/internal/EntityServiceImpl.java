@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.internal;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public final class EntityServiceImpl {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     public static final String FIELD_ID = "id";
 
@@ -40,6 +44,38 @@ public final class EntityServiceImpl {
                 throw new IllegalStateException("cannot find mapping class for definition: "
                         + dataDefinition.getFullyQualifiedClassName(), e);
             }
+        }
+    }
+
+    public Long getId(final Object entity) {
+        return (Long) getField(entity, FIELD_ID);
+    }
+
+    public void setId(final Object entity, final Long id) {
+        setField(entity, FIELD_ID, id);
+    }
+
+    public void setDeleted(final Object entity) {
+        setField(entity, FIELD_DELETED, true);
+    }
+
+    public void setField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
+        if (fieldDefinition.isCustomField()) {
+            throw new UnsupportedOperationException("custom fields are not supported");
+        } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
+            setBelongsToField(entity, fieldDefinition, value);
+        } else {
+            setPrimitiveField(entity, fieldDefinition, value);
+        }
+    }
+
+    public Object getField(final Object entity, final FieldDefinition fieldDefinition) {
+        if (fieldDefinition.isCustomField()) {
+            throw new UnsupportedOperationException("custom fields are not supported");
+        } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
+            return getBelongsToField(entity, fieldDefinition);
+        } else {
+            return getPrimitiveField(entity, fieldDefinition);
         }
     }
 
@@ -71,26 +107,6 @@ public final class EntityServiceImpl {
         return databaseEntity;
     }
 
-    public Long getId(final Object entity) {
-        return (Long) getField(entity, FIELD_ID);
-    }
-
-    public void setId(final Object entity, final Long id) {
-        setField(entity, FIELD_ID, id);
-    }
-
-    public void setDeleted(final Object entity) {
-        setField(entity, FIELD_DELETED, true);
-    }
-
-    public void setField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
-        if (fieldDefinition.isCustomField()) {
-            throw new UnsupportedOperationException("custom fields are not supported");
-        } else {
-            setPrimitiveField(entity, fieldDefinition, value);
-        }
-    }
-
     private void setPrimitiveField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
         if (!fieldDefinition.getType().isValidType(value)) {
             throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
@@ -99,14 +115,16 @@ public final class EntityServiceImpl {
         setField(entity, fieldDefinition.getName(), value);
     }
 
-    public Object getField(final Object entity, final FieldDefinition fieldDefinition) {
-        if (fieldDefinition.isCustomField()) {
-            throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
-            return getBelongsToField(entity, fieldDefinition);
-        } else {
-            return getPrimitiveField(entity, fieldDefinition);
+    private void setBelongsToField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
+        BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
+        DataDefinition referencedDataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
+        Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
+        Entity referencedEntity = (Entity) sessionFactory.getCurrentSession().get(referencedClass, (Long) value);
+        if (!fieldDefinition.getType().isValidType(referencedEntity)) {
+            throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
+                    + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
         }
+        setField(entity, fieldDefinition.getName(), referencedEntity);
     }
 
     private Object getPrimitiveField(final Object entity, final FieldDefinition fieldDefinition) {

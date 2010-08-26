@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,9 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
+import com.qcadoo.mes.core.data.search.HibernateRestriction;
+import com.qcadoo.mes.core.data.search.Order;
+import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 
@@ -92,36 +94,57 @@ public final class DataAccessServiceImpl implements DataAccessService {
         DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
         Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
 
-        int totalNumberOfEntities = Integer.valueOf(sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true)).setProjection(Projections.rowCount()).uniqueResult()
-                .toString());
+        int totalNumberOfEntities = getTotalNumberOfEntities(getCriteriaWithRestriction(searchCriteria, entityClass));
 
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .setFirstResult(searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults())
-                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true));
+        Criteria criteria = getCriteriaWithRestriction(searchCriteria, entityClass).setFirstResult(
+                searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults());
 
-        if (searchCriteria.getOrder() != null) {
-            Order order = null;
-            if (searchCriteria.getOrder().isAsc()) {
-                order = Order.asc(searchCriteria.getOrder().getFieldName());
-            } else {
-                order = Order.desc(searchCriteria.getOrder().getFieldName());
-            }
-            criteria = criteria.addOrder(order);
-        }
+        criteria = addOrderToCriteria(searchCriteria.getOrder(), criteria);
+
         List<?> results = criteria.list();
 
+        return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, results);
+    }
+
+    private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, Class<?> entityClass) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
+                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true));
+
+        for (Restriction restriction : searchCriteria.getRestrictions()) {
+            criteria = addRestrictionToCriteria(restriction, criteria);
+        }
+        return criteria;
+    }
+
+    private int getTotalNumberOfEntities(Criteria criteria) {
+        return Integer.valueOf(criteria.setProjection(Projections.rowCount()).uniqueResult().toString());
+    }
+
+    private ResultSetImpl getResultSet(final SearchCriteria searchCriteria, DataDefinition dataDefinition,
+            int totalNumberOfEntities, List<?> results) {
         List<Entity> genericResults = new ArrayList<Entity>();
 
         for (Object databaseEntity : results) {
             genericResults.add(entityService.convertToGenericEntity(dataDefinition, databaseEntity));
         }
+
         ResultSetImpl resultSet = new ResultSetImpl();
         resultSet.setResults(genericResults);
         resultSet.setCriteria(searchCriteria);
         resultSet.setTotalNumberOfEntities(totalNumberOfEntities);
-
         return resultSet;
+    }
+
+    private Criteria addRestrictionToCriteria(final Restriction restriction, final Criteria criteria) {
+        return ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+    }
+
+    private Criteria addOrderToCriteria(final Order order, final Criteria criteria) {
+        if (order.isAsc()) {
+            return criteria.addOrder(org.hibernate.criterion.Order.asc(order.getFieldName()));
+        } else {
+            return criteria.addOrder(org.hibernate.criterion.Order.desc(order.getFieldName()));
+        }
     }
 
     private Object getDatabaseEntity(final Class<?> entityClass, final Long entityId) {
