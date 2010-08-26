@@ -15,7 +15,6 @@
 		<c:forEach items="${substituteComponentGridDefinition.columns}" var="column">
 			substituteComponentsColNames.push("<spring:message code="substitutes.column.${column.name}"/>");
 			substituteComponentsColModel.push({name:"${column.name}", index:"${column.name}", width:100, sortable: false});
-			console.info("${column.fields[0].name}");
 		</c:forEach>
 		var substituteComponentsGrid;
 
@@ -83,8 +82,6 @@
 
 		newSubstituteClicked = function() {
 			editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId=${entityId }'});
-			
-			//$('#editSubstituteWindow').html('').attr('src', 'substitute/editSubstitute.html');
 			editSubstituteWindow.jqmShow();
 		}
 
@@ -93,26 +90,45 @@
 			editSubstituteComponentWindow.jqmShow();
 		}
 
-		applyClick = function() {
-			//alert("click");
+		editSubstituteApplyClick = function() {
 			var substituteData = $('#substituteForm').serializeObject();
-			console.info(substituteData);
-			//var dataString = JSON.stringify(substituteData);
 			$(".validatorGlobalMessage").html('');
 			$(".fieldValidatorMessage").html('');
 			$.ajax({
 				url: 'substitute/editSubstitute/save.html',
 				type: 'POST',
-				//dataType: 'json',
 				data: substituteData,
-				//contentType: 'application/json; charset=utf-8',
 				success: function(response) {
-					//refresh();
-					console.info(response);
 					if (response.valid) {
-						console.info("ok");
 						editSubstituteWindow.jqmHide();
 						substitutesGrid.refresh();
+					} else {
+						$(".validatorGlobalMessage").html(response.globalMessage);
+						for (var field in response.fieldMessages) {
+							$("#"+field+"_validateMessage").html(response.fieldMessages[field]);
+						}
+					}
+				},
+				error: function(xhr, textStatus, errorThrown){
+					alert(textStatus);
+				}
+	
+			});
+			return false;
+		}
+
+		editSubstituteComponentApplyClick = function() {
+			var substituteData = $('#substituteComponentForm').serializeObject();
+			$(".validatorGlobalMessage").html('');
+			$(".fieldValidatorMessage").html('');
+			$.ajax({
+				url: 'substitute/editSubstituteComponent/save.html',
+				type: 'POST',
+				data: substituteData,
+				success: function(response) {
+					if (response.valid) {
+						editSubstituteComponentWindow.jqmHide();
+						substituteComponentsGrid.refresh();
 					} else {
 						$(".validatorGlobalMessage").html(response.globalMessage);
 						for (var field in response.fieldMessages) {
@@ -147,6 +163,7 @@
 		<table id="substituteComponentsGrid"></table> 
 		
 		<div class="jqmWindow" id="editSubstituteWindow">
+			Please wait...
 		</div>
 		
 		<div class="jqmWindow" id="editSubstituteComponentWindow">

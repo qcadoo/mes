@@ -20,7 +20,7 @@ public class Substitute {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
-    private Integer no;
+    private Integer priority;
 
     private String number;
 
@@ -42,12 +42,12 @@ public class Substitute {
         this.id = id;
     }
 
-    public Integer getNo() {
-        return no;
+    public Integer getPriority() {
+        return priority;
     }
 
-    public void setNo(Integer no) {
-        this.no = no;
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 
     public String getNumber() {

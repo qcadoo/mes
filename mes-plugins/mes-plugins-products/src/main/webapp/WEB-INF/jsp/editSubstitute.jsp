@@ -70,7 +70,7 @@
 		</form>
 	</div>
 	<div class="modalFooter">
-		<button id="ajaxSubmit" onclick="applyClick()">Apply</button>
+		<button id="ajaxSubmit" onclick="editSubstituteApplyClick()">Apply</button>
 		<button class="jqmClose">zamknij</button>
 	</div>
 	

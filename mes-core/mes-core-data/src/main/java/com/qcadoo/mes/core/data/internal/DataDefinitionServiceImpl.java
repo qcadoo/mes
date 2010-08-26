@@ -68,9 +68,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("products.substitute");
         GridDefinition gridDefinition = new GridDefinition("substitutes");
 
-        FieldDefinition fieldNo = createFieldDefinition("no", fieldTypeFactory.integerType());
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
@@ -79,14 +79,14 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
-        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldNo, fieldNumber, fieldName, fieldEffectiveDateFrom,
-                fieldEffectiveDateTo, fieldProduct }));
+        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldNumber, fieldName, fieldPriority,
+                fieldEffectiveDateFrom, fieldEffectiveDateTo, fieldProduct }));
 
-        ColumnDefinition columnNo = createColumnDefinition("no", fieldNo, null);
         ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber, null);
         ColumnDefinition columnName = createColumnDefinition("name", fieldName, null);
+        ColumnDefinition columnPriority = createColumnDefinition("priority", fieldPriority, null);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNo, columnNumber, columnName }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnPriority }));
 
         return dataDefinition;
     }
@@ -99,6 +99,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
         FieldDefinition fieldSubstitute = createFieldDefinition("substitute",
                 fieldTypeFactory.eagerBelongsToType("products.substitute", "name"));
+        fieldSubstitute.setHidden(true);
         FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
