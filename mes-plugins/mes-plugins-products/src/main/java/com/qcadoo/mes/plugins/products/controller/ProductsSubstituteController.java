@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,11 +16,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.plugins.products.data.ListData;
+import com.qcadoo.mes.plugins.products.validation.ValidationResult;
+import com.qcadoo.mes.plugins.products.validation.ValidationUtils;
 
 @Controller
 public class ProductsSubstituteController {
@@ -43,8 +48,31 @@ public class ProductsSubstituteController {
     public ModelAndView getEditSubstituteView(@RequestParam(required = false) Long substituteId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("editSubstitute");
-        mav.addObject("substituteId", substituteId);
+
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
+        mav.addObject("substituteFieldsDefinition", substituteDataDefinition.getFields());
+
+        if (substituteId != null) {
+            Entity substitute = dataAccessService.get("products.substitute", substituteId);
+            mav.addObject("substitute", substitute);
+        }
+
         return mav;
+    }
+
+    @RequestMapping(value = "/products/substitute/editSubstitute/save", method = RequestMethod.POST)
+    @ResponseBody
+    public ValidationResult saveSubstitute(@ModelAttribute Entity substitute) {
+        // logger.info(substitute.getId() + "");
+        // logger.info(substitute.getFields().toString());
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
+        ValidationResult validationResult = ValidationUtils.validateEntity(substitute, substituteDataDefinition.getFields());
+        if (validationResult.isValid()) {
+            // save
+            logger.info("save");
+            dataAccessService.save("products.substitute", validationResult.getValidEntity());
+        }
+        return validationResult;
     }
 
     @RequestMapping(value = "/products/substitute/editSubstituteComponent", method = RequestMethod.GET)
@@ -71,19 +99,6 @@ public class ProductsSubstituteController {
                         .restrictedWith(Restrictions.belongsTo("product", Long.valueOf(pId))).build();
                 ResultSet rs = dataAccessService.find("products.substitute", searchCriteria);
                 return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
-
-                // List<Entity> entities = new LinkedList<Entity>();
-                // for (int i = 1; i < 4; i++) {
-                // Entity e = new Entity();
-                // e.setId((long) i);
-                // e.setField("no", "no-" + i + "-" + pId);
-                // e.setField("number", "number-" + i + "-" + pId);
-                // e.setField("name", "name-" + i + "-" + pId);
-                // entities.add(e);
-                // }
-                // int totalNumberOfEntities = 3;
-                // return new ListData(totalNumberOfEntities, entities);
-
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -109,18 +124,6 @@ public class ProductsSubstituteController {
                         .restrictedWith(Restrictions.belongsTo("substitute", Long.valueOf(sId))).build();
                 ResultSet rs = dataAccessService.find("products.substituteComponent", searchCriteria);
                 return new ListData(rs.getTotalNumberOfEntities(), rs.getResults());
-
-                // List<Entity> entities = new LinkedList<Entity>();
-                // for (int i = 1; i < 3; i++) {
-                // Entity e = new Entity();
-                // e.setId((long) i);
-                // e.setField("number", "number-" + i + "-" + pId + "-" + sId);
-                // e.setField("name", "name-" + i + "-" + pId + "-" + sId);
-                // e.setField("quantity", "no-" + i + "-" + pId + "-" + sId);
-                // entities.add(e);
-                // }
-                // int totalNumberOfEntities = 2;
-                // return new ListData(totalNumberOfEntities, entities);
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException(e);
             }
