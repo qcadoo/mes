@@ -111,6 +111,8 @@
 					console.info(response);
 					if (response.valid) {
 						console.info("ok");
+						editSubstituteWindow.jqmHide();
+						substitutesGrid.refresh();
 					} else {
 						$(".validatorGlobalMessage").html(response.globalMessage);
 						for (var field in response.fieldMessages) {
@@ -120,7 +122,6 @@
 				},
 				error: function(xhr, textStatus, errorThrown){
 					alert(textStatus);
-					//unblockList();
 				}
 	
 			});

@@ -58,7 +58,7 @@
 					</c:when>
 					<c:otherwise>
 					
-						<input type="hidden" name="fields[${substituteFieldDefinition.name}.id]" value="${substitute.fields[substituteFieldDefinition.name].id}"/>
+						<input type="hidden" name="fields[${substituteFieldDefinition.name}]" value="${substitute.fields[substituteFieldDefinition.name].id}"/>
 					
 					</c:otherwise>
 				</c:choose>

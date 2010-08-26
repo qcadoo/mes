@@ -27,7 +27,6 @@ public class ValidationUtils {
     public static ValidationResult translateEntity(Entity entity, List<FieldDefinition> fields) {
         Entity validEntity = new Entity(entity.getId());
         Map<String, String> fieldMessages = new HashMap<String, String>();
-
         for (FieldDefinition fieldDefinition : fields) {
             Object fieldValue = entity.getField(fieldDefinition.getName());
             String fieldValueStr = (String) fieldValue;
@@ -100,7 +99,7 @@ public class ValidationUtils {
 
                 case FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO:
                     try {
-                        Object ifFieldValue = entity.getField(fieldDefinition.getName() + ".id");
+                        Object ifFieldValue = entity.getField(fieldDefinition.getName());
                         Long entityId = Long.parseLong((String) ifFieldValue);
                         validEntity.setField(fieldDefinition.getName(), new Entity(entityId));
                     } catch (NumberFormatException e) {
