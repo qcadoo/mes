@@ -93,9 +93,6 @@ public class ValidationService {
                     break;
 
                 case FieldTypeFactory.NUMERIC_TYPE_STRING:
-                    validEntity.setField(fieldDefinition.getName(), (String) fieldValue);
-                    break;
-
                 case FieldTypeFactory.NUMERIC_TYPE_TEXT:
                     validEntity.setField(fieldDefinition.getName(), (String) fieldValue);
                     break;
