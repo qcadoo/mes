@@ -40,7 +40,7 @@ public class ValidationService {
             switch (fieldDefinition.getType().getNumericType()) {
 
                 case FieldTypeFactory.NUMERIC_TYPE_BOOLEAN:
-                    validEntity.setField(fieldDefinition.getName(), fieldValue); // to do
+                    validEntity.setField(fieldDefinition.getName(), fieldValue); // TODO mina add boolean conversion
                     break;
 
                 case FieldTypeFactory.NUMERIC_TYPE_DATE:
@@ -92,11 +92,8 @@ public class ValidationService {
                     }
                     break;
 
-                case FieldTypeFactory.NUMERIC_TYPE_STRING:
-                    validEntity.setField(fieldDefinition.getName(), (String) fieldValue);
-                    break;
-
                 case FieldTypeFactory.NUMERIC_TYPE_TEXT:
+                case FieldTypeFactory.NUMERIC_TYPE_STRING:
                     validEntity.setField(fieldDefinition.getName(), (String) fieldValue);
                     break;
 
@@ -112,10 +109,9 @@ public class ValidationService {
             }
         }
         if (fieldMessages.size() == 0) {
-            return ValidationResultFactory.getInstance().createValidResult(validEntity);
+            return ValidationResultFactory.createValidResult(validEntity);
         } else {
-            return ValidationResultFactory.getInstance().createInvalidResult("form.validate.wrongFieldTypesValidateMessage",
-                    fieldMessages);
+            return ValidationResultFactory.createInvalidResult("form.validate.wrongFieldTypesValidateMessage", fieldMessages);
         }
     }
 
@@ -129,10 +125,9 @@ public class ValidationService {
             }
         }
         if (fieldMessages.size() == 0) {
-            return ValidationResultFactory.getInstance().createValidResult(entity);
+            return ValidationResultFactory.createValidResult(entity);
         } else {
-            return ValidationResultFactory.getInstance().createInvalidResult("form.validate.nullMandatoryFieldsValidateMessage",
-                    fieldMessages);
+            return ValidationResultFactory.createInvalidResult("form.validate.nullMandatoryFieldsValidateMessage", fieldMessages);
         }
     }
 }

@@ -1,4 +1,8 @@
-
+<%@ page language="java" contentType="text/html; charset=ISO-8859-2"
+    pageEncoding="ISO-8859-2"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 	
 	<script type="text/javascript">
 
@@ -104,8 +108,6 @@
 				success: function(response) {
 					if (response.valid) {
 						validResponseFunction.call();
-						//editSubstituteWindow.jqmHide();
-						//substitutesGrid.refresh();
 					} else {
 						$("."+validatorPrefix+"_validatorGlobalMessage").html(response.globalMessage);
 						for (var field in response.fieldMessages) {
@@ -120,60 +122,6 @@
 			});
 			return false;
 		}
-/*
-		editSubstituteApplyClick = function() {
-			var substituteData = $('#substituteForm').serializeObject();
-			$(".validatorGlobalMessage").html('');
-			$(".fieldValidatorMessage").html('');
-			$.ajax({
-				url: 'substitute/editSubstitute/save.html',
-				type: 'POST',
-				data: substituteData,
-				success: function(response) {
-					if (response.valid) {
-						editSubstituteWindow.jqmHide();
-						substitutesGrid.refresh();
-					} else {
-						$(".validatorGlobalMessage").html(response.globalMessage);
-						for (var field in response.fieldMessages) {
-							$("#"+field+"_validateMessage").html(response.fieldMessages[field]);
-						}
-					}
-				},
-				error: function(xhr, textStatus, errorThrown){
-					alert(textStatus);
-				}
-	
-			});
-			return false;
-		}
-
-		editSubstituteComponentApplyClick = function() {
-			var substituteData = $('#substituteComponentForm').serializeObject();
-			$(".validatorGlobalMessage").html('');
-			$(".fieldValidatorMessage").html('');
-			$.ajax({
-				url: 'substitute/editSubstituteComponent/save.html',
-				type: 'POST',
-				data: substituteData,
-				success: function(response) {
-					if (response.valid) {
-						editSubstituteComponentWindow.jqmHide();
-						substituteComponentsGrid.refresh();
-					} else {
-						$(".validatorGlobalMessage").html(response.globalMessage);
-						for (var field in response.fieldMessages) {
-							$("#"+field+"_validateMessage").html(response.fieldMessages[field]);
-						}
-					}
-				},
-				error: function(xhr, textStatus, errorThrown){
-					alert(textStatus);
-				}
-	
-			});
-			return false;
-		}*/
 		
 	</script>
 		

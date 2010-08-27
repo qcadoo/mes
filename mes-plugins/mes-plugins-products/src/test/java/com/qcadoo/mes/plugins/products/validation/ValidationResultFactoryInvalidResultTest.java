@@ -18,7 +18,7 @@ public class ValidationResultFactoryInvalidResultTest {
         fieldMessages.put("testKey", "testValue");
 
         // when
-        ValidationResult result = ValidationResultFactory.getInstance().createInvalidResult(globalMsg, fieldMessages);
+        ValidationResult result = ValidationResultFactory.createInvalidResult(globalMsg, fieldMessages);
 
         // then
         assertEquals(false, result.isValid());

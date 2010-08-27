@@ -15,7 +15,7 @@ public class ValidationResultFactoryValidResultTest {
         Entity entity = new Entity();
 
         // when
-        ValidationResult result = ValidationResultFactory.getInstance().createValidResult(entity);
+        ValidationResult result = ValidationResultFactory.createValidResult(entity);
 
         // then
         assertEquals(true, result.isValid());

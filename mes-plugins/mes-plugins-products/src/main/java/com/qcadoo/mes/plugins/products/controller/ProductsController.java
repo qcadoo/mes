@@ -26,6 +26,16 @@ import com.qcadoo.mes.plugins.products.validation.ValidationService;
 @Controller
 public class ProductsController extends CrudTemplate {
 
+    private static final String JSP_VIEW_GRID = "productsGridView";
+
+    private static final String JSP_VIEW_FORM = "productsFormView";
+
+    private static final String TYPE_PRODUCT = "products.product";
+
+    private static final String TYPE_SUBSTITUTE = "products.substitute";
+
+    private static final String TYPE_SUBSTITUTE_COMPONENT = "products.substituteComponent";
+
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -37,31 +47,31 @@ public class ProductsController extends CrudTemplate {
 
     @RequestMapping(value = "/products/list", method = RequestMethod.GET)
     public ModelAndView getProductsListView(@RequestParam(required = false) String message) {
-        return getEntityListView("productsGridView", "products.product", message);
+        return getEntityListView(JSP_VIEW_GRID, TYPE_PRODUCT, message);
     }
 
     @RequestMapping(value = "/products/list/data", method = RequestMethod.GET)
     @ResponseBody
     public ListData getProductsListData(@RequestParam int maxResults, @RequestParam int firstResult,
             @RequestParam(required = false) String sortColumn, @RequestParam(required = false) String sortOrder) {
-        return getEntitiesGridData("products.product", maxResults, firstResult, sortColumn, sortOrder);
+        return getEntitiesGridData(TYPE_PRODUCT, maxResults, firstResult, sortColumn, sortOrder);
     }
 
     @RequestMapping(value = "/products/list/delete", method = RequestMethod.POST)
     @ResponseBody
     public String deleteData(@RequestBody List<Integer> selectedRows) {
-        return deleteEntity(selectedRows, "products.product");
+        return deleteEntity(selectedRows, TYPE_PRODUCT);
     }
 
     @RequestMapping(value = "/products/getEntity", method = RequestMethod.GET)
     public ModelAndView getProductFormView(@RequestParam(required = false) Long productId) {
-        ModelAndView mav = getEntityFormView("productsFormView", productId, "products.product", null, null);
+        ModelAndView mav = getEntityFormView(JSP_VIEW_FORM, productId, TYPE_PRODUCT, null, null);
 
-        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
+        DataDefinition substituteDataDefinition = dataDefinitionService.get(TYPE_SUBSTITUTE);
         GridDefinition substituteGridDefinition = substituteDataDefinition.getGrids().get(0);
         mav.addObject("substituteGridDefinition", substituteGridDefinition);
 
-        DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
+        DataDefinition substituteComponentDataDefinition = dataDefinitionService.get(TYPE_SUBSTITUTE_COMPONENT);
         GridDefinition substituteComponentGridDefinition = substituteComponentDataDefinition.getGrids().get(0);
         mav.addObject("substituteComponentGridDefinition", substituteComponentGridDefinition);
 
@@ -71,6 +81,6 @@ public class ProductsController extends CrudTemplate {
     @RequestMapping(value = "/products/saveEntity", method = RequestMethod.POST)
     @ResponseBody
     public ValidationResult saveProduct(@ModelAttribute Entity product, Locale locale) {
-        return saveEntity(product, "products.product", locale);
+        return saveEntity(product, TYPE_PRODUCT, locale);
     }
 }

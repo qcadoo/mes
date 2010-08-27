@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -198,9 +198,8 @@ public class CrudTemplate {
             ApplicationContext ctx = AppContext.getApplicationContext();
             ReloadableResourceBundleMessageSource messageSource = (ReloadableResourceBundleMessageSource) ctx
                     .getBean("messageSource");
-            Set<String> keys = messages.keySet();
-            for (String key : keys) {
-                messages.put(key, messageSource.getMessage(messages.get(key), null, locale));
+            for (Entry<String, String> entry : messages.entrySet()) {
+                messages.put(entry.getKey(), messageSource.getMessage(entry.getValue(), null, locale));
             }
             if (validationResult.getGlobalMessage() != null) {
                 validationResult.setGlobalMessage(messageSource.getMessage(validationResult.getGlobalMessage(), null, locale));
