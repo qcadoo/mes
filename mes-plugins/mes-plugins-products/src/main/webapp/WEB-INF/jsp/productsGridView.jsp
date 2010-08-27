@@ -39,9 +39,10 @@
 				colNames: colNames,
 				colModel: colModel,
 				multiselect: true,
-				loadingText: 'Wczytuje...',
+				loadingText: '<spring:message code="commons.loading.gridLoading"/>',
+				deleteConfirmMessage: '<spring:message code="commons.confirm.deleteMessage"/>',
 				ondblClickRow: function(id){
-			        window.location='getEntity.html?entityId='+id
+			        window.location='getEntity.html?productId='+id
 		        }
 			});
 			productsGrid.refresh();
@@ -64,7 +65,7 @@
 </head>
 <body>
 
-	<div id="pageHeader">${headerContent}</div> 
+	<div id="pageHeader"><spring:message code="productsFormView.header"/></div> 
 	<div id="languageSection"><a href="?lang=pl">PL</a>/<a href="?lang=en">EN</a></div>
 	
 	<div id="messageBox"><c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="productsGridView.${message }"/> <br/></c:otherwise></c:choose></div>

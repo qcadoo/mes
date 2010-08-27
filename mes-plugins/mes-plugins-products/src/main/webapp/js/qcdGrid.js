@@ -21,7 +21,8 @@ QCDGrid = function(opts) {
 	var paging_allPagesNoSpan = null;
 	
 	var defaultOptions = {
-		paging: true
+		paging: true,
+		deleteConfirmMessage: 'delete?'
 	};
 	
 	function parseOptions(opts) {
@@ -206,7 +207,7 @@ QCDGrid = function(opts) {
 	this.refresh = refresh;
 	
 	this.deleteSelectedRecords = function() {
-		if (window.confirm("delete?")) {
+		if (window.confirm(options.deleteConfirmMessage)) {
 			blockList();
 			var selectedRows;
 			if (options.multiselect) {

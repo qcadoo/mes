@@ -24,67 +24,16 @@
 <body>
 	<h2 id="pageHeader"><spring:message code="productsFormView.header"/></h2>
 	
-	
-		<c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="productsFormView.${message }"/> <br/></c:otherwise></c:choose>
-		
-		<form action="saveEntity.html" method="POST">
-			<table>
-				<c:forEach items="${fieldsDefinition}" var="entry">
-					<tr>
-						<c:choose>
-							<c:when test="${entry.hidden=='false'}">
-									<td><spring:message code="products.field.${entry.name}"/></td>
-									<c:choose>
-										<c:when test='${(fieldsTypes[entry.name] == "4") || (fieldsTypes[entry.name] == "5") }'>
-											<td>
-												<select name="fields[${entry.name}]">
-													<option></option>
-													<c:forEach items="${lists[entry.name] }" var="listEntry">
-														<c:choose>
-															<c:when test='${listEntry  == entity[entry.name]}'>
-																<option selected="selected">${listEntry } </option>
-															</c:when>
-															<c:otherwise>
-																<option>${listEntry }</option>
-															</c:otherwise>
-														</c:choose>		
-													</c:forEach>
-												</select>
-											</td>
-										</c:when>
-										<c:when test='${(fieldsTypes[entry.name] == "9") }'>
-											<td>
-												<textarea name="fields[${entry.name}]">${entity[entry.name]}</textarea>
-											</td>
-										</c:when>
-										<c:otherwise>
-											<td>
-											<input type="text" name="fields[${entry.name}]"
-											<c:if test="${entry.editable=='true'}">
-												readonly="readonly"
-											</c:if> 
-											value="${entity[entry.name]}" />
-											</td>
-										</c:otherwise>
-									</c:choose>
-									
-									<c:choose>
-										<c:when test="${fieldsValidationInfo[entry.name] == null}"> </c:when>
-										<c:otherwise><td><spring:message code="productsFormView.${fieldsValidationInfo[entry.name] }"/></td> </c:otherwise>
-									</c:choose>
-							</c:when> 
-							<c:otherwise>
-								<input type="hidden" name="fields[${entry.name}]" value="${entity[entry.name]}" />
-							</c:otherwise> 
-						</c:choose>  
-					</tr>
-				</c:forEach>	
-			</table>	
-			<input type="hidden" name="id" value="${entityId }"/>
-			<input type="submit" name="button" value="<spring:message code="productsFormView.button"/>" onClick="window.location='list.html'"/>
-			<input type="button" name="button" value="<spring:message code="productsFormView.cancel"/>" onClick="window.location='list.html'" />
-		</form><br />
-		
+			
+		<form ID="productFormId">
+			<%@ include file="formTable.jsp" %>
+			
+			
+		</form>
+		<button onclick="editEntityApplyClick('productFormId', 'saveEntity.html', function() {window.location='list.html'})"><spring:message code="productsFormView.button"/></button>
+		<button onClick="window.location='list.html'"><spring:message code="productsFormView.cancel"/></button>
+		<br />
+		<br />
 		<%@ include file="substitutes.jsp" %>
 
 </body>

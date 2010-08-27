@@ -30,7 +30,7 @@
 				paging: false,
 				colNames: substitutesColNames,
 				colModel: substitutesColModel,
-				loadingText: 'Wczytuje...',
+				loadingText: '<spring:message code="commons.loading.gridLoading"/>',
 				onSelectRow: function(id){
 			        substituteComponentsGrid.setOption('dataSource','substitute/components.html?productId=${entityId }&substituteId='+id);
 			        substituteComponentsGrid.refresh();
@@ -42,7 +42,8 @@
 				ondblClickRow: function(id){
 		        	editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId=${entityId }&substituteId='+id});
 		        	editSubstituteWindow.jqmShow();
-		        }
+		        },
+		        deleteConfirmMessage: '<spring:message code="commons.confirm.deleteMessage"/>'
 			});
 
 			substituteComponentsGrid = new QCDGrid({
@@ -52,7 +53,7 @@
 				paging: false,
 				colNames: substituteComponentsColNames,
 				colModel: substituteComponentsColModel,
-				loadingText: 'Wczytuje...',
+				loadingText: '<spring:message code="commons.loading.gridLoading"/>',
 				onSelectRow: function(id){
 					$("#deleteSubstituteComponentButton").attr("disabled", false);
 				},
@@ -61,7 +62,8 @@
 						ajax: 'substitute/editSubstituteComponent.html?substituteId='+substitutesGrid.getSelectedRow()+'&componentId='+id
 					});
 					editSubstituteComponentWindow.jqmShow();
-				}
+				},
+				deleteConfirmMessage: '<spring:message code="commons.confirm.deleteMessage"/>'
 			});
 
 			 $("#newSubstituteComponentButton").attr("disabled", true);
@@ -70,8 +72,9 @@
 			 $("#upSubstituteButton").attr("disabled", true);
 			 $("#downSubstituteButton").attr("disabled", true);
 
-			 if ("${entityId }") {
+			 if ($("#entityId").val().trim() != '') {
 			 	substitutesGrid.refresh();
+			 	 $("#newSubstituteButton").attr("disabled", false);
 			 } else {
 				 $("#newSubstituteButton").attr("disabled", true);
 			 }
@@ -88,6 +91,34 @@
 		newSubstituteComponentClicked = function() {
 			editSubstituteComponentWindow = $('#editSubstituteComponentWindow').jqm({ajax: 'substitute/editSubstituteComponent.html?substituteId='+substitutesGrid.getSelectedRow()});
 			editSubstituteComponentWindow.jqmShow();
+		}
+
+		editEntityApplyClick = function(formId, url, validResponseFunction) {
+			var formData = $('#'+formId).serializeObject();
+			$(".validatorGlobalMessage").html('');
+			$(".fieldValidatorMessage").html('');
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: formData,
+				success: function(response) {
+					if (response.valid) {
+						validResponseFunction.call();
+						//editSubstituteWindow.jqmHide();
+						//substitutesGrid.refresh();
+					} else {
+						$(".validatorGlobalMessage").html(response.globalMessage);
+						for (var field in response.fieldMessages) {
+							$("#"+field+"_validateMessage").html(response.fieldMessages[field]);
+						}
+					}
+				},
+				error: function(xhr, textStatus, errorThrown){
+					alert(textStatus);
+				}
+	
+			});
+			return false;
 		}
 
 		editSubstituteApplyClick = function() {
@@ -151,10 +182,15 @@
 			<spring:message code="substitutes.info.header"/>
 			<button id="newSubstituteButton" onClick="newSubstituteClicked()"><spring:message code="productsFormView.new"/></button>
 			<button id="deleteSubstituteButton" onClick="substitutesGrid.deleteSelectedRecords()"><spring:message code="productsFormView.delete"/></button>
-			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.up"/></button>
-			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.down"/></button>
+			
 		</div>
 		<table id="substitutesGrid"></table>
+		<div>
+			<spring:message code="substitutes.info.changePriorityLabel"/>
+			<button id="upSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.up"/></button>
+			<button id="downSubstituteButton" onClick="console.info('not implemented')"><spring:message code="productsFormView.down"/></button><br/><br/><br/>
+		</div>
+		
 		<div>
 			<spring:message code="substituteComponent.info.header"/>
 			<button id="newSubstituteComponentButton" onClick="newSubstituteComponentClicked()"><spring:message code="productsFormView.new"/></button>

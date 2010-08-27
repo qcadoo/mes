@@ -9,19 +9,20 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 
-public class ProductsListControllerDelete {
+public class CrudTemplateControllerDeleteTest {
 
-    private ProductsListController controller;
+    private CRUD controller;
 
     private DataAccessService dasMock;
 
     @Before
     public void setUp() {
         dasMock = mock(DataAccessService.class);
-        controller = new ProductsListController(null, dasMock);
+        controller = new CRUD(dasMock);
     }
 
     @Test
@@ -29,7 +30,7 @@ public class ProductsListControllerDelete {
         // given
 
         // when
-        String r = controller.deleteData(Arrays.asList(new Integer[] { 123 }));
+        String r = controller.deleteEntity(Arrays.asList(new Integer[] { 123 }), "products.product");
 
         // then
         assertEquals("ok", r);
@@ -42,7 +43,7 @@ public class ProductsListControllerDelete {
         // given
 
         // when
-        String r = controller.deleteData(Arrays.asList(new Integer[] { 1, 2, 3 }));
+        String r = controller.deleteEntity(Arrays.asList(new Integer[] { 1, 2, 3 }), "products.product");
 
         // then
         assertEquals("ok", r);
@@ -57,11 +58,17 @@ public class ProductsListControllerDelete {
         // given
 
         // when
-        String r = controller.deleteData(Arrays.asList(new Integer[] {}));
+        String r = controller.deleteEntity(Arrays.asList(new Integer[] {}), "products.product");
 
         // then
         assertEquals("ok", r);
         verifyNoMoreInteractions(dasMock);
     }
 
+    private class CRUD extends CrudTemplate {
+
+        public CRUD(DataAccessService das) {
+            super(null, das, LoggerFactory.getLogger(CrudTemplateControllerDeleteTest.class), null);
+        }
+    }
 }

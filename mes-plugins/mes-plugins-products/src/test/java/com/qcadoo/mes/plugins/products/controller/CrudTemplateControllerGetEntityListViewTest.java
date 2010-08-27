@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -14,9 +15,9 @@ import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.plugins.products.data.mock.DataAccessServiceMock;
 import com.qcadoo.mes.plugins.products.data.mock.DataDefinitionServiceMock;
 
-public class ProductsListControllerGetViewTest {
+public class CrudTemplateControllerGetEntityListViewTest {
 
-    private ProductsListController controller;
+    private CRUD controller;
 
     private DataDefinitionService dds;
 
@@ -26,7 +27,7 @@ public class ProductsListControllerGetViewTest {
     public void setUp() {
         dds = new DataDefinitionServiceMock();
         das = new DataAccessServiceMock();
-        controller = new ProductsListController(dds, das);
+        controller = new CRUD(dds, das);
     }
 
     @Test
@@ -34,13 +35,10 @@ public class ProductsListControllerGetViewTest {
         // given
 
         // when
-        ModelAndView modelAndView = controller.getProductsListView(null);
+        ModelAndView modelAndView = controller.getEntityListView("productsGridView", "products.product", null);
 
         // then
         assertEquals("productsGridView", modelAndView.getViewName());
-
-        assertNotNull(modelAndView.getModel().get("headerContent"));
-        assertEquals("Produkty:", modelAndView.getModel().get("headerContent"));
 
         assertNull(modelAndView.getModel().get("message"));
 
@@ -56,11 +54,18 @@ public class ProductsListControllerGetViewTest {
         // given
 
         // when
-        ModelAndView modelAndView = controller.getProductsListView("testMsg");
+        ModelAndView modelAndView = controller.getEntityListView("productsGridView", "products.product", "testMsg");
 
         // then
         assertNotNull(modelAndView.getModel().get("message"));
         assertEquals("testMsg", modelAndView.getModel().get("message"));
+    }
+
+    private class CRUD extends CrudTemplate {
+
+        public CRUD(DataDefinitionService dds, DataAccessService das) {
+            super(dds, das, LoggerFactory.getLogger(CrudTemplateControllerGetEntityListViewTest.class), null);
+        }
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-public class ValidationResultFactoryInvalidResult {
+public class ValidationResultFactoryInvalidResultTest {
 
     @Test
     public void shouldReturnValidResultWhenInvalid() {

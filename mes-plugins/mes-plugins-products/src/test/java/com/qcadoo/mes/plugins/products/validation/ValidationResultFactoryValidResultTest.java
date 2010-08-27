@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 
-public class ValidationResultFactoryValidResult {
+public class ValidationResultFactoryValidResultTest {
 
     @Test
     public void shouldReturnValidResultWhenValid() {

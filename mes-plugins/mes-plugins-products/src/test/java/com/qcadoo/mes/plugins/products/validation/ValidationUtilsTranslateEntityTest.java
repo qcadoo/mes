@@ -23,7 +23,7 @@ import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 import com.qcadoo.mes.core.data.internal.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.definition.BelongsToFieldType;
 
-public class ValidationUtilsTranslateEntity {
+public class ValidationUtilsTranslateEntityTest {
 
     @Test
     public void shouldTranslateWhenValid() {
@@ -54,8 +54,10 @@ public class ValidationUtilsTranslateEntity {
         entity.setField("testText", "ala ma koty");
         entity.setField("testBelongsTo", "321");
 
+        ValidationService validationUtils = new ValidationService();
+
         // when
-        ValidationResult result = ValidationUtils.translateEntity(entity, fields);
+        ValidationResult result = validationUtils.translateEntity(entity, fields);
 
         // then
         assertEquals(true, result.isValid());
@@ -127,20 +129,22 @@ public class ValidationUtilsTranslateEntity {
         entity.setField("testDecimal", "a123");
         entity.setField("testBelongsTo", "a321");
 
+        ValidationService validationUtils = new ValidationService();
+
         // when
-        ValidationResult result = ValidationUtils.translateEntity(entity, fields);
+        ValidationResult result = validationUtils.translateEntity(entity, fields);
 
         // then
         assertEquals(false, result.isValid());
         assertNull(result.getValidEntity());
-        assertEquals("wrongFieldTypesValidateMessage", result.getGlobalMessage());
+        assertEquals("form.validate.wrongFieldTypesValidateMessage", result.getGlobalMessage());
 
-        assertEquals("notDateValidateMessage", result.getFieldMessages().get("testDate"));
-        assertEquals("notDateValidateMessage", result.getFieldMessages().get("testDateTime"));
-        assertEquals("notInDictionaryValidateMessage", result.getFieldMessages().get("testEnum"));
-        assertEquals("notIntegerValidateMessage", result.getFieldMessages().get("testInteger"));
-        assertEquals("notBigDecimalValidateMessage", result.getFieldMessages().get("testDecimal"));
-        assertEquals("notIdValidateMessage", result.getFieldMessages().get("testBelongsTo"));
+        assertEquals("form.validate.notDateValidateMessage", result.getFieldMessages().get("testDate"));
+        assertEquals("form.validate.notDateTimeValidateMessage", result.getFieldMessages().get("testDateTime"));
+        assertEquals("form.validate.notInDictionaryValidateMessage", result.getFieldMessages().get("testEnum"));
+        assertEquals("form.validate.notIntegerValidateMessage", result.getFieldMessages().get("testInteger"));
+        assertEquals("form.validate.notBigDecimalValidateMessage", result.getFieldMessages().get("testDecimal"));
+        assertEquals("form.validate.notIdValidateMessage", result.getFieldMessages().get("testBelongsTo"));
 
     }
 

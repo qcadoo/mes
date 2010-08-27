@@ -9,14 +9,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 
-public class ValidationUtils {
+@Service
+public class ValidationService {
 
-    public static ValidationResult validateEntity(Entity entity, List<FieldDefinition> fields) {
+    public ValidationResult validateEntity(Entity entity, List<FieldDefinition> fields) {
         ValidationResult validationResult = translateEntity(entity, fields);
         if (validationResult.isValid()) {
             validationResult = validateRequiredFields(validationResult.getValidEntity(), fields);
@@ -24,7 +27,7 @@ public class ValidationUtils {
         return validationResult;
     }
 
-    public static ValidationResult translateEntity(Entity entity, List<FieldDefinition> fields) {
+    public ValidationResult translateEntity(Entity entity, List<FieldDefinition> fields) {
         Entity validEntity = new Entity(entity.getId());
         Map<String, String> fieldMessages = new HashMap<String, String>();
         for (FieldDefinition fieldDefinition : fields) {
@@ -116,7 +119,7 @@ public class ValidationUtils {
         }
     }
 
-    public static ValidationResult validateRequiredFields(Entity entity, List<FieldDefinition> fields) {
+    public ValidationResult validateRequiredFields(Entity entity, List<FieldDefinition> fields) {
         Map<String, String> fieldMessages = new HashMap<String, String>();
         for (FieldDefinition fieldDefinition : fields) {
             if (fieldDefinition.isRequired()) {
