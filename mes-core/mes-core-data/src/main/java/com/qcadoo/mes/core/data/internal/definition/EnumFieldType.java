@@ -5,8 +5,9 @@ import java.util.List;
 
 import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.internal.ValidatableFieldType;
 
-public final class EnumFieldType implements EnumeratedFieldType {
+public final class EnumFieldType implements EnumeratedFieldType, ValidatableFieldType {
 
     private final List<String> values;
 
@@ -30,17 +31,16 @@ public final class EnumFieldType implements EnumeratedFieldType {
     }
 
     @Override
-    public boolean isValidType(final Object value) {
-        if (value == null) {
-            return true;
-        }
-        if (!(value instanceof String)) {
-            return false;
-        }
+    public Class<?> getType() {
+        return String.class;
+    }
+
+    @Override
+    public String validateValue(final Object value) {
         if (!values.contains(value)) {
-            return false;
+            return String.valueOf(value) + " must be one the " + values;
         }
-        return true;
+        return null;
     }
 
     @Override
