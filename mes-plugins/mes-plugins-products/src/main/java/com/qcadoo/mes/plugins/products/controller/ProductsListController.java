@@ -15,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.search.Order;
@@ -23,6 +22,7 @@ import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.plugins.products.data.ListData;
+import com.qcadoo.mes.plugins.products.data.ListDataUtils;
 
 @Controller
 public class ProductsListController {
@@ -84,9 +84,11 @@ public class ProductsListController {
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
         ResultSet rs = dataAccessService.find("products.product", searchCriteria);
-        List<Entity> entities = rs.getResults();
-        int totalNumberOfEntities = rs.getTotalNumberOfEntities();
-        return new ListData(totalNumberOfEntities, entities);
+
+        DataDefinition dataDefinition = dataDefinitionService.get("products.product");
+        GridDefinition gridDefinition = dataDefinition.getGrids().get(0);
+
+        return ListDataUtils.generateListData(rs, gridDefinition);
 
     }
 

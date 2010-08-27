@@ -3,22 +3,18 @@ package com.qcadoo.mes.core.data.internal;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public final class SimpleDatabaseObject {
+public final class ParentDatabaseObject {
 
     private Long id;
 
     private String name;
 
-    private int age;
-
     private boolean deleted;
 
-    private ParentDatabaseObject belongsTo;
-
-    public SimpleDatabaseObject() {
+    public ParentDatabaseObject() {
     }
 
-    public SimpleDatabaseObject(Long id) {
+    public ParentDatabaseObject(Long id) {
         this.id = id;
     }
 
@@ -28,14 +24,6 @@ public final class SimpleDatabaseObject {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(final int age) {
-        this.age = age;
     }
 
     public String getName() {
@@ -54,17 +42,9 @@ public final class SimpleDatabaseObject {
         this.deleted = deleted;
     }
 
-    public ParentDatabaseObject getBelongsTo() {
-        return belongsTo;
-    }
-
-    public void setBelongsTo(ParentDatabaseObject belongsTo) {
-        this.belongsTo = belongsTo;
-    }
-
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(age).append(id).append(deleted).append(belongsTo).toHashCode();
+        return new HashCodeBuilder(11, 37).append(name).append(id).append(deleted).toHashCode();
     }
 
     @Override
@@ -75,12 +55,11 @@ public final class SimpleDatabaseObject {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof SimpleDatabaseObject)) {
+        if (!(obj instanceof ParentDatabaseObject)) {
             return false;
         }
-        SimpleDatabaseObject other = (SimpleDatabaseObject) obj;
-        return new EqualsBuilder().append(name, other.name).append(age, other.age).append(id, other.id)
-                .append(deleted, other.deleted).append(belongsTo, other.belongsTo).isEquals();
+        ParentDatabaseObject other = (ParentDatabaseObject) obj;
+        return new EqualsBuilder().append(name, other.name).append(id, other.id).append(deleted, other.deleted).isEquals();
     }
 
 }

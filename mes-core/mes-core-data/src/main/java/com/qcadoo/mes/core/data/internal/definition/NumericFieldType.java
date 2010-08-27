@@ -4,8 +4,9 @@ import java.math.BigDecimal;
 
 import com.qcadoo.mes.core.data.definition.FieldType;
 import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.internal.ValidatableFieldType;
 
-public final class NumericFieldType implements FieldType {
+public final class NumericFieldType implements FieldType, ValidatableFieldType {
 
     private final int scale;
 
@@ -35,25 +36,20 @@ public final class NumericFieldType implements FieldType {
     }
 
     @Override
-    public boolean isValidType(final Object value) {
-        if (!(value instanceof Number)) {
-            return false;
-        }
+    public Class<?> getType() {
         if (scale == 0) {
-            if (value instanceof Float) {
-                return false;
-            }
-            if (value instanceof Double) {
-                return false;
-            }
-            if (value instanceof BigDecimal) {
-                return false;
-            }
+            return Integer.class;
+        } else {
+            return BigDecimal.class;
         }
+    }
+
+    @Override
+    public String validateValue(final Object value) {
         if (((Number) value).longValue() > maxValue) {
-            return false;
+            return "value is too big, " + value + " > " + maxValue;
         }
-        return true;
+        return null;
     }
 
     @Override

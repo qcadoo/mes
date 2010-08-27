@@ -10,7 +10,7 @@ public final class BelongsToRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criteria addToHibernateCriteria(Criteria criteria) {
+    public Criteria addToHibernateCriteria(final Criteria criteria) {
         return criteria.add(Restrictions.eq(getFieldName() + ".id", (Long) getValue()));
     }
 

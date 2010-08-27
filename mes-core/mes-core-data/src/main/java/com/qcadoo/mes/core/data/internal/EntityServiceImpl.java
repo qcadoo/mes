@@ -47,43 +47,43 @@ public final class EntityServiceImpl {
         }
     }
 
-    public Long getId(final Object entity) {
-        return (Long) getField(entity, FIELD_ID);
+    public Long getId(final Object databaseEntity) {
+        return (Long) getField(databaseEntity, FIELD_ID);
     }
 
-    public void setId(final Object entity, final Long id) {
-        setField(entity, FIELD_ID, id);
+    public void setId(final Object databaseEntity, final Long id) {
+        setField(databaseEntity, FIELD_ID, id);
     }
 
-    public void setDeleted(final Object entity) {
-        setField(entity, FIELD_DELETED, true);
+    public void setDeleted(final Object databaseEntity) {
+        setField(databaseEntity, FIELD_DELETED, true);
     }
 
-    public void setField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
+    public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
-            setBelongsToField(entity, fieldDefinition, value);
+            setBelongsToField(databaseEntity, fieldDefinition, value);
         } else {
-            setPrimitiveField(entity, fieldDefinition, value);
+            setPrimitiveField(databaseEntity, fieldDefinition, value);
         }
     }
 
-    public Object getField(final Object entity, final FieldDefinition fieldDefinition) {
+    public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
-            return getBelongsToField(entity, fieldDefinition);
+            return getBelongsToField(databaseEntity, fieldDefinition);
         } else {
-            return getPrimitiveField(entity, fieldDefinition);
+            return getPrimitiveField(databaseEntity, fieldDefinition);
         }
     }
 
-    public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object entity) {
-        Entity genericEntity = new Entity(getId(entity));
+    public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
+        Entity genericEntity = new Entity(getId(databaseEntity));
 
         for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            genericEntity.setField(fieldDefinition.getName(), getField(entity, fieldDefinition));
+            genericEntity.setField(fieldDefinition.getName(), getField(databaseEntity, fieldDefinition));
         }
 
         return genericEntity;
@@ -107,61 +107,78 @@ public final class EntityServiceImpl {
         return databaseEntity;
     }
 
-    private void setPrimitiveField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
-        if (!fieldDefinition.getType().isValidType(value)) {
-            throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
-        }
-        setField(entity, fieldDefinition.getName(), value);
+    private void setPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
+        validateValue(databaseEntity, fieldDefinition, value);
+        setField(databaseEntity, fieldDefinition.getName(), value);
     }
 
-    private void setBelongsToField(final Object entity, final FieldDefinition fieldDefinition, final Object value) {
-        BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
-        DataDefinition referencedDataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
-        Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
-        Entity referencedEntity = (Entity) sessionFactory.getCurrentSession().get(referencedClass, (Long) value);
-        if (!fieldDefinition.getType().isValidType(referencedEntity)) {
-            throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
+    private void validateValue(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
+        if (value == null) {
+            return;
         }
-        setField(entity, fieldDefinition.getName(), referencedEntity);
+        ValidatableFieldType validatableFieldType = (ValidatableFieldType) fieldDefinition.getType();
+        if (!validatableFieldType.getType().isInstance(value)) {
+            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
+                    + fieldDefinition.getName() + " has invalid type " + value.getClass().getSimpleName() + ", should be "
+                    + validatableFieldType.getType().getSimpleName());
+        }
+        String error = validatableFieldType.validateValue(value);
+        if (error != null) {
+            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
+                    + fieldDefinition.getName() + " is invalid: " + error);
+        }
     }
 
-    private Object getPrimitiveField(final Object entity, final FieldDefinition fieldDefinition) {
-        Object value = getField(entity, fieldDefinition.getName());
-        if (!fieldDefinition.getType().isValidType(value)) {
-            throw new IllegalStateException("value of the property " + entity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " has invalid type: " + value.getClass().getSimpleName());
+    private void setBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
+        if (value != null) {
+            Long referencedEntityId = ((Entity) value).getId();
+            BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
+            DataDefinition referencedDataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
+            Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
+            Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
+            validateValue(databaseEntity, fieldDefinition, referencedEntity);
+            setField(databaseEntity, fieldDefinition.getName(), referencedEntity);
+        } else {
+            setField(databaseEntity, fieldDefinition.getName(), null);
         }
+    }
+
+    private Object getPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
+        Object value = getField(databaseEntity, fieldDefinition.getName());
+        validateValue(databaseEntity, fieldDefinition, value);
         return value;
     }
 
-    private Object getBelongsToField(final Object entity, final FieldDefinition fieldDefinition) {
+    private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
         DataDefinition dataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
         if (belongsToFieldType.isEagerFetch()) {
-            Object value = getField(entity, fieldDefinition.getName());
-            return convertToGenericEntity(dataDefinition, value);
+            Object value = getField(databaseEntity, fieldDefinition.getName());
+            if (value != null) {
+                return convertToGenericEntity(dataDefinition, value);
+            } else {
+                return null;
+            }
         } else {
             throw new IllegalStateException("belongsTo type with lazy loading is not supported yet");
         }
     }
 
-    private void setField(final Object entity, final String fieldName, final Object value) {
+    private void setField(final Object databaseEntity, final String fieldName, final Object value) {
         try {
-            PropertyUtils.setProperty(entity, fieldName, value);
+            PropertyUtils.setProperty(databaseEntity, fieldName, value);
         } catch (Exception e) {
-            throw new IllegalStateException("cannot set value of the property: " + entity.getClass().getSimpleName() + ", "
-                    + fieldName, e);
+            throw new IllegalStateException("cannot set value of the property: " + databaseEntity.getClass().getSimpleName()
+                    + ", " + fieldName, e);
         }
     }
 
-    private Object getField(final Object entity, final String fieldName) {
+    private Object getField(final Object databaseEntity, final String fieldName) {
         try {
-            return PropertyUtils.getProperty(entity, fieldName);
+            return PropertyUtils.getProperty(databaseEntity, fieldName);
         } catch (Exception e) {
-            throw new IllegalStateException("cannot get value of the property: " + entity.getClass().getSimpleName() + ", "
-                    + fieldName, e);
+            throw new IllegalStateException("cannot get value of the property: " + databaseEntity.getClass().getSimpleName()
+                    + ", " + fieldName, e);
         }
     }
 

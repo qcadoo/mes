@@ -11,7 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public class Substitute {
+public final class Substitute {
 
     @Id
     @GeneratedValue
@@ -20,7 +20,7 @@ public class Substitute {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
-    private Integer no;
+    private Integer priority;
 
     private String number;
 
@@ -38,23 +38,23 @@ public class Substitute {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
-    public Integer getNo() {
-        return no;
+    public Integer getPriority() {
+        return priority;
     }
 
-    public void setNo(Integer no) {
-        this.no = no;
+    public void setPriority(final Integer priority) {
+        this.priority = priority;
     }
 
     public String getNumber() {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -62,7 +62,7 @@ public class Substitute {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -70,7 +70,7 @@ public class Substitute {
         return effectiveDateFrom;
     }
 
-    public void setEffectiveDateFrom(Date effectiveDateFrom) {
+    public void setEffectiveDateFrom(final Date effectiveDateFrom) {
         this.effectiveDateFrom = effectiveDateFrom;
     }
 
@@ -78,7 +78,7 @@ public class Substitute {
         return effectiveDateTo;
     }
 
-    public void setEffectiveDateTo(Date effectiveDateTo) {
+    public void setEffectiveDateTo(final Date effectiveDateTo) {
         this.effectiveDateTo = effectiveDateTo;
     }
 
@@ -86,7 +86,7 @@ public class Substitute {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -94,7 +94,7 @@ public class Substitute {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(final Product product) {
         this.product = product;
     }
 }

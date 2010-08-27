@@ -5,6 +5,9 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.ExpressionUtil;
+
 /**
  * Columns defines one column on grid. It can be a one-field column or composite column.
  * 
@@ -14,6 +17,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * only for column which one-field column field column with aggregable type - {@link FieldType#isAggregable()}.
  * 
  * Width is % of grid width for presentation given column
+ * 
+ * Method {@link ColumnDefinition#getValue(Entity)} returns value of the column for given entity.
  * 
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.has com.qcadoo.mes.core.data.definition.ColumnAggregationMode
@@ -60,6 +65,10 @@ public final class ColumnDefinition {
 
     public void setExpression(final String expression) {
         this.expression = expression;
+    }
+
+    public String getValue(final Entity entity) {
+        return ExpressionUtil.getValue(entity, this);
     }
 
     public Integer getWidth() {

@@ -64,7 +64,8 @@
 </head>
 <body>
 
-	<div id="pageHeader">${headerContent}</div>
+	<div id="pageHeader">${headerContent}</div> 
+	<div id="languageSection"><a href="?lang=pl">PL</a>/<a href="?lang=en">EN</a></div>
 	
 	<div id="messageBox"><c:choose><c:when test="${message == null}"> </c:when><c:otherwise><spring:message code="productsGridView.${message }"/> <br/></c:otherwise></c:choose></div>
 	
