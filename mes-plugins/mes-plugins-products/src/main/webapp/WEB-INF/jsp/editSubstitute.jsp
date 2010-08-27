@@ -18,7 +18,7 @@
 		</form>
 	</div>
 	<div class="modalFooter">
-		<button id="ajaxSubmit" onclick="editSubstituteApplyClick()"><spring:message code="${entityType}.form.apply"/></button>
+		<button id="ajaxSubmit" onclick="editEntityApplyClick('substituteForm', 'substitute/editSubstitute/save.html', 'products_substitute', function() {editSubstituteWindow.jqmHide(); substitutesGrid.refresh();})"><spring:message code="${entityType}.form.apply"/></button>
 		<button class="jqmClose"><spring:message code="${entityType}.form.cancel"/></button>
 	</div>
 	

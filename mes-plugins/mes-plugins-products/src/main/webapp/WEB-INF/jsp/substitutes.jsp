@@ -24,7 +24,7 @@
 		jQuery(document).ready(function(){
 			substitutesGrid = new QCDGrid({
 				element: 'substitutesGrid',
-				dataSource: "substitute/data.html?productId=${entityId }",
+				dataSource: "substitute/data.html?productId="+$("#entityId").val().trim(),
 				deleteUrl: "substitute/deleteSubstitute.html",
 				height: 150, 
 				paging: false,
@@ -32,7 +32,7 @@
 				colModel: substitutesColModel,
 				loadingText: '<spring:message code="commons.loading.gridLoading"/>',
 				onSelectRow: function(id){
-			        substituteComponentsGrid.setOption('dataSource','substitute/components.html?productId=${entityId }&substituteId='+id);
+			        substituteComponentsGrid.setOption('dataSource','substitute/components.html?productId='+$("#entityId").val().trim()+'&substituteId='+id);
 			        substituteComponentsGrid.refresh();
 			        $("#newSubstituteComponentButton").attr("disabled", false);
 			        $("#deleteSubstituteButton").attr("disabled", false);
@@ -40,7 +40,7 @@
 			        $("#downSubstituteButton").attr("disabled", false);
 		        },
 				ondblClickRow: function(id){
-		        	editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId=${entityId }&substituteId='+id});
+		        	editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId='+$("#entityId").val().trim()+'&substituteId='+id});
 		        	editSubstituteWindow.jqmShow();
 		        },
 		        deleteConfirmMessage: '<spring:message code="commons.confirm.deleteMessage"/>'
@@ -84,7 +84,7 @@
 		});
 
 		newSubstituteClicked = function() {
-			editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId=${entityId }'});
+			editSubstituteWindow = $('#editSubstituteWindow').jqm({ajax: 'substitute/editSubstitute.html?productId='+$("#entityId").val().trim()});
 			editSubstituteWindow.jqmShow();
 		}
 
@@ -93,10 +93,10 @@
 			editSubstituteComponentWindow.jqmShow();
 		}
 
-		editEntityApplyClick = function(formId, url, validResponseFunction) {
+		editEntityApplyClick = function(formId, url, validatorPrefix, validResponseFunction) {
 			var formData = $('#'+formId).serializeObject();
-			$(".validatorGlobalMessage").html('');
-			$(".fieldValidatorMessage").html('');
+			$("."+validatorPrefix+"_validatorGlobalMessage").html('');
+			$("."+validatorPrefix+"_fieldValidatorMessage").html('');
 			$.ajax({
 				url: url,
 				type: 'POST',
@@ -107,9 +107,9 @@
 						//editSubstituteWindow.jqmHide();
 						//substitutesGrid.refresh();
 					} else {
-						$(".validatorGlobalMessage").html(response.globalMessage);
+						$("."+validatorPrefix+"_validatorGlobalMessage").html(response.globalMessage);
 						for (var field in response.fieldMessages) {
-							$("#"+field+"_validateMessage").html(response.fieldMessages[field]);
+							$("#"+validatorPrefix+"_"+field+"_validateMessage").html(response.fieldMessages[field]);
 						}
 					}
 				},
@@ -120,7 +120,7 @@
 			});
 			return false;
 		}
-
+/*
 		editSubstituteApplyClick = function() {
 			var substituteData = $('#substituteForm').serializeObject();
 			$(".validatorGlobalMessage").html('');
@@ -173,7 +173,7 @@
 	
 			});
 			return false;
-		}
+		}*/
 		
 	</script>
 		

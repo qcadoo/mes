@@ -2,10 +2,15 @@
     pageEncoding="ISO-8859-2"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <%@ page import="com.qcadoo.mes.core.data.definition.FieldTypeFactory" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
-<div class="validatorGlobalMessage"></div>
+
+<c:set var="validatorPrefix" value="${fn:replace(entityType, '.', '_')}" />
+
+<div class="${validatorPrefix}_validatorGlobalMessage validatorGlobalMessage"></div>
 <table>
 			<c:forEach items="${entityFieldsDefinition}" var="fieldDefinition">
 			<tr>
@@ -70,7 +75,7 @@
 								
 							</c:choose>
 						</td>
-						<td id="${fieldDefinition.name}_validateMessage" class="fieldValidatorMessage">		
+						<td id="${validatorPrefix}_${fieldDefinition.name}_validateMessage" class="fieldValidatorMessage ${entityType}_validateMessage">		
 							
 						</td>
 					</c:when>

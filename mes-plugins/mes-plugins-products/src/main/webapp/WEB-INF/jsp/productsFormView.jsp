@@ -30,7 +30,7 @@
 			
 			
 		</form>
-		<button onclick="editEntityApplyClick('productFormId', 'saveEntity.html', function() {window.location='list.html'})"><spring:message code="productsFormView.button"/></button>
+		<button onclick="editEntityApplyClick('productFormId', 'saveEntity.html', 'products_product', function() {window.location='list.html'})"><spring:message code="productsFormView.button"/></button>
 		<button onClick="window.location='list.html'"><spring:message code="productsFormView.cancel"/></button>
 		<br />
 		<br />
