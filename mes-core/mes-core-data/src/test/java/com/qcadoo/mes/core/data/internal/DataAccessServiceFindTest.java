@@ -49,17 +49,13 @@ public class DataAccessServiceFindTest {
         DataDefinition dataDefinition = new DataDefinition("test.Entity");
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 
-        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
-
         FieldDefinition fieldDefinitionName = new FieldDefinition("name");
         fieldDefinitionName.setType(fieldTypeFactory.stringType());
-        fieldDefinitions.add(fieldDefinitionName);
+        dataDefinition.addField(fieldDefinitionName);
 
         FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
         fieldDefinitionAge.setType(fieldTypeFactory.integerType());
-        fieldDefinitions.add(fieldDefinitionAge);
-
-        dataDefinition.setFields(fieldDefinitions);
+        dataDefinition.addField(fieldDefinitionAge);
 
         given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
     }

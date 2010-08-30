@@ -10,12 +10,7 @@ public class ListData {
 
     private List<Entity> entities;
 
-    public ListData() {
-        super();
-    }
-
     public ListData(int totalNumberOfEntities, List<Entity> entities) {
-        this();
         this.totalNumberOfEntities = totalNumberOfEntities;
         this.entities = entities;
     }

@@ -1,11 +1,17 @@
 package com.qcadoo.mes.plugins.products.controller;
 
 import org.junit.Before;
+import org.junit.Test;
 
-public class CrudTemplateControllerGetGridDataTestTODO {
+public class CrudTemplateControllerGetGridDataTest {
 
     @Before
-    public void setUp() {
+    public void init() {
+
+    }
+
+    @Test
+    public void test() {
 
     }
     /*

@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.definition;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +23,7 @@ public final class DataDefinition {
 
     private String discriminator;
 
-    private Map<String, FieldDefinition> fields;
+    private Map<String, FieldDefinition> fields = new HashMap<String, FieldDefinition>();
 
     public DataDefinition(final String entityName) {
         this.entityName = entityName;

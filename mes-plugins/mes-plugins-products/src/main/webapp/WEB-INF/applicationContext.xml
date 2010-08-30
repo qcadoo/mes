@@ -71,6 +71,5 @@
 	    <property name="defaultLocale" value="pl"/>
 	</bean>
 
-	<bean id="contextApplicationContextProvider" class="com.qcadoo.mes.plugins.products.utils.ApplicationContextProvider"></bean>  
 
 </beans>

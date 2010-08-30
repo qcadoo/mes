@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
@@ -31,11 +32,15 @@ public class CrudTemplateControllerSaveEntityTest {
     private ValidationService vs;
 
     @Before
-    public void setUp() {
+    public void init() {
         dds = new DataDefinitionServiceMock();
         das = mock(DataAccessService.class);
         vs = mock(ValidationService.class);
-        controller = new CRUD(dds, das, vs);
+        controller = new CRUD();
+        ReflectionTestUtils.setField(controller, "dataAccessService", das);
+        ReflectionTestUtils.setField(controller, "dataDefinitionService", dds);
+        ReflectionTestUtils.setField(controller, "validationUtils", vs);
+
     }
 
     @Test
@@ -79,8 +84,8 @@ public class CrudTemplateControllerSaveEntityTest {
 
     private class CRUD extends CrudController {
 
-        public CRUD(DataDefinitionService dds, DataAccessService das, ValidationService vs) {
-            super(dds, das, LoggerFactory.getLogger(CrudTemplateControllerSaveEntityTest.class), vs);
+        public CRUD() {
+            super(LoggerFactory.getLogger(CrudTemplateControllerSaveEntityTest.class));
         }
     }
 }

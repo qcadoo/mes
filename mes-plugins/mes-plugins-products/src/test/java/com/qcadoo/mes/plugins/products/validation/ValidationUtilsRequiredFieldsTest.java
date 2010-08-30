@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -16,21 +17,32 @@ import com.qcadoo.mes.core.data.internal.FieldTypeFactoryImpl;
 
 public class ValidationUtilsRequiredFieldsTest {
 
-    @Test
-    public void shouldValidateWhenAllFieldsAreFilled() {
-        // given
-        FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
-        Entity entity = new Entity();
-        List<FieldDefinition> fields = new LinkedList<FieldDefinition>();
+    private FieldTypeFactory fieldTypeFactory;
+
+    private Entity entity;
+
+    private List<FieldDefinition> fields;
+
+    private ValidationService validationUtils;
+
+    @Before
+    public void init() {
+        fieldTypeFactory = new FieldTypeFactoryImpl();
+        entity = new Entity();
+        fields = new LinkedList<FieldDefinition>();
+        validationUtils = new ValidationService();
         fields.add(createFieldDefinition("testField1", fieldTypeFactory.integerType(), true));
         fields.add(createFieldDefinition("testField2", fieldTypeFactory.integerType(), true));
         fields.add(createFieldDefinition("testField3", fieldTypeFactory.integerType(), false));
+    }
+
+    @Test
+    public void shouldValidateWhenAllFieldsAreFilled() {
+        // given
 
         entity.setField("testField1", 1);
         entity.setField("testField2", 2);
         entity.setField("testField3", 3);
-
-        ValidationService validationUtils = new ValidationService();
 
         // when
         ValidationResult result = validationUtils.validateRequiredFields(entity, fields);
@@ -42,18 +54,10 @@ public class ValidationUtilsRequiredFieldsTest {
     @Test
     public void shouldValidateWhenAllRequiredFieldsAreFilled() {
         // given
-        FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
-        Entity entity = new Entity();
-        List<FieldDefinition> fields = new LinkedList<FieldDefinition>();
-        fields.add(createFieldDefinition("testField1", fieldTypeFactory.integerType(), true));
-        fields.add(createFieldDefinition("testField2", fieldTypeFactory.integerType(), true));
-        fields.add(createFieldDefinition("testField3", fieldTypeFactory.integerType(), false));
 
         entity.setField("testField1", 1);
         entity.setField("testField2", 2);
         entity.setField("testField3", null);
-
-        ValidationService validationUtils = new ValidationService();
 
         // when
         ValidationResult result = validationUtils.validateRequiredFields(entity, fields);
@@ -65,18 +69,10 @@ public class ValidationUtilsRequiredFieldsTest {
     @Test
     public void shouldNotValidateWhenNoneRequiredFieldsAreFilled() {
         // given
-        FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
-        Entity entity = new Entity();
-        List<FieldDefinition> fields = new LinkedList<FieldDefinition>();
-        fields.add(createFieldDefinition("testField1", fieldTypeFactory.integerType(), true));
-        fields.add(createFieldDefinition("testField2", fieldTypeFactory.integerType(), true));
-        fields.add(createFieldDefinition("testField3", fieldTypeFactory.integerType(), false));
 
         entity.setField("testField1", null);
         entity.setField("testField2", null);
         entity.setField("testField3", null);
-
-        ValidationService validationUtils = new ValidationService();
 
         // when
         ValidationResult result = validationUtils.validateRequiredFields(entity, fields);
@@ -93,18 +89,10 @@ public class ValidationUtilsRequiredFieldsTest {
     @Test
     public void shouldNotValidateWhenSomeRequiredFieldsAreNotFilled() {
         // given
-        FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
-        Entity entity = new Entity();
-        List<FieldDefinition> fields = new LinkedList<FieldDefinition>();
-        fields.add(createFieldDefinition("testField1", fieldTypeFactory.integerType(), true));
-        fields.add(createFieldDefinition("testField2", fieldTypeFactory.integerType(), true));
-        fields.add(createFieldDefinition("testField3", fieldTypeFactory.integerType(), false));
 
         entity.setField("testField1", 1);
         entity.setField("testField2", null);
         entity.setField("testField3", null);
-
-        ValidationService validationUtils = new ValidationService();
 
         // when
         ValidationResult result = validationUtils.validateRequiredFields(entity, fields);

@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
@@ -71,11 +70,13 @@ public class EntityServiceTest {
         fieldDefinitionAge.setType(fieldTypeFactory.integerType());
 
         parentDataDefinition = new DataDefinition("parent.entity");
-        parentDataDefinition.setFields(Lists.newArrayList(parentFieldDefinitionName));
+        parentDataDefinition.addField(parentFieldDefinitionName);
         parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
 
         dataDefinition = new DataDefinition("simple.entity");
-        dataDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionBelongsTo));
+        dataDefinition.addField(fieldDefinitionName);
+        dataDefinition.addField(fieldDefinitionAge);
+        dataDefinition.addField(fieldDefinitionBelongsTo);
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 
         given(dataDefinitionService.get("simple.entity")).willReturn(dataDefinition);

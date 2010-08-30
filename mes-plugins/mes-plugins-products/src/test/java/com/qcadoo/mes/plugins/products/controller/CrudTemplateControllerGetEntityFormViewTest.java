@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -27,10 +28,12 @@ public class CrudTemplateControllerGetEntityFormViewTest {
     private DataAccessService das;
 
     @Before
-    public void setUp() {
+    public void init() {
         dds = new DataDefinitionServiceMock();
         das = mock(DataAccessService.class);
-        controller = new CRUD(dds, das);
+        controller = new CRUD();
+        ReflectionTestUtils.setField(controller, "dataAccessService", das);
+        ReflectionTestUtils.setField(controller, "dataDefinitionService", dds);
     }
 
     @Test
@@ -97,8 +100,8 @@ public class CrudTemplateControllerGetEntityFormViewTest {
 
     private class CRUD extends CrudController {
 
-        public CRUD(DataDefinitionService dds, DataAccessService das) {
-            super(dds, das, LoggerFactory.getLogger(CrudTemplateControllerGetEntityFormViewTest.class), null);
+        public CRUD() {
+            super(LoggerFactory.getLogger(CrudTemplateControllerGetEntityFormViewTest.class));
         }
     }
 
