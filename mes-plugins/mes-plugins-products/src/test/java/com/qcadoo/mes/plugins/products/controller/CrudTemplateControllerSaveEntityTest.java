@@ -32,7 +32,7 @@ public class CrudTemplateControllerSaveEntityTest {
     private ValidationService vs;
 
     @Before
-    public void setUp() {
+    public void init() {
         dds = new DataDefinitionServiceMock();
         das = mock(DataAccessService.class);
         vs = mock(ValidationService.class);

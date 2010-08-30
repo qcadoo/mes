@@ -21,7 +21,7 @@ public class CrudTemplateControllerDeleteTest {
     private DataAccessService dasMock;
 
     @Before
-    public void setUp() {
+    public void init() {
         dasMock = mock(DataAccessService.class);
         controller = new CRUD();
         ReflectionTestUtils.setField(controller, "dataAccessService", dasMock);

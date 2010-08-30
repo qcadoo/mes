@@ -28,7 +28,7 @@ public class CrudTemplateControllerGetEntityFormViewTest {
     private DataAccessService das;
 
     @Before
-    public void setUp() {
+    public void init() {
         dds = new DataDefinitionServiceMock();
         das = mock(DataAccessService.class);
         controller = new CRUD();
