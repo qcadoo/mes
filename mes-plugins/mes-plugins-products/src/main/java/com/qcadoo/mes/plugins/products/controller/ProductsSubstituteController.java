@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,12 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.plugins.products.data.ListData;
 import com.qcadoo.mes.plugins.products.validation.ValidationResult;
-import com.qcadoo.mes.plugins.products.validation.ValidationService;
 
 @Controller
 public class ProductsSubstituteController extends CrudTemplate {
@@ -32,11 +28,8 @@ public class ProductsSubstituteController extends CrudTemplate {
 
     private static final String TYPE_SUBSTITUTE_COMPONENT = "products.substituteComponent";
 
-    @Autowired
-    public ProductsSubstituteController(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService,
-            ValidationService validationUtils) {
-        super(dataDefinitionService, dataAccessService, LoggerFactory.getLogger(ProductsSubstituteController.class),
-                validationUtils);
+    public ProductsSubstituteController() {
+        super(LoggerFactory.getLogger(ProductsSubstituteController.class));
     }
 
     @RequestMapping(value = "/products/substitute/editSubstitute", method = RequestMethod.GET)

@@ -1,5 +1,7 @@
 package com.qcadoo.mes.plugins.products.controller;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,20 +37,19 @@ public class CrudTemplate {
     @Autowired
     private ReloadableResourceBundleMessageSource messageSource;
 
-    private DataDefinitionService dataDefinitionService;
+    @Autowired
+    protected DataDefinitionService dataDefinitionService;
 
+    @Autowired
     private DataAccessService dataAccessService;
+
+    @Autowired
+    private ValidationService validationUtils;
 
     private Logger logger;
 
-    private ValidationService validationUtils;
-
-    public CrudTemplate(DataDefinitionService dataDefinitionService, DataAccessService dataAccessService, Logger logger,
-            ValidationService validationUtils) {
-        this.dataDefinitionService = dataDefinitionService;
-        this.dataAccessService = dataAccessService;
+    public CrudTemplate(Logger logger) {
         this.logger = logger;
-        this.validationUtils = validationUtils;
     }
 
     public ModelAndView getEntityListView(String viewName, String entityType, String message) {
@@ -82,22 +83,17 @@ public class CrudTemplate {
     protected ListData getEntitiesGridData(String entityType, Long parentEntityId, String entityParentField, Integer maxResults,
             Integer firstResult, String sortColumn, String sortOrder) {
 
-        if (maxResults != null && maxResults < 0) {
-            throw new IllegalArgumentException();
-        }
-        if (firstResult != null && firstResult < 0) {
-            throw new IllegalArgumentException();
-        }
-
         SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(entityType);
         if (parentEntityId != null && entityParentField != null) {
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions
                     .belongsTo(entityParentField, parentEntityId));
         }
         if (maxResults != null) {
+            checkArgument(maxResults >= 0, "Max results must be greater or equals 0");
             searchCriteriaBuilder = searchCriteriaBuilder.withMaxResults(maxResults);
         }
         if (firstResult != null) {
+            checkArgument(firstResult >= 0, "First result must be greater or equals 0");
             searchCriteriaBuilder = searchCriteriaBuilder.withFirstResult(firstResult);
         }
         if (sortColumn != null && sortOrder != null) {

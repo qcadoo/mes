@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -27,7 +28,9 @@ public class CrudTemplateControllerGetEntityListViewTest {
     public void setUp() {
         dds = new DataDefinitionServiceMock();
         das = new DataAccessServiceMock();
-        controller = new CRUD(dds, das);
+        controller = new CRUD();
+        ReflectionTestUtils.setField(controller, "dataAccessService", das);
+        ReflectionTestUtils.setField(controller, "dataDefinitionService", dds);
     }
 
     @Test
@@ -63,8 +66,8 @@ public class CrudTemplateControllerGetEntityListViewTest {
 
     private class CRUD extends CrudTemplate {
 
-        public CRUD(DataDefinitionService dds, DataAccessService das) {
-            super(dds, das, LoggerFactory.getLogger(CrudTemplateControllerGetEntityListViewTest.class), null);
+        public CRUD() {
+            super(LoggerFactory.getLogger(CrudTemplateControllerGetEntityListViewTest.class));
         }
     }
 
