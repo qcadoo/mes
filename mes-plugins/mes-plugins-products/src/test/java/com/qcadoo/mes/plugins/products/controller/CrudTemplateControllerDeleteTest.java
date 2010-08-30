@@ -65,7 +65,7 @@ public class CrudTemplateControllerDeleteTest {
         verifyNoMoreInteractions(dasMock);
     }
 
-    private class CRUD extends CrudTemplate {
+    private class CRUD extends CrudController {
 
         public CRUD(DataAccessService das) {
             super(null, das, LoggerFactory.getLogger(CrudTemplateControllerDeleteTest.class), null);

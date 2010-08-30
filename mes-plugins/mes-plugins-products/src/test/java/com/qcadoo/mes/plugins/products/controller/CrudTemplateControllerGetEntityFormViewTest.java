@@ -95,7 +95,7 @@ public class CrudTemplateControllerGetEntityFormViewTest {
     // TODO mina Add test for fields definition
     // TODO mina Add test for dictionary values
 
-    private class CRUD extends CrudTemplate {
+    private class CRUD extends CrudController {
 
         public CRUD(DataDefinitionService dds, DataAccessService das) {
             super(dds, das, LoggerFactory.getLogger(CrudTemplateControllerGetEntityFormViewTest.class), null);

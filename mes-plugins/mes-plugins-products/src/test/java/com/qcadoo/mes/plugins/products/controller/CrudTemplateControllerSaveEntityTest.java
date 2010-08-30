@@ -77,7 +77,7 @@ public class CrudTemplateControllerSaveEntityTest {
         verifyNoMoreInteractions(das);
     }
 
-    private class CRUD extends CrudTemplate {
+    private class CRUD extends CrudController {
 
         public CRUD(DataDefinitionService dds, DataAccessService das, ValidationService vs) {
             super(dds, das, LoggerFactory.getLogger(CrudTemplateControllerSaveEntityTest.class), vs);

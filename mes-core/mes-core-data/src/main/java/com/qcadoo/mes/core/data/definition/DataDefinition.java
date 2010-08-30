@@ -1,6 +1,6 @@
 package com.qcadoo.mes.core.data.definition;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Object defines database structure and its representation on grids and forms. The {@link DataDefinition#getEntityName()} points
@@ -22,9 +22,7 @@ public final class DataDefinition {
 
     private String discriminator;
 
-    private List<FieldDefinition> fields;
-
-    private List<GridDefinition> grids;
+    private Map<String, FieldDefinition> fields;
 
     public DataDefinition(final String entityName) {
         this.entityName = entityName;
@@ -50,20 +48,20 @@ public final class DataDefinition {
         this.discriminator = discriminator;
     }
 
-    public List<FieldDefinition> getFields() {
+    public Map<String, FieldDefinition> getFields() {
         return fields;
     }
 
-    public void setFields(final List<FieldDefinition> fields) {
+    public void setFields(final Map<String, FieldDefinition> fields) {
         this.fields = fields;
     }
 
-    public List<GridDefinition> getGrids() {
-        return grids;
+    public void addField(FieldDefinition field) {
+        fields.put(field.getName(), field);
     }
 
-    public void setGrids(final List<GridDefinition> grids) {
-        this.grids = grids;
+    public FieldDefinition getField(String fieldName) {
+        return fields.get(fieldName);
     }
 
     public boolean isVirtualTable() {

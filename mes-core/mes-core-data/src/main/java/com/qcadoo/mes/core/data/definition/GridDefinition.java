@@ -20,9 +20,7 @@ import com.qcadoo.mes.core.data.search.Restriction;
  * @apiviz.uses com.qcadoo.mes.core.data.search.Order
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
  */
-public final class GridDefinition {
-
-    private String name;
+public final class GridDefinition extends ViewElementDefinition {
 
     private Set<FieldDefinition> searchableFields;
 
@@ -32,12 +30,12 @@ public final class GridDefinition {
 
     private Set<Restriction> defaultRestrictions;
 
-    public GridDefinition(final String name) {
-        this.name = name;
+    public GridDefinition(final String name, DataDefinition dataDefinition) {
+        super(name, dataDefinition);
     }
 
-    public String getName() {
-        return name;
+    public int getType() {
+        return ViewElementDefinition.TYPE_GRID;
     }
 
     public Set<FieldDefinition> getSearchableFields() {
@@ -74,7 +72,7 @@ public final class GridDefinition {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(11, 37).append(columns).append(defaultOrder).append(defaultRestrictions).append(name)
+        return new HashCodeBuilder(11, 37).append(columns).append(defaultOrder).append(defaultRestrictions)
                 .append(searchableFields).toHashCode();
     }
 
@@ -91,7 +89,7 @@ public final class GridDefinition {
         }
         GridDefinition other = (GridDefinition) obj;
         return new EqualsBuilder().append(columns, other.columns).append(defaultOrder, other.defaultOrder)
-                .append(defaultRestrictions, other.defaultRestrictions).append(name, other.name)
-                .append(searchableFields, other.searchableFields).isEquals();
+                .append(defaultRestrictions, other.defaultRestrictions).append(searchableFields, other.searchableFields)
+                .isEquals();
     }
 }

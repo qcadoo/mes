@@ -2,6 +2,8 @@ package com.qcadoo.mes.core.data.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Map.Entry;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,8 +84,8 @@ public final class EntityServiceImpl {
     public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
         Entity genericEntity = new Entity(getId(databaseEntity));
 
-        for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            genericEntity.setField(fieldDefinition.getName(), getField(databaseEntity, fieldDefinition));
+        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+            genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
         }
 
         return genericEntity;
@@ -100,8 +102,8 @@ public final class EntityServiceImpl {
             setId(databaseEntity, genericEntity.getId());
         }
 
-        for (FieldDefinition fieldDefinition : dataDefinition.getFields()) {
-            setField(databaseEntity, fieldDefinition, genericEntity.getField(fieldDefinition.getName()));
+        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+            setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
         }
 
         return databaseEntity;
