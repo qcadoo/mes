@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -27,11 +27,13 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.plugins.products.data.ListData;
 import com.qcadoo.mes.plugins.products.data.ListDataUtils;
-import com.qcadoo.mes.plugins.products.utils.AppContext;
 import com.qcadoo.mes.plugins.products.validation.ValidationResult;
 import com.qcadoo.mes.plugins.products.validation.ValidationService;
 
 public class CrudTemplate {
+
+    @Autowired
+    private ReloadableResourceBundleMessageSource messageSource;
 
     private DataDefinitionService dataDefinitionService;
 
@@ -195,9 +197,7 @@ public class CrudTemplate {
     private void translateValidationResult(ValidationResult validationResult, Locale locale) {
         Map<String, String> messages = validationResult.getFieldMessages();
         if (messages != null) {
-            ApplicationContext ctx = AppContext.getApplicationContext();
-            ReloadableResourceBundleMessageSource messageSource = (ReloadableResourceBundleMessageSource) ctx
-                    .getBean("messageSource");
+
             for (Entry<String, String> entry : messages.entrySet()) {
                 messages.put(entry.getKey(), messageSource.getMessage(entry.getValue(), null, locale));
             }
