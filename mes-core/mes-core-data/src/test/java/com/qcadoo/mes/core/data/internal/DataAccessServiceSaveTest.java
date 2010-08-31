@@ -23,13 +23,13 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class DataAccessServiceSaveTest {
 
-    private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+    private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-    private EntityServiceImpl entityService = new EntityServiceImpl();
+    private final EntityServiceImpl entityService = new EntityServiceImpl();
 
-    private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
-    private FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
+    private final FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
 
     private DataAccessService dataAccessService = null;
 
@@ -80,7 +80,7 @@ public final class DataAccessServiceSaveTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(databaseObject);
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -107,7 +107,7 @@ public final class DataAccessServiceSaveTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(databaseObject);
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -121,7 +121,7 @@ public final class DataAccessServiceSaveTest {
         ValidationResults validationResults = dataAccessService.save("test.Entity", entity);
 
         // then
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -135,10 +135,10 @@ public final class DataAccessServiceSaveTest {
         ValidationResults validationResults = dataAccessService.save("test.Entity", entity);
 
         // then
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
-    private void givenGetWillReturn(Long id, SimpleDatabaseObject existingDatabaseObject) {
+    private void givenGetWillReturn(final Long id, final SimpleDatabaseObject existingDatabaseObject) {
         given(
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(existingDatabaseObject);

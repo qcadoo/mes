@@ -117,7 +117,7 @@ public final class EntityServiceImpl {
     private void setPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         Object parsedValue = parseAndValidateValue(fieldDefinition, value, validationResults);
-        if (!validationResults.hasErrorForField(fieldDefinition)) {
+        if (validationResults.isFieldValid(fieldDefinition)) {
             setField(databaseEntity, fieldDefinition.getName(), parsedValue);
         }
     }
@@ -137,7 +137,7 @@ public final class EntityServiceImpl {
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                     return null;
                 }
-                if (validationResults.hasErrorForField(fieldDefinition)) {
+                if (validationResults.isFieldNotValid(fieldDefinition)) {
                     return null;
                 }
                 if (!fieldDefinition.getType().validate(fieldDefinition, fieldValue, validationResults)) {
@@ -162,7 +162,7 @@ public final class EntityServiceImpl {
             Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
             referencedEntity = parseAndValidateValue(fieldDefinition, referencedEntity, validationResults);
-            if (!validationResults.hasErrorForField(fieldDefinition)) {
+            if (validationResults.isFieldValid(fieldDefinition)) {
                 setField(databaseEntity, fieldDefinition.getName(), referencedEntity);
             }
         } else {

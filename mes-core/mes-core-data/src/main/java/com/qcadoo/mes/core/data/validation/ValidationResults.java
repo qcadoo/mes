@@ -33,12 +33,20 @@ public final class ValidationResults {
 
     }
 
-    public boolean hasErrorForField(final FieldDefinition fieldDefinition) {
-        return errors.get(fieldDefinition) != null && !errors.get(fieldDefinition).isEmpty();
+    public boolean isValid() {
+        return false;
     }
 
-    public boolean hasError() {
-        return !errors.isEmpty();
+    public boolean isNotValid() {
+        return false;
+    }
+
+    public boolean isFieldValid(final FieldDefinition fieldDefinition) {
+        return false;
+    }
+
+    public boolean isFieldNotValid(final FieldDefinition fieldDefinition) {
+        return false;
     }
 
 }

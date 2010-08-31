@@ -142,7 +142,8 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
+        assertTrue(validationResults.isValid());
     }
 
     @Test
@@ -171,7 +172,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -185,7 +186,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -199,7 +200,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -213,7 +214,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -245,7 +246,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -261,7 +262,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -277,7 +278,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -293,7 +294,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -309,7 +310,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -325,7 +326,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -341,7 +342,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -357,7 +358,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -373,7 +374,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -389,7 +390,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -405,7 +406,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -421,7 +422,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -437,7 +438,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -453,7 +454,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -469,7 +470,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -485,7 +486,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -501,7 +502,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -517,7 +518,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.hasError());
+        assertFalse(validationResults.isNotValid());
     }
 
     @Test
@@ -533,7 +534,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
@@ -549,7 +550,7 @@ public class ValidatorTest {
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.hasError());
+        assertTrue(validationResults.isNotValid());
     }
 
     public class CustomValidateMethod {

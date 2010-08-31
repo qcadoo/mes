@@ -59,7 +59,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity,
                     validationResults);
 
-            if (validationResults.hasError()) {
+            if (validationResults.isNotValid()) {
                 break;
             }
 
