@@ -14,7 +14,9 @@ import java.util.Date;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -34,6 +36,8 @@ public class ValidatorTest {
     private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
     private final DictionaryService dictionaryService = mock(DictionaryService.class);
+
+    private final ApplicationContext applicationContext = mock(ApplicationContext.class);
 
     private FieldTypeFactory fieldTypeFactory = null;
 
@@ -76,6 +80,9 @@ public class ValidatorTest {
         ReflectionTestUtils.setField(fieldTypeFactory, "dataAccessService", dataAccessService);
 
         fieldValidatorFactory = new FieldValidatorFactoryImpl();
+        ReflectionTestUtils.setField(fieldValidatorFactory, "applicationContext", applicationContext);
+
+        BDDMockito.given(applicationContext.getBean("custom")).willReturn(new CustomValidateMethod());
 
         parentFieldDefinitionName = new FieldDefinition("name");
         parentFieldDefinitionName.setType(fieldTypeFactory.stringType());
@@ -500,9 +507,57 @@ public class ValidatorTest {
     @Test
     public void shouldHasNoErrorIfCustomValidatorReturnsTrue() throws Exception {
         // given
+        Entity entity = new Entity();
+        entity.setField("name", "qwerty");
+
+        fieldDefinitionName.setValidators(fieldValidatorFactory.beanMethod("custom", "isEqualToQwerty"));
 
         // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
         // then
+        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        assertFalse(validationResults.hasError());
+    }
+
+    @Test
+    public void shouldHaveErrorIfCustomValidatorReturnsFalse() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "qwert");
+
+        fieldDefinitionName.setValidators(fieldValidatorFactory.beanMethod("custom", "isEqualToQwerty"));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.hasError());
+    }
+
+    @Test
+    public void shouldHaveErrorIfCustomValidationMethodDoesNotExists() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "qwert");
+
+        fieldDefinitionName.setValidators(fieldValidatorFactory.beanMethod("custom", "isEqualToQwerty"));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.hasError());
+    }
+
+    public class CustomValidateMethod {
+
+        public boolean isEqualToQwerty(final Object object) {
+            return String.valueOf(object).equals("qwerty");
+        }
+
     }
 
 }
