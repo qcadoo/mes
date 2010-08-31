@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -25,10 +26,16 @@ import com.qcadoo.mes.core.data.types.FieldType;
 
 public class ValidationUtilsTranslateEntityTest {
 
+    private DataAccessService das;
+
+    @Before
+    public void init() {
+        das = mock(DataAccessService.class);
+    }
+
     @Test
     public void shouldTranslateWhenValid() {
         // given
-        DataAccessService das = mock(DataAccessService.class);
 
         FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
         Entity entity = new Entity();
@@ -107,7 +114,6 @@ public class ValidationUtilsTranslateEntityTest {
     @Test
     public void shouldFailWhenWrongData() {
         // given
-        DataAccessService das = mock(DataAccessService.class);
 
         FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
         Entity entity = new Entity();

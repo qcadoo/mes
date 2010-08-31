@@ -1,6 +1,8 @@
 package com.qcadoo.mes.core.data.search;
 
 import com.qcadoo.mes.core.data.internal.search.restrictions.BelongsToRestriction;
+import com.qcadoo.mes.core.data.internal.search.restrictions.IsNotNullRestriction;
+import com.qcadoo.mes.core.data.internal.search.restrictions.IsNullRestriction;
 import com.qcadoo.mes.core.data.internal.search.restrictions.LikeRestriction;
 import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
 import com.qcadoo.mes.core.data.internal.search.restrictions.SimpleRestriction;
@@ -34,11 +36,11 @@ public final class Restrictions {
     }
 
     public static Restriction isNotNull(final String fieldName) {
-        return new SimpleRestriction(fieldName, RestrictionOperator.NOTNULL);
+        return new IsNotNullRestriction(fieldName, RestrictionOperator.NOTNULL);
     }
 
     public static Restriction isNull(final String fieldName) {
-        return new SimpleRestriction(fieldName, RestrictionOperator.NULL);
+        return new IsNullRestriction(fieldName, RestrictionOperator.NULL);
     }
 
     public static Restriction le(final String fieldName, final Object expectedValue) {

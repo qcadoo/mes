@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 
@@ -20,9 +21,11 @@ public class CrudTemplateControllerDeleteTest {
     private DataAccessService dasMock;
 
     @Before
-    public void setUp() {
+    public void init() {
         dasMock = mock(DataAccessService.class);
-        controller = new CRUD(dasMock);
+        controller = new CRUD();
+        ReflectionTestUtils.setField(controller, "dataAccessService", dasMock);
+
     }
 
     @Test
@@ -67,8 +70,8 @@ public class CrudTemplateControllerDeleteTest {
 
     private class CRUD extends CrudTemplate {
 
-        public CRUD(DataAccessService das) {
-            super(null, das, LoggerFactory.getLogger(CrudTemplateControllerDeleteTest.class), null);
+        public CRUD() {
+            super(LoggerFactory.getLogger(CrudTemplateControllerDeleteTest.class));
         }
     }
 }

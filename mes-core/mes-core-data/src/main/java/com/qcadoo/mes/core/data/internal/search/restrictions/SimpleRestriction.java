@@ -11,11 +11,6 @@ public final class SimpleRestriction extends BaseRestriction {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleRestriction.class);
 
-    public SimpleRestriction(final String fieldName, final RestrictionOperator op) {
-        super(fieldName, null);
-        this.op = op;
-    }
-
     public SimpleRestriction(final String fieldName, final Object value, final RestrictionOperator op) {
         super(fieldName, value);
         this.op = op;
@@ -41,13 +36,6 @@ public final class SimpleRestriction extends BaseRestriction {
                 break;
             case NE:
                 criteria.add(Restrictions.ne(getFieldName(), getValue()));
-                break;
-            case NULL:
-                criteria.add(Restrictions.isNull(getFieldName()));
-                break;
-            case NOTNULL:
-                criteria.add(Restrictions.isNotNull(getFieldName()));
-                break;
             default:
         }
 
