@@ -16,8 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
@@ -25,7 +23,6 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
-import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class EntityServiceTest {
@@ -79,11 +76,13 @@ public class EntityServiceTest {
         fieldDefinitionAge.setValidators();
 
         parentDataDefinition = new DataDefinition("parent.entity");
-        parentDataDefinition.setFields(Lists.newArrayList(parentFieldDefinitionName));
+        parentDataDefinition.addField(parentFieldDefinitionName);
         parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
 
         dataDefinition = new DataDefinition("simple.entity");
-        dataDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionBelongsTo));
+        dataDefinition.addField(fieldDefinitionName);
+        dataDefinition.addField(fieldDefinitionAge);
+        dataDefinition.addField(fieldDefinitionBelongsTo);
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 
         given(dataDefinitionService.get("simple.entity")).willReturn(dataDefinition);

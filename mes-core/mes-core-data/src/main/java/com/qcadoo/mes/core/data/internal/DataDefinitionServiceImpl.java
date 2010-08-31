@@ -1,16 +1,13 @@
 package com.qcadoo.mes.core.data.internal;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
@@ -43,7 +40,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     private DataDefinition createProductDefinition() {
         DataDefinition dataDefinition = new DataDefinition("products.product");
-        GridDefinition gridDefinition = new GridDefinition("products");
+        // GridDefinition gridDefinition = new GridDefinition("products");
 
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
         fieldNumber.setValidators(fieldValidationFactory.required());
@@ -57,23 +54,27 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldUnit = createFieldDefinition("unit", fieldTypeFactory.stringType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Product");
-        dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
-        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldNumber, fieldName, fieldTypeOfMaterial, fieldEan,
-                fieldCategory, fieldUnit }));
+        // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
+        dataDefinition.addField(fieldNumber);
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldTypeOfMaterial);
+        dataDefinition.addField(fieldEan);
+        dataDefinition.addField(fieldCategory);
+        dataDefinition.addField(fieldUnit);
 
-        ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber, null);
-        ColumnDefinition columnName = createColumnDefinition("name", fieldName, null);
-        ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", fieldTypeOfMaterial, null);
-        ColumnDefinition columnEan = createColumnDefinition("ean", fieldEan, null);
+        // ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber, null);
+        // ColumnDefinition columnName = createColumnDefinition("name", fieldName, null);
+        // ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", fieldTypeOfMaterial, null);
+        // ColumnDefinition columnEan = createColumnDefinition("ean", fieldEan, null);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
+        // gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
 
         return dataDefinition;
     }
 
     private DataDefinition createSubstituteDefinition() {
         DataDefinition dataDefinition = new DataDefinition("products.substitute");
-        GridDefinition gridDefinition = new GridDefinition("substitutes");
+        // GridDefinition gridDefinition = new GridDefinition("substitutes");
 
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType(), true);
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType(), true);
@@ -85,22 +86,26 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         fieldProduct.setHidden(true);
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
-        dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
-        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldNumber, fieldName, fieldPriority,
-                fieldEffectiveDateFrom, fieldEffectiveDateTo, fieldProduct }));
+        // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
+        dataDefinition.addField(fieldNumber);
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldPriority);
+        dataDefinition.addField(fieldEffectiveDateFrom);
+        dataDefinition.addField(fieldEffectiveDateTo);
+        dataDefinition.addField(fieldProduct);
 
-        ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber, null);
-        ColumnDefinition columnName = createColumnDefinition("name", fieldName, null);
-        ColumnDefinition columnPriority = createColumnDefinition("priority", fieldPriority, null);
-
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnPriority }));
+        // ColumnDefinition columnNumber = createColumnDefinition("number", fieldNumber, null);
+        // ColumnDefinition columnName = createColumnDefinition("name", fieldName, null);
+        // ColumnDefinition columnPriority = createColumnDefinition("priority", fieldPriority, null);
+        //
+        // gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnPriority }));
 
         return dataDefinition;
     }
 
     private DataDefinition createSubstituteComponentDefinition() {
         DataDefinition dataDefinition = new DataDefinition("products.substituteComponent");
-        GridDefinition gridDefinition = new GridDefinition("substituteComponents");
+        // GridDefinition gridDefinition = new GridDefinition("substituteComponents");
 
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"), true);
@@ -110,25 +115,27 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType(), true);
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
-        dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
-        dataDefinition.setFields(Arrays.asList(new FieldDefinition[] { fieldProduct, fieldSubstitute, fieldQuantity }));
+        // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
+        dataDefinition.addField(fieldProduct);
+        dataDefinition.addField(fieldSubstitute);
+        dataDefinition.addField(fieldQuantity);
 
-        ColumnDefinition columnSubstituteNumber = createColumnDefinition("number", fieldProduct,
-                "fields['product'].fields['number']");
-        ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "fields['product'].fields['name']");
-        ColumnDefinition columnQuantity = createColumnDefinition("quantity", fieldQuantity, null);
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber, columnProductName,
-                columnQuantity }));
+        // ColumnDefinition columnSubstituteNumber = createColumnDefinition("number", fieldProduct,
+        // "fields['product'].fields['number']");
+        // ColumnDefinition columnProductName = createColumnDefinition("name", fieldProduct, "fields['product'].fields['name']");
+        // ColumnDefinition columnQuantity = createColumnDefinition("quantity", fieldQuantity, null);
+        // gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber, columnProductName,
+        // columnQuantity }));
 
         return dataDefinition;
     }
 
-    private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field, final String expression) {
-        ColumnDefinition columnDefinition = new ColumnDefinition(name);
-        columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
-        columnDefinition.setExpression(expression);
-        return columnDefinition;
-    }
+    // private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field, final String expression) {
+    // ColumnDefinition columnDefinition = new ColumnDefinition(name);
+    // columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
+    // columnDefinition.setExpression(expression);
+    // return columnDefinition;
+    // }
 
     private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);

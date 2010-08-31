@@ -20,6 +20,10 @@ QCDGrid = function(opts) {
 	var paging_pageNoSpan = null;
 	var paging_allPagesNoSpan = null;
 	
+	var buttons = new Object();
+	
+	var parentId = null;
+	
 	var defaultOptions = {
 		paging: true,
 		deleteConfirmMessage: 'delete?'
@@ -106,6 +110,39 @@ QCDGrid = function(opts) {
 		}
 	};
 	
+	function newClicked() {
+		if (options.events.newClicked) {
+			if ("goto" == options.events.newClicked.substring(0,4).toLowerCase()) {
+				var location = options.events.newClicked.substring(5, options.events.newClicked.length-1);
+				window.location = location;
+			}
+		}
+	}
+	
+	function deleteClicked() {
+		//alert('delete');
+	}
+	
+	function rewClicked(rowId) {
+		if (options.events && options.events.onSelect) {
+			//console.info(options.events.onSelect);
+			//$("#gbox_substitutesComponentGrid").setParent(rowId);
+			options.viewElements.substitutesComponentGrid.setParentId(rowId);
+		}
+	}
+	
+	function rewDblClicked(rowId) {
+		if (options.events && options.events.rowDblClicked) {
+			if ("goto" == options.events.rowDblClicked.substring(0,4).toLowerCase()) {
+				var location = options.events.rowDblClicked.substring(5, options.events.rowDblClicked.length-1);
+				location = Encoder.htmlDecode(location);
+				location = location.replace("{$rowId}", rowId);
+				console.info(location);
+				window.location = location;
+			}
+		}
+	}
+	
 	// CONSTRUCTOR
 	
 	function constructor(opts) {
@@ -114,6 +151,21 @@ QCDGrid = function(opts) {
 		
 		
 		var element = $("#"+opts.element);
+		
+		var topDiv = $("<div>").addClass('qcdGrid_top');
+			var newButton =  $("<button>").html('new');
+			newButton.click(newClicked);
+			newButton.attr("disabled", true);
+			topDiv.append(newButton);
+			buttons.newButton = newButton;
+			
+			var deleteButton =  $("<button>").html('delete');
+			deleteButton.click(deleteClicked);
+			deleteButton.attr("disabled", true);
+			topDiv.append(deleteButton);
+			buttons.deleteButton = deleteButton;
+			
+		element.before(topDiv);
 		
 		if (options.paging) {
 			//create paging div
@@ -152,6 +204,12 @@ QCDGrid = function(opts) {
 		}
 		
 		options.datatype = 'local';
+		options.ondblClickRow = function(id){
+			rewDblClicked(id);
+        }
+		options.onSelectRow = function(id){
+			rewClicked(id);
+        }
 		grid = element.jqGrid(options);
 	}
 	
@@ -165,6 +223,25 @@ QCDGrid = function(opts) {
 	this.setOption = function(key, value) {
 		options[key] = value;
 	}
+	
+	function enable() {
+		buttons.newButton.attr("disabled", false);
+		buttons.deleteButton.attr("disabled", false);
+	}
+	this.enable = enable;
+	
+	function disable() {
+		buttons.newButton.attr("disabled", true);
+		buttons.deleteButton.attr("disabled", true);
+	}
+	this.disable = disable;
+	
+	function setParentId(_parentId) {
+		parentId = _parentId;
+		enable();
+		refresh();
+	};
+	this.setParentId = setParentId;
 	
 	function refresh() {
 		//$this.jqGrid('clearGridData');
@@ -181,8 +258,11 @@ QCDGrid = function(opts) {
 			parameters.sortColumn = sortColumn;
 			parameters.sortOrder = sortOrder;
 		}
+		if (parentId) {
+			parameters.parentId = parentId;
+		}
 		$.ajax({
-			url: options.dataSource,
+			url: options.viewName+"/"+options.viewElementName+"/list.html",
 			type: 'GET',
 			data: parameters,
 			dataType: 'json',
@@ -192,6 +272,8 @@ QCDGrid = function(opts) {
 				totalNumberOfEntities = response.totalNumberOfEntities;
 				for (var entityNo in response.entities) {
 					var entity = response.entities[entityNo];
+					//console.info(entity.id);
+					//console.info(entity.fields);
 					grid.jqGrid('addRowData',entity.id,entity.fields);
 				}	       
 				unblockList();

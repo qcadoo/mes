@@ -1,7 +1,6 @@
 package com.qcadoo.mes.core.data.internal.search.restrictions;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 public final class LikeRestriction extends BaseRestriction {
@@ -12,7 +11,7 @@ public final class LikeRestriction extends BaseRestriction {
 
     @Override
     public Criteria addToHibernateCriteria(Criteria criteria) {
-        return criteria.add(Restrictions.like(getFieldName(), (String) getValue(), MatchMode.START));
+        return criteria.add(Restrictions.like(getFieldName(), (String) getValue()));
     }
 
 }

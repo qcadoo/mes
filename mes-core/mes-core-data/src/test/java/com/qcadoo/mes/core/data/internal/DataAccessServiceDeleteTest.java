@@ -4,9 +4,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,21 +42,17 @@ public class DataAccessServiceDeleteTest {
         DataDefinition dataDefinition = new DataDefinition("test.Entity");
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 
-        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
-
         FieldDefinition fieldDefinitionName = new FieldDefinition("name");
         fieldDefinitionName.setType(fieldTypeFactory.stringType());
-        fieldDefinitions.add(fieldDefinitionName);
+        dataDefinition.addField(fieldDefinitionName);
 
         FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
         fieldDefinitionAge.setType(fieldTypeFactory.integerType());
-        fieldDefinitions.add(fieldDefinitionAge);
+        dataDefinition.addField(fieldDefinitionAge);
 
         FieldDefinition fieldDefinitionDeleted = new FieldDefinition("deleted");
         fieldDefinitionDeleted.setType(fieldTypeFactory.booleanType());
-        fieldDefinitions.add(fieldDefinitionDeleted);
-
-        dataDefinition.setFields(fieldDefinitions);
+        dataDefinition.addField(fieldDefinitionDeleted);
 
         given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
 
@@ -90,17 +83,13 @@ public class DataAccessServiceDeleteTest {
         DataDefinition dataDefinition = new DataDefinition("test.Entity");
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 
-        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
-
         FieldDefinition fieldDefinitionName = new FieldDefinition("name");
         fieldDefinitionName.setType(fieldTypeFactory.stringType());
-        fieldDefinitions.add(fieldDefinitionName);
+        dataDefinition.addField(fieldDefinitionName);
 
         FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
         fieldDefinitionAge.setType(fieldTypeFactory.integerType());
-        fieldDefinitions.add(fieldDefinitionAge);
-
-        dataDefinition.setFields(fieldDefinitions);
+        dataDefinition.addField(fieldDefinitionAge);
 
         given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
 
