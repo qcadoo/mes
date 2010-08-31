@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;
 
 public class ExpressionUtilTest {
 

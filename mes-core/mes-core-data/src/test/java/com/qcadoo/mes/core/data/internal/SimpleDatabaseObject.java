@@ -1,5 +1,8 @@
 package com.qcadoo.mes.core.data.internal;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -9,7 +12,37 @@ public final class SimpleDatabaseObject {
 
     private String name;
 
-    private int age;
+    private Integer age;
+
+    private BigDecimal money;
+
+    private Boolean retired;
+
+    private Date birthDate;
+
+    public BigDecimal getMoney() {
+        return money;
+    }
+
+    public void setMoney(BigDecimal money) {
+        this.money = money;
+    }
+
+    public Boolean getRetired() {
+        return retired;
+    }
+
+    public void setRetired(Boolean retired) {
+        this.retired = retired;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
 
     private boolean deleted;
 
@@ -30,11 +63,11 @@ public final class SimpleDatabaseObject {
         this.id = id;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(final int age) {
+    public void setAge(final Integer age) {
         this.age = age;
     }
 
@@ -64,7 +97,8 @@ public final class SimpleDatabaseObject {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(age).append(id).append(deleted).append(belongsTo).toHashCode();
+        return new HashCodeBuilder(17, 37).append(name).append(age).append(id).append(deleted).append(belongsTo).append(money)
+                .append(retired).append(birthDate).toHashCode();
     }
 
     @Override
@@ -80,7 +114,8 @@ public final class SimpleDatabaseObject {
         }
         SimpleDatabaseObject other = (SimpleDatabaseObject) obj;
         return new EqualsBuilder().append(name, other.name).append(age, other.age).append(id, other.id)
-                .append(deleted, other.deleted).append(belongsTo, other.belongsTo).isEquals();
+                .append(deleted, other.deleted).append(belongsTo, other.belongsTo).append(money, other.money)
+                .append(retired, other.retired).append(birthDate, other.birthDate).isEquals();
     }
 
 }

@@ -25,6 +25,7 @@ import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {
@@ -35,16 +36,18 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Autowired
     private EntityServiceImpl entityService;
 
-    private final static Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
     @Override
     @Transactional
-    public void save(final String entityName, final Entity... entities) {
+    public ValidationResults save(final String entityName, final Entity... entities) {
         checkArgument(entities.length > 0, "entity must be given");
         DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
         Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
 
         Object existingDatabaseEntity = null;
+
+        ValidationResults validationResults = new ValidationResults();
 
         for (Entity entity : entities) {
             if (entity.getId() != null) {
@@ -53,7 +56,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
                         entity.getId());
             }
 
-            Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity);
+            Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity,
+                    validationResults);
+
+            if (validationResults.hasError()) {
+                break;
+            }
 
             sessionFactory.getCurrentSession().save(databaseEntity);
 
@@ -61,6 +69,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 LOG.debug("Object with id: " + entity.getId() + " has been saved");
             }
         }
+
+        return validationResults;
     }
 
     @Override
@@ -133,7 +143,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, results);
     }
 
-    private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, Class<?> entityClass) {
+    private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, final Class<?> entityClass) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
                 .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true));
 
@@ -143,12 +153,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return criteria;
     }
 
-    private int getTotalNumberOfEntities(Criteria criteria) {
+    private int getTotalNumberOfEntities(final Criteria criteria) {
         return Integer.valueOf(criteria.setProjection(Projections.rowCount()).uniqueResult().toString());
     }
 
-    private ResultSetImpl getResultSet(final SearchCriteria searchCriteria, DataDefinition dataDefinition,
-            int totalNumberOfEntities, List<?> results) {
+    private ResultSetImpl getResultSet(final SearchCriteria searchCriteria, final DataDefinition dataDefinition,
+            final int totalNumberOfEntities, final List<?> results) {
         List<Entity> genericResults = new ArrayList<Entity>();
 
         for (Object databaseEntity : results) {

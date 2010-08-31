@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.api;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 /**
  * @apiviz.uses com.qcadoo.mes.core.data.beans.Entity
@@ -11,7 +12,7 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
  */
 public interface DataAccessService {
 
-    void save(String entityName, Entity... entities);
+    ValidationResults save(String entityName, Entity... entities);
 
     Entity get(String entityName, Long entityId);
 

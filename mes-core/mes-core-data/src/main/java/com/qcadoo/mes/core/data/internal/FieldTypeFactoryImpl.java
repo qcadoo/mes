@@ -5,19 +5,18 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
-import com.qcadoo.mes.core.data.definition.FieldType;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
-import com.qcadoo.mes.core.data.definition.LookupedFieldType;
-import com.qcadoo.mes.core.data.internal.definition.BelongsToFieldType;
-import com.qcadoo.mes.core.data.internal.definition.BooleanFieldType;
-import com.qcadoo.mes.core.data.internal.definition.DateFieldType;
-import com.qcadoo.mes.core.data.internal.definition.DateTimeFieldType;
-import com.qcadoo.mes.core.data.internal.definition.DictionaryFieldType;
-import com.qcadoo.mes.core.data.internal.definition.EnumFieldType;
-import com.qcadoo.mes.core.data.internal.definition.NumericFieldType;
-import com.qcadoo.mes.core.data.internal.definition.StringFieldType;
-import com.qcadoo.mes.core.data.internal.definition.TextFieldType;
+import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.internal.types.BooleanFieldType;
+import com.qcadoo.mes.core.data.internal.types.DateFieldType;
+import com.qcadoo.mes.core.data.internal.types.DateTimeFieldType;
+import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
+import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
+import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
+import com.qcadoo.mes.core.data.internal.types.StringFieldType;
+import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.data.types.FieldType;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
+import com.qcadoo.mes.core.data.types.LookupedFieldType;
 
 @Service
 public final class FieldTypeFactoryImpl implements FieldTypeFactory {
@@ -32,9 +31,9 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     private static final FieldType DECIMAL_FIELD_TYPE = new NumericFieldType(10, 3);
 
-    private static final FieldType STRING_FIELD_TYPE = new StringFieldType();
+    private static final FieldType STRING_FIELD_TYPE = new StringFieldType(255);
 
-    private static final FieldType TEXT_FIELD_TYPE = new TextFieldType();
+    private static final FieldType TEXT_FIELD_TYPE = new StringFieldType(2048);
 
     private static final FieldType BOOLEAN_FIELD_TYPE = new BooleanFieldType();
 
