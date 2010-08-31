@@ -27,15 +27,15 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class EntityServiceTest {
 
-    private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+    private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-    private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
-    private DictionaryService dictionaryService = mock(DictionaryService.class);
+    private final DictionaryService dictionaryService = mock(DictionaryService.class);
 
-    private DataAccessService dataAccessService = mock(DataAccessService.class);
+    private final DataAccessService dataAccessService = mock(DataAccessService.class);
 
-    private FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
+    private final FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
 
     private EntityServiceImpl entityService = null;
 
@@ -264,8 +264,8 @@ public class EntityServiceTest {
         entityService.setField(databaseEntity, fieldDefinitionAge, "XXX", validationResults);
 
         // then
-        Assert.assertEquals("form.validate.errors.invalidNumericFormat", validationResults.getErrorsForField(fieldDefinitionAge)
-                .get(0).getMessage());
+        Assert.assertEquals("form.validate.errors.invalidNumericFormat", validationResults.getErrorForField(fieldDefinitionAge)
+                .getMessage());
     }
 
     @Test

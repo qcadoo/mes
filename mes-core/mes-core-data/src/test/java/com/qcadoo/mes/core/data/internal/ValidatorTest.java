@@ -236,10 +236,11 @@ public class ValidatorTest {
     public void shouldHasErrorsIfRequiredFieldsAreNotSet() throws Exception {
         // given
         Entity entity = new Entity();
-        entity.setField("name", null);
+        entity.setField("name", "");
         entity.setField("age", null);
 
         fieldDefinitionName.setValidators(fieldValidatorFactory.required());
+        fieldDefinitionAge.setValidators(fieldValidatorFactory.required());
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);

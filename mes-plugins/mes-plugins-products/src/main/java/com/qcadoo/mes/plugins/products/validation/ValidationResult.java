@@ -14,10 +14,6 @@ public class ValidationResult {
 
     private Entity validEntity;
 
-    public ValidationResult() {
-
-    }
-
     public ValidationResult(boolean isValid) {
         this.isValid = isValid;
     }

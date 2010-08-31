@@ -30,10 +30,11 @@ public final class GridDefinition extends ViewElementDefinition {
 
     private Set<Restriction> defaultRestrictions;
 
-    public GridDefinition(final String name, DataDefinition dataDefinition) {
+    public GridDefinition(final String name, final DataDefinition dataDefinition) {
         super(name, dataDefinition);
     }
 
+    @Override
     public int getType() {
         return ViewElementDefinition.TYPE_GRID;
     }

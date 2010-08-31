@@ -9,7 +9,7 @@ public class ViewDefinition {
 
     private List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
-    public ViewDefinition(String name) {
+    public ViewDefinition(final String name) {
         this.name = name;
     }
 
@@ -17,7 +17,7 @@ public class ViewDefinition {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -25,11 +25,11 @@ public class ViewDefinition {
         return elements;
     }
 
-    public void setElements(List<ViewElementDefinition> elements) {
+    public void setElements(final List<ViewElementDefinition> elements) {
         this.elements = elements;
     }
 
-    public ViewElementDefinition getElementByName(String elementName) {
+    public ViewElementDefinition getElementByName(final String elementName) {
         for (ViewElementDefinition element : elements) {
             if (elementName.equals(element.getName())) {
                 return element;

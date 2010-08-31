@@ -33,13 +33,13 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class FieldTypeFactoryImplTest {
 
-    private DictionaryService dictionaryService = mock(DictionaryService.class);
+    private final DictionaryService dictionaryService = mock(DictionaryService.class);
 
     private FieldTypeFactory fieldTypeFactory = null;
 
     private ValidationResults validationResults = null;
 
-    private FieldDefinition fieldDefinition = new FieldDefinition("aa");
+    private final FieldDefinition fieldDefinition = new FieldDefinition("aa");
 
     @Before
     public void init() {
@@ -63,9 +63,9 @@ public class FieldTypeFactoryImplTest {
 
         Assert.assertTrue(fieldType.validate(fieldDefinition, "val1", validationResults));
         Assert.assertFalse(fieldType.validate(fieldDefinition, "val4", validationResults));
-        Assert.assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorsForField(fieldDefinition)
-                .get(0).getMessage());
-        Assert.assertEquals("[val1, val2, val3]", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
+        Assert.assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorForField(fieldDefinition)
+                .getMessage());
+        Assert.assertEquals("[val1, val2, val3]", validationResults.getErrorForField(fieldDefinition).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_ENUM));
     }
 
@@ -86,9 +86,9 @@ public class FieldTypeFactoryImplTest {
         Assert.assertEquals(String.class, fieldType.getType());
         Assert.assertTrue(fieldType.validate(fieldDefinition, "val1", validationResults));
         Assert.assertFalse(fieldType.validate(fieldDefinition, "val4", validationResults));
-        Assert.assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorsForField(fieldDefinition)
-                .get(0).getMessage());
-        Assert.assertEquals("[val1, val2, val3]", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
+        Assert.assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorForField(fieldDefinition)
+                .getMessage());
+        Assert.assertEquals("[val1, val2, val3]", validationResults.getErrorForField(fieldDefinition).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DICTIONARY));
     }
 
@@ -153,9 +153,9 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.validate(fieldDefinition, BigDecimal.valueOf(1), validationResults));
         Assert.assertTrue(fieldType.validate(fieldDefinition, BigDecimal.valueOf(1234567), validationResults));
         Assert.assertFalse(fieldType.validate(fieldDefinition, BigDecimal.valueOf(12345678), validationResults));
-        Assert.assertEquals("form.validate.errors.numericIsTooBig", validationResults.getErrorsForField(fieldDefinition).get(0)
+        Assert.assertEquals("form.validate.errors.numericIsTooBig", validationResults.getErrorForField(fieldDefinition)
                 .getMessage());
-        Assert.assertEquals("9999999", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
+        Assert.assertEquals("9999999", validationResults.getErrorForField(fieldDefinition).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DECIMAL));
     }
 
@@ -189,9 +189,9 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.validate(fieldDefinition, "test", validationResults));
         Assert.assertTrue(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 255), validationResults));
         Assert.assertFalse(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 256), validationResults));
-        Assert.assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorsForField(fieldDefinition).get(0)
+        Assert.assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorForField(fieldDefinition)
                 .getMessage());
-        Assert.assertEquals("255", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
+        Assert.assertEquals("255", validationResults.getErrorForField(fieldDefinition).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_STRING));
     }
 
@@ -209,9 +209,9 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.validate(fieldDefinition, "test", validationResults));
         Assert.assertTrue(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 2048), validationResults));
         Assert.assertFalse(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 2049), validationResults));
-        Assert.assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorsForField(fieldDefinition).get(0)
+        Assert.assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorForField(fieldDefinition)
                 .getMessage());
-        Assert.assertEquals("2048", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
+        Assert.assertEquals("2048", validationResults.getErrorForField(fieldDefinition).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_TEXT));
     }
 

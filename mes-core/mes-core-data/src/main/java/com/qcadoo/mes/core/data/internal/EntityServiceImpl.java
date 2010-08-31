@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -125,6 +126,9 @@ public final class EntityServiceImpl {
     private Object parseAndValidateValue(final FieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         Object fieldValue = value;
+        if (fieldValue instanceof String && !StringUtils.hasText((String) fieldValue)) {
+            fieldValue = null;
+        }
         if (fieldValue != null) {
             if (fieldValue instanceof String) {
                 fieldValue = ((String) fieldValue).trim();
