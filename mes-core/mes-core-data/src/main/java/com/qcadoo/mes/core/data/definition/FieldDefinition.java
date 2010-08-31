@@ -5,6 +5,12 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.core.data.internal.validators.RequiredValidator;
+import com.qcadoo.mes.core.data.internal.validators.UniqueValidator;
+import com.qcadoo.mes.core.data.types.FieldType;
+import com.qcadoo.mes.core.data.validation.FieldValidator;
+
 /**
  * Field defines database field or custom field (according to {@link FieldDefinition#isCustomField()}).
  * 
@@ -55,8 +61,20 @@ public final class FieldDefinition {
         return validators;
     }
 
-    public void setValidators(final Set<FieldValidator> validators) {
-        this.validators = validators;
+    public void setValidators(final FieldValidator... validators) {
+        this.validators = Sets.newHashSet(validators);
+        required = false;
+        unique = false;
+        if (validators != null) {
+            for (FieldValidator fieldValidator : validators) {
+                if (fieldValidator instanceof RequiredValidator) {
+                    required = true;
+                }
+                if (fieldValidator instanceof UniqueValidator) {
+                    unique = true;
+                }
+            }
+        }
     }
 
     public boolean isEditable() {
@@ -69,10 +87,6 @@ public final class FieldDefinition {
 
     public boolean isRequired() {
         return required;
-    }
-
-    public void setRequired(final boolean required) {
-        this.required = required;
     }
 
     public boolean isCustomField() {
@@ -101,10 +115,6 @@ public final class FieldDefinition {
 
     public boolean isUnique() {
         return unique;
-    }
-
-    public void setUnique(final boolean unique) {
-        this.unique = unique;
     }
 
     @Override

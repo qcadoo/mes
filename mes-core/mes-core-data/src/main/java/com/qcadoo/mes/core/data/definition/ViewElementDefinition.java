@@ -16,12 +16,15 @@ public abstract class ViewElementDefinition {
 
     private Map<String, String> events;
 
-    private DataDefinition parent;
+    private DataDefinition parentDefinition;
+
+    private String parentField;
 
     public abstract int getType();
 
     public ViewElementDefinition(String name, DataDefinition dataDefinition) {
         this.name = name;
+        this.dataDefinition = dataDefinition;
     }
 
     public String getName() {
@@ -56,12 +59,20 @@ public abstract class ViewElementDefinition {
         this.events = events;
     }
 
-    public DataDefinition getParent() {
-        return parent;
+    public DataDefinition getParentDefinition() {
+        return parentDefinition;
     }
 
-    public void setParent(DataDefinition parent) {
-        this.parent = parent;
+    public void setParentDefinition(DataDefinition parentDefinition) {
+        this.parentDefinition = parentDefinition;
+    }
+
+    public String getParentField() {
+        return parentField;
+    }
+
+    public void setParentField(String parentField) {
+        this.parentField = parentField;
     }
 
 }

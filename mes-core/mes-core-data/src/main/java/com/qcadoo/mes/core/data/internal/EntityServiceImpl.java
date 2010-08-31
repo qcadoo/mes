@@ -13,7 +13,9 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.internal.definition.BelongsToFieldType;
+import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.validation.FieldValidator;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 @Service
 public final class EntityServiceImpl {
@@ -61,13 +63,14 @@ public final class EntityServiceImpl {
         setField(databaseEntity, FIELD_DELETED, true);
     }
 
-    public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
+    public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
-            setBelongsToField(databaseEntity, fieldDefinition, value);
+            setBelongsToField(databaseEntity, fieldDefinition, value, validationResults);
         } else {
-            setPrimitiveField(databaseEntity, fieldDefinition, value);
+            setPrimitiveField(databaseEntity, fieldDefinition, value, validationResults);
         }
     }
 
@@ -92,7 +95,7 @@ public final class EntityServiceImpl {
     }
 
     public Object convertToDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
-            final Object existingDatabaseEntity) {
+            final Object existingDatabaseEntity, final ValidationResults validationResults) {
         Object databaseEntity = null;
 
         if (existingDatabaseEntity != null) {
@@ -103,52 +106,72 @@ public final class EntityServiceImpl {
         }
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
+            setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()),
+                    validationResults);
+
         }
 
         return databaseEntity;
     }
 
-    private void setPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
-        validateValue(databaseEntity, fieldDefinition, value);
-        setField(databaseEntity, fieldDefinition.getName(), value);
-    }
-
-    private void validateValue(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
-        if (value == null) {
-            return;
-        }
-        ValidatableFieldType validatableFieldType = (ValidatableFieldType) fieldDefinition.getType();
-        if (!validatableFieldType.getType().isInstance(value)) {
-            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " has invalid type " + value.getClass().getSimpleName() + ", should be "
-                    + validatableFieldType.getType().getSimpleName());
-        }
-        String error = validatableFieldType.validateValue(value);
-        if (error != null) {
-            throw new IllegalStateException("value of the property " + databaseEntity.getClass().getSimpleName() + "#"
-                    + fieldDefinition.getName() + " is invalid: " + error);
+    private void setPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
+        Object parsedValue = parseAndValidateValue(fieldDefinition, value, validationResults);
+        if (!validationResults.hasErrorForField(fieldDefinition)) {
+            setField(databaseEntity, fieldDefinition.getName(), parsedValue);
         }
     }
 
-    private void setBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
+    private Object parseAndValidateValue(final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
+        Object fieldValue = value;
+        if (fieldValue != null) {
+            if (fieldValue instanceof String) {
+                fieldValue = ((String) fieldValue).trim();
+            }
+            if (!fieldDefinition.getType().getType().isInstance(fieldValue)) {
+                if (fieldValue instanceof String) {
+                    fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
+                } else {
+                    validationResults.addError(fieldDefinition, "form.validate.errors.wrongType", fieldValue.getClass()
+                            .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
+                    return null;
+                }
+                if (validationResults.hasErrorForField(fieldDefinition)) {
+                    return null;
+                }
+                if (!fieldDefinition.getType().validate(fieldDefinition, fieldValue, validationResults)) {
+                    return null;
+                }
+            }
+        }
+        for (FieldValidator fieldValidator : fieldDefinition.getValidators()) {
+            if (!fieldValidator.validate(fieldDefinition, fieldValue, validationResults)) {
+                return null;
+            }
+        }
+        return fieldValue;
+    }
+
+    private void setBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (value != null) {
             Long referencedEntityId = ((Entity) value).getId();
             BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
             DataDefinition referencedDataDefinition = getDataDefinitionForEntity(belongsToFieldType.getEntityName());
             Class<?> referencedClass = getClassForEntity(referencedDataDefinition);
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
-            validateValue(databaseEntity, fieldDefinition, referencedEntity);
-            setField(databaseEntity, fieldDefinition.getName(), referencedEntity);
+            referencedEntity = parseAndValidateValue(fieldDefinition, referencedEntity, validationResults);
+            if (!validationResults.hasErrorForField(fieldDefinition)) {
+                setField(databaseEntity, fieldDefinition.getName(), referencedEntity);
+            }
         } else {
             setField(databaseEntity, fieldDefinition.getName(), null);
         }
     }
 
     private Object getPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
-        Object value = getField(databaseEntity, fieldDefinition.getName());
-        validateValue(databaseEntity, fieldDefinition, value);
-        return value;
+        return getField(databaseEntity, fieldDefinition.getName());
     }
 
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {

@@ -14,7 +14,7 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 
 public class DataAccessServiceDeleteTest {
 

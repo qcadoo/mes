@@ -8,14 +8,18 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldType;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.types.FieldType;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
+import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 
 @Service
 public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     @Autowired
     private FieldTypeFactory fieldTypeFactory;
+
+    @Autowired
+    private FieldValidatorFactory fieldValidationFactory;
 
     @Override
     public void save(final DataDefinition dataDefinition) {
@@ -39,12 +43,12 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         // GridDefinition gridDefinition = new GridDefinition("products");
 
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
-        fieldNumber.setRequired(true);
+        fieldNumber.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
-        fieldName.setRequired(true);
+        fieldName.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldTypeOfMaterial = createFieldDefinition("typeOfMaterial",
                 fieldTypeFactory.enumType("product", "intermediate", "component"));
-        fieldTypeOfMaterial.setRequired(true);
+        fieldTypeOfMaterial.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEan = createFieldDefinition("ean", fieldTypeFactory.stringType());
         FieldDefinition fieldCategory = createFieldDefinition("category", fieldTypeFactory.dictionaryType("categories"));
         FieldDefinition fieldUnit = createFieldDefinition("unit", fieldTypeFactory.stringType());
@@ -142,7 +146,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private FieldDefinition createFieldDefinition(final String name, final FieldType type, final boolean required) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);
         fieldDefinition.setType(type);
-        fieldDefinition.setRequired(required);
+        fieldDefinition.setValidators(fieldValidationFactory.required());
         return fieldDefinition;
     }
 

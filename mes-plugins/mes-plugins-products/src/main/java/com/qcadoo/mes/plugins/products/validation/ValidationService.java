@@ -12,9 +12,9 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 
 @Service
 public class ValidationService {

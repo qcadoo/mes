@@ -18,7 +18,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 
 public final class DataAccessServiceGetTest {
 
@@ -97,8 +97,8 @@ public final class DataAccessServiceGetTest {
         assertEquals(66, entity.getField("age"));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldFailIfFieldTypeIsNotValid() throws Exception {
+    @Test
+    public void shouldNotFailIfFieldTypeIsNotValid() throws Exception {
         // given
         DataDefinition dataDefinition = new DataDefinition("test.Entity");
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());

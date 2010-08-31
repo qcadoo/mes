@@ -17,18 +17,19 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.EnumeratedFieldType;
-import com.qcadoo.mes.core.data.definition.FieldType;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
-import com.qcadoo.mes.core.data.internal.definition.BelongsToFieldType;
-import com.qcadoo.mes.core.data.internal.definition.BooleanFieldType;
-import com.qcadoo.mes.core.data.internal.definition.DateFieldType;
-import com.qcadoo.mes.core.data.internal.definition.DateTimeFieldType;
-import com.qcadoo.mes.core.data.internal.definition.DictionaryFieldType;
-import com.qcadoo.mes.core.data.internal.definition.EnumFieldType;
-import com.qcadoo.mes.core.data.internal.definition.NumericFieldType;
-import com.qcadoo.mes.core.data.internal.definition.StringFieldType;
-import com.qcadoo.mes.core.data.internal.definition.TextFieldType;
+import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.internal.types.BooleanFieldType;
+import com.qcadoo.mes.core.data.internal.types.DateFieldType;
+import com.qcadoo.mes.core.data.internal.types.DateTimeFieldType;
+import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
+import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
+import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
+import com.qcadoo.mes.core.data.internal.types.StringFieldType;
+import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.data.types.FieldType;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class FieldTypeFactoryImplTest {
 
@@ -36,10 +37,15 @@ public class FieldTypeFactoryImplTest {
 
     private FieldTypeFactory fieldTypeFactory = null;
 
+    private ValidationResults validationResults = null;
+
+    private FieldDefinition fieldDefinition = new FieldDefinition("aa");
+
     @Before
     public void init() {
         fieldTypeFactory = new FieldTypeFactoryImpl();
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
+        validationResults = new ValidationResults();
     }
 
     @Test
@@ -53,9 +59,13 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(String.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue("val1"));
-        Assert.assertNotNull(((ValidatableFieldType) fieldType).validateValue("val4"));
+        Assert.assertEquals(String.class, fieldType.getType());
+
+        Assert.assertTrue(fieldType.validate(fieldDefinition, "val1", validationResults));
+        Assert.assertFalse(fieldType.validate(fieldDefinition, "val4", validationResults));
+        Assert.assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorsForField(fieldDefinition)
+                .get(0).getMessage());
+        Assert.assertEquals("[val1, val2, val3]", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_ENUM));
     }
 
@@ -73,9 +83,12 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(String.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue("val1"));
-        Assert.assertNotNull(((ValidatableFieldType) fieldType).validateValue("val4"));
+        Assert.assertEquals(String.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, "val1", validationResults));
+        Assert.assertFalse(fieldType.validate(fieldDefinition, "val4", validationResults));
+        Assert.assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorsForField(fieldDefinition)
+                .get(0).getMessage());
+        Assert.assertEquals("[val1, val2, val3]", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DICTIONARY));
     }
 
@@ -89,8 +102,8 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(Boolean.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(false));
+        Assert.assertEquals(Boolean.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, false, validationResults));
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_BOOLEAN));
     }
 
@@ -104,8 +117,8 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(Date.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(new Date()));
+        Assert.assertEquals(Date.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, new Date(), validationResults));
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DATE));
     }
 
@@ -119,8 +132,8 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(Date.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(new Date()));
+        Assert.assertEquals(Date.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, new Date(), validationResults));
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DATE_TIME));
     }
 
@@ -134,12 +147,15 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertTrue(fieldType.isAggregable());
-        Assert.assertEquals(BigDecimal.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(BigDecimal.valueOf(1.21)));
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(BigDecimal.valueOf(1)));
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(BigDecimal.valueOf(1)));
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(BigDecimal.valueOf(1234567)));
-        Assert.assertNotNull(((ValidatableFieldType) fieldType).validateValue(BigDecimal.valueOf(12345678)));
+        Assert.assertEquals(BigDecimal.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, BigDecimal.valueOf(1.21), validationResults));
+        Assert.assertTrue(fieldType.validate(fieldDefinition, BigDecimal.valueOf(1), validationResults));
+        Assert.assertTrue(fieldType.validate(fieldDefinition, BigDecimal.valueOf(1), validationResults));
+        Assert.assertTrue(fieldType.validate(fieldDefinition, BigDecimal.valueOf(1234567), validationResults));
+        Assert.assertFalse(fieldType.validate(fieldDefinition, BigDecimal.valueOf(12345678), validationResults));
+        Assert.assertEquals("form.validate.errors.numericIsTooBig", validationResults.getErrorsForField(fieldDefinition).get(0)
+                .getMessage());
+        Assert.assertEquals("9999999", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DECIMAL));
     }
 
@@ -153,9 +169,9 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertTrue(fieldType.isAggregable());
-        Assert.assertEquals(Integer.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(1));
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(1234567890));
+        Assert.assertEquals(Integer.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, 1, validationResults));
+        Assert.assertTrue(fieldType.validate(fieldDefinition, 1234567890, validationResults));
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_INTEGER));
     }
 
@@ -169,10 +185,13 @@ public class FieldTypeFactoryImplTest {
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(String.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue("test"));
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(StringUtils.repeat("a", 255)));
-        Assert.assertNotNull(((ValidatableFieldType) fieldType).validateValue(StringUtils.repeat("a", 256)));
+        Assert.assertEquals(String.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, "test", validationResults));
+        Assert.assertTrue(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 255), validationResults));
+        Assert.assertFalse(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 256), validationResults));
+        Assert.assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorsForField(fieldDefinition).get(0)
+                .getMessage());
+        Assert.assertEquals("255", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_STRING));
     }
 
@@ -182,14 +201,17 @@ public class FieldTypeFactoryImplTest {
         FieldType fieldType = fieldTypeFactory.textType();
 
         // then
-        Assert.assertThat(fieldType, is(TextFieldType.class));
-        Assert.assertFalse(fieldType.isSearchable());
-        Assert.assertFalse(fieldType.isOrderable());
+        Assert.assertThat(fieldType, is(StringFieldType.class));
+        Assert.assertTrue(fieldType.isSearchable());
+        Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(String.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue("test"));
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(StringUtils.repeat("a", 2048)));
-        Assert.assertNotNull(((ValidatableFieldType) fieldType).validateValue(StringUtils.repeat("a", 2049)));
+        Assert.assertEquals(String.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, "test", validationResults));
+        Assert.assertTrue(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 2048), validationResults));
+        Assert.assertFalse(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 2049), validationResults));
+        Assert.assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorsForField(fieldDefinition).get(0)
+                .getMessage());
+        Assert.assertEquals("2048", validationResults.getErrorsForField(fieldDefinition).get(0).getVars()[0]);
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_TEXT));
     }
 
@@ -203,9 +225,8 @@ public class FieldTypeFactoryImplTest {
         Assert.assertFalse(fieldType.isSearchable());
         Assert.assertFalse(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());
-        Assert.assertEquals(Object.class, ((ValidatableFieldType) fieldType).getType());
-        Assert.assertNull(((ValidatableFieldType) fieldType).validateValue(new Entity()));
+        Assert.assertEquals(Object.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, new Entity(), validationResults));
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO));
     }
-
 }

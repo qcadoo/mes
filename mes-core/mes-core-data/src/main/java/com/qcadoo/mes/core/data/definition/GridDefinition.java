@@ -13,7 +13,7 @@ import com.qcadoo.mes.core.data.search.Restriction;
  * Grid defines structure used for listing entities. It contains the list of field that can be used for restrictions and the list
  * of columns. It also have default order and default restrictions.
  * 
- * Searchable fields must have searchable type - {@link FieldType#isSearchable()}.
+ * Searchable fields must have searchable type - FieldType#isSearchable().
  * 
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.owns com.qcadoo.mes.core.data.definition.ColumnDefinition

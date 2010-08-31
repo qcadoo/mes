@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data.internal.utils;
 
 import java.util.ArrayList;
 import java.util.List;

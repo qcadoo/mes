@@ -15,19 +15,19 @@ public class ListData {
         this.entities = entities;
     }
 
-    public final int getTotalNumberOfEntities() {
+    public int getTotalNumberOfEntities() {
         return totalNumberOfEntities;
     }
 
-    public final void setTotalNumberOfEntities(int totalNumberOfEntities) {
+    public void setTotalNumberOfEntities(int totalNumberOfEntities) {
         this.totalNumberOfEntities = totalNumberOfEntities;
     }
 
-    public final List<Entity> getEntities() {
+    public List<Entity> getEntities() {
         return entities;
     }
 
-    public final void setEntities(List<Entity> entities) {
+    public void setEntities(List<Entity> entities) {
         this.entities = entities;
     }
 

@@ -29,4 +29,13 @@ public class ViewDefinition {
         this.elements = elements;
     }
 
+    public ViewElementDefinition getElementByName(String elementName) {
+        for (ViewElementDefinition element : elements) {
+            if (elementName.equals(element.getName())) {
+                return element;
+            }
+        }
+        return null;
+    }
+
 }

@@ -8,16 +8,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 
-<c:set var="validatorPrefix" value="${fn:replace(entityType, '.', '_')}" />
+<c:set var="validatorPrefix" value="${fn:replace(dataDefinition.entityName, '.', '_')}" />
 
 <div class="${validatorPrefix}_validatorGlobalMessage validatorGlobalMessage"></div>
 <table>
-			<c:forEach items="${entityFieldsDefinition}" var="fieldDefinition">
+			<c:forEach items="${dataDefinition.fields}" var="fieldDefinition">
 			<tr>
 				<c:choose>
-					<c:when test="${fieldDefinition.hidden == false}">
+					<c:when test="${fieldDefinition.value.hidden == false}">
 						<td>
-							<spring:message code="${entityType}.field.${fieldDefinition.name}"/>
+							<spring:message code="${entityType}.field.${fieldDefinition.k}"/>
 						</td>
 						<td>
 							<c:choose>

@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -16,7 +18,8 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class DataAccessServiceSaveTest {
 
@@ -41,10 +44,12 @@ public final class DataAccessServiceSaveTest {
 
         FieldDefinition fieldDefinitionName = new FieldDefinition("name");
         fieldDefinitionName.setType(fieldTypeFactory.stringType());
+        fieldDefinitionName.setValidators();
         dataDefinition.addField(fieldDefinitionName);
 
         FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
         fieldDefinitionAge.setType(fieldTypeFactory.integerType());
+        fieldDefinitionAge.setValidators();
         dataDefinition.addField(fieldDefinitionAge);
 
         given(dataDefinitionService.get("test.Entity")).willReturn(dataDefinition);
@@ -71,10 +76,11 @@ public final class DataAccessServiceSaveTest {
         databaseObject.setAge(66);
 
         // when
-        dataAccessService.save("test.Entity", entity);
+        ValidationResults validationResults = dataAccessService.save("test.Entity", entity);
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(databaseObject);
+        assertFalse(validationResults.hasError());
     }
 
     @Test
@@ -97,21 +103,39 @@ public final class DataAccessServiceSaveTest {
         databaseObject.setAge(66);
 
         // when
-        dataAccessService.save("test.Entity", entity);
+        ValidationResults validationResults = dataAccessService.save("test.Entity", entity);
 
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(databaseObject);
+        assertFalse(validationResults.hasError());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailIfFieldTypeIsNotValid() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "Mr T");
+        entity.setField("age", "r");
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("test.Entity", entity);
+
+        // then
+        assertTrue(validationResults.hasError());
+    }
+
+    @Test
+    public void shouldConvertTypeFromInteger() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", "Mr T");
         entity.setField("age", "66");
 
         // when
-        dataAccessService.save("test.Entity", entity);
+        ValidationResults validationResults = dataAccessService.save("test.Entity", entity);
+
+        // then
+        assertFalse(validationResults.hasError());
     }
 
     private void givenGetWillReturn(Long id, SimpleDatabaseObject existingDatabaseObject) {

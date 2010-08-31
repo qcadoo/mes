@@ -7,13 +7,13 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class DataAccessServiceMock implements DataAccessService {
 
     @Override
-    public void save(String entityName, Entity... entities) {
-        // TODO Auto-generated method stub
-
+    public ValidationResults save(String entityName, Entity... entities) {
+        return null;
     }
 
     @Override

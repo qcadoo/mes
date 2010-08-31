@@ -22,35 +22,35 @@ public class ValidationResult {
         this.isValid = isValid;
     }
 
-    public final boolean isValid() {
+    public boolean isValid() {
         return isValid;
     }
 
-    public final void setValid(boolean isValid) {
+    public void setValid(boolean isValid) {
         this.isValid = isValid;
     }
 
-    public final String getGlobalMessage() {
+    public String getGlobalMessage() {
         return globalMessage;
     }
 
-    public final void setGlobalMessage(String globalMessage) {
+    public void setGlobalMessage(String globalMessage) {
         this.globalMessage = globalMessage;
     }
 
-    public final Map<String, String> getFieldMessages() {
+    public Map<String, String> getFieldMessages() {
         return fieldMessages;
     }
 
-    public final void setFieldMessages(Map<String, String> fieldMessages) {
+    public void setFieldMessages(Map<String, String> fieldMessages) {
         this.fieldMessages = fieldMessages;
     }
 
-    public final Entity getValidEntity() {
+    public Entity getValidEntity() {
         return validEntity;
     }
 
-    public final void setValidEntity(Entity validEntity) {
+    public void setValidEntity(Entity validEntity) {
         this.validEntity = validEntity;
     }
 
