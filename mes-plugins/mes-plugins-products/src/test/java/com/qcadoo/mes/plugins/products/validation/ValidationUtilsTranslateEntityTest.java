@@ -18,10 +18,10 @@ import org.junit.Test;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldType;
 import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
 import com.qcadoo.mes.core.data.internal.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.definition.BelongsToFieldType;
+import com.qcadoo.mes.core.data.types.FieldType;
 
 public class ValidationUtilsTranslateEntityTest {
 

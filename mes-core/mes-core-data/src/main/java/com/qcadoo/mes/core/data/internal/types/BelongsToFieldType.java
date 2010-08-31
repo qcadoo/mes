@@ -1,18 +1,19 @@
-package com.qcadoo.mes.core.data.internal.definition;
+package com.qcadoo.mes.core.data.internal.types;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.FieldTypeFactory;
-import com.qcadoo.mes.core.data.definition.LookupedFieldType;
-import com.qcadoo.mes.core.data.internal.ValidatableFieldType;
+import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.core.data.types.FieldTypeFactory;
+import com.qcadoo.mes.core.data.types.LookupedFieldType;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class BelongsToFieldType implements LookupedFieldType, ValidatableFieldType {
+public final class BelongsToFieldType implements LookupedFieldType {
 
     private final String entityName;
 
@@ -56,11 +57,6 @@ public final class BelongsToFieldType implements LookupedFieldType, ValidatableF
     }
 
     @Override
-    public String validateValue(final Object value) {
-        return null;
-    }
-
-    @Override
     public Map<Long, String> lookup(final String prefix) {
         ResultSet resultSet = dataAccessService.find(entityName,
                 SearchCriteriaBuilder.forEntity(entityName).orderBy(Order.asc(lookupFieldName)).build());
@@ -79,6 +75,16 @@ public final class BelongsToFieldType implements LookupedFieldType, ValidatableF
 
     public boolean isEagerFetch() {
         return eagerFetch;
+    }
+
+    @Override
+    public Object fromString(FieldDefinition fieldDefinition, String value, ValidationResults validationResults) {
+        throw new IllegalStateException("belongsTo field type doesn't suppont fromString method");
+    }
+
+    @Override
+    public boolean validate(FieldDefinition fieldDefinition, Object value, ValidationResults validationResults) {
+        return true;
     }
 
 }

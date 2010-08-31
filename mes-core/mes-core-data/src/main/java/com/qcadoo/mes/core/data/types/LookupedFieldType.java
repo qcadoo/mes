@@ -1,6 +1,7 @@
-package com.qcadoo.mes.core.data.definition;
+package com.qcadoo.mes.core.data.types;
 
 import java.util.Map;
+
 
 /**
  * Method is {@link LookupedFieldType#lookup(String)} returns all possible values that begin with given prefix.

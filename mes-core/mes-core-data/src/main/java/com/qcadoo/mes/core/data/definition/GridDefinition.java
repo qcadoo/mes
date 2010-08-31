@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
+import com.qcadoo.mes.core.data.types.FieldType;
 
 /**
  * Grid defines structure used for listing entities. It contains the list of field that can be used for restrictions and the list
@@ -22,7 +23,7 @@ import com.qcadoo.mes.core.data.search.Restriction;
  */
 public final class GridDefinition {
 
-    private String name;
+    private final String name;
 
     private Set<FieldDefinition> searchableFields;
 
