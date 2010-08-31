@@ -3,7 +3,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
-<%@ page import="com.qcadoo.mes.core.data.definition.FieldTypeFactory" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
@@ -33,14 +32,10 @@
 		
 		jQuery(document).ready(function(){
 
-			console.info(definedParentEntities);
-			
 			$(".element_table").each(function(i,e){
 
 				var optionsElement = $("#"+e.id+" .element_options");
-				console.info(optionsElement);
 				var options = jsonParse(optionsElement.html());
-				console.info(options.columns);
 
 				optionsElement.remove();
 				
@@ -79,9 +74,7 @@
 					grid.enable();
 					grid.refresh();
 				} else {
-					console.info(options.parentDefinition);
 					var entity = definedParentEntities[options.parentDefinition];
-					console.info(entity);
 					if (entity) {
 						grid.setParentId(entity);
 					} else {
@@ -95,10 +88,7 @@
 				var formElement = new Object();
 				
 				var optionsElement = $("#"+e.id+" .element_options");
-				console.info("form");
-				console.info(optionsElement);
 				var options = jsonParse(optionsElement.html());
-				console.info(options);
 				optionsElement.remove();
 
 				formElement.id = e.id;
@@ -116,7 +106,7 @@
 			console.info(formId+"-"+ validatorPrefix);
 			var formData = $('#'+formId+"_form").serializeObject();
 
-			var form = formElements[formId];
+			var form = viewElements[formId];
 			var url = "${viewDefinition.name}/"+form.id+"/save.html";
 			
 			$("."+validatorPrefix+"_validatorGlobalMessage").html('');

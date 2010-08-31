@@ -41,4 +41,8 @@ public final class ValidationResults {
         return !errors.isEmpty();
     }
 
+    public boolean isValid() {
+        return errors.isEmpty();
+    }
+
 }
