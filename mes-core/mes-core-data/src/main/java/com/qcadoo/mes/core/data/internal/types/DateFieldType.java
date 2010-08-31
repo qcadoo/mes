@@ -40,9 +40,9 @@ public final class DateFieldType implements FieldType {
     }
 
     @Override
-    public Object fromString(FieldDefinition fieldDefinition, String value, ValidationResults validationResults) {
+    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
         try {
-            return FORMAT.parse((String) value);
+            return FORMAT.parse(value);
         } catch (ParseException e) {
             validationResults.addError(fieldDefinition, "form.validate.errors.invalidDateFormat");
         }
@@ -50,7 +50,7 @@ public final class DateFieldType implements FieldType {
     }
 
     @Override
-    public boolean validate(FieldDefinition fieldDefinition, Object value, ValidationResults validationResults) {
+    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
         return true;
     }
 

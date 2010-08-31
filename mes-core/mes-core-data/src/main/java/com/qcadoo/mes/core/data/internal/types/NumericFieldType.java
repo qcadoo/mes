@@ -55,7 +55,7 @@ public final class NumericFieldType implements FieldType {
     }
 
     @Override
-    public Object fromString(FieldDefinition fieldDefinition, String value, ValidationResults validationResults) {
+    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
         try {
             if (scale == 0) {
                 return Integer.parseInt(value);
@@ -69,7 +69,7 @@ public final class NumericFieldType implements FieldType {
     }
 
     @Override
-    public boolean validate(FieldDefinition fieldDefinition, Object value, ValidationResults validationResults) {
+    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
         if (((Number) value).longValue() > maxValue) {
             validationResults.addError(fieldDefinition, "form.validate.errors.numericIsTooBig", String.valueOf(maxValue));
             return false;

@@ -11,7 +11,7 @@ public final class StringFieldType implements FieldType {
 
     private final int lenght;
 
-    public StringFieldType(int lenght) {
+    public StringFieldType(final int lenght) {
         this.lenght = lenght;
     }
 
@@ -45,12 +45,12 @@ public final class StringFieldType implements FieldType {
     }
 
     @Override
-    public Object fromString(FieldDefinition fieldDefinition, String value, ValidationResults validationResults) {
+    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
         return value;
     }
 
     @Override
-    public boolean validate(FieldDefinition fieldDefinition, Object value, ValidationResults validationResults) {
+    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
         if (StringUtils.length((String) value) > lenght) {
             validationResults.addError(fieldDefinition, "form.validate.errors.stringIsTooLong", String.valueOf(lenght));
             return false;
