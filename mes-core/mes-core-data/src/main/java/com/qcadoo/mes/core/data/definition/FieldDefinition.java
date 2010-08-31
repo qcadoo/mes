@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.definition;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -27,7 +28,7 @@ public final class FieldDefinition {
 
     private FieldType type;
 
-    private Set<FieldValidator> validators;
+    private Set<FieldValidator> validators = new HashSet<FieldValidator>();
 
     private boolean editable;
 
