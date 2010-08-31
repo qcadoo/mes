@@ -6,7 +6,9 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class UniqueValidator implements FieldValidator {
 
-    private String errorMessage = "";
+    private static final String UNIQUE_ERROR = "core.validation.error.duplicated";
+
+    private String errorMessage = UNIQUE_ERROR;
 
     @Override
     public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {

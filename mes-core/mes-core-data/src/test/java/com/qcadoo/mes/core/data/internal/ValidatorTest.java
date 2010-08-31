@@ -30,11 +30,11 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class ValidatorTest {
 
-    private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+    private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-    private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
-    private DictionaryService dictionaryService = mock(DictionaryService.class);
+    private final DictionaryService dictionaryService = mock(DictionaryService.class);
 
     private FieldTypeFactory fieldTypeFactory = null;
 
@@ -492,6 +492,14 @@ public class ValidatorTest {
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.hasError());
+    }
+
+    @Test
+    public void shouldHasNoErrorIfCustomValidatorReturnsTrue() throws Exception {
+        // given
+
+        // when
+        // then
     }
 
 }

@@ -6,7 +6,9 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class RequiredValidator implements FieldValidator {
 
-    private String errorMessage = "form.validate.errors.isRequired";
+    private static final String MISSING_ERROR = "core.validation.error.missing";
+
+    private String errorMessage = MISSING_ERROR;
 
     @Override
     public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {

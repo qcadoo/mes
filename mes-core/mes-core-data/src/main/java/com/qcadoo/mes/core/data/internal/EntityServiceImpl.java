@@ -129,7 +129,7 @@ public final class EntityServiceImpl {
                 if (fieldValue instanceof String) {
                     fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
                 } else {
-                    validationResults.addError(fieldDefinition, "form.validate.errors.wrongType", fieldValue.getClass()
+                    validationResults.addError(fieldDefinition, "core.validation.error.wrongType", fieldValue.getClass()
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                     return null;
                 }
