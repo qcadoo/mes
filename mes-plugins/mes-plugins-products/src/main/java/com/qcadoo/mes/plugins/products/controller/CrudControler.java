@@ -32,9 +32,9 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 import com.qcadoo.mes.plugins.products.data.ListData;
 import com.qcadoo.mes.plugins.products.data.ListDataUtils;
-import com.qcadoo.mes.plugins.products.validation.ValidationResult;
 
 @Controller
 public class CrudControler {
@@ -139,26 +139,12 @@ public class CrudControler {
 
     @RequestMapping(value = "test/{viewName}/{elementName}/save", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResult saveEntity(@PathVariable("viewName") String viewName,
-            @PathVariable("elementName") String elementName, @ModelAttribute Entity product, Locale locale) {
+    public ValidationResults saveEntity(@PathVariable("viewName") String viewName,
+            @PathVariable("elementName") String elementName, @ModelAttribute Entity entity, Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
-        // ValidationResult validationResult = validationUtils.validateEntity(entity, entityDataDefinition.getFields());
-        ValidationResult validationResult = new ValidationResult();
-        validationResult.setValid(false);
-        validationResult.setGlobalMessage("aaa");
-        Map<String, String> fieldMessages = new HashMap<String, String>();
-        fieldMessages.put("name", "nie ma");
-        validationResult.setFieldMessages(fieldMessages);
-
-        if (validationResult.isValid()) {
-            // dataAccessService.save(element.getDataDefinition().getEntityName(), validationResult.getValidEntity());
-        }
-
-        // if (locale != null) {
-        // translateValidationResult(validationResult, locale);
-        // }
+        ValidationResults validationResult = dataAccessService.save(element.getDataDefinition().getEntityName(), entity);
 
         return validationResult;
     }
@@ -170,7 +156,7 @@ public class CrudControler {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
         for (Integer recordId : selectedRows) {
-            // dataAccessService.delete(element.getDataDefinition().getEntityName(), (long) recordId);
+            dataAccessService.delete(element.getDataDefinition().getEntityName(), (long) recordId);
         }
         return "ok";
 
