@@ -15,6 +15,17 @@ public final class Restrictions {
     private Restrictions() {
     }
 
+    public static Restriction stringEqOrLike(final String fieldName, final String expectedValue) {
+        if (expectedValue.contains("*") || expectedValue.contains("%") || expectedValue.contains("?")
+                || expectedValue.contains("_")) {
+            String value = expectedValue.replace('*', '%');
+            value = value.replace('?', '_');
+            return new LikeRestriction(fieldName, value);
+        } else {
+            return new SimpleRestriction(fieldName, expectedValue, RestrictionOperator.EQ);
+        }
+    }
+
     public static Restriction eq(final String fieldName, final Object expectedValue) {
         return new SimpleRestriction(fieldName, expectedValue, RestrictionOperator.EQ);
     }
