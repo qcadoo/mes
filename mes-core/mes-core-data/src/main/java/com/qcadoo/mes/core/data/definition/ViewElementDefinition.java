@@ -16,9 +16,11 @@ public abstract class ViewElementDefinition {
 
     private Map<String, String> events;
 
-    private DataDefinition parentDefinition;
+    private DataDefinition parentDefinition; // url, viewElement:{name}
 
     private String parentField;
+
+    private ViewDefinition correspondingView;
 
     public abstract int getType();
 
@@ -73,6 +75,14 @@ public abstract class ViewElementDefinition {
 
     public void setParentField(String parentField) {
         this.parentField = parentField;
+    }
+
+    public ViewDefinition getCorrespondingView() {
+        return correspondingView;
+    }
+
+    public void setCorrespondingView(ViewDefinition correspondingView) {
+        this.correspondingView = correspondingView;
     }
 
 }

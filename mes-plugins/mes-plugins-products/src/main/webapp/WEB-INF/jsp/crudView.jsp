@@ -13,128 +13,33 @@
 	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../css/productGrid.css" type="text/css" />
 
-	<script type="text/javascript" src="../js/json_sans_eval.js"></script>
-	<script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="../js/jquery.blockUI.js"></script>
-	<script type="text/javascript" src="../js/jquery.jqGrid.min.js"></script>
-	<script type="text/javascript" src="../js/encoder.js"></script>
-	<script type="text/javascript" src="../js/qcdGrid.js"></script>
-	<script type="text/javascript" src="../js/jquery.ba-serializeobject.min.js"></script>
+	<script type="text/javascript" src="../js/lib/json_sans_eval.js"></script>
+	<script type="text/javascript" src="../js/lib/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="../js/lib/jquery.blockUI.js"></script>
+	<script type="text/javascript" src="../js/lib/jquery.jqGrid.min.js"></script>
+	<script type="text/javascript" src="../js/lib/encoder.js"></script>
+	<script type="text/javascript" src="../js/qcd/elements/qcdGrid.js"></script>
+	<script type="text/javascript" src="../js/lib/jquery.ba-serializeobject.min.js"></script>
+	
+	<script type="text/javascript" src="../js/qcd/utils/logger.js"></script>
+	<script type="text/javascript" src="../js/qcd/core/pageController.js"></script>
+	<script type="text/javascript" src="../js/qcd/core/pageConstructor.js"></script>
+	<script type="text/javascript" src="../js/qcd/elements/qcdForm.js"></script>
 	
 	<script type="text/javascript">
 
 		var definedParentEntities = new Object();
-		<c:forEach items="${parentEntities}" var="entity">
-			definedParentEntities["${entity.key}"] = "${entity.value}";
-		</c:forEach>
+			<c:forEach items="${parentEntities}" var="entity">
+				definedParentEntities["${entity.key}"] = "${entity.value}";
+			</c:forEach>
+		var viewName = "${viewDefinition.name}";
 
-		var viewElements = new Object();
+		var controller = new QCD.PageController(viewName);
 		
 		jQuery(document).ready(function(){
-
-			$(".element_table").each(function(i,e){
-
-				var optionsElement = $("#"+e.id+" .element_options");
-				var options = jsonParse(optionsElement.html());
-
-				optionsElement.remove();
-				
-				var colNames = new Array();
-				var colModel = new Array();
-
-				for (var i in options.columns) {
-					colNames.push(options.columns[i]);
-					colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: false});
-				}
-
-				var gridOptions = new Object();
-
-				gridOptions.element = e.id;
-				gridOptions.viewName = "${viewDefinition.name}",
-				gridOptions.viewElementName = e.id;
-				gridOptions.colNames = colNames;
-				gridOptions.colModel = colModel;
-				gridOptions.loadingText = '<spring:message code="commons.loading.gridLoading"/>';
-				gridOptions.paging = options.options.paging == "true" ? true : false;
-				gridOptions.parentDefinition = options.parentDefinition ? options.parentDefinition : null;
-				if (options.options) {
-					gridOptions.paging = options.options.paging == "true" ? true : false;
-					gridOptions.sortable = options.options.sortable == "true" ? true : false;
-					gridOptions.filter = options.options.filter == "true" ? true : false;
-					gridOptions.multiselect = options.options.multiselect == "true" ? true : false;
-					if (options.options.height) { gridOptions.height = parseInt(options.options.height); }
-				}
-
-				gridOptions.events = options.events;
-				gridOptions.viewElements = viewElements;
-
-				var grid = new QCDGrid(gridOptions);
-
-				if (options.parentDefinition == null) {
-					grid.enable();
-					grid.refresh();
-				} else {
-					var entity = definedParentEntities[options.parentDefinition];
-					if (entity) {
-						grid.setParentId(entity);
-					} else {
-						grid.disable();
-					}
-				}
-				viewElements[gridOptions.viewElementName] = grid;
-			});
-
-			$(".element_form").each(function(i,e){
-				var formElement = new Object();
-				
-				var optionsElement = $("#"+e.id+" .element_options");
-				var options = jsonParse(optionsElement.html());
-				optionsElement.remove();
-
-				formElement.id = e.id;
-				formElement.options = options;
-				
-				viewElements[formElement.id] = formElement;
-			});
-
+			controller.init();
+			controller.insertParents(definedParentEntities);
 		});
-
-		editEntityApplyClick = function(formId, validatorPrefix, validResponseFunction) {
-
-			//console.info(formElements[formId]);
-			
-			console.info(formId+"-"+ validatorPrefix);
-			var formData = $('#'+formId+"_form").serializeObject();
-
-			var form = viewElements[formId];
-			var url = "${viewDefinition.name}/"+form.id+"/save.html";
-			
-			$("."+validatorPrefix+"_validatorGlobalMessage").html('');
-			$("."+validatorPrefix+"_fieldValidatorMessage").html('');
-			$.ajax({
-				url: url,
-				type: 'POST',
-				data: formData,
-				success: function(response) {
-					if (response.valid) {
-						//validResponseFunction.call();
-						console.info("ok")
-					} else {
-						$("."+validatorPrefix+"_validatorGlobalMessage").html(response.globalMessage);
-						for (var field in response.fieldMessages) {
-							$("#"+validatorPrefix+"_"+field+"_validateMessage").html(response.fieldMessages[field]);
-						}
-					}
-				},
-				error: function(xhr, textStatus, errorThrown){
-					alert(textStatus);
-				}
-	
-			});
-			return false;
-		}
-
-	
 
 	</script>
 </head>
@@ -148,28 +53,7 @@
 			
 				<table class="element_table" id="${viewElement.name}">
 					<td class=element_options>
-						{
-						"dataDefinition"="${viewElement.dataDefinition.entityName}",
-						<c:if test="${viewElement.options != null}">"options"={
-							<c:forEach items="${viewElement.options}" var="option">
-								"${option.key}": "${option.value}",
-							</c:forEach>
-							},
-						</c:if>
-						<c:if test="${viewElement.events != null}">"events"={
-							<c:forEach items="${viewElement.events}" var="event">
-								"${event.key}": "${event.value}",
-							</c:forEach>
-							},
-						</c:if>
-						<c:if test="${viewElement.parentDefinition != null}">"parentDefinition"="${viewElement.parentDefinition.entityName}"</c:if>,
-						
-						"columns"=[
-							<c:forEach items="${viewElement.columns}" var="column">
-								"${column.name}",
-							</c:forEach>
-						]
-						}
+						${viewElementsOptions[viewElement.name]}
 					</td>
 				</table>
 				
@@ -177,23 +61,7 @@
 			<c:when test="${viewElement.type == 2}">
 				<div class="element_form" id="${viewElement.name}">
 					<div class=element_options>
-						{
-						"dataDefinition"="${viewElement.dataDefinition.entityName}",
-						<c:if test="${viewElement.options != null}">"options"={
-							<c:forEach items="${viewElement.options}" var="option">
-								"${option.key}": "${option.value}",
-							</c:forEach>
-							},
-						</c:if>
-						<c:if test="${viewElement.events != null}">"events"={
-							<c:forEach items="${viewElement.events}" var="event">
-								"${event.key}": "${event.value}",
-							</c:forEach>
-							},
-						</c:if>
-						<c:if test="${viewElement.parentDefinition != null}">"parentDefinition"=${viewElement.parentDefinition.entityName}</c:if>,
-						
-						}
+						${viewElementsOptions[viewElement.name]}
 					</div>
 					<tiles:insertTemplate template="formTemplate.jsp">
 						<tiles:putAttribute name="formId" value="${ viewElement.name}" />

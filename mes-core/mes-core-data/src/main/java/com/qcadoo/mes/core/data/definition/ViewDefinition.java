@@ -9,6 +9,8 @@ public class ViewDefinition {
 
     private List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
+    private boolean modal = false;
+
     public ViewDefinition(String name) {
         this.name = name;
     }
@@ -36,6 +38,14 @@ public class ViewDefinition {
             }
         }
         return null;
+    }
+
+    public boolean isModal() {
+        return modal;
+    }
+
+    public void setModal(boolean modal) {
+        this.modal = modal;
     }
 
 }

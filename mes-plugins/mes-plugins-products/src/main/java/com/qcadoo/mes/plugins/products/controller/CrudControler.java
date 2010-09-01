@@ -56,12 +56,14 @@ public class CrudControler {
         Map<String, Entity> entities = new HashMap<String, Entity>();
         Map<String, Map<Long, String>> dictionaryValues = new HashMap<String, Map<Long, String>>();
         Map<String, Long> parentEntities = new HashMap<String, Long>();
+        Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
         for (ViewElementDefinition viewElement : viewDefinition.getElements()) {
+            viewElementsOptionsJson.put(viewElement.getName(), CrudControllerUtils.generateJsonViewElementOptions(viewElement));
             if (viewElement.getParentDefinition() != null) {
                 String argument = arguments.get(viewElement.getParentDefinition().getEntityName());
                 if (argument != null) {
                     Long entityId = Long.parseLong(argument);
-                    parentEntities.put(viewElement.getParentDefinition().getEntityName(), entityId);
+                    parentEntities.put(viewElement.getName(), entityId);
                 }
             }
             if (viewElement.getType() == ViewElementDefinition.TYPE_FORM) {
@@ -97,6 +99,7 @@ public class CrudControler {
         mav.addObject("entities", entities);
         mav.addObject("parentEntities", parentEntities);
         mav.addObject("dictionaryValues", dictionaryValues);
+        mav.addObject("viewElementsOptions", viewElementsOptionsJson);
 
         return mav;
     }

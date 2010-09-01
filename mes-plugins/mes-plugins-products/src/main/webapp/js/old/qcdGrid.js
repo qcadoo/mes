@@ -1,5 +1,7 @@
+var QCD = QCD || {};
+QCD.elements = QCD.elements || {};
 
-QCDGrid = function(opts) {
+QCD.elements.GridElement = function(opts) {
 	
 	// PRIVATE
 	
@@ -98,17 +100,6 @@ QCDGrid = function(opts) {
 			paging_allPagesNoSpan.html(pagesNo);
 		}
 	}		
-	
-	function debug($msg) {
-		if (window.console && window.console.debug) {
-			window.console.debug($msg);
-		}
-	};
-	function info($msg) {
-		if (window.console && window.console.info) {
-			window.console.info($msg);
-		}
-	};
 	
 	function newClicked() {
 		if (options.events.newClicked) {
@@ -222,6 +213,10 @@ QCDGrid = function(opts) {
 	
 	this.setOption = function(key, value) {
 		options[key] = value;
+	}
+	
+	this.insertParentId = function(parentId) {
+		//alert(parentId);
 	}
 	
 	function enable() {

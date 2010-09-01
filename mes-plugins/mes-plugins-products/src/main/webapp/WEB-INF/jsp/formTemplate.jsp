@@ -11,9 +11,7 @@
 <tiles:useAttribute name="dataDefinition" />
 <tiles:useAttribute name="entity" ignore="true"/>
 
-<c:set var="validatorPrefix" value="${fn:replace(dataDefinition.entityName, '.', '_')}" />
-
-<div class="${validatorPrefix}_validatorGlobalMessage validatorGlobalMessage"></div>
+<div class="${formId}_validatorGlobalMessage validatorGlobalMessage"></div>
 <form id="${formId}_form">
 	<table>
 		<c:forEach items="${dataDefinition.fields}" var="fieldEntry">
@@ -79,7 +77,7 @@
 								
 							</c:choose>
 						</td>
-						<td id="${validatorPrefix}_${fieldEntry.key}_validateMessage" class="fieldValidatorMessage ${dataDefinition.entityName}_validateMessage">		
+						<td id="${formId}_${fieldEntry.key}_validateMessage" class="fieldValidatorMessage ${formId}_validateMessage">		
 						</td>
 					</c:when>
 					<c:otherwise>
@@ -96,6 +94,7 @@
 			
 </form>
 
-<button onclick="editEntityApplyClick('${formId}', '${validatorPrefix}', function() {window.location='list.html'})"><spring:message code="productsFormView.button"/></button>
-<button onClick="dataDefinition.entityName"><spring:message code="productsFormView.cancel"/></button>
+<button id="${formId}_saveButton"><spring:message code="productsFormView.button"/></button>
+<button id="${formId}_saveCloseButton">TODO</button>
+<button id="${formId}_cancelButton"><spring:message code="productsFormView.cancel"/></button>
 

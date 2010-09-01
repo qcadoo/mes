@@ -25,13 +25,24 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    private Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
+
     public ViewDefinition getViewDefinition(String viewName) {
-        if ("products.productGridView".equals(viewName)) {
-            return createProductGridView();
-        } else if ("products.productDetailsView".equals(viewName)) {
-            return createProductDetailsView();
+        ViewDefinition viewDefinition = viewDefinitions.get(viewName);
+        if (viewDefinition == null) {
+            if ("products.productGridView".equals(viewName)) {
+                viewDefinition = createProductGridView();
+                viewDefinitions.put(viewName, viewDefinition);
+                ViewDefinition detailsViewDef = getViewDefinition("products.productDetailsView");
+                viewDefinition.getElementByName("products").setCorrespondingView(detailsViewDef);
+            } else if ("products.productDetailsView".equals(viewName)) {
+                viewDefinition = createProductDetailsView();
+            }
+            if (viewDefinition != null) {
+                viewDefinitions.put(viewName, viewDefinition);
+            }
         }
-        return null;
+        return viewDefinition;
     }
 
     private ViewDefinition createProductGridView() {
@@ -41,6 +52,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("products.product");
         GridDefinition gridDefinition = new GridDefinition("products", gridDataDefinition);
+        // gridDefinition.setCorrespondingView(getViewDefinition("products.productDetailsView"));
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
         gridOptions.put("sortable", "true");
@@ -72,6 +84,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
         FormDefinition form = new FormDefinition("productDetailsForm", productDataDefinition);
+        form.setCorrespondingView(getViewDefinition("products.productGridView"));
         elements.add(form);
 
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
