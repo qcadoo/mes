@@ -33,7 +33,8 @@ QCD.PageConstructor = function(_viewName) {
 		}
 		gridParameters.events = parameters.events;
 		gridParameters.parent = parameters.parent;
-		gridParameters.correspondingView = parameters.correspondingView;
+		gridParameters.correspondingViewName = parameters.correspondingViewName;
+		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
 		
 		var grid = new QCD.elements.GridElement(gridParameters);
 		

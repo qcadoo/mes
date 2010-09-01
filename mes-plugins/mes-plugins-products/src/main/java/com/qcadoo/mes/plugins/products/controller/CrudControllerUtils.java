@@ -39,8 +39,9 @@ public class CrudControllerUtils {
             if (viewElement.getParent() != null) {
                 obj.put("parent", viewElement.getParent());
             }
-            if (viewElement.getCorrespondingView() != null) {
-                obj.put("correspondingView", viewElement.getCorrespondingView().getName());
+            if (viewElement.getCorrespondingViewName() != null) {
+                obj.put("correspondingViewName", viewElement.getCorrespondingViewName());
+                obj.put("isCorrespondingViewModal", viewElement.isCorrespondingViewModal());
             }
 
             if (viewElement.getType() == ViewElementDefinition.TYPE_GRID) {

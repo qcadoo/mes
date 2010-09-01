@@ -48,7 +48,7 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	redirectToCorrespondingPage = function() {
-		window.location = parameters.correspondingView + ".html";
+		window.location = parameters.correspondingViewName + ".html";
 	}
 	
 	getEntityAndFillForm = function(entityId) {

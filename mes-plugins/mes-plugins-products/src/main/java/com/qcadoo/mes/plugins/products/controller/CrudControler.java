@@ -1,5 +1,7 @@
 package com.qcadoo.mes.plugins.products.controller;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +28,7 @@ import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.definition.ViewDefinition;
 import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
@@ -105,16 +108,24 @@ public class CrudControler {
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(gridDefinition.getParentField(),
                     parentId));
         }
-        /*
-         * if (parentEntityId != null && entityParentField != null) { searchCriteriaBuilder =
-         * searchCriteriaBuilder.restrictedWith(Restrictions .belongsTo(entityParentField, parentEntityId)); } if (maxResults !=
-         * null) { checkArgument(maxResults >= 0, "Max results must be greater or equals 0"); searchCriteriaBuilder =
-         * searchCriteriaBuilder.withMaxResults(maxResults); } if (firstResult != null) { checkArgument(firstResult >= 0,
-         * "First result must be greater or equals 0"); searchCriteriaBuilder =
-         * searchCriteriaBuilder.withFirstResult(firstResult); } if (sortColumn != null && sortOrder != null) { if
-         * ("desc".equals(sortOrder)) { searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(sortColumn)); } else {
-         * searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(sortColumn)); } }
-         */
+        if (arguments.get("maxResults") != null) {
+            int maxResults = Integer.parseInt(arguments.get("maxResults"));
+            checkArgument(maxResults >= 0, "Max results must be greater or equals 0");
+            searchCriteriaBuilder = searchCriteriaBuilder.withMaxResults(maxResults);
+        }
+        if (arguments.get("firstResult") != null) {
+            int firstResult = Integer.parseInt(arguments.get("firstResult"));
+            checkArgument(firstResult >= 0, "First result must be greater or equals 0");
+            searchCriteriaBuilder = searchCriteriaBuilder.withFirstResult(firstResult);
+        }
+        if (arguments.get("sortColumn") != null && arguments.get("sortOrder") != null) {
+            if ("desc".equals(arguments.get("sortOrder"))) {
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(arguments.get("sortColumn")));
+            } else {
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(arguments.get("sortColumn")));
+            }
+        }
+
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
         ResultSet rs = dataAccessService.find(dataDefinition.getEntityName(), searchCriteria);
