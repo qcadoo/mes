@@ -27,7 +27,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
 
-    public ViewDefinition getViewDefinition(String viewName) {
+    @Override
+    public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
         if (viewDefinition == null) {
             if ("products.productGridView".equals(viewName)) {
@@ -37,6 +38,13 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition.getElementByName("products").setCorrespondingView(detailsViewDef);
             } else if ("products.productDetailsView".equals(viewName)) {
                 viewDefinition = createProductDetailsView();
+            } else if ("users.groupGridView".equals(viewName)) {
+                viewDefinition = createUserGroupGridView();
+                viewDefinitions.put(viewName, viewDefinition);
+                ViewDefinition detailsViewDef = getViewDefinition("users.groupDetailsView");
+                viewDefinition.getElementByName("groups").setCorrespondingView(detailsViewDef);
+            } else if ("users.groupDetailsView".equals(viewName)) {
+                viewDefinition = createUserGroupDetailsView();
             }
             if (viewDefinition != null) {
                 viewDefinitions.put(viewName, viewDefinition);
@@ -126,6 +134,48 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteComponentGridOptions.put("height", "150");
         substituteComponentGridDefinition.setOptions(substituteComponentGridOptions);
         elements.add(substituteComponentGridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createUserGroupGridView() {
+        ViewDefinition viewDefinition = new ViewDefinition("users.groupGridView");
+
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition gridDataDefinition = dataDefinitionService.get("users.group");
+        GridDefinition gridDefinition = new GridDefinition("users", gridDataDefinition);
+        // gridDefinition.setCorrespondingView(getViewDefinition("users.groupDetailsView"));
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "true");
+        gridOptions.put("sortable", "true");
+        gridOptions.put("filter", "false");
+        gridOptions.put("multiselect", "true");
+        gridOptions.put("height", "450");
+        gridDefinition.setOptions(gridOptions);
+        Map<String, String> gridEvents = new HashMap<String, String>();
+        gridEvents.put("newClicked", "goTo(users.groupDetailsView.html)");
+        gridEvents.put("rowDblClicked", "goTo(users.groupDetailsView.html?users.group={$rowId})");
+        gridDefinition.setEvents(gridEvents);
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        ColumnDefinition columnRole = createColumnDefinition("role", gridDataDefinition.getField("role"), null);
+
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnRole }));
+        elements.add(gridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createUserGroupDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("users.groupDetailsView");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition groupDataDefinition = dataDefinitionService.get("users.group");
+        FormDefinition form = new FormDefinition("groupDetailsForm", groupDataDefinition);
+        form.setCorrespondingView(getViewDefinition("users.groupGridView"));
+        elements.add(form);
 
         viewDefinition.setElements(elements);
         return viewDefinition;
