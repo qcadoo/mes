@@ -31,6 +31,8 @@ QCD.elements.GridElement = function(args) {
 	
 	var parentId = null;
 	
+	var children = new Array();
+	
 	
 	var defaultOptions = {
 		paging: true,
@@ -125,7 +127,9 @@ QCD.elements.GridElement = function(args) {
 	}*/
 	
 	function rowClicked(rowId) {
-		
+		for (var i in children) {
+			children[i].insertParentId(rowId);
+		}
 	}
 	
 	function rowDblClicked(rowId) {
@@ -143,7 +147,7 @@ QCD.elements.GridElement = function(args) {
 	redirectToCorrespondingPage = function(rowId) {
 		var url = gridParameters.correspondingView + ".html";
 		if (rowId) {
-			
+			url += "?entityId="+rowId;
 		}
 		window.location = url;
 	}
@@ -316,6 +320,10 @@ QCD.elements.GridElement = function(args) {
 	
 	this.getParent = function() {
 		return gridParameters.parent;
+	}
+	
+	this.addChild = function(child) {
+		children.push(child);
 	}
 	
 	// PUBLIC

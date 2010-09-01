@@ -5,6 +5,8 @@ QCD.elements.FormElement = function(args) {
 	
 	var parameters;
 	
+	var children = new Array();
+	
 	performSave = function() {
 		sendSaveRequest(false);
 	}
@@ -61,7 +63,13 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	this.insertParentId = function(parentId) {
-		QCDLogger.info("insert parent to form: "+parentId);
+		for (var i in children) {
+			children[i].insertParentId(parentId);
+		}
+	}
+	
+	this.addChild = function(child) {
+		children.push(child);
 	}
 	
 	constructor(args);
