@@ -80,7 +80,7 @@
 			
 </form>
 
-<button id="${formId}_saveButton"><spring:message code="productsFormView.button"/></button>
-<button id="${formId}_saveCloseButton">TODO</button>
-<button id="${formId}_cancelButton"><spring:message code="productsFormView.cancel"/></button>
+<button id="${formId}_saveButton"><spring:message code="commons.form.button.accept"/></button>
+<button id="${formId}_saveCloseButton"><spring:message code="commons.form.button.acceptAndClose"/></button>
+<button id="${formId}_cancelButton"><spring:message code="commons.form.button.cancel"/></button>
 
