@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.internal;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -14,7 +15,6 @@ import java.util.Date;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -25,6 +25,8 @@ import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
+import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -43,7 +45,9 @@ public class ValidatorTest {
 
     private FieldValidatorFactory fieldValidatorFactory = null;
 
-    private EntityServiceImpl entityService = null;
+    private EntityService entityService = null;
+
+    private ValidationService validationService = null;
 
     private DataAccessService dataAccessService = null;
 
@@ -67,13 +71,18 @@ public class ValidatorTest {
 
     @Before
     public void init() {
-        entityService = new EntityServiceImpl();
+        validationService = new ValidationService();
+        ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
+        ReflectionTestUtils.setField(validationService, "dataDefinitionService", dataDefinitionService);
+
+        entityService = new EntityService();
         ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(entityService, "sessionFactory", sessionFactory);
+        ReflectionTestUtils.setField(entityService, "validationService", validationService);
 
         dataAccessService = new DataAccessServiceImpl();
         ReflectionTestUtils.setField(dataAccessService, "entityService", entityService);
         ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
+        ReflectionTestUtils.setField(dataAccessService, "dataDefinitionService", dataDefinitionService);
 
         fieldTypeFactory = new FieldTypeFactoryImpl();
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
@@ -82,7 +91,8 @@ public class ValidatorTest {
         fieldValidatorFactory = new FieldValidatorFactoryImpl();
         ReflectionTestUtils.setField(fieldValidatorFactory, "applicationContext", applicationContext);
 
-        BDDMockito.given(applicationContext.getBean("custom")).willReturn(new CustomValidateMethod());
+        given(applicationContext.getBean("custom")).willReturn(new CustomValidateMethod());
+        given(applicationContext.getBean("customEntity")).willReturn(new CustomEntityValidateMethod());
 
         parentFieldDefinitionName = new FieldDefinition("name");
         parentFieldDefinitionName.setType(fieldTypeFactory.stringType());
@@ -144,6 +154,47 @@ public class ValidatorTest {
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
         assertTrue(validationResults.isValid());
+        assertTrue(validationResults.getErrors().isEmpty());
+        assertTrue(validationResults.getGlobalErrors().isEmpty());
+    }
+
+    @Test
+    public void shouldHasErrorMessage() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("age", "");
+
+        fieldDefinitionAge.setValidators(fieldValidatorFactory.required());
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.isNotValid());
+        assertEquals(1, validationResults.getErrors().size());
+        assertEquals("core.validation.error.missing", validationResults.getErrors().get(fieldDefinitionAge).getMessage());
+        assertEquals(1, validationResults.getGlobalErrors().size());
+        assertEquals("core.validation.error.global", validationResults.getGlobalErrors().get(0).getMessage());
+    }
+
+    @Test
+    public void shouldHasCustomErrorMessage() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("age", "");
+
+        fieldDefinitionAge.setValidators(fieldValidatorFactory.required().customErrorMessage("missing age"));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.isNotValid());
+        assertEquals(1, validationResults.getErrors().size());
+        assertEquals("missing age", validationResults.getErrors().get(fieldDefinitionAge).getMessage());
+        assertEquals(1, validationResults.getGlobalErrors().size());
     }
 
     @Test
@@ -512,7 +563,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.beanMethod("custom", "isEqualToQwerty"));
+        fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -528,7 +579,26 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("name", "qwert");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.beanMethod("custom", "isEqualToQwerty"));
+        fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.isNotValid());
+        assertEquals(1, validationResults.getErrors().size());
+        assertEquals("core.validation.error.custom", validationResults.getErrors().get(fieldDefinitionName).getMessage());
+        assertEquals(1, validationResults.getGlobalErrors().size());
+    }
+
+    @Test
+    public void shouldHaveErrorIfCustomValidationMethodDoesNotExists() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "qwerty");
+
+        fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwertz"));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -539,12 +609,52 @@ public class ValidatorTest {
     }
 
     @Test
-    public void shouldHaveErrorIfCustomValidationMethodDoesNotExists() throws Exception {
+    public void shouldHasNoErrorIfCustomEntityValidatorReturnsTrue() throws Exception {
         // given
         Entity entity = new Entity();
-        entity.setField("name", "qwert");
+        entity.setField("name", "Mr T");
+        entity.setField("age", "18");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.beanMethod("custom", "isEqualToQwerty"));
+        dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        assertFalse(validationResults.isNotValid());
+    }
+
+    @Test
+    public void shouldHaveErrorIfCustomEntityValidatorReturnsFalse() throws Exception {
+        // given
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "Mr");
+        entity.setField("age", "18");
+
+        dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.isNotValid());
+        assertTrue(validationResults.getErrors().isEmpty());
+        assertEquals(2, validationResults.getGlobalErrors().size());
+        assertEquals("core.validation.error.global", validationResults.getGlobalErrors().get(0).getMessage());
+        assertEquals("core.validation.error.customEntity", validationResults.getGlobalErrors().get(1).getMessage());
+    }
+
+    @Test
+    public void shouldHaveErrorIfCustomEntityValidationMethodDoesNotExists() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "Mr T");
+        entity.setField("age", "18");
+
+        dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrX"));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -558,6 +668,16 @@ public class ValidatorTest {
 
         public boolean isEqualToQwerty(final Object object) {
             return String.valueOf(object).equals("qwerty");
+        }
+
+    }
+
+    public class CustomEntityValidateMethod {
+
+        public boolean hasAge18AndNameMrT(final Entity entity) {
+            System.out.println(" ---> " + entity.getFields() + ": " + (entity.getField("age").equals(18)));
+
+            return (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T"));
         }
 
     }

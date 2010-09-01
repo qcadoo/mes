@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +30,22 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     @Override
     public DataDefinition get(final String entityName) {
+        DataDefinition dataDefinition = null;
         if ("products.product".equals(entityName)) {
-            return createProductDefinition();
+            dataDefinition = createProductDefinition();
         } else if ("products.substitute".equals(entityName)) {
-            return createSubstituteDefinition();
+            dataDefinition = createSubstituteDefinition();
         } else if ("products.substituteComponent".equals(entityName)) {
-            return createSubstituteComponentDefinition();
+            dataDefinition = createSubstituteComponentDefinition();
         } else if ("users.user".equals(entityName)) {
-            return createUserDefinition();
+            dataDefinition = createUserDefinition();
         } else if ("users.group".equals(entityName)) {
-            return createUserGroupDefinition();
+            dataDefinition = createUserGroupDefinition();
         }
-        return null;
+
+        checkNotNull(dataDefinition, "data definition for %s cannot be found", entityName);
+
+        return dataDefinition;
     }
 
     private DataDefinition createProductDefinition() {

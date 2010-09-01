@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
@@ -34,7 +35,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private SessionFactory sessionFactory;
 
     @Autowired
-    private EntityServiceImpl entityService;
+    private EntityService entityService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
@@ -42,8 +46,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional
     public ValidationResults save(final String entityName, final Entity... entities) {
         checkArgument(entities.length > 0, "entity must be given");
-        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+        Class<?> entityClass = dataDefinition.getClassForEntity();
 
         Object existingDatabaseEntity = null;
 
@@ -77,8 +81,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional(readOnly = true)
     public Entity get(final String entityName, final Long entityId) {
         checkArgument(entityId != null, "entityId must be given");
-        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+        Class<?> entityClass = dataDefinition.getClassForEntity();
 
         Object databaseEntity = getDatabaseEntity(entityClass, entityId);
 
@@ -93,8 +97,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional
     public void delete(final String entityName, final Long entityId) {
         checkArgument(entityId != null, "entityId must be given");
-        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+        Class<?> entityClass = dataDefinition.getClassForEntity();
 
         Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
 
@@ -115,8 +119,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional(readOnly = true)
     public ResultSet find(final String entityName, final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
-        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity(entityName);
-        Class<?> entityClass = entityService.getClassForEntity(dataDefinition);
+        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+        Class<?> entityClass = dataDefinition.getClassForEntity();
 
         int totalNumberOfEntities = getTotalNumberOfEntities(getCriteriaWithRestriction(searchCriteria, entityClass));
 
@@ -145,7 +149,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, final Class<?> entityClass) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true));
+                .add(Restrictions.ne(EntityService.FIELD_DELETED, true));
 
         for (Restriction restriction : searchCriteria.getRestrictions()) {
             criteria = addRestrictionToCriteria(restriction, criteria);
@@ -186,7 +190,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private Object getDatabaseEntity(final Class<?> entityClass, final Long entityId) {
         return sessionFactory.getCurrentSession().createCriteria(entityClass).add(Restrictions.idEq(entityId))
-                .add(Restrictions.ne(EntityServiceImpl.FIELD_DELETED, true)).uniqueResult();
+                .add(Restrictions.ne(EntityService.FIELD_DELETED, true)).uniqueResult();
     }
 
 }
