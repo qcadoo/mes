@@ -20,7 +20,9 @@ public abstract class ViewElementDefinition {
 
     private String parentField;
 
-    private ViewDefinition correspondingView;
+    private String correspondingViewName;
+
+    private boolean correspondingViewModal = false;
 
     public abstract int getType();
 
@@ -69,20 +71,28 @@ public abstract class ViewElementDefinition {
         this.parentField = parentField;
     }
 
-    public ViewDefinition getCorrespondingView() {
-        return correspondingView;
-    }
-
-    public void setCorrespondingView(ViewDefinition correspondingView) {
-        this.correspondingView = correspondingView;
-    }
-
     public String getParent() {
         return parent;
     }
 
     public void setParent(String parent) {
         this.parent = parent;
+    }
+
+    public String getCorrespondingViewName() {
+        return correspondingViewName;
+    }
+
+    public void setCorrespondingViewName(String correspondingViewName) {
+        this.correspondingViewName = correspondingViewName;
+    }
+
+    public boolean isCorrespondingViewModal() {
+        return correspondingViewModal;
+    }
+
+    public void setCorrespondingViewModal(boolean correspondingViewModal) {
+        this.correspondingViewModal = correspondingViewModal;
     }
 
 }

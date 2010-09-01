@@ -33,16 +33,10 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         if (viewDefinition == null) {
             if ("products.productGridView".equals(viewName)) {
                 viewDefinition = createProductGridView();
-                viewDefinitions.put(viewName, viewDefinition);
-                ViewDefinition detailsViewDef = getViewDefinition("products.productDetailsView");
-                viewDefinition.getElementByName("products").setCorrespondingView(detailsViewDef);
             } else if ("products.productDetailsView".equals(viewName)) {
                 viewDefinition = createProductDetailsView();
             } else if ("users.groupGridView".equals(viewName)) {
                 viewDefinition = createUserGroupGridView();
-                viewDefinitions.put(viewName, viewDefinition);
-                ViewDefinition detailsViewDef = getViewDefinition("users.groupDetailsView");
-                viewDefinition.getElementByName("groups").setCorrespondingView(detailsViewDef);
             } else if ("users.groupDetailsView".equals(viewName)) {
                 viewDefinition = createUserGroupDetailsView();
             }
@@ -60,7 +54,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("products.product");
         GridDefinition gridDefinition = new GridDefinition("products", gridDataDefinition);
-        // gridDefinition.setCorrespondingView(getViewDefinition("products.productDetailsView"));
+        gridDefinition.setCorrespondingViewName("products.productDetailsView");
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
         gridOptions.put("sortable", "true");
@@ -91,7 +85,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
         FormDefinition form = new FormDefinition("productDetailsForm", productDataDefinition);
         form.setParent("entityId");
-        form.setCorrespondingView(getViewDefinition("products.productGridView"));
+        form.setCorrespondingViewName("products.productGridView");
         elements.add(form);
 
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
@@ -146,7 +140,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("users.group");
         GridDefinition gridDefinition = new GridDefinition("users", gridDataDefinition);
-        // gridDefinition.setCorrespondingView(getViewDefinition("users.groupDetailsView"));
+        gridDefinition.setCorrespondingViewName("users.groupDetailsView");
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
         gridOptions.put("sortable", "true");
@@ -174,7 +168,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition groupDataDefinition = dataDefinitionService.get("users.group");
         FormDefinition form = new FormDefinition("groupDetailsForm", groupDataDefinition);
-        form.setCorrespondingView(getViewDefinition("users.groupGridView"));
+        form.setCorrespondingViewName("users.groupGridView");
         elements.add(form);
 
         viewDefinition.setElements(elements);
