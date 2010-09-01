@@ -202,10 +202,10 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ColumnDefinition columnEmail = createColumnDefinition("email", gridDataDefinition.getField("email"), null);
         ColumnDefinition columnFirstName = createColumnDefinition("firstName", gridDataDefinition.getField("firstName"), null);
         ColumnDefinition columnLastName = createColumnDefinition("lastName", gridDataDefinition.getField("lastName"), null);
-        ColumnDefinition columnGroup = createColumnDefinition("group", gridDataDefinition.getField("group"), null);
+        ColumnDefinition columnUserGroup = createColumnDefinition("userGroup", gridDataDefinition.getField("userGroup"), null);
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnLogin, columnEmail, columnFirstName,
-                columnLastName, columnGroup }));
+                columnLastName, columnUserGroup }));
         elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
