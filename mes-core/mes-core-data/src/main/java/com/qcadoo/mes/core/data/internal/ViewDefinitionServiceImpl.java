@@ -35,6 +35,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition = createProductGridView();
             } else if ("products.productDetailsView".equals(viewName)) {
                 viewDefinition = createProductDetailsView();
+            } else if ("products.substituteDetailsView".equals(viewName)) {
+                viewDefinition = createProductSubstituteDetailsView();
             } else if ("users.groupGridView".equals(viewName)) {
                 viewDefinition = createUserGroupGridView();
             } else if ("users.groupDetailsView".equals(viewName)) {
@@ -109,6 +111,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteGridDefinition.setOptions(substituteGridOptions);
         Map<String, String> substituteGridEvents = new HashMap<String, String>();
         substituteGridDefinition.setEvents(substituteGridEvents);
+        substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
+        // substituteGridDefinition.setCorrespondingViewModal(true);
         elements.add(substituteGridDefinition);
 
         DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
@@ -132,6 +136,19 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteComponentGridOptions.put("height", "150");
         substituteComponentGridDefinition.setOptions(substituteComponentGridOptions);
         elements.add(substituteComponentGridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createProductSubstituteDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition substitutesDataDefinition = dataDefinitionService.get("products.substitute");
+        FormDefinition form = new FormDefinition("substitutesDetailsForm", substitutesDataDefinition);
+        form.setCorrespondingViewName("products.productDetailsView");
+        elements.add(form);
 
         viewDefinition.setElements(elements);
         return viewDefinition;

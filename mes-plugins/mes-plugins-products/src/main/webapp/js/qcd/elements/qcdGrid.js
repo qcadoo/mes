@@ -99,12 +99,17 @@ QCD.elements.GridElement = function(args) {
 		deleteSelectedRecords();
 	}
 	
-	redirectToCorrespondingPage = function(rowId) {
+	function redirectToCorrespondingPage(rowId) {
 		var url = gridParameters.correspondingViewName + ".html";
 		if (rowId) {
 			url += "?entityId="+rowId;
 		}
-		window.location = url;
+		if (gridParameters.isCorrespondingViewModal) {
+			QCDLogger.info("modal: "+url);
+		} else {
+			QCDLogger.info("not modal: "+url);
+			window.location = url;
+		}
 	}
 	
 	function enable() {
