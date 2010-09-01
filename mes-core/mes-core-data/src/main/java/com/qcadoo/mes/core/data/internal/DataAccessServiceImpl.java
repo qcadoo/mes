@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -126,6 +127,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Get total number of entities: " + totalNumberOfEntities);
+        }
+
+        if (totalNumberOfEntities == 0) {
+            return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, Collections.emptyList());
         }
 
         Criteria criteria = getCriteriaWithRestriction(searchCriteria, entityClass).setFirstResult(

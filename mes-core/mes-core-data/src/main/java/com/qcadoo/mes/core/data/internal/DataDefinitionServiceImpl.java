@@ -87,14 +87,19 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         // GridDefinition gridDefinition = new GridDefinition("substitutes");
 
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType(), true);
+        fieldNumber.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType(), true);
+        fieldName.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType(), true);
+        fieldPriority.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
+        fieldProduct.setValidators(fieldValidationFactory.required());
         fieldProduct.setHidden(true);
 
+        // TODO masz dataDefinition.setValidators(...) data poczˆtkowa mniejsza od koÄcowej
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
         dataDefinition.addField(fieldNumber);
@@ -119,10 +124,13 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"), true);
+        fieldProduct.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldSubstitute = createFieldDefinition("substitute",
                 fieldTypeFactory.eagerBelongsToType("products.substitute", "name"));
+        fieldSubstitute.setValidators(fieldValidationFactory.required());
         fieldSubstitute.setHidden(true);
         FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType(), true);
+        fieldQuantity.setValidators(fieldValidationFactory.required());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
         // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));

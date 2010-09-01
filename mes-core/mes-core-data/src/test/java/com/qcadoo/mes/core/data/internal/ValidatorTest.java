@@ -25,8 +25,11 @@ import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
+import com.qcadoo.mes.core.data.search.Restrictions;
+import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -40,6 +43,8 @@ public class ValidatorTest {
     private final DictionaryService dictionaryService = mock(DictionaryService.class);
 
     private final ApplicationContext applicationContext = mock(ApplicationContext.class);
+
+    private final DataAccessService dataAccessServiceMock = mock(DataAccessService.class);
 
     private FieldTypeFactory fieldTypeFactory = null;
 
@@ -90,6 +95,7 @@ public class ValidatorTest {
 
         fieldValidatorFactory = new FieldValidatorFactoryImpl();
         ReflectionTestUtils.setField(fieldValidatorFactory, "applicationContext", applicationContext);
+        ReflectionTestUtils.setField(fieldValidatorFactory, "dataAccessService", dataAccessServiceMock);
 
         given(applicationContext.getBean("custom")).willReturn(new CustomValidateMethod());
         given(applicationContext.getBean("customEntity")).willReturn(new CustomEntityValidateMethod());
@@ -555,6 +561,52 @@ public class ValidatorTest {
         // then
         Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
+    }
+
+    @Test
+    public void shouldHasNoErrorsIfFieldIsNotDuplicated() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "not existed");
+
+        ResultSetImpl resultSet = new ResultSetImpl();
+        resultSet.setTotalNumberOfEntities(0);
+
+        given(
+                dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
+                        .restrictedWith(Restrictions.eq("name", "not existed")).build())).willReturn(resultSet);
+
+        fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        assertFalse(validationResults.isNotValid());
+    }
+
+    @Test
+    public void shouldHasErrorsIfFieldIsDuplicated() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("name", "existed");
+
+        ResultSetImpl resultSet = new ResultSetImpl();
+        resultSet.setTotalNumberOfEntities(1);
+
+        given(
+                dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
+                        .restrictedWith(Restrictions.eq("name", "existed")).build())).willReturn(resultSet);
+
+        fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.isNotValid());
     }
 
     @Test
