@@ -96,7 +96,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", substituteDataDefinition);
-        substituteGridDefinition.setParent("entityId");
+        substituteGridDefinition.setParent("viewElement:productDetailsForm");
         substituteGridDefinition.setParentField("product");
         ColumnDefinition columnNumber = createColumnDefinition("number", substituteDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", substituteDataDefinition.getField("name"), null);

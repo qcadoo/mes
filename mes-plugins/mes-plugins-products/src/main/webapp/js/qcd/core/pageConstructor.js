@@ -6,7 +6,6 @@ QCD.PageConstructor = function(_viewName) {
 	
 	function constructGrid(gridName) {
 		var parameters = getElementParameters(gridName);
-		QCDLogger.info(parameters);
 		
 		var colNames = new Array();
 		var colModel = new Array();
