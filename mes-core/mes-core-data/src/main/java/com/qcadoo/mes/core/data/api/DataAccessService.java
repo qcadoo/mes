@@ -12,7 +12,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
  */
 public interface DataAccessService {
 
-    ValidationResults save(String entityName, Entity... entities);
+    ValidationResults save(String entityName, Entity entity);
 
     Entity get(String entityName, Long entityId);
 

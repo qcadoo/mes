@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
@@ -45,8 +46,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public ValidationResults save(final String entityName, final Entity... entities) {
-        checkArgument(entities.length > 0, "entity must be given");
+    public ValidationResults save(final String entityName, final Entity entity) {
+        checkNotNull(entity, "entity must be given");
         DataDefinition dataDefinition = dataDefinitionService.get(entityName);
         Class<?> entityClass = dataDefinition.getClassForEntity();
 
@@ -54,26 +55,28 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         ValidationResults validationResults = new ValidationResults();
 
-        for (Entity entity : entities) {
-            if (entity.getId() != null) {
-                existingDatabaseEntity = getDatabaseEntity(entityClass, entity.getId());
-                checkState(existingDatabaseEntity != null, "cannot find entity %s with id=%s", entityClass.getSimpleName(),
-                        entity.getId());
-            }
-
-            Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity,
-                    validationResults);
-
-            if (validationResults.isNotValid()) {
-                break;
-            }
-
-            sessionFactory.getCurrentSession().save(databaseEntity);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Object with id: " + entity.getId() + " has been saved");
-            }
+        if (entity.getId() != null) {
+            existingDatabaseEntity = getDatabaseEntity(entityClass, entity.getId());
+            checkState(existingDatabaseEntity != null, "cannot find entity %s with id=%s", entityClass.getSimpleName(),
+                    entity.getId());
         }
+
+        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity,
+                validationResults);
+
+        if (validationResults.isNotValid()) {
+            return validationResults;
+        }
+
+        sessionFactory.getCurrentSession().save(databaseEntity);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Object with id: " + entity.getId() + " has been saved");
+        }
+
+        Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
+
+        validationResults.setEntity(savedEntity);
 
         return validationResults;
     }
