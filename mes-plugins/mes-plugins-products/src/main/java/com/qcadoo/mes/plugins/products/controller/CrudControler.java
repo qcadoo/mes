@@ -53,53 +53,36 @@ public class CrudControler {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         mav.addObject("viewDefinition", viewDefinition);
 
-        Map<String, Entity> entities = new HashMap<String, Entity>();
         Map<String, Map<Long, String>> dictionaryValues = new HashMap<String, Map<Long, String>>();
-        Map<String, Long> parentEntities = new HashMap<String, Long>();
         Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
+
         for (ViewElementDefinition viewElement : viewDefinition.getElements()) {
             viewElementsOptionsJson.put(viewElement.getName(), CrudControllerUtils.generateJsonViewElementOptions(viewElement));
-            if (viewElement.getParentDefinition() != null) {
-                String argument = arguments.get(viewElement.getParentDefinition().getEntityName());
-                if (argument != null) {
-                    Long entityId = Long.parseLong(argument);
-                    parentEntities.put(viewElement.getName(), entityId);
+            for (Entry<String, FieldDefinition> fieldDefEntry : viewElement.getDataDefinition().getFields().entrySet()) {
+                switch (fieldDefEntry.getValue().getType().getNumericType()) {
+                    case FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO:
+                        BelongsToFieldType belongsToField = (BelongsToFieldType) fieldDefEntry.getValue().getType();
+                        Map<Long, String> fieldOptions = belongsToField.lookup(null);
+                        dictionaryValues.put(fieldDefEntry.getKey(), fieldOptions);
+                        break;
+                    case FieldTypeFactory.NUMERIC_TYPE_DICTIONARY:
+                    case FieldTypeFactory.NUMERIC_TYPE_ENUM:
+                        EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefEntry.getValue().getType();
+                        List<String> options = enumeratedField.values();
+                        Map<Long, String> fieldOptionsMap = new HashMap<Long, String>();
+                        Long key = (long) 0;
+                        for (String option : options) {
+                            fieldOptionsMap.put(key++, option);
+                        }
+                        dictionaryValues.put(fieldDefEntry.getKey(), fieldOptionsMap);
+                        break;
                 }
-            }
-            if (viewElement.getType() == ViewElementDefinition.TYPE_FORM) {
-                String argument = arguments.get(viewElement.getDataDefinition().getEntityName());
-                if (argument != null) {
-                    Long entityId = Long.parseLong(argument);
-                    Entity entity = dataAccessService.get(viewElement.getDataDefinition().getEntityName(), entityId);
-                    entities.put(viewElement.getName(), entity);
-                }
-                for (Entry<String, FieldDefinition> fieldDefEntry : viewElement.getDataDefinition().getFields().entrySet()) {
-                    switch (fieldDefEntry.getValue().getType().getNumericType()) {
-                        case FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO:
-                            BelongsToFieldType belongsToField = (BelongsToFieldType) fieldDefEntry.getValue().getType();
-                            Map<Long, String> fieldOptions = belongsToField.lookup(null);
-                            dictionaryValues.put(fieldDefEntry.getKey(), fieldOptions);
-                            break;
-                        case FieldTypeFactory.NUMERIC_TYPE_DICTIONARY:
-                        case FieldTypeFactory.NUMERIC_TYPE_ENUM:
-                            EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefEntry.getValue().getType();
-                            List<String> options = enumeratedField.values();
-                            Map<Long, String> fieldOptionsMap = new HashMap<Long, String>();
-                            Long key = (long) 0;
-                            for (String option : options) {
-                                fieldOptionsMap.put(key++, option);
-                            }
-                            dictionaryValues.put(fieldDefEntry.getKey(), fieldOptionsMap);
-                            break;
-                    }
-                }
-
             }
         }
-        mav.addObject("entities", entities);
-        mav.addObject("parentEntities", parentEntities);
         mav.addObject("dictionaryValues", dictionaryValues);
         mav.addObject("viewElementsOptions", viewElementsOptionsJson);
+
+        mav.addObject("entityId", arguments.get("entityId"));
 
         return mav;
     }
@@ -117,9 +100,8 @@ public class CrudControler {
 
         SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition.getEntityName());
 
-        if (arguments.get("parentId") != null && gridDefinition.getParentDefinition() != null) {
-            Long parentId = Long.parseLong(arguments.get("parentId"));
-            System.out.println(parentId + " - " + gridDefinition.getParentField());
+        if (arguments.get("entityId") != null && gridDefinition.getParent() != null) {
+            Long parentId = Long.parseLong(arguments.get("entityId"));
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(gridDefinition.getParentField(),
                     parentId));
         }
@@ -138,6 +120,17 @@ public class CrudControler {
         ResultSet rs = dataAccessService.find(dataDefinition.getEntityName(), searchCriteria);
 
         return ListDataUtils.generateListData(rs, gridDefinition);
+    }
+
+    @RequestMapping(value = "test/{viewName}/{elementName}/entity", method = RequestMethod.GET)
+    @ResponseBody
+    public Entity getEntityData(@PathVariable("viewName") String viewName, @PathVariable("elementName") String elementName,
+            @RequestParam Map<String, String> arguments) {
+
+        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+
+        return dataAccessService.get(element.getDataDefinition().getEntityName(), Long.parseLong(arguments.get("entityId")));
     }
 
     @RequestMapping(value = "test/{viewName}/{elementName}/save", method = RequestMethod.POST)

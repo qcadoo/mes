@@ -43,8 +43,7 @@ QCD.PageConstructor = function(_viewName) {
 	
 	function constructForm(formName) {
 		var parameters = getElementParameters(formName);
-		parameters.viewName = viewName,
-		QCDLogger.info(parameters);
+		parameters.viewName = viewName;
 		var formElement = new QCD.elements.FormElement(parameters);
 		return formElement;
 	}
@@ -58,7 +57,6 @@ QCD.PageConstructor = function(_viewName) {
 	
 	this.constructPageElements = function() {
 		var pageElements = new Object();
-		
 		$(".element_table").each(function(i,e) {
 			pageElements[e.id] = constructGrid(e.id);
 		});
@@ -66,7 +64,6 @@ QCD.PageConstructor = function(_viewName) {
 		$(".element_form").each(function(i,e){
 			pageElements[e.id] = constructForm(e.id);
 		});
-		
 		return pageElements;
 	}
 }

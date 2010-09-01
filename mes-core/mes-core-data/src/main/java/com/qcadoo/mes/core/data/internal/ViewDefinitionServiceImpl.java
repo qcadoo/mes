@@ -69,8 +69,6 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridOptions.put("height", "450");
         gridDefinition.setOptions(gridOptions);
         Map<String, String> gridEvents = new HashMap<String, String>();
-        gridEvents.put("newClicked", "goTo(products.productDetailsView.html)");
-        gridEvents.put("rowDblClicked", "goTo(products.productDetailsView.html?products.product={$rowId})");
         gridDefinition.setEvents(gridEvents);
         ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
@@ -92,12 +90,13 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
         FormDefinition form = new FormDefinition("productDetailsForm", productDataDefinition);
+        form.setParent("entityId");
         form.setCorrespondingView(getViewDefinition("products.productGridView"));
         elements.add(form);
 
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", substituteDataDefinition);
-        substituteGridDefinition.setParentDefinition(productDataDefinition);
+        substituteGridDefinition.setParent("entityId");
         substituteGridDefinition.setParentField("product");
         ColumnDefinition columnNumber = createColumnDefinition("number", substituteDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", substituteDataDefinition.getField("name"), null);
@@ -111,14 +110,13 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteGridOptions.put("height", "150");
         substituteGridDefinition.setOptions(substituteGridOptions);
         Map<String, String> substituteGridEvents = new HashMap<String, String>();
-        substituteGridEvents.put("onSelect", "#substitutesComponentGrid.setParent({$rowId})");
         substituteGridDefinition.setEvents(substituteGridEvents);
         elements.add(substituteGridDefinition);
 
         DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
         GridDefinition substituteComponentGridDefinition = new GridDefinition("substitutesComponentGrid",
                 substituteComponentDataDefinition);
-        substituteComponentGridDefinition.setParentDefinition(substituteDataDefinition);
+        substituteComponentGridDefinition.setParent("viewElement:substitutesGrid");
         substituteComponentGridDefinition.setParentField("substitute");
         ColumnDefinition columnSubstituteNumber = createColumnDefinition("number",
                 substituteComponentDataDefinition.getField("number"), "fields['product'].fields['number']");

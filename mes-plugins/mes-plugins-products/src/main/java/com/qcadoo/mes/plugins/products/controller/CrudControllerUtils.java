@@ -36,8 +36,8 @@ public class CrudControllerUtils {
                 }
                 obj.put("events", eventsObject);
             }
-            if (viewElement.getParentDefinition() != null) {
-                obj.put("parent", viewElement.getParentDefinition().getEntityName());
+            if (viewElement.getParent() != null) {
+                obj.put("parent", viewElement.getParent());
             }
             if (viewElement.getCorrespondingView() != null) {
                 obj.put("correspondingView", viewElement.getCorrespondingView().getName());
