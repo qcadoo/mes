@@ -16,7 +16,7 @@ public abstract class ViewElementDefinition {
 
     private Map<String, String> events;
 
-    private DataDefinition parentDefinition; // url, viewElement:{name}
+    private DataDefinition parentDefinition; // null, url, viewElement:{name}
 
     private String parentField;
 
