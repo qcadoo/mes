@@ -133,7 +133,7 @@ QCD.elements.GridElement = function(args) {
 	}
 	
 	function rowDblClicked(rowId) {
-		//redirectToCorrespondingPage(rowId);
+		redirectToCorrespondingPage(rowId);
 	}
 	
 	function newClicked() {
@@ -147,7 +147,7 @@ QCD.elements.GridElement = function(args) {
 	redirectToCorrespondingPage = function(rowId) {
 		var url = gridParameters.correspondingView + ".html";
 		if (rowId) {
-			
+			url += "?entityId="+rowId;
 		}
 		window.location = url;
 	}
