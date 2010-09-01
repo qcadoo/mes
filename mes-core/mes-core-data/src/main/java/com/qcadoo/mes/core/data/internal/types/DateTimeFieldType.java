@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.data.internal.types;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,8 +10,6 @@ import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class DateTimeFieldType implements FieldType {
-
-    private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     @Override
     public boolean isSearchable() {
@@ -42,7 +39,7 @@ public final class DateTimeFieldType implements FieldType {
     @Override
     public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
         try {
-            return FORMAT.parse(value);
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(value);
         } catch (ParseException e) {
             validationResults.addError(fieldDefinition, "form.validate.errors.invalidDateTimeFormat");
         }
