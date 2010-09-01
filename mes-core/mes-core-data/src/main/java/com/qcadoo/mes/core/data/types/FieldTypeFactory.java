@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.data.types;
 
-
 public interface FieldTypeFactory {
 
     int NUMERIC_TYPE_BOOLEAN = 1;
@@ -23,6 +22,8 @@ public interface FieldTypeFactory {
 
     int NUMERIC_TYPE_BELONGS_TO = 10;
 
+    int NUMERIC_TYPE_PASSWORD = 11;
+
     FieldType booleanType();
 
     FieldType stringType();
@@ -36,6 +37,8 @@ public interface FieldTypeFactory {
     FieldType dateTimeType();
 
     FieldType textType();
+
+    FieldType passwordType();
 
     EnumeratedFieldType enumType(final String... values);
 

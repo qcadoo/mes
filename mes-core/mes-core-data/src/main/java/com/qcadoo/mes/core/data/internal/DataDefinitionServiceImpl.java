@@ -34,6 +34,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
             return createSubstituteDefinition();
         } else if ("products.substituteComponent".equals(entityName)) {
             return createSubstituteComponentDefinition();
+        } else if ("users.user".equals(entityName)) {
+            return createUserDefinition();
+        } else if ("users.group".equals(entityName)) {
+            return createUserGroupDefinition();
         }
         return null;
     }
@@ -136,6 +140,51 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     // columnDefinition.setExpression(expression);
     // return columnDefinition;
     // }
+
+    private DataDefinition createUserDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("users.user");
+
+        FieldDefinition fieldFirstName = createFieldDefinition("firstName", fieldTypeFactory.stringType());
+        fieldFirstName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldLastName = createFieldDefinition("lastName", fieldTypeFactory.stringType());
+        fieldLastName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldLogin = createFieldDefinition("login", fieldTypeFactory.stringType());
+        fieldLogin.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldPassword = createFieldDefinition("password", fieldTypeFactory.passwordType());
+        fieldPassword.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldEmail = createFieldDefinition("email", fieldTypeFactory.stringType());
+        // TODO KRNA zamienic na relacje
+        FieldDefinition fieldGroup = createFieldDefinition("group",
+                fieldTypeFactory.enumType("Administrator", "Operator - Full", "Operator - ReadOnly"));
+
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.User");
+
+        dataDefinition.addField(fieldFirstName);
+        dataDefinition.addField(fieldLastName);
+        dataDefinition.addField(fieldLogin);
+        dataDefinition.addField(fieldPassword);
+        dataDefinition.addField(fieldEmail);
+        dataDefinition.addField(fieldGroup);
+
+        return dataDefinition;
+    }
+
+    private DataDefinition createUserGroupDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("users.group");
+
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
+        fieldName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
+        // TODO KRNA zamienic na relacje
+        FieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.enumType("read", "write", "delete"));
+
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Group");
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDescription);
+        dataDefinition.addField(fieldRole);
+
+        return dataDefinition;
+    }
 
     private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);

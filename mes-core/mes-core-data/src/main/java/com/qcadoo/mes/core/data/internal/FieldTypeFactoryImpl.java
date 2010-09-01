@@ -33,6 +33,8 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     private static final FieldType STRING_FIELD_TYPE = new StringFieldType(255);
 
+    private static final FieldType PASSWORD_FIELD_TYPE = new StringFieldType(255);
+
     private static final FieldType TEXT_FIELD_TYPE = new StringFieldType(2048);
 
     private static final FieldType BOOLEAN_FIELD_TYPE = new BooleanFieldType();
@@ -74,6 +76,11 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Override
     public FieldType textType() {
         return TEXT_FIELD_TYPE;
+    }
+
+    @Override
+    public FieldType passwordType() {
+        return PASSWORD_FIELD_TYPE;
     }
 
     @Override

@@ -33,7 +33,7 @@ public final class EqOrLikeRestrictionTest {
     @Test
     public void shouldCreateCriteriaWithStringEqRestriction() {
         // given
-        Restriction restriction = Restrictions.stringEqOrLike("name", simpleDatabaseObject.getName());
+        Restriction restriction = Restrictions.eqOrLike("name", simpleDatabaseObject.getName());
 
         // when
         criteria = (CriteriaImpl) ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
@@ -51,7 +51,7 @@ public final class EqOrLikeRestrictionTest {
     @Test
     public void shouldCreateCriteriaWithStringLikeRestriction() {
         // given
-        Restriction restriction = Restrictions.stringEqOrLike("name", "%Mr_?" + "*");
+        Restriction restriction = Restrictions.eqOrLike("name", "%Mr_?" + "*");
 
         // when
         criteria = (CriteriaImpl) ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
