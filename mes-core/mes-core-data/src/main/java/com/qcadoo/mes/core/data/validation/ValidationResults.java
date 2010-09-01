@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 
 public final class ValidationResults {
@@ -15,6 +16,8 @@ public final class ValidationResults {
     private final Map<String, ValidationError> errors = new HashMap<String, ValidationError>();
 
     private final List<ValidationError> globalErrors = new ArrayList<ValidationError>();
+
+    private Entity entity;
 
     public void addGlobalError(final String message, final String... vars) {
         globalErrors.add(new ValidationError(message, vars));
@@ -56,6 +59,14 @@ public final class ValidationResults {
 
     public boolean isFieldNotValid(final FieldDefinition fieldDefinition) {
         return !isFieldValid(fieldDefinition);
+    }
+
+    public void setEntity(final Entity entity) {
+        this.entity = entity;
+    }
+
+    public Entity getEntity() {
+        return entity;
     }
 
 }
