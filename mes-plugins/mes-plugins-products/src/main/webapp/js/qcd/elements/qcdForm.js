@@ -21,8 +21,7 @@ QCD.elements.FormElement = function(args) {
 		var formData = $('#'+parameters.name+"_form").serializeObject();
 		var url = parameters.viewName+"/"+parameters.name+"/save.html";
 		
-		$("."+parameters.name+"_validatorGlobalMessage").html('');
-		$("."+parameters.name+"_fieldValidatorMessage").html('');
+		$('#'+parameters.name+"_form .errorMessage").html('');
 		
 		$.ajax({
 			url: url,
@@ -32,11 +31,15 @@ QCD.elements.FormElement = function(args) {
 				if (response.valid) {
 					if (shouldRedirect) {
 						redirectToCorrespondingPage();
+					} else {
+						refreshForm(response.entity);
 					}
 				} else {
-					$("."+parameters.name+"_validatorGlobalMessage").html(response.globalMessage);
-					for (var field in response.fieldMessages) {
-						$("#"+parameters.name+"_"+field+"_validateMessage").html(response.fieldMessages[field]);
+					for(var i in response.globalErrors) {
+						$('#'+parameters.name+"_globalErrors").append('<p>'+response.globalErrors[i].message+'</p>');
+					}
+					for (var field in response.errors) {
+						$('#'+parameters.name+"_field_"+field+"_error").html(response.errors[field].message);
 					}
 				}
 			},
@@ -68,7 +71,7 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	refreshForm = function(entity) {
-		$('#'+parameters.name+"_field_id").value = entity["id"];
+		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
 		}

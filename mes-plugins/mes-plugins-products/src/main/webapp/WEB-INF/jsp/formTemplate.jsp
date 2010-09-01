@@ -11,8 +11,8 @@
 <tiles:useAttribute name="dataDefinition" />
 <tiles:useAttribute name="entity" ignore="true"/>
 
-<div class="${formId}_validatorGlobalMessage validatorGlobalMessage"></div>
 <form id="${formId}_form">
+	<div id="${formId}_globalErrors" class="errorMessage"></div>
 	<table>
 		<c:forEach items="${dataDefinition.fields}" var="fieldEntry">
 			<tr>
@@ -63,13 +63,10 @@
 								
 							</c:choose>
 						</td>
-						<td id="${formId}_${fieldEntry.key}_validateMessage" class="fieldValidatorMessage ${formId}_validateMessage">		
-						</td>
+						<td id="${formId}_field_${fieldEntry.key}_error" class="errorMessage"></td>
 					</c:when>
 					<c:otherwise>
-					
 						<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
-					
 					</c:otherwise>
 				</c:choose>
 			</tr>

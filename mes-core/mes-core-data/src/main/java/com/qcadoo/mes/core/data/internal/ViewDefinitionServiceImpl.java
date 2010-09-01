@@ -169,10 +169,6 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridOptions.put("multiselect", "true");
         gridOptions.put("height", "450");
         gridDefinition.setOptions(gridOptions);
-        Map<String, String> gridEvents = new HashMap<String, String>();
-        gridEvents.put("newClicked", "goTo(users.groupDetailsView.html)");
-        gridEvents.put("rowDblClicked", "goTo(users.groupDetailsView.html?users.group={$rowId})");
-        gridDefinition.setEvents(gridEvents);
         ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
         ColumnDefinition columnRole = createColumnDefinition("role", gridDataDefinition.getField("role"), null);
 
@@ -189,6 +185,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition groupDataDefinition = dataDefinitionService.get("users.group");
         FormDefinition form = new FormDefinition("groupDetailsForm", groupDataDefinition);
+        form.setParent("entityId");
         form.setCorrespondingViewName("users.groupGridView");
         elements.add(form);
 
@@ -211,18 +208,14 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridOptions.put("multiselect", "true");
         gridOptions.put("height", "450");
         gridDefinition.setOptions(gridOptions);
-        Map<String, String> gridEvents = new HashMap<String, String>();
-        gridEvents.put("newClicked", "goTo(users.userDetailsView.html)");
-        gridEvents.put("rowDblClicked", "goTo(users.userDetailsView.html?users.user={$rowId})");
-        gridDefinition.setEvents(gridEvents);
         ColumnDefinition columnLogin = createColumnDefinition("login", gridDataDefinition.getField("login"), null);
         ColumnDefinition columnEmail = createColumnDefinition("email", gridDataDefinition.getField("email"), null);
         ColumnDefinition columnFirstName = createColumnDefinition("firstName", gridDataDefinition.getField("firstName"), null);
         ColumnDefinition columnLastName = createColumnDefinition("lastName", gridDataDefinition.getField("lastName"), null);
-        ColumnDefinition columnGroup = createColumnDefinition("group", gridDataDefinition.getField("group"), null);
+        ColumnDefinition columnUserGroup = createColumnDefinition("userGroup", gridDataDefinition.getField("userGroup"), null);
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnLogin, columnEmail, columnFirstName,
-                columnLastName, columnGroup }));
+                columnLastName, columnUserGroup }));
         elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
@@ -235,6 +228,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition userDataDefinition = dataDefinitionService.get("users.user");
         FormDefinition form = new FormDefinition("userDetailsForm", userDataDefinition);
+        form.setParent("entityId");
         form.setCorrespondingViewName("users.userGridView");
         elements.add(form);
 

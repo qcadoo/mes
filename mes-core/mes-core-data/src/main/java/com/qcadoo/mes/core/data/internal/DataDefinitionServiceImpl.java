@@ -162,9 +162,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         fieldLogin.setValidators(fieldValidationFactory.required());
         fieldLogin.setValidators(fieldValidationFactory.unique());
         // TODO KRNA zamienic na relacje
-        FieldDefinition fieldGroup = createFieldDefinition("group",
+        FieldDefinition fieldUserGroup = createFieldDefinition("userGroup",
                 fieldTypeFactory.enumType("Administrator", "Operator - Full", "Operator - ReadOnly"));
-        fieldGroup.setValidators(fieldValidationFactory.required());
+        fieldUserGroup.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEmail = createFieldDefinition("email", fieldTypeFactory.stringType());
         FieldDefinition fieldFirstName = createFieldDefinition("firstName", fieldTypeFactory.stringType());
         FieldDefinition fieldLastName = createFieldDefinition("lastName", fieldTypeFactory.stringType());
@@ -172,10 +172,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldPassword = createFieldDefinition("password", fieldTypeFactory.passwordType());
         fieldPassword.setValidators(fieldValidationFactory.required());
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.User");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SystemUser");
 
         dataDefinition.addField(fieldLogin);
-        dataDefinition.addField(fieldGroup);
+        dataDefinition.addField(fieldUserGroup);
         dataDefinition.addField(fieldEmail);
         dataDefinition.addField(fieldFirstName);
         dataDefinition.addField(fieldLastName);

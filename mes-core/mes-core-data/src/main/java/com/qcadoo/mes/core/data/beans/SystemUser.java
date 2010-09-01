@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public final class User {
+public final class SystemUser {
 
     @Id
     @GeneratedValue
@@ -13,13 +13,13 @@ public final class User {
 
     private String login;
 
-    private String group;
+    private String userGroup;
 
     private String email;
 
     private String firstName;
 
-    private String lastNeme;
+    private String lastName;
 
     private String description;
 
@@ -59,12 +59,12 @@ public final class User {
         this.login = login;
     }
 
-    public String getGroup() {
-        return group;
+    public String getUserGroup() {
+        return userGroup;
     }
 
-    public void setGroup(final String group) {
-        this.group = group;
+    public void setUserGroup(final String userGroup) {
+        this.userGroup = userGroup;
     }
 
     public String getEmail() {
@@ -83,12 +83,12 @@ public final class User {
         this.firstName = firstName;
     }
 
-    public String getLastNeme() {
-        return lastNeme;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastNeme(final String lastNeme) {
-        this.lastNeme = lastNeme;
+    public void setLastName(final String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPassword() {
