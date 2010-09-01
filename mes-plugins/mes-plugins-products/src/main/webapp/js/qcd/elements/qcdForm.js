@@ -71,7 +71,7 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	refreshForm = function(entity) {
-		$('#'+parameters.name+"_field_id").value = entity["id"];
+		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
 		}
