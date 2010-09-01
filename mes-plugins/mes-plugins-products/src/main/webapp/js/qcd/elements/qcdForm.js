@@ -51,6 +51,32 @@ QCD.elements.FormElement = function(args) {
 		window.location = parameters.correspondingView + ".html";
 	}
 	
+	getEntityAndFillForm = function(entityId) {
+		var url = parameters.viewName+"/"+parameters.name+"/entity.html?entityId="+entityId;
+		$.ajax({
+			url: url,
+			type: 'GET',
+			success: function(response) {
+				if(response) {
+					refreshForm(response);
+				}
+			},
+			error: function(xhr, textStatus, errorThrown){
+				alert(textStatus);
+			}
+		});
+	}
+	
+	refreshForm = function(entity) {
+		$('#'+parameters.name+"_field_id").value = entity["id"];
+		for(var i in entity["fields"]) {
+			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
+		}
+		for (var i in children) {
+			children[i].insertParentId(entity["id"]);
+		}
+	}
+	
 	function constructor(args) {
 		parameters = args;
 		$("#"+parameters.name+"_saveButton").click(performSave);
@@ -63,9 +89,7 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	this.insertParentId = function(parentId) {
-		for (var i in children) {
-			children[i].insertParentId(parentId);
-		}
+		getEntityAndFillForm(parentId);
 	}
 	
 	this.addChild = function(child) {
