@@ -39,6 +39,10 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition = createUserGroupGridView();
             } else if ("users.groupDetailsView".equals(viewName)) {
                 viewDefinition = createUserGroupDetailsView();
+            } else if ("users.userGridView".equals(viewName)) {
+                viewDefinition = createUserGridView();
+            } else if ("users.userDetailsView".equals(viewName)) {
+                viewDefinition = createUserDetailsView();
             }
             if (viewDefinition != null) {
                 viewDefinitions.put(viewName, viewDefinition);
@@ -169,6 +173,52 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition groupDataDefinition = dataDefinitionService.get("users.group");
         FormDefinition form = new FormDefinition("groupDetailsForm", groupDataDefinition);
         form.setCorrespondingViewName("users.groupGridView");
+        elements.add(form);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createUserGridView() {
+        ViewDefinition viewDefinition = new ViewDefinition("users.userGridView");
+
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition gridDataDefinition = dataDefinitionService.get("users.user");
+        GridDefinition gridDefinition = new GridDefinition("users", gridDataDefinition);
+        gridDefinition.setCorrespondingViewName("users.userDetailsView");
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "true");
+        gridOptions.put("sortable", "true");
+        gridOptions.put("filter", "false");
+        gridOptions.put("multiselect", "true");
+        gridOptions.put("height", "450");
+        gridDefinition.setOptions(gridOptions);
+        Map<String, String> gridEvents = new HashMap<String, String>();
+        gridEvents.put("newClicked", "goTo(users.userDetailsView.html)");
+        gridEvents.put("rowDblClicked", "goTo(users.userDetailsView.html?users.user={$rowId})");
+        gridDefinition.setEvents(gridEvents);
+        ColumnDefinition columnLogin = createColumnDefinition("login", gridDataDefinition.getField("login"), null);
+        ColumnDefinition columnEmail = createColumnDefinition("email", gridDataDefinition.getField("email"), null);
+        ColumnDefinition columnFirstName = createColumnDefinition("firstName", gridDataDefinition.getField("firstName"), null);
+        ColumnDefinition columnLastName = createColumnDefinition("lastName", gridDataDefinition.getField("lastName"), null);
+        ColumnDefinition columnGroup = createColumnDefinition("group", gridDataDefinition.getField("group"), null);
+
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnLogin, columnEmail, columnFirstName,
+                columnLastName, columnGroup }));
+        elements.add(gridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createUserDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("users.userDetailsView");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition userDataDefinition = dataDefinitionService.get("users.user");
+        FormDefinition form = new FormDefinition("userDetailsForm", userDataDefinition);
+        form.setCorrespondingViewName("users.userGridView");
         elements.add(form);
 
         viewDefinition.setElements(elements);

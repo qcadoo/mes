@@ -24,27 +24,27 @@
 						<td>		
 							<c:choose>
 								<c:when test='${(fieldEntry.value.type.numericType == "9") }'>
-									<textarea name="fields[${fieldEntry.key}]"></textarea>
+									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"></textarea>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "8") }'>
-									<input type="text" name="fields[${fieldEntry.key}]"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "7") }'>
-									<input type="text" name="fields[${fieldEntry.key}]""/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]""/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "6") }'>
-									<input type="text" name="fields[${fieldEntry.key}]"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "3") }'>
-									<input type="text" name="fields[${fieldEntry.key}]"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "4") || (fieldEntry.value.type.numericType == "5") }'>
-									<select name="fields[${fieldEntry.key}]">
+									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
 											<option>${dictionaryValue.value }</option>
@@ -53,7 +53,7 @@
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "10") }'>
-									<select name="fields[${fieldEntry.key}]">
+									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
 											<option value="${dictionaryValue.key}">${dictionaryValue.value }</option>
@@ -68,7 +68,7 @@
 					</c:when>
 					<c:otherwise>
 					
-						<input type="hidden" name="fields[${fieldEntry.key}]"/>
+						<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
 					
 					</c:otherwise>
 				</c:choose>
@@ -76,7 +76,7 @@
 		</c:forEach>
 	</table>
 		
-	<input id="entityId" type="hidden" name="id"/>
+	<input id="${formId}_field_id" type="hidden" name="id"/>
 			
 </form>
 
