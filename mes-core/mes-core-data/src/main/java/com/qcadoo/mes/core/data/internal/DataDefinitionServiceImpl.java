@@ -158,27 +158,29 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private DataDefinition createUserDefinition() {
         DataDefinition dataDefinition = new DataDefinition("users.user");
 
-        FieldDefinition fieldFirstName = createFieldDefinition("firstName", fieldTypeFactory.stringType());
-        fieldFirstName.setValidators(fieldValidationFactory.required());
-        FieldDefinition fieldLastName = createFieldDefinition("lastName", fieldTypeFactory.stringType());
-        fieldLastName.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldLogin = createFieldDefinition("login", fieldTypeFactory.stringType());
         fieldLogin.setValidators(fieldValidationFactory.required());
-        FieldDefinition fieldPassword = createFieldDefinition("password", fieldTypeFactory.passwordType());
-        fieldPassword.setValidators(fieldValidationFactory.required());
-        FieldDefinition fieldEmail = createFieldDefinition("email", fieldTypeFactory.stringType());
+        fieldLogin.setValidators(fieldValidationFactory.unique());
         // TODO KRNA zamienic na relacje
         FieldDefinition fieldGroup = createFieldDefinition("group",
                 fieldTypeFactory.enumType("Administrator", "Operator - Full", "Operator - ReadOnly"));
+        fieldGroup.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldEmail = createFieldDefinition("email", fieldTypeFactory.stringType());
+        FieldDefinition fieldFirstName = createFieldDefinition("firstName", fieldTypeFactory.stringType());
+        FieldDefinition fieldLastName = createFieldDefinition("lastName", fieldTypeFactory.stringType());
+        FieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
+        FieldDefinition fieldPassword = createFieldDefinition("password", fieldTypeFactory.passwordType());
+        fieldPassword.setValidators(fieldValidationFactory.required());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.User");
 
+        dataDefinition.addField(fieldLogin);
+        dataDefinition.addField(fieldGroup);
+        dataDefinition.addField(fieldEmail);
         dataDefinition.addField(fieldFirstName);
         dataDefinition.addField(fieldLastName);
-        dataDefinition.addField(fieldLogin);
+        dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldPassword);
-        dataDefinition.addField(fieldEmail);
-        dataDefinition.addField(fieldGroup);
 
         return dataDefinition;
     }
@@ -193,7 +195,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         // TODO KRNA zamienic na relacje
         FieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.enumType("read", "write", "delete"));
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Group");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.UserGroup");
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldRole);
