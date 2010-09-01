@@ -24,18 +24,19 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
+import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.search.ResultSet;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 
 public class DataAccessServiceFindTest {
 
-    private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+    private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-    private EntityServiceImpl entityService = new EntityServiceImpl();
+    private final EntityService entityService = new EntityService();
 
-    private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
-    private FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
+    private final FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
 
     private DataAccessService dataAccessService = null;
 
@@ -43,6 +44,7 @@ public class DataAccessServiceFindTest {
     public void init() {
         dataAccessService = new DataAccessServiceImpl();
         ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(dataAccessService, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(dataAccessService, "entityService", entityService);
         ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
 
@@ -92,14 +94,14 @@ public class DataAccessServiceFindTest {
                 createEntity(2L, "name2", 2), createEntity(3L, "name3", 3), createEntity(4L, "name4", 4)));
     }
 
-    private SimpleDatabaseObject createDatabaseObject(Long id, String name, int age) {
+    private SimpleDatabaseObject createDatabaseObject(final Long id, final String name, final int age) {
         SimpleDatabaseObject simpleDatabaseObject = new SimpleDatabaseObject(id);
         simpleDatabaseObject.setName(name);
         simpleDatabaseObject.setAge(age);
         return simpleDatabaseObject;
     }
 
-    private Entity createEntity(Long id, String name, int age) {
+    private Entity createEntity(final Long id, final String name, final int age) {
         Entity entity = new Entity(id);
         entity.setField("name", name);
         entity.setField("age", age);

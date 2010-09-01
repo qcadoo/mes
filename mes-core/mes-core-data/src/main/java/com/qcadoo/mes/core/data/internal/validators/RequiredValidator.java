@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.internal.validators;
 
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -11,7 +12,8 @@ public final class RequiredValidator implements FieldValidator {
     private String errorMessage = MISSING_ERROR;
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (value == null) {
             validationResults.addError(fieldDefinition, errorMessage);
             return false;

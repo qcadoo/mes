@@ -14,6 +14,8 @@ public interface FieldValidatorFactory {
 
     FieldValidator range(final Object from, final Object to);
 
-    FieldValidator beanMethod(final String beanName, final String staticValidateMethodName);
+    FieldValidator custom(final String beanName, final String staticValidateMethodName);
+
+    EntityValidator customEntity(final String beanName, final String staticValidateMethodName);
 
 }

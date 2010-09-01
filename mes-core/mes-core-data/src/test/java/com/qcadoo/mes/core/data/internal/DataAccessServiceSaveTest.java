@@ -18,6 +18,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
@@ -25,7 +26,9 @@ public final class DataAccessServiceSaveTest {
 
     private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-    private final EntityServiceImpl entityService = new EntityServiceImpl();
+    private final EntityService entityService = new EntityService();
+
+    private final ValidationService validationService = new ValidationService();
 
     private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
@@ -37,8 +40,12 @@ public final class DataAccessServiceSaveTest {
     public void init() {
         dataAccessService = new DataAccessServiceImpl();
         ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(entityService, "validationService", validationService);
+        ReflectionTestUtils.setField(validationService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
         ReflectionTestUtils.setField(dataAccessService, "entityService", entityService);
         ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
+        ReflectionTestUtils.setField(dataAccessService, "dataDefinitionService", dataDefinitionService);
         DataDefinition dataDefinition = new DataDefinition("test.Entity");
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 

@@ -1,14 +1,11 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data.internal.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.core.data.internal.validators.BeanMethodValidator;
-import com.qcadoo.mes.core.data.internal.validators.MaxLenghtValidator;
-import com.qcadoo.mes.core.data.internal.validators.RangeValidator;
-import com.qcadoo.mes.core.data.internal.validators.RequiredValidator;
-import com.qcadoo.mes.core.data.internal.validators.UniqueValidator;
+import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 
@@ -18,6 +15,9 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private DataAccessService dataAccessService;
+
     @Override
     public FieldValidator required() {
         return new RequiredValidator();
@@ -25,7 +25,7 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Override
     public FieldValidator unique() {
-        return new UniqueValidator();
+        return new UniqueValidator(dataAccessService);
     }
 
     @Override
@@ -39,8 +39,12 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
     }
 
     @Override
-    public FieldValidator beanMethod(final String beanName, final String staticValidateMethodName) {
-        return new BeanMethodValidator(applicationContext.getBean(beanName), staticValidateMethodName);
+    public FieldValidator custom(final String beanName, final String staticValidateMethodName) {
+        return new CustomValidator(applicationContext.getBean(beanName), staticValidateMethodName);
     }
 
+    @Override
+    public EntityValidator customEntity(final String beanName, final String staticValidateMethodName) {
+        return new CustomEntityValidator(applicationContext.getBean(beanName), staticValidateMethodName);
+    }
 }

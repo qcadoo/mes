@@ -9,7 +9,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.springframework.util.Assert.isInstanceOf;
-import junit.framework.Assert;
 
 import org.hibernate.SessionFactory;
 import org.junit.Before;
@@ -22,6 +21,7 @@ import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
@@ -37,7 +37,9 @@ public class EntityServiceTest {
 
     private final FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
 
-    private EntityServiceImpl entityService = null;
+    private EntityService entityService = null;
+
+    private ValidationService validationService = null;
 
     private DataDefinition parentDataDefinition = null;
 
@@ -53,9 +55,14 @@ public class EntityServiceTest {
 
     @Before
     public void init() {
-        entityService = new EntityServiceImpl();
+        validationService = new ValidationService();
+        ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
+        ReflectionTestUtils.setField(validationService, "dataDefinitionService", dataDefinitionService);
+
+        entityService = new EntityService();
         ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(entityService, "sessionFactory", sessionFactory);
+        ReflectionTestUtils.setField(entityService, "validationService", validationService);
+
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
         ReflectionTestUtils.setField(fieldTypeFactory, "dataAccessService", dataAccessService);
 
@@ -162,7 +169,7 @@ public class EntityServiceTest {
     @Test
     public void shouldReturnClassForGivenDataDefinition() throws Exception {
         // when
-        Class<?> clazz = entityService.getClassForEntity(dataDefinition);
+        Class<?> clazz = dataDefinition.getClassForEntity();
 
         // then
         assertEquals(SimpleDatabaseObject.class, clazz);
@@ -175,25 +182,7 @@ public class EntityServiceTest {
         dataDefinition.setFullyQualifiedClassName("java.lang.SomeUselessNotExistingClass");
 
         // when
-        entityService.getClassForEntity(dataDefinition);
-    }
-
-    @Test
-    public void shouldReturnDataDefinitionForGivenEntityName() throws Exception {
-        // when
-        DataDefinition dataDefinition = entityService.getDataDefinitionForEntity("simple.entity");
-
-        // then
-        assertEquals("simple.entity", dataDefinition.getEntityName());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrownAnExceptionIfDataDefinitionForGivenEntityNameDoesNotExist() throws Exception {
-        // given
-        given(dataDefinitionService.get("unknown.entity.name")).willReturn(null);
-
-        // when
-        entityService.getDataDefinitionForEntity("unknown.entity.name");
+        dataDefinition.getClassForEntity();
     }
 
     @Test
@@ -251,21 +240,7 @@ public class EntityServiceTest {
         fieldDefinition.setValidators();
 
         // when
-        entityService.setField(databaseEntity, fieldDefinition, "XXX", new ValidationResults());
-    }
-
-    @Test
-    public void shouldThrownAnExceptionWhileSettingFieldWithIncorrectType() throws Exception {
-        // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
-        ValidationResults validationResults = new ValidationResults();
-
-        // when
-        entityService.setField(databaseEntity, fieldDefinitionAge, "XXX", validationResults);
-
-        // then
-        Assert.assertEquals("form.validate.errors.invalidNumericFormat", validationResults.getErrorForField(fieldDefinitionAge)
-                .getMessage());
+        entityService.setField(databaseEntity, dataDefinition, fieldDefinition, "XXX");
     }
 
     @Test
@@ -275,7 +250,7 @@ public class EntityServiceTest {
         databaseEntity.setName("name");
 
         // when
-        entityService.setField(databaseEntity, fieldDefinitionName, null, new ValidationResults());
+        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionName, null);
 
         // then
         assertNull(databaseEntity.getName());
@@ -288,7 +263,7 @@ public class EntityServiceTest {
         databaseEntity.setName("name");
 
         // when
-        entityService.setField(databaseEntity, fieldDefinitionName, "XXX", new ValidationResults());
+        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionName, "XXX");
 
         // then
         assertEquals("XXX", databaseEntity.getName());
@@ -305,7 +280,7 @@ public class EntityServiceTest {
         given(sessionFactory.getCurrentSession().get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         // when
-        entityService.setField(databaseEntity, fieldDefinitionBelongsTo, new Entity(1L), new ValidationResults());
+        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionBelongsTo, parentDatabaseEntity);
 
         // then
         assertNotNull(databaseEntity.getBelongsTo());
@@ -322,7 +297,7 @@ public class EntityServiceTest {
         databaseEntity.setBelongsTo(parentDatabaseEntity);
 
         // when
-        entityService.setField(databaseEntity, fieldDefinitionBelongsTo, null, new ValidationResults());
+        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionBelongsTo, null);
 
         // then
         assertNull(databaseEntity.getBelongsTo());

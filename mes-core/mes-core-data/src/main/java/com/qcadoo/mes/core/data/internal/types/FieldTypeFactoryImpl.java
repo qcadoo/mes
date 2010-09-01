@@ -1,18 +1,10 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data.internal.types;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
-import com.qcadoo.mes.core.data.internal.types.BooleanFieldType;
-import com.qcadoo.mes.core.data.internal.types.DateFieldType;
-import com.qcadoo.mes.core.data.internal.types.DateTimeFieldType;
-import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
-import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
-import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
-import com.qcadoo.mes.core.data.internal.types.StringFieldType;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;

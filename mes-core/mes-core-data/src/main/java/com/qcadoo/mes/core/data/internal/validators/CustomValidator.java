@@ -6,17 +6,18 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class BeanMethodValidator implements FieldValidator {
+public final class CustomValidator implements FieldValidator {
 
     private static final String UNKNOWN_ERROR = "core.validation.error.unknown";
 
     private static final String CUSTOM_ERROR = "core.validation.error.custom";
 
-    private static final Logger LOG = LoggerFactory.getLogger(BeanMethodValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CustomValidator.class);
 
     private final Object bean;
 
@@ -24,13 +25,14 @@ public final class BeanMethodValidator implements FieldValidator {
 
     private String errorMessage = CUSTOM_ERROR;
 
-    public BeanMethodValidator(final Object bean, final String staticValidateMethodName) {
+    public CustomValidator(final Object bean, final String staticValidateMethodName) {
         this.bean = bean;
         this.staticValidateMethodName = staticValidateMethodName;
     }
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         try {
             boolean result = (Boolean) MethodUtils.invokeMethod(bean, staticValidateMethodName, new Object[] { value });
             if (result) {

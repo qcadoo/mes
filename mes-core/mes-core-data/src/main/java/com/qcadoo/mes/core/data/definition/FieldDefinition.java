@@ -1,12 +1,12 @@
 package com.qcadoo.mes.core.data.definition;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.internal.validators.RequiredValidator;
 import com.qcadoo.mes.core.data.internal.validators.UniqueValidator;
 import com.qcadoo.mes.core.data.types.FieldType;
@@ -28,7 +28,7 @@ public final class FieldDefinition {
 
     private FieldType type;
 
-    private Set<FieldValidator> validators = new HashSet<FieldValidator>();
+    private List<FieldValidator> validators = new ArrayList<FieldValidator>();
 
     private boolean editable;
 
@@ -58,12 +58,12 @@ public final class FieldDefinition {
         this.type = type;
     }
 
-    public Set<FieldValidator> getValidators() {
+    public List<FieldValidator> getValidators() {
         return validators;
     }
 
     public void setValidators(final FieldValidator... validators) {
-        this.validators = Sets.newHashSet(validators);
+        this.validators = Lists.newArrayList(validators);
         required = false;
         unique = false;
         if (validators != null) {

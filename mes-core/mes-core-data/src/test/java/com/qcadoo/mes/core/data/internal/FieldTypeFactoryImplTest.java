@@ -24,6 +24,7 @@ import com.qcadoo.mes.core.data.internal.types.DateFieldType;
 import com.qcadoo.mes.core.data.internal.types.DateTimeFieldType;
 import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
 import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
+import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
 import com.qcadoo.mes.core.data.internal.types.StringFieldType;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;

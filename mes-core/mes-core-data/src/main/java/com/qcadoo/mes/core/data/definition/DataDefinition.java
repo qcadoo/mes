@@ -1,7 +1,13 @@
 package com.qcadoo.mes.core.data.definition;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.core.data.internal.EntityService;
+import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 /**
  * Object defines database structure and its representation on grids and forms. The {@link DataDefinition#getEntityName()} points
@@ -24,6 +30,8 @@ public final class DataDefinition {
     private String discriminator;
 
     private Map<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
+
+    private List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
     public DataDefinition(final String entityName) {
         this.entityName = entityName;
@@ -57,11 +65,11 @@ public final class DataDefinition {
         this.fields = fields;
     }
 
-    public void addField(FieldDefinition field) {
+    public void addField(final FieldDefinition field) {
         fields.put(field.getName(), field);
     }
 
-    public FieldDefinition getField(String fieldName) {
+    public FieldDefinition getField(final String fieldName) {
         return fields.get(fieldName);
     }
 
@@ -75,6 +83,39 @@ public final class DataDefinition {
 
     public boolean isPluginTable() {
         return !isCoreTable() && !isVirtualTable();
+    }
+
+    public List<EntityValidator> getValidators() {
+        return validators;
+    }
+
+    public void setValidators(final EntityValidator... validators) {
+        this.validators = Lists.newArrayList(validators);
+    }
+
+    public Class<?> getClassForEntity() {
+        if (isVirtualTable()) {
+            throw new UnsupportedOperationException("virtual tables are not supported");
+        } else {
+            String fullyQualifiedClassName = getFullyQualifiedClassName();
+
+            try {
+                return EntityService.class.getClassLoader().loadClass(fullyQualifiedClassName);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
+            }
+        }
+    }
+
+    public Object getInstanceForEntity() {
+        Class<?> entityClass = getClassForEntity();
+        try {
+            return entityClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new IllegalStateException("cannot instantiate class: " + getFullyQualifiedClassName(), e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("cannot instantiate class: " + getFullyQualifiedClassName(), e);
+        }
     }
 
 }

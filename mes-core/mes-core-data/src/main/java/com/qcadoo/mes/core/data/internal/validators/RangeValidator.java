@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.internal.validators;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -23,7 +24,8 @@ public final class RangeValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (value == null) {
             return true;
         }
