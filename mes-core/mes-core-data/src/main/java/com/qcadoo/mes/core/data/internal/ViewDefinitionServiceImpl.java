@@ -143,7 +143,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("users.group");
-        GridDefinition gridDefinition = new GridDefinition("users", gridDataDefinition);
+        GridDefinition gridDefinition = new GridDefinition("groups", gridDataDefinition);
         gridDefinition.setCorrespondingViewName("users.groupDetailsView");
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
