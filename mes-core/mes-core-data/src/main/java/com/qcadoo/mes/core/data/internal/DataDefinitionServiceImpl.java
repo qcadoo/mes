@@ -99,7 +99,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         fieldProduct.setValidators(fieldValidationFactory.required());
         fieldProduct.setHidden(true);
 
-        // TODO masz dataDefinition.setValidators(...) data poczˆtkowa mniejsza od koÄcowej
+        // TODO masz dataDefinition.setValidators(...) data poczï¿½tkowa mniejsza od koï¿½cowej
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
         dataDefinition.addField(fieldNumber);
@@ -188,6 +188,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
         fieldName.setValidators(fieldValidationFactory.required());
+        fieldName.setValidators(fieldValidationFactory.unique());
         FieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
         // TODO KRNA zamienic na relacje
         FieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.enumType("read", "write", "delete"));

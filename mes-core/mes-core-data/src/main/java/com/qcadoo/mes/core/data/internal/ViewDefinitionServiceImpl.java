@@ -27,7 +27,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
 
-    public ViewDefinition getViewDefinition(String viewName) {
+    @Override
+    public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
         if (viewDefinition == null) {
             if ("products.productGridView".equals(viewName)) {
@@ -37,6 +38,13 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition.getElementByName("products").setCorrespondingView(detailsViewDef);
             } else if ("products.productDetailsView".equals(viewName)) {
                 viewDefinition = createProductDetailsView();
+            } else if ("users.groupGridView".equals(viewName)) {
+                viewDefinition = createGroupGridView();
+                viewDefinitions.put(viewName, viewDefinition);
+                ViewDefinition detailsViewDef = getViewDefinition("users.groupDetailsView");
+                viewDefinition.getElementByName("groups").setCorrespondingView(detailsViewDef);
+            } else if ("users.groupDetailsView".equals(viewName)) {
+                viewDefinition = createGroupDetailsView();
             }
             if (viewDefinition != null) {
                 viewDefinitions.put(viewName, viewDefinition);
@@ -130,6 +138,43 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         elements.add(substituteComponentGridDefinition);
 
         viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createGroupGridView() {
+        ViewDefinition viewDefinition = new ViewDefinition("users.groupGridView");
+
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition gridDataDefinition = dataDefinitionService.get("users.user");
+        GridDefinition gridDefinition = new GridDefinition("users", gridDataDefinition);
+        // gridDefinition.setCorrespondingView(getViewDefinition("products.productDetailsView"));
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "true");
+        gridOptions.put("sortable", "true");
+        gridOptions.put("filter", "true");
+        gridOptions.put("multiselect", "true");
+        gridOptions.put("height", "450");
+        gridDefinition.setOptions(gridOptions);
+        Map<String, String> gridEvents = new HashMap<String, String>();
+        gridEvents.put("newClicked", "goTo(products.productDetailsView.html)");
+        gridEvents.put("rowDblClicked", "goTo(products.productDetailsView.html?products.product={$rowId})");
+        gridDefinition.setEvents(gridEvents);
+        ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", gridDataDefinition.getField("typeOfMaterial"),
+                null);
+        ColumnDefinition columnEan = createColumnDefinition("ean", gridDataDefinition.getField("ean"), null);
+
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
+        elements.add(gridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createGroupDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("users.groupDetailsView");
         return viewDefinition;
     }
 
