@@ -173,7 +173,7 @@ public class ValidatorTest {
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
-        assertEquals("core.validation.error.missing", validationResults.getErrors().get(fieldDefinitionAge).getMessage());
+        assertEquals("core.validation.error.missing", validationResults.getErrorForField("age").getMessage());
         assertEquals(1, validationResults.getGlobalErrors().size());
         assertEquals("core.validation.error.global", validationResults.getGlobalErrors().get(0).getMessage());
     }
@@ -193,7 +193,7 @@ public class ValidatorTest {
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
-        assertEquals("missing age", validationResults.getErrors().get(fieldDefinitionAge).getMessage());
+        assertEquals("missing age", validationResults.getErrorForField("age").getMessage());
         assertEquals(1, validationResults.getGlobalErrors().size());
     }
 
@@ -588,7 +588,7 @@ public class ValidatorTest {
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
-        assertEquals("core.validation.error.custom", validationResults.getErrors().get(fieldDefinitionName).getMessage());
+        assertEquals("core.validation.error.custom", validationResults.getErrorForField("name").getMessage());
         assertEquals(1, validationResults.getGlobalErrors().size());
     }
 

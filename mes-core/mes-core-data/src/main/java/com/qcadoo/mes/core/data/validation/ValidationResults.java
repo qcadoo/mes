@@ -12,7 +12,7 @@ public final class ValidationResults {
 
     private static final ValidationError GLOBAL_ERROR = new ValidationError("core.validation.error.global");
 
-    private final Map<FieldDefinition, ValidationError> errors = new HashMap<FieldDefinition, ValidationError>();
+    private final Map<String, ValidationError> errors = new HashMap<String, ValidationError>();
 
     private final List<ValidationError> globalErrors = new ArrayList<ValidationError>();
 
@@ -21,10 +21,10 @@ public final class ValidationResults {
     }
 
     public void addError(final FieldDefinition fieldDefinition, final String message, final String... vars) {
-        errors.put(fieldDefinition, new ValidationError(message, vars));
+        errors.put(fieldDefinition.getName(), new ValidationError(message, vars));
     }
 
-    public Map<FieldDefinition, ValidationError> getErrors() {
+    public Map<String, ValidationError> getErrors() {
         return errors;
     }
 
@@ -38,8 +38,8 @@ public final class ValidationResults {
         return errorMessages;
     }
 
-    public ValidationError getErrorForField(final FieldDefinition fieldDefinition) {
-        return errors.get(fieldDefinition);
+    public ValidationError getErrorForField(final String fieldName) {
+        return errors.get(fieldName);
     }
 
     public boolean isValid() {
@@ -51,7 +51,7 @@ public final class ValidationResults {
     }
 
     public boolean isFieldValid(final FieldDefinition fieldDefinition) {
-        return errors.get(fieldDefinition) == null;
+        return errors.get(fieldDefinition.getName()) == null;
     }
 
     public boolean isFieldNotValid(final FieldDefinition fieldDefinition) {
