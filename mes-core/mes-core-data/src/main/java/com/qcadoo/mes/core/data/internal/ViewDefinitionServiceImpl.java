@@ -148,7 +148,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("users.group");
         GridDefinition gridDefinition = new GridDefinition("users", gridDataDefinition);
-        // gridDefinition.setCorrespondingView(getViewDefinition("products.productDetailsView"));
+        // gridDefinition.setCorrespondingView(getViewDefinition("users.groupDetailsView"));
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
         gridOptions.put("sortable", "true");
@@ -172,6 +172,14 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createUserGroupDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("users.groupDetailsView");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition groupDataDefinition = dataDefinitionService.get("users.group");
+        FormDefinition form = new FormDefinition("groupDetailsForm", groupDataDefinition);
+        form.setCorrespondingView(getViewDefinition("users.groupGridView"));
+        elements.add(form);
+
+        viewDefinition.setElements(elements);
         return viewDefinition;
     }
 
