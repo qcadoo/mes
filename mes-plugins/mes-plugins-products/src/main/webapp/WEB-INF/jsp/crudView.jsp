@@ -28,17 +28,12 @@
 	
 	<script type="text/javascript">
 
-		var definedParentEntities = new Object();
-			<c:forEach items="${parentEntities}" var="entity">
-				definedParentEntities["${entity.key}"] = "${entity.value}";
-			</c:forEach>
 		var viewName = "${viewDefinition.name}";
+		var entityId = "${entityId}";
 
-		var controller = new QCD.PageController(viewName);
-		
 		jQuery(document).ready(function(){
-			controller.init();
-			controller.insertParents(definedParentEntities);
+			var controller = new QCD.PageController(viewName);
+			controller.init(entityId);
 		});
 
 	</script>
@@ -66,7 +61,6 @@
 					<tiles:insertTemplate template="formTemplate.jsp">
 						<tiles:putAttribute name="formId" value="${ viewElement.name}" />
 						<tiles:putAttribute name="dataDefinition" value="${ viewElement.dataDefinition}" />
-						<tiles:putAttribute name="entity" value="${ entities[viewElement.name]}" />
 					</tiles:insertTemplate>
 				</div>
 

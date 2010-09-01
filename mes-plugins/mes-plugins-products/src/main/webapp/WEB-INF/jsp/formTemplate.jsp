@@ -24,37 +24,30 @@
 						<td>		
 							<c:choose>
 								<c:when test='${(fieldEntry.value.type.numericType == "9") }'>
-									<textarea name="fields[${fieldEntry.key}]">${entity.fields[fieldEntry.key]}</textarea>
+									<textarea name="fields[${fieldEntry.key}]"></textarea>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "8") }'>
-									<input type="text" name="fields[${fieldEntry.key}]" value="${entity.fields[fieldEntry.key]}"/>
+									<input type="text" name="fields[${fieldEntry.key}]"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "7") }'>
-									<input type="text" name="fields[${fieldEntry.key}]" value="${entity.fields[fieldEntry.key]}"/>
+									<input type="text" name="fields[${fieldEntry.key}]""/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "6") }'>
-									<input type="text" name="fields[${fieldEntry.key}]" value="${entity.fields[fieldEntry.key]}"/>
+									<input type="text" name="fields[${fieldEntry.key}]"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "3") }'>
-									<input type="text" name="fields[${fieldEntry.key}]" value="${entity.fields[fieldEntry.key]}"/>
+									<input type="text" name="fields[${fieldEntry.key}]"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "4") || (fieldEntry.value.type.numericType == "5") }'>
 									<select name="fields[${fieldEntry.key}]">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
-											<c:choose>
-												<c:when test='${dictionaryValue.value  == entity.fields[fieldEntry.key]}'>
-													<option selected="selected">${dictionaryValue.value } </option>
-												</c:when>
-												<c:otherwise>
-													<option>${dictionaryValue.value }</option>
-												</c:otherwise>
-											</c:choose>		
+											<option>${dictionaryValue.value }</option>
 										</c:forEach>
 									</select>
 								</c:when>
@@ -63,14 +56,7 @@
 									<select name="fields[${fieldEntry.key}]">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
-											<c:choose>
-												<c:when test='${dictionaryValue.key  == entity.fields[fieldEntry.key].id}'>
-													<option value="${dictionaryValue.key}" selected="selected">${dictionaryValue.value } </option>
-												</c:when>
-												<c:otherwise>
-													<option value="${dictionaryValue.key}">${dictionaryValue.value }</option>
-												</c:otherwise>
-											</c:choose>		
+											<option value="${dictionaryValue.key}">${dictionaryValue.value }</option>
 										</c:forEach>
 									</select>
 								</c:when>
@@ -82,7 +68,7 @@
 					</c:when>
 					<c:otherwise>
 					
-						<input type="hidden" name="fields[${fieldEntry.key}]" value="${entity.fields[fieldEntry.key].id}"/>
+						<input type="hidden" name="fields[${fieldEntry.key}]"/>
 					
 					</c:otherwise>
 				</c:choose>
@@ -90,7 +76,7 @@
 		</c:forEach>
 	</table>
 		
-	<input id="entityId" type="hidden" name="id" value="${entity.id }"/>
+	<input id="entityId" type="hidden" name="id"/>
 			
 </form>
 

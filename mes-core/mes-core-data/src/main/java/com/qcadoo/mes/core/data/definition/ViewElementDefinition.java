@@ -16,7 +16,7 @@ public abstract class ViewElementDefinition {
 
     private Map<String, String> events;
 
-    private DataDefinition parentDefinition; // null, url, viewElement:{name}
+    private String parent; // null, entityId, viewElement:{name}
 
     private String parentField;
 
@@ -61,14 +61,6 @@ public abstract class ViewElementDefinition {
         this.events = events;
     }
 
-    public DataDefinition getParentDefinition() {
-        return parentDefinition;
-    }
-
-    public void setParentDefinition(final DataDefinition parentDefinition) {
-        this.parentDefinition = parentDefinition;
-    }
-
     public String getParentField() {
         return parentField;
     }
@@ -83,6 +75,14 @@ public abstract class ViewElementDefinition {
 
     public void setCorrespondingView(ViewDefinition correspondingView) {
         this.correspondingView = correspondingView;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 
 }

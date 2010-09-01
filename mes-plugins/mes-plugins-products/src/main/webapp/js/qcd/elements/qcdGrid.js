@@ -173,7 +173,7 @@ QCD.elements.GridElement = function(args) {
 			parameters.sortOrder = sortVars.order;
 		}
 		if (parentId) {
-			parameters.parentId = parentId;
+			parameters.entityId = parentId;
 		}
 		$.ajax({
 			url: gridParameters.viewName+"/"+gridParameters.viewElementName+"/list.html",
@@ -309,9 +309,13 @@ QCD.elements.GridElement = function(args) {
 	}
 	
 	this.insertParentId = function(_parentId) {
+		parentId = _parentId;
 		enable();
-		parentId = _parentId
 		refresh();
+	}
+	
+	this.getParent = function() {
+		return gridParameters.parent;
 	}
 	
 	// PUBLIC

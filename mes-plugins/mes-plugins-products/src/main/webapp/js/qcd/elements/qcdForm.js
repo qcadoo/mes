@@ -56,8 +56,12 @@ QCD.elements.FormElement = function(args) {
 		$("#"+parameters.name+"_cancelButton").click(performCancel);
 	}
 	
+	this.getParent = function() {
+		return parameters.parent;
+	}
+	
 	this.insertParentId = function(parentId) {
-		
+		QCDLogger.info("insert parent to form: "+parentId);
 	}
 	
 	constructor(args);
