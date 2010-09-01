@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +30,22 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     @Override
     public DataDefinition get(final String entityName) {
+        DataDefinition dataDefinition = null;
         if ("products.product".equals(entityName)) {
-            return createProductDefinition();
+            dataDefinition = createProductDefinition();
         } else if ("products.substitute".equals(entityName)) {
-            return createSubstituteDefinition();
+            dataDefinition = createSubstituteDefinition();
         } else if ("products.substituteComponent".equals(entityName)) {
-            return createSubstituteComponentDefinition();
+            dataDefinition = createSubstituteComponentDefinition();
+        } else if ("users.user".equals(entityName)) {
+            dataDefinition = createUserDefinition();
+        } else if ("users.group".equals(entityName)) {
+            dataDefinition = createUserGroupDefinition();
         }
-        return null;
+
+        checkNotNull(dataDefinition, "data definition for %s cannot be found", entityName);
+
+        return dataDefinition;
     }
 
     private DataDefinition createProductDefinition() {
@@ -77,14 +87,19 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         // GridDefinition gridDefinition = new GridDefinition("substitutes");
 
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType(), true);
+        fieldNumber.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType(), true);
+        fieldName.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType(), true);
+        fieldPriority.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
+        fieldProduct.setValidators(fieldValidationFactory.required());
         fieldProduct.setHidden(true);
 
+        // TODO masz dataDefinition.setValidators(...) data poczˆtkowa mniejsza od koÄcowej
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
         dataDefinition.addField(fieldNumber);
@@ -109,10 +124,13 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"), true);
+        fieldProduct.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldSubstitute = createFieldDefinition("substitute",
                 fieldTypeFactory.eagerBelongsToType("products.substitute", "name"));
+        fieldSubstitute.setValidators(fieldValidationFactory.required());
         fieldSubstitute.setHidden(true);
         FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType(), true);
+        fieldQuantity.setValidators(fieldValidationFactory.required());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
         // dataDefinition.setGrids(Arrays.asList(new GridDefinition[] { gridDefinition }));
@@ -136,6 +154,51 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     // columnDefinition.setExpression(expression);
     // return columnDefinition;
     // }
+
+    private DataDefinition createUserDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("users.user");
+
+        FieldDefinition fieldFirstName = createFieldDefinition("firstName", fieldTypeFactory.stringType());
+        fieldFirstName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldLastName = createFieldDefinition("lastName", fieldTypeFactory.stringType());
+        fieldLastName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldLogin = createFieldDefinition("login", fieldTypeFactory.stringType());
+        fieldLogin.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldPassword = createFieldDefinition("password", fieldTypeFactory.passwordType());
+        fieldPassword.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldEmail = createFieldDefinition("email", fieldTypeFactory.stringType());
+        // TODO KRNA zamienic na relacje
+        FieldDefinition fieldGroup = createFieldDefinition("group",
+                fieldTypeFactory.enumType("Administrator", "Operator - Full", "Operator - ReadOnly"));
+
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.User");
+
+        dataDefinition.addField(fieldFirstName);
+        dataDefinition.addField(fieldLastName);
+        dataDefinition.addField(fieldLogin);
+        dataDefinition.addField(fieldPassword);
+        dataDefinition.addField(fieldEmail);
+        dataDefinition.addField(fieldGroup);
+
+        return dataDefinition;
+    }
+
+    private DataDefinition createUserGroupDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("users.group");
+
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
+        fieldName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
+        // TODO KRNA zamienic na relacje
+        FieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.enumType("read", "write", "delete"));
+
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Group");
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDescription);
+        dataDefinition.addField(fieldRole);
+
+        return dataDefinition;
+    }
 
     private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);

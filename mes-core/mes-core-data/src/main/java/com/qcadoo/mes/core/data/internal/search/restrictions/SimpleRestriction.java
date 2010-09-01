@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.internal.search.restrictions;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -43,5 +45,15 @@ public final class SimpleRestriction extends BaseRestriction {
             LOG.debug("Criteria added: " + op.getValue());
         }
         return criteria;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }

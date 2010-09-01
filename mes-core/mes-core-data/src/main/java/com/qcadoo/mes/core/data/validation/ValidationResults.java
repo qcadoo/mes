@@ -1,48 +1,61 @@
 package com.qcadoo.mes.core.data.validation;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 
 public final class ValidationResults {
 
-    private final Map<FieldDefinition, List<ValidationError>> errors = new HashMap<FieldDefinition, List<ValidationError>>();
+    private static final ValidationError GLOBAL_ERROR = new ValidationError("core.validation.error.global");
 
-    public void addError(final FieldDefinition fieldDefinition, final String message, final String... vars) {
-        ValidationError error = new ValidationError(message, vars);
-        if (!errors.containsKey(fieldDefinition)) {
-            errors.put(fieldDefinition, Lists.<ValidationError> newArrayList());
-        }
-        errors.get(fieldDefinition).add(error);
+    private final Map<String, ValidationError> errors = new HashMap<String, ValidationError>();
+
+    private final List<ValidationError> globalErrors = new ArrayList<ValidationError>();
+
+    public void addGlobalError(final String message, final String... vars) {
+        globalErrors.add(new ValidationError(message, vars));
     }
 
-    public Map<FieldDefinition, List<ValidationError>> getErrors() {
+    public void addError(final FieldDefinition fieldDefinition, final String message, final String... vars) {
+        errors.put(fieldDefinition.getName(), new ValidationError(message, vars));
+    }
+
+    public Map<String, ValidationError> getErrors() {
         return errors;
     }
 
-    public List<ValidationError> getErrorsForField(final FieldDefinition fieldDefinition) {
-        List<ValidationError> errorsForField = errors.get(fieldDefinition);
-        if (errorsForField != null) {
-            return errorsForField;
-        } else {
-            return Lists.newArrayList();
+    public List<ValidationError> getGlobalErrors() {
+        if (globalErrors.isEmpty() && errors.isEmpty()) {
+            return Collections.emptyList();
         }
-
+        List<ValidationError> errorMessages = new ArrayList<ValidationError>();
+        errorMessages.add(GLOBAL_ERROR);
+        errorMessages.addAll(globalErrors);
+        return errorMessages;
     }
 
-    public boolean hasErrorForField(final FieldDefinition fieldDefinition) {
-        return errors.get(fieldDefinition) != null && !errors.get(fieldDefinition).isEmpty();
-    }
-
-    public boolean hasError() {
-        return !errors.isEmpty();
+    public ValidationError getErrorForField(final String fieldName) {
+        return errors.get(fieldName);
     }
 
     public boolean isValid() {
-        return errors.isEmpty();
+        return errors.isEmpty() && globalErrors.isEmpty();
+    }
+
+    public boolean isNotValid() {
+        return !isValid();
+    }
+
+    public boolean isFieldValid(final FieldDefinition fieldDefinition) {
+        return errors.get(fieldDefinition.getName()) == null;
+    }
+
+    public boolean isFieldNotValid(final FieldDefinition fieldDefinition) {
+        return !isFieldValid(fieldDefinition);
     }
 
 }

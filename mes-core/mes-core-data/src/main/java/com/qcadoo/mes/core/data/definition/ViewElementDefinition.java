@@ -24,7 +24,7 @@ public abstract class ViewElementDefinition {
 
     public abstract int getType();
 
-    public ViewElementDefinition(String name, DataDefinition dataDefinition) {
+    public ViewElementDefinition(final String name, final DataDefinition dataDefinition) {
         this.name = name;
         this.dataDefinition = dataDefinition;
     }
@@ -33,7 +33,7 @@ public abstract class ViewElementDefinition {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -41,7 +41,7 @@ public abstract class ViewElementDefinition {
         return dataDefinition;
     }
 
-    public void setDataDefinition(DataDefinition dataDefinition) {
+    public void setDataDefinition(final DataDefinition dataDefinition) {
         this.dataDefinition = dataDefinition;
     }
 
@@ -49,7 +49,7 @@ public abstract class ViewElementDefinition {
         return options;
     }
 
-    public void setOptions(Map<String, String> options) {
+    public void setOptions(final Map<String, String> options) {
         this.options = options;
     }
 
@@ -57,7 +57,7 @@ public abstract class ViewElementDefinition {
         return events;
     }
 
-    public void setEvents(Map<String, String> events) {
+    public void setEvents(final Map<String, String> events) {
         this.events = events;
     }
 
@@ -65,7 +65,7 @@ public abstract class ViewElementDefinition {
         return parentDefinition;
     }
 
-    public void setParentDefinition(DataDefinition parentDefinition) {
+    public void setParentDefinition(final DataDefinition parentDefinition) {
         this.parentDefinition = parentDefinition;
     }
 
@@ -73,7 +73,7 @@ public abstract class ViewElementDefinition {
         return parentField;
     }
 
-    public void setParentField(String parentField) {
+    public void setParentField(final String parentField) {
         this.parentField = parentField;
     }
 

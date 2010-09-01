@@ -14,17 +14,18 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 
 public class DataAccessServiceDeleteTest {
 
-    private DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+    private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-    private EntityServiceImpl entityService = new EntityServiceImpl();
+    private final EntityService entityService = new EntityService();
 
-    private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
-    private FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
+    private final FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
 
     private DataAccessService dataAccessService = null;
 
@@ -32,6 +33,7 @@ public class DataAccessServiceDeleteTest {
     public void init() {
         dataAccessService = new DataAccessServiceImpl();
         ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(dataAccessService, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(dataAccessService, "entityService", entityService);
         ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
     }

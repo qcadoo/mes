@@ -1,18 +1,10 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data.internal.types;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
-import com.qcadoo.mes.core.data.internal.types.BooleanFieldType;
-import com.qcadoo.mes.core.data.internal.types.DateFieldType;
-import com.qcadoo.mes.core.data.internal.types.DateTimeFieldType;
-import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
-import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
-import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
-import com.qcadoo.mes.core.data.internal.types.StringFieldType;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
@@ -32,6 +24,8 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     private static final FieldType DECIMAL_FIELD_TYPE = new NumericFieldType(10, 3);
 
     private static final FieldType STRING_FIELD_TYPE = new StringFieldType(255);
+
+    private static final FieldType PASSWORD_FIELD_TYPE = new StringFieldType(255);
 
     private static final FieldType TEXT_FIELD_TYPE = new StringFieldType(2048);
 
@@ -74,6 +68,11 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Override
     public FieldType textType() {
         return TEXT_FIELD_TYPE;
+    }
+
+    @Override
+    public FieldType passwordType() {
+        return PASSWORD_FIELD_TYPE;
     }
 
     @Override
