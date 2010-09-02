@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,9 +32,9 @@ import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restrictions;
-import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -47,6 +49,8 @@ public class CrudControler {
 
     @Autowired
     private DataAccessService dataAccessService;
+
+    private static final Logger LOG = LoggerFactory.getLogger(CrudControler.class);
 
     @RequestMapping(value = "test/{viewName}", method = RequestMethod.GET)
     public ModelAndView getView(@PathVariable("viewName") String viewName, @RequestParam Map<String, String> arguments) {
@@ -96,6 +100,10 @@ public class CrudControler {
     public ListData getGridData(@PathVariable("viewName") String viewName, @PathVariable("elementName") String elementName,
             @RequestParam Map<String, String> arguments) {
 
+        for (Entry<String, String> entry : arguments.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
@@ -125,6 +133,36 @@ public class CrudControler {
             } else {
                 searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(arguments.get("sortColumn")));
             }
+        }
+
+        for (int i = 0;; i++) {
+            if (arguments.get("filterObject[" + i + "][column]") == null) {
+                break;
+            }
+            String column = arguments.get("filterObject[" + i + "][column]");
+            String operator = arguments.get("filterObject[" + i + "][operator]");
+            String value = arguments.get("filterObject[" + i + "][filterValue]");
+            // for (ColumnDefinition columnDef : gridDefinition.getColumns()) {
+            // columnDef.getFields().get(0);
+            // }
+            // if ("=".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.eq(column, value));
+            // } else if ("<".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.lt(column, value));
+            // } else if (">".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.gt(column, value));
+            // } else if ("<=".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.le(column, value));
+            // } else if (">=".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.ge(column, value));
+            // } else if ("<>".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.ne(column, value));
+            // } else if ("null".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.isNull(column));
+            // } else if ("not null".equals(operator)) {
+            // searchCriteriaBuilder.restrictedWith(Restrictions.isNotNull(column));
+            // }
+            // LOG.info("filter: " + column + "-" + operator + "-" + value);
         }
 
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();
