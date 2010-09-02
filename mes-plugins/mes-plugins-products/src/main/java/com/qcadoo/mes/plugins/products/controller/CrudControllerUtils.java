@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
 
@@ -54,6 +55,11 @@ public class CrudControllerUtils {
                     columnsArray.put(column.getName());
                 }
                 obj.put("columns", columnsArray);
+                JSONArray fieldsArray = new JSONArray();
+                for (Entry<String, FieldDefinition> field : gridDefinition.getDataDefinition().getFields().entrySet()) {
+                    fieldsArray.put(field.getKey());
+                }
+                obj.put("fields", fieldsArray);
             }
 
         } catch (JSONException e) {

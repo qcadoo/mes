@@ -33,6 +33,8 @@ public final class DataDefinition {
 
     private List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
+    private boolean deletable = true;
+
     public DataDefinition(final String entityName) {
         this.entityName = entityName;
     }
@@ -114,6 +116,18 @@ public final class DataDefinition {
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("cannot instantiate class: " + getFullyQualifiedClassName(), e);
         }
+    }
+
+    public boolean isDeletable() {
+        return deletable;
+    }
+
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
+    }
+
+    public void setValidators(List<EntityValidator> validators) {
+        this.validators = validators;
     }
 
 }

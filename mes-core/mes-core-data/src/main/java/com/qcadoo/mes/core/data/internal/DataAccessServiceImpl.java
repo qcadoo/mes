@@ -57,7 +57,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         ValidationResults validationResults = new ValidationResults();
 
         if (entity.getId() != null) {
-            existingDatabaseEntity = getDatabaseEntity(entityClass, entity.getId());
+            existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId());
             checkState(existingDatabaseEntity != null, "cannot find entity %s with id=%s", entityClass.getSimpleName(),
                     entity.getId());
         }
@@ -94,9 +94,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     public Entity get(final String entityName, final Long entityId) {
         checkArgument(entityId != null, "entityId must be given");
         DataDefinition dataDefinition = dataDefinitionService.get(entityName);
-        Class<?> entityClass = dataDefinition.getClassForEntity();
 
-        Object databaseEntity = getDatabaseEntity(entityClass, entityId);
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
         if (databaseEntity == null) {
             return null;
@@ -141,9 +140,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     public SearchResult find(final String entityName, final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
         DataDefinition dataDefinition = dataDefinitionService.get(entityName);
-        Class<?> entityClass = dataDefinition.getClassForEntity();
 
-        int totalNumberOfEntities = getTotalNumberOfEntities(getCriteriaWithRestriction(searchCriteria, entityClass));
+        int totalNumberOfEntities = getTotalNumberOfEntities(getCriteriaWithRestriction(searchCriteria, dataDefinition));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Get total number of entities: " + totalNumberOfEntities);
@@ -157,7 +155,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, Collections.emptyList());
         }
 
-        Criteria criteria = getCriteriaWithRestriction(searchCriteria, entityClass).setFirstResult(
+        Criteria criteria = getCriteriaWithRestriction(searchCriteria, dataDefinition).setFirstResult(
                 searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults());
 
         criteria = addOrderToCriteria(searchCriteria.getOrder(), criteria);
@@ -176,9 +174,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, results);
     }
 
-    private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, final Class<?> entityClass) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass)
-                .add(Restrictions.ne(EntityService.FIELD_DELETED, true));
+    private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, final DataDefinition dataDefinition) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
+
+        if (dataDefinition.isDeletable()) {
+            criteria = criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
+        }
 
         for (Restriction restriction : searchCriteria.getRestrictions()) {
             criteria = addRestrictionToCriteria(restriction, criteria);
@@ -217,9 +218,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
     }
 
-    private Object getDatabaseEntity(final Class<?> entityClass, final Long entityId) {
-        return sessionFactory.getCurrentSession().createCriteria(entityClass).add(Restrictions.idEq(entityId))
-                .add(Restrictions.ne(EntityService.FIELD_DELETED, true)).uniqueResult();
+    private Object getDatabaseEntity(final DataDefinition dataDefinition, final Long entityId) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
+                .add(Restrictions.idEq(entityId));
+        if (dataDefinition.isDeletable()) {
+            criteria = criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
+        }
+        return criteria.uniqueResult();
     }
-
 }
