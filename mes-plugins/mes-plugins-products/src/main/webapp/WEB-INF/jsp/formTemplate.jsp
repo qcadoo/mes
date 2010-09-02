@@ -25,31 +25,31 @@
 						<td <c:if test='${fieldEntry.value.required}'>class="fieldRequired"</c:if> >		
 							<c:choose>
 								<c:when test='${(fieldEntry.value.type.numericType == "11") }'>
-									<input type="password" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-password <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="password" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-password <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "9") }'>
-									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>"></textarea>
+									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"></textarea>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "8") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "7") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-decimal <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-decimal <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "6") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-integer <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-integer <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "3") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-datetime <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-datetime <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "2") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-date <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-date <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "1") }'>

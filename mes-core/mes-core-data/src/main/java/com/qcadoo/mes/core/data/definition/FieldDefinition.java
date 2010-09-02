@@ -30,7 +30,7 @@ public final class FieldDefinition {
 
     private List<FieldValidator> validators = new ArrayList<FieldValidator>();
 
-    private boolean editable;
+    private boolean editable = true;
 
     private boolean required;
 

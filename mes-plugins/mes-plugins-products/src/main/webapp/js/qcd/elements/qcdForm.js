@@ -141,6 +141,9 @@ QCD.elements.FormElement = function(args) {
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
 		}
+		if(entity["id"]) {
+			$('#'+parameters.name+'_form .readonly').attr('readonly', 'readonly');
+		}
 		for (var i in children) {
 			children[i].insertParentId(entity["id"]);
 		}

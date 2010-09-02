@@ -218,9 +218,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldState = createFieldDefinition("state", fieldTypeFactory.enumType("New", "Pending", "Done"));
         fieldName.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldMachine = createFieldDefinition("machine", fieldTypeFactory.enumType("Maszyna 1", "Maszyna 2"));
-        FieldDefinition fieldProduct = createFieldDefinition("product",
-                fieldTypeFactory.eagerBelongsToType("products.product", "name"));
+        FieldDefinition fieldProduct = createFieldDefinition("product", fieldTypeFactory.enumType("Produkt 1", "Produkt 2"));
         FieldDefinition fieldDefaultInstruction = createFieldDefinition("defaultInstruction", fieldTypeFactory.textType());
+        fieldDefaultInstruction.setEditable(false);
         FieldDefinition fieldInstruction = createFieldDefinition("instruction",
                 fieldTypeFactory.enumType("Instrukcja 1", "Instrukcja 2"));
         FieldDefinition fieldPlannedQuantity = createFieldDefinition("plannedQuantity", fieldTypeFactory.decimalType());
