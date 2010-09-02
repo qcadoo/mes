@@ -9,6 +9,8 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
+import com.qcadoo.mes.core.data.internal.types.StringFieldType;
 import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;
 
 public class ExpressionUtilTest {
@@ -20,6 +22,7 @@ public class ExpressionUtilTest {
         entity.setField("name", "Mr T");
 
         FieldDefinition fieldDefinition = new FieldDefinition("name");
+        fieldDefinition.setType(new StringFieldType(255));
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
@@ -40,8 +43,11 @@ public class ExpressionUtilTest {
         entity.setField("sex", "F");
 
         FieldDefinition fieldDefinitionName = new FieldDefinition("name");
+        fieldDefinitionName.setType(new StringFieldType(255));
         FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
+        fieldDefinitionAge.setType(new NumericFieldType(10, 0));
         FieldDefinition fieldDefinitionSex = new FieldDefinition("sex");
+        fieldDefinitionSex.setType(new StringFieldType(255));
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex));
