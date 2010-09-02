@@ -7,6 +7,8 @@ QCD.elements.FormElement = function(args) {
 	
 	var children = new Array();
 	
+	var contextEntityId = null;
+	
 	performSave = function() {
 		sendSaveRequest(false);
 	}
@@ -20,6 +22,11 @@ QCD.elements.FormElement = function(args) {
 	sendSaveRequest = function(shouldRedirect) {
 		var formData = $('#'+parameters.name+"_form").serializeObject();
 		var url = parameters.viewName+"/"+parameters.name+"/save.html";
+		
+		if (contextEntityId && parameters.parentField) {
+			formData["fields["+parameters.parentField+"]"] = contextEntityId;
+		}
+		QCDLogger.info(formData);
 		
 		$('#'+parameters.name+"_form .errorMessage").html('');
 		
@@ -93,6 +100,10 @@ QCD.elements.FormElement = function(args) {
 	
 	this.insertParentId = function(parentId) {
 		getEntityAndFillForm(parentId);
+	}
+	
+	this.insertContext = function(_contextEntityId) {
+		contextEntityId = _contextEntityId;
 	}
 	
 	this.addChild = function(child) {

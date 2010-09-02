@@ -12,9 +12,9 @@ import com.qcadoo.mes.core.data.beans.Entity;
  * @apiviz.owns com.qcadoo.mes.core.data.beans.Entity
  * @apiviz.has com.qcadoo.mes.core.data.search.SearchCriteria
  */
-public interface ResultSet {
+public interface SearchResult {
 
-    List<Entity> getResults();
+    List<Entity> getEntities();
 
     Map<String, Integer> getAggregations();
 

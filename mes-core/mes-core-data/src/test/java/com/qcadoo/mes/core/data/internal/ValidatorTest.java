@@ -25,7 +25,7 @@ import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
+import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
 import com.qcadoo.mes.core.data.search.Restrictions;
@@ -569,7 +569,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("name", "not existed");
 
-        ResultSetImpl resultSet = new ResultSetImpl();
+        SearchResultImpl resultSet = new SearchResultImpl();
         resultSet.setTotalNumberOfEntities(0);
 
         given(
@@ -592,7 +592,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("name", "existed");
 
-        ResultSetImpl resultSet = new ResultSetImpl();
+        SearchResultImpl resultSet = new SearchResultImpl();
         resultSet.setTotalNumberOfEntities(1);
 
         given(

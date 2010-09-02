@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.search.ResultSet;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 
-public final class ResultSetImpl implements ResultSet {
+public final class SearchResultImpl implements SearchResult {
 
     private SearchCriteria searchCriteria;
 
@@ -16,7 +16,7 @@ public final class ResultSetImpl implements ResultSet {
     private int totalNumberOfEntities;
 
     @Override
-    public List<Entity> getResults() {
+    public List<Entity> getEntities() {
         return results;
     }
 

@@ -332,7 +332,7 @@ public class EntityServiceTest {
         Entity genericEntity = new Entity(2L);
         genericEntity.setField("name", "Mr T");
         genericEntity.setField("age", 12);
-        genericEntity.setField("belongsTo", new Entity(1L));
+        genericEntity.setField("belongsTo", 1L);
 
         ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
@@ -359,7 +359,7 @@ public class EntityServiceTest {
         Entity genericEntity = new Entity(2L);
         genericEntity.setField("name", "Mr T");
         genericEntity.setField("age", 12);
-        genericEntity.setField("belongsTo", new Entity(1L));
+        genericEntity.setField("belongsTo", 1L);
 
         SimpleDatabaseObject existingDatabaseEntity = new SimpleDatabaseObject(11L);
 

@@ -86,11 +86,11 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("products.substitute");
         // GridDefinition gridDefinition = new GridDefinition("substitutes");
 
-        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType(), true);
+        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
         fieldNumber.setValidators(fieldValidationFactory.required());
-        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType(), true);
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
         fieldName.setValidators(fieldValidationFactory.required());
-        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType(), true);
+        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType());
         fieldPriority.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
@@ -123,13 +123,13 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         // GridDefinition gridDefinition = new GridDefinition("substituteComponents");
 
         FieldDefinition fieldProduct = createFieldDefinition("product",
-                fieldTypeFactory.eagerBelongsToType("products.product", "name"), true);
+                fieldTypeFactory.eagerBelongsToType("products.product", "name"));
         fieldProduct.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldSubstitute = createFieldDefinition("substitute",
                 fieldTypeFactory.eagerBelongsToType("products.substitute", "name"));
         fieldSubstitute.setValidators(fieldValidationFactory.required());
         fieldSubstitute.setHidden(true);
-        FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType(), true);
+        FieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType());
         fieldQuantity.setValidators(fieldValidationFactory.required());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
@@ -207,13 +207,6 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private FieldDefinition createFieldDefinition(final String name, final FieldType type) {
         FieldDefinition fieldDefinition = new FieldDefinition(name);
         fieldDefinition.setType(type);
-        return fieldDefinition;
-    }
-
-    private FieldDefinition createFieldDefinition(final String name, final FieldType type, final boolean required) {
-        FieldDefinition fieldDefinition = new FieldDefinition(name);
-        fieldDefinition.setType(type);
-        fieldDefinition.setValidators(fieldValidationFactory.required());
         return fieldDefinition;
     }
 

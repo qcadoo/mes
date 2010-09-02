@@ -30,7 +30,7 @@ import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restrictions;
-import com.qcadoo.mes.core.data.search.ResultSet;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
@@ -86,6 +86,7 @@ public class CrudControler {
         mav.addObject("viewElementsOptions", viewElementsOptionsJson);
 
         mav.addObject("entityId", arguments.get("entityId"));
+        mav.addObject("contextEntityId", arguments.get("contextEntityId"));
 
         return mav;
     }
@@ -128,7 +129,7 @@ public class CrudControler {
 
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
-        ResultSet rs = dataAccessService.find(dataDefinition.getEntityName(), searchCriteria);
+        SearchResult rs = dataAccessService.find(dataDefinition.getEntityName(), searchCriteria);
 
         return ListDataUtils.generateListData(rs, gridDefinition);
     }

@@ -29,6 +29,9 @@ QCD.elements.GridElement = function(args) {
 		sortElements.columnChooser = null;
 		sortElements.orderChooser = null;
 	
+	var filterElements = new Object();
+		filterElements.filterDiv = null;
+		
 	var navigationButtons = new Object();
 		navigationButtons.newButton = null;
 		navigationButtons.deleteButton = null;
@@ -80,6 +83,28 @@ QCD.elements.GridElement = function(args) {
 		refresh();
 	}
 	
+	function addFilterButtonClicked(row) {
+		console.info(filterElements.filterDiv);
+		if (row == null) {
+			var filterDiv = $("<div>").addClass('qcdGrid_filterButtons_row');
+				/*sortElements.columnChooser = $("<select>");
+					for (var i in gridParameters.colNames) {
+						var colName = gridParameters.colNames[i];
+						sortElements.columnChooser.append("<option value='"+colName+"'>"+colName+"</option>");
+					}
+					topSortDiv.append(sortElements.columnChooser);
+				sortElements.orderChooser = $("<select>");
+					sortElements.orderChooser.append("<option value='asc'>asc</option>");
+					sortElements.orderChooser.append("<option value='desc'>desc</option>");
+					topSortDiv.append(sortElements.orderChooser);
+				var sortButton =  $("<button>").html('sort');
+					sortButton.click(function() {performSort();});
+					topSortDiv.append(sortButton);
+					element.before(topSortDiv);*/
+			filterElements.filterDiv.append(filterDiv);
+		}
+	}
+	
 	
 	function rowClicked(rowId) {
 		for (var i in children) {
@@ -101,9 +126,19 @@ QCD.elements.GridElement = function(args) {
 	
 	function redirectToCorrespondingPage(rowId) {
 		var url = gridParameters.correspondingViewName + ".html";
-		if (rowId) {
-			url += "?entityId="+rowId;
+		if (parentId || rowId) {
+			url += "?";
+			if (parentId) {
+				url += "contextEntityId="+parentId;
+			}
+			if (rowId) {
+				if (parentId) {
+					url += "&";
+				}
+				url += "entityId="+rowId;
+			}
 		}
+		
 		if (gridParameters.isCorrespondingViewModal) {
 			QCDLogger.info("modal: "+url);
 		} else {
@@ -273,6 +308,14 @@ QCD.elements.GridElement = function(args) {
 			element.before(topSortDiv);
 		}
 		
+		if (gridParameters.filter) {
+			filterElements.filterDiv = $("<div>").addClass('qcdGrid_filterButtons');
+				var addFilterButton =  $("<button>").html('+');
+				addFilterButton.bind("click", {row: null}, function(event) {addFilterButtonClicked(event.data.row);});
+				filterElements.filterDiv.append(addFilterButton);
+			element.before(filterElements.filterDiv);
+		}
+		
 		if (gridParameters.paging) {
 			var pagingDiv = $("<div>").addClass('qcdGrid_paging');
 				pagingElements.prevButton =  $("<button>").html('prev');
@@ -326,6 +369,10 @@ QCD.elements.GridElement = function(args) {
 		parentId = _parentId;
 		enable();
 		refresh();
+	}
+	
+	this.insertContext = function(contextEntityId) {
+		
 	}
 	
 	this.getParent = function() {
