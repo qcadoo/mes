@@ -18,6 +18,8 @@ QCD.elements.GridElement = function(args) {
 		sortVars.column = null;
 		sortVars.order = null;
 		
+	var filterArray = null;
+		
 	var pagingElements = new Object();
 		pagingElements.prevButton = null;
 		pagingElements.nextButton = null;
@@ -83,25 +85,61 @@ QCD.elements.GridElement = function(args) {
 		refresh();
 	}
 	
-	function addFilterButtonClicked(row) {
-		console.info(filterElements.filterDiv);
-		if (row == null) {
-			var filterDiv = $("<div>").addClass('qcdGrid_filterButtons_row');
-				/*sortElements.columnChooser = $("<select>");
-					for (var i in gridParameters.colNames) {
-						var colName = gridParameters.colNames[i];
-						sortElements.columnChooser.append("<option value='"+colName+"'>"+colName+"</option>");
-					}
-					topSortDiv.append(sortElements.columnChooser);
-				sortElements.orderChooser = $("<select>");
-					sortElements.orderChooser.append("<option value='asc'>asc</option>");
-					sortElements.orderChooser.append("<option value='desc'>desc</option>");
-					topSortDiv.append(sortElements.orderChooser);
-				var sortButton =  $("<button>").html('sort');
-					sortButton.click(function() {performSort();});
-					topSortDiv.append(sortButton);
-					element.before(topSortDiv);*/
-			filterElements.filterDiv.append(filterDiv);
+	function addFilterButtonClicked(prevRow) {
+		var filterDiv = $("<div>").addClass('qcdGrid_filterButtons_row');
+			var filterDivColumnChooser = $("<select>");
+				for (var i in gridParameters.colNames) {
+					var colName = gridParameters.colNames[i];
+					filterDivColumnChooser.append("<option value='"+colName+"'>"+colName+"</option>");
+				}
+				filterDiv.append(filterDivColumnChooser);
+			var operatorChooser = $("<select>");
+				operatorChooser.append("<option selected='selected' value='='>=</option>");
+				operatorChooser.append("<option value='<'><</option>");
+				operatorChooser.append("<option value='>'>></option>");
+				operatorChooser.append("<option value='<='><=</option>");
+				operatorChooser.append("<option value='>='>>=</option>");
+				operatorChooser.append("<option value='<>'><></option>");
+				operatorChooser.append("<option value='null'>null</option>");
+				operatorChooser.append("<option value='not null'>not null</option>");
+				filterDiv.append(operatorChooser);
+			var filterValueInput = $("<input type='text'></input>");
+				filterDiv.append(filterValueInput);
+			var removeRowButton =  $("<button>").html('-');
+				removeRowButton.bind("click", {row: filterDiv}, function(event) {event.data.row.remove(); });
+				filterDiv.append(removeRowButton);
+			var addRowButton =  $("<button>").html('+');
+				addRowButton.bind("click", {prevRow: filterDiv}, function(event) {addFilterButtonClicked(event.data.prevRow);});
+				filterDiv.append(addRowButton);
+			operatorChooser.bind("change", {operatorChooser: operatorChooser, filterValueInput: filterValueInput},
+						function(event) {onFilterOperatorChange(event.data.operatorChooser, event.data.filterValueInput);});
+		prevRow.after(filterDiv);
+	}
+	
+	function onFilterOperatorChange(operatorChooser, filterValueInput) {
+		if (operatorChooser.val() == "null" || operatorChooser.val() == "not null") {
+			filterValueInput.hide();
+		} else {
+			filterValueInput.show();
+		}
+	}
+	
+	function performFilter() {
+		var newFilterArray = new Array();
+		filterElements.filterDiv.children().each(function() {
+			if ($(this).children().length > 3) {
+				var rowObject = new Object();
+				rowObject.column = $($(this).children().get(0)).val();
+				rowObject.operator = $($(this).children().get(1)).val();
+				rowObject.filterValue = $($(this).children().get(2)).val().trim();
+				if (!(rowObject.operator != "null" && rowObject.operator != "not null" && rowObject.filterValue == '')) {
+					newFilterArray.push(rowObject);
+				}
+			}
+		});
+		filterArray = newFilterArray;
+		if (filterArray.length > 0) {
+			refresh();
 		}
 	}
 	
@@ -170,6 +208,9 @@ QCD.elements.GridElement = function(args) {
 		if (sortVars.column && sortVars.order) {
 			parameters.sortColumn = sortVars.column;
 			parameters.sortOrder = sortVars.order;
+		}
+		if (filterArray && filterArray.length > 0) {
+			parameters.filterObject = filterArray;
 		}
 		if (parentId) {
 			parameters.entityId = parentId;
@@ -310,10 +351,17 @@ QCD.elements.GridElement = function(args) {
 		
 		if (gridParameters.filter) {
 			filterElements.filterDiv = $("<div>").addClass('qcdGrid_filterButtons');
-				var addFilterButton =  $("<button>").html('+');
-				addFilterButton.bind("click", {row: null}, function(event) {addFilterButtonClicked(event.data.row);});
-				filterElements.filterDiv.append(addFilterButton);
+				var firstRow = $("<div>").addClass('qcdGrid_filterButtons_row');
+					var addFilterButton =  $("<button>").html('+');
+					addFilterButton.bind("click", {prevRow: firstRow}, function(event) {addFilterButtonClicked(event.data.prevRow);});
+					firstRow.append(addFilterButton);
+				filterElements.filterDiv.append(firstRow);
 			element.before(filterElements.filterDiv);
+			var filterButtonDiv = $("<div>").addClass('qcdGrid_filterButtons');
+				var performFilterButton =  $("<button>").html('Filtruj');
+				performFilterButton.click(function() {performFilter();});
+				filterButtonDiv.append(performFilterButton);
+			element.before(performFilterButton);
 		}
 		
 		if (gridParameters.paging) {
