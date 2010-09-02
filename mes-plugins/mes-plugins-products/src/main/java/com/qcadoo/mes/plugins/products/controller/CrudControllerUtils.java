@@ -43,6 +43,9 @@ public class CrudControllerUtils {
                 obj.put("correspondingViewName", viewElement.getCorrespondingViewName());
                 obj.put("isCorrespondingViewModal", viewElement.isCorrespondingViewModal());
             }
+            if (viewElement.getParentField() != null) {
+                obj.put("parentField", viewElement.getParentField());
+            }
 
             if (viewElement.getType() == ViewElementDefinition.TYPE_GRID) {
                 GridDefinition gridDefinition = (GridDefinition) viewElement;

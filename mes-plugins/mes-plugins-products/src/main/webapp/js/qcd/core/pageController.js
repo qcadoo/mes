@@ -10,7 +10,7 @@ QCD.PageController = function(_viewName) {
 		pageElements = pageConstructor.constructPageElements();
 	}
 	
-	this.init = function(entityId) {
+	this.init = function(entityId, contextEntityId) {
 		for (var i in pageElements) {
 			var elementParent = pageElements[i].getParent();
 			if (elementParent && elementParent.length > 12) {
@@ -20,6 +20,11 @@ QCD.PageController = function(_viewName) {
 					pageElements[parentViewName].addChild(pageElements[i]);
 					QCDLogger.debug("attach "+i+" to "+parentViewName);	
 				}
+			}
+		}
+		if (contextEntityId && contextEntityId != "") {
+			for (var i in pageElements) {
+				pageElements[i].insertContext(contextEntityId);
 			}
 		}
 		if (entityId && entityId != "") {

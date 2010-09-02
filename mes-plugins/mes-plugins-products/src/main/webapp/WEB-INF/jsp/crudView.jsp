@@ -30,10 +30,11 @@
 
 		var viewName = "${viewDefinition.name}";
 		var entityId = "${entityId}";
+		var contextEntityId = "${contextEntityId}";
 
 		jQuery(document).ready(function(){
 			var controller = new QCD.PageController(viewName);
-			controller.init(entityId);
+			controller.init(entityId, contextEntityId);
 		});
 
 	</script>

@@ -86,6 +86,7 @@ public class CrudControler {
         mav.addObject("viewElementsOptions", viewElementsOptionsJson);
 
         mav.addObject("entityId", arguments.get("entityId"));
+        mav.addObject("contextEntityId", arguments.get("contextEntityId"));
 
         return mav;
     }

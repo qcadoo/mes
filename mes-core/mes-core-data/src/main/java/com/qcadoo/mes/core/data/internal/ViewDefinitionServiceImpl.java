@@ -148,6 +148,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition substitutesDataDefinition = dataDefinitionService.get("products.substitute");
         FormDefinition form = new FormDefinition("substitutesDetailsForm", substitutesDataDefinition);
         form.setCorrespondingViewName("products.productDetailsView");
+        form.setParent("entityId");
+        form.setParentField("product");
         elements.add(form);
 
         viewDefinition.setElements(elements);
