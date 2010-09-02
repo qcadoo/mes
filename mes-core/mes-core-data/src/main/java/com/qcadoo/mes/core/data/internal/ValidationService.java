@@ -17,7 +17,7 @@ import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 @Service
-public class ValidationService {
+public final class ValidationService {
 
     @Autowired
     private SessionFactory sessionFactory;
