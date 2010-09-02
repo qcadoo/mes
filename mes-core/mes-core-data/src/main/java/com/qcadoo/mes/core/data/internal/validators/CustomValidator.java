@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
@@ -52,6 +53,12 @@ public final class CustomValidator implements FieldValidator {
         }
         validationResults.addError(fieldDefinition, UNKNOWN_ERROR);
         return false;
+    }
+
+    @Override
+    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity,
+            final ValidationResults validationResults) {
+        return true;
     }
 
     @Override

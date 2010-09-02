@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -574,6 +575,36 @@ public class ValidatorTest {
         given(
                 dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
                         .restrictedWith(Restrictions.eq("name", "not existed")).build())).willReturn(resultSet);
+
+        fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        assertFalse(validationResults.isNotValid());
+    }
+
+    @Test
+    public void shouldHasNoErrorsIfUpdatedFieldIsNotDuplicated() throws Exception {
+        // given
+        Entity entity = new Entity(1L);
+        entity.setField("name", "not existed");
+
+        SimpleDatabaseObject databaseObject = new SimpleDatabaseObject(1L);
+
+        SearchResultImpl resultSet = new SearchResultImpl();
+        resultSet.setTotalNumberOfEntities(0);
+
+        given(
+                dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
+                        .restrictedWith(Restrictions.eq("name", "not existed")).restrictedWith(Restrictions.ne("id", 1L)).build()))
+                .willReturn(resultSet);
+
+        given(
+                sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
+                        .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
         fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
 
