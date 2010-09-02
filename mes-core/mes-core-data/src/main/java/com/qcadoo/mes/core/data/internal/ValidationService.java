@@ -46,13 +46,7 @@ public final class ValidationService {
     private Object parseAndValidateValue(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         Object fieldValue = value;
-        if (fieldValue instanceof String && !StringUtils.hasText((String) fieldValue)) {
-            fieldValue = null;
-        }
         if (fieldValue != null) {
-            if (fieldValue instanceof String) {
-                fieldValue = ((String) fieldValue).trim();
-            }
             if (!fieldDefinition.getType().getType().isInstance(fieldValue)) {
                 if (fieldValue instanceof String) {
                     fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
@@ -80,7 +74,23 @@ public final class ValidationService {
     private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         if (value != null) {
-            Long referencedEntityId = ((Entity) value).getId();
+            Long referencedEntityId = null;
+            if (value instanceof String) {
+                try {
+                    referencedEntityId = Long.valueOf((String) value);
+                } catch (NumberFormatException e) {
+                    validationResults.addError(fieldDefinition, "core.validation.error.wrongType", value.getClass()
+                            .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
+                }
+            } else if (value instanceof Long) {
+                referencedEntityId = (Long) value;
+            } else if (value instanceof Entity) {
+                referencedEntityId = ((Entity) value).getId();
+            } else {
+                validationResults.addError(fieldDefinition, "core.validation.error.wrongType", value.getClass().getSimpleName(),
+                        fieldDefinition.getType().getType().getSimpleName());
+                return null;
+            }
             BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
             DataDefinition referencedDataDefinition = dataDefinitionService.get(belongsToFieldType.getEntityName());
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
@@ -96,10 +106,22 @@ public final class ValidationService {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
-            return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, value, validationResults);
+            return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validationResults);
         } else {
-            return parseAndValidateValue(dataDefinition, fieldDefinition, value, validationResults);
+            return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validationResults);
         }
+    }
+
+    private Object trimAndNullIfEmpty(final Object value) {
+        if (value instanceof String && !StringUtils.hasText((String) value)) {
+            return null;
+        }
+        if (value != null) {
+            if (value instanceof String) {
+                return ((String) value).trim();
+            }
+        }
+        return value;
     }
 
 }
