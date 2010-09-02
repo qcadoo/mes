@@ -24,6 +24,10 @@
 						</td>
 						<td>		
 							<c:choose>
+								<c:when test='${(fieldEntry.value.type.numericType == "11") }'>
+									<input type="password" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-password <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+								</c:when>
+							
 								<c:when test='${(fieldEntry.value.type.numericType == "9") }'>
 									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>"></textarea>
 								</c:when>
@@ -33,19 +37,19 @@
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "7") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="decimal <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-decimal <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "6") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="integer <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-integer <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "3") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="datetime <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-datetime <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "2") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="date <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-date <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "1") }'>
@@ -62,7 +66,7 @@
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "10") }'>
-									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>">
+									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-reference <c:if test='${fieldEntry.value.required}'>required</c:if>">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
 											<option value="${dictionaryValue.key}">${dictionaryValue.value }</option>
@@ -75,7 +79,17 @@
 						<td id="${formId}_field_${fieldEntry.key}_error" class="errorMessage"></td>
 					</c:when>
 					<c:otherwise>
-						<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
+						<c:choose>
+								<c:when test='${(fieldEntry.value.type.numericType == "11") }'>
+									<input type=hidden id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-password"/>
+								</c:when>
+								<c:when test='${(fieldEntry.value.type.numericType == "10") }'>
+									<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-reference"/>
+								</c:when>
+								<c:otherwise>
+									<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
+								</c:otherwise>
+						</c:choose>
 					</c:otherwise>
 				</c:choose>
 			</tr>
