@@ -47,6 +47,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition = createUserGridView();
             } else if ("users.userDetailsView".equals(viewName)) {
                 viewDefinition = createUserDetailsView();
+            } else if ("orders.orderGridView".equals(viewName)) {
+                viewDefinition = createOrderGridView();
             }
             if (viewDefinition != null) {
                 viewDefinitions.put(viewName, viewDefinition);
@@ -251,6 +253,32 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setParent("entityId");
         form.setCorrespondingViewName("users.userGridView");
         elements.add(form);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createOrderGridView() {
+        ViewDefinition viewDefinition = new ViewDefinition("orders.orderGridView");
+
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition gridDataDefinition = dataDefinitionService.get("orders.order");
+        GridDefinition gridDefinition = new GridDefinition("orders", gridDataDefinition);
+        gridDefinition.setCorrespondingViewName("orders.orderDetailsView");
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "true");
+        gridOptions.put("sortable", "true");
+        gridOptions.put("filter", "true");
+        gridOptions.put("multiselect", "true");
+        gridOptions.put("height", "450");
+        gridDefinition.setOptions(gridOptions);
+        ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        ColumnDefinition columnState = createColumnDefinition("state", gridDataDefinition.getField("state"), null);
+
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnState }));
+        elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
         return viewDefinition;

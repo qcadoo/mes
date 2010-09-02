@@ -41,6 +41,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
             dataDefinition = createUserDefinition();
         } else if ("users.group".equals(entityName)) {
             dataDefinition = createUserGroupDefinition();
+        } else if ("orders.order".equals(entityName)) {
+            dataDefinition = createOrderDefinition();
         }
 
         checkNotNull(dataDefinition, "data definition for %s cannot be found", entityName);
@@ -159,8 +161,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("users.user");
 
         FieldDefinition fieldLogin = createFieldDefinition("login", fieldTypeFactory.stringType());
-        fieldLogin.setValidators(fieldValidationFactory.required());
-        fieldLogin.setValidators(fieldValidationFactory.unique());
+        fieldLogin.setValidators(fieldValidationFactory.required(), fieldValidationFactory.unique());
         // TODO KRNA zamienic na relacje
         FieldDefinition fieldUserGroup = createFieldDefinition("userGroup",
                 fieldTypeFactory.enumType("Administrator", "Operator - Full", "Operator - ReadOnly"));
@@ -190,8 +191,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("users.group");
 
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
-        fieldName.setValidators(fieldValidationFactory.required());
-        fieldName.setValidators(fieldValidationFactory.unique());
+        fieldName.setValidators(fieldValidationFactory.required(), fieldValidationFactory.unique());
         FieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
         // TODO KRNA zamienic na relacje
         FieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.enumType("read", "write", "delete"));
@@ -200,6 +200,24 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldRole);
+
+        return dataDefinition;
+    }
+
+    private DataDefinition createOrderDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("orders.order");
+
+        FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
+        fieldNumber.setValidators(fieldValidationFactory.required(), fieldValidationFactory.unique());
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        fieldName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldState = createFieldDefinition("state", fieldTypeFactory.enumType("New", "Pending", "Done"));
+        fieldName.setValidators(fieldValidationFactory.required());
+
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.ProductOrder");
+        dataDefinition.addField(fieldNumber);
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldState);
 
         return dataDefinition;
     }
