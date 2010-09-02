@@ -108,6 +108,7 @@ QCD.elements.GridElement = function(args) {
 			var removeRowButton =  $("<button>").html('-');
 				removeRowButton.bind("click", {row: filterDiv}, function(event) {event.data.row.remove(); });
 				filterDiv.append(removeRowButton);
+			filterDiv.append("<br/>");
 			var addRowButton =  $("<button>").html('+');
 				addRowButton.bind("click", {prevRow: filterDiv}, function(event) {addFilterButtonClicked(event.data.prevRow);});
 				filterDiv.append(addRowButton);
@@ -138,15 +139,29 @@ QCD.elements.GridElement = function(args) {
 			}
 		});
 		filterArray = newFilterArray;
-		if (filterArray.length > 0) {
-			refresh();
-		}
+		refresh();
 	}
 	
+	function onDiselect() {
+		navigationButtons.deleteButton.attr("disabled", true);
+		for (var i in children) {
+			children[i].insertParentId(null);
+		}
+	}
 	
 	function rowClicked(rowId) {
 		for (var i in children) {
 			children[i].insertParentId(rowId);
+		}
+		if (gridParameters.multiselect) {
+			selectedRows = grid.getGridParam("selarrrow");
+			if (selectedRows.length > 0) {
+				navigationButtons.deleteButton.attr("disabled", false);
+			} else {
+				navigationButtons.deleteButton.attr("disabled", true);
+			}
+		} else {
+			navigationButtons.deleteButton.attr("disabled", false);
 		}
 	}
 	
@@ -187,10 +202,11 @@ QCD.elements.GridElement = function(args) {
 	
 	function enable() {
 		navigationButtons.newButton.attr("disabled", false);
-		navigationButtons.deleteButton.attr("disabled", false);
+		//navigationButtons.deleteButton.attr("disabled", false);
 	}
 	
 	function disable() {
+		grid.jqGrid('clearGridData');
 		navigationButtons.newButton.attr("disabled", true);
 		navigationButtons.deleteButton.attr("disabled", true);
 	}
@@ -227,7 +243,8 @@ QCD.elements.GridElement = function(args) {
 				for (var entityNo in response.entities) {
 					var entity = response.entities[entityNo];
 					grid.jqGrid('addRowData',entity.id,entity.fields);
-				}	       
+				}
+				onDiselect();
 				unblockList();
 			},
 			error: function(xhr, textStatus, errorThrown){
@@ -415,8 +432,12 @@ QCD.elements.GridElement = function(args) {
 	
 	this.insertParentId = function(_parentId) {
 		parentId = _parentId;
-		enable();
-		refresh();
+		if (_parentId) {
+			enable();
+			refresh();
+		} else {
+			disable();
+		}
 	}
 	
 	this.insertContext = function(contextEntityId) {

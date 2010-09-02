@@ -10,13 +10,15 @@ public abstract class ViewElementDefinition {
 
     private String name;
 
+    private String header;
+
     private DataDefinition dataDefinition;
 
     private Map<String, String> options;
 
     private Map<String, String> events;
 
-    private String parent; // null, entityId, viewElement:{name}
+    private String parent; // null, "entityId", "viewElement:{name}"
 
     private String parentField;
 
@@ -93,6 +95,14 @@ public abstract class ViewElementDefinition {
 
     public void setCorrespondingViewModal(boolean correspondingViewModal) {
         this.correspondingViewModal = correspondingViewModal;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
 }

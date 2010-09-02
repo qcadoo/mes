@@ -32,7 +32,6 @@ QCD.elements.FormElement = function(args) {
 		if (contextEntityId && parameters.parentField) {
 			formData["fields["+parameters.parentField+"]"] = contextEntityId;
 		}
-		QCDLogger.info(formData);
 		
 		$.ajax({
 			url: url,

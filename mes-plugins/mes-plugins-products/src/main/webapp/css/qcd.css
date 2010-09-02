@@ -2,12 +2,17 @@ body {
 	
 }
 
-#pageHeader {
+.pageHeader {
 	color: 777777;
 	border-bottom: dotted black 1px;
 	padding-bottom: 5px;
 	margin-bottom: 5px;
 	font-size: 25px;
+}
+
+.elementHeader {
+	color: 777777;
+	font-weight: bold;
 }
 
 #languageSection {
@@ -36,5 +41,23 @@ body {
 }
 
 .qcdGrid_paging_pageInfo {
-	color: 777777;
+	color: #777777;
+}
+
+.fieldValidatorMessage {
+	color: red;	
+}
+.validatorGlobalMessage {
+	color: red;
+	padding-bottom: 10px;
+}
+
+input, textarea, select {
+	border: solid #777777 1px;	
+}
+
+td.fieldRequired input,
+td.fieldRequired textarea,
+td.fieldRequired select {
+	background: #f4f6c0;
 }

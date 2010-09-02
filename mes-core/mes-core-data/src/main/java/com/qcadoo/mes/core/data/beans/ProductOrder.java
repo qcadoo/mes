@@ -5,8 +5,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -39,7 +41,8 @@ public final class ProductOrder {
 
     private String machine;
 
-    private String product;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal plannedQuantity;
@@ -131,11 +134,11 @@ public final class ProductOrder {
         this.machine = machine;
     }
 
-    public String getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(final String product) {
+    public void setProduct(final Product product) {
         this.product = product;
     }
 

@@ -162,7 +162,6 @@ public class CrudControler {
             // } else if ("not null".equals(operator)) {
             // searchCriteriaBuilder.restrictedWith(Restrictions.isNotNull(column));
             // }
-            // LOG.info("filter: " + column + "-" + operator + "-" + value);
         }
 
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();

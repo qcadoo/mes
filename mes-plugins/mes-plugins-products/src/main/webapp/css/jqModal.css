@@ -54,10 +54,3 @@ Added by Michal Nawalany
 	text-align: right;
 }
 
-.fieldValidatorMessage {
-	color: red;	
-}
-.validatorGlobalMessage {
-	color: red;
-	padding-bottom: 10px;
-}

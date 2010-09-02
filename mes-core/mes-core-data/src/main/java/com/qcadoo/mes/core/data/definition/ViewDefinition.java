@@ -9,6 +9,8 @@ public class ViewDefinition {
 
     private List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
+    private String header;
+
     public ViewDefinition(final String name) {
         this.name = name;
     }
@@ -36,6 +38,14 @@ public class ViewDefinition {
             }
         }
         return null;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
 }
