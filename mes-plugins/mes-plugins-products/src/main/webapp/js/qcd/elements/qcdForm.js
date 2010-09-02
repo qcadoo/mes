@@ -80,7 +80,13 @@ QCD.elements.FormElement = function(args) {
 	refreshForm = function(entity) {
 		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
-			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
+			if(!entity["fields"][i]) continue;
+			if($('#'+parameters.name+"_field_"+i).hasClass('type-password')) continue;
+			if($('#'+parameters.name+"_field_"+i).hasClass('type-reference')) {
+				$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]["id"]);
+			} else {
+				$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
+			}
 		}
 		for (var i in children) {
 			children[i].insertParentId(entity["id"]);

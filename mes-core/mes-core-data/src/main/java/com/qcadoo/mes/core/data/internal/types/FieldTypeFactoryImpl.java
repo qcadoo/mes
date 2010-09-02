@@ -25,7 +25,7 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     private static final FieldType STRING_FIELD_TYPE = new StringFieldType(255);
 
-    private static final FieldType PASSWORD_FIELD_TYPE = new StringFieldType(255);
+    private static final FieldType PASSWORD_FIELD_TYPE = new PasswordFieldType(255);
 
     private static final FieldType TEXT_FIELD_TYPE = new StringFieldType(2048);
 

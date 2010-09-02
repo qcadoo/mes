@@ -3,7 +3,6 @@ package com.qcadoo.mes.core.data.beans;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 @Entity
 public final class SystemUser {
@@ -25,9 +24,6 @@ public final class SystemUser {
     private String description;
 
     private String password;
-
-    @Transient
-    private String repeatPassword;
 
     private boolean deleted;
 
@@ -101,14 +97,6 @@ public final class SystemUser {
 
     public void setPassword(final String password) {
         this.password = password;
-    }
-
-    public String getRepeatPassword() {
-        return repeatPassword;
-    }
-
-    public void setRepeatPassword(final String repeatPassword) {
-        this.repeatPassword = repeatPassword;
     }
 
 }
