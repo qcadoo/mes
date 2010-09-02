@@ -7,8 +7,8 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.search.Order;
-import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.types.LookupedFieldType;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -80,6 +80,11 @@ public final class BelongsToFieldType implements LookupedFieldType {
     @Override
     public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
         throw new IllegalStateException("belongsTo field type doesn't suppont fromString method");
+    }
+
+    @Override
+    public String toString(final Object value) {
+        return String.valueOf(((Entity) value).getId());
     }
 
     @Override

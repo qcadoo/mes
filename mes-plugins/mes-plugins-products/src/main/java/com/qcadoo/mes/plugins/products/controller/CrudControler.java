@@ -38,6 +38,7 @@ import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.plugins.products.data.EntityDataUtils;
 import com.qcadoo.mes.plugins.products.data.ListData;
 import com.qcadoo.mes.plugins.products.data.ListDataUtils;
 
@@ -53,7 +54,7 @@ public class CrudControler {
     private static final Logger LOG = LoggerFactory.getLogger(CrudControler.class);
 
     @RequestMapping(value = "test/{viewName}", method = RequestMethod.GET)
-    public ModelAndView getView(@PathVariable("viewName") String viewName, @RequestParam Map<String, String> arguments) {
+    public ModelAndView getView(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("crudView");
 
@@ -97,8 +98,8 @@ public class CrudControler {
 
     @RequestMapping(value = "test/{viewName}/{elementName}/list", method = RequestMethod.GET)
     @ResponseBody
-    public ListData getGridData(@PathVariable("viewName") String viewName, @PathVariable("elementName") String elementName,
-            @RequestParam Map<String, String> arguments) {
+    public ListData getGridData(@PathVariable("viewName") final String viewName,
+            @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
@@ -168,31 +169,34 @@ public class CrudControler {
 
     @RequestMapping(value = "test/{viewName}/{elementName}/entity", method = RequestMethod.GET)
     @ResponseBody
-    public Entity getEntityData(@PathVariable("viewName") String viewName, @PathVariable("elementName") String elementName,
-            @RequestParam Map<String, String> arguments) {
+    public Entity getEntityData(@PathVariable("viewName") final String viewName,
+            @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
-        return dataAccessService.get(element.getDataDefinition().getEntityName(), Long.parseLong(arguments.get("entityId")));
+        Entity entity = dataAccessService.get(element.getDataDefinition().getEntityName(),
+                Long.parseLong(arguments.get("entityId")));
+
+        return EntityDataUtils.generateEntityData(entity, element.getDataDefinition());
     }
 
     @RequestMapping(value = "test/{viewName}/{elementName}/save", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResults saveEntity(@PathVariable("viewName") String viewName,
-            @PathVariable("elementName") String elementName, @ModelAttribute Entity entity, Locale locale) {
+    public ValidationResults saveEntity(@PathVariable("viewName") final String viewName,
+            @PathVariable("elementName") final String elementName, @ModelAttribute final Entity entity, final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
         ValidationResults validationResult = dataAccessService.save(element.getDataDefinition().getEntityName(), entity);
 
-        return validationResult;
+        return EntityDataUtils.generateValidationResultWithEntityData(validationResult, element.getDataDefinition());
     }
 
     @RequestMapping(value = "test/{viewName}/{elementName}/delete", method = RequestMethod.POST)
     @ResponseBody
-    public String deleteEntities(@PathVariable("viewName") String viewName, @PathVariable("elementName") String elementName,
-            @RequestBody List<Integer> selectedRows) {
+    public String deleteEntities(@PathVariable("viewName") final String viewName,
+            @PathVariable("elementName") final String elementName, @RequestBody final List<Integer> selectedRows) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
         for (Integer recordId : selectedRows) {

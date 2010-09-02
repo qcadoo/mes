@@ -23,11 +23,12 @@ public final class ExpressionUtil {
         String value = null;
         if (StringUtils.isEmpty(columnDefinition.getExpression())) {
             if (columnDefinition.getFields().size() == 1) {
-                value = String.valueOf(entity.getField(columnDefinition.getFields().get(0).getName()));
+                value = columnDefinition.getFields().get(0)
+                        .getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
             } else {
                 List<String> values = new ArrayList<String>();
                 for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
-                    values.add(String.valueOf(entity.getField(fieldDefinition.getName())));
+                    values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName())));
                 }
                 value = StringUtils.join(values, ", ");
             }
