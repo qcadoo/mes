@@ -20,7 +20,6 @@
 					<c:when test="${fieldEntry.value.hidden == false}">
 						<td>
 							<spring:message code="${dataDefinition.entityName}.field.${fieldEntry.key}"/>
-							
 						</td>
 						<td <c:if test='${fieldEntry.value.required}'>class="fieldRequired"</c:if> >		
 							<c:choose>
@@ -77,6 +76,16 @@
 							</c:choose>
 						</td>
 						<td id="${formId}_field_${fieldEntry.key}_error" class="errorMessage fieldValidatorMessage"></td>
+						<c:if test='${(fieldEntry.value.type.numericType == "11") }'>
+							</tr><tr>
+							<td>
+								<spring:message code="${dataDefinition.entityName}.field.${fieldEntry.key}_confirmation"/>
+							</td>
+							<td <c:if test='${fieldEntry.value.required}'>class="fieldRequired"</c:if> >
+								<input type="password" id="${formId}_field_${fieldEntry.key}_confirmation" name="fields[${fieldEntry.key}_confirmation]" class="<c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
+							</td>
+							<td id="${formId}_field_${fieldEntry.key}_confirmation_error" class="errorMessage fieldValidatorMessage"></td>
+						</c:if>
 					</c:when>
 					<c:otherwise>
 						<c:choose>

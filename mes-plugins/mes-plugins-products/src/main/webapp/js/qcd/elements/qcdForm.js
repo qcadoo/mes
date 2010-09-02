@@ -90,6 +90,13 @@ QCD.elements.FormElement = function(args) {
 		}).each(function(index) {
 			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateTimeFormat');
 		});
+		$('#'+parameters.name+'_form .type-password').each(function(index) {
+			password = $(this).attr('value');
+			passwordConfirmation = $('#'+$(this).attr('id')+'_confirmation').attr('value');
+			if(password && password != passwordConfirmation) {
+				addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.notMatch');
+			}
+		});
 		return !hasErrors();
 		
 	}
