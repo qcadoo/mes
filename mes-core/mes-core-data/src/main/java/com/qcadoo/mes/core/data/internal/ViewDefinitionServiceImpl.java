@@ -37,6 +37,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition = createProductDetailsView();
             } else if ("products.substituteDetailsView".equals(viewName)) {
                 viewDefinition = createProductSubstituteDetailsView();
+            } else if ("products.substituteComponentDetailsView".equals(viewName)) {
+                viewDefinition = createProductSubstituteComponentDetailsView();
             } else if ("users.groupGridView".equals(viewName)) {
                 viewDefinition = createUserGroupGridView();
             } else if ("users.groupDetailsView".equals(viewName)) {
@@ -135,6 +137,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteComponentGridOptions.put("multiselect", "false");
         substituteComponentGridOptions.put("height", "150");
         substituteComponentGridDefinition.setOptions(substituteComponentGridOptions);
+        substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
         elements.add(substituteComponentGridDefinition);
 
         viewDefinition.setElements(elements);
@@ -150,6 +153,21 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setCorrespondingViewName("products.productDetailsView");
         form.setParent("entityId");
         form.setParentField("product");
+        elements.add(form);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createProductSubstituteComponentDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("products.substituteComponentDetailsView");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
+        FormDefinition form = new FormDefinition("substitutesComponentDetailsForm", substitutesComponentDataDefinition);
+        form.setCorrespondingViewName("products.productDetailsView");
+        form.setParent("entityId");
+        form.setParentField("substitute");
         elements.add(form);
 
         viewDefinition.setElements(elements);
