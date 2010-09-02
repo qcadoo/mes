@@ -211,13 +211,36 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         fieldNumber.setValidators(fieldValidationFactory.required(), fieldValidationFactory.unique());
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
         fieldName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldDateFrom = createFieldDefinition("dateFrom", fieldTypeFactory.dateType());
+        fieldDateFrom.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldDateTo = createFieldDefinition("dateTo", fieldTypeFactory.dateType());
+        fieldDateTo.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldState = createFieldDefinition("state", fieldTypeFactory.enumType("New", "Pending", "Done"));
         fieldName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldMachine = createFieldDefinition("machine", fieldTypeFactory.enumType("Maszyna 1", "Maszyna 2"));
+        FieldDefinition fieldProduct = createFieldDefinition("product", fieldTypeFactory.enumType("Produkt 1", "Produkt 2"));
+        FieldDefinition fieldDefaultInstruction = createFieldDefinition("defaultInstruction", fieldTypeFactory.textType());
+        FieldDefinition fieldInstruction = createFieldDefinition("instruction",
+                fieldTypeFactory.enumType("Instrukcja 1", "Instrukcja 2"));
+        FieldDefinition fieldPlannedQuantity = createFieldDefinition("plannedQuantity", fieldTypeFactory.decimalType());
+        FieldDefinition fieldDoneQuantity = createFieldDefinition("doneQuantity", fieldTypeFactory.decimalType());
+        FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateType());
+        FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.ProductOrder");
         dataDefinition.addField(fieldNumber);
         dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDateFrom);
+        dataDefinition.addField(fieldDateTo);
         dataDefinition.addField(fieldState);
+        dataDefinition.addField(fieldMachine);
+        dataDefinition.addField(fieldProduct);
+        dataDefinition.addField(fieldDefaultInstruction);
+        dataDefinition.addField(fieldInstruction);
+        dataDefinition.addField(fieldPlannedQuantity);
+        dataDefinition.addField(fieldDoneQuantity);
+        dataDefinition.addField(fieldEffectiveDateFrom);
+        dataDefinition.addField(fieldEffectiveDateTo);
 
         return dataDefinition;
     }

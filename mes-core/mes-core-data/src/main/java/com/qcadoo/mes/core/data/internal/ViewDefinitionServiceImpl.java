@@ -49,6 +49,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition = createUserDetailsView();
             } else if ("orders.orderGridView".equals(viewName)) {
                 viewDefinition = createOrderGridView();
+            } else if ("orders.orderDetailsView".equals(viewName)) {
+                viewDefinition = createOrderDetailsView();
             }
             if (viewDefinition != null) {
                 viewDefinitions.put(viewName, viewDefinition);
@@ -279,6 +281,20 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnState }));
         elements.add(gridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createOrderDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("orders.orderDetailsView");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition orderDataDefinition = dataDefinitionService.get("orders.order");
+        FormDefinition form = new FormDefinition("orderDetailsForm", orderDataDefinition);
+        form.setParent("entityId");
+        form.setCorrespondingViewName("orders.orderGridView");
+        elements.add(form);
 
         viewDefinition.setElements(elements);
         return viewDefinition;
