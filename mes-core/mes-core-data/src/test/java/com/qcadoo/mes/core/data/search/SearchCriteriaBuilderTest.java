@@ -145,12 +145,6 @@ public final class SearchCriteriaBuilderTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrownAnExceptionIfrestrictionIsNull() throws Exception {
-        // when
-        SearchCriteriaBuilder.forEntity("virtual.test").restrictedWith(null).build();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfThereIsNoEntityName() throws Exception {
         // when
         SearchCriteriaBuilder.forEntity(null).build();
