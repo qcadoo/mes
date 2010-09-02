@@ -25,7 +25,7 @@ import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
-import com.qcadoo.mes.core.data.search.ResultSet;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 
 public class DataAccessServiceFindTest {
@@ -85,12 +85,12 @@ public class DataAccessServiceFindTest {
                 .willReturn(databaseObjects);
 
         // when
-        ResultSet resultSet = dataAccessService.find("test.Entity", searchCriteria);
+        SearchResult resultSet = dataAccessService.find("test.Entity", searchCriteria);
 
         // then
         assertEquals(4, resultSet.getTotalNumberOfEntities());
-        assertEquals(4, resultSet.getResults().size());
-        Assert.assertThat(resultSet.getResults(), JUnitMatchers.hasItems(createEntity(1L, "name1", 1),
+        assertEquals(4, resultSet.getEntities().size());
+        Assert.assertThat(resultSet.getEntities(), JUnitMatchers.hasItems(createEntity(1L, "name1", 1),
                 createEntity(2L, "name2", 2), createEntity(3L, "name3", 3), createEntity(4L, "name4", 4)));
     }
 

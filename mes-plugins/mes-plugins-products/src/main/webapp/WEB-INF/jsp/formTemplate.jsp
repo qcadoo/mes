@@ -20,31 +20,40 @@
 					<c:when test="${fieldEntry.value.hidden == false}">
 						<td>
 							<spring:message code="${dataDefinition.entityName}.field.${fieldEntry.key}"/>
+							<c:if test='${fieldEntry.value.required}'>*</c:if>
 						</td>
 						<td>		
 							<c:choose>
 								<c:when test='${(fieldEntry.value.type.numericType == "9") }'>
-									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"></textarea>
+									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>"></textarea>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "8") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "7") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]""/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="decimal <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "6") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="integer <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
 								</c:when>
 							
 								<c:when test='${(fieldEntry.value.type.numericType == "3") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="datetime <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+								</c:when>
+								
+								<c:when test='${(fieldEntry.value.type.numericType == "2") }'>
+									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="date <c:if test='${fieldEntry.value.required}'>required</c:if>"/>
+								</c:when>
+								
+								<c:when test='${(fieldEntry.value.type.numericType == "1") }'>
+									<input type="checkbox" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "4") || (fieldEntry.value.type.numericType == "5") }'>
-									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]">
+									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
 											<option>${dictionaryValue.value }</option>
@@ -53,7 +62,7 @@
 								</c:when>
 								
 								<c:when test='${(fieldEntry.value.type.numericType == "10") }'>
-									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]">
+									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
 											<option value="${dictionaryValue.key}">${dictionaryValue.value }</option>

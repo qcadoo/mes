@@ -97,10 +97,8 @@ public final class DataDefinition {
         if (isVirtualTable()) {
             throw new UnsupportedOperationException("virtual tables are not supported");
         } else {
-            String fullyQualifiedClassName = getFullyQualifiedClassName();
-
             try {
-                return EntityService.class.getClassLoader().loadClass(fullyQualifiedClassName);
+                return EntityService.class.getClassLoader().loadClass(getFullyQualifiedClassName());
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
             }

@@ -7,7 +7,7 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.search.Order;
-import com.qcadoo.mes.core.data.search.ResultSet;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.types.LookupedFieldType;
@@ -58,11 +58,11 @@ public final class BelongsToFieldType implements LookupedFieldType {
 
     @Override
     public Map<Long, String> lookup(final String prefix) {
-        ResultSet resultSet = dataAccessService.find(entityName,
+        SearchResult resultSet = dataAccessService.find(entityName,
                 SearchCriteriaBuilder.forEntity(entityName).orderBy(Order.asc(lookupFieldName)).build());
         Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
 
-        for (Entity entity : resultSet.getResults()) {
+        for (Entity entity : resultSet.getEntities()) {
             possibleValues.put(entity.getId(), (String) entity.getField(lookupFieldName));
         }
 

@@ -22,11 +22,11 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.internal.search.ResultSetImpl;
+import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
-import com.qcadoo.mes.core.data.search.ResultSet;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
@@ -121,7 +121,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResultSet find(final String entityName, final SearchCriteria searchCriteria) {
+    public SearchResult find(final String entityName, final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
         DataDefinition dataDefinition = dataDefinitionService.get(entityName);
         Class<?> entityClass = dataDefinition.getClassForEntity();
@@ -169,7 +169,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return Integer.valueOf(criteria.setProjection(Projections.rowCount()).uniqueResult().toString());
     }
 
-    private ResultSetImpl getResultSet(final SearchCriteria searchCriteria, final DataDefinition dataDefinition,
+    private SearchResultImpl getResultSet(final SearchCriteria searchCriteria, final DataDefinition dataDefinition,
             final int totalNumberOfEntities, final List<?> results) {
         List<Entity> genericResults = new ArrayList<Entity>();
 
@@ -177,7 +177,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             genericResults.add(entityService.convertToGenericEntity(dataDefinition, databaseEntity));
         }
 
-        ResultSetImpl resultSet = new ResultSetImpl();
+        SearchResultImpl resultSet = new SearchResultImpl();
         resultSet.setResults(genericResults);
         resultSet.setCriteria(searchCriteria);
         resultSet.setTotalNumberOfEntities(totalNumberOfEntities);

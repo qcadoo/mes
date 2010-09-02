@@ -6,12 +6,12 @@ import java.util.List;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
-import com.qcadoo.mes.core.data.search.ResultSet;
+import com.qcadoo.mes.core.data.search.SearchResult;
 
 public class ListDataUtils {
 
-    public static ListData generateListData(ResultSet rs, GridDefinition gridDefinition) {
-        List<Entity> entities = rs.getResults();
+    public static ListData generateListData(SearchResult rs, GridDefinition gridDefinition) {
+        List<Entity> entities = rs.getEntities();
         List<Entity> gridEntities = new LinkedList<Entity>();
 
         for (Entity entity : entities) {
