@@ -141,23 +141,23 @@ public class CrudControler {
             String value = arguments.get("filterObject[" + i + "][filterValue]");
 
             FieldDefinition field = dataDefinition.getField(fieldName);
-            // if ("=".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.eq(column, value));
-            // } else if ("<".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.lt(column, value));
-            // } else if (">".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.gt(column, value));
-            // } else if ("<=".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.le(column, value));
-            // } else if (">=".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.ge(column, value));
-            // } else if ("<>".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.ne(column, value));
-            // } else if ("null".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.isNull(column));
-            // } else if ("not null".equals(operator)) {
-            // searchCriteriaBuilder.restrictedWith(Restrictions.isNotNull(column));
-            // }
+            if ("=".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value));
+            } else if ("<".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.lt(field, value));
+            } else if (">".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.gt(field, value));
+            } else if ("<=".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.le(field, value));
+            } else if (">=".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.ge(field, value));
+            } else if ("<>".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.ne(field, value));
+            } else if ("null".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.isNull(field));
+            } else if ("not null".equals(operator)) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.isNotNull(field));
+            }
         }
 
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();
