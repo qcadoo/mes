@@ -118,6 +118,14 @@ public final class FieldDefinition {
         return unique;
     }
 
+    public String getValue(final Object value) {
+        if (value == null) {
+            return null;
+        } else {
+            return type.toString(value);
+        }
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(editable).append(hidden).append(name)
