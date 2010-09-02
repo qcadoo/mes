@@ -32,7 +32,6 @@ QCD.elements.FormElement = function(args) {
 		if (contextEntityId && parameters.parentField) {
 			formData["fields["+parameters.parentField+"]"] = contextEntityId;
 		}
-		QCDLogger.info(formData);
 		
 		$.ajax({
 			url: url,
@@ -91,6 +90,13 @@ QCD.elements.FormElement = function(args) {
 		}).each(function(index) {
 			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateTimeFormat');
 		});
+		$('#'+parameters.name+'_form .type-password').each(function(index) {
+			password = $(this).attr('value');
+			passwordConfirmation = $('#'+$(this).attr('id')+'_confirmation').attr('value');
+			if(password && password != passwordConfirmation) {
+				addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.notMatch');
+			}
+		});
 		return !hasErrors();
 		
 	}
@@ -140,13 +146,10 @@ QCD.elements.FormElement = function(args) {
 	refreshForm = function(entity) {
 		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
-			if(!entity["fields"][i]) continue;
-			if($('#'+parameters.name+"_field_"+i).hasClass('type-password')) continue;
-			if($('#'+parameters.name+"_field_"+i).hasClass('type-reference')) {
-				$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]["id"]);
-			} else {
-				$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
-			}
+			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
+		}
+		if(entity["id"]) {
+			$('#'+parameters.name+'_form .readonly').attr('readonly', 'readonly');
 		}
 		for (var i in children) {
 			children[i].insertParentId(entity["id"]);

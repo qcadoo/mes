@@ -17,6 +17,8 @@ public interface FieldType {
 
     Object fromString(FieldDefinition fieldDefinition, String value, ValidationResults validationResults);
 
+    String toString(Object value);
+
     boolean validate(FieldDefinition fieldDefinition, Object value, ValidationResults validationResults);
 
 }

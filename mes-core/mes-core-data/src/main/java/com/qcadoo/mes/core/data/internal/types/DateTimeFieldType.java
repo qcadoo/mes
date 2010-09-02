@@ -47,6 +47,11 @@ public final class DateTimeFieldType implements FieldType {
     }
 
     @Override
+    public String toString(final Object value) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format((Date) value);
+    }
+
+    @Override
     public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
         return true;
     }

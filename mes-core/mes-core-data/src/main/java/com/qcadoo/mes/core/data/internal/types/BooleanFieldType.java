@@ -38,6 +38,11 @@ public final class BooleanFieldType implements FieldType {
     }
 
     @Override
+    public String toString(final Object value) {
+        return ((Boolean) value) ? "1" : "0";
+    }
+
+    @Override
     public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
         return true;
     }

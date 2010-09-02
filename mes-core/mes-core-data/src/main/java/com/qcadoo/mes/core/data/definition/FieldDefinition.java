@@ -30,7 +30,7 @@ public final class FieldDefinition {
 
     private List<FieldValidator> validators = new ArrayList<FieldValidator>();
 
-    private boolean editable;
+    private boolean editable = true;
 
     private boolean required;
 
@@ -116,6 +116,14 @@ public final class FieldDefinition {
 
     public boolean isUnique() {
         return unique;
+    }
+
+    public String getValue(final Object value) {
+        if (value == null) {
+            return null;
+        } else {
+            return type.toString(value);
+        }
     }
 
     @Override

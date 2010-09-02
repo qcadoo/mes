@@ -11,7 +11,7 @@
 		
 	<link rel="stylesheet" href="../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
-	<link rel="stylesheet" href="../css/productGrid.css" type="text/css" />
+	<link rel="stylesheet" href="../css/qcd.css" type="text/css" />
 
 	<script type="text/javascript" src="../js/lib/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../js/lib/jquery-1.4.2.min.js"></script>
@@ -41,12 +41,14 @@
 </head>
 <body>
 
+<c:if test='${viewDefinition.header != null}'><div class="pageHeader">${viewDefinition.header}</div></c:if>
+
 <c:forEach items="${viewDefinition.elements}" var="viewElement">
 
 	<div>
 		<c:choose>
 			<c:when test="${viewElement.type == 1}">
-			
+				<div class="elementHeader">${viewElement.header}</div>
 				<table class="element_table" id="${viewElement.name}">
 					<td class=element_options>
 						${viewElementsOptions[viewElement.name]}
@@ -56,6 +58,7 @@
 			</c:when>
 			<c:when test="${viewElement.type == 2}">
 				<div class="element_form" id="${viewElement.name}">
+				<div class="elementHeader">${viewElement.header}</div>
 					<div class=element_options>
 						${viewElementsOptions[viewElement.name]}
 					</div>

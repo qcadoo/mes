@@ -61,6 +61,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.productGridView");
+        viewDefinition.setHeader("Products:");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -91,6 +92,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView");
+        viewDefinition.setHeader("Product:");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -104,6 +106,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", substituteDataDefinition);
         substituteGridDefinition.setParent("viewElement:productDetailsForm");
         substituteGridDefinition.setParentField("product");
+        substituteGridDefinition.setHeader("Substitutes:");
         ColumnDefinition columnNumber = createColumnDefinition("number", substituteDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", substituteDataDefinition.getField("name"), null);
         ColumnDefinition columnPriority = createColumnDefinition("priority", substituteDataDefinition.getField("priority"), null);
@@ -126,6 +129,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 substituteComponentDataDefinition);
         substituteComponentGridDefinition.setParent("viewElement:substitutesGrid");
         substituteComponentGridDefinition.setParentField("substitute");
+        substituteComponentGridDefinition.setHeader("Substitute products:");
         ColumnDefinition columnSubstituteNumber = createColumnDefinition("number",
                 substituteComponentDataDefinition.getField("number"), "fields['product'].fields['number']");
         ColumnDefinition columnProductName = createColumnDefinition("name", substituteComponentDataDefinition.getField("name"),
@@ -150,6 +154,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductSubstituteDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView");
+        viewDefinition.setHeader("Substitute:");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition substitutesDataDefinition = dataDefinitionService.get("products.substitute");
@@ -165,6 +170,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductSubstituteComponentDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.substituteComponentDetailsView");
+        viewDefinition.setHeader("Substitute product:");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
@@ -262,6 +268,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createOrderGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("orders.orderGridView");
+        viewDefinition.setHeader("Orders:");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -288,6 +295,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createOrderDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("orders.orderDetailsView");
+        viewDefinition.setHeader("Order:");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition orderDataDefinition = dataDefinitionService.get("orders.order");

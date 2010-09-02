@@ -50,6 +50,11 @@ public final class StringFieldType implements FieldType {
     }
 
     @Override
+    public String toString(final Object value) {
+        return String.valueOf(value);
+    }
+
+    @Override
     public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
         if (StringUtils.length((String) value) > lenght) {
             validationResults.addError(fieldDefinition, "form.validate.errors.stringIsTooLong", String.valueOf(lenght));
