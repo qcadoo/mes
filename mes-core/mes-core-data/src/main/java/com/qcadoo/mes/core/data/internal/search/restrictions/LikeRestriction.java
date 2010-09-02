@@ -9,7 +9,7 @@ public final class LikeRestriction extends BaseRestriction {
 
     private static final Logger LOG = LoggerFactory.getLogger(LikeRestriction.class);
 
-    public LikeRestriction(final String fieldName, final String value) {
+    public LikeRestriction(final String fieldName, final Object value) {
         super(fieldName, value);
     }
 

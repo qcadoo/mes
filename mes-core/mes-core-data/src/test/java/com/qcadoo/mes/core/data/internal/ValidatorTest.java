@@ -27,6 +27,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
+import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
 import com.qcadoo.mes.core.data.search.Restrictions;
@@ -574,7 +575,7 @@ public class ValidatorTest {
 
         given(
                 dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
-                        .restrictedWith(Restrictions.eq("name", "not existed")).build())).willReturn(resultSet);
+                        .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed")).build())).willReturn(resultSet);
 
         fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
 
@@ -598,9 +599,12 @@ public class ValidatorTest {
         resultSet.setTotalNumberOfEntities(0);
 
         given(
-                dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
-                        .restrictedWith(Restrictions.eq("name", "not existed")).restrictedWith(Restrictions.ne("id", 1L)).build()))
-                .willReturn(resultSet);
+                dataAccessServiceMock.find(
+                        "simple.entity",
+                        SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
+                                .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed"))
+                                .restrictedWith(Restrictions.idRestriction(1L, RestrictionOperator.NE)).build())).willReturn(
+                resultSet);
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
@@ -627,7 +631,7 @@ public class ValidatorTest {
 
         given(
                 dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
-                        .restrictedWith(Restrictions.eq("name", "existed")).build())).willReturn(resultSet);
+                        .restrictedWith(Restrictions.eq(fieldDefinitionName, "existed")).build())).willReturn(resultSet);
 
         fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
 

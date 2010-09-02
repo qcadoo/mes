@@ -87,7 +87,6 @@ public final class SearchCriteriaImpl implements SearchCriteria {
     }
 
     public void addRestriction(final Restriction restriction) {
-        checkNotNull(restriction);
         checkState(restrictions.size() < MAX_RESTRICTIONS, "too many restriction, max is %s", MAX_RESTRICTIONS);
         this.restrictions.add(restriction);
     }

@@ -26,8 +26,8 @@ import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
-import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 @Service
@@ -133,6 +133,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         if (totalNumberOfEntities == 0) {
+            return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, Collections.emptyList());
+        }
+
+        if (searchCriteria.getRestrictions().contains(null)) {
             return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, Collections.emptyList());
         }
 
