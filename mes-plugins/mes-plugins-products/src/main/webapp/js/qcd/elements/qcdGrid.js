@@ -87,12 +87,12 @@ QCD.elements.GridElement = function(args) {
 	
 	function addFilterButtonClicked(prevRow) {
 		var filterDiv = $("<div>").addClass('qcdGrid_filterButtons_row');
-			var filterDivColumnChooser = $("<select>");
-				for (var i in gridParameters.colNames) {
-					var colName = gridParameters.colNames[i];
-					filterDivColumnChooser.append("<option value='"+colName+"'>"+colName+"</option>");
+			var filterDivFieldChooser = $("<select>");
+				for (var i in gridParameters.fields) {
+					var fieldName = gridParameters.fields[i];
+					filterDivFieldChooser.append("<option value='"+fieldName+"'>"+fieldName+"</option>");
 				}
-				filterDiv.append(filterDivColumnChooser);
+				filterDiv.append(filterDivFieldChooser);
 			var operatorChooser = $("<select>");
 				operatorChooser.append("<option selected='selected' value='='>=</option>");
 				operatorChooser.append("<option value='<'><</option>");
@@ -130,7 +130,7 @@ QCD.elements.GridElement = function(args) {
 		filterElements.filterDiv.children().each(function() {
 			if ($(this).children().length > 3) {
 				var rowObject = new Object();
-				rowObject.column = $($(this).children().get(0)).val();
+				rowObject.fieldName = $($(this).children().get(0)).val();
 				rowObject.operator = $($(this).children().get(1)).val();
 				rowObject.filterValue = $($(this).children().get(2)).val().trim();
 				if (!(rowObject.operator != "null" && rowObject.operator != "not null" && rowObject.filterValue == '')) {
@@ -143,7 +143,8 @@ QCD.elements.GridElement = function(args) {
 	}
 	
 	function onDiselect() {
-		navigationButtons.deleteButton.attr("disabled", true);
+		if (navigationButtons.deleteButton)
+			navigationButtons.deleteButton.attr("disabled", true);
 		for (var i in children) {
 			children[i].insertParentId(null);
 		}
@@ -153,15 +154,17 @@ QCD.elements.GridElement = function(args) {
 		for (var i in children) {
 			children[i].insertParentId(rowId);
 		}
-		if (gridParameters.multiselect) {
-			selectedRows = grid.getGridParam("selarrrow");
-			if (selectedRows.length > 0) {
-				navigationButtons.deleteButton.attr("disabled", false);
+		if (navigationButtons.deleteButton) {
+			if (gridParameters.multiselect) {
+				selectedRows = grid.getGridParam("selarrrow");
+				if (selectedRows.length > 0 ) {
+					navigationButtons.deleteButton.attr("disabled", false);
+				} else {
+					navigationButtons.deleteButton.attr("disabled", true);
+				}
 			} else {
-				navigationButtons.deleteButton.attr("disabled", true);
+				navigationButtons.deleteButton.attr("disabled", false);
 			}
-		} else {
-			navigationButtons.deleteButton.attr("disabled", false);
 		}
 	}
 	
@@ -178,37 +181,42 @@ QCD.elements.GridElement = function(args) {
 	}
 	
 	function redirectToCorrespondingPage(rowId) {
-		var url = gridParameters.correspondingViewName + ".html";
-		if (parentId || rowId) {
-			url += "?";
-			if (parentId) {
-				url += "contextEntityId="+parentId;
-			}
-			if (rowId) {
+		if (gridParameters.correspondingViewName && gridParameters.correspondingViewName != '') {
+			var url = gridParameters.correspondingViewName + ".html";
+			if (parentId || rowId) {
+				url += "?";
 				if (parentId) {
-					url += "&";
+					url += "contextEntityId="+parentId;
 				}
-				url += "entityId="+rowId;
+				if (rowId) {
+					if (parentId) {
+						url += "&";
+					}
+					url += "entityId="+rowId;
+				}
 			}
-		}
-		
-		if (gridParameters.isCorrespondingViewModal) {
-			QCDLogger.info("modal: "+url);
-		} else {
-			QCDLogger.info("not modal: "+url);
-			window.location = url;
+			
+			if (gridParameters.isCorrespondingViewModal) {
+				QCDLogger.info("modal: "+url);
+			} else {
+				QCDLogger.info("not modal: "+url);
+				window.location = url;
+			}
 		}
 	}
 	
 	function enable() {
-		navigationButtons.newButton.attr("disabled", false);
+		if (navigationButtons.newButton)
+			navigationButtons.newButton.attr("disabled", false);
 		//navigationButtons.deleteButton.attr("disabled", false);
 	}
 	
 	function disable() {
 		grid.jqGrid('clearGridData');
-		navigationButtons.newButton.attr("disabled", true);
-		navigationButtons.deleteButton.attr("disabled", true);
+		if (navigationButtons.newButton)
+			navigationButtons.newButton.attr("disabled", true);
+		if (navigationButtons.deleteButton)
+			navigationButtons.deleteButton.attr("disabled", true);
 	}
 	
 	function refresh() {
@@ -338,14 +346,18 @@ QCD.elements.GridElement = function(args) {
 		var element = $("#"+gridParameters.element);
 		
 		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
-			navigationButtons.newButton =  $("<button>").html('new');
-			navigationButtons.newButton.click(newClicked);
-			navigationButtons.newButton.attr("disabled", true);
-			topButtonsDiv.append(navigationButtons.newButton);
-			navigationButtons.deleteButton =  $("<button>").html('delete');
-			navigationButtons.deleteButton.click(deleteClicked);
-			navigationButtons.deleteButton.attr("disabled", true);
-			topButtonsDiv.append(navigationButtons.deleteButton);
+			if (gridParameters.canNew) {
+				navigationButtons.newButton =  $("<button>").html('new');
+				navigationButtons.newButton.click(newClicked);
+				navigationButtons.newButton.attr("disabled", true);
+				topButtonsDiv.append(navigationButtons.newButton);
+			}
+			if (gridParameters.canDelete) {
+				navigationButtons.deleteButton =  $("<button>").html('delete');
+				navigationButtons.deleteButton.click(deleteClicked);
+				navigationButtons.deleteButton.attr("disabled", true);
+				topButtonsDiv.append(navigationButtons.deleteButton);
+			}
 		element.before(topButtonsDiv);
 		
 		if (gridParameters.sortable) {

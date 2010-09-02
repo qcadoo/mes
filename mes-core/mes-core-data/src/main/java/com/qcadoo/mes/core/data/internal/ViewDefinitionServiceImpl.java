@@ -51,6 +51,12 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 viewDefinition = createOrderGridView();
             } else if ("orders.orderDetailsView".equals(viewName)) {
                 viewDefinition = createOrderDetailsView();
+            } else if ("core.dictionaryGridView".equals(viewName)) {
+                viewDefinition = createDictionaryGridView();
+            } else if ("core.dictionaryDetailsView".equals(viewName)) {
+                viewDefinition = createDictionaryDetailsView();
+            } else if ("core.dictionaryItemDetailsView".equals(viewName)) {
+                viewDefinition = createDictionaryItemDetailsView();
             }
             if (viewDefinition != null) {
                 viewDefinitions.put(viewName, viewDefinition);
@@ -302,6 +308,73 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormDefinition form = new FormDefinition("orderDetailsForm", orderDataDefinition);
         form.setParent("entityId");
         form.setCorrespondingViewName("orders.orderGridView");
+        elements.add(form);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createDictionaryGridView() {
+        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryGridView");
+        viewDefinition.setHeader("Dictonaries:");
+
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+        DataDefinition gridDataDefinition = dataDefinitionService.get("core.dictionary");
+        GridDefinition gridDefinition = new GridDefinition("distionaries", gridDataDefinition);
+        gridDefinition.setCorrespondingViewName("core.dictionaryDetailsView");
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "true");
+        gridOptions.put("sortable", "true");
+        gridOptions.put("filter", "true");
+        gridOptions.put("multiselect", "false");
+        gridOptions.put("height", "450");
+        gridOptions.put("canDelete", "false");
+        gridOptions.put("canNew", "false");
+        gridDefinition.setOptions(gridOptions);
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
+        elements.add(gridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createDictionaryDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryDetailsView");
+        viewDefinition.setHeader("Dictonary:");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition gridDataDefinition = dataDefinitionService.get("core.dictionaryItem");
+        GridDefinition gridDefinition = new GridDefinition("dictionaryItems", gridDataDefinition);
+        gridDefinition.setParent("entityId");
+        gridDefinition.setParentField("dictionary");
+        gridDefinition.setCorrespondingViewName("core.dictionaryItemDetailsView");
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "false");
+        gridOptions.put("sortable", "false");
+        gridOptions.put("filter", "false");
+        gridOptions.put("multiselect", "true");
+        gridOptions.put("height", "250");
+        gridDefinition.setOptions(gridOptions);
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
+        elements.add(gridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createDictionaryItemDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryItemDetailsView");
+        viewDefinition.setHeader("Dictionary item:");
+        List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+
+        DataDefinition orderDataDefinition = dataDefinitionService.get("core.dictionaryItem");
+        FormDefinition form = new FormDefinition("dictionaryItemDetailsForm", orderDataDefinition);
+        form.setParent("entityId");
+        form.setParentField("dictionary");
+        form.setCorrespondingViewName("core.dictionaryDetailsView");
         elements.add(form);
 
         viewDefinition.setElements(elements);

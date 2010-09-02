@@ -20,6 +20,7 @@ QCD.PageConstructor = function(_viewName) {
 		gridParameters.viewElementName = gridName;
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
+		gridParameters.fields = parameters.fields;
 		//gridParameters.loadingText = '<spring:message code="commons.loading.gridLoading"/>'; // TODO mina loadingtext
 		gridParameters.loadingText = 'TODO';
 		gridParameters.paging = parameters.options.paging == "true" ? true : false;
@@ -29,6 +30,8 @@ QCD.PageConstructor = function(_viewName) {
 			gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
 			gridParameters.filter = parameters.options.filter == "true" ? true : false;
 			gridParameters.multiselect = parameters.options.multiselect == "true" ? true : false;
+			gridParameters.canNew = parameters.options.canNew == "false" ? false : true;
+			gridParameters.canDelete = parameters.options.canDelete == "false" ? false : true;
 			if (parameters.options.height) { gridParameters.height = parseInt(parameters.options.height); }
 		}
 		gridParameters.events = parameters.events;

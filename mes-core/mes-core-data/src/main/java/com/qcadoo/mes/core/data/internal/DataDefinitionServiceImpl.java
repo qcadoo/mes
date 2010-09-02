@@ -43,6 +43,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
             dataDefinition = createUserGroupDefinition();
         } else if ("orders.order".equals(entityName)) {
             dataDefinition = createOrderDefinition();
+        } else if ("core.dictionary".equals(entityName)) {
+            dataDefinition = createDictionaryDefinition();
+        } else if ("core.dictionaryItem".equals(entityName)) {
+            dataDefinition = createDictionaryItemDefinition();
         }
 
         checkNotNull(dataDefinition, "data definition for %s cannot be found", entityName);
@@ -243,6 +247,33 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldEffectiveDateFrom);
         dataDefinition.addField(fieldEffectiveDateTo);
 
+        return dataDefinition;
+    }
+
+    private DataDefinition createDictionaryDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("core.dictionary");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Dictionary");
+        dataDefinition.setDeletable(false);
+
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        fieldName.setValidators(fieldValidationFactory.required());
+
+        dataDefinition.addField(fieldName);
+        return dataDefinition;
+    }
+
+    private DataDefinition createDictionaryItemDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("core.dictionaryItem");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.DictionaryItem");
+
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        fieldName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldDictionary = createFieldDefinition("dictionary",
+                fieldTypeFactory.eagerBelongsToType("core.dictionary", "name"));
+        fieldDictionary.setHidden(true);
+
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDictionary);
         return dataDefinition;
     }
 

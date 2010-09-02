@@ -100,10 +100,6 @@ public class CrudControler {
     public ListData getGridData(@PathVariable("viewName") String viewName, @PathVariable("elementName") String elementName,
             @RequestParam Map<String, String> arguments) {
 
-        for (Entry<String, String> entry : arguments.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
-
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
@@ -136,15 +132,14 @@ public class CrudControler {
         }
 
         for (int i = 0;; i++) {
-            if (arguments.get("filterObject[" + i + "][column]") == null) {
+            if (arguments.get("filterObject[" + i + "][fieldName]") == null) {
                 break;
             }
-            String column = arguments.get("filterObject[" + i + "][column]");
+            String fieldName = arguments.get("filterObject[" + i + "][fieldName]");
             String operator = arguments.get("filterObject[" + i + "][operator]");
             String value = arguments.get("filterObject[" + i + "][filterValue]");
-            // for (ColumnDefinition columnDef : gridDefinition.getColumns()) {
-            // columnDef.getFields().get(0);
-            // }
+
+            FieldDefinition field = dataDefinition.getField(fieldName);
             // if ("=".equals(operator)) {
             // searchCriteriaBuilder.restrictedWith(Restrictions.eq(column, value));
             // } else if ("<".equals(operator)) {
