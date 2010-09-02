@@ -180,8 +180,7 @@ public class ValidatorTest {
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
         assertEquals("core.validation.error.missing", validationResults.getErrorForField("age").getMessage());
-        assertEquals(1, validationResults.getGlobalErrors().size());
-        assertEquals("core.validation.error.global", validationResults.getGlobalErrors().get(0).getMessage());
+        assertEquals(0, validationResults.getGlobalErrors().size());
     }
 
     @Test
@@ -200,7 +199,7 @@ public class ValidatorTest {
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
         assertEquals("missing age", validationResults.getErrorForField("age").getMessage());
-        assertEquals(1, validationResults.getGlobalErrors().size());
+        assertEquals(0, validationResults.getGlobalErrors().size());
     }
 
     @Test
@@ -641,7 +640,7 @@ public class ValidatorTest {
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
         assertEquals("core.validation.error.custom", validationResults.getErrorForField("name").getMessage());
-        assertEquals(1, validationResults.getGlobalErrors().size());
+        assertEquals(0, validationResults.getGlobalErrors().size());
     }
 
     @Test
@@ -694,9 +693,8 @@ public class ValidatorTest {
         Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertTrue(validationResults.getErrors().isEmpty());
-        assertEquals(2, validationResults.getGlobalErrors().size());
-        assertEquals("core.validation.error.global", validationResults.getGlobalErrors().get(0).getMessage());
-        assertEquals("core.validation.error.customEntity", validationResults.getGlobalErrors().get(1).getMessage());
+        assertEquals(1, validationResults.getGlobalErrors().size());
+        assertEquals("core.validation.error.customEntity", validationResults.getGlobalErrors().get(0).getMessage());
     }
 
     @Test

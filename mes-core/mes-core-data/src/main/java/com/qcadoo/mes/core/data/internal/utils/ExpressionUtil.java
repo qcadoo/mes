@@ -20,21 +20,27 @@ public final class ExpressionUtil {
     }
 
     public static String getValue(final Entity entity, final ColumnDefinition columnDefinition) {
+        String value = null;
         if (StringUtils.isEmpty(columnDefinition.getExpression())) {
             if (columnDefinition.getFields().size() == 1) {
-                return String.valueOf(entity.getField(columnDefinition.getFields().get(0).getName()));
+                value = String.valueOf(entity.getField(columnDefinition.getFields().get(0).getName()));
             } else {
                 List<String> values = new ArrayList<String>();
                 for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
                     values.add(String.valueOf(entity.getField(fieldDefinition.getName())));
                 }
-                return StringUtils.join(values, ", ");
+                value = StringUtils.join(values, ", ");
             }
         } else {
             ExpressionParser parser = new SpelExpressionParser();
             Expression exp = parser.parseExpression(columnDefinition.getExpression());
             EvaluationContext context = new StandardEvaluationContext(entity);
-            return String.valueOf(exp.getValue(context));
+            value = String.valueOf(exp.getValue(context));
+        }
+        if (StringUtils.isEmpty(value) || "null".equals(value)) {
+            return null;
+        } else {
+            return value;
         }
     }
 

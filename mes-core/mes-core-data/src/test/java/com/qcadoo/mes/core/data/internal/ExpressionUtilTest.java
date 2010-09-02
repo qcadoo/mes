@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
 import static junit.framework.Assert.assertEquals;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -69,6 +70,25 @@ public class ExpressionUtilTest {
 
         // then
         assertEquals("MR T", value);
+    }
+
+    @Test
+    public void shouldGenerateValueOfEmptyField() throws Exception {
+        // given
+        Entity entity = new Entity(1L);
+        entity.setField("name", null);
+
+        FieldDefinition fieldDefinition = new FieldDefinition("name");
+
+        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
+        columnDefinition.setExpression("fields['name']");
+
+        // when
+        String value = ExpressionUtil.getValue(entity, columnDefinition);
+
+        // then
+        Assert.assertNull(value);
     }
 
     @Test

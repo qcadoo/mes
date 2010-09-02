@@ -20,6 +20,12 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	sendSaveRequest = function(shouldRedirect) {
+		clearErrorMessages();
+		
+		if(!validateForm()) {
+			return;
+		}
+		
 		var formData = $('#'+parameters.name+"_form").serializeObject();
 		var url = parameters.viewName+"/"+parameters.name+"/save.html";
 		
@@ -27,8 +33,6 @@ QCD.elements.FormElement = function(args) {
 			formData["fields["+parameters.parentField+"]"] = contextEntityId;
 		}
 		QCDLogger.info(formData);
-		
-		$('#'+parameters.name+"_form .errorMessage").html('');
 		
 		$.ajax({
 			url: url,
@@ -43,10 +47,10 @@ QCD.elements.FormElement = function(args) {
 					}
 				} else {
 					for(var i in response.globalErrors) {
-						$('#'+parameters.name+"_globalErrors").append('<p>'+response.globalErrors[i].message+'</p>');
+						addGlobalErrorMessage(response.globalErrors[i].message);
 					}
 					for (var field in response.errors) {
-						$('#'+parameters.name+"_field_"+field+"_error").html(response.errors[field].message);
+						addFieldErrorMessage(parameters.name+'_field_'+field, response.errors[field].message);
 					}
 				}
 			},
@@ -59,6 +63,62 @@ QCD.elements.FormElement = function(args) {
 	
 	redirectToCorrespondingPage = function() {
 		window.location = parameters.correspondingViewName + ".html";
+	}
+	
+	validateForm = function() {
+		$('#'+parameters.name+'_form .required').filter(function() {
+	        return $(this).attr('value') == '';
+	    }).each(function(index) {
+	    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
+		});
+		$('#'+parameters.name+'_form .type-integer').filter(function() {
+	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d+$/);
+	    }).each(function(index) {
+	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
+		});
+		$('#'+parameters.name+'_form .type-decimal').filter(function() {
+	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d+(\.\d*)?$/);
+	    }).each(function(index) {
+	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
+		});
+		$('#'+parameters.name+'_form .type-date').filter(function() {
+			return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d{4}-\d{2}-\d{2}$/);
+		}).each(function(index) {
+			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateFormat');
+		});
+		$('#'+parameters.name+'_form .type-datetime').filter(function() {
+			return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+		}).each(function(index) {
+			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateTimeFormat');
+		});
+		return !hasErrors();
+		
+	}
+	
+	hasErrors = function() {
+		return $('#'+parameters.name+'_globalErrors').html().trim() != '';
+	}
+	
+	clearErrorMessages = function(error) {
+		$('#'+parameters.name+"_form .errorMessage").html('');
+	}
+	
+	addMainErrorMessage = function() {
+		if(!hasErrors()) {
+			$('#'+parameters.name+'_globalErrors').html('<p>core.validation.error.global</p>');
+		}
+	}
+	
+	addGlobalErrorMessage = function(error) {
+		addMainErrorMessage();
+		$('#'+parameters.name+'_globalErrors').append('<p>'+error+'</p>');
+	}
+	
+	addFieldErrorMessage = function(fieldId, error) {
+		if($('#'+fieldId+'_error').html().trim() == '') {
+			addMainErrorMessage();
+			$('#'+fieldId+'_error').html(error);
+		}
 	}
 	
 	getEntityAndFillForm = function(entityId) {

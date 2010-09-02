@@ -11,8 +11,6 @@ import com.qcadoo.mes.core.data.definition.FieldDefinition;
 
 public final class ValidationResults {
 
-    private static final ValidationError GLOBAL_ERROR = new ValidationError("core.validation.error.global");
-
     private final Map<String, ValidationError> errors = new HashMap<String, ValidationError>();
 
     private final List<ValidationError> globalErrors = new ArrayList<ValidationError>();
@@ -36,7 +34,6 @@ public final class ValidationResults {
             return Collections.emptyList();
         }
         List<ValidationError> errorMessages = new ArrayList<ValidationError>();
-        errorMessages.add(GLOBAL_ERROR);
         errorMessages.addAll(globalErrors);
         return errorMessages;
     }
