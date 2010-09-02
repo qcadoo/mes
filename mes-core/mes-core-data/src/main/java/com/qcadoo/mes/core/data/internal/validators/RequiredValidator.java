@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.internal.validators;
 
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
@@ -18,6 +19,12 @@ public final class RequiredValidator implements FieldValidator {
             validationResults.addError(fieldDefinition, errorMessage);
             return false;
         }
+        return true;
+    }
+
+    @Override
+    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity,
+            final ValidationResults validationResults) {
         return true;
     }
 

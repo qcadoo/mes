@@ -35,6 +35,18 @@ public final class ValidationService {
             validatedEntity.setField(fieldDefinitionEntry.getKey(), validateFieldValue);
         }
 
+        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+            if (validationResults.isFieldNotValid(fieldDefinitionEntry.getValue())) {
+                continue;
+            }
+            for (FieldValidator fieldValidator : fieldDefinitionEntry.getValue().getValidators()) {
+                fieldValidator.validate(dataDefinition, fieldDefinitionEntry.getValue(), validatedEntity, validationResults);
+                if (validationResults.isFieldNotValid(fieldDefinitionEntry.getValue())) {
+                    break;
+                }
+            }
+        }
+
         if (validationResults.isValid()) {
             for (EntityValidator entityValidator : dataDefinition.getValidators()) {
                 entityValidator.validate(dataDefinition, validatedEntity, validationResults);
