@@ -23,7 +23,7 @@ import com.qcadoo.mes.core.data.validation.FieldValidator;
  * @apiviz.has com.qcadoo.mes.core.data.definition.FieldType
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldValidator
  */
-public final class FieldDefinition {
+public class FieldDefinition {
 
     private final String name;
 

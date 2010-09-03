@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 
@@ -64,6 +67,27 @@ public final class ValidationResults {
 
     public Entity getEntity() {
         return entity;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(13, 31).append(errors).append(globalErrors).append(entity).toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ValidationResults)) {
+            return false;
+        }
+        ValidationResults other = (ValidationResults) obj;
+        return new EqualsBuilder().append(errors, other.errors).append(globalErrors, other.globalErrors)
+                .append(entity, other.entity).isEquals();
     }
 
 }

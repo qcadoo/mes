@@ -43,7 +43,7 @@ import com.qcadoo.mes.plugins.products.data.ListData;
 import com.qcadoo.mes.plugins.products.data.ListDataUtils;
 
 @Controller
-public class CrudControler {
+public class CrudController {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
@@ -51,14 +51,13 @@ public class CrudControler {
     @Autowired
     private DataAccessService dataAccessService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(CrudControler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CrudController.class);
 
     @RequestMapping(value = "test/{viewName}", method = RequestMethod.GET)
     public ModelAndView getView(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("crudView");
 
-        System.out.println("AAAAAAAAA" + viewDefinitionService.getAllViews());
         mav.addObject("viewsList", viewDefinitionService.getAllViews());
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);

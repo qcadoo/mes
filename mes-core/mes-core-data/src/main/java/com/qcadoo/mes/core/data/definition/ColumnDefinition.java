@@ -23,7 +23,7 @@ import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.has com.qcadoo.mes.core.data.definition.ColumnAggregationMode
  */
-public final class ColumnDefinition {
+public class ColumnDefinition {
 
     private final String name;
 

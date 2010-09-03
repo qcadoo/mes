@@ -14,6 +14,8 @@ public final class DictionaryItem {
 
     private String name;
 
+    private String description;
+
     private boolean deleted;
 
     @ManyToOne
@@ -49,6 +51,14 @@ public final class DictionaryItem {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

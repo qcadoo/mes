@@ -5,6 +5,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -14,9 +17,8 @@ import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public class CrudTemplateControllerSaveEntityTest {
+public class CrudTemplateControllerGetEntityDataTest {
 
     private CrudController controller;
 
@@ -45,22 +47,22 @@ public class CrudTemplateControllerSaveEntityTest {
     }
 
     @Test
-    public void shouldPerformSaveEntity() {
+    public void shouldReturnEntityData() {
         // given
-        Entity entity = new Entity((long) 11);
+        Map<String, String> arguments = new HashMap<String, String>();
+        arguments.put("entityId", "22");
+
+        Entity entity = new Entity((long) 22);
         entity.setField("testField1", "testField1Val");
 
-        ValidationResults valRes = new ValidationResults();
-        valRes.setEntity(entity);
-
-        given(dasMock.save("testEntityType", entity)).willReturn(valRes);
+        given(dasMock.get("testEntityType", (long) 22)).willReturn(entity);
 
         // when
-        ValidationResults vr = controller.saveEntity("testView", "testViewElement", entity, null);
+        Entity resultEntity = controller.getEntityData("testView", "testViewElement", arguments);
 
         // then
-        assertEquals(new Long(11), vr.getEntity().getId());
-        assertEquals(1, vr.getEntity().getFields().size());
-        assertEquals("testField1Ok", vr.getEntity().getField("testField1"));
+        assertEquals(new Long(22), resultEntity.getId());
+        assertEquals(1, resultEntity.getFields().size());
+        assertEquals("testField1Ok", resultEntity.getField("testField1"));
     }
 }

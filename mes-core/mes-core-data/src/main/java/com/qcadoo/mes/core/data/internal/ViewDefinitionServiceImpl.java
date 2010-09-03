@@ -52,40 +52,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Override
     public ViewDefinition getViewDefinition(final String viewName) {
-        ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        // if (viewDefinition == null) {
-        // if ("products.productGridView".equals(viewName)) {
-        // viewDefinition = createProductGridView();
-        // } else if ("products.productDetailsView".equals(viewName)) {
-        // viewDefinition = createProductDetailsView();
-        // } else if ("products.substituteDetailsView".equals(viewName)) {
-        // viewDefinition = createProductSubstituteDetailsView();
-        // } else if ("products.substituteComponentDetailsView".equals(viewName)) {
-        // viewDefinition = createProductSubstituteComponentDetailsView();
-        // } else if ("users.groupGridView".equals(viewName)) {
-        // viewDefinition = createUserGroupGridView();
-        // } else if ("users.groupDetailsView".equals(viewName)) {
-        // viewDefinition = createUserGroupDetailsView();
-        // } else if ("users.userGridView".equals(viewName)) {
-        // viewDefinition = createUserGridView();
-        // } else if ("users.userDetailsView".equals(viewName)) {
-        // viewDefinition = createUserDetailsView();
-        // } else if ("orders.orderGridView".equals(viewName)) {
-        // viewDefinition = createOrderGridView();
-        // } else if ("orders.orderDetailsView".equals(viewName)) {
-        // viewDefinition = createOrderDetailsView();
-        // } else if ("core.dictionaryGridView".equals(viewName)) {
-        // viewDefinition = createDictionaryGridView();
-        // } else if ("core.dictionaryDetailsView".equals(viewName)) {
-        // viewDefinition = createDictionaryDetailsView();
-        // } else if ("core.dictionaryItemDetailsView".equals(viewName)) {
-        // viewDefinition = createDictionaryItemDetailsView();
-        // }
-        // if (viewDefinition != null) {
-        // viewDefinitions.put(viewName, viewDefinition);
-        // }
-        // }
-        return viewDefinition;
+        return viewDefinitions.get(viewName);
     }
 
     public List<ViewDefinition> getAllViews() {
@@ -393,7 +360,9 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridOptions.put("height", "250");
         gridDefinition.setOptions(gridOptions);
         ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
+        ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
+                null);
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnDescription }));
         elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
