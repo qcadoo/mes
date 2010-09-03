@@ -1,10 +1,15 @@
 package com.qcadoo.mes.core.data.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,44 +30,74 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
+    private Map<String, ViewDefinition> viewDefinitions;
+
+    @PostConstruct
+    public void initViews() {
+        viewDefinitions = new HashMap<String, ViewDefinition>();
+        viewDefinitions.put("products.productGridView", createProductGridView());
+        viewDefinitions.put("products.productDetailsView", createProductDetailsView());
+        viewDefinitions.put("products.substituteDetailsView", createProductSubstituteDetailsView());
+        viewDefinitions.put("products.substituteComponentDetailsView", createProductSubstituteComponentDetailsView());
+        viewDefinitions.put("users.groupGridView", createUserGroupGridView());
+        viewDefinitions.put("users.groupDetailsView", createUserGroupDetailsView());
+        viewDefinitions.put("users.userGridView", createUserGridView());
+        viewDefinitions.put("users.userDetailsView", createUserDetailsView());
+        viewDefinitions.put("orders.orderGridView", createOrderGridView());
+        viewDefinitions.put("orders.orderDetailsView", createOrderDetailsView());
+        viewDefinitions.put("core.dictionaryGridView", createDictionaryGridView());
+        viewDefinitions.put("core.dictionaryDetailsView", createDictionaryDetailsView());
+        viewDefinitions.put("core.dictionaryItemDetailsView", createDictionaryItemDetailsView());
+    }
 
     @Override
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        if (viewDefinition == null) {
-            if ("products.productGridView".equals(viewName)) {
-                viewDefinition = createProductGridView();
-            } else if ("products.productDetailsView".equals(viewName)) {
-                viewDefinition = createProductDetailsView();
-            } else if ("products.substituteDetailsView".equals(viewName)) {
-                viewDefinition = createProductSubstituteDetailsView();
-            } else if ("products.substituteComponentDetailsView".equals(viewName)) {
-                viewDefinition = createProductSubstituteComponentDetailsView();
-            } else if ("users.groupGridView".equals(viewName)) {
-                viewDefinition = createUserGroupGridView();
-            } else if ("users.groupDetailsView".equals(viewName)) {
-                viewDefinition = createUserGroupDetailsView();
-            } else if ("users.userGridView".equals(viewName)) {
-                viewDefinition = createUserGridView();
-            } else if ("users.userDetailsView".equals(viewName)) {
-                viewDefinition = createUserDetailsView();
-            } else if ("orders.orderGridView".equals(viewName)) {
-                viewDefinition = createOrderGridView();
-            } else if ("orders.orderDetailsView".equals(viewName)) {
-                viewDefinition = createOrderDetailsView();
-            } else if ("core.dictionaryGridView".equals(viewName)) {
-                viewDefinition = createDictionaryGridView();
-            } else if ("core.dictionaryDetailsView".equals(viewName)) {
-                viewDefinition = createDictionaryDetailsView();
-            } else if ("core.dictionaryItemDetailsView".equals(viewName)) {
-                viewDefinition = createDictionaryItemDetailsView();
-            }
-            if (viewDefinition != null) {
-                viewDefinitions.put(viewName, viewDefinition);
-            }
-        }
+        // if (viewDefinition == null) {
+        // if ("products.productGridView".equals(viewName)) {
+        // viewDefinition = createProductGridView();
+        // } else if ("products.productDetailsView".equals(viewName)) {
+        // viewDefinition = createProductDetailsView();
+        // } else if ("products.substituteDetailsView".equals(viewName)) {
+        // viewDefinition = createProductSubstituteDetailsView();
+        // } else if ("products.substituteComponentDetailsView".equals(viewName)) {
+        // viewDefinition = createProductSubstituteComponentDetailsView();
+        // } else if ("users.groupGridView".equals(viewName)) {
+        // viewDefinition = createUserGroupGridView();
+        // } else if ("users.groupDetailsView".equals(viewName)) {
+        // viewDefinition = createUserGroupDetailsView();
+        // } else if ("users.userGridView".equals(viewName)) {
+        // viewDefinition = createUserGridView();
+        // } else if ("users.userDetailsView".equals(viewName)) {
+        // viewDefinition = createUserDetailsView();
+        // } else if ("orders.orderGridView".equals(viewName)) {
+        // viewDefinition = createOrderGridView();
+        // } else if ("orders.orderDetailsView".equals(viewName)) {
+        // viewDefinition = createOrderDetailsView();
+        // } else if ("core.dictionaryGridView".equals(viewName)) {
+        // viewDefinition = createDictionaryGridView();
+        // } else if ("core.dictionaryDetailsView".equals(viewName)) {
+        // viewDefinition = createDictionaryDetailsView();
+        // } else if ("core.dictionaryItemDetailsView".equals(viewName)) {
+        // viewDefinition = createDictionaryItemDetailsView();
+        // }
+        // if (viewDefinition != null) {
+        // viewDefinitions.put(viewName, viewDefinition);
+        // }
+        // }
         return viewDefinition;
+    }
+
+    public List<ViewDefinition> getAllViews() {
+        List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>(viewDefinitions.values());
+        Collections.sort(viewsList, new Comparator<ViewDefinition>() {
+
+            public int compare(ViewDefinition v1, ViewDefinition v2) {
+                return v1.getName().compareTo(v2.getName());
+            }
+        });
+        return viewsList;
+
     }
 
     private ViewDefinition createProductGridView() {

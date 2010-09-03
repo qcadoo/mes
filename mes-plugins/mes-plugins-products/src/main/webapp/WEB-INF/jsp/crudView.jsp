@@ -41,6 +41,15 @@
 </head>
 <body>
 
+<div style="float: right">
+	<select id="viewsSelect">
+		<c:forEach items="${viewsList}" var="view">
+			<option>${view.name }</option>
+		</c:forEach>
+	</select>
+	<button onclick="window.location = $('#viewsSelect').val() + '.html'">GO</button>
+</div>
+
 <c:if test='${viewDefinition.header != null}'><div class="pageHeader">${viewDefinition.header}</div></c:if>
 
 <c:forEach items="${viewDefinition.elements}" var="viewElement">

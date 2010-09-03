@@ -58,6 +58,9 @@ public class CrudControler {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("crudView");
 
+        System.out.println("AAAAAAAAA" + viewDefinitionService.getAllViews());
+        mav.addObject("viewsList", viewDefinitionService.getAllViews());
+
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         mav.addObject("viewDefinition", viewDefinition);
 
