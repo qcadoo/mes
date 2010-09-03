@@ -10,6 +10,10 @@ import com.qcadoo.mes.core.data.search.SearchResult;
 
 public class ListDataUtils {
 
+    private ListDataUtils() {
+
+    }
+
     public static ListData generateListData(SearchResult rs, GridDefinition gridDefinition) {
         List<Entity> entities = rs.getEntities();
         List<Entity> gridEntities = new LinkedList<Entity>();

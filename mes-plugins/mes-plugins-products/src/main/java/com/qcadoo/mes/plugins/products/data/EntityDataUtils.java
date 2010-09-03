@@ -8,6 +8,10 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class EntityDataUtils {
 
+    private EntityDataUtils() {
+
+    }
+
     public static Entity generateEntityData(final Entity entity, final DataDefinition dataDefinition) {
         Entity stringEntity = new Entity(entity.getId());
         for (Map.Entry<String, Object> entry : entity.getFields().entrySet()) {

@@ -1,46 +1,111 @@
 package com.qcadoo.mes.plugins.products.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.api.ViewDefinitionService;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.GridDefinition;
+import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
+import com.qcadoo.mes.core.data.search.Order;
+import com.qcadoo.mes.core.data.search.Restrictions;
+import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.plugins.products.data.ListData;
 
 public class CrudTemplateControllerGetGridDataTest {
 
+    private CrudController controller;
+
+    private DataAccessService dasMock;
+
+    private GridDefinition gridDefinition;
+
+    private DataDefinition gridDataDefinition;
+
     @Before
     public void init() {
+        controller = new CrudController();
 
+        dasMock = mock(DataAccessService.class, RETURNS_DEEP_STUBS);
+        ReflectionTestUtils.setField(controller, "dataAccessService", dasMock);
+
+        ViewDefinitionService vdsMock = mock(ViewDefinitionService.class, RETURNS_DEEP_STUBS);
+        ReflectionTestUtils.setField(controller, "viewDefinitionService", vdsMock);
+
+        gridDataDefinition = new DataDefinition("testEntity");
+        gridDataDefinition.addField(new FieldDefinition("parentEntity"));
+
+        gridDefinition = new GridDefinition("testGrid", gridDataDefinition);
+        gridDefinition.setColumns(new LinkedList<ColumnDefinition>());
+        gridDefinition.setParent("entityId");
+        gridDefinition.setParentField("parentEntity");
+
+        given(vdsMock.getViewDefinition("testView").getElementByName("testViewElement")).willReturn(gridDefinition);
     }
 
     @Test
-    public void test() {
+    public void shouldReturnValidDataWhenNoOrderAndNoFilterAndNoPagingAndNoParent() {
+        // given
+        Map<String, String> arguments = new HashMap<String, String>();
+        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("testEntity").build();
 
+        SearchResultImpl searchResult = new SearchResultImpl();
+        searchResult.setResults(new LinkedList<Entity>());
+        searchResult.setTotalNumberOfEntities(30);
+
+        given(dasMock.find("testEntity", searchCriteria)).willReturn(searchResult);
+        // when
+        ListData result = controller.getGridData("testView", "testViewElement", arguments);
+
+        // then
+        assertEquals(30, result.getTotalNumberOfEntities());
     }
-    /*
-     * @Test public void shouldReturnValidDataWhenNoOrder() { // given int maxRes = 10; int firstRes = 20; DataAccessService
-     * dasMock = mock(DataAccessService.class); DataDefinitionService ddsMock = mock(DataDefinitionService.class);
-     * ProductsListController controller = new ProductsListController(ddsMock, dasMock); SearchCriteria searchCriteria =
-     * SearchCriteriaBuilder.forEntity("products.product").withMaxResults(maxRes) .withFirstResult(firstRes).build();
-     * given(dasMock.find("products.product", searchCriteria)).willReturn(new ResultSetMock(searchCriteria)); // when List<Entity>
-     * entities = controller.getProductsListData(maxRes, firstRes, null, null).getEntities(); // then assertTrue(entities.size()
-     * == maxRes); for (int i = 0; i < maxRes; i++) { assertTrue(entities.get(i).getId() == firstRes + i); } }
-     * @Test public void shouldReturnValidDataWhenAscOrder() { // given int maxRes = 12; int firstRes = 4; String colName =
-     * "testCol2"; DataAccessService dasMock = mock(DataAccessService.class); ProductsListController controller = new
-     * ProductsListController(null, dasMock); SearchCriteria searchCriteria =
-     * SearchCriteriaBuilder.forEntity("products.product").withMaxResults(maxRes)
-     * .withFirstResult(firstRes).orderBy(Order.asc(colName)).build(); given(dasMock.find("products.product",
-     * searchCriteria)).willReturn(new ResultSetMock(searchCriteria)); // when List<Entity> entities =
-     * controller.getProductsListData(maxRes, firstRes, colName, "asc").getEntities(); // then assertTrue(entities.size() ==
-     * maxRes); for (int i = 0; i < maxRes; i++) { assertTrue(entities.get(i).getId() == firstRes + i); } }
-     * @Test public void shouldReturnValidDataWhenDescOrder() { // given int maxRes = 40; int firstRes = 30; String colName =
-     * "testCol"; DataAccessService dasMock = mock(DataAccessService.class); ProductsListController controller = new
-     * ProductsListController(null, dasMock); SearchCriteria searchCriteria =
-     * SearchCriteriaBuilder.forEntity("products.product").withMaxResults(maxRes)
-     * .withFirstResult(firstRes).orderBy(Order.desc(colName)).build(); given(dasMock.find("products.product",
-     * searchCriteria)).willReturn(new ResultSetMock(searchCriteria)); // when List<Entity> entities =
-     * controller.getProductsListData(maxRes, firstRes, colName, "desc").getEntities(); // then assertTrue(entities.size() ==
-     * maxRes); for (int i = 0; i < maxRes; i++) { assertTrue(entities.get(i).getId() == firstRes + i); } }
-     * @Test public void shouldThrowExceptionWhenIllegalArgument() { testIllegalArgument(-30, 10); testIllegalArgument(30, -10);
-     * testIllegalArgument(-30, -10); } private void testIllegalArgument(int s1, int s2) { // given ProductsListController
-     * controller = new ProductsListController(null, null); try { // when controller.getProductsListData(s1, s2, null, null); //
-     * then fail(); } catch (Exception e) { } }
-     */
+
+    @Test
+    public void shouldReturnValidDataWhenOrderAndFilterAndPagingAndParent() {
+        // given
+        Map<String, String> arguments = new HashMap<String, String>();
+        arguments.put("entityId", "123");
+        arguments.put("maxResults", "11");
+        arguments.put("firstResult", "21");
+        arguments.put("sortColumn", "testCol");
+        arguments.put("sortOrder", "desc");
+
+        FieldDefinition parentField = gridDataDefinition.getField("parentEntity");
+        Long parentId = new Long(123);
+
+        // TODO mina test for filtering
+
+        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("testEntity")
+                .restrictedWith(Restrictions.belongsTo(parentField, parentId)).withMaxResults(11).withFirstResult(21)
+                .orderBy(Order.desc("testCol")).build();
+
+        SearchResultImpl searchResult = new SearchResultImpl();
+        searchResult.setResults(new LinkedList<Entity>());
+        searchResult.setTotalNumberOfEntities(30);
+
+        given(dasMock.find("testEntity", searchCriteria)).willReturn(searchResult);
+
+        // when
+        ListData result = controller.getGridData("testView", "testViewElement", arguments);
+
+        // then
+        assertEquals(30, result.getTotalNumberOfEntities());
+    }
+
 }
