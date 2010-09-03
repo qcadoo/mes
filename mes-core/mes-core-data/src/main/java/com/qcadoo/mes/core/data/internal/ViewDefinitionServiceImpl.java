@@ -55,11 +55,13 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return viewDefinitions.get(viewName);
     }
 
+    @Override
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>(viewDefinitions.values());
         Collections.sort(viewsList, new Comparator<ViewDefinition>() {
 
-            public int compare(ViewDefinition v1, ViewDefinition v2) {
+            @Override
+            public int compare(final ViewDefinition v1, final ViewDefinition v2) {
                 return v1.getName().compareTo(v2.getName());
             }
         });
@@ -250,7 +252,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ColumnDefinition columnEmail = createColumnDefinition("email", gridDataDefinition.getField("email"), null);
         ColumnDefinition columnFirstName = createColumnDefinition("firstName", gridDataDefinition.getField("firstName"), null);
         ColumnDefinition columnLastName = createColumnDefinition("lastName", gridDataDefinition.getField("lastName"), null);
-        ColumnDefinition columnUserGroup = createColumnDefinition("userGroup", gridDataDefinition.getField("userGroup"), null);
+        ColumnDefinition columnUserGroup = createColumnDefinition("userGroup", gridDataDefinition.getField("userGroup"),
+                "fields['userGroup'].fields['name']");
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnLogin, columnEmail, columnFirstName,
                 columnLastName, columnUserGroup }));

@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.beans;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public final class SystemUser {
@@ -13,7 +14,8 @@ public final class SystemUser {
 
     private String login;
 
-    private String userGroup;
+    @ManyToOne
+    private UserGroup userGroup;
 
     private String email;
 
@@ -59,14 +61,6 @@ public final class SystemUser {
         this.login = login;
     }
 
-    public String getUserGroup() {
-        return userGroup;
-    }
-
-    public void setUserGroup(final String userGroup) {
-        this.userGroup = userGroup;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -97,6 +91,14 @@ public final class SystemUser {
 
     public void setPassword(final String password) {
         this.password = password;
+    }
+
+    public UserGroup getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(final UserGroup userGroup) {
+        this.userGroup = userGroup;
     }
 
 }

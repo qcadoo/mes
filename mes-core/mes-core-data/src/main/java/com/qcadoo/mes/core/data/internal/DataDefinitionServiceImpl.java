@@ -166,9 +166,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         FieldDefinition fieldLogin = createFieldDefinition("login", fieldTypeFactory.stringType());
         fieldLogin.setValidators(fieldValidationFactory.required(), fieldValidationFactory.unique());
-        // TODO KRNA zamienic na relacje
         FieldDefinition fieldUserGroup = createFieldDefinition("userGroup",
-                fieldTypeFactory.enumType("Administrator", "Operator - Full", "Operator - ReadOnly"));
+                fieldTypeFactory.eagerBelongsToType("users.group", "name"));
 
         fieldUserGroup.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEmail = createFieldDefinition("email", fieldTypeFactory.stringType());
