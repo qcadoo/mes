@@ -61,9 +61,7 @@ public class CrudTemplateControllerDeleteEntitiesTest {
 
         // then
         assertEquals("ok", r);
-        verify(dasMock).delete("testEntityType", (long) 1);
-        verify(dasMock).delete("testEntityType", (long) 3);
-        verify(dasMock).delete("testEntityType", (long) 2);
+        verify(dasMock).delete("testEntityType", (long) 1, (long) 2, (long) 3);
         verifyNoMoreInteractions(dasMock);
     }
 
