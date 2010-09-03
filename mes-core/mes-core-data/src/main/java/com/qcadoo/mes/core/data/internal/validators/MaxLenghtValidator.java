@@ -10,14 +10,14 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class MaxLenghtValidator implements FieldValidator {
 
-    private static final String MAX_LENGTH_EXCEEDED_ERROR = "core.validation.error.maxLengthExceeded";
+    private static final String LENGTH_EXCEEDED_ERROR = "core.validation.error.maxLengthExceeded";
 
-    private final int maxLenght;
+    private final int maxLength;
 
-    private String errorMessage = MAX_LENGTH_EXCEEDED_ERROR;
+    private String errorMessage = LENGTH_EXCEEDED_ERROR;
 
-    public MaxLenghtValidator(final int maxLenght) {
-        this.maxLenght = maxLenght;
+    public MaxLenghtValidator(final int maxLength) {
+        this.maxLength = maxLength;
     }
 
     @Override
@@ -33,8 +33,8 @@ public final class MaxLenghtValidator implements FieldValidator {
             return true;
         }
 
-        if (value.toString().length() > maxLenght) {
-            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxLenght));
+        if (value.toString().length() > maxLength) {
+            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxLength));
             return false;
         }
 

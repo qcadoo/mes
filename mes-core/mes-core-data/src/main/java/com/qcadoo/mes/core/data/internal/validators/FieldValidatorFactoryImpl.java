@@ -34,8 +34,13 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
     }
 
     @Override
-    public FieldValidator maxLength(final int maxLenght) {
+    public FieldValidator length(final int maxLenght) {
         return new MaxLenghtValidator(maxLenght);
+    }
+
+    @Override
+    public FieldValidator precisionAndScale(final int presition, final int scale) {
+        return new MaxPrecisionAndScaleValidator(presition, scale);
     }
 
     @Override

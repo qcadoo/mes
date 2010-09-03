@@ -314,7 +314,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.maxLength(5));
+        fieldDefinitionName.setValidators(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -474,7 +474,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("age", 123456);
 
-        fieldDefinitionAge.setValidators(fieldValidatorFactory.maxLength(5));
+        fieldDefinitionAge.setValidators(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -490,7 +490,23 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("money", new BigDecimal("123.456"));
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.maxLength(5));
+        fieldDefinitionMoney.setValidators(fieldValidatorFactory.length(5));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        assertTrue(validationResults.isNotValid());
+    }
+
+    @Test
+    public void shouldHasErrorsIfBigDecimalPresicionAndScaleAreTooLong() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("money", new BigDecimal("123.456"));
+
+        fieldDefinitionMoney.setValidators(fieldValidatorFactory.precisionAndScale(6, 2));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -506,7 +522,23 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("money", new BigDecimal("123.4"));
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.maxLength(5));
+        fieldDefinitionMoney.setValidators(fieldValidatorFactory.length(5));
+
+        // when
+        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+
+        // then
+        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        assertFalse(validationResults.isNotValid());
+    }
+
+    @Test
+    public void shouldHasNoErrorsIfBigDecimalValuePresicionAndScaleIsOk() throws Exception {
+        // given
+        Entity entity = new Entity();
+        entity.setField("money", new BigDecimal("123.4"));
+
+        fieldDefinitionMoney.setValidators(fieldValidatorFactory.precisionAndScale(4, 1));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -522,7 +554,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("retired", false);
 
-        fieldDefinitionRetired.setValidators(fieldValidatorFactory.maxLength(0));
+        fieldDefinitionRetired.setValidators(fieldValidatorFactory.length(0));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -538,7 +570,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("birthDate", "2010-01-01");
 
-        fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.maxLength(0));
+        fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.length(0));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
@@ -554,7 +586,7 @@ public class ValidatorTest {
         Entity entity = new Entity();
         entity.setField("name", "qwert");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.maxLength(5));
+        fieldDefinitionName.setValidators(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save("simple.entity", entity);

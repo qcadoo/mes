@@ -10,7 +10,7 @@ public interface FieldValidatorFactory {
 
     FieldValidator unique();
 
-    FieldValidator maxLength(final int maxLenght);
+    FieldValidator length(final int maxLenght);
 
     FieldValidator range(final Object from, final Object to);
 
@@ -19,5 +19,7 @@ public interface FieldValidatorFactory {
     EntityValidator customEntity(final String beanName, final String validateMethodName);
 
     FieldValidator requiredOnCreation();
+
+    FieldValidator precisionAndScale(int scale, int presition);
 
 }
