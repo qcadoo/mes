@@ -1,8 +1,8 @@
 package com.qcadoo.mes.core.data.api;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 /**
@@ -16,7 +16,7 @@ public interface DataAccessService {
 
     Entity get(String entityName, Long entityId);
 
-    void delete(String entityName, Long entityId);
+    void delete(String entityName, Long... entityId);
 
     SearchResult find(String entityName, SearchCriteria searchCriteria);
 }

@@ -79,7 +79,7 @@ public class DataAccessServiceDeleteTest {
         Mockito.verify(sessionFactory.getCurrentSession()).update(simpleDatabaseObjectDeleted);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldFailIfEntityNotFound() throws Exception {
         // given
         DataDefinition dataDefinition = new DataDefinition("test.Entity");
@@ -99,7 +99,5 @@ public class DataAccessServiceDeleteTest {
 
         // when
         dataAccessService.delete("test.Entity", 1L);
-
-        // then
     }
 }

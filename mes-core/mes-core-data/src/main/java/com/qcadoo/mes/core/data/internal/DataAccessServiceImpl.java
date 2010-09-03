@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Preconditions;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -100,23 +102,26 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void delete(final String entityName, final Long entityId) {
-        checkArgument(entityId != null, "entityId must be given");
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
-        Class<?> entityClass = dataDefinition.getClassForEntity();
-
-        Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
-
-        if (databaseEntity == null) {
+    public void delete(final String entityName, final Long... entityIds) {
+        if (entityIds.length == 0) {
             return;
         }
 
-        entityService.setDeleted(databaseEntity);
+        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+        Class<?> entityClass = dataDefinition.getClassForEntity();
 
-        sessionFactory.getCurrentSession().update(databaseEntity);
+        for (Long entityId : entityIds) {
+            Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
+
+            Preconditions.checkNotNull(databaseEntity, "entity with id: " + entityId + " cannot be found");
+
+            entityService.setDeleted(databaseEntity);
+
+            sessionFactory.getCurrentSession().update(databaseEntity);
+        }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Object with id: " + entityId + " marked as deleted");
+            LOG.debug("Object with id: " + Arrays.toString(entityIds) + " marked as deleted");
         }
     }
 
