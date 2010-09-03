@@ -37,20 +37,18 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
         }
 
         if (fieldClass.equals(BigDecimal.class)) {
-            if (value.toString().length() > maxPrecision + 1) {
-                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision),
-                        String.valueOf(maxScale));
+            BigDecimal decimal = (BigDecimal) value;
+            if (decimal.precision() - decimal.scale() > maxPrecision) {
+                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
                 return false;
             }
-            if (maxScale > 0 && ((BigDecimal) value).scale() > maxScale) {
-                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision),
-                        String.valueOf(maxScale));
+            if (maxScale > 0 && decimal.scale() > maxScale) {
+                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
                 return false;
             }
         } else {
             if (value.toString().length() > maxPrecision) {
-                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision),
-                        String.valueOf(maxScale));
+                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
                 return false;
             }
         }
