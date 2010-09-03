@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Iterator;
 
+import junit.framework.Assert;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.NotNullExpression;
 import org.hibernate.criterion.NullExpression;
@@ -49,6 +51,8 @@ public final class SimpleRestricitonTest {
 
     private FieldDefinition fieldDefinitionName = null;
 
+    private FieldDefinition fieldDefinitionAge = null;
+
     private FieldTypeFactory fieldTypeFactory = null;
 
     @Before
@@ -78,6 +82,10 @@ public final class SimpleRestricitonTest {
         fieldDefinitionName = new FieldDefinition("name");
         fieldDefinitionName.setType(fieldTypeFactory.stringType());
         fieldDefinitionName.setValidators();
+
+        fieldDefinitionAge = new FieldDefinition("age");
+        fieldDefinitionAge.setType(fieldTypeFactory.integerType());
+        fieldDefinitionAge.setValidators();
     }
 
     @SuppressWarnings("unchecked")
@@ -224,5 +232,16 @@ public final class SimpleRestricitonTest {
             SimpleExpression simpleExpression = (SimpleExpression) entry.getCriterion();
             assertEquals(simpleExpression.toString(), "name like " + "%Mr__" + "%");
         }
+    }
+
+    @Test
+    public void shouldReturnNullIfOrderValidationResultsNotEmpty() throws Exception {
+        // given
+
+        // when
+        Restriction restriction = Restrictions.eq(fieldDefinitionAge, "Mr");
+
+        // then
+        Assert.assertNull(restriction);
     }
 }
