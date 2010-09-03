@@ -79,12 +79,12 @@ QCD.elements.FormElement = function(args) {
 			});
 		}
 		$('#'+parameters.name+'_form .type-integer').filter(function() {
-	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d+$/);
+	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\-?\d+$/);
 	    }).each(function(index) {
 	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
 		});
 		$('#'+parameters.name+'_form .type-decimal').filter(function() {
-	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d+(\.\d*)?$/);
+	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\-?\d+(\.\d*)?$/);
 	    }).each(function(index) {
 	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
 		});
