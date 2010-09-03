@@ -65,8 +65,9 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	validateForm = function() {
+		edition = $('#'+parameters.name+"_field_id").attr('value') != '';
 		$('#'+parameters.name+'_form .required').filter(function() {
-	        return $(this).attr('value') == '';
+	        return $(this).attr('value') == '' && !(edition && $(this).attr('type') == 'password');
 	    }).each(function(index) {
 	    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
 		});
