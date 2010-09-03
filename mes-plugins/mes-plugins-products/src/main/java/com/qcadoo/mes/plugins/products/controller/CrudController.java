@@ -201,9 +201,16 @@ public class CrudController {
             @PathVariable("elementName") final String elementName, @RequestBody final List<Integer> selectedRows) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
-        for (Integer recordId : selectedRows) {
-            dataAccessService.delete(element.getDataDefinition().getEntityName(), (long) recordId);
+
+        if (selectedRows.size() > 0) {
+            Long[] entitiesId = new Long[selectedRows.size()];
+            int i = 0;
+            for (Integer selectedRowId : selectedRows) {
+                entitiesId[i++] = new Long(selectedRowId);
+            }
+            dataAccessService.delete(element.getDataDefinition().getEntityName(), entitiesId);
         }
+
         return "ok";
 
     }
