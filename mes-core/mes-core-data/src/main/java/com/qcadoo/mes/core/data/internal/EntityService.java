@@ -43,9 +43,7 @@ public final class EntityService {
             final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof PasswordFieldType && value == null) {
-            // don't nullify password value
-        } else {
+        } else if (!(fieldDefinition.getType() instanceof PasswordFieldType && value == null)) {
             setField(databaseEntity, fieldDefinition.getName(), value);
         }
     }
