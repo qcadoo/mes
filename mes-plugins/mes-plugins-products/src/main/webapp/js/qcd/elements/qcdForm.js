@@ -67,10 +67,17 @@ QCD.elements.FormElement = function(args) {
 	validateForm = function() {
 		edition = $('#'+parameters.name+"_field_id").attr('value') != '';
 		$('#'+parameters.name+'_form .required').filter(function() {
-	        return $(this).attr('value') == '' && !(edition && $(this).attr('type') == 'password');
+	        return $(this).attr('value') == '';
 	    }).each(function(index) {
 	    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
 		});
+		if(!edition) {
+			$('#'+parameters.name+'_form .required-on-creation').filter(function() {
+		        return $(this).attr('value') == '';
+		    }).each(function(index) {
+		    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
+			});
+		}
 		$('#'+parameters.name+'_form .type-integer').filter(function() {
 	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d+$/);
 	    }).each(function(index) {
@@ -91,10 +98,10 @@ QCD.elements.FormElement = function(args) {
 		}).each(function(index) {
 			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateTimeFormat');
 		});
-		$('#'+parameters.name+'_form .type-password').each(function(index) {
-			password = $(this).attr('value');
-			passwordConfirmation = $('#'+$(this).attr('id')+'_confirmation').attr('value');
-			if(password && password != passwordConfirmation) {
+		$('#'+parameters.name+'_form .confirmable').each(function(index) {
+			value = $(this).attr('value') || '';
+			valueConfirmation = $('#'+$(this).attr('id')+'_confirmation').attr('value') || '';
+			if(value != valueConfirmation) {
 				addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.notMatch');
 			}
 		});
@@ -152,6 +159,9 @@ QCD.elements.FormElement = function(args) {
 		if(entity["id"]) {
 			$('#'+parameters.name+'_form .readonly').attr('readonly', 'readonly');
 		}
+		$('#'+parameters.name+'_form .confirmable').each(function(index) {
+			$('#'+$(this).attr('id')+'_confirmation').attr('value','');
+		});
 		for (var i in children) {
 			children[i].insertParentId(entity["id"]);
 		}

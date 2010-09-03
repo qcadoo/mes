@@ -11,6 +11,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.internal.types.PasswordFieldType;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 @Service
@@ -42,6 +43,8 @@ public final class EntityService {
             final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
+        } else if (fieldDefinition.getType() instanceof PasswordFieldType && value == null) {
+            // don't nullify password value
         } else {
             setField(databaseEntity, fieldDefinition.getName(), value);
         }

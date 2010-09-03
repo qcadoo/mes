@@ -18,4 +18,6 @@ public interface FieldValidatorFactory {
 
     EntityValidator customEntity(final String beanName, final String staticValidateMethodName);
 
+    FieldValidator requiredOnCreation();
+
 }

@@ -176,7 +176,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldLastName = createFieldDefinition("lastName", fieldTypeFactory.stringType());
         FieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
         FieldDefinition fieldPassword = createFieldDefinition("password", fieldTypeFactory.passwordType());
-        fieldPassword.setValidators(fieldValidationFactory.required());
+        fieldPassword.setValidators(fieldValidationFactory.requiredOnCreation());
+        fieldPassword.setConfirmable(true);
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SystemUser");
 

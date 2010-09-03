@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.core.data.internal.validators.RequiredOnCreationValidator;
 import com.qcadoo.mes.core.data.internal.validators.RequiredValidator;
 import com.qcadoo.mes.core.data.internal.validators.UniqueValidator;
 import com.qcadoo.mes.core.data.types.FieldType;
@@ -34,11 +35,15 @@ public final class FieldDefinition {
 
     private boolean required;
 
+    private boolean requiredOnCreation;
+
     private boolean customField;
 
     private boolean hidden;
 
     private boolean unique;
+
+    private boolean confirmable;
 
     private Object defaultValue;
 
@@ -65,11 +70,15 @@ public final class FieldDefinition {
     public void setValidators(final FieldValidator... validators) {
         this.validators = Lists.newArrayList(validators);
         required = false;
+        requiredOnCreation = false;
         unique = false;
         if (validators != null) {
             for (FieldValidator fieldValidator : validators) {
                 if (fieldValidator instanceof RequiredValidator) {
                     required = true;
+                }
+                if (fieldValidator instanceof RequiredOnCreationValidator) {
+                    requiredOnCreation = true;
                 }
                 if (fieldValidator instanceof UniqueValidator) {
                     unique = true;
@@ -88,6 +97,10 @@ public final class FieldDefinition {
 
     public boolean isRequired() {
         return required;
+    }
+
+    public boolean isRequiredOnCreation() {
+        return requiredOnCreation;
     }
 
     public boolean isCustomField() {
@@ -118,6 +131,14 @@ public final class FieldDefinition {
         return unique;
     }
 
+    public boolean isConfirmable() {
+        return confirmable;
+    }
+
+    public void setConfirmable(final boolean confirmable) {
+        this.confirmable = confirmable;
+    }
+
     public String getValue(final Object value) {
         if (value == null) {
             return null;
@@ -129,7 +150,7 @@ public final class FieldDefinition {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(editable).append(hidden).append(name)
-                .append(required).append(type).append(unique).append(validators).toHashCode();
+                .append(required).append(type).append(unique).append(confirmable).append(validators).toHashCode();
     }
 
     @Override
@@ -147,7 +168,7 @@ public final class FieldDefinition {
         return new EqualsBuilder().append(customField, other.customField).append(defaultValue, other.defaultValue)
                 .append(editable, other.editable).append(hidden, other.hidden).append(name, other.name)
                 .append(required, other.required).append(type, other.type).append(unique, other.unique)
-                .append(validators, other.validators).isEquals();
+                .append(confirmable, other.confirmable).append(validators, other.validators).isEquals();
     }
 
 }

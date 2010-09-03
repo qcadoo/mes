@@ -15,90 +15,92 @@
 	<div id="${formId}_globalErrors" class="errorMessage validatorGlobalMessage"></div>
 	<table>
 		<c:forEach items="${dataDefinition.fields}" var="fieldEntry">
+		
+			<c:choose>
+				<c:when test='${(fieldEntry.value.type.numericType == "11") }'>
+					<c:set var="textInputType" value="password" scope="page" />
+				</c:when>
+				<c:otherwise>
+					<c:set var="textInputType" value="text" scope="page" />
+				</c:otherwise>
+			</c:choose>
+		
+			<c:choose>
+				<c:when test='${(fieldEntry.value.type.numericType == "11") }'>
+					<c:set var="valueType" value="type-password" scope="page" />
+				</c:when>
+				<c:when test='${(fieldEntry.value.type.numericType == "7") }'>
+					<c:set var="valueType" value="type-decimal" scope="page" />
+				</c:when>
+				<c:when test='${(fieldEntry.value.type.numericType == "6") }'>
+					<c:set var="valueType" value="type-integer" scope="page" />
+				</c:when>
+				<c:when test='${(fieldEntry.value.type.numericType == "3") }'>
+					<c:set var="valueType" value="type-datetime" scope="page" />
+				</c:when>
+				<c:when test='${(fieldEntry.value.type.numericType == "2") }'>
+					<c:set var="valueType" value="type-date" scope="page" />
+				</c:when>
+				<c:when test='${(fieldEntry.value.type.numericType == "10") }'>
+					<c:set var="valueType" value="type-reference" scope="page" />
+				</c:when>
+				<c:otherwise>
+					<c:set var="valueType" value="" scope="page" />
+				</c:otherwise>
+			</c:choose>
+			
+			<c:set var="inputClass" value="${valueType} ${fieldEntry.value.required ? 'required' : ''} ${fieldEntry.value.requiredOnCreation ? 'required-on-creation' : ''} ${fieldEntry.value.editable ? '' : 'readonly'}" scope="page" />
+
+			<c:set var="tdClass" value="${(fieldEntry.value.required || fieldEntry.value.requiredOnCreation) ? 'fieldRequired' : ''}" scope="page" />
+		
 			<tr>
 				<c:choose>
 					<c:when test="${fieldEntry.value.hidden == false}">
 						<td>
 							<spring:message code="${dataDefinition.entityName}.field.${fieldEntry.key}"/>
 						</td>
-						<td <c:if test='${fieldEntry.value.required}'>class="fieldRequired"</c:if> >		
+						<td class="${tdClass}">		
 							<c:choose>
-								<c:when test='${(fieldEntry.value.type.numericType == "11") }'>
-									<input type="password" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-password <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
+								<c:when test='${(fieldEntry.value.type.numericType == "9")}'>
+									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="${inputClass}"></textarea>
 								</c:when>
-							
-								<c:when test='${(fieldEntry.value.type.numericType == "9") }'>
-									<textarea id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"></textarea>
-								</c:when>
-							
-								<c:when test='${(fieldEntry.value.type.numericType == "8") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
-								</c:when>
-								
-								<c:when test='${(fieldEntry.value.type.numericType == "7") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-decimal <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
-								</c:when>
-							
-								<c:when test='${(fieldEntry.value.type.numericType == "6") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-integer <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
-								</c:when>
-							
-								<c:when test='${(fieldEntry.value.type.numericType == "3") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-datetime <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
-								</c:when>
-								
-								<c:when test='${(fieldEntry.value.type.numericType == "2") }'>
-									<input type="text" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-date <c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
-								</c:when>
-								
-								<c:when test='${(fieldEntry.value.type.numericType == "1") }'>
+								<c:when test='${(fieldEntry.value.type.numericType == "1")}'>
 									<input type="checkbox" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
 								</c:when>
-								
-								<c:when test='${(fieldEntry.value.type.numericType == "4") || (fieldEntry.value.type.numericType == "5") }'>
-									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="<c:if test='${fieldEntry.value.required}'>required</c:if>">
+								<c:when test='${(fieldEntry.value.type.numericType == "4") || (fieldEntry.value.type.numericType == "5")}'>
+									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="${inputClass}">
 										<option></option>
-										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
+										<c:forEach items="${dictionaryValues[fieldEntry.key]}" var="dictionaryValue">
 											<option>${dictionaryValue.value }</option>
 										</c:forEach>
 									</select>
 								</c:when>
-								
-								<c:when test='${(fieldEntry.value.type.numericType == "10") }'>
-									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-reference <c:if test='${fieldEntry.value.required}'>required</c:if>">
+								<c:when test='${(fieldEntry.value.type.numericType == "10")}'>
+									<select id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="${inputClass}">
 										<option></option>
-										<c:forEach items="${dictionaryValues[fieldEntry.key] }" var="dictionaryValue">
+										<c:forEach items="${dictionaryValues[fieldEntry.key]}" var="dictionaryValue">
 											<option value="${dictionaryValue.key}">${dictionaryValue.value }</option>
 										</c:forEach>
 									</select>
 								</c:when>
-								
+								<c:otherwise>
+									<input type="${textInputType}" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="${inputClass} ${fieldEntry.value.confirmable ? 'confirmable' : ''}"/>
+								</c:otherwise>
 							</c:choose>
 						</td>
 						<td id="${formId}_field_${fieldEntry.key}_error" class="errorMessage fieldValidatorMessage"></td>
-						<c:if test='${(fieldEntry.value.type.numericType == "11") }'>
-							</tr><tr>
-							<td>
+						<c:if test='${(fieldEntry.value.confirmable)}'>
+							</tr><tr><td>
 								<spring:message code="${dataDefinition.entityName}.field.${fieldEntry.key}_confirmation"/>
 							</td>
-							<td <c:if test='${fieldEntry.value.required}'>class="fieldRequired"</c:if> >
-								<input type="password" id="${formId}_field_${fieldEntry.key}_confirmation" name="fields[${fieldEntry.key}_confirmation]" class="<c:if test='${fieldEntry.value.required}'>required</c:if> <c:if test='${!fieldEntry.value.editable}'>readonly</c:if>"/>
+							<td class="${tdClass}">
+								<input type="${textInputType}" id="${formId}_field_${fieldEntry.key}_confirmation" name="fields[${fieldEntry.key}_confirmation]" class="${inputClass}"/>
 							</td>
 							<td id="${formId}_field_${fieldEntry.key}_confirmation_error" class="errorMessage fieldValidatorMessage"></td>
 						</c:if>
 					</c:when>
 					<c:otherwise>
-						<c:choose>
-								<c:when test='${(fieldEntry.value.type.numericType == "11") }'>
-									<input type=hidden id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-password"/>
-								</c:when>
-								<c:when test='${(fieldEntry.value.type.numericType == "10") }'>
-									<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="type-reference"/>
-								</c:when>
-								<c:otherwise>
-									<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]"/>
-								</c:otherwise>
-						</c:choose>
+						<input type="hidden" id="${formId}_field_${fieldEntry.key}" name="fields[${fieldEntry.key}]" class="${valueType}"/>
 					</c:otherwise>
 				</c:choose>
 			</tr>
