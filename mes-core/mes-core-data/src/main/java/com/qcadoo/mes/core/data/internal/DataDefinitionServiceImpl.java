@@ -268,13 +268,15 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("core.dictionaryItem");
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.DictionaryItem");
 
-        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
+        FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
         fieldName.setValidators(fieldValidationFactory.required());
+        FieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
         FieldDefinition fieldDictionary = createFieldDefinition("dictionary",
                 fieldTypeFactory.eagerBelongsToType("core.dictionary", "name"));
         fieldDictionary.setHidden(true);
 
         dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldDictionary);
         return dataDefinition;
     }
