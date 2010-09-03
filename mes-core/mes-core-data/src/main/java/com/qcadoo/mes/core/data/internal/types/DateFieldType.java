@@ -11,6 +11,31 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class DateFieldType implements FieldType {
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+
+    private static final String DATE_FORMAT_ERROR_MESSAGE = "form.validate.errors.invalidDateFormat";
+
+    private static final String DATE_TIME_FORMAT_ERROR_MESSAGE = "form.validate.errors.invalidDateTimeFormat";
+
+    private final String format;
+
+    private final String errorMessage;
+
+    private final boolean withTime;
+
+    public DateFieldType(final boolean withTime) {
+        this.withTime = withTime;
+        if (withTime) {
+            format = DATE_TIME_FORMAT;
+            errorMessage = DATE_FORMAT_ERROR_MESSAGE;
+        } else {
+            format = DATE_FORMAT;
+            errorMessage = DATE_TIME_FORMAT_ERROR_MESSAGE;
+        }
+    }
+
     @Override
     public boolean isSearchable() {
         return true;
@@ -28,7 +53,11 @@ public final class DateFieldType implements FieldType {
 
     @Override
     public int getNumericType() {
-        return FieldTypeFactory.NUMERIC_TYPE_DATE;
+        if (withTime) {
+            return FieldTypeFactory.NUMERIC_TYPE_DATE_TIME;
+        } else {
+            return FieldTypeFactory.NUMERIC_TYPE_DATE;
+        }
     }
 
     @Override
@@ -39,16 +68,16 @@ public final class DateFieldType implements FieldType {
     @Override
     public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
         try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(value);
+            return new SimpleDateFormat(format).parse(value);
         } catch (ParseException e) {
-            validationResults.addError(fieldDefinition, "form.validate.errors.invalidDateFormat");
+            validationResults.addError(fieldDefinition, errorMessage);
         }
         return null;
     }
 
     @Override
     public String toString(final Object value) {
-        return new SimpleDateFormat("yyyy-MM-dd").format((Date) value);
+        return new SimpleDateFormat(format).format((Date) value);
     }
 
     @Override

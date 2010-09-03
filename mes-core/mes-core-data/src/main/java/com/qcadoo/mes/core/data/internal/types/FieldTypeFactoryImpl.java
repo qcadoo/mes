@@ -31,9 +31,9 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     private static final FieldType BOOLEAN_FIELD_TYPE = new BooleanFieldType();
 
-    private static final FieldType DATE_FIELD_TYPE = new DateFieldType();
+    private static final FieldType DATE_FIELD_TYPE = new DateFieldType(false);
 
-    private static final FieldType DATE_TIME_FIELD_TYPE = new DateTimeFieldType();
+    private static final FieldType DATE_TIME_FIELD_TYPE = new DateFieldType(true);
 
     @Override
     public FieldType booleanType() {

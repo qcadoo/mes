@@ -21,7 +21,6 @@ import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
 import com.qcadoo.mes.core.data.internal.types.BooleanFieldType;
 import com.qcadoo.mes.core.data.internal.types.DateFieldType;
-import com.qcadoo.mes.core.data.internal.types.DateTimeFieldType;
 import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
 import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
@@ -127,7 +126,7 @@ public class FieldTypeFactoryImplTest {
         FieldType fieldType = fieldTypeFactory.dateTimeType();
 
         // then
-        Assert.assertThat(fieldType, is(DateTimeFieldType.class));
+        Assert.assertThat(fieldType, is(DateFieldType.class));
         Assert.assertTrue(fieldType.isSearchable());
         Assert.assertTrue(fieldType.isOrderable());
         Assert.assertFalse(fieldType.isAggregable());

@@ -128,10 +128,8 @@ public final class ValidationService {
         if (value instanceof String && !StringUtils.hasText((String) value)) {
             return null;
         }
-        if (value != null) {
-            if (value instanceof String) {
-                return ((String) value).trim();
-            }
+        if (value != null && value instanceof String) {
+            return ((String) value).trim();
         }
         return value;
     }
