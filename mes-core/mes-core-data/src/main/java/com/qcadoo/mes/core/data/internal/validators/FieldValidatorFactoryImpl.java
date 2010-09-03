@@ -24,13 +24,23 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
     }
 
     @Override
+    public FieldValidator requiredOnCreation() {
+        return new RequiredOnCreationValidator();
+    }
+
+    @Override
     public FieldValidator unique() {
         return new UniqueValidator(dataAccessService);
     }
 
     @Override
-    public FieldValidator maxLength(final int maxLenght) {
+    public FieldValidator length(final int maxLenght) {
         return new MaxLenghtValidator(maxLenght);
+    }
+
+    @Override
+    public FieldValidator precisionAndScale(final int presition, final int scale) {
+        return new MaxPrecisionAndScaleValidator(presition, scale);
     }
 
     @Override
@@ -39,12 +49,12 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
     }
 
     @Override
-    public FieldValidator custom(final String beanName, final String staticValidateMethodName) {
-        return new CustomValidator(applicationContext.getBean(beanName), staticValidateMethodName);
+    public FieldValidator custom(final String beanName, final String validateMethodName) {
+        return new CustomValidator(applicationContext.getBean(beanName), validateMethodName);
     }
 
     @Override
-    public EntityValidator customEntity(final String beanName, final String staticValidateMethodName) {
-        return new CustomEntityValidator(applicationContext.getBean(beanName), staticValidateMethodName);
+    public EntityValidator customEntity(final String beanName, final String validateMethodName) {
+        return new CustomEntityValidator(applicationContext.getBean(beanName), validateMethodName);
     }
 }

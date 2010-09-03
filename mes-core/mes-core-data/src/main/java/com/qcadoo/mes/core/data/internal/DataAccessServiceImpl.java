@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.beans.ProductOrder;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
@@ -75,14 +74,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             LOG.debug("Object with id: " + entity.getId() + " has been saved");
         }
 
-        if (databaseEntity instanceof ProductOrder) {
-            LOG.info(((ProductOrder) databaseEntity).getDateFrom().toString());
-            LOG.info(((ProductOrder) databaseEntity).getDateFrom().getClass().getSimpleName());
-        }
-
         Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
-
-        LOG.info(" --> " + savedEntity.getFields());
 
         validationResults.setEntity(savedEntity);
 
@@ -101,14 +93,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return null;
         }
 
-        if (databaseEntity instanceof ProductOrder) {
-            LOG.info(((ProductOrder) databaseEntity).getDateFrom().toString());
-            LOG.info(((ProductOrder) databaseEntity).getDateFrom().getClass().getSimpleName());
-        }
-
         Entity entity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
-
-        LOG.info(" --> " + entity.getFields());
 
         return entity;
     }
