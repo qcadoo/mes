@@ -73,6 +73,12 @@ public final class EntityService {
 
         Entity validatedEntity = validationService.parseAndValidateEntity(dataDefinition, genericEntity, validationResults);
 
+        if (validatedEntity.getId() != null) {
+            dataDefinition.callOnUpdate(validatedEntity);
+        } else {
+            dataDefinition.callOnCreate(validatedEntity);
+        }
+
         if (validationResults.isValid()) {
             Object databaseEntity = null;
 

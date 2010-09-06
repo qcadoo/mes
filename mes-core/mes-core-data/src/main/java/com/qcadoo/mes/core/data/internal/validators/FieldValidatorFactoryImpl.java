@@ -1,10 +1,10 @@
 package com.qcadoo.mes.core.data.internal.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.internal.CallbackFactory;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
@@ -13,7 +13,7 @@ import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Autowired
-    private ApplicationContext applicationContext;
+    private CallbackFactory callbackFactory;
 
     @Autowired
     private DataAccessService dataAccessService;
@@ -50,11 +50,11 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Override
     public FieldValidator custom(final String beanName, final String validateMethodName) {
-        return new CustomValidator(applicationContext.getBean(beanName), validateMethodName);
+        return new CustomValidator(callbackFactory.getCallback(beanName, validateMethodName));
     }
 
     @Override
     public EntityValidator customEntity(final String beanName, final String validateMethodName) {
-        return new CustomEntityValidator(applicationContext.getBean(beanName), validateMethodName);
+        return new CustomEntityValidator(callbackFactory.getCallback(beanName, validateMethodName));
     }
 }

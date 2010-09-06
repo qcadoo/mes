@@ -14,9 +14,9 @@ public interface FieldValidatorFactory {
 
     FieldValidator range(final Object from, final Object to);
 
-    FieldValidator custom(final String beanName, final String validateMethodName);
+    FieldValidator custom(final String beanName, final String methodName);
 
-    EntityValidator customEntity(final String beanName, final String validateMethodName);
+    EntityValidator customEntity(final String beanName, final String methodName);
 
     FieldValidator requiredOnCreation();
 
