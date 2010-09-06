@@ -51,17 +51,23 @@ public class CrudController {
     @Autowired
     private DataAccessService dataAccessService;
 
+    @Autowired
+    private TranslationService translationService;
+
     private static final Logger LOG = LoggerFactory.getLogger(CrudController.class);
 
-    @RequestMapping(value = "test/{viewName}", method = RequestMethod.GET)
-    public ModelAndView getView(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
+    @RequestMapping(value = "page/{viewName}", method = RequestMethod.GET)
+    public ModelAndView getView(@PathVariable("viewName") final String viewName,
+            @RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("crudView");
 
-        mav.addObject("viewsList", viewDefinitionService.getAllViews());
+        System.out.println(viewName);
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         mav.addObject("viewDefinition", viewDefinition);
+
+        System.out.println(viewDefinition);
 
         Map<String, Map<Long, String>> dictionaryValues = new HashMap<String, Map<Long, String>>();
         Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
@@ -95,10 +101,13 @@ public class CrudController {
         mav.addObject("entityId", arguments.get("entityId"));
         mav.addObject("contextEntityId", arguments.get("contextEntityId"));
 
+        System.out.println("AAAAAAAAAAA " + translationService.translate("aa", locale));
+        System.out.println("AAAAAAAAAAA " + translationService.translate("commons.loading.gridLoading", locale));
+
         return mav;
     }
 
-    @RequestMapping(value = "test/{viewName}/{elementName}/list", method = RequestMethod.GET)
+    @RequestMapping(value = "page/{viewName}/{elementName}/list", method = RequestMethod.GET)
     @ResponseBody
     public ListData getGridData(@PathVariable("viewName") final String viewName,
             @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
@@ -169,7 +178,7 @@ public class CrudController {
         return ListDataUtils.generateListData(rs, gridDefinition);
     }
 
-    @RequestMapping(value = "test/{viewName}/{elementName}/entity", method = RequestMethod.GET)
+    @RequestMapping(value = "page/{viewName}/{elementName}/entity", method = RequestMethod.GET)
     @ResponseBody
     public Entity getEntityData(@PathVariable("viewName") final String viewName,
             @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
@@ -183,7 +192,7 @@ public class CrudController {
         return EntityDataUtils.generateEntityData(entity, element.getDataDefinition());
     }
 
-    @RequestMapping(value = "test/{viewName}/{elementName}/save", method = RequestMethod.POST)
+    @RequestMapping(value = "page/{viewName}/{elementName}/save", method = RequestMethod.POST)
     @ResponseBody
     public ValidationResults saveEntity(@PathVariable("viewName") final String viewName,
             @PathVariable("elementName") final String elementName, @ModelAttribute final Entity entity, final Locale locale) {
@@ -195,7 +204,7 @@ public class CrudController {
         return EntityDataUtils.generateValidationResultWithEntityData(validationResult, element.getDataDefinition());
     }
 
-    @RequestMapping(value = "test/{viewName}/{elementName}/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "page/{viewName}/{elementName}/delete", method = RequestMethod.POST)
     @ResponseBody
     public String deleteEntities(@PathVariable("viewName") final String viewName,
             @PathVariable("elementName") final String elementName, @RequestBody final List<Integer> selectedRows) {

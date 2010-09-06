@@ -32,23 +32,20 @@
 		var entityId = "${entityId}";
 		var contextEntityId = "${contextEntityId}";
 
+		var controller = null
+		
 		jQuery(document).ready(function(){
-			var controller = new QCD.PageController(viewName);
+			controller = new QCD.PageController(viewName);
 			controller.init(entityId, contextEntityId);
 		});
+
+		window.insertState = function(serializationObject) {
+			controller.insertState(serializationObject);
+		}
 
 	</script>
 </head>
 <body>
-
-<div style="float: right">
-	<select id="viewsSelect">
-		<c:forEach items="${viewsList}" var="view">
-			<option>${view.name }</option>
-		</c:forEach>
-	</select>
-	<button onclick="window.location = $('#viewsSelect').val() + '.html'">GO</button>
-</div>
 
 <c:if test='${viewDefinition.header != null}'><div class="pageHeader">${viewDefinition.header}</div></c:if>
 
@@ -59,7 +56,7 @@
 			<c:when test="${viewElement.type == 1}">
 				<div class="elementHeader">${viewElement.header}</div>
 				<table class="element_table" id="${viewElement.name}">
-					<td class=element_options>
+					<td class=element_options style="display: none">
 						${viewElementsOptions[viewElement.name]}
 					</td>
 				</table>
@@ -68,7 +65,7 @@
 			<c:when test="${viewElement.type == 2}">
 				<div class="element_form" id="${viewElement.name}">
 				<div class="elementHeader">${viewElement.header}</div>
-					<div class=element_options>
+					<div class=element_options style="display: none">
 						${viewElementsOptions[viewElement.name]}
 					</div>
 					<tiles:insertTemplate template="formTemplate.jsp">

@@ -5,9 +5,9 @@ QCD.PageController = function(_viewName) {
 	var pageElements;
 	var viewName = _viewName;
 	
-	function constructor() {
+	function constructor(_this) {
 		var pageConstructor = new QCD.PageConstructor(viewName);
-		pageElements = pageConstructor.constructPageElements();
+		pageElements = pageConstructor.constructPageElements(_this);
 	}
 	
 	this.init = function(entityId, contextEntityId) {
@@ -37,5 +37,23 @@ QCD.PageController = function(_viewName) {
 		}
 	}
 	
-	constructor();
+	this.goToPage = function(url) {
+		var serializationObject = new Object();
+		for (var i in pageElements) {
+			serializationObject[i] = pageElements[i].serialize();
+		}
+		window.parent.goToPage(url, serializationObject);
+	}
+	
+	this.goBack = function() {
+		window.parent.goBack();
+	}
+	
+	this.insertState = function(serializationObject) {
+		for (var i in pageElements) {
+			pageElements[i].deserialize(serializationObject[i]);
+		}
+	}
+	
+	constructor(this);
 }

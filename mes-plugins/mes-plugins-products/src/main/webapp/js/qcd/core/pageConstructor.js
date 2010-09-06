@@ -4,7 +4,7 @@ QCD.PageConstructor = function(_viewName) {
 	
 	var viewName = _viewName;
 	
-	function constructGrid(gridName) {
+	function constructGrid(gridName, mainController) {
 		var parameters = getElementParameters(gridName);
 		
 		var colNames = new Array();
@@ -39,15 +39,15 @@ QCD.PageConstructor = function(_viewName) {
 		gridParameters.correspondingViewName = parameters.correspondingViewName;
 		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
 		
-		var grid = new QCD.elements.GridElement(gridParameters);
+		var grid = new QCD.elements.GridElement(gridParameters, mainController);
 		
 		return grid;
 	}
 	
-	function constructForm(formName) {
+	function constructForm(formName, mainController) {
 		var parameters = getElementParameters(formName);
 		parameters.viewName = viewName;
-		var formElement = new QCD.elements.FormElement(parameters);
+		var formElement = new QCD.elements.FormElement(parameters, mainController);
 		return formElement;
 	}
 	
@@ -58,14 +58,14 @@ QCD.PageConstructor = function(_viewName) {
 		return options;
 	}
 	
-	this.constructPageElements = function() {
+	this.constructPageElements = function(mainController) {
 		var pageElements = new Object();
 		$(".element_table").each(function(i,e) {
-			pageElements[e.id] = constructGrid(e.id);
+			pageElements[e.id] = constructGrid(e.id, mainController);
 		});
 	
 		$(".element_form").each(function(i,e){
-			pageElements[e.id] = constructForm(e.id);
+			pageElements[e.id] = constructForm(e.id, mainController);
 		});
 		return pageElements;
 	}

@@ -1,9 +1,11 @@
 var QCD = QCD || {};
 QCD.elements = QCD.elements || {};
 
-QCD.elements.FormElement = function(args) {
+QCD.elements.FormElement = function(args, _mainController) {
 	
 	var parameters;
+	
+	var mainController = _mainController;
 	
 	var children = new Array();
 	
@@ -61,7 +63,8 @@ QCD.elements.FormElement = function(args) {
 	}
 	
 	redirectToCorrespondingPage = function() {
-		window.location = parameters.correspondingViewName + ".html";
+		//window.location = parameters.correspondingViewName + ".html";
+		mainController.goBack();
 	}
 	
 	validateForm = function() {
@@ -188,6 +191,14 @@ QCD.elements.FormElement = function(args) {
 	
 	this.addChild = function(child) {
 		children.push(child);
+	}
+	
+	this.serialize = function() {
+		return "form";
+	}
+	
+	this.deserialize = function(serializationObject) {
+		//QCDLogger.info(serializationObject);
 	}
 	
 	constructor(args);

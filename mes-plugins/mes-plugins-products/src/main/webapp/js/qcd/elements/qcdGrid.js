@@ -1,9 +1,11 @@
 var QCD = QCD || {};
 QCD.elements = QCD.elements || {};
 
-QCD.elements.GridElement = function(args) {
+QCD.elements.GridElement = function(args, _mainController) {
 	
 	// PRIVATE
+	
+	var mainController;
 	
 	var gridParameters;
 	
@@ -200,7 +202,8 @@ QCD.elements.GridElement = function(args) {
 				QCDLogger.info("modal: "+url);
 			} else {
 				QCDLogger.info("not modal: "+url);
-				window.location = url;
+				//window.location = url;
+				mainController.goToPage(url);
 			}
 		}
 	}
@@ -338,10 +341,10 @@ QCD.elements.GridElement = function(args) {
 	
 	// CONSTRUCTOR
 	
-	function constructor(args) {
+	function constructor(args, _mainController) {
 		
 		gridParameters = parseOptions(args);
-		
+		mainController = _mainController;
 		
 		var element = $("#"+gridParameters.element);
 		
@@ -464,6 +467,14 @@ QCD.elements.GridElement = function(args) {
 		children.push(child);
 	}
 	
-	constructor(args);
+	this.serialize = function() {
+		return "grid";
+	}
+	
+	this.deserialize = function(serializationObject) {
+		//QCDLogger.info(serializationObject);
+	}
+	
+	constructor(args, _mainController);
 	
 };
