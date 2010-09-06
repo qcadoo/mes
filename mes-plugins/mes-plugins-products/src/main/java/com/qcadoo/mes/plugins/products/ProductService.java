@@ -35,9 +35,6 @@ public class ProductService {
 
         }
 
-        System.out.println(" -----> " + entity.getField("effectiveDateFrom"));
-        System.out.println(" -----> " + entity.getField("effectiveDateTo"));
-
         if (entity.getField("effectiveDateTo") != null) {
             entity.setField("state", "done");
         } else if (entity.getField("effectiveDateFrom") != null) {
