@@ -22,6 +22,7 @@
 	<script type="text/javascript" src="../js/lib/jquery.ba-serializeobject.min.js"></script>
 	
 	<script type="text/javascript" src="../js/qcd/utils/logger.js"></script>
+	<script type="text/javascript" src="../js/qcd/utils/serializator.js"></script>
 	<script type="text/javascript" src="../js/qcd/core/pageController.js"></script>
 	<script type="text/javascript" src="../js/qcd/core/pageConstructor.js"></script>
 	<script type="text/javascript" src="../js/qcd/elements/qcdForm.js"></script>

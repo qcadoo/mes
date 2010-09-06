@@ -21,8 +21,6 @@ QCD.PageConstructor = function(_viewName) {
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
 		gridParameters.fields = parameters.fields;
-		//gridParameters.loadingText = '<spring:message code="commons.loading.gridLoading"/>'; // TODO mina loadingtext
-		gridParameters.loadingText = 'TODO';
 		gridParameters.paging = parameters.options.paging == "true" ? true : false;
 		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;
 		if (parameters.options) {

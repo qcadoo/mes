@@ -25,7 +25,7 @@ import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;
  */
 public class ColumnDefinition {
 
-    private final String name;
+    private String name;
 
     private List<FieldDefinition> fields;
 
@@ -41,6 +41,10 @@ public class ColumnDefinition {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public List<FieldDefinition> getFields() {

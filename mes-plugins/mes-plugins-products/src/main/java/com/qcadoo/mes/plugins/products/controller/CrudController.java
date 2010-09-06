@@ -41,6 +41,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 import com.qcadoo.mes.plugins.products.data.EntityDataUtils;
 import com.qcadoo.mes.plugins.products.data.ListData;
 import com.qcadoo.mes.plugins.products.data.ListDataUtils;
+import com.qcadoo.mes.plugins.products.translation.TranslationService;
 
 @Controller
 public class CrudController {
@@ -65,6 +66,7 @@ public class CrudController {
         System.out.println(viewName);
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        translationService.translateViewDefinition(viewDefinition, locale);
         mav.addObject("viewDefinition", viewDefinition);
 
         System.out.println(viewDefinition);
@@ -101,8 +103,7 @@ public class CrudController {
         mav.addObject("entityId", arguments.get("entityId"));
         mav.addObject("contextEntityId", arguments.get("contextEntityId"));
 
-        // System.out.println("AAAAAAAAAAA " + translationService.translate("aa", locale));
-        // System.out.println("AAAAAAAAAAA " + translationService.translate("commons.loading.gridLoading", locale));
+        mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
 
         return mav;
     }

@@ -71,7 +71,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.productGridView");
-        viewDefinition.setHeader("Products:");
+        viewDefinition.setHeader("products.product.view.productGridView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -87,11 +87,14 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridDefinition.setOptions(gridOptions);
         Map<String, String> gridEvents = new HashMap<String, String>();
         gridDefinition.setEvents(gridEvents);
-        ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
-        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
-        ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", gridDataDefinition.getField("typeOfMaterial"),
+        ColumnDefinition columnNumber = createColumnDefinition("products.product.column.number",
+                gridDataDefinition.getField("number"), null);
+        ColumnDefinition columnName = createColumnDefinition("products.product.column.name", gridDataDefinition.getField("name"),
                 null);
-        ColumnDefinition columnEan = createColumnDefinition("ean", gridDataDefinition.getField("ean"), null);
+        ColumnDefinition columnType = createColumnDefinition("products.product.column.typeOfMaterial",
+                gridDataDefinition.getField("typeOfMaterial"), null);
+        ColumnDefinition columnEan = createColumnDefinition("products.product.column.typeOfMaterial",
+                gridDataDefinition.getField("ean"), null);
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
         elements.add(gridDefinition);

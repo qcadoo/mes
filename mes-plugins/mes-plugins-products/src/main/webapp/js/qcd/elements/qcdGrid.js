@@ -44,10 +44,13 @@ QCD.elements.GridElement = function(args, _mainController) {
 	
 	var children = new Array();
 	
+	var dataFromSerialization = null;
+	
+	var currentRefreshId = 0;
+	var rowsToSelect = null;
 	
 	var defaultOptions = {
 		paging: true,
-		deleteConfirmMessage: 'delete?'
 	};
 	
 	function parseOptions(opts) {
@@ -81,42 +84,64 @@ QCD.elements.GridElement = function(args, _mainController) {
 		refresh();
 	}
 	
+	function updateSortElements() {
+		if (sortElements.columnChooser && sortElements.orderChooser) {
+			sortElements.columnChooser.val(sortVars.column);
+			sortElements.orderChooser.val(sortVars.order);
+		}
+	}
+	
+	function updateSortVars() {
+		if (sortElements.columnChooser && sortElements.orderChooser) {
+			sortVars.column = sortElements.columnChooser.val();
+			sortVars.order = sortElements.orderChooser.val();
+		}
+	}
+	
 	function performSort() {
-		sortVars.column = sortElements.columnChooser.val();
-		sortVars.order = sortElements.orderChooser.val();
+		updateSortVars();
 		refresh();
 	}
 	
-	function addFilterButtonClicked(prevRow) {
+	function createFilterRow(rowObject) {
 		var filterDiv = $("<div>").addClass('qcdGrid_filterButtons_row');
-			var filterDivFieldChooser = $("<select>");
-				for (var i in gridParameters.fields) {
-					var fieldName = gridParameters.fields[i];
-					filterDivFieldChooser.append("<option value='"+fieldName+"'>"+fieldName+"</option>");
-				}
-				filterDiv.append(filterDivFieldChooser);
-			var operatorChooser = $("<select>");
-				operatorChooser.append("<option selected='selected' value='='>=</option>");
-				operatorChooser.append("<option value='<'><</option>");
-				operatorChooser.append("<option value='>'>></option>");
-				operatorChooser.append("<option value='<='><=</option>");
-				operatorChooser.append("<option value='>='>>=</option>");
-				operatorChooser.append("<option value='<>'><></option>");
-				operatorChooser.append("<option value='null'>null</option>");
-				operatorChooser.append("<option value='not null'>not null</option>");
-				filterDiv.append(operatorChooser);
-			var filterValueInput = $("<input type='text'></input>");
-				filterDiv.append(filterValueInput);
-			var removeRowButton =  $("<button>").html('-');
-				removeRowButton.bind("click", {row: filterDiv}, function(event) {event.data.row.remove(); });
-				filterDiv.append(removeRowButton);
-			filterDiv.append("<br/>");
-			var addRowButton =  $("<button>").html('+');
-				addRowButton.bind("click", {prevRow: filterDiv}, function(event) {addFilterButtonClicked(event.data.prevRow);});
-				filterDiv.append(addRowButton);
-			operatorChooser.bind("change", {operatorChooser: operatorChooser, filterValueInput: filterValueInput},
-						function(event) {onFilterOperatorChange(event.data.operatorChooser, event.data.filterValueInput);});
-		prevRow.after(filterDiv);
+		var filterDivFieldChooser = $("<select>");
+			for (var i in gridParameters.fields) {
+				var fieldName = gridParameters.fields[i];
+				filterDivFieldChooser.append("<option value='"+fieldName+"'>"+fieldName+"</option>");
+			}
+			filterDiv.append(filterDivFieldChooser);
+		var operatorChooser = $("<select>");
+			operatorChooser.append("<option selected='selected' value='='>=</option>");
+			operatorChooser.append("<option value='<'><</option>");
+			operatorChooser.append("<option value='>'>></option>");
+			operatorChooser.append("<option value='<='><=</option>");
+			operatorChooser.append("<option value='>='>>=</option>");
+			operatorChooser.append("<option value='<>'><></option>");
+			operatorChooser.append("<option value='null'>"+mainController.getTranslation("commons.grid.button.filter.null")+"</option>");
+			operatorChooser.append("<option value='not null'>"+mainController.getTranslation("commons.grid.button.filter.notNull")+"</option>");
+			filterDiv.append(operatorChooser);
+		var filterValueInput = $("<input type='text'></input>");
+			filterDiv.append(filterValueInput);
+		var removeRowButton =  $("<button>").html('-');
+			removeRowButton.bind("click", {row: filterDiv}, function(event) {event.data.row.remove(); });
+			filterDiv.append(removeRowButton);
+		filterDiv.append("<br/>");
+		var addRowButton =  $("<button>").html('+');
+			addRowButton.bind("click", {prevRow: filterDiv}, function(event) {addFilterButtonClicked(event.data.prevRow);});
+			filterDiv.append(addRowButton);
+		operatorChooser.bind("change", {operatorChooser: operatorChooser, filterValueInput: filterValueInput},
+					function(event) {onFilterOperatorChange(event.data.operatorChooser, event.data.filterValueInput);});
+		if (rowObject) {
+			filterDivFieldChooser.val(rowObject.fieldName);
+			operatorChooser.val(rowObject.operator);
+			filterValueInput.val(rowObject.filterValue);
+		}
+		return filterDiv;
+	}
+	
+	function addFilterButtonClicked(prevRow) {
+		prevRow.after(createFilterRow());
 	}
 	
 	function onFilterOperatorChange(operatorChooser, filterValueInput) {
@@ -127,20 +152,34 @@ QCD.elements.GridElement = function(args, _mainController) {
 		}
 	}
 	
-	function performFilter() {
-		var newFilterArray = new Array();
-		filterElements.filterDiv.children().each(function() {
-			if ($(this).children().length > 3) {
-				var rowObject = new Object();
-				rowObject.fieldName = $($(this).children().get(0)).val();
-				rowObject.operator = $($(this).children().get(1)).val();
-				rowObject.filterValue = $($(this).children().get(2)).val().trim();
-				if (!(rowObject.operator != "null" && rowObject.operator != "not null" && rowObject.filterValue == '')) {
-					newFilterArray.push(rowObject);
-				}
+	function updateFiltersVars() {
+		if (filterElements.filterDiv) {
+			for (var i in filterArray) {
+				filterElements.filterDiv.append(createFilterRow(filterArray[i]));
 			}
-		});
+		}
+	}
+	
+	function updateFiltersArray() {
+		var newFilterArray = new Array();
+		if (filterElements.filterDiv) {
+			filterElements.filterDiv.children().each(function() {
+				if ($(this).children().length > 3) {
+					var rowObject = new Object();
+					rowObject.fieldName = $($(this).children().get(0)).val();
+					rowObject.operator = $($(this).children().get(1)).val();
+					rowObject.filterValue = $($(this).children().get(2)).val().trim();
+					//if (!(rowObject.operator != "null" && rowObject.operator != "not null" && rowObject.filterValue == '')) {
+						newFilterArray.push(rowObject);
+					//}
+				}
+			});
+		}
 		filterArray = newFilterArray;
+	}
+	
+	function performFilter() {
+		updateFiltersArray();
 		refresh();
 	}
 	
@@ -242,6 +281,8 @@ QCD.elements.GridElement = function(args, _mainController) {
 		if (parentId) {
 			parameters.entityId = parentId;
 		}
+		currentRefreshId++;
+		var thisRefreshId = currentRefreshId;
 		$.ajax({
 			url: gridParameters.viewName+"/"+gridParameters.viewElementName+"/list.html",
 			type: 'GET',
@@ -251,12 +292,20 @@ QCD.elements.GridElement = function(args, _mainController) {
 			contentType: 'application/json; charset=utf-8',
 			success: function(response) {
 				if (response) {
+					if (thisRefreshId != currentRefreshId) {
+						return;
+					}
 					pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
 					for (var entityNo in response.entities) {
 						var entity = response.entities[entityNo];
 						grid.jqGrid('addRowData',entity.id,entity.fields);
 					}
-					onDiselect();
+					if (rowsToSelect) {
+						setSelectedRows(rowsToSelect);
+						rowsToSelect = null;
+					} else {
+						onDiselect();
+					}
 					unblockList();
 				}
 			},
@@ -269,7 +318,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 	}
 	
 	function blockList() {
-		grid.block({ message: gridParameters.loadingText, showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+		grid.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
             border: 'none', 
             padding: '15px', 
             backgroundColor: '#000', 
@@ -308,16 +357,33 @@ QCD.elements.GridElement = function(args, _mainController) {
 		}
 	}
 	
-	function deleteSelectedRecords() {
-		if (window.confirm(gridParameters.deleteConfirmMessage)) {
-			blockList();
-			var selectedRows;
-			if (gridParameters.multiselect) {
-				selectedRows = grid.getGridParam("selarrrow");
-			} else {
-				selectedRows = new Array();
-				selectedRows.push(grid.getGridParam('selrow'));
+	function getSelectedRows() {
+		var selectedRows;
+		if (gridParameters.multiselect) {
+			selectedRows = grid.getGridParam("selarrrow");
+		} else {
+			selectedRows = new Array();
+			selectedRows.push(grid.getGridParam('selrow'));
+		}
+		return selectedRows;
+	}
+	
+	function setSelectedRows(selectedRows) {
+		if (gridParameters.multiselect) {
+			for (var i in selectedRows) {
+				grid.setSelection(selectedRows[i]);
 			}
+		}  else {
+			grid.setSelection(selectedRows);
+		}
+	}
+	
+	function deleteSelectedRecords() {
+		if (window.confirm(mainController.getTranslation("commons.confirm.deleteMessage"))) {
+			blockList();
+			
+			var selectedRows = getSelectedRows();
+			
 			var dataArray = new Array();
 			for (var i in selectedRows) {
 				dataArray.push(parseInt(selectedRows[i]));
@@ -352,13 +418,13 @@ QCD.elements.GridElement = function(args, _mainController) {
 		
 		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
 			if (gridParameters.canNew) {
-				navigationButtons.newButton =  $("<button>").html('new');
+				navigationButtons.newButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.new"));
 				navigationButtons.newButton.click(newClicked);
 				navigationButtons.newButton.attr("disabled", true);
 				topButtonsDiv.append(navigationButtons.newButton);
 			}
 			if (gridParameters.canDelete) {
-				navigationButtons.deleteButton =  $("<button>").html('delete');
+				navigationButtons.deleteButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.delete"));
 				navigationButtons.deleteButton.click(deleteClicked);
 				navigationButtons.deleteButton.attr("disabled", true);
 				topButtonsDiv.append(navigationButtons.deleteButton);
@@ -374,10 +440,10 @@ QCD.elements.GridElement = function(args, _mainController) {
 					}
 					topSortDiv.append(sortElements.columnChooser);
 				sortElements.orderChooser = $("<select>");
-					sortElements.orderChooser.append("<option value='asc'>asc</option>");
-					sortElements.orderChooser.append("<option value='desc'>desc</option>");
+					sortElements.orderChooser.append("<option value='asc'>"+mainController.getTranslation("commons.grid.button.sort.asc")+"</option>");
+					sortElements.orderChooser.append("<option value='desc'>"+mainController.getTranslation("commons.grid.button.sort.desc")+"</option>");
 					topSortDiv.append(sortElements.orderChooser);
-				var sortButton =  $("<button>").html('sort');
+				var sortButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.sort"));
 					sortButton.click(function() {performSort();});
 					topSortDiv.append(sortButton);
 			element.before(topSortDiv);
@@ -392,7 +458,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 				filterElements.filterDiv.append(firstRow);
 			element.before(filterElements.filterDiv);
 			var filterButtonDiv = $("<div>").addClass('qcdGrid_filterButtons');
-				var performFilterButton =  $("<button>").html('Filtruj');
+				var performFilterButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.filter"));
 				performFilterButton.click(function() {performFilter();});
 				filterButtonDiv.append(performFilterButton);
 			element.before(performFilterButton);
@@ -400,7 +466,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 		
 		if (gridParameters.paging) {
 			var pagingDiv = $("<div>").addClass('qcdGrid_paging');
-				pagingElements.prevButton =  $("<button>").html('prev');
+				pagingElements.prevButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.prev"));
 				pagingDiv.append(pagingElements.prevButton);
 				
 				pagingElements.recordsNoSelect = $("<select>");
@@ -411,7 +477,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 				pagingDiv.append(pagingElements.recordsNoSelect);
 				
 				var pageInfoSpan = $("<span>").addClass('qcdGrid_paging_pageInfo');
-					pageInfoSpan.append('<span>page</span>');
+					pageInfoSpan.append('<span>'+mainController.getTranslation("commons.grid.button.pageInfo")+'</span>');
 					pagingElements.pageNoSpan = $("<span>");
 					pageInfoSpan.append(pagingElements.pageNoSpan);
 					pageInfoSpan.append('<span>/</span>');
@@ -419,7 +485,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 					pageInfoSpan.append(pagingElements.allPagesNoSpan);
 				pagingDiv.append(pageInfoSpan);
 				
-				pagingElements.nextButton =  $("<button>").html('next');
+				pagingElements.nextButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.next"));
 				pagingDiv.append(pagingElements.nextButton);
 			
 				pagingElements.prevButton.click(function() {paging_prev();});
@@ -451,7 +517,9 @@ QCD.elements.GridElement = function(args, _mainController) {
 		parentId = _parentId;
 		if (_parentId) {
 			enable();
-			refresh();
+			//if (! dataFromSerialization) {
+				refresh();
+			//}
 		} else {
 			disable();
 		}
@@ -470,10 +538,28 @@ QCD.elements.GridElement = function(args, _mainController) {
 	}
 	
 	this.serialize = function() {
-		return "grid";
+		updateSortVars();
+		updateFiltersArray();
+		var serializationObject = new Object();
+		serializationObject.parentId = parentId;
+		serializationObject.pagingVars = pagingVars;
+		serializationObject.sortVars = sortVars;
+		serializationObject.filterArray = filterArray;
+		serializationObject.selectedRows = getSelectedRows();
+		//QCDLogger.info(serializationObject);
+		return serializationObject;
 	}
 	
 	this.deserialize = function(serializationObject) {
+		dataFromSerialization = serializationObject;
+		parentId = serializationObject.parentId;
+		pagingVars = serializationObject.pagingVars;
+		sortVars = serializationObject.sortVars;
+		filterArray = serializationObject.filterArray;
+		rowsToSelect = serializationObject.selectedRows;
+		updateSortElements();
+		updateFiltersVars();
+		refresh();
 		//QCDLogger.info(serializationObject);
 	}
 	

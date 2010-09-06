@@ -111,7 +111,7 @@
 			
 </form>
 
-<button id="${formId}_saveButton"><spring:message code="commons.form.button.accept"/></button>
-<button id="${formId}_saveCloseButton"><spring:message code="commons.form.button.acceptAndClose"/></button>
-<button id="${formId}_cancelButton"><spring:message code="commons.form.button.cancel"/></button>
+<button id="${formId}_saveButton">${commonTranslations["commons.form.button.accept"] }</button>
+<button id="${formId}_saveCloseButton">${commonTranslations["commons.form.button.acceptAndClose"] }</button>
+<button id="${formId}_cancelButton">${commonTranslations["commons.form.button.cancel"] }</button>
 

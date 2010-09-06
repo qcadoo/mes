@@ -5,8 +5,6 @@ QCD.PageController = function(_viewName) {
 	var pageElements;
 	var viewName = _viewName;
 	
-	var isInsertByDeserialize = false;
-	
 	function constructor(_this) {
 		var pageConstructor = new QCD.PageConstructor(viewName);
 		pageElements = pageConstructor.constructPageElements(_this);
@@ -29,8 +27,7 @@ QCD.PageController = function(_viewName) {
 				pageElements[i].insertContext(contextEntityId);
 			}
 		}
-		QCDLogger.info(isInsertByDeserialize);
-		if (entityId && entityId != "" && !isInsertByDeserialize) {
+		if (entityId && entityId != "") {
 			for (var i in pageElements) {
 				var elementParent = pageElements[i].getParent(); 
 				if (elementParent == "entityId") {
@@ -38,6 +35,10 @@ QCD.PageController = function(_viewName) {
 				}
 			}
 		}
+	}
+	
+	this.getTranslation = function(key) {
+		return window.parent.commonTranslations[key] ? window.parent.commonTranslations[key] : "ToTranslate";
 	}
 	
 	this.goToPage = function(url) {
@@ -53,7 +54,6 @@ QCD.PageController = function(_viewName) {
 	}
 	
 	this.insertState = function(serializationObject) {
-		isInsertByDeserialize = true;
 		for (var i in pageElements) {
 			pageElements[i].deserialize(serializationObject[i]);
 		}

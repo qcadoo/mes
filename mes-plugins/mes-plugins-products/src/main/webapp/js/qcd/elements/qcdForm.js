@@ -11,6 +11,8 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	var contextEntityId = null;
 	
+	var dataFromSerialization = null;
+	
 	performSave = function() {
 		sendSaveRequest(false);
 	}
@@ -28,7 +30,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 			return;
 		}
 		
-		var formData = $('#'+parameters.name+"_form").serializeObject();
+		var formData = QCDSerializator.serializeForm($('#'+parameters.name+"_form"));
 		var url = parameters.viewName+"/"+parameters.name+"/save.html";
 		
 		if (contextEntityId && parameters.parentField) {
@@ -63,7 +65,6 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	redirectToCorrespondingPage = function() {
-		//window.location = parameters.correspondingViewName + ".html";
 		mainController.goBack();
 	}
 	
@@ -140,11 +141,17 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	getEntityAndFillForm = function(entityId) {
 		var url = parameters.viewName+"/"+parameters.name+"/entity.html?entityId="+entityId;
+		if (dataFromSerialization)
+			return;
+		dataFromSerialization = null;
 		$.ajax({
 			url: url,
 			type: 'GET',
 			success: function(response) {
 				if(response) {
+					if (dataFromSerialization)
+						return;
+					dataFromSerialization = null;
 					refreshForm(response);
 				}
 			},
@@ -155,8 +162,6 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	refreshForm = function(entity) {
-		QCDLogger.info("refreshForm");
-		QCDLogger.info(entity);
 		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
@@ -197,13 +202,12 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	this.serialize = function() {
 		var serializationObject = new Object();
-		serializationObject.formData = $('#'+parameters.name+"_form").serializeObject();
+		serializationObject.formData = QCDSerializator.serializeForm($('#'+parameters.name+"_form"));
 		return serializationObject;
 	}
 	
 	this.deserialize = function(serializationObject) {
-		QCDLogger.info("deserialize");
-		QCDLogger.info(serializationObject);
+		dataFromSerialization = serializationObject;
 		refreshForm(serializationObject.formData);
 	}
 	
