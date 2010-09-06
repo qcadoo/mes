@@ -232,6 +232,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinition fieldDoneQuantity = createFieldDefinition("doneQuantity", fieldTypeFactory.decimalType());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateType());
+        FieldDefinition fieldStartWorker = createFieldDefinition("startWorker", fieldTypeFactory.textType());
+        FieldDefinition fieldEndWorker = createFieldDefinition("endWorker", fieldTypeFactory.textType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.ProductOrder");
         dataDefinition.addField(fieldNumber);
@@ -247,6 +249,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldDoneQuantity);
         dataDefinition.addField(fieldEffectiveDateFrom);
         dataDefinition.addField(fieldEffectiveDateTo);
+        dataDefinition.addField(fieldStartWorker);
+        dataDefinition.addField(fieldEndWorker);
 
         return dataDefinition;
     }

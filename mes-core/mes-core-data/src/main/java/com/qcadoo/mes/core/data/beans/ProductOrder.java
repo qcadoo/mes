@@ -54,6 +54,10 @@ public final class ProductOrder {
     @Column(scale = 3, precision = 10)
     private BigDecimal doneQuantity;
 
+    private String startWorker;
+
+    private String endWorker;
+
     public Long getId() {
         return id;
     }
@@ -172,6 +176,22 @@ public final class ProductOrder {
 
     public void setDoneQuantity(final BigDecimal doneQuantity) {
         this.doneQuantity = doneQuantity;
+    }
+
+    public String getStartWorker() {
+        return startWorker;
+    }
+
+    public void setStartWorker(final String startWorker) {
+        this.startWorker = startWorker;
+    }
+
+    public String getEndWorker() {
+        return endWorker;
+    }
+
+    public void setEndWorker(final String endWorker) {
+        this.endWorker = endWorker;
     }
 
 }
