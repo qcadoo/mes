@@ -76,6 +76,8 @@ public class ValidatorTest {
 
     private FieldDefinition parentFieldDefinitionName = null;
 
+    private CallbackFactory callbackFactory;
+
     @Before
     public void init() {
         validationService = new ValidationService();
@@ -95,8 +97,11 @@ public class ValidatorTest {
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
         ReflectionTestUtils.setField(fieldTypeFactory, "dataAccessService", dataAccessService);
 
+        callbackFactory = new CallbackFactory();
+        ReflectionTestUtils.setField(callbackFactory, "applicationContext", applicationContext);
+
         fieldValidatorFactory = new FieldValidatorFactoryImpl();
-        ReflectionTestUtils.setField(fieldValidatorFactory, "applicationContext", applicationContext);
+        ReflectionTestUtils.setField(fieldValidatorFactory, "callbackFactory", callbackFactory);
         ReflectionTestUtils.setField(fieldValidatorFactory, "dataAccessService", dataAccessServiceMock);
 
         given(applicationContext.getBean("custom")).willReturn(new CustomValidateMethod());
@@ -792,8 +797,6 @@ public class ValidatorTest {
     public class CustomEntityValidateMethod {
 
         public boolean hasAge18AndNameMrT(final Entity entity) {
-            System.out.println(" ---> " + entity.getFields() + ": " + (entity.getField("age").equals(18)));
-
             return (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T"));
         }
 

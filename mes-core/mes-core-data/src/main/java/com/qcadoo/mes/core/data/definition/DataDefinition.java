@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.EntityService;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
@@ -34,6 +35,12 @@ public final class DataDefinition {
     private List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
     private boolean deletable = true;
+
+    private CallbackDefinition onCreate;
+
+    private CallbackDefinition onUpdate;
+
+    private CallbackDefinition onSave;
 
     public DataDefinition(final String entityName) {
         this.entityName = entityName;
@@ -95,6 +102,36 @@ public final class DataDefinition {
         this.validators = Lists.newArrayList(validators);
     }
 
+    public void setOnCreate(final CallbackDefinition onCreateCallback) {
+        this.onCreate = onCreateCallback;
+    }
+
+    public void setOnUpdate(final CallbackDefinition onUpdateCallback) {
+        this.onUpdate = onUpdateCallback;
+    }
+
+    public void setOnSave(final CallbackDefinition onSaveCallback) {
+        this.onSave = onSaveCallback;
+    }
+
+    public void callOnCreate(final Entity entity) {
+        if (onCreate != null) {
+            onCreate.callWithEntity(entity);
+        }
+        if (onSave != null) {
+            onSave.callWithEntity(entity);
+        }
+    }
+
+    public void callOnUpdate(final Entity entity) {
+        if (onUpdate != null) {
+            onUpdate.callWithEntity(entity);
+        }
+        if (onSave != null) {
+            onSave.callWithEntity(entity);
+        }
+    }
+
     public Class<?> getClassForEntity() {
         if (isVirtualTable()) {
             throw new UnsupportedOperationException("virtual tables are not supported");
@@ -122,12 +159,8 @@ public final class DataDefinition {
         return deletable;
     }
 
-    public void setDeletable(boolean deletable) {
+    public void setDeletable(final boolean deletable) {
         this.deletable = deletable;
-    }
-
-    public void setValidators(List<EntityValidator> validators) {
-        this.validators = validators;
     }
 
 }
