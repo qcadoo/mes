@@ -155,6 +155,8 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	refreshForm = function(entity) {
+		QCDLogger.info("refreshForm");
+		QCDLogger.info(entity);
 		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
@@ -194,11 +196,15 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	this.serialize = function() {
-		return "form";
+		var serializationObject = new Object();
+		serializationObject.formData = $('#'+parameters.name+"_form").serializeObject();
+		return serializationObject;
 	}
 	
 	this.deserialize = function(serializationObject) {
-		//QCDLogger.info(serializationObject);
+		QCDLogger.info("deserialize");
+		QCDLogger.info(serializationObject);
+		refreshForm(serializationObject.formData);
 	}
 	
 	constructor(args);

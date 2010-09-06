@@ -5,6 +5,8 @@ QCD.PageController = function(_viewName) {
 	var pageElements;
 	var viewName = _viewName;
 	
+	var isInsertByDeserialize = false;
+	
 	function constructor(_this) {
 		var pageConstructor = new QCD.PageConstructor(viewName);
 		pageElements = pageConstructor.constructPageElements(_this);
@@ -27,7 +29,8 @@ QCD.PageController = function(_viewName) {
 				pageElements[i].insertContext(contextEntityId);
 			}
 		}
-		if (entityId && entityId != "") {
+		QCDLogger.info(isInsertByDeserialize);
+		if (entityId && entityId != "" && !isInsertByDeserialize) {
 			for (var i in pageElements) {
 				var elementParent = pageElements[i].getParent(); 
 				if (elementParent == "entityId") {
@@ -50,6 +53,7 @@ QCD.PageController = function(_viewName) {
 	}
 	
 	this.insertState = function(serializationObject) {
+		isInsertByDeserialize = true;
 		for (var i in pageElements) {
 			pageElements[i].deserialize(serializationObject[i]);
 		}

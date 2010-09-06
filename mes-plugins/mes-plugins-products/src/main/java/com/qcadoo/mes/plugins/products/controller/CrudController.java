@@ -101,8 +101,8 @@ public class CrudController {
         mav.addObject("entityId", arguments.get("entityId"));
         mav.addObject("contextEntityId", arguments.get("contextEntityId"));
 
-        System.out.println("AAAAAAAAAAA " + translationService.translate("aa", locale));
-        System.out.println("AAAAAAAAAAA " + translationService.translate("commons.loading.gridLoading", locale));
+        // System.out.println("AAAAAAAAAAA " + translationService.translate("aa", locale));
+        // System.out.println("AAAAAAAAAAA " + translationService.translate("commons.loading.gridLoading", locale));
 
         return mav;
     }

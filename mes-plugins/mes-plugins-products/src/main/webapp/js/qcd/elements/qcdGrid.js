@@ -250,13 +250,15 @@ QCD.elements.GridElement = function(args, _mainController) {
 			data: parameters,
 			contentType: 'application/json; charset=utf-8',
 			success: function(response) {
-				pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
-				for (var entityNo in response.entities) {
-					var entity = response.entities[entityNo];
-					grid.jqGrid('addRowData',entity.id,entity.fields);
+				if (response) {
+					pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
+					for (var entityNo in response.entities) {
+						var entity = response.entities[entityNo];
+						grid.jqGrid('addRowData',entity.id,entity.fields);
+					}
+					onDiselect();
+					unblockList();
 				}
-				onDiselect();
-				unblockList();
 			},
 			error: function(xhr, textStatus, errorThrown){
 				alert(textStatus);

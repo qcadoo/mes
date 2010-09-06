@@ -55,7 +55,7 @@ public class CrudTemplateControllerGetViewTest {
         arguments.put("contextEntityId", "testContextEntityId");
 
         // when
-        ModelAndView mav = controller.getView("testView", arguments);
+        ModelAndView mav = controller.getView("testView", arguments, null);
 
         // then
         assertEquals("crudView", mav.getViewName());
