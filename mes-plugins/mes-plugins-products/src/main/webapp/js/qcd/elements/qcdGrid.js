@@ -105,8 +105,8 @@ QCD.elements.GridElement = function(args, _mainController) {
 		var filterDiv = $("<div>").addClass('qcdGrid_filterButtons_row');
 		var filterDivFieldChooser = $("<select>");
 			for (var i in gridParameters.fields) {
-				var fieldName = gridParameters.fields[i];
-				filterDivFieldChooser.append("<option value='"+fieldName+"'>"+fieldName+"</option>");
+				var field = gridParameters.fields[i];
+				filterDivFieldChooser.append("<option value='"+field.name+"'>"+field.label+"</option>");
 			}
 			filterDiv.append(filterDivFieldChooser);
 		var operatorChooser = $("<select>");
@@ -465,8 +465,8 @@ QCD.elements.GridElement = function(args, _mainController) {
 			var topSortDiv = $("<div>").addClass('qcdGrid_sortButtons');
 				sortElements.fieldChooser = $("<select>");
 					for (var i in gridParameters.fields) {
-						var fieldName = gridParameters.fields[i];
-						sortElements.fieldChooser.append("<option value='"+fieldName+"'>"+fieldName+"</option>");
+						var field = gridParameters.fields[i];
+						sortElements.fieldChooser.append("<option value='"+field.name+"'>"+field.label+"</option>");
 					}
 					topSortDiv.append(sortElements.fieldChooser);
 				sortElements.orderChooser = $("<select>");
@@ -601,7 +601,10 @@ QCD.elements.GridElement = function(args, _mainController) {
 		updateSortElements();
 		updateFiltersVars();
 		//QCDLogger.info(serializationObject);
-		refresh();
+		if (!gridParameters.parent || parentId) {
+			enable();
+			refresh();
+		}
 		//QCDLogger.info(serializationObject);
 	}
 	

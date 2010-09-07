@@ -24,7 +24,10 @@ QCD.PageConstructor = function(_viewName) {
 		gridParameters.fields = new Array();
 		for (var i in parameters.fields) {
 			var nameToTranslate = viewName+"."+gridName+".field."+parameters.fields[i];
-			gridParameters.fields.push(mainController.getTranslation(nameToTranslate));
+			gridParameters.fields.push({
+				name: parameters.fields[i],
+				label: mainController.getTranslation(nameToTranslate)
+			});
 		}
 		gridParameters.paging = parameters.options.paging == "true" ? true : false;
 		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;

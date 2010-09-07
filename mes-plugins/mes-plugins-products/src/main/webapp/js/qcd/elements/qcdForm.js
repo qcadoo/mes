@@ -131,7 +131,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	addFieldErrorMessage = function(fieldId, error) {
-		if($('#'+fieldId+'_error').html().trim() == '') {
+		if ($('#'+fieldId+'_error').html().trim() == '') {
 			addMainErrorMessage();
 			$('#'+fieldId+'_error').html(error);
 		}

@@ -9,6 +9,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.FieldViewDefinition;
+import com.qcadoo.mes.core.data.definition.FormDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.definition.ViewDefinition;
 import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
@@ -54,14 +56,22 @@ public class TranslationServiceImpl implements TranslationService {
             if (viewElement.getHeader() != null) {
                 putTranslationToMap(viewDefinition.getName() + "." + viewElement.getName() + ".header", translationsMap, locale);
             }
-            for (String fieldName : viewElement.getDataDefinition().getFields().keySet()) {
-                putTranslationToMap(viewDefinition.getName() + "." + viewElement.getName() + ".field." + fieldName,
-                        translationsMap, locale);
-            }
-            if (viewElement.getType() == ViewElementDefinition.TYPE_GRID) {
+            if (viewElement.getType() == ViewElementDefinition.TYPE_FORM) {
+                FormDefinition formDefinition = (FormDefinition) viewElement;
+                for (FieldViewDefinition fieldView : formDefinition.getFields()) {
+                    putTranslationToMap(
+                            viewDefinition.getName() + "." + viewElement.getName() + ".field." + fieldView.getLabel(),
+                            translationsMap, locale);
+                }
+
+            } else if (viewElement.getType() == ViewElementDefinition.TYPE_GRID) {
                 GridDefinition gridDefinition = (GridDefinition) viewElement;
                 for (ColumnDefinition column : gridDefinition.getColumns()) {
                     putTranslationToMap(viewDefinition.getName() + "." + viewElement.getName() + ".column." + column.getName(),
+                            translationsMap, locale);
+                }
+                for (String fieldName : viewElement.getDataDefinition().getFields().keySet()) {
+                    putTranslationToMap(viewDefinition.getName() + "." + viewElement.getName() + ".field." + fieldName,
                             translationsMap, locale);
                 }
             }

@@ -71,8 +71,7 @@
 						${viewElementsOptions[viewElement.name]}
 					</div>
 					<tiles:insertTemplate template="formTemplate.jsp">
-						<tiles:putAttribute name="formId" value="${ viewElement.name}" />
-						<tiles:putAttribute name="dataDefinition" value="${ viewElement.dataDefinition}" />
+						<tiles:putAttribute name="formElement" value="${viewElement}" />
 					</tiles:insertTemplate>
 				</div>
 

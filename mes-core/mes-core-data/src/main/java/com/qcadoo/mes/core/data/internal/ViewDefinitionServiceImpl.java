@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -19,6 +20,7 @@ import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.FieldViewDefinition;
 import com.qcadoo.mes.core.data.definition.FormDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.definition.ViewDefinition;
@@ -110,6 +112,10 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormDefinition form = new FormDefinition("productDetailsForm", productDataDefinition);
         form.setParent("entityId");
         form.setCorrespondingViewName("products.productGridView");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        for (Entry<String, FieldDefinition> fieldEntry : productDataDefinition.getFields().entrySet())
+            formFields.add(new FieldViewDefinition(fieldEntry.getKey(), fieldEntry.getValue()));
+        form.setFields(formFields);
         elements.add(form);
 
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
@@ -164,7 +170,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductSubstituteDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView");
-        viewDefinition.setHeader("Substitute:");
+        viewDefinition.setHeader("products.substituteDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition substitutesDataDefinition = dataDefinitionService.get("products.substitute");
@@ -172,6 +178,17 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setCorrespondingViewName("products.productDetailsView");
         form.setParent("entityId");
         form.setParentField("product");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        // for (Entry<String, FieldDefinition> fieldEntry : substitutesDataDefinition.getFields().entrySet())
+        // formFields.add(new FieldViewDefinition(fieldEntry.getKey(), fieldEntry.getValue()));
+        // form.setFields(formFields);
+        formFields.add(new FieldViewDefinition("number", substitutesDataDefinition.getField("number")));
+        formFields.add(new FieldViewDefinition("name", substitutesDataDefinition.getField("name")));
+        formFields.add(new FieldViewDefinition("priority", substitutesDataDefinition.getField("priority")));
+        formFields.add(new FieldViewDefinition("effectiveDateFrom", substitutesDataDefinition.getField("effectiveDateFrom")));
+        formFields.add(new FieldViewDefinition("effectiveDateTo", substitutesDataDefinition.getField("effectiveDateTo")));
+        form.setFields(formFields);
+
         elements.add(form);
 
         viewDefinition.setElements(elements);
@@ -180,7 +197,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductSubstituteComponentDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.substituteComponentDetailsView");
-        viewDefinition.setHeader("Substitute product:");
+        viewDefinition.setHeader("products.substituteComponentDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
@@ -188,6 +205,12 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setCorrespondingViewName("products.productDetailsView");
         form.setParent("entityId");
         form.setParentField("substitute");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        // for (Entry<String, FieldDefinition> fieldEntry : substitutesComponentDataDefinition.getFields().entrySet())
+        // formFields.add(new FieldViewDefinition(fieldEntry.getKey(), fieldEntry.getValue()));
+        formFields.add(new FieldViewDefinition("product", substitutesComponentDataDefinition.getField("product")));
+        formFields.add(new FieldViewDefinition("quantity", substitutesComponentDataDefinition.getField("quantity")));
+        form.setFields(formFields);
         elements.add(form);
 
         viewDefinition.setElements(elements);
