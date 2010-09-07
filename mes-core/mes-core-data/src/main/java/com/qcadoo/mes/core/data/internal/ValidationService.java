@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
@@ -21,9 +20,6 @@ public final class ValidationService {
 
     @Autowired
     private SessionFactory sessionFactory;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public Entity parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final ValidationResults validationResults) {

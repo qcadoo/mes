@@ -5,7 +5,7 @@ import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public class PriorityFieldType implements FieldType {
+public final class PriorityFieldType implements FieldType {
 
     private final FieldDefinition scopeFieldDefinition;
 

@@ -9,7 +9,6 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.EntityService;
 import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
@@ -47,6 +46,8 @@ public final class DataDefinition {
 
     private CallbackDefinition onSave;
 
+    private Class<?> classForEntity;
+
     public DataDefinition(final String entityName) {
         this.entityName = entityName;
     }
@@ -61,6 +62,19 @@ public final class DataDefinition {
 
     public void setFullyQualifiedClassName(final String fullyQualifiedClassName) {
         this.fullyQualifiedClassName = fullyQualifiedClassName;
+        this.classForEntity = loadClassForEntity();
+    }
+
+    private Class<?> loadClassForEntity() {
+        if (isVirtualTable()) {
+            throw new UnsupportedOperationException("virtual tables are not supported");
+        } else {
+            try {
+                return DataDefinition.class.getClassLoader().loadClass(getFullyQualifiedClassName());
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
+            }
+        }
     }
 
     public String getDiscriminator() {
@@ -140,15 +154,7 @@ public final class DataDefinition {
     }
 
     public Class<?> getClassForEntity() {
-        if (isVirtualTable()) {
-            throw new UnsupportedOperationException("virtual tables are not supported");
-        } else {
-            try {
-                return EntityService.class.getClassLoader().loadClass(getFullyQualifiedClassName());
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
-            }
-        }
+        return classForEntity;
     }
 
     public Object getInstanceForEntity() {

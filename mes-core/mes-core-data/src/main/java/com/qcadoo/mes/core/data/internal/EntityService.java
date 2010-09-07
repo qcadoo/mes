@@ -6,7 +6,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
@@ -19,9 +18,6 @@ public final class EntityService {
 
     @Autowired
     private ValidationService validationService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public static final String FIELD_ID = "id";
 
