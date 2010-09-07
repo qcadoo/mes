@@ -23,6 +23,7 @@ QCD.PageConstructor = function(_viewName) {
 		gridParameters.fields = parameters.fields;
 		gridParameters.paging = parameters.options.paging == "true" ? true : false;
 		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;
+		gridParameters.isDataDefinitionProritizable = parameters.isDataDefinitionProritizable;
 		if (parameters.options) {
 			gridParameters.paging = parameters.options.paging == "true" ? true : false;
 			gridParameters.sortable = parameters.options.sortable == "true" ? true : false;

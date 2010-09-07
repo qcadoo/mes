@@ -22,7 +22,7 @@ public class TranslationServiceImpl implements TranslationService {
             "commons.grid.button.delete", "commons.grid.button.sort", "commons.grid.button.sort.asc",
             "commons.grid.button.sort.desc", "commons.grid.button.filter", "commons.grid.button.filter.null",
             "commons.grid.button.filter.notNull", "commons.grid.button.prev", "commons.grid.button.next",
-            "commons.grid.button.pageInfo" };
+            "commons.grid.span.pageInfo", "commons.grid.span.priority", "commons.grid.button.up", "commons.grid.button.down" };
 
     @Autowired
     private MessageSource messageSource;

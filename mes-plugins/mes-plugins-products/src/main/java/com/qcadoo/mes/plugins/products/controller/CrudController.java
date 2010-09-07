@@ -220,8 +220,18 @@ public class CrudController {
             }
             dataAccessService.delete(element.getDataDefinition().getEntityName(), entitiesId);
         }
+        return "ok";
+    }
+
+    @RequestMapping(value = "page/{viewName}/{elementName}/move", method = RequestMethod.POST)
+    @ResponseBody
+    public String moveEntities(@PathVariable("viewName") final String viewName,
+            @PathVariable("elementName") final String elementName, @RequestParam Integer entityId, @RequestParam Integer direction) {
+        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+
+        dataAccessService.move(element.getDataDefinition().getEntityName(), new Long(entityId), direction);
 
         return "ok";
-
     }
 }

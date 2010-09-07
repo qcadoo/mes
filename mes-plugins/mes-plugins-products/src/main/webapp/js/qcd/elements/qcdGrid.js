@@ -402,8 +402,38 @@ QCD.elements.GridElement = function(args, _mainController) {
 					alert(textStatus);
 					unblockList();
 				}
-
 			});
+		}
+	}
+	
+	function priorityDown() {
+		changePriority(-1);
+	}
+	
+	function priorityUp() {
+		changePriority(1);
+	}
+	
+	function changePriority(direction) {
+		var entitiesArray = getSelectedRows();
+		if (entitiesArray && entitiesArray.length == 1) {
+			var entity = entitiesArray[0];
+			if (entity) {
+				$.ajax({
+					url: gridParameters.viewName+"/"+gridParameters.viewElementName+"/move.html?entityId="+entityId+"&direction="+direction,
+					type: 'POST',
+					dataType: 'json',
+					data: null,
+					contentType: 'application/json; charset=utf-8',
+					success: function(response) {
+						refresh();
+					},
+					error: function(xhr, textStatus, errorThrown){
+						alert(textStatus);
+						unblockList();
+					}
+				});
+			}
 		}
 	}
 	
@@ -464,6 +494,18 @@ QCD.elements.GridElement = function(args, _mainController) {
 			element.before(performFilterButton);
 		}
 		
+		if (gridParameters.isDataDefinitionProritizable) {
+			var prorityDiv = $("<div>");
+				prorityDiv.append('<span>'+mainController.getTranslation("commons.grid.span.priority")+'</span>');
+				var upButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.up"));
+				upButton.click(function() {priorityUp();});
+				prorityDiv.append(upButton);
+				var downButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.down"));
+				downButton.click(function() {priorityDown();});
+				prorityDiv.append(downButton);
+			element.after(prorityDiv);
+		}
+		
 		if (gridParameters.paging) {
 			var pagingDiv = $("<div>").addClass('qcdGrid_paging');
 				pagingElements.prevButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.prev"));
@@ -477,7 +519,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 				pagingDiv.append(pagingElements.recordsNoSelect);
 				
 				var pageInfoSpan = $("<span>").addClass('qcdGrid_paging_pageInfo');
-					pageInfoSpan.append('<span>'+mainController.getTranslation("commons.grid.button.pageInfo")+'</span>');
+					pageInfoSpan.append('<span>'+mainController.getTranslation("commons.grid.span.pageInfo")+'</span>');
 					pagingElements.pageNoSpan = $("<span>");
 					pageInfoSpan.append(pagingElements.pageNoSpan);
 					pageInfoSpan.append('<span>/</span>');

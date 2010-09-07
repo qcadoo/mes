@@ -23,6 +23,7 @@ public class CrudControllerUtils {
         try {
             obj.put("name", viewElement.getName());
             obj.put("dataDefinition", viewElement.getDataDefinition().getEntityName());
+            obj.put("isDataDefinitionProritizable", viewElement.getDataDefinition().isProritizable());
             if (viewElement.getOptions() != null) {
                 JSONObject optionsObject = new JSONObject();
                 for (Entry<String, String> optionEntry : viewElement.getOptions().entrySet()) {
