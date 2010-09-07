@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.data.internal;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public final class ParentDatabaseObject {
 
@@ -14,7 +15,7 @@ public final class ParentDatabaseObject {
     public ParentDatabaseObject() {
     }
 
-    public ParentDatabaseObject(Long id) {
+    public ParentDatabaseObject(final Long id) {
         this.id = id;
     }
 
@@ -38,28 +39,23 @@ public final class ParentDatabaseObject {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(11, 37).append(name).append(id).append(deleted).toHashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof ParentDatabaseObject)) {
-            return false;
-        }
-        ParentDatabaseObject other = (ParentDatabaseObject) obj;
-        return new EqualsBuilder().append(name, other.name).append(id, other.id).append(deleted, other.deleted).isEquals();
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }

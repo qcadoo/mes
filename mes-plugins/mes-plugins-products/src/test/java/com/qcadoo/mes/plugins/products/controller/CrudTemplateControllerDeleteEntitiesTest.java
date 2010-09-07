@@ -25,6 +25,8 @@ public class CrudTemplateControllerDeleteEntitiesTest {
 
     private ViewDefinitionService vdsMock;
 
+    private DataDefinition dataDefinition;
+
     @Before
     public void init() {
         controller = new CrudController();
@@ -34,8 +36,9 @@ public class CrudTemplateControllerDeleteEntitiesTest {
         vdsMock = mock(ViewDefinitionService.class, RETURNS_DEEP_STUBS);
         ReflectionTestUtils.setField(controller, "viewDefinitionService", vdsMock);
 
+        dataDefinition = new DataDefinition("testEntityType");
         given(vdsMock.getViewDefinition("testView").getElementByName("testViewElement").getDataDefinition()).willReturn(
-                new DataDefinition("testEntityType"));
+                dataDefinition);
 
     }
 
@@ -48,7 +51,7 @@ public class CrudTemplateControllerDeleteEntitiesTest {
 
         // then
         assertEquals("ok", r);
-        verify(dasMock).delete("testEntityType", (long) 123);
+        verify(dasMock).delete(dataDefinition, (long) 123);
         verifyNoMoreInteractions(dasMock);
     }
 
@@ -61,7 +64,7 @@ public class CrudTemplateControllerDeleteEntitiesTest {
 
         // then
         assertEquals("ok", r);
-        verify(dasMock).delete("testEntityType", (long) 1, (long) 2, (long) 3);
+        verify(dasMock).delete(dataDefinition, (long) 1, (long) 2, (long) 3);
         verifyNoMoreInteractions(dasMock);
     }
 

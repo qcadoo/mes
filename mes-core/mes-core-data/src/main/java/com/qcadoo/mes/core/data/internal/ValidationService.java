@@ -104,7 +104,7 @@ public final class ValidationService {
                 return null;
             }
             BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
-            DataDefinition referencedDataDefinition = dataDefinitionService.get(belongsToFieldType.getEntityName());
+            DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
             return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validationResults);

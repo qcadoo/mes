@@ -32,12 +32,12 @@ public final class UniqueValidator implements FieldValidator {
     @Override
     public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity,
             final ValidationResults validationResults) {
-        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition.getEntityName())
+        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition)
                 .restrictedWith(Restrictions.eq(fieldDefinition, entity.getField(fieldDefinition.getName()))).withMaxResults(1);
         if (entity.getId() != null) {
             searchCriteriaBuilder.restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE));
         }
-        SearchResult results = dataAccessService.find(dataDefinition.getEntityName(), searchCriteriaBuilder.build());
+        SearchResult results = dataAccessService.find(searchCriteriaBuilder.build());
         if (results.getTotalNumberOfEntities() == 0) {
             return true;
         } else {

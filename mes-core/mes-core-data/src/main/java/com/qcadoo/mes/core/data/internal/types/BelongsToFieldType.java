@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
@@ -15,7 +16,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class BelongsToFieldType implements LookupedFieldType {
 
-    private final String entityName;
+    private final DataDefinition dataDefinition;
 
     private final DataAccessService dataAccessService;
 
@@ -23,9 +24,9 @@ public final class BelongsToFieldType implements LookupedFieldType {
 
     private final boolean eagerFetch;
 
-    public BelongsToFieldType(final String entityName, final String lookupFieldName, final boolean eagerFetch,
+    public BelongsToFieldType(final DataDefinition dataDefinition, final String lookupFieldName, final boolean eagerFetch,
             final DataAccessService dataAccessService) {
-        this.entityName = entityName;
+        this.dataDefinition = dataDefinition;
         this.lookupFieldName = lookupFieldName;
         this.eagerFetch = eagerFetch;
         this.dataAccessService = dataAccessService;
@@ -58,8 +59,8 @@ public final class BelongsToFieldType implements LookupedFieldType {
 
     @Override
     public Map<Long, String> lookup(final String prefix) {
-        SearchResult resultSet = dataAccessService.find(entityName,
-                SearchCriteriaBuilder.forEntity(entityName).orderBy(Order.asc(lookupFieldName)).build());
+        SearchResult resultSet = dataAccessService.find(SearchCriteriaBuilder.forEntity(dataDefinition)
+                .orderBy(Order.asc(lookupFieldName)).build());
         Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
 
         for (Entity entity : resultSet.getEntities()) {
@@ -69,8 +70,8 @@ public final class BelongsToFieldType implements LookupedFieldType {
         return possibleValues;
     }
 
-    public String getEntityName() {
-        return entityName;
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
     public boolean isEagerFetch() {

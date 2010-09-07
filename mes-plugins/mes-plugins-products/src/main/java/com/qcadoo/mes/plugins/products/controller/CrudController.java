@@ -119,7 +119,7 @@ public class CrudController {
         GridDefinition gridDefinition = (GridDefinition) element;
         DataDefinition dataDefinition = gridDefinition.getDataDefinition();
 
-        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition.getEntityName());
+        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition);
 
         if (arguments.get("entityId") != null && gridDefinition.getParent() != null) {
             Long parentId = Long.parseLong(arguments.get("entityId"));
@@ -174,7 +174,7 @@ public class CrudController {
 
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
-        SearchResult rs = dataAccessService.find(dataDefinition.getEntityName(), searchCriteria);
+        SearchResult rs = dataAccessService.find(searchCriteria);
 
         return ListDataUtils.generateListData(rs, gridDefinition);
     }
@@ -187,8 +187,7 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
-        Entity entity = dataAccessService.get(element.getDataDefinition().getEntityName(),
-                Long.parseLong(arguments.get("entityId")));
+        Entity entity = dataAccessService.get(element.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
 
         return EntityDataUtils.generateEntityData(entity, element.getDataDefinition());
     }
@@ -200,7 +199,7 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
-        ValidationResults validationResult = dataAccessService.save(element.getDataDefinition().getEntityName(), entity);
+        ValidationResults validationResult = dataAccessService.save(element.getDataDefinition(), entity);
 
         return EntityDataUtils.generateValidationResultWithEntityData(validationResult, element.getDataDefinition());
     }
@@ -218,7 +217,7 @@ public class CrudController {
             for (Integer selectedRowId : selectedRows) {
                 entitiesId[i++] = new Long(selectedRowId);
             }
-            dataAccessService.delete(element.getDataDefinition().getEntityName(), entitiesId);
+            dataAccessService.delete(element.getDataDefinition(), entitiesId);
         }
         return "ok";
     }
@@ -226,11 +225,12 @@ public class CrudController {
     @RequestMapping(value = "page/{viewName}/{elementName}/move", method = RequestMethod.POST)
     @ResponseBody
     public String moveEntities(@PathVariable("viewName") final String viewName,
-            @PathVariable("elementName") final String elementName, @RequestParam Integer entityId, @RequestParam Integer direction) {
+            @PathVariable("elementName") final String elementName, @RequestParam final Integer entityId,
+            @RequestParam final Integer direction) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
-        dataAccessService.move(element.getDataDefinition().getEntityName(), new Long(entityId), direction);
+        dataAccessService.move(element.getDataDefinition(), new Long(entityId), direction);
 
         return "ok";
     }

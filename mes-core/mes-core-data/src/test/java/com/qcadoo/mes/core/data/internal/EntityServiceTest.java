@@ -6,96 +6,16 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.springframework.util.Assert.isInstanceOf;
 
-import org.hibernate.SessionFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public class EntityServiceTest {
-
-    private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-
-    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
-
-    private final DictionaryService dictionaryService = mock(DictionaryService.class);
-
-    private final DataAccessService dataAccessService = mock(DataAccessService.class);
-
-    private final FieldTypeFactory fieldTypeFactory = new FieldTypeFactoryImpl();
-
-    private EntityService entityService = null;
-
-    private ValidationService validationService = null;
-
-    private DataDefinition parentDataDefinition = null;
-
-    private DataDefinition dataDefinition = null;
-
-    private FieldDefinition fieldDefinitionAge = null;
-
-    private FieldDefinition fieldDefinitionName = null;
-
-    private FieldDefinition fieldDefinitionBelongsTo = null;
-
-    private FieldDefinition parentFieldDefinitionName = null;
-
-    @Before
-    public void init() {
-        validationService = new ValidationService();
-        ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
-        ReflectionTestUtils.setField(validationService, "dataDefinitionService", dataDefinitionService);
-
-        entityService = new EntityService();
-        ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(entityService, "validationService", validationService);
-
-        ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
-        ReflectionTestUtils.setField(fieldTypeFactory, "dataAccessService", dataAccessService);
-
-        parentFieldDefinitionName = new FieldDefinition("name");
-        parentFieldDefinitionName.setType(fieldTypeFactory.stringType());
-        parentFieldDefinitionName.setValidators();
-
-        fieldDefinitionBelongsTo = new FieldDefinition("belongsTo");
-        fieldDefinitionBelongsTo.setType(fieldTypeFactory.eagerBelongsToType("parent.entity", "name"));
-        fieldDefinitionBelongsTo.setValidators();
-
-        fieldDefinitionName = new FieldDefinition("name");
-        fieldDefinitionName.setType(fieldTypeFactory.stringType());
-        fieldDefinitionName.setValidators();
-
-        fieldDefinitionAge = new FieldDefinition("age");
-        fieldDefinitionAge.setType(fieldTypeFactory.integerType());
-        fieldDefinitionAge.setValidators();
-
-        parentDataDefinition = new DataDefinition("parent.entity");
-        parentDataDefinition.addField(parentFieldDefinitionName);
-        parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
-
-        dataDefinition = new DataDefinition("simple.entity");
-        dataDefinition.addField(fieldDefinitionName);
-        dataDefinition.addField(fieldDefinitionAge);
-        dataDefinition.addField(fieldDefinitionBelongsTo);
-        dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
-
-        given(dataDefinitionService.get("simple.entity")).willReturn(dataDefinition);
-
-        given(dataDefinitionService.get("parent.entity")).willReturn(parentDataDefinition);
-    }
+public class EntityServiceTest extends DataAccessTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrownAnExceptionWhileGettingNotExistingField() throws Exception {
@@ -277,7 +197,7 @@ public class EntityServiceTest {
 
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(2L);
 
-        given(sessionFactory.getCurrentSession().get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         // when
         entityService.setField(databaseEntity, fieldDefinitionBelongsTo, parentDatabaseEntity);
@@ -337,7 +257,7 @@ public class EntityServiceTest {
         ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        given(sessionFactory.getCurrentSession().get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         // when
         Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, null,
@@ -366,7 +286,7 @@ public class EntityServiceTest {
         ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        given(sessionFactory.getCurrentSession().get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         // when
         Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity,

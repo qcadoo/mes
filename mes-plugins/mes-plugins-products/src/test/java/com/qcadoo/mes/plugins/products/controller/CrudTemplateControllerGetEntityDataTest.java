@@ -26,6 +26,8 @@ public class CrudTemplateControllerGetEntityDataTest {
 
     private ViewDefinitionService vdsMock;
 
+    private DataDefinition dataDefinition;
+
     @Before
     public void init() {
         controller = new CrudController();
@@ -39,7 +41,7 @@ public class CrudTemplateControllerGetEntityDataTest {
         given(f1.getName()).willReturn("testField1");
         given(f1.getValue("testField1Val")).willReturn("testField1Ok");
 
-        DataDefinition dataDefinition = new DataDefinition("testEntityType");
+        dataDefinition = new DataDefinition("testEntityType");
         dataDefinition.addField(f1);
 
         given(vdsMock.getViewDefinition("testView").getElementByName("testViewElement").getDataDefinition()).willReturn(
@@ -55,7 +57,7 @@ public class CrudTemplateControllerGetEntityDataTest {
         Entity entity = new Entity((long) 22);
         entity.setField("testField1", "testField1Val");
 
-        given(dasMock.get("testEntityType", (long) 22)).willReturn(entity);
+        given(dasMock.get(dataDefinition, (long) 22)).willReturn(entity);
 
         // when
         Entity resultEntity = controller.getEntityData("testView", "testViewElement", arguments);

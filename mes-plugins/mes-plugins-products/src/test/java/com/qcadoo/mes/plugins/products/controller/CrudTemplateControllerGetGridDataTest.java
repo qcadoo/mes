@@ -62,13 +62,13 @@ public class CrudTemplateControllerGetGridDataTest {
     public void shouldReturnValidDataWhenNoOrderAndNoFilterAndNoPagingAndNoParent() {
         // given
         Map<String, String> arguments = new HashMap<String, String>();
-        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("testEntity").build();
+        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity(gridDataDefinition).build();
 
         SearchResultImpl searchResult = new SearchResultImpl();
         searchResult.setResults(new LinkedList<Entity>());
         searchResult.setTotalNumberOfEntities(30);
 
-        given(dasMock.find("testEntity", searchCriteria)).willReturn(searchResult);
+        given(dasMock.find(searchCriteria)).willReturn(searchResult);
         // when
         ListData result = controller.getGridData("testView", "testViewElement", arguments);
 
@@ -91,7 +91,7 @@ public class CrudTemplateControllerGetGridDataTest {
 
         // TODO mina test for filtering
 
-        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity("testEntity")
+        SearchCriteria searchCriteria = SearchCriteriaBuilder.forEntity(gridDataDefinition)
                 .restrictedWith(Restrictions.belongsTo(parentField, parentId)).withMaxResults(11).withFirstResult(21)
                 .orderBy(Order.desc("testCol")).build();
 
@@ -99,7 +99,7 @@ public class CrudTemplateControllerGetGridDataTest {
         searchResult.setResults(new LinkedList<Entity>());
         searchResult.setTotalNumberOfEntities(30);
 
-        given(dasMock.find("testEntity", searchCriteria)).willReturn(searchResult);
+        given(dasMock.find(searchCriteria)).willReturn(searchResult);
 
         // when
         ListData result = controller.getGridData("testView", "testViewElement", arguments);

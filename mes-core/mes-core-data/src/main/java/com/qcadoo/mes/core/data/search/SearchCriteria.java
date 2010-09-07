@@ -2,6 +2,9 @@ package com.qcadoo.mes.core.data.search;
 
 import java.util.Set;
 
+import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.GridDefinition;
+
 /**
  * Object represents the criteria for listing entities. Together with definition -
  * {@link com.qcadoo.mes.core.data.definition.DataDefinition} - and grip - optionally
@@ -14,10 +17,6 @@ import java.util.Set;
  */
 public interface SearchCriteria {
 
-    String getEntityName();
-
-    String getGridName();
-
     int getMaxResults();
 
     int getFirstResult();
@@ -25,5 +24,9 @@ public interface SearchCriteria {
     Order getOrder();
 
     Set<Restriction> getRestrictions();
+
+    DataDefinition getDataDefinition();
+
+    GridDefinition getGridDefinition();
 
 }

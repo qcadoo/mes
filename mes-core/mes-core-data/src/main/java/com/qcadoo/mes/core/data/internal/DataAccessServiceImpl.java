@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
@@ -44,16 +43,14 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Autowired
     private EntityService entityService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
     @Override
     @Transactional
-    public ValidationResults save(final String entityName, final Entity entity) {
+    public ValidationResults save(final DataDefinition dataDefinition, final Entity entity) {
+        checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(entity, "entity must be given");
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+
         Class<?> entityClass = dataDefinition.getClassForEntity();
 
         Object existingDatabaseEntity = null;
@@ -92,9 +89,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional(readOnly = true)
-    public Entity get(final String entityName, final Long entityId) {
-        checkArgument(entityId != null, "entityId must be given");
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+    public Entity get(final DataDefinition dataDefinition, final Long entityId) {
+        checkNotNull(dataDefinition, "dataDefinition must be given");
+        checkNotNull(entityId, "entityId must be given");
 
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
@@ -109,12 +106,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void delete(final String entityName, final Long... entityIds) {
+    public void delete(final DataDefinition dataDefinition, final Long... entityIds) {
+        checkNotNull(dataDefinition, "dataDefinition must be given");
+
         if (entityIds.length == 0) {
             return;
         }
 
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
         Class<?> entityClass = dataDefinition.getClassForEntity();
 
         for (Long entityId : entityIds) {
@@ -136,9 +134,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional(readOnly = true)
-    public SearchResult find(final String entityName, final SearchCriteria searchCriteria) {
+    public SearchResult find(final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+        DataDefinition dataDefinition = searchCriteria.getDataDefinition();
 
         int totalNumberOfEntities = getTotalNumberOfEntities(getCriteriaWithRestriction(searchCriteria, dataDefinition));
 
@@ -157,7 +155,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Criteria criteria = getCriteriaWithRestriction(searchCriteria, dataDefinition).setFirstResult(
                 searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults());
 
-        criteria = addOrderToCriteria(searchCriteria.getOrder(), criteria);
+        addOrderToCriteria(searchCriteria.getOrder(), criteria);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Searching elements with criteria: firstResults = " + searchCriteria.getFirstResult() + ", maxResults = "
@@ -175,14 +173,14 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void moveTo(final String entityName, final Long entityId, final int position) {
-        move(entityName, entityId, position, 0);
+    public void moveTo(final DataDefinition dataDefinition, final Long entityId, final int position) {
+        move(dataDefinition, entityId, position, 0);
     }
 
     @Override
     @Transactional
-    public void move(final String entityName, final Long entityId, final int offset) {
-        move(entityName, entityId, 0, offset);
+    public void move(final DataDefinition dataDefinition, final Long entityId, final int offset) {
+        move(dataDefinition, entityId, 0, offset);
     }
 
     private void prioritizeEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
@@ -220,9 +218,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     @SuppressWarnings("unchecked")
-    private void move(final String entityName, final Long entityId, final int position, final int offset) {
-        checkNotNull(entityId, "entity id must be given");
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+    private void move(final DataDefinition dataDefinition, final Long entityId, final int position, final int offset) {
+        checkNotNull(dataDefinition, "dataDefinition must be given");
+        checkNotNull(entityId, "entityId must be given");
+
         FieldDefinition fieldDefinition = getPriorityField(dataDefinition);
 
         checkNotNull(fieldDefinition, "priority field not found");
@@ -237,10 +236,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         int targetPriority = 0;
 
-        if (position > 0) {
-            targetPriority = position;
-        } else {
+        if (offset > 0) {
             targetPriority = currentPriority + offset;
+        } else {
+            targetPriority = position;
         }
 
         if (targetPriority < 1) {
@@ -248,16 +247,25 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         if (currentPriority == targetPriority) {
+            LOG.info(" ---> ehh?");
             return;
         }
 
         FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
         Object scopeValue = entityService.getField(databaseEntity, scopeFieldDefinition);
 
-        int totalNumberOfEntities = getScopedTotalNumberOfEntities(dataDefinition, scopeFieldDefinition, scopeValue);
+        if (targetPriority > 1) {
+            int totalNumberOfEntities = getScopedTotalNumberOfEntities(dataDefinition, scopeFieldDefinition, scopeValue);
 
-        if (targetPriority > totalNumberOfEntities) {
-            targetPriority = totalNumberOfEntities;
+            if (targetPriority > totalNumberOfEntities) {
+                targetPriority = totalNumberOfEntities;
+            }
+        }
+
+        LOG.info(" ---> " + currentPriority + ", " + targetPriority);
+
+        if (currentPriority == targetPriority) {
+            return;
         }
 
         if (currentPriority < targetPriority) {
@@ -267,6 +275,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             changePriority(dataDefinition, fieldDefinition, scopeFieldDefinition, scopeValue, targetPriority,
                     currentPriority - 1, 1);
         }
+
+        entityService.setField(databaseEntity, fieldDefinition, targetPriority);
 
         sessionFactory.getCurrentSession().update(databaseEntity);
     }
@@ -292,7 +302,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     private FieldDefinition getPriorityField(final DataDefinition dataDefinition) {
-        if (!dataDefinition.isProritizable()) {
+        if (!dataDefinition.isPrioritizable()) {
             return null;
         }
 
@@ -317,7 +327,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             final Object scopeValue) {
         Criteria criteria = getCriteria(dataDefinition).setProjection(Projections.rowCount());
 
-        criteria = addScopeToCriteria(criteria, scopeFieldDefinition, scopeValue);
+        addScopeToCriteria(criteria, scopeFieldDefinition, scopeValue);
+
         return Integer.valueOf(criteria.uniqueResult().toString());
     }
 
@@ -334,7 +345,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Criteria criteria = getCriteria(dataDefinition);
 
         for (Restriction restriction : searchCriteria.getRestrictions()) {
-            criteria = addRestrictionToCriteria(restriction, criteria);
+            addRestrictionToCriteria(restriction, criteria);
         }
         return criteria;
     }
@@ -343,7 +354,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
 
         if (dataDefinition.isDeletable()) {
-            criteria = criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
+            criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
         }
 
         return criteria;
@@ -384,7 +395,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
                 .add(Restrictions.idEq(entityId));
         if (dataDefinition.isDeletable()) {
-            criteria = criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
+            criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
         }
         return criteria.uniqueResult();
     }

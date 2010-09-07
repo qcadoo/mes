@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
@@ -19,6 +20,9 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Autowired
     private DataAccessService dataAccessService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     private static final FieldType INTEGER_FIELD_TYPE = new NumericFieldType(10, 0);
 
@@ -91,13 +95,13 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Override
     public LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToFieldType(entityName, lookupFieldName, false, dataAccessService);
+        return new BelongsToFieldType(dataDefinitionService.get(entityName), lookupFieldName, false, dataAccessService);
     }
 
     @Override
     public LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToFieldType(entityName, lookupFieldName, true, dataAccessService);
+        return new BelongsToFieldType(dataDefinitionService.get(entityName), lookupFieldName, true, dataAccessService);
     }
 
     @Override

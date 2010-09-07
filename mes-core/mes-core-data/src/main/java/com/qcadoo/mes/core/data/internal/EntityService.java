@@ -107,7 +107,7 @@ public final class EntityService {
 
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
-        DataDefinition referencedDataDefinition = dataDefinitionService.get(belongsToFieldType.getEntityName());
+        DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
         if (belongsToFieldType.isEagerFetch()) {
             Object value = getField(databaseEntity, fieldDefinition.getName());
             if (value != null) {

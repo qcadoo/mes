@@ -33,11 +33,11 @@ public final class DataDefinition {
 
     private final Map<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
 
+    private FieldDefinition priorityField;
+
     private List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
     private boolean deletable = true;
-
-    private boolean proritizable = false;
 
     private CallbackDefinition onCreate;
 
@@ -75,7 +75,7 @@ public final class DataDefinition {
 
     public void addField(final FieldDefinition field) {
         if (field.getType() instanceof PriorityFieldType) {
-            proritizable = true;
+            priorityField = field;
         }
         fields.put(field.getName(), field);
     }
@@ -161,8 +161,12 @@ public final class DataDefinition {
         return deletable;
     }
 
-    public boolean isProritizable() {
-        return proritizable;
+    public boolean isPrioritizable() {
+        return priorityField != null;
+    }
+
+    public FieldDefinition getPriorityField() {
+        return priorityField;
     }
 
     public void setDeletable(final boolean deletable) {

@@ -407,11 +407,11 @@ QCD.elements.GridElement = function(args, _mainController) {
 	}
 	
 	function priorityDown() {
-		changePriority(-1);
+		changePriority(1);
 	}
 	
 	function priorityUp() {
-		changePriority(1);
+		changePriority(-1);
 	}
 	
 	function changePriority(direction) {
@@ -420,7 +420,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 			var entity = entitiesArray[0];
 			if (entity) {
 				$.ajax({
-					url: gridParameters.viewName+"/"+gridParameters.viewElementName+"/move.html?entityId="+entityId+"&direction="+direction,
+					url: gridParameters.viewName+"/"+gridParameters.viewElementName+"/move.html?entityId="+entity+"&direction="+direction,
 					type: 'POST',
 					dataType: 'json',
 					data: null,
