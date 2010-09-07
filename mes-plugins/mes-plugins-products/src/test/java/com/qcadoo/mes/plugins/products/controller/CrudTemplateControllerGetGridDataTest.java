@@ -83,7 +83,7 @@ public class CrudTemplateControllerGetGridDataTest {
         arguments.put("entityId", "123");
         arguments.put("maxResults", "11");
         arguments.put("firstResult", "21");
-        arguments.put("sortColumn", "testCol");
+        arguments.put("sortField", "testCol");
         arguments.put("sortOrder", "desc");
 
         FieldDefinition parentField = gridDataDefinition.getField("parentEntity");

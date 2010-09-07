@@ -17,7 +17,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 		pagingVars.totalNumberOfEntities = null;
 	
 	var sortVars = new Object();
-		sortVars.column = null;
+		sortVars.field = null;
 		sortVars.order = null;
 		
 	var filterArray = null;
@@ -30,7 +30,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 		pagingElements.allPagesNoSpan = null;
 		
 	var sortElements = new Object();
-		sortElements.columnChooser = null;
+		sortElements.fieldChooser = null;
 		sortElements.orderChooser = null;
 	
 	var filterElements = new Object();
@@ -43,8 +43,6 @@ QCD.elements.GridElement = function(args, _mainController) {
 	var parentId = null;
 	
 	var children = new Array();
-	
-	var dataFromSerialization = null;
 	
 	var currentRefreshId = 0;
 	var rowsToSelect = null;
@@ -85,15 +83,15 @@ QCD.elements.GridElement = function(args, _mainController) {
 	}
 	
 	function updateSortElements() {
-		if (sortElements.columnChooser && sortElements.orderChooser) {
-			sortElements.columnChooser.val(sortVars.column);
+		if (sortElements.fieldChooser && sortElements.orderChooser) {
+			sortElements.fieldChooser.val(sortVars.field);
 			sortElements.orderChooser.val(sortVars.order);
 		}
 	}
 	
 	function updateSortVars() {
-		if (sortElements.columnChooser && sortElements.orderChooser) {
-			sortVars.column = sortElements.columnChooser.val();
+		if (sortElements.fieldChooser && sortElements.orderChooser) {
+			sortVars.field = sortElements.fieldChooser.val();
 			sortVars.order = sortElements.orderChooser.val();
 		}
 	}
@@ -192,8 +190,10 @@ QCD.elements.GridElement = function(args, _mainController) {
 	}
 	
 	function rowClicked(rowId) {
-		for (var i in children) {
-			children[i].insertParentId(rowId);
+		if (! rowsToSelect) {
+			for (var i in children) {
+				children[i].insertParentId(rowId);
+			}
 		}
 		if (navigationButtons.deleteButton) {
 			if (gridParameters.multiselect) {
@@ -271,8 +271,8 @@ QCD.elements.GridElement = function(args, _mainController) {
 		if (pagingVars.first != null) {
 			parameters.firstResult = pagingVars.first;
 		}
-		if (sortVars.column && sortVars.order) {
-			parameters.sortColumn = sortVars.column;
+		if (sortVars.field && sortVars.order) {
+			parameters.sortField = sortVars.field;
 			parameters.sortOrder = sortVars.order;
 		}
 		if (filterArray && filterArray.length > 0) {
@@ -463,12 +463,12 @@ QCD.elements.GridElement = function(args, _mainController) {
 		
 		if (gridParameters.sortable) {
 			var topSortDiv = $("<div>").addClass('qcdGrid_sortButtons');
-				sortElements.columnChooser = $("<select>");
-					for (var i in gridParameters.colNames) {
-						var colName = gridParameters.colNames[i];
-						sortElements.columnChooser.append("<option value='"+colName+"'>"+colName+"</option>");
+				sortElements.fieldChooser = $("<select>");
+					for (var i in gridParameters.fields) {
+						var fieldName = gridParameters.fields[i];
+						sortElements.fieldChooser.append("<option value='"+fieldName+"'>"+fieldName+"</option>");
 					}
-					topSortDiv.append(sortElements.columnChooser);
+					topSortDiv.append(sortElements.fieldChooser);
 				sortElements.orderChooser = $("<select>");
 					sortElements.orderChooser.append("<option value='asc'>"+mainController.getTranslation("commons.grid.button.sort.asc")+"</option>");
 					sortElements.orderChooser.append("<option value='desc'>"+mainController.getTranslation("commons.grid.button.sort.desc")+"</option>");
@@ -551,17 +551,17 @@ QCD.elements.GridElement = function(args, _mainController) {
 		
 		if (! gridParameters.parent) {
 			enable();
-			refresh();
+			//refresh();
 		}
 	}
+	
+	this.refresh = refresh;
 	
 	this.insertParentId = function(_parentId) {
 		parentId = _parentId;
 		if (_parentId) {
 			enable();
-			//if (! dataFromSerialization) {
-				refresh();
-			//}
+			refresh();
 		} else {
 			disable();
 		}
@@ -593,7 +593,6 @@ QCD.elements.GridElement = function(args, _mainController) {
 	}
 	
 	this.deserialize = function(serializationObject) {
-		dataFromSerialization = serializationObject;
 		parentId = serializationObject.parentId;
 		pagingVars = serializationObject.pagingVars;
 		sortVars = serializationObject.sortVars;
@@ -601,6 +600,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 		rowsToSelect = serializationObject.selectedRows;
 		updateSortElements();
 		updateFiltersVars();
+		//QCDLogger.info(serializationObject);
 		refresh();
 		//QCDLogger.info(serializationObject);
 	}

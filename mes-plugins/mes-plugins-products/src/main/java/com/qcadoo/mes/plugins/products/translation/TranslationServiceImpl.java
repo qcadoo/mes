@@ -43,19 +43,29 @@ public class TranslationServiceImpl implements TranslationService {
         return commonsTranslations;
     }
 
-    public void translateViewDefinition(ViewDefinition viewDefinition, Locale locale) {
-        viewDefinition.setHeader(translate(viewDefinition.getHeader(), locale));
+    private void putTranslationToMap(String messageCode, Map<String, String> translationsMap, Locale locale) {
+        translationsMap.put(messageCode, translate(messageCode, locale));
+    }
+
+    public void updateTranslationsForViewDefinition(ViewDefinition viewDefinition, Map<String, String> translationsMap,
+            Locale locale) {
+        putTranslationToMap(viewDefinition.getName() + ".header", translationsMap, locale);
         for (ViewElementDefinition viewElement : viewDefinition.getElements()) {
             if (viewElement.getHeader() != null) {
-                viewElement.setHeader(translate(viewElement.getHeader(), locale));
+                putTranslationToMap(viewDefinition.getName() + "." + viewElement.getName() + ".header", translationsMap, locale);
+            }
+            for (String fieldName : viewElement.getDataDefinition().getFields().keySet()) {
+                putTranslationToMap(viewDefinition.getName() + "." + viewElement.getName() + ".field." + fieldName,
+                        translationsMap, locale);
             }
             if (viewElement.getType() == ViewElementDefinition.TYPE_GRID) {
                 GridDefinition gridDefinition = (GridDefinition) viewElement;
                 for (ColumnDefinition column : gridDefinition.getColumns()) {
-                    column.setName(translate(column.getName(), locale));
+                    putTranslationToMap(viewDefinition.getName() + "." + viewElement.getName() + ".column." + column.getName(),
+                            translationsMap, locale);
                 }
-
             }
         }
+        System.out.println(translationsMap);
     }
 }

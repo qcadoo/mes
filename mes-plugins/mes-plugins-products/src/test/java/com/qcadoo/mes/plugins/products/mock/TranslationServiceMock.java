@@ -12,7 +12,8 @@ public class TranslationServiceMock implements TranslationService {
         return null;
     }
 
-    public void translateViewDefinition(ViewDefinition viewDefinition, Locale locale) {
+    public void updateTranslationsForViewDefinition(ViewDefinition viewDefinition, Map<String, String> translationsMap,
+            Locale locale) {
 
     }
 

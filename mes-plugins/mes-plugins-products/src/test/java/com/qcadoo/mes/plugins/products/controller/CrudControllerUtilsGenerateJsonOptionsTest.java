@@ -49,7 +49,7 @@ public class CrudControllerUtilsGenerateJsonOptionsTest {
         // then
         try {
             JSONObject obj = new JSONObject(json);
-            assertEquals(8, obj.length());
+            assertEquals(9, obj.length());
             assertEquals("testForm", obj.get("name"));
             assertEquals("testEntity", obj.get("dataDefinition"));
 
@@ -87,7 +87,7 @@ public class CrudControllerUtilsGenerateJsonOptionsTest {
         // then
         try {
             JSONObject obj = new JSONObject(json);
-            assertEquals(2, obj.length());
+            assertEquals(3, obj.length());
             assertEquals("testForm", obj.get("name"));
             assertEquals("testEntity", obj.get("dataDefinition"));
         } catch (JSONException e) {
@@ -118,7 +118,7 @@ public class CrudControllerUtilsGenerateJsonOptionsTest {
         // then
         try {
             JSONObject obj = new JSONObject(json);
-            assertEquals(4, obj.length());
+            assertEquals(5, obj.length());
             assertEquals("testGrid", obj.get("name"));
             assertEquals("testDD", obj.get("dataDefinition"));
 

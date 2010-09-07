@@ -10,7 +10,7 @@ QCD.PageController = function(_viewName) {
 		pageElements = pageConstructor.constructPageElements(_this);
 	}
 	
-	this.init = function(entityId, contextEntityId) {
+	this.init = function(entityId, contextEntityId, serializationObject) {
 		for (var i in pageElements) {
 			var elementParent = pageElements[i].getParent();
 			if (elementParent && elementParent.length > 12) {
@@ -27,18 +27,27 @@ QCD.PageController = function(_viewName) {
 				pageElements[i].insertContext(contextEntityId);
 			}
 		}
-		if (entityId && entityId != "") {
+		if (serializationObject) {
 			for (var i in pageElements) {
-				var elementParent = pageElements[i].getParent(); 
-				if (elementParent == "entityId") {
-					pageElements[i].insertParentId(entityId);
+				pageElements[i].deserialize(serializationObject[i]);
+			}
+		} else {
+			for (var i in pageElements) {
+				var elementParent = pageElements[i].getParent();
+				if (!elementParent) {
+					pageElements[i].refresh();
+				} else if (elementParent == "entityId") {
+					if (entityId && entityId != "") {
+						pageElements[i].insertParentId(entityId);
+					}
 				}
 			}
 		}
 	}
 	
 	this.getTranslation = function(key) {
-		return window.parent.commonTranslations[key] ? window.parent.commonTranslations[key] : "ToTranslate";
+		return window.translationsMap[key] ? window.translationsMap[key] : "TT: "+key;
+		//return window.parent.commonTranslations[key] ? window.parent.commonTranslations[key] : "ToTranslate";
 	}
 	
 	this.goToPage = function(url) {
@@ -51,12 +60,6 @@ QCD.PageController = function(_viewName) {
 	
 	this.goBack = function() {
 		window.parent.goBack();
-	}
-	
-	this.insertState = function(serializationObject) {
-		for (var i in pageElements) {
-			pageElements[i].deserialize(serializationObject[i]);
-		}
 	}
 	
 	constructor(this);

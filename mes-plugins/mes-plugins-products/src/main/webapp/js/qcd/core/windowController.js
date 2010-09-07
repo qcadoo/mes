@@ -52,8 +52,8 @@ QCD.WindowController = function() {
 	}
 	
 	function onIframeLoad() {
-		if (serializationObjectToInsert) {
-			iframe[0].contentWindow.insertState(serializationObjectToInsert);
+		if (iframe[0].contentWindow.init) {
+			iframe[0].contentWindow.init(serializationObjectToInsert);
 		}
 		serializationObjectToInsert = null;
 		loadingIndicator.hide();

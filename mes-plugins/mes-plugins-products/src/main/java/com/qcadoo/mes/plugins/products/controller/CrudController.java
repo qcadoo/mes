@@ -63,11 +63,11 @@ public class CrudController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("crudView");
 
-        System.out.println(viewName);
+        Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        translationService.translateViewDefinition(viewDefinition, locale);
         mav.addObject("viewDefinition", viewDefinition);
+        translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
         System.out.println(viewDefinition);
 
@@ -103,7 +103,7 @@ public class CrudController {
         mav.addObject("entityId", arguments.get("entityId"));
         mav.addObject("contextEntityId", arguments.get("contextEntityId"));
 
-        mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
+        mav.addObject("translationsMap", translationsMap);
 
         return mav;
     }
@@ -136,11 +136,11 @@ public class CrudController {
             checkArgument(firstResult >= 0, "First result must be greater or equals 0");
             searchCriteriaBuilder = searchCriteriaBuilder.withFirstResult(firstResult);
         }
-        if (arguments.get("sortColumn") != null && arguments.get("sortOrder") != null) {
+        if (arguments.get("sortField") != null && arguments.get("sortOrder") != null) {
             if ("desc".equals(arguments.get("sortOrder"))) {
-                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(arguments.get("sortColumn")));
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(arguments.get("sortField")));
             } else {
-                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(arguments.get("sortColumn")));
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(arguments.get("sortField")));
             }
         }
 

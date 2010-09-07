@@ -57,7 +57,7 @@
 				<c:choose>
 					<c:when test="${fieldEntry.value.hidden == false}">
 						<td>
-							<spring:message code="${dataDefinition.entityName}.field.${fieldEntry.key}"/>
+							${translationsMap["${dataDefinition.entityName+}.field.${fieldEntry.key}"]}
 						</td>
 						<td class="${tdClass}">		
 							<c:choose>
@@ -111,7 +111,7 @@
 			
 </form>
 
-<button id="${formId}_saveButton">${commonTranslations["commons.form.button.accept"] }</button>
-<button id="${formId}_saveCloseButton">${commonTranslations["commons.form.button.acceptAndClose"] }</button>
-<button id="${formId}_cancelButton">${commonTranslations["commons.form.button.cancel"] }</button>
+<button id="${formId}_saveButton">${translationsMap["commons.form.button.accept"] }</button>
+<button id="${formId}_saveCloseButton">${translationsMap["commons.form.button.acceptAndClose"] }</button>
+<button id="${formId}_cancelButton">${translationsMap["commons.form.button.cancel"] }</button>
 

@@ -11,8 +11,6 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	var contextEntityId = null;
 	
-	var dataFromSerialization = null;
-	
 	performSave = function() {
 		sendSaveRequest(false);
 	}
@@ -46,7 +44,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 					if (shouldRedirect) {
 						redirectToCorrespondingPage();
 					} else {
-						refreshForm(response.entity);
+						refreshForm(response.entity, true);
 					}
 				} else {
 					for(var i in response.globalErrors) {
@@ -141,18 +139,12 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	getEntityAndFillForm = function(entityId) {
 		var url = parameters.viewName+"/"+parameters.name+"/entity.html?entityId="+entityId;
-		if (dataFromSerialization)
-			return;
-		dataFromSerialization = null;
 		$.ajax({
 			url: url,
 			type: 'GET',
 			success: function(response) {
 				if(response) {
-					if (dataFromSerialization)
-						return;
-					dataFromSerialization = null;
-					refreshForm(response);
+					refreshForm(response, true);
 				}
 			},
 			error: function(xhr, textStatus, errorThrown){
@@ -161,7 +153,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 		});
 	}
 	
-	refreshForm = function(entity) {
+	refreshForm = function(entity, updateChildren) {
 		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
@@ -172,8 +164,10 @@ QCD.elements.FormElement = function(args, _mainController) {
 		$('#'+parameters.name+'_form .confirmable').each(function(index) {
 			$('#'+$(this).attr('id')+'_confirmation').attr('value','');
 		});
-		for (var i in children) {
-			children[i].insertParentId(entity["id"]);
+		if (updateChildren) {
+			for (var i in children) {
+				children[i].insertParentId(entity["id"]);
+			}
 		}
 	}
 	
@@ -208,7 +202,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	this.deserialize = function(serializationObject) {
 		dataFromSerialization = serializationObject;
-		refreshForm(serializationObject.formData);
+		refreshForm(serializationObject.formData, false);
 	}
 	
 	constructor(args);

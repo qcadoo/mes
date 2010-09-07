@@ -10,7 +10,8 @@ QCD.PageConstructor = function(_viewName) {
 		var colNames = new Array();
 		var colModel = new Array();
 		for (var i in parameters.columns) {
-			colNames.push(parameters.columns[i]);
+			var nameToTranslate = viewName+"."+gridName+".column."+parameters.columns[i];
+			colNames.push(mainController.getTranslation(nameToTranslate));
 			colModel.push({name:parameters.columns[i], index:parameters.columns[i], width:100, sortable: false});
 		}
 		
@@ -20,7 +21,11 @@ QCD.PageConstructor = function(_viewName) {
 		gridParameters.viewElementName = gridName;
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
-		gridParameters.fields = parameters.fields;
+		gridParameters.fields = new Array();
+		for (var i in parameters.fields) {
+			var nameToTranslate = viewName+"."+gridName+".field."+parameters.fields[i];
+			gridParameters.fields.push(mainController.getTranslation(nameToTranslate));
+		}
 		gridParameters.paging = parameters.options.paging == "true" ? true : false;
 		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;
 		gridParameters.isDataDefinitionProritizable = parameters.isDataDefinitionProritizable;

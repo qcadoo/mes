@@ -67,9 +67,6 @@ public class CrudTemplateControllerGetViewTest {
         @SuppressWarnings("unchecked")
         Map<String, String> optionsMap = (Map<String, String>) mav.getModel().get("viewElementsOptions");
         assertEquals(2, optionsMap.size());
-        assertEquals("{\"dataDefinition\":\"testEntity1\",\"name\":\"testForm\"}", optionsMap.get("testForm"));
-        assertEquals("{\"dataDefinition\":\"testEntity2\",\"name\":\"testGrid\",\"columns\":[],\"fields\":[]}",
-                optionsMap.get("testGrid"));
 
         // TODO mina add test for dictionary values
 

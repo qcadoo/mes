@@ -9,6 +9,6 @@ public interface TranslationService {
 
     Map<String, String> getCommonsTranslations(Locale locale);
 
-    void translateViewDefinition(ViewDefinition viewDefinition, Locale locale);
+    void updateTranslationsForViewDefinition(ViewDefinition viewDefinition, Map<String, String> translationsMap, Locale locale);
 
 }

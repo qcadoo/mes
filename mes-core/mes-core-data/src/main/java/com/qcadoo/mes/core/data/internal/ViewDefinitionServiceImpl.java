@@ -71,12 +71,12 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.productGridView");
-        viewDefinition.setHeader("products.product.view.productGridView.header");
+        viewDefinition.setHeader("products.productGridView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("products.product");
-        GridDefinition gridDefinition = new GridDefinition("products", gridDataDefinition);
+        GridDefinition gridDefinition = new GridDefinition("productsGrid", gridDataDefinition);
         gridDefinition.setCorrespondingViewName("products.productDetailsView");
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
@@ -87,14 +87,11 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridDefinition.setOptions(gridOptions);
         Map<String, String> gridEvents = new HashMap<String, String>();
         gridDefinition.setEvents(gridEvents);
-        ColumnDefinition columnNumber = createColumnDefinition("products.product.column.number",
-                gridDataDefinition.getField("number"), null);
-        ColumnDefinition columnName = createColumnDefinition("products.product.column.name", gridDataDefinition.getField("name"),
+        ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", gridDataDefinition.getField("typeOfMaterial"),
                 null);
-        ColumnDefinition columnType = createColumnDefinition("products.product.column.typeOfMaterial",
-                gridDataDefinition.getField("typeOfMaterial"), null);
-        ColumnDefinition columnEan = createColumnDefinition("products.product.column.typeOfMaterial",
-                gridDataDefinition.getField("ean"), null);
+        ColumnDefinition columnEan = createColumnDefinition("ean", gridDataDefinition.getField("ean"), null);
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
         elements.add(gridDefinition);
@@ -105,7 +102,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView");
-        viewDefinition.setHeader("Product:");
+        viewDefinition.setHeader("products.productDetailsView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -119,7 +116,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", substituteDataDefinition);
         substituteGridDefinition.setParent("viewElement:productDetailsForm");
         substituteGridDefinition.setParentField("product");
-        substituteGridDefinition.setHeader("Substitutes:");
+        substituteGridDefinition.setHeader("products.productDetailsView.substitutesGrid.header");
         ColumnDefinition columnNumber = createColumnDefinition("number", substituteDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", substituteDataDefinition.getField("name"), null);
         ColumnDefinition columnPriority = createColumnDefinition("priority", substituteDataDefinition.getField("priority"), null);
@@ -142,7 +139,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 substituteComponentDataDefinition);
         substituteComponentGridDefinition.setParent("viewElement:substitutesGrid");
         substituteComponentGridDefinition.setParentField("substitute");
-        substituteComponentGridDefinition.setHeader("Substitute products:");
+        substituteComponentGridDefinition.setHeader("products.productDetailsView.substitutesComponentGrid.header");
         ColumnDefinition columnSubstituteNumber = createColumnDefinition("number",
                 substituteComponentDataDefinition.getField("number"), "fields['product'].fields['number']");
         ColumnDefinition columnProductName = createColumnDefinition("name", substituteComponentDataDefinition.getField("name"),
