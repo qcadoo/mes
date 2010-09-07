@@ -64,6 +64,11 @@ public final class EntityService {
             genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
         }
 
+        if (dataDefinition.isPrioritizable()) {
+            genericEntity.setField(dataDefinition.getPriorityField().getName(),
+                    getField(databaseEntity, dataDefinition.getPriorityField()));
+        }
+
         return genericEntity;
     }
 
@@ -89,9 +94,12 @@ public final class EntityService {
             }
 
             for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-                if (!fieldDefinitionEntry.getValue().isEditable()) {
-                    continue;
-                }
+                // if (!fieldDefinitionEntry.getValue().isEditable()) {
+                // continue;
+                // }
+                // if (!fieldDefinitionEntry.getValue().isReadOnly()) {
+                // continue;
+                // }
                 setField(databaseEntity, fieldDefinitionEntry.getValue(), validatedEntity.getField(fieldDefinitionEntry.getKey()));
             }
 

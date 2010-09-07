@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.definition;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,9 +76,6 @@ public final class DataDefinition {
     }
 
     public void addField(final FieldDefinition field) {
-        if (field.getType() instanceof PriorityFieldType) {
-            priorityField = field;
-        }
         fields.put(field.getName(), field);
     }
 
@@ -163,6 +162,12 @@ public final class DataDefinition {
 
     public boolean isPrioritizable() {
         return priorityField != null;
+    }
+
+    public void setPriorityField(final FieldDefinition priorityField) {
+        checkState(priorityField.getType() instanceof PriorityFieldType, "priority field has wrong type");
+        checkState(!priorityField.isCustomField(), "priority field cannot be custom field");
+        this.priorityField = priorityField;
     }
 
     public FieldDefinition getPriorityField() {

@@ -184,11 +184,11 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     private void prioritizeEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
-        FieldDefinition fieldDefinition = getPriorityField(dataDefinition);
-
-        if (fieldDefinition == null) {
+        if (!dataDefinition.isPrioritizable()) {
             return;
         }
+
+        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
 
@@ -203,11 +203,11 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     private void deprioritizeEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
-        FieldDefinition fieldDefinition = getPriorityField(dataDefinition);
-
-        if (fieldDefinition == null) {
+        if (!dataDefinition.isPrioritizable()) {
             return;
         }
+
+        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
 
@@ -222,9 +222,11 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(entityId, "entityId must be given");
 
-        FieldDefinition fieldDefinition = getPriorityField(dataDefinition);
+        if (!dataDefinition.isPrioritizable()) {
+            return;
+        }
 
-        checkNotNull(fieldDefinition, "priority field not found");
+        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
@@ -236,7 +238,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         int targetPriority = 0;
 
-        if (offset > 0) {
+        if (offset != 0) {
             targetPriority = currentPriority + offset;
         } else {
             targetPriority = position;
@@ -299,28 +301,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
             entityService.setField(entity, fieldDefinition, priority + diff);
             session.update(entity);
         }
-    }
-
-    private FieldDefinition getPriorityField(final DataDefinition dataDefinition) {
-        if (!dataDefinition.isPrioritizable()) {
-            return null;
-        }
-
-        FieldDefinition fieldDefinition = null;
-
-        for (FieldDefinition field : dataDefinition.getFields().values()) {
-            if (field.getType() instanceof PriorityFieldType) {
-                fieldDefinition = field;
-            }
-        }
-
-        if (fieldDefinition == null) {
-            return null;
-        }
-
-        checkState(!fieldDefinition.isCustomField(), "priority field cannot be custom field");
-
-        return fieldDefinition;
     }
 
     private int getScopedTotalNumberOfEntities(final DataDefinition dataDefinition, final FieldDefinition scopeFieldDefinition,

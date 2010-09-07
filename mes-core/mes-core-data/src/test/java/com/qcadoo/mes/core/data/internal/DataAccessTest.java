@@ -125,7 +125,7 @@ public abstract class DataAccessTest {
         fieldDefinitionPriority = new FieldDefinition("priority");
         fieldDefinitionPriority.setType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
         fieldDefinitionPriority.setValidators();
-        fieldDefinitionPriority.setEditable(false);
+        fieldDefinitionPriority.setReadOnly(true);
 
         fieldDefinitionMoney = new FieldDefinition("money");
         fieldDefinitionMoney.setType(fieldTypeFactory.decimalType());
