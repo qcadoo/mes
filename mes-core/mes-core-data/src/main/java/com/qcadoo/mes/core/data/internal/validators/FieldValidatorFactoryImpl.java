@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.internal.CallbackFactory;
+import com.qcadoo.mes.core.data.internal.callbacks.CallbackFactory;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;

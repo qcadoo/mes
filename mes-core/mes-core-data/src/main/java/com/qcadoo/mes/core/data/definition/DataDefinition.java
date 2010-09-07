@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.definition;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -7,7 +9,6 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.EntityService;
 import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
@@ -45,6 +46,8 @@ public final class DataDefinition {
 
     private CallbackDefinition onSave;
 
+    private Class<?> classForEntity;
+
     public DataDefinition(final String entityName) {
         this.entityName = entityName;
     }
@@ -59,6 +62,19 @@ public final class DataDefinition {
 
     public void setFullyQualifiedClassName(final String fullyQualifiedClassName) {
         this.fullyQualifiedClassName = fullyQualifiedClassName;
+        this.classForEntity = loadClassForEntity();
+    }
+
+    private Class<?> loadClassForEntity() {
+        if (isVirtualTable()) {
+            throw new UnsupportedOperationException("virtual tables are not supported");
+        } else {
+            try {
+                return DataDefinition.class.getClassLoader().loadClass(getFullyQualifiedClassName());
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
+            }
+        }
     }
 
     public String getDiscriminator() {
@@ -74,14 +90,17 @@ public final class DataDefinition {
     }
 
     public void addField(final FieldDefinition field) {
-        if (field.getType() instanceof PriorityFieldType) {
-            priorityField = field;
-        }
         fields.put(field.getName(), field);
     }
 
     public FieldDefinition getField(final String fieldName) {
-        return fields.get(fieldName);
+        if (fields.containsKey(fieldName)) {
+            return fields.get(fieldName);
+        } else if (priorityField != null && priorityField.getName().equals(fieldName)) {
+            return priorityField;
+        } else {
+            return null;
+        }
     }
 
     public boolean isVirtualTable() {
@@ -135,15 +154,7 @@ public final class DataDefinition {
     }
 
     public Class<?> getClassForEntity() {
-        if (isVirtualTable()) {
-            throw new UnsupportedOperationException("virtual tables are not supported");
-        } else {
-            try {
-                return EntityService.class.getClassLoader().loadClass(getFullyQualifiedClassName());
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
-            }
-        }
+        return classForEntity;
     }
 
     public Object getInstanceForEntity() {
@@ -163,6 +174,12 @@ public final class DataDefinition {
 
     public boolean isPrioritizable() {
         return priorityField != null;
+    }
+
+    public void setPriorityField(final FieldDefinition priorityField) {
+        checkState(priorityField.getType() instanceof PriorityFieldType, "priority field has wrong type");
+        checkState(!priorityField.isCustomField(), "priority field cannot be custom field");
+        this.priorityField = priorityField;
     }
 
     public FieldDefinition getPriorityField() {

@@ -21,6 +21,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.callbacks.CallbackFactory;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
@@ -78,10 +79,8 @@ public abstract class DataAccessTest {
     public void superInit() {
         validationService = new ValidationService();
         ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
-        ReflectionTestUtils.setField(validationService, "dataDefinitionService", dataDefinitionService);
 
         entityService = new EntityService();
-        ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(entityService, "validationService", validationService);
 
         dataAccessService = new DataAccessServiceImpl();
@@ -125,7 +124,7 @@ public abstract class DataAccessTest {
         fieldDefinitionPriority = new FieldDefinition("priority");
         fieldDefinitionPriority.setType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
         fieldDefinitionPriority.setValidators();
-        fieldDefinitionPriority.setEditable(false);
+        fieldDefinitionPriority.setReadOnly(true);
 
         fieldDefinitionMoney = new FieldDefinition("money");
         fieldDefinitionMoney.setType(fieldTypeFactory.decimalType());

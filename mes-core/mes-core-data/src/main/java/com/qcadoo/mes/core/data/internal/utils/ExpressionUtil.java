@@ -22,26 +22,33 @@ public final class ExpressionUtil {
     public static String getValue(final Entity entity, final ColumnDefinition columnDefinition) {
         String value = null;
         if (StringUtils.isEmpty(columnDefinition.getExpression())) {
-            if (columnDefinition.getFields().size() == 1) {
-                value = columnDefinition.getFields().get(0)
-                        .getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
-            } else {
-                List<String> values = new ArrayList<String>();
-                for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
-                    values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName())));
-                }
-                value = StringUtils.join(values, ", ");
-            }
+            value = getValueWithoutExpression(entity, columnDefinition);
         } else {
-            ExpressionParser parser = new SpelExpressionParser();
-            Expression exp = parser.parseExpression(columnDefinition.getExpression());
-            EvaluationContext context = new StandardEvaluationContext(entity);
-            value = String.valueOf(exp.getValue(context));
+            value = getValueWithExpression(entity, columnDefinition);
         }
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
         } else {
             return value;
+        }
+    }
+
+    private static String getValueWithExpression(final Entity entity, final ColumnDefinition columnDefinition) {
+        ExpressionParser parser = new SpelExpressionParser();
+        Expression exp = parser.parseExpression(columnDefinition.getExpression());
+        EvaluationContext context = new StandardEvaluationContext(entity);
+        return String.valueOf(exp.getValue(context));
+    }
+
+    private static String getValueWithoutExpression(final Entity entity, final ColumnDefinition columnDefinition) {
+        if (columnDefinition.getFields().size() == 1) {
+            return columnDefinition.getFields().get(0).getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
+        } else {
+            List<String> values = new ArrayList<String>();
+            for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
+                values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName())));
+            }
+            return StringUtils.join(values, ", ");
         }
     }
 

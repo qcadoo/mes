@@ -1,7 +1,8 @@
 package com.qcadoo.mes.core.data.internal.search.restrictions;
 
 public enum RestrictionOperator {
-    EQ("="), GE(">="), GT(">"), LE("<="), LT("<"), NE("<>"), NOTNULL("is not null"), NULL("is null");
+
+    EQ("="), GE(">="), GT(">"), LE("<="), LT("<"), NE("<>");
 
     private String value;
 

@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.util.Assert.notNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +19,19 @@ public class PriorityTest extends DataAccessTest {
 
     @Before
     public void init() {
-        dataDefinition.addField(fieldDefinitionPriority);
+        dataDefinition.setPriorityField(fieldDefinitionPriority);
     }
 
     @Test
     public void shouldBePrioritizable() throws Exception {
         // then
         assertTrue(dataDefinition.isPrioritizable());
+    }
+
+    @Test
+    public void shouldHasPriorityField() throws Exception {
+        // then
+        notNull(dataDefinition.getField("priority"));
     }
 
     @Test
@@ -86,6 +93,60 @@ public class PriorityTest extends DataAccessTest {
 
         SimpleDatabaseObject updatedDatabaseObject = new SimpleDatabaseObject(2L);
         updatedDatabaseObject.setPriority(11);
+
+        verify(session).update(updatedDatabaseObject);
+    }
+
+    @Test
+    public void shouldChangeEntitiesBetweenCurrentAndTargetPriorityWhileMoving() throws Exception {
+        // given
+        SimpleDatabaseObject existingDatabaseObject = new SimpleDatabaseObject(1L);
+        existingDatabaseObject.setPriority(5);
+
+        SimpleDatabaseObject otherDatabaseObject = new SimpleDatabaseObject(2L);
+        otherDatabaseObject.setPriority(6);
+
+        given(criteria.uniqueResult()).willReturn(existingDatabaseObject, 6);
+        given(criteria.list()).willReturn(Lists.newArrayList(otherDatabaseObject));
+
+        // when
+        dataAccessService.move(dataDefinition, 1L, 1);
+
+        // then
+        SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);
+        movedDatabaseObject.setPriority(6);
+
+        verify(session).update(movedDatabaseObject);
+
+        SimpleDatabaseObject updatedDatabaseObject = new SimpleDatabaseObject(2L);
+        updatedDatabaseObject.setPriority(5);
+
+        verify(session).update(updatedDatabaseObject);
+    }
+
+    @Test
+    public void shouldChangeEntitiesBetweenCurrentAndTargetPriorityWhileMovingTo() throws Exception {
+        // given
+        SimpleDatabaseObject existingDatabaseObject = new SimpleDatabaseObject(1L);
+        existingDatabaseObject.setPriority(5);
+
+        SimpleDatabaseObject otherDatabaseObject = new SimpleDatabaseObject(2L);
+        otherDatabaseObject.setPriority(6);
+
+        given(criteria.uniqueResult()).willReturn(existingDatabaseObject, 6);
+        given(criteria.list()).willReturn(Lists.newArrayList(otherDatabaseObject));
+
+        // when
+        dataAccessService.moveTo(dataDefinition, 1L, 6);
+
+        // then
+        SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);
+        movedDatabaseObject.setPriority(6);
+
+        verify(session).update(movedDatabaseObject);
+
+        SimpleDatabaseObject updatedDatabaseObject = new SimpleDatabaseObject(2L);
+        updatedDatabaseObject.setPriority(5);
 
         verify(session).update(updatedDatabaseObject);
     }

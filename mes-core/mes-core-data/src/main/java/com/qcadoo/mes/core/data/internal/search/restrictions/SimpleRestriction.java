@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.internal.search.restrictions;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,40 +21,55 @@ public final class SimpleRestriction extends BaseRestriction {
 
     @Override
     public Criteria addToHibernateCriteria(final Criteria criteria) {
-        switch (op) {
-            case EQ:
-                criteria.add(Restrictions.eq(getFieldName(), getValue()));
-                break;
-            case GE:
-                criteria.add(Restrictions.ge(getFieldName(), getValue()));
-                break;
-            case GT:
-                criteria.add(Restrictions.gt(getFieldName(), getValue()));
-                break;
-            case LE:
-                criteria.add(Restrictions.le(getFieldName(), getValue()));
-                break;
-            case LT:
-                criteria.add(Restrictions.lt(getFieldName(), getValue()));
-                break;
-            case NE:
-                criteria.add(Restrictions.ne(getFieldName(), getValue()));
-            default:
+        Criterion hibernateRestriction = getHibernateRestriction();
+
+        if (hibernateRestriction != null) {
+            criteria.add(hibernateRestriction);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Criteria added: " + op.getValue());
+            }
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Criteria added: " + op.getValue());
-        }
         return criteria;
+    }
+
+    private Criterion getHibernateRestriction() {
+        switch (op) {
+            case EQ:
+                return Restrictions.eq(getFieldName(), getValue());
+            case GE:
+                return Restrictions.ge(getFieldName(), getValue());
+            case GT:
+                return Restrictions.gt(getFieldName(), getValue());
+            case LE:
+                return Restrictions.le(getFieldName(), getValue());
+            case LT:
+                return Restrictions.lt(getFieldName(), getValue());
+            case NE:
+                return Restrictions.ne(getFieldName(), getValue());
+            default:
+                return null;
+        }
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return new HashCodeBuilder(13, 5).append(getFieldName()).append(getValue()).append(op).toHashCode();
     }
 
     @Override
     public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof SimpleRestriction)) {
+            return false;
+        }
+        SimpleRestriction other = (SimpleRestriction) obj;
+        return new EqualsBuilder().append(getFieldName(), other.getFieldName()).append(getValue(), other.getValue())
+                .append(op, other.op).isEquals();
     }
 }
