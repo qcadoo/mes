@@ -25,6 +25,8 @@ import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
 import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
+import com.qcadoo.mes.core.data.internal.types.PasswordFieldType;
+import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
 import com.qcadoo.mes.core.data.internal.types.StringFieldType;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
@@ -223,5 +225,39 @@ public class FieldTypeFactoryImplTest {
         Assert.assertEquals(Object.class, fieldType.getType());
         Assert.assertTrue(fieldType.validate(fieldDefinition, new Entity(), validationResults));
         Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO));
+    }
+
+    @Test
+    public void shouldReturnPasswordType() throws Exception {
+        // when
+        FieldType fieldType = fieldTypeFactory.passwordType();
+
+        // then
+        Assert.assertThat(fieldType, is(PasswordFieldType.class));
+        Assert.assertFalse(fieldType.isSearchable());
+        Assert.assertFalse(fieldType.isOrderable());
+        Assert.assertFalse(fieldType.isAggregable());
+        Assert.assertEquals(String.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, "", validationResults));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_PASSWORD));
+    }
+
+    @Test
+    public void shouldReturnPriorityType() throws Exception {
+        // given
+        FieldDefinition fieldDefinition = new FieldDefinition("aaa");
+
+        // when
+        FieldType fieldType = fieldTypeFactory.priorityType(fieldDefinition);
+
+        // then
+        Assert.assertThat(fieldType, is(PriorityFieldType.class));
+        Assert.assertFalse(fieldType.isSearchable());
+        Assert.assertTrue(fieldType.isOrderable());
+        Assert.assertFalse(fieldType.isAggregable());
+        Assert.assertEquals(Integer.class, fieldType.getType());
+        Assert.assertTrue(fieldType.validate(fieldDefinition, 1, validationResults));
+        Assert.assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_PRIORITY));
+        Assert.assertEquals(fieldDefinition, ((PriorityFieldType) fieldType).getScopeFieldDefinition());
     }
 }

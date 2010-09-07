@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.types;
 
+import com.qcadoo.mes.core.data.definition.FieldDefinition;
+
 public interface FieldTypeFactory {
 
     int NUMERIC_TYPE_BOOLEAN = 1;
@@ -24,6 +26,8 @@ public interface FieldTypeFactory {
 
     int NUMERIC_TYPE_PASSWORD = 11;
 
+    int NUMERIC_TYPE_PRIORITY = 12;
+
     FieldType booleanType();
 
     FieldType stringType();
@@ -40,6 +44,8 @@ public interface FieldTypeFactory {
 
     FieldType passwordType();
 
+    FieldType priorityType(final FieldDefinition scopeFieldDefinition);
+
     EnumeratedFieldType enumType(final String... values);
 
     EnumeratedFieldType dictionaryType(final String dictionaryName);
@@ -47,4 +53,5 @@ public interface FieldTypeFactory {
     LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName);
 
     LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName);
+
 }

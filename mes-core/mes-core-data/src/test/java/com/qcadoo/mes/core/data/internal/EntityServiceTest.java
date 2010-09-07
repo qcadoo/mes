@@ -240,7 +240,7 @@ public class EntityServiceTest {
         fieldDefinition.setValidators();
 
         // when
-        entityService.setField(databaseEntity, dataDefinition, fieldDefinition, "XXX");
+        entityService.setField(databaseEntity, fieldDefinition, "XXX");
     }
 
     @Test
@@ -250,7 +250,7 @@ public class EntityServiceTest {
         databaseEntity.setName("name");
 
         // when
-        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionName, null);
+        entityService.setField(databaseEntity, fieldDefinitionName, null);
 
         // then
         assertNull(databaseEntity.getName());
@@ -263,7 +263,7 @@ public class EntityServiceTest {
         databaseEntity.setName("name");
 
         // when
-        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionName, "XXX");
+        entityService.setField(databaseEntity, fieldDefinitionName, "XXX");
 
         // then
         assertEquals("XXX", databaseEntity.getName());
@@ -280,7 +280,7 @@ public class EntityServiceTest {
         given(sessionFactory.getCurrentSession().get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         // when
-        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionBelongsTo, parentDatabaseEntity);
+        entityService.setField(databaseEntity, fieldDefinitionBelongsTo, parentDatabaseEntity);
 
         // then
         assertNotNull(databaseEntity.getBelongsTo());
@@ -297,7 +297,7 @@ public class EntityServiceTest {
         databaseEntity.setBelongsTo(parentDatabaseEntity);
 
         // when
-        entityService.setField(databaseEntity, dataDefinition, fieldDefinitionBelongsTo, null);
+        entityService.setField(databaseEntity, fieldDefinitionBelongsTo, null);
 
         // then
         assertNull(databaseEntity.getBelongsTo());

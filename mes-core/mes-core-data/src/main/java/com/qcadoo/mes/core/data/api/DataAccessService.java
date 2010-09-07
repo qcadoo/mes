@@ -19,4 +19,8 @@ public interface DataAccessService {
     void delete(String entityName, Long... entityId);
 
     SearchResult find(String entityName, SearchCriteria searchCriteria);
+
+    void moveTo(String entityName, Long entityId, int position);
+
+    void move(String entityName, Long entityId, int offset);
 }

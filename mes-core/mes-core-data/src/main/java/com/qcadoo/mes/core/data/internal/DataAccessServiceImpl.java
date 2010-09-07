@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -24,7 +25,9 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
+import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
@@ -68,6 +71,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         if (validationResults.isNotValid()) {
             return validationResults;
+        }
+
+        if (entity.getId() == null) {
+            prioritizeEntity(dataDefinition, databaseEntity);
         }
 
         sessionFactory.getCurrentSession().save(databaseEntity);
@@ -114,6 +121,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             Object databaseEntity = sessionFactory.getCurrentSession().get(entityClass, entityId);
 
             Preconditions.checkNotNull(databaseEntity, "entity with id: " + entityId + " cannot be found");
+
+            deprioritizeEntity(dataDefinition, databaseEntity);
 
             entityService.setDeleted(databaseEntity);
 
@@ -164,16 +173,179 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, results);
     }
 
+    @Override
+    @Transactional
+    public void moveTo(final String entityName, final Long entityId, final int position) {
+        move(entityName, entityId, position, 0);
+    }
+
+    @Override
+    @Transactional
+    public void move(final String entityName, final Long entityId, final int offset) {
+        move(entityName, entityId, 0, offset);
+    }
+
+    private void prioritizeEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
+        FieldDefinition fieldDefinition = getPriorityField(dataDefinition);
+
+        if (fieldDefinition == null) {
+            return;
+        }
+
+        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
+
+        int totalNumberOfEntities = getScopedTotalNumberOfEntities(dataDefinition, scopeFieldDefinition,
+                entityService.getField(databaseEntity, scopeFieldDefinition));
+
+        entityService.setField(databaseEntity, fieldDefinition, totalNumberOfEntities + 1);
+    }
+
+    private FieldDefinition getScopeForPriority(final FieldDefinition fieldDefinition) {
+        return ((PriorityFieldType) fieldDefinition.getType()).getScopeFieldDefinition();
+    }
+
+    private void deprioritizeEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
+        FieldDefinition fieldDefinition = getPriorityField(dataDefinition);
+
+        if (fieldDefinition == null) {
+            return;
+        }
+
+        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
+
+        int currentPriority = (Integer) entityService.getField(databaseEntity, fieldDefinition);
+
+        changePriority(dataDefinition, fieldDefinition, scopeFieldDefinition,
+                entityService.getField(databaseEntity, scopeFieldDefinition), currentPriority + 1, Integer.MAX_VALUE, -1);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void move(final String entityName, final Long entityId, final int position, final int offset) {
+        checkNotNull(entityId, "entity id must be given");
+        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
+        FieldDefinition fieldDefinition = getPriorityField(dataDefinition);
+
+        checkNotNull(fieldDefinition, "priority field not found");
+
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
+
+        if (databaseEntity == null) {
+            return;
+        }
+
+        int currentPriority = (Integer) entityService.getField(databaseEntity, fieldDefinition);
+
+        int targetPriority = 0;
+
+        if (position > 0) {
+            targetPriority = position;
+        } else {
+            targetPriority = currentPriority + offset;
+        }
+
+        if (targetPriority < 1) {
+            targetPriority = 1;
+        }
+
+        if (currentPriority == targetPriority) {
+            return;
+        }
+
+        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
+        Object scopeValue = entityService.getField(databaseEntity, scopeFieldDefinition);
+
+        int totalNumberOfEntities = getScopedTotalNumberOfEntities(dataDefinition, scopeFieldDefinition, scopeValue);
+
+        if (targetPriority > totalNumberOfEntities) {
+            targetPriority = totalNumberOfEntities;
+        }
+
+        if (currentPriority < targetPriority) {
+            changePriority(dataDefinition, fieldDefinition, scopeFieldDefinition, scopeValue, currentPriority + 1,
+                    targetPriority, -1);
+        } else {
+            changePriority(dataDefinition, fieldDefinition, scopeFieldDefinition, scopeValue, targetPriority,
+                    currentPriority - 1, 1);
+        }
+
+        sessionFactory.getCurrentSession().update(databaseEntity);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void changePriority(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final FieldDefinition scopeFieldDefinition, final Object scopeValue, final int fromPriority, final int toPriority,
+            final int diff) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Criteria criteria = getCriteria(dataDefinition).add(Restrictions.ge(fieldDefinition.getName(), fromPriority)).add(
+                Restrictions.le(fieldDefinition.getName(), toPriority));
+
+        addScopeToCriteria(criteria, scopeFieldDefinition, scopeValue);
+
+        List<Object> entitiesToDecrement = criteria.list();
+
+        for (Object entity : entitiesToDecrement) {
+            int priority = (Integer) entityService.getField(entity, fieldDefinition);
+            entityService.setField(entity, fieldDefinition, priority + diff);
+            session.update(entity);
+        }
+    }
+
+    private FieldDefinition getPriorityField(final DataDefinition dataDefinition) {
+        if (!dataDefinition.isProritizable()) {
+            return null;
+        }
+
+        FieldDefinition fieldDefinition = null;
+
+        for (FieldDefinition field : dataDefinition.getFields().values()) {
+            if (field.getType() instanceof PriorityFieldType) {
+                fieldDefinition = field;
+            }
+        }
+
+        if (fieldDefinition == null) {
+            return null;
+        }
+
+        checkState(!fieldDefinition.isCustomField(), "priority field cannot be custom field");
+
+        return fieldDefinition;
+    }
+
+    private int getScopedTotalNumberOfEntities(final DataDefinition dataDefinition, final FieldDefinition scopeFieldDefinition,
+            final Object scopeValue) {
+        Criteria criteria = getCriteria(dataDefinition).setProjection(Projections.rowCount());
+
+        criteria = addScopeToCriteria(criteria, scopeFieldDefinition, scopeValue);
+        return Integer.valueOf(criteria.uniqueResult().toString());
+    }
+
+    private Criteria addScopeToCriteria(final Criteria criteria, final FieldDefinition scopeFieldDefinition,
+            final Object scopeValue) {
+        if (scopeValue instanceof Entity) {
+            return criteria.add(Restrictions.eq(scopeFieldDefinition.getName() + ".id", ((Entity) scopeValue).getId()));
+        } else {
+            return criteria.add(Restrictions.eq(scopeFieldDefinition.getName(), scopeValue));
+        }
+    }
+
     private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, final DataDefinition dataDefinition) {
+        Criteria criteria = getCriteria(dataDefinition);
+
+        for (Restriction restriction : searchCriteria.getRestrictions()) {
+            criteria = addRestrictionToCriteria(restriction, criteria);
+        }
+        return criteria;
+    }
+
+    private Criteria getCriteria(final DataDefinition dataDefinition) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
 
         if (dataDefinition.isDeletable()) {
             criteria = criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
         }
 
-        for (Restriction restriction : searchCriteria.getRestrictions()) {
-            criteria = addRestrictionToCriteria(restriction, criteria);
-        }
         return criteria;
     }
 

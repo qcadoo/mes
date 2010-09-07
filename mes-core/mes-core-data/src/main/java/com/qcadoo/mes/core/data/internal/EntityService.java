@@ -39,8 +39,7 @@ public final class EntityService {
         setField(databaseEntity, FIELD_DELETED, true);
     }
 
-    public void setField(final Object databaseEntity, final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
-            final Object value) {
+    public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else if (!(fieldDefinition.getType() instanceof PasswordFieldType && value == null)) {
@@ -90,8 +89,10 @@ public final class EntityService {
             }
 
             for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-                setField(databaseEntity, dataDefinition, fieldDefinitionEntry.getValue(),
-                        validatedEntity.getField(fieldDefinitionEntry.getKey()));
+                if (!fieldDefinitionEntry.getValue().isEditable()) {
+                    continue;
+                }
+                setField(databaseEntity, fieldDefinitionEntry.getValue(), validatedEntity.getField(fieldDefinitionEntry.getKey()));
             }
 
             return databaseEntity;

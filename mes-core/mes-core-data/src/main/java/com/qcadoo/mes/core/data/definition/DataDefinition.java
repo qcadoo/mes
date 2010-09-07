@@ -8,6 +8,7 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.EntityService;
+import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 /**
@@ -30,11 +31,13 @@ public final class DataDefinition {
 
     private String discriminator;
 
-    private Map<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
+    private final Map<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
 
     private List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
     private boolean deletable = true;
+
+    private boolean proritizable = false;
 
     private CallbackDefinition onCreate;
 
@@ -70,11 +73,10 @@ public final class DataDefinition {
         return fields;
     }
 
-    public void setFields(final Map<String, FieldDefinition> fields) {
-        this.fields = fields;
-    }
-
     public void addField(final FieldDefinition field) {
+        if (field.getType() instanceof PriorityFieldType) {
+            proritizable = true;
+        }
         fields.put(field.getName(), field);
     }
 
@@ -157,6 +159,10 @@ public final class DataDefinition {
 
     public boolean isDeletable() {
         return deletable;
+    }
+
+    public boolean isProritizable() {
+        return proritizable;
     }
 
     public void setDeletable(final boolean deletable) {

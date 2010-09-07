@@ -59,7 +59,6 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     private DataDefinition createProductDefinition() {
         DataDefinition dataDefinition = new DataDefinition("products.product");
-        // GridDefinition gridDefinition = new GridDefinition("products");
 
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
         fieldNumber.setValidators(fieldValidationFactory.required());
@@ -90,14 +89,14 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         fieldNumber.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
         fieldName.setValidators(fieldValidationFactory.required());
-        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType());
-        fieldPriority.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
         fieldProduct.setValidators(fieldValidationFactory.required());
         fieldProduct.setHidden(true);
+        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.priorityType(fieldProduct));
+        fieldPriority.setEditable(true); // TODO masz - should be readonly
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         dataDefinition.addField(fieldNumber);
