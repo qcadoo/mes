@@ -80,7 +80,13 @@ public final class DataDefinition {
     }
 
     public FieldDefinition getField(final String fieldName) {
-        return fields.get(fieldName);
+        if (fields.containsKey(fieldName)) {
+            return fields.get(fieldName);
+        } else if (priorityField != null && priorityField.getName().equals(fieldName)) {
+            return priorityField;
+        } else {
+            return null;
+        }
     }
 
     public boolean isVirtualTable() {

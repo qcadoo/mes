@@ -249,7 +249,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         if (currentPriority == targetPriority) {
-            LOG.info(" ---> ehh?");
             return;
         }
 
@@ -263,8 +262,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 targetPriority = totalNumberOfEntities;
             }
         }
-
-        LOG.info(" ---> " + currentPriority + ", " + targetPriority);
 
         if (currentPriority == targetPriority) {
             return;

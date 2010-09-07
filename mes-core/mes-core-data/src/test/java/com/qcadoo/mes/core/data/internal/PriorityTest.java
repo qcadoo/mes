@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.util.Assert.notNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +26,12 @@ public class PriorityTest extends DataAccessTest {
     public void shouldBePrioritizable() throws Exception {
         // then
         assertTrue(dataDefinition.isPrioritizable());
+    }
+
+    @Test
+    public void shouldHasPriorityField() throws Exception {
+        // then
+        notNull(dataDefinition.getField("priority"));
     }
 
     @Test
