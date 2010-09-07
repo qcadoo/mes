@@ -10,7 +10,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class MaxPrecisionAndScaleValidator implements FieldValidator {
 
-    private static final String PRECISION_AND_SCALE_EXCEEDED_ERROR = "core.validation.error.maxPrecisionAndScaleExceeded";
+    private static final String PRECISION_AND_SCALE_EXCEEDED_ERROR = "commons.validate.field.error.maxPrecisionAndScaleExceeded";
 
     private final int maxScale;
 

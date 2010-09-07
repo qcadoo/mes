@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.definition.ViewDefinition;
+import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public interface TranslationService {
 
@@ -11,4 +12,5 @@ public interface TranslationService {
 
     void updateTranslationsForViewDefinition(ViewDefinition viewDefinition, Map<String, String> translationsMap, Locale locale);
 
+    void translateValidationResults(ValidationResults validationResults, Locale locale);
 }

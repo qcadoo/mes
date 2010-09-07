@@ -55,7 +55,7 @@
 				<c:choose>
 					<c:when test="${field.definition.hidden == false}">
 						<td>
-							<c:set var="label" value="${viewDefinition.name}.${formElement.name}.field.${field.label}"/>
+							<c:set var="label" value="${viewDefinition.name}.${formElement.name}.field.${field.definition.name}"/>
 							${translationsMap[label]}
 						</td>
 						<td class="${tdClass}">		
@@ -90,7 +90,7 @@
 						<td id="${formElement.name}_field_${field.definition.name}_error" class="errorMessage fieldValidatorMessage"></td>
 						<c:if test='${(field.definition.confirmable)}'>
 							</tr><tr><td>
-								CONF
+								${translationsMap["commons.form.field.confirmable.label"]}
 							</td>
 							<td class="${tdClass}">
 								<input type="${textInputType}" id="${formElement.name}_field_${field.definition.name}_confirmation" name="fields[${field.definition.name}_confirmation]" class="${inputClass}"/>

@@ -15,6 +15,8 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.plugins.products.mock.MessageSourceMock;
+import com.qcadoo.mes.plugins.products.translation.TranslationServiceImpl;
 
 public class CrudTemplateControllerSaveEntityTest {
 
@@ -34,6 +36,10 @@ public class CrudTemplateControllerSaveEntityTest {
 
         vdsMock = mock(ViewDefinitionService.class, RETURNS_DEEP_STUBS);
         ReflectionTestUtils.setField(controller, "viewDefinitionService", vdsMock);
+
+        TranslationServiceImpl translationService = new TranslationServiceImpl();
+        ReflectionTestUtils.setField(translationService, "messageSource", new MessageSourceMock());
+        ReflectionTestUtils.setField(controller, "translationService", translationService);
 
         FieldDefinition f1 = mock(FieldDefinition.class);
         given(f1.getName()).willReturn("testField1");

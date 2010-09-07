@@ -8,7 +8,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class CustomEntityValidator implements EntityValidator {
 
-    private static final String CUSTOM_ERROR = "core.validation.error.customEntity";
+    private static final String CUSTOM_ERROR = "commons.validate.field.error.customEntity";
 
     private final CallbackDefinition callback;
 

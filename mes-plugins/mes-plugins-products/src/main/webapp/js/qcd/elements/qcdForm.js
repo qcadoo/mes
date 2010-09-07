@@ -71,40 +71,40 @@ QCD.elements.FormElement = function(args, _mainController) {
 		$('#'+parameters.name+'_form .required').filter(function() {
 	        return $(this).attr('value') == '';
 	    }).each(function(index) {
-	    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
+	    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.missing'));
 		});
 		if(!edition) {
 			$('#'+parameters.name+'_form .required-on-creation').filter(function() {
 		        return $(this).attr('value') == '';
 		    }).each(function(index) {
-		    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
+		    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.missing'));
 			});
 		}
 		$('#'+parameters.name+'_form .type-integer').filter(function() {
 	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\-?\d+$/);
 	    }).each(function(index) {
-	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
+	    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidNumericFormat'));
 		});
 		$('#'+parameters.name+'_form .type-decimal').filter(function() {
 	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\-?\d+(\.\d*)?$/);
 	    }).each(function(index) {
-	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
+	    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidNumericFormat'));
 		});
 		$('#'+parameters.name+'_form .type-date').filter(function() {
 			return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d{4}-\d{2}-\d{2}$/);
 		}).each(function(index) {
-			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateFormat');
+			addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidDateFormat'));
 		});
 		$('#'+parameters.name+'_form .type-datetime').filter(function() {
 			return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
 		}).each(function(index) {
-			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateTimeFormat');
+			addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidDateTimeFormat'));
 		});
 		$('#'+parameters.name+'_form .confirmable').each(function(index) {
 			value = $(this).attr('value') || '';
 			valueConfirmation = $('#'+$(this).attr('id')+'_confirmation').attr('value') || '';
 			if(value != valueConfirmation) {
-				addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.notMatch');
+				addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.notMatch'));
 			}
 		});
 		return !hasErrors();
@@ -121,7 +121,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	addMainErrorMessage = function() {
 		if(!hasErrors()) {
-			$('#'+parameters.name+'_globalErrors').html('<p>core.validation.error.global</p>');
+			$('#'+parameters.name+'_globalErrors').html('<p>'+mainController.getTranslation('commons.validate.global.error')+'</p>');
 		}
 	}
 	

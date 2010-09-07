@@ -63,7 +63,7 @@ public final class ValidationService {
                 if (fieldValue instanceof String) {
                     fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
                 } else {
-                    validationResults.addError(fieldDefinition, "core.validation.error.wrongType", fieldValue.getClass()
+                    validationResults.addError(fieldDefinition, "commons.validate.field.error.wrongType", fieldValue.getClass()
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                     return null;
                 }
@@ -91,7 +91,7 @@ public final class ValidationService {
                 try {
                     referencedEntityId = Long.valueOf((String) value);
                 } catch (NumberFormatException e) {
-                    validationResults.addError(fieldDefinition, "core.validation.error.wrongType", value.getClass()
+                    validationResults.addError(fieldDefinition, "commons.validate.field.error.wrongType", value.getClass()
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 }
             } else if (value instanceof Long) {
@@ -99,8 +99,8 @@ public final class ValidationService {
             } else if (value instanceof Entity) {
                 referencedEntityId = ((Entity) value).getId();
             } else {
-                validationResults.addError(fieldDefinition, "core.validation.error.wrongType", value.getClass().getSimpleName(),
-                        fieldDefinition.getType().getType().getSimpleName());
+                validationResults.addError(fieldDefinition, "commons.validate.field.error.wrongType", value.getClass()
+                        .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 return null;
             }
             BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();

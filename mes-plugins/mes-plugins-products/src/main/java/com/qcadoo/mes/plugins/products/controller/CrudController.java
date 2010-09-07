@@ -69,8 +69,6 @@ public class CrudController {
         mav.addObject("viewDefinition", viewDefinition);
         translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
-        System.out.println(viewDefinition);
-
         Map<String, Map<Long, String>> dictionaryValues = new HashMap<String, Map<Long, String>>();
         Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
 
@@ -200,6 +198,8 @@ public class CrudController {
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
         ValidationResults validationResult = dataAccessService.save(element.getDataDefinition(), entity);
+
+        translationService.translateValidationResults(validationResult, locale);
 
         return EntityDataUtils.generateValidationResultWithEntityData(validationResult, element.getDataDefinition());
     }

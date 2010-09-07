@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.data.validation;
 
 public final class ValidationError {
 
-    private final String message;
+    private String message;
 
     private final String[] vars;
 
@@ -13,6 +13,10 @@ public final class ValidationError {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String[] getVars() {

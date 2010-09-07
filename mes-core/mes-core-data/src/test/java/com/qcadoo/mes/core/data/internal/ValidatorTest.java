@@ -62,7 +62,7 @@ public class ValidatorTest extends DataAccessTest {
         verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
-        assertEquals("core.validation.error.missing", validationResults.getErrorForField("age").getMessage());
+        assertEquals("commons.validate.field.error.missing", validationResults.getErrorForField("age").getMessage());
         assertEquals(0, validationResults.getGlobalErrors().size());
     }
 
@@ -582,7 +582,7 @@ public class ValidatorTest extends DataAccessTest {
         verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
-        assertEquals("core.validation.error.custom", validationResults.getErrorForField("name").getMessage());
+        assertEquals("commons.validate.field.error.custom", validationResults.getErrorForField("name").getMessage());
         assertEquals(0, validationResults.getGlobalErrors().size());
     }
 
@@ -637,7 +637,7 @@ public class ValidatorTest extends DataAccessTest {
         assertTrue(validationResults.isNotValid());
         assertTrue(validationResults.getErrors().isEmpty());
         assertEquals(1, validationResults.getGlobalErrors().size());
-        assertEquals("core.validation.error.customEntity", validationResults.getGlobalErrors().get(0).getMessage());
+        assertEquals("commons.validate.field.error.customEntity", validationResults.getGlobalErrors().get(0).getMessage());
     }
 
     @Test
