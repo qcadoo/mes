@@ -1,6 +1,6 @@
 package com.qcadoo.mes.core.data.types;
 
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 
 public interface FieldTypeFactory {
 
@@ -44,7 +44,7 @@ public interface FieldTypeFactory {
 
     FieldType passwordType();
 
-    FieldType priorityType(final FieldDefinition scopeFieldDefinition);
+    FieldType priorityType(final DataFieldDefinition scopeFieldDefinition);
 
     EnumeratedFieldType enumType(final String... values);
 

@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
 import com.qcadoo.mes.core.data.internal.types.BooleanFieldType;
 import com.qcadoo.mes.core.data.internal.types.DateFieldType;
@@ -36,7 +36,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
 
     private ValidationResults validationResults = null;
 
-    private final FieldDefinition fieldDefinition = new FieldDefinition("aa");
+    private final DataFieldDefinition fieldDefinition = new DataFieldDefinition("aa");
 
     @Before
     public void init() {
@@ -238,7 +238,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnPriorityType() throws Exception {
         // given
-        FieldDefinition fieldDefinition = new FieldDefinition("aaa");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("aaa");
 
         // when
         FieldType fieldType = fieldTypeFactory.priorityType(fieldDefinition);

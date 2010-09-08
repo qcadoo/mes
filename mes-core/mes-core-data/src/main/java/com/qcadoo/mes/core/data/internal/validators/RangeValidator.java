@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
@@ -25,7 +25,7 @@ public final class RangeValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         if (value == null) {
             return true;
@@ -44,7 +44,7 @@ public final class RangeValidator implements FieldValidator {
         return true;
     }
 
-    private boolean validateDateRange(final FieldDefinition fieldDefinition, final Date value,
+    private boolean validateDateRange(final DataFieldDefinition fieldDefinition, final Date value,
             final ValidationResults validationResults) {
         if (from != null && value.before((Date) from)) {
             addError(fieldDefinition, validationResults);
@@ -57,7 +57,7 @@ public final class RangeValidator implements FieldValidator {
         return true;
     }
 
-    private boolean validateNumberRange(final FieldDefinition fieldDefinition, final Number value,
+    private boolean validateNumberRange(final DataFieldDefinition fieldDefinition, final Number value,
             final ValidationResults validationResults) {
         if (from != null && value.doubleValue() < ((Number) from).doubleValue()) {
             addError(fieldDefinition, validationResults);
@@ -70,7 +70,7 @@ public final class RangeValidator implements FieldValidator {
         return true;
     }
 
-    private boolean validateStringRange(final FieldDefinition fieldDefinition, final String value,
+    private boolean validateStringRange(final DataFieldDefinition fieldDefinition, final String value,
             final ValidationResults validationResults) {
         if (from != null && value.compareTo((String) from) < 0) {
             addError(fieldDefinition, validationResults);
@@ -83,12 +83,12 @@ public final class RangeValidator implements FieldValidator {
         return true;
     }
 
-    private void addError(final FieldDefinition fieldDefinition, final ValidationResults validationResults) {
+    private void addError(final DataFieldDefinition fieldDefinition, final ValidationResults validationResults) {
         validationResults.addError(fieldDefinition, errorMessage, String.valueOf(from), String.valueOf(to));
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity,
+    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Entity entity,
             final ValidationResults validationResults) {
         return true;
     }

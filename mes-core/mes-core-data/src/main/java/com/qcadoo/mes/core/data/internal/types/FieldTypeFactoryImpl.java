@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
@@ -105,7 +105,7 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     }
 
     @Override
-    public FieldType priorityType(final FieldDefinition scopeFieldDefinition) {
+    public FieldType priorityType(final DataFieldDefinition scopeFieldDefinition) {
         return new PriorityFieldType(scopeFieldDefinition);
     }
 

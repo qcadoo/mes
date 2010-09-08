@@ -1,7 +1,7 @@
 package com.qcadoo.mes.core.data.search;
 
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
 
 /**

@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
 import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
 import com.qcadoo.mes.core.data.internal.types.StringFieldType;
 import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;
@@ -21,7 +21,7 @@ public class ExpressionUtilTest {
         Entity entity = new Entity(1L);
         entity.setField("name", "Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinition("name");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("name");
         fieldDefinition.setType(new StringFieldType(255));
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
@@ -42,11 +42,11 @@ public class ExpressionUtilTest {
         entity.setField("age", 33);
         entity.setField("sex", "F");
 
-        FieldDefinition fieldDefinitionName = new FieldDefinition("name");
+        DataFieldDefinition fieldDefinitionName = new DataFieldDefinition("name");
         fieldDefinitionName.setType(new StringFieldType(255));
-        FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
+        DataFieldDefinition fieldDefinitionAge = new DataFieldDefinition("age");
         fieldDefinitionAge.setType(new NumericFieldType(10, 0));
-        FieldDefinition fieldDefinitionSex = new FieldDefinition("sex");
+        DataFieldDefinition fieldDefinitionSex = new DataFieldDefinition("sex");
         fieldDefinitionSex.setType(new StringFieldType(255));
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
@@ -65,7 +65,7 @@ public class ExpressionUtilTest {
         Entity entity = new Entity(1L);
         entity.setField("name", "Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinition("name");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("name");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
@@ -84,7 +84,7 @@ public class ExpressionUtilTest {
         Entity entity = new Entity(1L);
         entity.setField("name", null);
 
-        FieldDefinition fieldDefinition = new FieldDefinition("name");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("name");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
@@ -105,9 +105,9 @@ public class ExpressionUtilTest {
         entity.setField("age", 33);
         entity.setField("sex", "F");
 
-        FieldDefinition fieldDefinitionName = new FieldDefinition("name");
-        FieldDefinition fieldDefinitionAge = new FieldDefinition("age");
-        FieldDefinition fieldDefinitionSex = new FieldDefinition("sex");
+        DataFieldDefinition fieldDefinitionName = new DataFieldDefinition("name");
+        DataFieldDefinition fieldDefinitionAge = new DataFieldDefinition("age");
+        DataFieldDefinition fieldDefinitionSex = new DataFieldDefinition("sex");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex));
@@ -130,7 +130,7 @@ public class ExpressionUtilTest {
         Entity entity = new Entity(1L);
         entity.setField("product", product);
 
-        FieldDefinition fieldDefinition = new FieldDefinition("product");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("product");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinition));

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
 
 @Service
@@ -28,7 +28,7 @@ public final class PriorityService {
             return;
         }
 
-        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
+        DataFieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         int totalNumberOfEntities = getTotalNumberOfEntities(dataDefinition, fieldDefinition, databaseEntity);
 
@@ -40,19 +40,19 @@ public final class PriorityService {
             return;
         }
 
-        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
+        DataFieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         int currentPriority = (Integer) entityService.getField(databaseEntity, fieldDefinition);
 
         changePriority(dataDefinition, fieldDefinition, databaseEntity, currentPriority + 1, Integer.MAX_VALUE, -1);
     }
 
-    private FieldDefinition getScopeForPriority(final FieldDefinition fieldDefinition) {
+    private DataFieldDefinition getScopeForPriority(final DataFieldDefinition fieldDefinition) {
         return ((PriorityFieldType) fieldDefinition.getType()).getScopeFieldDefinition();
     }
 
     public void move(final DataDefinition dataDefinition, final Object databaseEntity, final int position, final int offset) {
-        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
+        DataFieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         int currentPriority = (Integer) entityService.getField(databaseEntity, fieldDefinition);
 
@@ -76,7 +76,7 @@ public final class PriorityService {
     }
 
     private int getIfTargetPriorityIsNotTooHigh(final DataDefinition dataDefinition, final Object databaseEntity,
-            final FieldDefinition fieldDefinition, final int targetPriority) {
+            final DataFieldDefinition fieldDefinition, final int targetPriority) {
         if (targetPriority > 1) {
             int totalNumberOfEntities = getTotalNumberOfEntities(dataDefinition, fieldDefinition, databaseEntity);
 
@@ -106,7 +106,7 @@ public final class PriorityService {
     }
 
     @SuppressWarnings("unchecked")
-    private void changePriority(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private void changePriority(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object databaseEntity, final int fromPriority, final int toPriority, final int diff) {
         Criteria criteria = getCriteria(dataDefinition, fieldDefinition, databaseEntity).add(
                 Restrictions.ge(fieldDefinition.getName(), fromPriority)).add(
@@ -125,16 +125,16 @@ public final class PriorityService {
         return sessionFactory.getCurrentSession();
     }
 
-    private int getTotalNumberOfEntities(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private int getTotalNumberOfEntities(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object databaseEntity) {
         Criteria criteria = getCriteria(dataDefinition, fieldDefinition, databaseEntity).setProjection(Projections.rowCount());
 
         return Integer.valueOf(criteria.uniqueResult().toString());
     }
 
-    private Criteria getCriteria(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Criteria getCriteria(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object databaseEntity) {
-        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
+        DataFieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
         Object scopeValue = entityService.getField(databaseEntity, scopeFieldDefinition);
 
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());

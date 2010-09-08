@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 
 public final class ValidationResults {
 
@@ -24,7 +24,7 @@ public final class ValidationResults {
         globalErrors.add(new ValidationError(message, vars));
     }
 
-    public void addError(final FieldDefinition fieldDefinition, final String message, final String... vars) {
+    public void addError(final DataFieldDefinition fieldDefinition, final String message, final String... vars) {
         errors.put(fieldDefinition.getName(), new ValidationError(message, vars));
     }
 
@@ -53,11 +53,11 @@ public final class ValidationResults {
         return !isValid();
     }
 
-    public boolean isFieldValid(final FieldDefinition fieldDefinition) {
+    public boolean isFieldValid(final DataFieldDefinition fieldDefinition) {
         return errors.get(fieldDefinition.getName()) == null;
     }
 
-    public boolean isFieldNotValid(final FieldDefinition fieldDefinition) {
+    public boolean isFieldNotValid(final DataFieldDefinition fieldDefinition) {
         return !isFieldValid(fieldDefinition);
     }
 

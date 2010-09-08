@@ -16,12 +16,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FormDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
-import com.qcadoo.mes.core.data.definition.ViewDefinition;
-import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
+import com.qcadoo.mes.core.data.definition.form.FormDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
+import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
+import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.plugins.products.mock.MessageSourceMock;
 import com.qcadoo.mes.plugins.products.translation.TranslationServiceImpl;
 
@@ -45,10 +45,10 @@ public class CrudTemplateControllerGetViewTest {
         ReflectionTestUtils.setField(controller, "translationService", translationService);
 
         viewDefinition = new ViewDefinition("testView");
-        ViewElementDefinition viewElementDefinition1 = new FormDefinition("testForm", new DataDefinition("testEntity1"));
+        ComponentDefinition viewElementDefinition1 = new FormDefinition("testForm", new DataDefinition("testEntity1"));
         GridDefinition viewElementDefinition2 = new GridDefinition("testGrid", new DataDefinition("testEntity2"));
         viewElementDefinition2.setColumns(new LinkedList<ColumnDefinition>());
-        viewDefinition.setElements(Arrays.asList(new ViewElementDefinition[] { viewElementDefinition1, viewElementDefinition2 }));
+        viewDefinition.setElements(Arrays.asList(new ComponentDefinition[] { viewElementDefinition1, viewElementDefinition2 }));
 
         given(vdsMock.getViewDefinition("testView")).willReturn(viewDefinition);
     }

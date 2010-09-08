@@ -25,10 +25,10 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
-import com.qcadoo.mes.core.data.definition.ViewDefinition;
-import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
+import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
+import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restrictions;
@@ -72,9 +72,9 @@ public class CrudController {
         Map<String, Map<Long, String>> dictionaryValues = new HashMap<String, Map<Long, String>>();
         Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
 
-        for (ViewElementDefinition viewElement : viewDefinition.getElements()) {
+        for (ComponentDefinition viewElement : viewDefinition.getElements()) {
             viewElementsOptionsJson.put(viewElement.getName(), CrudControllerUtils.generateJsonViewElementOptions(viewElement));
-            for (Entry<String, FieldDefinition> fieldDefEntry : viewElement.getDataDefinition().getFields().entrySet()) {
+            for (Entry<String, DataFieldDefinition> fieldDefEntry : viewElement.getDataDefinition().getFields().entrySet()) {
                 switch (fieldDefEntry.getValue().getType().getNumericType()) {
                     case FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO:
                         BelongsToFieldType belongsToField = (BelongsToFieldType) fieldDefEntry.getValue().getType();
@@ -112,7 +112,7 @@ public class CrudController {
             @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+        ComponentDefinition element = viewDefinition.getElementByName(elementName);
 
         GridDefinition gridDefinition = (GridDefinition) element;
         DataDefinition dataDefinition = gridDefinition.getDataDefinition();
@@ -121,7 +121,7 @@ public class CrudController {
 
         if (arguments.get("entityId") != null && gridDefinition.getParent() != null) {
             Long parentId = Long.parseLong(arguments.get("entityId"));
-            FieldDefinition parentField = dataDefinition.getField(gridDefinition.getParentField());
+            DataFieldDefinition parentField = dataDefinition.getField(gridDefinition.getParentField());
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(parentField, parentId));
         }
         if (arguments.get("maxResults") != null) {
@@ -150,7 +150,7 @@ public class CrudController {
             String operator = arguments.get("filterObject[" + i + "][operator]");
             String value = arguments.get("filterObject[" + i + "][filterValue]");
 
-            FieldDefinition field = dataDefinition.getField(fieldName);
+            DataFieldDefinition field = dataDefinition.getField(fieldName);
             if ("=".equals(operator)) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value));
             } else if ("<".equals(operator)) {
@@ -183,7 +183,7 @@ public class CrudController {
             @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+        ComponentDefinition element = viewDefinition.getElementByName(elementName);
 
         Entity entity = dataAccessService.get(element.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
 
@@ -195,7 +195,7 @@ public class CrudController {
     public ValidationResults saveEntity(@PathVariable("viewName") final String viewName,
             @PathVariable("elementName") final String elementName, @ModelAttribute final Entity entity, final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+        ComponentDefinition element = viewDefinition.getElementByName(elementName);
 
         ValidationResults validationResult = dataAccessService.save(element.getDataDefinition(), entity);
 
@@ -209,7 +209,7 @@ public class CrudController {
     public String deleteEntities(@PathVariable("viewName") final String viewName,
             @PathVariable("elementName") final String elementName, @RequestBody final List<Integer> selectedRows) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+        ComponentDefinition element = viewDefinition.getElementByName(elementName);
 
         if (selectedRows.size() > 0) {
             Long[] entitiesId = new Long[selectedRows.size()];
@@ -228,7 +228,7 @@ public class CrudController {
             @PathVariable("elementName") final String elementName, @RequestParam final Integer entityId,
             @RequestParam final Integer direction) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+        ComponentDefinition element = viewDefinition.getElementByName(elementName);
 
         dataAccessService.move(element.getDataDefinition(), new Long(entityId), direction);
 

@@ -9,8 +9,8 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 
 public class ListDataUtilsGenerateListDataTest {

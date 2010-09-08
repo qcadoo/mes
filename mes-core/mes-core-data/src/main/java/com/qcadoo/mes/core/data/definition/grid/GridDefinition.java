@@ -1,10 +1,14 @@
-package com.qcadoo.mes.core.data.definition;
+package com.qcadoo.mes.core.data.definition.grid;
 
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 
 /**
  * Grid defines structure used for listing entities. It contains the list of field that can be used for restrictions and the list
@@ -17,9 +21,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @apiviz.uses com.qcadoo.mes.core.data.search.Order
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
  */
-public final class GridDefinition extends ViewElementDefinition {
+public final class GridDefinition extends ComponentDefinition {
 
-    private Set<FieldDefinition> searchableFields;
+    private Set<DataFieldDefinition> searchableFields;
 
     private List<ColumnDefinition> columns;
 
@@ -29,14 +33,14 @@ public final class GridDefinition extends ViewElementDefinition {
 
     @Override
     public int getType() {
-        return ViewElementDefinition.TYPE_GRID;
+        return ComponentDefinition.TYPE_GRID;
     }
 
-    public Set<FieldDefinition> getSearchableFields() {
+    public Set<DataFieldDefinition> getSearchableFields() {
         return searchableFields;
     }
 
-    public void setSearchableFields(final Set<FieldDefinition> searchableFields) {
+    public void setSearchableFields(final Set<DataFieldDefinition> searchableFields) {
         this.searchableFields = searchableFields;
     }
 

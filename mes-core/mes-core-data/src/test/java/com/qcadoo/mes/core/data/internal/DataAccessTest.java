@@ -20,7 +20,7 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.callbacks.CallbackFactory;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
@@ -61,21 +61,21 @@ public abstract class DataAccessTest {
 
     protected DataDefinition dataDefinition = null;
 
-    protected FieldDefinition fieldDefinitionPriority = null;
+    protected DataFieldDefinition fieldDefinitionPriority = null;
 
-    protected FieldDefinition fieldDefinitionBelongsTo = null;
+    protected DataFieldDefinition fieldDefinitionBelongsTo = null;
 
-    protected FieldDefinition fieldDefinitionAge = null;
+    protected DataFieldDefinition fieldDefinitionAge = null;
 
-    protected FieldDefinition fieldDefinitionMoney = null;
+    protected DataFieldDefinition fieldDefinitionMoney = null;
 
-    protected FieldDefinition fieldDefinitionRetired = null;
+    protected DataFieldDefinition fieldDefinitionRetired = null;
 
-    protected FieldDefinition fieldDefinitionBirthDate = null;
+    protected DataFieldDefinition fieldDefinitionBirthDate = null;
 
-    protected FieldDefinition fieldDefinitionName = null;
+    protected DataFieldDefinition fieldDefinitionName = null;
 
-    protected FieldDefinition parentFieldDefinitionName = null;
+    protected DataFieldDefinition parentFieldDefinitionName = null;
 
     @Before
     public void superInit() {
@@ -106,7 +106,7 @@ public abstract class DataAccessTest {
         ReflectionTestUtils.setField(fieldValidatorFactory, "callbackFactory", callbackFactory);
         ReflectionTestUtils.setField(fieldValidatorFactory, "dataAccessService", dataAccessServiceMock);
 
-        parentFieldDefinitionName = new FieldDefinition("name");
+        parentFieldDefinitionName = new DataFieldDefinition("name");
         parentFieldDefinitionName.setType(fieldTypeFactory.stringType());
         parentFieldDefinitionName.setValidators();
 
@@ -116,32 +116,32 @@ public abstract class DataAccessTest {
 
         given(dataDefinitionService.get("parent.entity")).willReturn(parentDataDefinition);
 
-        fieldDefinitionBelongsTo = new FieldDefinition("belongsTo");
+        fieldDefinitionBelongsTo = new DataFieldDefinition("belongsTo");
         fieldDefinitionBelongsTo.setType(fieldTypeFactory.eagerBelongsToType("parent.entity", "name"));
         fieldDefinitionBelongsTo.setValidators();
 
-        fieldDefinitionName = new FieldDefinition("name");
+        fieldDefinitionName = new DataFieldDefinition("name");
         fieldDefinitionName.setType(fieldTypeFactory.stringType());
         fieldDefinitionName.setValidators();
 
-        fieldDefinitionAge = new FieldDefinition("age");
+        fieldDefinitionAge = new DataFieldDefinition("age");
         fieldDefinitionAge.setType(fieldTypeFactory.integerType());
         fieldDefinitionAge.setValidators();
 
-        fieldDefinitionPriority = new FieldDefinition("priority");
+        fieldDefinitionPriority = new DataFieldDefinition("priority");
         fieldDefinitionPriority.setType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
         fieldDefinitionPriority.setValidators();
         fieldDefinitionPriority.setReadOnly(true);
 
-        fieldDefinitionMoney = new FieldDefinition("money");
+        fieldDefinitionMoney = new DataFieldDefinition("money");
         fieldDefinitionMoney.setType(fieldTypeFactory.decimalType());
         fieldDefinitionMoney.setValidators();
 
-        fieldDefinitionRetired = new FieldDefinition("retired");
+        fieldDefinitionRetired = new DataFieldDefinition("retired");
         fieldDefinitionRetired.setType(fieldTypeFactory.booleanType());
         fieldDefinitionRetired.setValidators();
 
-        fieldDefinitionBirthDate = new FieldDefinition("birthDate");
+        fieldDefinitionBirthDate = new DataFieldDefinition("birthDate");
         fieldDefinitionBirthDate.setType(fieldTypeFactory.dateType());
         fieldDefinitionBirthDate.setValidators();
 

@@ -11,8 +11,8 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
 
 public final class ExpressionUtil {
 
@@ -45,7 +45,7 @@ public final class ExpressionUtil {
             return columnDefinition.getFields().get(0).getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
         } else {
             List<String> values = new ArrayList<String>();
-            for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
+            for (DataFieldDefinition fieldDefinition : columnDefinition.getFields()) {
                 values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName())));
             }
             return StringUtils.join(values, ", ");

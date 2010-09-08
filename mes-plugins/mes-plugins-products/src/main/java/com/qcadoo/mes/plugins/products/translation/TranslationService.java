@@ -3,7 +3,7 @@ package com.qcadoo.mes.plugins.products.translation;
 import java.util.Locale;
 import java.util.Map;
 
-import com.qcadoo.mes.core.data.definition.ViewDefinition;
+import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public interface TranslationService {

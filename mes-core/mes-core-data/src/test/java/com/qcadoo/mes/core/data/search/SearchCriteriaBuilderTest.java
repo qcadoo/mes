@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.definition.GridDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
 import com.qcadoo.mes.core.data.internal.DataAccessTest;
 
 public final class SearchCriteriaBuilderTest extends DataAccessTest {

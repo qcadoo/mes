@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.definition;
+package com.qcadoo.mes.core.data.definition.grid;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;
 
 /**
@@ -27,7 +28,7 @@ public class ColumnDefinition {
 
     private String name;
 
-    private List<FieldDefinition> fields;
+    private List<DataFieldDefinition> fields;
 
     private ColumnAggregationMode aggregationMode;
 
@@ -47,11 +48,11 @@ public class ColumnDefinition {
         this.name = name;
     }
 
-    public List<FieldDefinition> getFields() {
+    public List<DataFieldDefinition> getFields() {
         return fields;
     }
 
-    public void setFields(final List<FieldDefinition> fields) {
+    public void setFields(final List<DataFieldDefinition> fields) {
         this.fields = fields;
     }
 

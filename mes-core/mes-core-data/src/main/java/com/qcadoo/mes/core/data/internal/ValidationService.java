@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
@@ -37,13 +37,13 @@ public final class ValidationService {
 
     private void parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final ValidationResults validationResults) {
-        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             Object validateFieldValue = parseAndValidateField(dataDefinition, fieldDefinitionEntry.getValue(),
                     genericEntity.getField(fieldDefinitionEntry.getKey()), validationResults);
             genericEntity.setField(fieldDefinitionEntry.getKey(), validateFieldValue);
         }
 
-        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             if (validationResults.isFieldNotValid(fieldDefinitionEntry.getValue())) {
                 continue;
             }
@@ -62,7 +62,7 @@ public final class ValidationService {
         }
     }
 
-    private Object parseAndValidateValue(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateValue(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         Object fieldValue = value;
         if (fieldValue != null) {
@@ -90,7 +90,7 @@ public final class ValidationService {
         return fieldValue;
     }
 
-    private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         if (value != null) {
             Long referencedEntityId = null;
@@ -120,7 +120,7 @@ public final class ValidationService {
         }
     }
 
-    private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateField(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");

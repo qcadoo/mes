@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.definition;
+package com.qcadoo.mes.core.data.definition.view;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +7,7 @@ public class ViewDefinition {
 
     private String name;
 
-    private List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
+    private List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
     private String header;
 
@@ -23,16 +23,16 @@ public class ViewDefinition {
         this.name = name;
     }
 
-    public List<ViewElementDefinition> getElements() {
+    public List<ComponentDefinition> getElements() {
         return elements;
     }
 
-    public void setElements(final List<ViewElementDefinition> elements) {
+    public void setElements(final List<ComponentDefinition> elements) {
         this.elements = elements;
     }
 
-    public ViewElementDefinition getElementByName(final String elementName) {
-        for (ViewElementDefinition element : elements) {
+    public ComponentDefinition getElementByName(final String elementName) {
+        for (ComponentDefinition element : elements) {
             if (elementName.equals(element.getName())) {
                 return element;
             }

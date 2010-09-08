@@ -9,9 +9,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 /**
  * Object represents data from the database tables - with and without custom fields - and virtual tables - build using only custom
  * fields. All fields - database's fields and custom fields - are aggregated into key-value map. The key is the name of the field
- * from its definition - {@link com.qcadoo.mes.core.data.definition.FieldDefinition#getName()}.
+ * from its definition - {@link com.qcadoo.mes.core.data.definition.DataFieldDefinition#getName()}.
  * 
- * Value type must be the same as the type defined in {@link com.qcadoo.mes.core.data.definition.FieldDefinition#getType()}.
+ * Value type must be the same as the type defined in {@link com.qcadoo.mes.core.data.definition.DataFieldDefinition#getType()}.
  */
 public final class Entity {
 
