@@ -11,6 +11,8 @@
             <intercept-url pattern="/login.html" filters="none" />
             <intercept-url pattern="/logout.html" filters="none" />
             <intercept-url pattern="/timeout.html" filters="none" />
+            <intercept-url pattern="/css/**" filters="none" />
+            <intercept-url pattern="/js/**" filters="none" />
             
         <form-login login-page="/login.html" authentication-failure-url="/login.html?login_error=1" default-target-url="/main.html"/>
         <logout logout-success-url="/logout.html"/>

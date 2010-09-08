@@ -5,37 +5,55 @@
 <html>
 <head>
 	
+	<link rel="stylesheet" href="css/login.css" type="text/css" />
+	
+	<script type="text/javascript" src="js/lib/jquery-1.4.2.min.js"></script>
+		
+	<script type="text/javascript">
+
+		jQuery(document).ready(function(){
+			$("#languageSelect").val("${currentLanguage}");
+		});
+	
+		changeLanguage = function(language) {
+			window.location = "login.html?lang="+language;
+		}
+
+	</script>
 	
 </head>
 <body>
 
-	<c:if test="${not empty redirectReason}">
- 		<div style="font-weight: bold">
-			<c:out value="${redirectReason}"/>
+	<div><img src="css/images/global.logo.png"></img></div>
+	
+	<c:if test="${not empty errorMessage}">
+ 		<div class="errorBox">
+			<c:out value="${translation[errorMessage]}"/>
 		</div>
     </c:if>
- 
-	<div>
-		login page:
-	</div>
-	
-	<c:if test="${not empty param.login_error}">
-      <font color="red">
-        Your login attempt was not successful, try again.<br/><br/>
-        Reason: <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
-      </font>
+ 	<c:if test="${not empty successMessage}">
+ 		<div class="successBox">
+			<c:out value="${translation[successMessage]}"/>
+		</div>
     </c:if>
-	
+
+	<div class="langiageDiv">
+		${translation["login.form.label.language"]}
+ 		<select id="languageSelect" onchange="changeLanguage(this.value)">
+ 			<option value="pl">polski</option>
+ 			<option value="en">english</option>
+ 		</select>
+ 	</div>
+ 		
 	<form name="loginForm" action="<c:url value='j_spring_security_check'/>" method="POST">
+	<!-- <form name="loginForm" action="performLogin.html" method="POST">-->
       <table>
-        <tr><td>User:</td><td><input type='text' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
-        <tr><td>Password:</td><td><input type='password' name='j_password'></td></tr>
-        <tr><td><input type="checkbox" name="_spring_security_remember_me"></td><td>Don't ask for my password for two weeks</td></tr>
-
-        <tr><td colspan='2'><input name="submit" type="submit"></td></tr>
-        <tr><td colspan='2'><input name="reset" type="reset"></td></tr>
-      </table>
-
+        <tr><td>${translation["login.form.label.login"]}</td><td><input type='text' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
+        <tr><td>${translation["login.form.label.password"]}</td><td><input type='password' name='j_password'></td></tr>
+ 		
+ 		
+ 		 </table>
+        <div><input name="submit" type="submit" value="${translation['login.form.button.logIn']}"></div>
     </form>
 	
 </body>
