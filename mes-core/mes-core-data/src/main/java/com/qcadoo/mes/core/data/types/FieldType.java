@@ -5,8 +5,6 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public interface FieldType {
 
-    int getNumericType();
-
     boolean isSearchable();
 
     boolean isOrderable();

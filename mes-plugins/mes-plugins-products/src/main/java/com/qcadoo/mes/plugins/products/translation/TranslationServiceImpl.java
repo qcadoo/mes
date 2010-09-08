@@ -121,7 +121,7 @@ public class TranslationServiceImpl implements TranslationService {
             }
             if (viewElement.getType() == ComponentDefinition.TYPE_FORM) {
                 FormDefinition formDefinition = (FormDefinition) viewElement;
-                for (FormFieldDefinition formField : formDefinition.getFields().values()) {
+                for (FormFieldDefinition formField : formDefinition.getFields()) {
                     addFormFieldTranslation(viewDefinition, formDefinition, formField, translationsMap, locale);
                 }
 

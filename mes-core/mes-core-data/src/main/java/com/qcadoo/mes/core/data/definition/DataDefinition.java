@@ -9,7 +9,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
+import com.qcadoo.mes.core.data.internal.types.PriorityType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 /**
@@ -163,7 +163,7 @@ public final class DataDefinition {
     }
 
     public void setPriorityField(final DataFieldDefinition priorityField) {
-        checkState(priorityField.getType() instanceof PriorityFieldType, "priority field has wrong type");
+        checkState(priorityField.getType() instanceof PriorityType, "priority field has wrong type");
         checkState(!priorityField.isCustomField(), "priority field cannot be custom field");
         this.priorityField = priorityField;
     }

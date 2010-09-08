@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
+import com.qcadoo.mes.core.data.internal.types.PriorityType;
 
 @Service
 public final class PriorityService {
@@ -48,7 +48,7 @@ public final class PriorityService {
     }
 
     private DataFieldDefinition getScopeForPriority(final DataFieldDefinition fieldDefinition) {
-        return ((PriorityFieldType) fieldDefinition.getType()).getScopeFieldDefinition();
+        return ((PriorityType) fieldDefinition.getType()).getScopeFieldDefinition();
     }
 
     public void move(final DataDefinition dataDefinition, final Object databaseEntity, final int position, final int offset) {

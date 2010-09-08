@@ -2,10 +2,9 @@ package com.qcadoo.mes.core.data.internal.types;
 
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class BooleanFieldType implements FieldType {
+public final class BooleanType implements FieldType {
 
     @Override
     public boolean isSearchable() {
@@ -23,17 +22,13 @@ public final class BooleanFieldType implements FieldType {
     }
 
     @Override
-    public int getNumericType() {
-        return FieldTypeFactory.NUMERIC_TYPE_BOOLEAN;
-    }
-
-    @Override
     public Class<?> getType() {
         return Boolean.class;
     }
 
     @Override
-    public Object fromString(final DataFieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         return Boolean.parseBoolean(value);
     }
 
@@ -47,7 +42,8 @@ public final class BooleanFieldType implements FieldType {
     }
 
     @Override
-    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         return true;
     }
 

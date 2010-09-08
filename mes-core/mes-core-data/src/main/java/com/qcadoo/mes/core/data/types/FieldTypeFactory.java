@@ -4,30 +4,6 @@ import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 
 public interface FieldTypeFactory {
 
-    int NUMERIC_TYPE_BOOLEAN = 1;
-
-    int NUMERIC_TYPE_DATE = 2;
-
-    int NUMERIC_TYPE_DATE_TIME = 3;
-
-    int NUMERIC_TYPE_DICTIONARY = 4;
-
-    int NUMERIC_TYPE_ENUM = 5;
-
-    int NUMERIC_TYPE_INTEGER = 6;
-
-    int NUMERIC_TYPE_DECIMAL = 7;
-
-    int NUMERIC_TYPE_STRING = 8;
-
-    int NUMERIC_TYPE_TEXT = 9;
-
-    int NUMERIC_TYPE_BELONGS_TO = 10;
-
-    int NUMERIC_TYPE_PASSWORD = 11;
-
-    int NUMERIC_TYPE_PRIORITY = 12;
-
     FieldType booleanType();
 
     FieldType stringType();

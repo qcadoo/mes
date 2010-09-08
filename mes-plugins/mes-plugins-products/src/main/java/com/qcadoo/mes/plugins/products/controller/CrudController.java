@@ -6,10 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,17 +23,18 @@ import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.form.FormDefinition;
+import com.qcadoo.mes.core.data.definition.form.FormFieldDefinition;
 import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
-import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 import com.qcadoo.mes.plugins.products.data.EntityDataUtils;
 import com.qcadoo.mes.plugins.products.data.ListData;
@@ -55,8 +53,6 @@ public class CrudController {
     @Autowired
     private TranslationService translationService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(CrudController.class);
-
     @RequestMapping(value = "page/{viewName}", method = RequestMethod.GET)
     public ModelAndView getView(@PathVariable("viewName") final String viewName,
             @RequestParam final Map<String, String> arguments, final Locale locale) {
@@ -74,24 +70,24 @@ public class CrudController {
 
         for (ComponentDefinition viewElement : viewDefinition.getElements()) {
             viewElementsOptionsJson.put(viewElement.getName(), CrudControllerUtils.generateJsonViewElementOptions(viewElement));
-            for (Entry<String, DataFieldDefinition> fieldDefEntry : viewElement.getDataDefinition().getFields().entrySet()) {
-                switch (fieldDefEntry.getValue().getType().getNumericType()) {
-                    case FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO:
-                        BelongsToFieldType belongsToField = (BelongsToFieldType) fieldDefEntry.getValue().getType();
+
+            if (viewElement instanceof FormDefinition) {
+                FormDefinition form = (FormDefinition) viewElement;
+                for (FormFieldDefinition fieldDefEntry : form.getFields()) {
+                    if (fieldDefEntry.getDataField().getType() instanceof BelongsToType) {
+                        BelongsToType belongsToField = (BelongsToType) fieldDefEntry.getDataField().getType();
                         Map<Long, String> fieldOptions = belongsToField.lookup(null);
-                        dictionaryValues.put(fieldDefEntry.getKey(), fieldOptions);
-                        break;
-                    case FieldTypeFactory.NUMERIC_TYPE_DICTIONARY:
-                    case FieldTypeFactory.NUMERIC_TYPE_ENUM:
-                        EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefEntry.getValue().getType();
+                        dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptions);
+                    } else if (fieldDefEntry.getDataField().getType() instanceof EnumeratedFieldType) {
+                        EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefEntry.getDataField().getType();
                         List<String> options = enumeratedField.values();
                         Map<Long, String> fieldOptionsMap = new HashMap<Long, String>();
                         Long key = (long) 0;
                         for (String option : options) {
                             fieldOptionsMap.put(key++, option);
                         }
-                        dictionaryValues.put(fieldDefEntry.getKey(), fieldOptionsMap);
-                        break;
+                        dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptionsMap);
+                    }
                 }
             }
         }

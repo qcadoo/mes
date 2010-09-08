@@ -1,19 +1,21 @@
 package com.qcadoo.mes.core.data.internal.types;
 
-import java.util.Arrays;
 import java.util.List;
 
+import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class EnumFieldType implements EnumeratedFieldType {
+public final class DictionaryType implements EnumeratedFieldType {
 
-    private final List<String> values;
+    private final String dictionaryName;
 
-    public EnumFieldType(final String... values) {
-        this.values = Arrays.asList(values);
+    private final DictionaryService dictionaryService;
+
+    public DictionaryType(final String dictionaryName, final DictionaryService dictionaryService) {
+        this.dictionaryName = dictionaryName;
+        this.dictionaryService = dictionaryService;
     }
 
     @Override
@@ -33,12 +35,7 @@ public final class EnumFieldType implements EnumeratedFieldType {
 
     @Override
     public List<String> values() {
-        return values;
-    }
-
-    @Override
-    public int getNumericType() {
-        return FieldTypeFactory.NUMERIC_TYPE_ENUM;
+        return dictionaryService.values(dictionaryName);
     }
 
     @Override
@@ -47,7 +44,8 @@ public final class EnumFieldType implements EnumeratedFieldType {
     }
 
     @Override
-    public Object fromString(final DataFieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         return value;
     }
 
@@ -57,12 +55,12 @@ public final class EnumFieldType implements EnumeratedFieldType {
     }
 
     @Override
-    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (!values().contains(value)) {
             validationResults.addError(fieldDefinition, "form.validate.errors.invalidDictionaryItem", String.valueOf(values()));
             return false;
         }
         return true;
     }
-
 }

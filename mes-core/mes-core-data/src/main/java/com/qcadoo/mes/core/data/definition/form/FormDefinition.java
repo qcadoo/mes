@@ -1,14 +1,14 @@
 package com.qcadoo.mes.core.data.definition.form;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 
 public final class FormDefinition extends ComponentDefinition {
 
-    private final Map<String, FormFieldDefinition> fields = new LinkedHashMap<String, FormFieldDefinition>();
+    private final List<FormFieldDefinition> fields = new ArrayList<FormFieldDefinition>();
 
     public FormDefinition(final String name, final DataDefinition dataDefinition) {
         super(name, dataDefinition);
@@ -19,16 +19,12 @@ public final class FormDefinition extends ComponentDefinition {
         return ComponentDefinition.TYPE_FORM;
     }
 
-    public Map<String, FormFieldDefinition> getFields() {
+    public List<FormFieldDefinition> getFields() {
         return fields;
     }
 
     public void addField(final FormFieldDefinition field) {
-        fields.put(field.getName(), field);
-    }
-
-    public FormFieldDefinition getField(final String fieldName) {
-        return fields.get(fieldName);
+        fields.add(field);
     }
 
 }

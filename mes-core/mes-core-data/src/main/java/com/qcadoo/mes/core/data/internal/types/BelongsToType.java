@@ -10,11 +10,10 @@ import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.types.LookupedFieldType;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class BelongsToFieldType implements LookupedFieldType {
+public final class BelongsToType implements LookupedFieldType {
 
     private final DataDefinition dataDefinition;
 
@@ -24,17 +23,12 @@ public final class BelongsToFieldType implements LookupedFieldType {
 
     private final boolean eagerFetch;
 
-    public BelongsToFieldType(final DataDefinition dataDefinition, final String lookupFieldName, final boolean eagerFetch,
+    public BelongsToType(final DataDefinition dataDefinition, final String lookupFieldName, final boolean eagerFetch,
             final DataAccessService dataAccessService) {
         this.dataDefinition = dataDefinition;
         this.lookupFieldName = lookupFieldName;
         this.eagerFetch = eagerFetch;
         this.dataAccessService = dataAccessService;
-    }
-
-    @Override
-    public int getNumericType() {
-        return FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO;
     }
 
     @Override
@@ -79,7 +73,8 @@ public final class BelongsToFieldType implements LookupedFieldType {
     }
 
     @Override
-    public Object fromString(final DataFieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         throw new IllegalStateException("belongsTo field type doesn't suppont fromString method");
     }
 
@@ -89,7 +84,8 @@ public final class BelongsToFieldType implements LookupedFieldType {
     }
 
     @Override
-    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         return true;
     }
 

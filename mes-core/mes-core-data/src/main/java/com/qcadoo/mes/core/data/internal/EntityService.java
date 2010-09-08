@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
-import com.qcadoo.mes.core.data.internal.types.PasswordFieldType;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
+import com.qcadoo.mes.core.data.internal.types.PasswordType;
 
 @Service
 public final class EntityService {
@@ -39,7 +39,7 @@ public final class EntityService {
     public void setField(final Object databaseEntity, final DataFieldDefinition fieldDefinition, final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (!(fieldDefinition.getType() instanceof PasswordFieldType && value == null)) {
+        } else if (!(fieldDefinition.getType() instanceof PasswordType && value == null)) {
             setField(databaseEntity, fieldDefinition.getName(), value);
         }
     }
@@ -47,7 +47,7 @@ public final class EntityService {
     public Object getField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
+        } else if (fieldDefinition.getType() instanceof BelongsToType) {
             return getBelongsToField(databaseEntity, fieldDefinition);
         } else {
             return getPrimitiveField(databaseEntity, fieldDefinition);
@@ -104,7 +104,7 @@ public final class EntityService {
     }
 
     private Object getBelongsToField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
-        BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
+        BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
         DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
         if (belongsToFieldType.isEagerFetch()) {
             Object value = getField(databaseEntity, fieldDefinition.getName());

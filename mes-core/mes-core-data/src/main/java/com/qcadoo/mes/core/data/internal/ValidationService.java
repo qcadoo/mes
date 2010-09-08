@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -110,7 +110,7 @@ public final class ValidationService {
                         .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 return null;
             }
-            BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
+            BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
             DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
@@ -124,7 +124,7 @@ public final class ValidationService {
             final Object value, final ValidationResults validationResults) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
+        } else if (fieldDefinition.getType() instanceof BelongsToType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validationResults);
         } else {
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validationResults);
