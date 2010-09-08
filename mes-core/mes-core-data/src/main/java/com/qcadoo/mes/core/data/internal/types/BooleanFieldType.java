@@ -39,7 +39,11 @@ public final class BooleanFieldType implements FieldType {
 
     @Override
     public String toString(final Object value) {
-        return ((Boolean) value) ? "1" : "0";
+        if ((Boolean) value) {
+            return "1";
+        } else {
+            return "0";
+        }
     }
 
     @Override

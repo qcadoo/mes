@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
@@ -103,6 +104,12 @@ public final class SearchCriteriaImpl implements SearchCriteria {
     @Override
     public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("maxResults", maxResults).append("firstResult", firstResult)
+                .append("order", order).append("restrictions", restrictions).toString();
     }
 
 }

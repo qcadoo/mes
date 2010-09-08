@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.data.internal.search.restrictions;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
@@ -34,6 +35,11 @@ public final class BelongsToRestriction extends BaseRestriction {
         }
         BelongsToRestriction other = (BelongsToRestriction) obj;
         return new EqualsBuilder().append(getFieldName(), other.getFieldName()).append(getValue(), other.getValue()).isEquals();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("fieldName", getFieldName()).append("id", getValue()).toString();
     }
 
 }

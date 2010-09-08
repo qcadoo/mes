@@ -13,7 +13,6 @@ import org.junit.Test;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class EntityServiceTest extends DataAccessTest {
 
@@ -259,9 +258,10 @@ public class EntityServiceTest extends DataAccessTest {
 
         given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
+        validationService.validateGenericEntity(dataDefinition, genericEntity);
+
         // when
-        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, null,
-                new ValidationResults());
+        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, null);
 
         // then
         assertNotNull(databaseEntity);
@@ -288,9 +288,10 @@ public class EntityServiceTest extends DataAccessTest {
 
         given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
+        validationService.validateGenericEntity(dataDefinition, genericEntity);
+
         // when
-        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity,
-                new ValidationResults());
+        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
         // then
         assertNotNull(databaseEntity);
