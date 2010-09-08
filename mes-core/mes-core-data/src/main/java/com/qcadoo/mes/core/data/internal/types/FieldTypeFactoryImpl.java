@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.internal.types;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
@@ -24,13 +25,14 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     private static final FieldType INTEGER_FIELD_TYPE = new NumericFieldType(10, 0);
 
     private static final FieldType DECIMAL_FIELD_TYPE = new NumericFieldType(10, 3);
 
     private static final FieldType STRING_FIELD_TYPE = new StringFieldType(255);
-
-    private static final FieldType PASSWORD_FIELD_TYPE = new PasswordFieldType(255);
 
     private static final FieldType TEXT_FIELD_TYPE = new StringFieldType(2048);
 
@@ -77,7 +79,8 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Override
     public FieldType passwordType() {
-        return PASSWORD_FIELD_TYPE;
+        // TODO masz don't create new fieltType every time, use some cache
+        return new PasswordFieldType(255, passwordEncoder);
     }
 
     @Override

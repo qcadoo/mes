@@ -11,6 +11,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.internal.types.PasswordFieldType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -66,7 +67,8 @@ public final class ValidationService {
             final Object value, final ValidationResults validationResults) {
         Object fieldValue = value;
         if (fieldValue != null) {
-            if (!fieldDefinition.getType().getType().isInstance(fieldValue)) {
+            if (!fieldDefinition.getType().getType().isInstance(fieldValue)
+                    || fieldDefinition.getType() instanceof PasswordFieldType) {
                 if (fieldValue instanceof String) {
                     fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
                 } else {
