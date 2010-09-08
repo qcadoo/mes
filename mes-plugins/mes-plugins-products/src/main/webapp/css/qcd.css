@@ -61,3 +61,9 @@ td.fieldRequired textarea,
 td.fieldRequired select {
 	background: #f4f6c0;
 }
+
+input.readonly, 
+textarea.readonly, 
+select.readonly {
+	//background: #CCCCCC;
+}

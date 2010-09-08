@@ -47,7 +47,7 @@
 				</c:otherwise>
 			</c:choose>
 			
-			<c:set var="inputClass" value="${valueType} ${field.definition.required ? 'required' : ''} ${field.definition.requiredOnCreation ? 'required-on-creation' : ''} ${field.definition.editable ? '' : 'readonly'}" scope="page" />
+			<c:set var="inputClass" value="${valueType} ${field.definition.required ? 'required' : ''} ${field.definition.requiredOnCreation ? 'required-on-creation' : ''} ${field.definition.editable ? '' : 'editable'} ${field.definition.readOnly ? 'readonly' : ''}" scope="page" />
 
 			<c:set var="tdClass" value="${(field.definition.required || field.definition.requiredOnCreation) ? 'fieldRequired' : ''}" scope="page" />
 		

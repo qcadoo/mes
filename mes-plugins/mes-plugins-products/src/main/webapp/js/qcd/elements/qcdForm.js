@@ -155,11 +155,13 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	refreshForm = function(entity, updateChildren) {
 		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
+		$('#'+parameters.name+'_form .readonly').attr('disabled', true);
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
 		}
 		if(entity["id"]) {
-			$('#'+parameters.name+'_form .readonly').attr('readonly', 'readonly');
+			//$('#'+parameters.name+'_form .editable').attr('readonly', 'readonly');
+			$('#'+parameters.name+'_form .editable').attr('disabled', true);
 		}
 		$('#'+parameters.name+'_form .confirmable').each(function(index) {
 			$('#'+$(this).attr('id')+'_confirmation').attr('value','');
@@ -176,6 +178,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 		$("#"+parameters.name+"_saveButton").click(performSave);
 		$("#"+parameters.name+"_saveCloseButton").click(performSaveAndExit);
 		$("#"+parameters.name+"_cancelButton").click(performCancel);
+		$('#'+parameters.name+'_form .readonly').attr('disabled', true);
 	}
 	
 	this.getParent = function() {

@@ -302,7 +302,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setParent("entityId");
         form.setCorrespondingViewName("users.userGridView");
         List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
-        formFields.add(new FieldViewDefinition(userDataDefinition.getField("login")));
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("userName")));
         formFields.add(new FieldViewDefinition(userDataDefinition.getField("userGroup")));
         formFields.add(new FieldViewDefinition(userDataDefinition.getField("email")));
         formFields.add(new FieldViewDefinition(userDataDefinition.getField("firstName")));

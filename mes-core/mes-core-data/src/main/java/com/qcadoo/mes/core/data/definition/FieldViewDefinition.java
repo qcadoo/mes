@@ -4,6 +4,8 @@ public class FieldViewDefinition {
 
     private FieldDefinition definition;
 
+    private boolean readOnly = false;
+
     public FieldViewDefinition(FieldDefinition definition) {
         super();
         this.definition = definition;
@@ -15,6 +17,14 @@ public class FieldViewDefinition {
 
     public void setDefinition(FieldDefinition definition) {
         this.definition = definition;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly || definition.isReadOnly();
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
 }
