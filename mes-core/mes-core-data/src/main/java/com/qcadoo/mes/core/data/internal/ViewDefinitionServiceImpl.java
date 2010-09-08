@@ -126,7 +126,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormFieldDefinition fieldEan = createFieldDefinition("ean", productDataDefinition.getField("ean"),
                 fieldControlFactory.stringControl());
         FormFieldDefinition fieldCategory = createFieldDefinition("category", productDataDefinition.getField("category"),
-                fieldControlFactory.selectControl());
+                fieldControlFactory.editableSelectControl());
         FormFieldDefinition fieldUnit = createFieldDefinition("unit", productDataDefinition.getField("unit"),
                 fieldControlFactory.stringControl());
 
@@ -237,7 +237,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.setParentField("substitute");
 
         FormFieldDefinition fieldProduct = createFieldDefinition("product",
-                substitutesComponentDataDefinition.getField("product"), fieldControlFactory.selectControl());
+                substitutesComponentDataDefinition.getField("product"), fieldControlFactory.lookupControl());
         FormFieldDefinition fieldQuantity = createFieldDefinition("quantity",
                 substitutesComponentDataDefinition.getField("quantity"), fieldControlFactory.decimalControl());
 
@@ -422,13 +422,13 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormFieldDefinition fieldState = createFieldDefinition("state", orderDataDefinition.getField("state"),
                 fieldControlFactory.selectControl());
         FormFieldDefinition fieldMachine = createFieldDefinition("machine", orderDataDefinition.getField("machine"),
-                fieldControlFactory.selectControl());
+                fieldControlFactory.editableSelectControl());
         FormFieldDefinition fieldProduct = createFieldDefinition("product", orderDataDefinition.getField("product"),
-                fieldControlFactory.selectControl());
+                fieldControlFactory.lookupControl());
         FormFieldDefinition fieldDefaultInstruction = createFieldDefinition("defaultInstruction",
                 orderDataDefinition.getField("defaultInstruction"), fieldControlFactory.displayControl());
         FormFieldDefinition fieldInstruction = createFieldDefinition("instruction", orderDataDefinition.getField("instruction"),
-                fieldControlFactory.selectControl());
+                fieldControlFactory.lookupControl());
         FormFieldDefinition fieldPlannedQuantity = createFieldDefinition("plannedQuantity",
                 orderDataDefinition.getField("plannedQuantity"), fieldControlFactory.decimalControl());
         FormFieldDefinition fieldDoneQuantity = createFieldDefinition("doneQuantity",

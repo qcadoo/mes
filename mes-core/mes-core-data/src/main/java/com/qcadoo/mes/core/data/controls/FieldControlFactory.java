@@ -18,4 +18,8 @@ public interface FieldControlFactory {
 
     FieldControl dateTimeControl();
 
+    FieldControl lookupControl();
+
+    FieldControl editableSelectControl();
+
 }
