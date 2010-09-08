@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.definition;
+package com.qcadoo.mes.core.data.definition.grid;
 
 public enum ColumnAggregationMode {
 

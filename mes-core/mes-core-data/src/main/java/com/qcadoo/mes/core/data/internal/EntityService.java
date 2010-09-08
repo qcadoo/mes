@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
-import com.qcadoo.mes.core.data.internal.types.PasswordFieldType;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
+import com.qcadoo.mes.core.data.internal.types.PasswordType;
 
 @Service
 public final class EntityService {
@@ -36,18 +36,18 @@ public final class EntityService {
         criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
     }
 
-    public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
+    public void setField(final Object databaseEntity, final DataFieldDefinition fieldDefinition, final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (!(fieldDefinition.getType() instanceof PasswordFieldType && value == null)) {
+        } else if (!(fieldDefinition.getType() instanceof PasswordType && value == null)) {
             setField(databaseEntity, fieldDefinition.getName(), value);
         }
     }
 
-    public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
+    public Object getField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
+        } else if (fieldDefinition.getType() instanceof BelongsToType) {
             return getBelongsToField(databaseEntity, fieldDefinition);
         } else {
             return getPrimitiveField(databaseEntity, fieldDefinition);
@@ -57,7 +57,7 @@ public final class EntityService {
     public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
         Entity genericEntity = new Entity(getId(databaseEntity));
 
-        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
         }
 
@@ -73,7 +73,7 @@ public final class EntityService {
             final Object existingDatabaseEntity) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
-        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             if (fieldDefinitionEntry.getValue().isReadOnly()) {
                 continue;
             }
@@ -99,12 +99,12 @@ public final class EntityService {
         return databaseEntity;
     }
 
-    private Object getPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
+    private Object getPrimitiveField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
         return getField(databaseEntity, fieldDefinition.getName());
     }
 
-    private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
-        BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
+    private Object getBelongsToField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
+        BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
         DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
         if (belongsToFieldType.isEagerFetch()) {
             Object value = getField(databaseEntity, fieldDefinition.getName());

@@ -4,12 +4,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class DateFieldType implements FieldType {
+public final class DateType implements FieldType {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
@@ -25,7 +24,7 @@ public final class DateFieldType implements FieldType {
 
     private final boolean withTime;
 
-    public DateFieldType(final boolean withTime) {
+    public DateType(final boolean withTime) {
         this.withTime = withTime;
         if (withTime) {
             format = DATE_TIME_FORMAT;
@@ -52,21 +51,13 @@ public final class DateFieldType implements FieldType {
     }
 
     @Override
-    public int getNumericType() {
-        if (withTime) {
-            return FieldTypeFactory.NUMERIC_TYPE_DATE_TIME;
-        } else {
-            return FieldTypeFactory.NUMERIC_TYPE_DATE;
-        }
-    }
-
-    @Override
     public Class<?> getType() {
         return Date.class;
     }
 
     @Override
-    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         try {
             return new SimpleDateFormat(format).parse(value);
         } catch (ParseException e) {
@@ -81,7 +72,8 @@ public final class DateFieldType implements FieldType {
     }
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         return true;
     }
 

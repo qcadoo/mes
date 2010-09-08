@@ -1,15 +1,14 @@
 package com.qcadoo.mes.core.data.internal.types;
 
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class PriorityFieldType implements FieldType {
+public final class PriorityType implements FieldType {
 
-    private final FieldDefinition scopeFieldDefinition;
+    private final DataFieldDefinition scopeFieldDefinition;
 
-    public PriorityFieldType(final FieldDefinition scopeFieldDefinition) {
+    public PriorityType(final DataFieldDefinition scopeFieldDefinition) {
         this.scopeFieldDefinition = scopeFieldDefinition;
     }
 
@@ -29,17 +28,13 @@ public final class PriorityFieldType implements FieldType {
     }
 
     @Override
-    public int getNumericType() {
-        return FieldTypeFactory.NUMERIC_TYPE_PRIORITY;
-    }
-
-    @Override
     public Class<?> getType() {
         return Integer.class;
     }
 
     @Override
-    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -54,11 +49,12 @@ public final class PriorityFieldType implements FieldType {
     }
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         return true;
     }
 
-    public FieldDefinition getScopeFieldDefinition() {
+    public DataFieldDefinition getScopeFieldDefinition() {
         return scopeFieldDefinition;
     }
 

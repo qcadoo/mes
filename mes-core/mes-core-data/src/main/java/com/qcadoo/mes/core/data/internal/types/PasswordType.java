@@ -3,18 +3,17 @@ package com.qcadoo.mes.core.data.internal.types;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class PasswordFieldType implements FieldType {
+public final class PasswordType implements FieldType {
 
     private final int lenght;
 
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public PasswordFieldType(final int lenght, final PasswordEncoder passwordEncoder) {
+    public PasswordType(final int lenght, final PasswordEncoder passwordEncoder) {
         this.lenght = lenght;
         this.passwordEncoder = passwordEncoder;
     }
@@ -35,17 +34,13 @@ public final class PasswordFieldType implements FieldType {
     }
 
     @Override
-    public int getNumericType() {
-        return FieldTypeFactory.NUMERIC_TYPE_PASSWORD;
-    }
-
-    @Override
     public Class<?> getType() {
         return String.class;
     }
 
     @Override
-    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         return passwordEncoder.encodePassword(value, null);
     }
 
@@ -55,7 +50,8 @@ public final class PasswordFieldType implements FieldType {
     }
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (StringUtils.length((String) value) > lenght) {
             validationResults.addError(fieldDefinition, "form.validate.errors.stringIsTooLong", String.valueOf(lenght));
             return false;

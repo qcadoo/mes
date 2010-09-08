@@ -11,7 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class TranslationServiceImplTranslateValidationResultsTest {
@@ -23,9 +23,9 @@ public class TranslationServiceImplTranslateValidationResultsTest {
         validationResults.addGlobalError("globalMsg1", new String[] { "aa" });
         validationResults.addGlobalError("globalMsg2", new String[] {});
 
-        validationResults.addError(new FieldDefinition("f1"), "f11", new String[] {});
-        validationResults.addError(new FieldDefinition("f2"), "f22", new String[] { "1", "2", "3" });
-        validationResults.addError(new FieldDefinition("f3"), "f33", new String[] {});
+        validationResults.addError(new DataFieldDefinition("f1"), "f11", new String[] {});
+        validationResults.addError(new DataFieldDefinition("f2"), "f22", new String[] { "1", "2", "3" });
+        validationResults.addError(new DataFieldDefinition("f3"), "f33", new String[] {});
 
         Entity entity = new Entity((long) 21);
         validationResults.setEntity(entity);

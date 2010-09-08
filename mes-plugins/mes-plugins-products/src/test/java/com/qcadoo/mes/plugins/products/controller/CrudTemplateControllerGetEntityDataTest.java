@@ -16,7 +16,7 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 
 public class CrudTemplateControllerGetEntityDataTest {
 
@@ -37,7 +37,7 @@ public class CrudTemplateControllerGetEntityDataTest {
         vdsMock = mock(ViewDefinitionService.class, RETURNS_DEEP_STUBS);
         ReflectionTestUtils.setField(controller, "viewDefinitionService", vdsMock);
 
-        FieldDefinition f1 = mock(FieldDefinition.class);
+        DataFieldDefinition f1 = mock(DataFieldDefinition.class);
         given(f1.getName()).willReturn("testField1");
         given(f1.getValue("testField1Val")).willReturn("testField1Ok");
 

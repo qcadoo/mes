@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
 import com.qcadoo.mes.core.data.search.SearchResult;
 
 public class ListDataUtils {

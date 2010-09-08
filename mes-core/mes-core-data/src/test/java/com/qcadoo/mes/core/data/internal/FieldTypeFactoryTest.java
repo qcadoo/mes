@@ -17,26 +17,25 @@ import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
-import com.qcadoo.mes.core.data.internal.types.BooleanFieldType;
-import com.qcadoo.mes.core.data.internal.types.DateFieldType;
-import com.qcadoo.mes.core.data.internal.types.DictionaryFieldType;
-import com.qcadoo.mes.core.data.internal.types.EnumFieldType;
-import com.qcadoo.mes.core.data.internal.types.NumericFieldType;
-import com.qcadoo.mes.core.data.internal.types.PasswordFieldType;
-import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
-import com.qcadoo.mes.core.data.internal.types.StringFieldType;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
+import com.qcadoo.mes.core.data.internal.types.BooleanType;
+import com.qcadoo.mes.core.data.internal.types.DateType;
+import com.qcadoo.mes.core.data.internal.types.DictionaryType;
+import com.qcadoo.mes.core.data.internal.types.EnumType;
+import com.qcadoo.mes.core.data.internal.types.NumericType;
+import com.qcadoo.mes.core.data.internal.types.PasswordType;
+import com.qcadoo.mes.core.data.internal.types.PriorityType;
+import com.qcadoo.mes.core.data.internal.types.StringType;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class FieldTypeFactoryTest extends DataAccessTest {
 
     private ValidationResults validationResults = null;
 
-    private final FieldDefinition fieldDefinition = new FieldDefinition("aa");
+    private final DataFieldDefinition fieldDefinition = new DataFieldDefinition("aa");
 
     @Before
     public void init() {
@@ -49,7 +48,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         EnumeratedFieldType fieldType = fieldTypeFactory.enumType("val1", "val2", "val3");
 
         // then
-        assertThat(fieldType, is(EnumFieldType.class));
+        assertThat(fieldType, is(EnumType.class));
         assertThat(fieldType.values(), JUnitMatchers.hasItems("val1", "val2", "val3"));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
@@ -60,7 +59,6 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.validate(fieldDefinition, "val4", validationResults));
         assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorForField("aa").getMessage());
         assertEquals("[val1, val2, val3]", validationResults.getErrorForField("aa").getVars()[0]);
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_ENUM));
     }
 
     @Test
@@ -72,7 +70,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         EnumeratedFieldType fieldType = fieldTypeFactory.dictionaryType("dict");
 
         // then
-        assertThat(fieldType, is(DictionaryFieldType.class));
+        assertThat(fieldType, is(DictionaryType.class));
         assertThat(fieldType.values(), JUnitMatchers.hasItems("val1", "val2", "val3"));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
@@ -82,7 +80,6 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.validate(fieldDefinition, "val4", validationResults));
         assertEquals("form.validate.errors.invalidDictionaryItem", validationResults.getErrorForField("aa").getMessage());
         assertEquals("[val1, val2, val3]", validationResults.getErrorForField("aa").getVars()[0]);
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DICTIONARY));
     }
 
     @Test
@@ -91,13 +88,12 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.booleanType();
 
         // then
-        assertThat(fieldType, is(BooleanFieldType.class));
+        assertThat(fieldType, is(BooleanType.class));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Boolean.class, fieldType.getType());
         assertTrue(fieldType.validate(fieldDefinition, false, validationResults));
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_BOOLEAN));
     }
 
     @Test
@@ -106,13 +102,12 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.dateType();
 
         // then
-        assertThat(fieldType, is(DateFieldType.class));
+        assertThat(fieldType, is(DateType.class));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Date.class, fieldType.getType());
         assertTrue(fieldType.validate(fieldDefinition, new Date(), validationResults));
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DATE));
     }
 
     @Test
@@ -121,13 +116,12 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.dateTimeType();
 
         // then
-        assertThat(fieldType, is(DateFieldType.class));
+        assertThat(fieldType, is(DateType.class));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Date.class, fieldType.getType());
         assertTrue(fieldType.validate(fieldDefinition, new Date(), validationResults));
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DATE_TIME));
     }
 
     @Test
@@ -136,7 +130,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.decimalType();
 
         // then
-        assertThat(fieldType, is(NumericFieldType.class));
+        assertThat(fieldType, is(NumericType.class));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertTrue(fieldType.isAggregable());
@@ -148,7 +142,6 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.validate(fieldDefinition, BigDecimal.valueOf(12345678), validationResults));
         assertEquals("form.validate.errors.numericIsTooBig", validationResults.getErrorForField("aa").getMessage());
         assertEquals("9999999", validationResults.getErrorForField("aa").getVars()[0]);
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_DECIMAL));
     }
 
     @Test
@@ -157,14 +150,13 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.integerType();
 
         // then
-        assertThat(fieldType, is(NumericFieldType.class));
+        assertThat(fieldType, is(NumericType.class));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertTrue(fieldType.isAggregable());
         assertEquals(Integer.class, fieldType.getType());
         assertTrue(fieldType.validate(fieldDefinition, 1, validationResults));
         assertTrue(fieldType.validate(fieldDefinition, 1234567890, validationResults));
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_INTEGER));
     }
 
     @Test
@@ -173,7 +165,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.stringType();
 
         // then
-        assertThat(fieldType, is(StringFieldType.class));
+        assertThat(fieldType, is(StringType.class));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
@@ -183,7 +175,6 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 256), validationResults));
         assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorForField("aa").getMessage());
         assertEquals("255", validationResults.getErrorForField("aa").getVars()[0]);
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_STRING));
     }
 
     @Test
@@ -192,7 +183,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.textType();
 
         // then
-        assertThat(fieldType, is(StringFieldType.class));
+        assertThat(fieldType, is(StringType.class));
         assertTrue(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
@@ -202,7 +193,6 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.validate(fieldDefinition, StringUtils.repeat("a", 2049), validationResults));
         assertEquals("form.validate.errors.stringIsTooLong", validationResults.getErrorForField("aa").getMessage());
         assertEquals("2048", validationResults.getErrorForField("aa").getVars()[0]);
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_TEXT));
     }
 
     @Test
@@ -211,13 +201,12 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent.entity", "name");
 
         // then
-        assertThat(fieldType, is(BelongsToFieldType.class));
+        assertThat(fieldType, is(BelongsToType.class));
         assertFalse(fieldType.isSearchable());
         assertFalse(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Object.class, fieldType.getType());
         assertTrue(fieldType.validate(fieldDefinition, new Entity(), validationResults));
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_BELONGS_TO));
     }
 
     @Test
@@ -226,31 +215,29 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.passwordType();
 
         // then
-        assertThat(fieldType, is(PasswordFieldType.class));
+        assertThat(fieldType, is(PasswordType.class));
         assertFalse(fieldType.isSearchable());
         assertFalse(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
         assertTrue(fieldType.validate(fieldDefinition, "", validationResults));
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_PASSWORD));
     }
 
     @Test
     public void shouldReturnPriorityType() throws Exception {
         // given
-        FieldDefinition fieldDefinition = new FieldDefinition("aaa");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("aaa");
 
         // when
         FieldType fieldType = fieldTypeFactory.priorityType(fieldDefinition);
 
         // then
-        assertThat(fieldType, is(PriorityFieldType.class));
+        assertThat(fieldType, is(PriorityType.class));
         assertFalse(fieldType.isSearchable());
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Integer.class, fieldType.getType());
         assertTrue(fieldType.validate(fieldDefinition, 1, validationResults));
-        assertThat(fieldType.getNumericType(), is(FieldTypeFactory.NUMERIC_TYPE_PRIORITY));
-        assertEquals(fieldDefinition, ((PriorityFieldType) fieldType).getScopeFieldDefinition());
+        assertEquals(fieldDefinition, ((PriorityType) fieldType).getScopeFieldDefinition());
     }
 }

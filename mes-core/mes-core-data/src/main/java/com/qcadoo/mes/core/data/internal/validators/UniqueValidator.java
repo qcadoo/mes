@@ -3,7 +3,7 @@ package com.qcadoo.mes.core.data.internal.validators;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
@@ -24,13 +24,13 @@ public final class UniqueValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         return true;
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity,
+    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Entity entity,
             final ValidationResults validationResults) {
         SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition)
                 .restrictedWith(Restrictions.eq(fieldDefinition, entity.getField(fieldDefinition.getName()))).withMaxResults(1);

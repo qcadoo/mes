@@ -1,6 +1,6 @@
 package com.qcadoo.mes.core.data.search;
 
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.restrictions.BelongsToRestriction;
 import com.qcadoo.mes.core.data.internal.search.restrictions.IsNotNullRestriction;
 import com.qcadoo.mes.core.data.internal.search.restrictions.IsNullRestriction;
@@ -17,7 +17,7 @@ public final class Restrictions {
     private Restrictions() {
     }
 
-    public static Restriction eq(final FieldDefinition fieldDefinition, final Object expectedValue) {
+    public static Restriction eq(final DataFieldDefinition fieldDefinition, final Object expectedValue) {
         ValidationResults validationResults = new ValidationResults();
         Object value = validateValue(fieldDefinition, expectedValue, validationResults);
         if (!validationResults.getErrors().isEmpty()) {
@@ -32,7 +32,7 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.EQ);
     }
 
-    public static Restriction belongsTo(final FieldDefinition fieldDefinition, final Long id) {
+    public static Restriction belongsTo(final DataFieldDefinition fieldDefinition, final Long id) {
         return new BelongsToRestriction(fieldDefinition.getName(), id);
     }
 
@@ -40,7 +40,7 @@ public final class Restrictions {
         return new SimpleRestriction("id", id, restrictionOperator);
     }
 
-    public static Restriction ge(final FieldDefinition fieldDefinition, final Object expectedValue) {
+    public static Restriction ge(final DataFieldDefinition fieldDefinition, final Object expectedValue) {
         ValidationResults validationResults = new ValidationResults();
         Object value = validateValue(fieldDefinition, expectedValue, validationResults);
         if (!validationResults.getErrors().isEmpty()) {
@@ -49,7 +49,7 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.GE);
     }
 
-    public static Restriction gt(final FieldDefinition fieldDefinition, final Object expectedValue) {
+    public static Restriction gt(final DataFieldDefinition fieldDefinition, final Object expectedValue) {
         ValidationResults validationResults = new ValidationResults();
         Object value = validateValue(fieldDefinition, expectedValue, validationResults);
         if (!validationResults.getErrors().isEmpty()) {
@@ -58,15 +58,15 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.GT);
     }
 
-    public static Restriction isNotNull(final FieldDefinition fieldDefinition) {
+    public static Restriction isNotNull(final DataFieldDefinition fieldDefinition) {
         return new IsNotNullRestriction(fieldDefinition.getName());
     }
 
-    public static Restriction isNull(final FieldDefinition fieldDefinition) {
+    public static Restriction isNull(final DataFieldDefinition fieldDefinition) {
         return new IsNullRestriction(fieldDefinition.getName());
     }
 
-    public static Restriction le(final FieldDefinition fieldDefinition, final Object expectedValue) {
+    public static Restriction le(final DataFieldDefinition fieldDefinition, final Object expectedValue) {
         ValidationResults validationResults = new ValidationResults();
         Object value = validateValue(fieldDefinition, expectedValue, validationResults);
         if (!validationResults.getErrors().isEmpty()) {
@@ -75,7 +75,7 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.LE);
     }
 
-    public static Restriction lt(final FieldDefinition fieldDefinition, final Object expectedValue) {
+    public static Restriction lt(final DataFieldDefinition fieldDefinition, final Object expectedValue) {
         ValidationResults validationResults = new ValidationResults();
         Object value = validateValue(fieldDefinition, expectedValue, validationResults);
         if (!validationResults.getErrors().isEmpty()) {
@@ -84,7 +84,7 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.LT);
     }
 
-    public static Restriction ne(final FieldDefinition fieldDefinition, final Object expectedValue) {
+    public static Restriction ne(final DataFieldDefinition fieldDefinition, final Object expectedValue) {
         ValidationResults validationResults = new ValidationResults();
         Object value = validateValue(fieldDefinition, expectedValue, validationResults);
         if (!validationResults.getErrors().isEmpty()) {
@@ -93,7 +93,7 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.NE);
     }
 
-    private static Object validateValue(final FieldDefinition fieldDefinition, final Object value,
+    private static Object validateValue(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         Object fieldValue = value;
         if (fieldValue != null) {

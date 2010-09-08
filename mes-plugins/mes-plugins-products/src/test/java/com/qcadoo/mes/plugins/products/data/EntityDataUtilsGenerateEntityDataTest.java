@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 
 public class EntityDataUtilsGenerateEntityDataTest {
 
@@ -20,13 +20,13 @@ public class EntityDataUtilsGenerateEntityDataTest {
         entity.setField("testField2", "testField2Val");
         entity.setField("testField3", "testField3Val");
 
-        FieldDefinition f1 = mock(FieldDefinition.class);
+        DataFieldDefinition f1 = mock(DataFieldDefinition.class);
         given(f1.getName()).willReturn("testField1");
         given(f1.getValue("testField1Val")).willReturn("testField1Ok");
-        FieldDefinition f2 = mock(FieldDefinition.class);
+        DataFieldDefinition f2 = mock(DataFieldDefinition.class);
         given(f2.getName()).willReturn("testField2");
         given(f2.getValue("testField2Val")).willReturn("testField2Ok");
-        FieldDefinition f3 = mock(FieldDefinition.class);
+        DataFieldDefinition f3 = mock(DataFieldDefinition.class);
         given(f3.getName()).willReturn("testField3");
         given(f3.getValue("testField3Val")).willReturn("testField3Ok");
 

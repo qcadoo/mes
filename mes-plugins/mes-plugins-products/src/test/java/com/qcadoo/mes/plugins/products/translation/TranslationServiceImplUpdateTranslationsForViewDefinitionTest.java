@@ -6,8 +6,6 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -16,14 +14,14 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FieldViewDefinition;
-import com.qcadoo.mes.core.data.definition.FormDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
-import com.qcadoo.mes.core.data.definition.ViewDefinition;
-import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.form.FormDefinition;
+import com.qcadoo.mes.core.data.definition.form.FormFieldDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
+import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
+import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 
 public class TranslationServiceImplUpdateTranslationsForViewDefinitionTest {
 
@@ -34,27 +32,25 @@ public class TranslationServiceImplUpdateTranslationsForViewDefinitionTest {
         viewDefinition.setHeader("view header");
 
         DataDefinition formDD = new DataDefinition("testEntity1");
-        formDD.addField(new FieldDefinition("f1"));
-        formDD.addField(new FieldDefinition("f2"));
+        formDD.addField(new DataFieldDefinition("f1"));
+        formDD.addField(new DataFieldDefinition("f2"));
         FormDefinition formDef = new FormDefinition("testForm", formDD);
         formDef.setHeader("form header");
-        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
-        formFields.add(new FieldViewDefinition(formDD.getField("f1")));
-        formFields.add(new FieldViewDefinition(formDD.getField("f2")));
-        formDef.setFields(formFields);
+        formDef.addField(new FormFieldDefinition("f1"));
+        formDef.addField(new FormFieldDefinition("f2"));
 
         DataDefinition gridDD = new DataDefinition("testEntity2");
-        gridDD.addField(new FieldDefinition("g1"));
-        gridDD.addField(new FieldDefinition("g2"));
+        gridDD.addField(new DataFieldDefinition("g1"));
+        gridDD.addField(new DataFieldDefinition("g2"));
         GridDefinition gridDef = new GridDefinition("testGrid", gridDD);
         gridDef.setHeader("grid header");
         ColumnDefinition c1 = new ColumnDefinition("c1");
-        c1.setFields(Arrays.asList(new FieldDefinition[] { gridDD.getField("g1") }));
+        c1.setFields(Arrays.asList(new DataFieldDefinition[] { gridDD.getField("g1") }));
         ColumnDefinition c2 = new ColumnDefinition("c2");
-        c2.setFields(Arrays.asList(new FieldDefinition[] { gridDD.getField("g2") }));
+        c2.setFields(Arrays.asList(new DataFieldDefinition[] { gridDD.getField("g2") }));
         gridDef.setColumns(Arrays.asList(new ColumnDefinition[] { c1, c2 }));
 
-        viewDefinition.setElements(Arrays.asList(new ViewElementDefinition[] { formDef, gridDef }));
+        viewDefinition.setElements(Arrays.asList(new ComponentDefinition[] { formDef, gridDef }));
 
         Locale locale = new Locale("test");
 

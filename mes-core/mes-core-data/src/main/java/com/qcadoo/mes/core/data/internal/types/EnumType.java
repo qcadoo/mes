@@ -3,16 +3,15 @@ package com.qcadoo.mes.core.data.internal.types;
 import java.util.Arrays;
 import java.util.List;
 
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class EnumFieldType implements EnumeratedFieldType {
+public final class EnumType implements EnumeratedFieldType {
 
     private final List<String> values;
 
-    public EnumFieldType(final String... values) {
+    public EnumType(final String... values) {
         this.values = Arrays.asList(values);
     }
 
@@ -37,17 +36,13 @@ public final class EnumFieldType implements EnumeratedFieldType {
     }
 
     @Override
-    public int getNumericType() {
-        return FieldTypeFactory.NUMERIC_TYPE_ENUM;
-    }
-
-    @Override
     public Class<?> getType() {
         return String.class;
     }
 
     @Override
-    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         return value;
     }
 
@@ -57,7 +52,8 @@ public final class EnumFieldType implements EnumeratedFieldType {
     }
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (!values().contains(value)) {
             validationResults.addError(fieldDefinition, "form.validate.errors.invalidDictionaryItem", String.valueOf(values()));
             return false;

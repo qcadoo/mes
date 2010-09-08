@@ -14,7 +14,7 @@ import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 
 /**
- * Field defines database field or custom field (according to {@link FieldDefinition#isCustomField()}).
+ * Field defines database field or custom field (according to {@link DataFieldDefinition#isCustomField()}).
  * 
  * Not editable field can't be changed after entity creation.
  * 
@@ -23,7 +23,7 @@ import com.qcadoo.mes.core.data.validation.FieldValidator;
  * @apiviz.has com.qcadoo.mes.core.data.definition.FieldType
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldValidator
  */
-public class FieldDefinition {
+public class DataFieldDefinition {
 
     private final String name;
 
@@ -41,15 +41,11 @@ public class FieldDefinition {
 
     private boolean customField;
 
-    private boolean hidden;
-
     private boolean unique;
-
-    private boolean confirmable;
 
     private Object defaultValue;
 
-    public FieldDefinition(final String name) {
+    public DataFieldDefinition(final String name) {
         this.name = name;
     }
 
@@ -121,14 +117,6 @@ public class FieldDefinition {
         this.customField = customField;
     }
 
-    public boolean isHidden() {
-        return hidden;
-    }
-
-    public void setHidden(final boolean hidden) {
-        this.hidden = hidden;
-    }
-
     public Object getDefaultValue() {
         return defaultValue;
     }
@@ -141,14 +129,6 @@ public class FieldDefinition {
         return unique;
     }
 
-    public boolean isConfirmable() {
-        return confirmable;
-    }
-
-    public void setConfirmable(final boolean confirmable) {
-        this.confirmable = confirmable;
-    }
-
     public String getValue(final Object value) {
         if (value == null) {
             return null;
@@ -159,8 +139,8 @@ public class FieldDefinition {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(editable).append(hidden).append(name)
-                .append(required).append(type).append(unique).append(confirmable).append(validators).toHashCode();
+        return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(editable).append(name)
+                .append(required).append(type).append(unique).append(validators).toHashCode();
     }
 
     @Override
@@ -171,14 +151,13 @@ public class FieldDefinition {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof FieldDefinition)) {
+        if (!(obj instanceof DataFieldDefinition)) {
             return false;
         }
-        FieldDefinition other = (FieldDefinition) obj;
+        DataFieldDefinition other = (DataFieldDefinition) obj;
         return new EqualsBuilder().append(customField, other.customField).append(defaultValue, other.defaultValue)
-                .append(editable, other.editable).append(hidden, other.hidden).append(name, other.name)
-                .append(required, other.required).append(type, other.type).append(unique, other.unique)
-                .append(confirmable, other.confirmable).append(validators, other.validators).isEquals();
+                .append(editable, other.editable).append(name, other.name).append(required, other.required)
+                .append(type, other.type).append(unique, other.unique).append(validators, other.validators).isEquals();
     }
 
 }
