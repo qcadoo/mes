@@ -34,6 +34,10 @@ public class TranslationServiceImpl implements TranslationService {
             "commons.validate.field.error.invalidDateFormat", "commons.validate.field.error.invalidDateTimeFormat",
             "commons.validate.field.error.notMatch", "commons.validate.global.error", "commons.form.field.confirmable.label" };
 
+    private static final String[] loginMessages = new String[] { "login.form.label.language", "login.form.label.login",
+            "login.form.label.password", "login.form.button.logIn", "login.message.error", "login.message.logout",
+            "login.message.timeout" };
+
     @Autowired
     private MessageSource messageSource;
 
@@ -56,6 +60,15 @@ public class TranslationServiceImpl implements TranslationService {
             commonsTranslations.put(commonMessage, translate(commonMessage, locale));
         }
         return commonsTranslations;
+    }
+
+    @Override
+    public Map<String, String> getLoginTranslations(final Locale locale) {
+        Map<String, String> loginTranslations = new HashMap<String, String>();
+        for (String loginMessage : loginMessages) {
+            loginTranslations.put(loginMessage, translate(loginMessage, locale));
+        }
+        return loginTranslations;
     }
 
     private void putTranslationToMap(final String messageCode, final Map<String, String> translationsMap, final Locale locale) {
