@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.data.search;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public final class Order {
 
@@ -48,6 +49,11 @@ public final class Order {
     @Override
     public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("fieldName", fieldName).append("asc", asc).toString();
     }
 
 }

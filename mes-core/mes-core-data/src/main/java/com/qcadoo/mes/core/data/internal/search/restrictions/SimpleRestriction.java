@@ -2,17 +2,14 @@ package com.qcadoo.mes.core.data.internal.search.restrictions;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class SimpleRestriction extends BaseRestriction {
 
     private final RestrictionOperator op;
-
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleRestriction.class);
 
     public SimpleRestriction(final String fieldName, final Object value, final RestrictionOperator op) {
         super(fieldName, value);
@@ -25,9 +22,6 @@ public final class SimpleRestriction extends BaseRestriction {
 
         if (hibernateRestriction != null) {
             criteria.add(hibernateRestriction);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Criteria added: " + op.getValue());
-            }
         }
 
         return criteria;
@@ -71,5 +65,11 @@ public final class SimpleRestriction extends BaseRestriction {
         SimpleRestriction other = (SimpleRestriction) obj;
         return new EqualsBuilder().append(getFieldName(), other.getFieldName()).append(getValue(), other.getValue())
                 .append(op, other.op).isEquals();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("fieldName", getFieldName()).append("op", op.getValue()).append("id", getValue())
+                .toString();
     }
 }

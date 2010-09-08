@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.classic.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -23,9 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
-import com.qcadoo.mes.core.data.internal.types.PriorityFieldType;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
@@ -42,48 +40,41 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Autowired
     private EntityService entityService;
 
+    @Autowired
+    private ValidationService validationService;
+
+    @Autowired
+    private PriorityService priorityService;
+
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
     @Override
     @Transactional
-    public ValidationResults save(final DataDefinition dataDefinition, final Entity entity) {
+    public ValidationResults save(final DataDefinition dataDefinition, final Entity genericEntity) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkNotNull(entity, "entity must be given");
+        checkNotNull(genericEntity, "entity must be given");
 
-        Object existingDatabaseEntity = getExistingDatabaseEntity(dataDefinition, entity);
-
-        ValidationResults validationResults = new ValidationResults();
-
-        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, entity, existingDatabaseEntity,
-                validationResults);
+        ValidationResults validationResults = validationService.validateGenericEntity(dataDefinition, genericEntity);
 
         if (validationResults.isValid()) {
-            if (entity.getId() == null) {
-                prioritizeEntity(dataDefinition, databaseEntity);
+            Object existingDatabaseEntity = getExistingDatabaseEntity(dataDefinition, genericEntity);
+
+            Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
+
+            if (genericEntity.getId() == null) {
+                priorityService.prioritizeEntity(dataDefinition, databaseEntity);
             }
 
-            sessionFactory.getCurrentSession().save(databaseEntity);
+            getCurrentSession().save(databaseEntity);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("entity " + dataDefinition.getEntityName() + "#" + entity.getId() + " has been saved");
+                LOG.debug("entity " + dataDefinition.getEntityName() + "#" + genericEntity.getId() + " has been saved");
             }
 
             validationResults.setEntity(entityService.convertToGenericEntity(dataDefinition, databaseEntity));
         }
 
         return validationResults;
-    }
-
-    private Object getExistingDatabaseEntity(final DataDefinition dataDefinition, final Entity entity) {
-        Object existingDatabaseEntity = null;
-
-        if (entity.getId() != null) {
-            existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId(), false);
-            checkState(existingDatabaseEntity != null, "entity %s#%s cannot be found", dataDefinition.getEntityName(),
-                    entity.getId());
-        }
-
-        return existingDatabaseEntity;
     }
 
     @Override
@@ -105,6 +96,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional
     public void delete(final DataDefinition dataDefinition, final Long... entityIds) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
+        checkState(dataDefinition.isDeletable(), "entity must be deletable");
         checkState(entityIds.length > 0, "entityIds must be given");
 
         for (Long entityId : entityIds) {
@@ -120,9 +112,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Transactional(readOnly = true)
     public SearchResult find(final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
+
         DataDefinition dataDefinition = searchCriteria.getDataDefinition();
 
-        int totalNumberOfEntities = getTotalNumberOfEntities(getCriteriaWithRestriction(searchCriteria, dataDefinition));
+        int totalNumberOfEntities = getTotalNumberOfEntities(getCriteria(searchCriteria));
 
         if (totalNumberOfEntities == 0 || searchCriteria.getRestrictions().contains(null)) {
             if (LOG.isDebugEnabled()) {
@@ -131,14 +124,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, Collections.emptyList());
         }
 
-        Criteria criteria = getCriteriaWithRestriction(searchCriteria, dataDefinition).setFirstResult(
-                searchCriteria.getFirstResult()).setMaxResults(searchCriteria.getMaxResults());
+        Criteria criteria = getCriteria(searchCriteria).setFirstResult(searchCriteria.getFirstResult()).setMaxResults(
+                searchCriteria.getMaxResults());
 
         addOrderToCriteria(searchCriteria.getOrder(), criteria);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("searching with criteria: firstResults = " + searchCriteria.getFirstResult() + ", maxResults = "
-                    + searchCriteria.getMaxResults() + ", order is asc = " + searchCriteria.getOrder().isAsc());
+            LOG.debug("searching with criteria " + searchCriteria);
         }
 
         List<?> results = criteria.list();
@@ -153,71 +145,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Override
     @Transactional
     public void moveTo(final DataDefinition dataDefinition, final Long entityId, final int position) {
-        move(dataDefinition, entityId, position, 0);
-    }
-
-    @Override
-    @Transactional
-    public void move(final DataDefinition dataDefinition, final Long entityId, final int offset) {
-        move(dataDefinition, entityId, 0, offset);
-    }
-
-    private void deleteEntity(final DataDefinition dataDefinition, final Long entityId) {
-        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
-
-        checkNotNull(databaseEntity, "entity %s#%s cannot be found", dataDefinition.getEntityName(), entityId);
-
-        deprioritizeEntity(dataDefinition, databaseEntity);
-
-        entityService.setDeleted(databaseEntity);
-
-        sessionFactory.getCurrentSession().update(databaseEntity);
-    }
-
-    private void prioritizeEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
-        if (!dataDefinition.isPrioritizable()) {
-            return;
-        }
-
-        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
-
-        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
-
-        int totalNumberOfEntities = getScopedTotalNumberOfEntities(dataDefinition, scopeFieldDefinition,
-                entityService.getField(databaseEntity, scopeFieldDefinition));
-
-        entityService.setField(databaseEntity, fieldDefinition, totalNumberOfEntities + 1);
-    }
-
-    private FieldDefinition getScopeForPriority(final FieldDefinition fieldDefinition) {
-        return ((PriorityFieldType) fieldDefinition.getType()).getScopeFieldDefinition();
-    }
-
-    private void deprioritizeEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
-        if (!dataDefinition.isPrioritizable()) {
-            return;
-        }
-
-        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
-
-        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
-
-        int currentPriority = (Integer) entityService.getField(databaseEntity, fieldDefinition);
-
-        changePriority(dataDefinition, fieldDefinition, scopeFieldDefinition,
-                entityService.getField(databaseEntity, scopeFieldDefinition), currentPriority + 1, Integer.MAX_VALUE, -1);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void move(final DataDefinition dataDefinition, final Long entityId, final int position, final int offset) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
+        checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
         checkNotNull(entityId, "entityId must be given");
-
-        if (!dataDefinition.isPrioritizable()) {
-            return;
-        }
-
-        FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
+        checkState(position > 0, "position must be greaten than 0");
 
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
 
@@ -225,104 +156,65 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return;
         }
 
-        int currentPriority = (Integer) entityService.getField(databaseEntity, fieldDefinition);
+        priorityService.move(dataDefinition, databaseEntity, position, 0);
+    }
 
-        int targetPriority = 0;
+    @Override
+    @Transactional
+    public void move(final DataDefinition dataDefinition, final Long entityId, final int offset) {
+        checkNotNull(dataDefinition, "dataDefinition must be given");
+        checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
+        checkNotNull(entityId, "entityId must be given");
+        checkState(offset != 0, "offset must be different than 0");
 
-        if (offset != 0) {
-            targetPriority = currentPriority + offset;
-        } else {
-            targetPriority = position;
-        }
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
 
-        if (targetPriority < 1) {
-            targetPriority = 1;
-        }
-
-        if (currentPriority == targetPriority) {
+        if (databaseEntity == null) {
             return;
         }
 
-        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
-        Object scopeValue = entityService.getField(databaseEntity, scopeFieldDefinition);
+        priorityService.move(dataDefinition, databaseEntity, 0, offset);
+    }
 
-        if (targetPriority > 1) {
-            int totalNumberOfEntities = getScopedTotalNumberOfEntities(dataDefinition, scopeFieldDefinition, scopeValue);
+    private Object getExistingDatabaseEntity(final DataDefinition dataDefinition, final Entity entity) {
+        Object existingDatabaseEntity = null;
 
-            if (targetPriority > totalNumberOfEntities) {
-                targetPriority = totalNumberOfEntities;
+        if (entity.getId() != null) {
+            existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId(), false);
+            checkState(existingDatabaseEntity != null, "entity %s#%s cannot be found", dataDefinition.getEntityName(),
+                    entity.getId());
+        }
+
+        return existingDatabaseEntity;
+    }
+
+    private void deleteEntity(final DataDefinition dataDefinition, final Long entityId) {
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
+
+        checkNotNull(databaseEntity, "entity %s#%s cannot be found", dataDefinition.getEntityName(), entityId);
+
+        priorityService.deprioritizeEntity(dataDefinition, databaseEntity);
+
+        entityService.setDeleted(databaseEntity);
+
+        getCurrentSession().update(databaseEntity);
+    }
+
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
+    private Criteria getCriteria(final SearchCriteria searchCriteria) {
+        Criteria criteria = getCurrentSession().createCriteria(searchCriteria.getDataDefinition().getClassForEntity());
+
+        if (searchCriteria.getDataDefinition().isDeletable()) {
+            entityService.addDeletedRestriction(criteria);
+        }
+
+        if (searchCriteria != null) {
+            for (Restriction restriction : searchCriteria.getRestrictions()) {
+                addRestrictionToCriteria(restriction, criteria);
             }
-        }
-
-        if (currentPriority == targetPriority) {
-            return;
-        }
-
-        if (currentPriority < targetPriority) {
-            changePriority(dataDefinition, fieldDefinition, scopeFieldDefinition, scopeValue, currentPriority + 1,
-                    targetPriority, -1);
-        } else {
-            changePriority(dataDefinition, fieldDefinition, scopeFieldDefinition, scopeValue, targetPriority,
-                    currentPriority - 1, 1);
-        }
-
-        entityService.setField(databaseEntity, fieldDefinition, targetPriority);
-
-        sessionFactory.getCurrentSession().update(databaseEntity);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void changePriority(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
-            final FieldDefinition scopeFieldDefinition, final Object scopeValue, final int fromPriority, final int toPriority,
-            final int diff) {
-        Session session = sessionFactory.getCurrentSession();
-
-        Criteria criteria = getCriteria(dataDefinition).add(Restrictions.ge(fieldDefinition.getName(), fromPriority)).add(
-                Restrictions.le(fieldDefinition.getName(), toPriority));
-
-        addScopeToCriteria(criteria, scopeFieldDefinition, scopeValue);
-
-        List<Object> entitiesToDecrement = criteria.list();
-
-        for (Object entity : entitiesToDecrement) {
-            int priority = (Integer) entityService.getField(entity, fieldDefinition);
-            entityService.setField(entity, fieldDefinition, priority + diff);
-            session.update(entity);
-        }
-    }
-
-    private int getScopedTotalNumberOfEntities(final DataDefinition dataDefinition, final FieldDefinition scopeFieldDefinition,
-            final Object scopeValue) {
-        Criteria criteria = getCriteria(dataDefinition).setProjection(Projections.rowCount());
-
-        addScopeToCriteria(criteria, scopeFieldDefinition, scopeValue);
-
-        return Integer.valueOf(criteria.uniqueResult().toString());
-    }
-
-    private Criteria addScopeToCriteria(final Criteria criteria, final FieldDefinition scopeFieldDefinition,
-            final Object scopeValue) {
-        if (scopeValue instanceof Entity) {
-            return criteria.add(Restrictions.eq(scopeFieldDefinition.getName() + ".id", ((Entity) scopeValue).getId()));
-        } else {
-            return criteria.add(Restrictions.eq(scopeFieldDefinition.getName(), scopeValue));
-        }
-    }
-
-    private Criteria getCriteriaWithRestriction(final SearchCriteria searchCriteria, final DataDefinition dataDefinition) {
-        Criteria criteria = getCriteria(dataDefinition);
-
-        for (Restriction restriction : searchCriteria.getRestrictions()) {
-            addRestrictionToCriteria(restriction, criteria);
-        }
-        return criteria;
-    }
-
-    private Criteria getCriteria(final DataDefinition dataDefinition) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
-
-        if (dataDefinition.isDeletable()) {
-            criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
         }
 
         return criteria;
@@ -344,6 +236,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         resultSet.setResults(genericResults);
         resultSet.setCriteria(searchCriteria);
         resultSet.setTotalNumberOfEntities(totalNumberOfEntities);
+
         return resultSet;
     }
 
@@ -361,14 +254,15 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private Object getDatabaseEntity(final DataDefinition dataDefinition, final Long entityId, final boolean withDeleted) {
         if (withDeleted || !dataDefinition.isDeletable()) {
-            return sessionFactory.getCurrentSession().get(dataDefinition.getClassForEntity(), entityId);
+            return getCurrentSession().get(dataDefinition.getClassForEntity(), entityId);
         } else {
-            Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
-                    .add(Restrictions.idEq(entityId));
+            Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity()).add(
+                    Restrictions.idEq(entityId));
             if (dataDefinition.isDeletable()) {
-                criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
+                entityService.addDeletedRestriction(criteria);
             }
             return criteria.uniqueResult();
         }
     }
+
 }

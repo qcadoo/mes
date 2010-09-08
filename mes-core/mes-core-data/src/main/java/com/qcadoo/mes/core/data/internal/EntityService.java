@@ -3,7 +3,8 @@ package com.qcadoo.mes.core.data.internal;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -11,13 +12,9 @@ import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
 import com.qcadoo.mes.core.data.internal.types.PasswordFieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 @Service
 public final class EntityService {
-
-    @Autowired
-    private ValidationService validationService;
 
     public static final String FIELD_ID = "id";
 
@@ -33,6 +30,10 @@ public final class EntityService {
 
     public void setDeleted(final Object databaseEntity) {
         setField(databaseEntity, FIELD_DELETED, true);
+    }
+
+    public void addDeletedRestriction(final Criteria criteria) {
+        criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
     }
 
     public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
@@ -69,40 +70,33 @@ public final class EntityService {
     }
 
     public Object convertToDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
-            final Object existingDatabaseEntity, final ValidationResults validationResults) {
+            final Object existingDatabaseEntity) {
+        Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
-        Entity validatedEntity = validationService.parseAndValidateEntity(dataDefinition, genericEntity, validationResults);
-
-        if (validatedEntity.getId() != null) {
-            dataDefinition.callOnUpdate(validatedEntity);
-        } else {
-            dataDefinition.callOnCreate(validatedEntity);
+        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+            if (fieldDefinitionEntry.getValue().isReadOnly()) {
+                continue;
+            }
+            if (!fieldDefinitionEntry.getValue().isEditable() && existingDatabaseEntity != null) {
+                continue;
+            }
+            setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
         }
 
-        if (validationResults.isValid()) {
-            Object databaseEntity = null;
+        return databaseEntity;
+    }
 
-            if (existingDatabaseEntity != null) {
-                databaseEntity = existingDatabaseEntity;
-            } else {
-                databaseEntity = dataDefinition.getInstanceForEntity();
-                setId(databaseEntity, validatedEntity.getId());
-            }
+    private Object getDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+            final Object existingDatabaseEntity) {
+        Object databaseEntity = null;
 
-            for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-                // if (!fieldDefinitionEntry.getValue().isEditable()) {
-                // continue;
-                // }
-                // if (!fieldDefinitionEntry.getValue().isReadOnly()) {
-                // continue;
-                // }
-                setField(databaseEntity, fieldDefinitionEntry.getValue(), validatedEntity.getField(fieldDefinitionEntry.getKey()));
-            }
-
-            return databaseEntity;
+        if (existingDatabaseEntity != null) {
+            databaseEntity = existingDatabaseEntity;
         } else {
-            return null;
+            databaseEntity = dataDefinition.getInstanceForEntity();
+            setId(databaseEntity, genericEntity.getId());
         }
+        return databaseEntity;
     }
 
     private Object getPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition) {

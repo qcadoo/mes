@@ -21,14 +21,26 @@ public final class ValidationService {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public Entity parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity,
-            final ValidationResults validationResults) {
-        Entity validatedEntity = new Entity(genericEntity.getId());
+    public ValidationResults validateGenericEntity(final DataDefinition dataDefinition, final Entity genericEntity) {
+        ValidationResults validationResults = new ValidationResults();
 
+        parseAndValidateEntity(dataDefinition, genericEntity, validationResults);
+
+        if (genericEntity.getId() != null) {
+            dataDefinition.callOnUpdate(genericEntity);
+        } else {
+            dataDefinition.callOnCreate(genericEntity);
+        }
+
+        return validationResults;
+    }
+
+    private void parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+            final ValidationResults validationResults) {
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             Object validateFieldValue = parseAndValidateField(dataDefinition, fieldDefinitionEntry.getValue(),
                     genericEntity.getField(fieldDefinitionEntry.getKey()), validationResults);
-            validatedEntity.setField(fieldDefinitionEntry.getKey(), validateFieldValue);
+            genericEntity.setField(fieldDefinitionEntry.getKey(), validateFieldValue);
         }
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
@@ -36,7 +48,7 @@ public final class ValidationService {
                 continue;
             }
             for (FieldValidator fieldValidator : fieldDefinitionEntry.getValue().getValidators()) {
-                fieldValidator.validate(dataDefinition, fieldDefinitionEntry.getValue(), validatedEntity, validationResults);
+                fieldValidator.validate(dataDefinition, fieldDefinitionEntry.getValue(), genericEntity, validationResults);
                 if (validationResults.isFieldNotValid(fieldDefinitionEntry.getValue())) {
                     break;
                 }
@@ -45,10 +57,9 @@ public final class ValidationService {
 
         if (validationResults.isValid()) {
             for (EntityValidator entityValidator : dataDefinition.getValidators()) {
-                entityValidator.validate(dataDefinition, validatedEntity, validationResults);
+                entityValidator.validate(dataDefinition, genericEntity, validationResults);
             }
         }
-        return validatedEntity;
     }
 
     private Object parseAndValidateValue(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,

@@ -151,23 +151,10 @@ public class PriorityTest extends DataAccessTest {
         verify(session).update(updatedDatabaseObject);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void shouldNotMoveToPositionBelowOne() throws Exception {
-        // given
-        SimpleDatabaseObject databaseObject = new SimpleDatabaseObject(1L);
-        databaseObject.setPriority(11);
-
-        given(criteria.uniqueResult()).willReturn(databaseObject);
-        given(criteria.list()).willReturn(Lists.newArrayList());
-
         // when
         dataAccessService.moveTo(dataDefinition, 1L, -2);
-
-        // then
-        SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);
-        movedDatabaseObject.setPriority(1);
-
-        verify(session).update(movedDatabaseObject);
     }
 
     @Test

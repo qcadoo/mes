@@ -51,6 +51,8 @@ public abstract class DataAccessTest {
 
     protected ValidationService validationService = null;
 
+    protected PriorityService priorityService = null;
+
     protected CallbackFactory callbackFactory;
 
     protected DataAccessService dataAccessService = null;
@@ -81,11 +83,16 @@ public abstract class DataAccessTest {
         ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
 
         entityService = new EntityService();
-        ReflectionTestUtils.setField(entityService, "validationService", validationService);
+
+        priorityService = new PriorityService();
+        ReflectionTestUtils.setField(priorityService, "entityService", entityService);
+        ReflectionTestUtils.setField(priorityService, "sessionFactory", sessionFactory);
 
         dataAccessService = new DataAccessServiceImpl();
         ReflectionTestUtils.setField(dataAccessService, "entityService", entityService);
         ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
+        ReflectionTestUtils.setField(dataAccessService, "priorityService", priorityService);
+        ReflectionTestUtils.setField(dataAccessService, "validationService", validationService);
 
         fieldTypeFactory = new FieldTypeFactoryImpl();
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);

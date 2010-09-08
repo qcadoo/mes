@@ -2,14 +2,11 @@ package com.qcadoo.mes.core.data.internal.search.restrictions;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class IsNullRestriction extends BaseRestriction {
-
-    private static final Logger LOG = LoggerFactory.getLogger(IsNullRestriction.class);
 
     public IsNullRestriction(final String fieldName) {
         super(fieldName, null);
@@ -17,12 +14,7 @@ public final class IsNullRestriction extends BaseRestriction {
 
     @Override
     public Criteria addToHibernateCriteria(final Criteria criteria) {
-        criteria.add(Restrictions.isNull(getFieldName()));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Criteria added: is null");
-        }
-        return criteria;
+        return criteria.add(Restrictions.isNull(getFieldName()));
     }
 
     @Override
@@ -43,6 +35,11 @@ public final class IsNullRestriction extends BaseRestriction {
         }
         IsNullRestriction other = (IsNullRestriction) obj;
         return new EqualsBuilder().append(getFieldName(), other.getFieldName()).append(getValue(), other.getValue()).isEquals();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("fieldName", getFieldName()).toString();
     }
 
 }

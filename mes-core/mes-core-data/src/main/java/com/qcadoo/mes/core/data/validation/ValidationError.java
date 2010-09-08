@@ -15,7 +15,7 @@ public final class ValidationError {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
