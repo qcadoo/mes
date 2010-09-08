@@ -10,6 +10,8 @@ public interface TranslationService {
 
     Map<String, String> getCommonsTranslations(Locale locale);
 
+    Map<String, String> getLoginTranslations(Locale locale);
+
     void updateTranslationsForViewDefinition(ViewDefinition viewDefinition, Map<String, String> translationsMap, Locale locale);
 
     void translateValidationResults(ValidationResults validationResults, Locale locale);
