@@ -27,6 +27,11 @@
 			windowController.goBack();
 		}
 
+		window.commonTranslations = new Object();
+		<c:forEach items="${commonTranslations}" var="translation">
+			window.commonTranslations["${translation.key}"] = "${translation.value}";
+		</c:forEach>
+
 	</script>
 	
 </head>
@@ -45,10 +50,10 @@
 								<option>${view.name }</option>
 							</c:forEach>
 						</select>
-						<button onclick="windowController.goToSelectedPage()">GO</button>
+						<button onclick="windowController.goToSelectedPage()">${commonTranslations["commons.button.go"] }</button>
 					</div>
 					<div id="logoutDiv">
-						<button onclick="windowController.performLogout()">Logout</button>
+						<button onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</button>
 					</div>
 				</div>
 			</td>

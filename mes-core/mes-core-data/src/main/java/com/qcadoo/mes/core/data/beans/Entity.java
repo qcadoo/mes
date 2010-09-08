@@ -72,4 +72,9 @@ public final class Entity {
         return new EqualsBuilder().append(id, other.id).append(fields, other.fields).isEquals();
     }
 
+    @Override
+    public String toString() {
+        return "#" + id + ", " + fields.toString();
+    }
+
 }

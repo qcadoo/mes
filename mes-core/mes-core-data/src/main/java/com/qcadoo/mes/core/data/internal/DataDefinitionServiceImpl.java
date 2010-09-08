@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.internal.callbacks.CallbackFactory;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
@@ -59,7 +60,6 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     private DataDefinition createProductDefinition() {
         DataDefinition dataDefinition = new DataDefinition("products.product");
-        // GridDefinition gridDefinition = new GridDefinition("products");
 
         FieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType());
         fieldNumber.setValidators(fieldValidationFactory.required());
@@ -90,22 +90,23 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         fieldNumber.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType());
         fieldName.setValidators(fieldValidationFactory.required());
-        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.integerType());
-        fieldPriority.setValidators(fieldValidationFactory.required());
         FieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         FieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
         fieldProduct.setValidators(fieldValidationFactory.required());
         fieldProduct.setHidden(true);
+        FieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.priorityType(fieldProduct));
+        fieldPriority.setReadOnly(true);
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
         dataDefinition.addField(fieldNumber);
         dataDefinition.addField(fieldName);
-        dataDefinition.addField(fieldPriority);
         dataDefinition.addField(fieldEffectiveDateFrom);
         dataDefinition.addField(fieldEffectiveDateTo);
         dataDefinition.addField(fieldProduct);
+
+        dataDefinition.setPriorityField(fieldPriority);
 
         dataDefinition.setValidators(fieldValidationFactory.customEntity("productService", "checkSubstituteDates")
                 .customErrorMessage("products.validation.error.datesOrder"));

@@ -15,6 +15,8 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.plugins.products.mock.MessageSourceMock;
+import com.qcadoo.mes.plugins.products.translation.TranslationServiceImpl;
 
 public class CrudTemplateControllerSaveEntityTest {
 
@@ -23,6 +25,8 @@ public class CrudTemplateControllerSaveEntityTest {
     private DataAccessService dasMock;
 
     private ViewDefinitionService vdsMock;
+
+    private DataDefinition dataDefinition;
 
     @Before
     public void init() {
@@ -33,11 +37,15 @@ public class CrudTemplateControllerSaveEntityTest {
         vdsMock = mock(ViewDefinitionService.class, RETURNS_DEEP_STUBS);
         ReflectionTestUtils.setField(controller, "viewDefinitionService", vdsMock);
 
+        TranslationServiceImpl translationService = new TranslationServiceImpl();
+        ReflectionTestUtils.setField(translationService, "messageSource", new MessageSourceMock());
+        ReflectionTestUtils.setField(controller, "translationService", translationService);
+
         FieldDefinition f1 = mock(FieldDefinition.class);
         given(f1.getName()).willReturn("testField1");
         given(f1.getValue("testField1Val")).willReturn("testField1Ok");
 
-        DataDefinition dataDefinition = new DataDefinition("testEntityType");
+        dataDefinition = new DataDefinition("testEntityType");
         dataDefinition.addField(f1);
 
         given(vdsMock.getViewDefinition("testView").getElementByName("testViewElement").getDataDefinition()).willReturn(
@@ -53,7 +61,7 @@ public class CrudTemplateControllerSaveEntityTest {
         ValidationResults valRes = new ValidationResults();
         valRes.setEntity(entity);
 
-        given(dasMock.save("testEntityType", entity)).willReturn(valRes);
+        given(dasMock.save(dataDefinition, entity)).willReturn(valRes);
 
         // when
         ValidationResults vr = controller.saveEntity("testView", "testViewElement", entity, null);

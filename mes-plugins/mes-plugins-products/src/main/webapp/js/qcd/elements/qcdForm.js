@@ -28,7 +28,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 			return;
 		}
 		
-		var formData = $('#'+parameters.name+"_form").serializeObject();
+		var formData = QCDSerializator.serializeForm($('#'+parameters.name+"_form"));
 		var url = parameters.viewName+"/"+parameters.name+"/save.html";
 		
 		if (contextEntityId && parameters.parentField) {
@@ -44,7 +44,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 					if (shouldRedirect) {
 						redirectToCorrespondingPage();
 					} else {
-						refreshForm(response.entity);
+						refreshForm(response.entity, true);
 					}
 				} else {
 					for(var i in response.globalErrors) {
@@ -63,7 +63,6 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	redirectToCorrespondingPage = function() {
-		//window.location = parameters.correspondingViewName + ".html";
 		mainController.goBack();
 	}
 	
@@ -72,40 +71,40 @@ QCD.elements.FormElement = function(args, _mainController) {
 		$('#'+parameters.name+'_form .required').filter(function() {
 	        return $(this).attr('value') == '';
 	    }).each(function(index) {
-	    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
+	    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.missing'));
 		});
 		if(!edition) {
 			$('#'+parameters.name+'_form .required-on-creation').filter(function() {
 		        return $(this).attr('value') == '';
 		    }).each(function(index) {
-		    	addFieldErrorMessage($(this).attr('id'), 'core.validation.error.missing');
+		    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.missing'));
 			});
 		}
 		$('#'+parameters.name+'_form .type-integer').filter(function() {
 	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\-?\d+$/);
 	    }).each(function(index) {
-	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
+	    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidNumericFormat'));
 		});
 		$('#'+parameters.name+'_form .type-decimal').filter(function() {
 	        return $(this).attr('value') != '' && !$(this).attr('value').match(/^\-?\d+(\.\d*)?$/);
 	    }).each(function(index) {
-	    	addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidNumericFormat');
+	    	addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidNumericFormat'));
 		});
 		$('#'+parameters.name+'_form .type-date').filter(function() {
 			return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d{4}-\d{2}-\d{2}$/);
 		}).each(function(index) {
-			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateFormat');
+			addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidDateFormat'));
 		});
 		$('#'+parameters.name+'_form .type-datetime').filter(function() {
 			return $(this).attr('value') != '' && !$(this).attr('value').match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
 		}).each(function(index) {
-			addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.invalidDateTimeFormat');
+			addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.invalidDateTimeFormat'));
 		});
 		$('#'+parameters.name+'_form .confirmable').each(function(index) {
 			value = $(this).attr('value') || '';
 			valueConfirmation = $('#'+$(this).attr('id')+'_confirmation').attr('value') || '';
 			if(value != valueConfirmation) {
-				addFieldErrorMessage($(this).attr('id'), 'form.validate.errors.notMatch');
+				addFieldErrorMessage($(this).attr('id'), mainController.getTranslation('commons.validate.field.error.notMatch'));
 			}
 		});
 		return !hasErrors();
@@ -122,7 +121,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	addMainErrorMessage = function() {
 		if(!hasErrors()) {
-			$('#'+parameters.name+'_globalErrors').html('<p>core.validation.error.global</p>');
+			$('#'+parameters.name+'_globalErrors').html('<p>'+mainController.getTranslation('commons.validate.global.error')+'</p>');
 		}
 	}
 	
@@ -132,7 +131,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	addFieldErrorMessage = function(fieldId, error) {
-		if($('#'+fieldId+'_error').html().trim() == '') {
+		if ($('#'+fieldId+'_error').html().trim() == '') {
 			addMainErrorMessage();
 			$('#'+fieldId+'_error').html(error);
 		}
@@ -145,7 +144,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 			type: 'GET',
 			success: function(response) {
 				if(response) {
-					refreshForm(response);
+					refreshForm(response, true);
 				}
 			},
 			error: function(xhr, textStatus, errorThrown){
@@ -154,9 +153,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 		});
 	}
 	
-	refreshForm = function(entity) {
-		QCDLogger.info("refreshForm");
-		QCDLogger.info(entity);
+	refreshForm = function(entity, updateChildren) {
 		$('#'+parameters.name+"_field_id").attr('value', entity["id"]);
 		for(var i in entity["fields"]) {
 			$('#'+parameters.name+"_field_"+i).attr('value', entity["fields"][i]);
@@ -167,8 +164,10 @@ QCD.elements.FormElement = function(args, _mainController) {
 		$('#'+parameters.name+'_form .confirmable').each(function(index) {
 			$('#'+$(this).attr('id')+'_confirmation').attr('value','');
 		});
-		for (var i in children) {
-			children[i].insertParentId(entity["id"]);
+		if (updateChildren) {
+			for (var i in children) {
+				children[i].insertParentId(entity["id"]);
+			}
 		}
 	}
 	
@@ -197,14 +196,13 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	this.serialize = function() {
 		var serializationObject = new Object();
-		serializationObject.formData = $('#'+parameters.name+"_form").serializeObject();
+		serializationObject.formData = QCDSerializator.serializeForm($('#'+parameters.name+"_form"));
 		return serializationObject;
 	}
 	
 	this.deserialize = function(serializationObject) {
-		QCDLogger.info("deserialize");
-		QCDLogger.info(serializationObject);
-		refreshForm(serializationObject.formData);
+		dataFromSerialization = serializationObject;
+		refreshForm(serializationObject.formData, false);
 	}
 	
 	constructor(args);

@@ -23,8 +23,9 @@ public final class Restrictions {
         if (!validationResults.getErrors().isEmpty()) {
             return null;
         }
-        if (value instanceof String && ((String) value).contains("*") || ((String) value).contains("%")
-                || ((String) value).contains("?") || ((String) value).contains("_")) {
+        if (value instanceof String
+                && (((String) value).contains("*") || ((String) value).contains("%") || ((String) value).contains("?") || ((String) value)
+                        .contains("_"))) {
             String preperadValue = ((String) value).replace('*', '%').replace('?', '_');
             return new LikeRestriction(fieldDefinition.getName(), preperadValue);
         }
@@ -58,11 +59,11 @@ public final class Restrictions {
     }
 
     public static Restriction isNotNull(final FieldDefinition fieldDefinition) {
-        return new IsNotNullRestriction(fieldDefinition.getName(), RestrictionOperator.NOTNULL);
+        return new IsNotNullRestriction(fieldDefinition.getName());
     }
 
     public static Restriction isNull(final FieldDefinition fieldDefinition) {
-        return new IsNullRestriction(fieldDefinition.getName(), RestrictionOperator.NULL);
+        return new IsNullRestriction(fieldDefinition.getName());
     }
 
     public static Restriction le(final FieldDefinition fieldDefinition, final Object expectedValue) {

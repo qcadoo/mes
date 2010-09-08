@@ -33,6 +33,8 @@ public class FieldDefinition {
 
     private boolean editable = true;
 
+    private boolean readOnly;
+
     private boolean required;
 
     private boolean requiredOnCreation;
@@ -93,6 +95,14 @@ public class FieldDefinition {
 
     public void setEditable(final boolean editable) {
         this.editable = editable;
+    }
+
+    public void setReadOnly(final boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
     }
 
     public boolean isRequired() {

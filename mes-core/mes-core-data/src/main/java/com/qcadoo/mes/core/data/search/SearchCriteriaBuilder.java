@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.search;
 
+import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
 
 /**
@@ -11,12 +13,12 @@ public final class SearchCriteriaBuilder {
 
     private final SearchCriteriaImpl searchCriteria;
 
-    private SearchCriteriaBuilder(final String entityName) {
-        searchCriteria = new SearchCriteriaImpl(entityName);
+    private SearchCriteriaBuilder(final DataDefinition dataDefinition) {
+        searchCriteria = new SearchCriteriaImpl(dataDefinition);
     }
 
-    public SearchCriteriaBuilder forGrid(final String gridName) {
-        searchCriteria.setGridName(gridName);
+    public SearchCriteriaBuilder forGrid(final GridDefinition gridDefinition) {
+        searchCriteria.setGridDefinition(gridDefinition);
         return this;
     }
 
@@ -44,8 +46,8 @@ public final class SearchCriteriaBuilder {
         return this;
     }
 
-    public static SearchCriteriaBuilder forEntity(final String entityName) {
-        return new SearchCriteriaBuilder(entityName);
+    public static SearchCriteriaBuilder forEntity(final DataDefinition dataDefinition) {
+        return new SearchCriteriaBuilder(dataDefinition);
     }
 
 }

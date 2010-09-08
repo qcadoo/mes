@@ -49,7 +49,7 @@ public final class DictionaryItem {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -57,7 +57,7 @@ public final class DictionaryItem {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 

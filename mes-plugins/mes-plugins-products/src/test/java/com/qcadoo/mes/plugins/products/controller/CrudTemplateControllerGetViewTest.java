@@ -22,6 +22,8 @@ import com.qcadoo.mes.core.data.definition.FormDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.definition.ViewDefinition;
 import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
+import com.qcadoo.mes.plugins.products.mock.MessageSourceMock;
+import com.qcadoo.mes.plugins.products.translation.TranslationServiceImpl;
 
 public class CrudTemplateControllerGetViewTest {
 
@@ -37,6 +39,10 @@ public class CrudTemplateControllerGetViewTest {
 
         vdsMock = mock(ViewDefinitionService.class, RETURNS_DEEP_STUBS);
         ReflectionTestUtils.setField(controller, "viewDefinitionService", vdsMock);
+
+        TranslationServiceImpl translationService = new TranslationServiceImpl();
+        ReflectionTestUtils.setField(translationService, "messageSource", new MessageSourceMock());
+        ReflectionTestUtils.setField(controller, "translationService", translationService);
 
         viewDefinition = new ViewDefinition("testView");
         ViewElementDefinition viewElementDefinition1 = new FormDefinition("testForm", new DataDefinition("testEntity1"));
@@ -64,9 +70,6 @@ public class CrudTemplateControllerGetViewTest {
         @SuppressWarnings("unchecked")
         Map<String, String> optionsMap = (Map<String, String>) mav.getModel().get("viewElementsOptions");
         assertEquals(2, optionsMap.size());
-        assertEquals("{\"dataDefinition\":\"testEntity1\",\"name\":\"testForm\"}", optionsMap.get("testForm"));
-        assertEquals("{\"dataDefinition\":\"testEntity2\",\"name\":\"testGrid\",\"columns\":[],\"fields\":[]}",
-                optionsMap.get("testGrid"));
 
         // TODO mina add test for dictionary values
 

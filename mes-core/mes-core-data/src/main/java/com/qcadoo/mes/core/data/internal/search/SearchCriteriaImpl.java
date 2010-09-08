@@ -1,9 +1,7 @@
 package com.qcadoo.mes.core.data.internal.search;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +9,8 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
@@ -21,36 +21,40 @@ public final class SearchCriteriaImpl implements SearchCriteria {
 
     private static final int MAX_RESTRICTIONS = 5;
 
-    private final String entityName;
-
-    private String gridName;
-
     private int maxResults = DEFAULT_MAX_RESULTS;
 
     private int firstResult = 0;
 
-    private Order order = Order.asc();
+    private Order order;
 
-    private Set<Restriction> restrictions = new HashSet<Restriction>();
+    private final Set<Restriction> restrictions = new HashSet<Restriction>();
 
-    public SearchCriteriaImpl(final String entityName) {
-        checkNotNull(entityName);
-        checkArgument(isNotEmpty(entityName), "must not be empty");
-        this.entityName = entityName;
+    private final DataDefinition dataDefinition;
+
+    private GridDefinition gridDefinition;
+
+    public SearchCriteriaImpl(final DataDefinition dataDefinition) {
+        checkNotNull(dataDefinition);
+        this.dataDefinition = dataDefinition;
+        if (dataDefinition.isPrioritizable()) {
+            order = Order.asc(dataDefinition.getPriorityField().getName());
+        } else {
+            order = Order.asc();
+        }
     }
 
     @Override
-    public String getEntityName() {
-        return entityName;
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
     @Override
-    public String getGridName() {
-        return gridName;
+    public GridDefinition getGridDefinition() {
+        return gridDefinition;
     }
 
-    public void setGridName(final String gridName) {
-        this.gridName = gridName;
+    public void setGridDefinition(final GridDefinition gridDefinition) {
+        this.gridDefinition = gridDefinition;
     }
 
     @Override

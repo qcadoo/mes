@@ -41,6 +41,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 import com.qcadoo.mes.plugins.products.data.EntityDataUtils;
 import com.qcadoo.mes.plugins.products.data.ListData;
 import com.qcadoo.mes.plugins.products.data.ListDataUtils;
+import com.qcadoo.mes.plugins.products.translation.TranslationService;
 
 @Controller
 public class CrudController {
@@ -62,12 +63,11 @@ public class CrudController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("crudView");
 
-        System.out.println(viewName);
+        Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         mav.addObject("viewDefinition", viewDefinition);
-
-        System.out.println(viewDefinition);
+        translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
         Map<String, Map<Long, String>> dictionaryValues = new HashMap<String, Map<Long, String>>();
         Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
@@ -101,8 +101,7 @@ public class CrudController {
         mav.addObject("entityId", arguments.get("entityId"));
         mav.addObject("contextEntityId", arguments.get("contextEntityId"));
 
-        // System.out.println("AAAAAAAAAAA " + translationService.translate("aa", locale));
-        // System.out.println("AAAAAAAAAAA " + translationService.translate("commons.loading.gridLoading", locale));
+        mav.addObject("translationsMap", translationsMap);
 
         return mav;
     }
@@ -118,7 +117,7 @@ public class CrudController {
         GridDefinition gridDefinition = (GridDefinition) element;
         DataDefinition dataDefinition = gridDefinition.getDataDefinition();
 
-        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition.getEntityName());
+        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition);
 
         if (arguments.get("entityId") != null && gridDefinition.getParent() != null) {
             Long parentId = Long.parseLong(arguments.get("entityId"));
@@ -135,11 +134,11 @@ public class CrudController {
             checkArgument(firstResult >= 0, "First result must be greater or equals 0");
             searchCriteriaBuilder = searchCriteriaBuilder.withFirstResult(firstResult);
         }
-        if (arguments.get("sortColumn") != null && arguments.get("sortOrder") != null) {
+        if (arguments.get("sortField") != null && arguments.get("sortOrder") != null) {
             if ("desc".equals(arguments.get("sortOrder"))) {
-                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(arguments.get("sortColumn")));
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.desc(arguments.get("sortField")));
             } else {
-                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(arguments.get("sortColumn")));
+                searchCriteriaBuilder = searchCriteriaBuilder.orderBy(Order.asc(arguments.get("sortField")));
             }
         }
 
@@ -173,7 +172,7 @@ public class CrudController {
 
         SearchCriteria searchCriteria = searchCriteriaBuilder.build();
 
-        SearchResult rs = dataAccessService.find(dataDefinition.getEntityName(), searchCriteria);
+        SearchResult rs = dataAccessService.find(searchCriteria);
 
         return ListDataUtils.generateListData(rs, gridDefinition);
     }
@@ -186,8 +185,7 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
-        Entity entity = dataAccessService.get(element.getDataDefinition().getEntityName(),
-                Long.parseLong(arguments.get("entityId")));
+        Entity entity = dataAccessService.get(element.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
 
         return EntityDataUtils.generateEntityData(entity, element.getDataDefinition());
     }
@@ -199,7 +197,9 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ViewElementDefinition element = viewDefinition.getElementByName(elementName);
 
-        ValidationResults validationResult = dataAccessService.save(element.getDataDefinition().getEntityName(), entity);
+        ValidationResults validationResult = dataAccessService.save(element.getDataDefinition(), entity);
+
+        translationService.translateValidationResults(validationResult, locale);
 
         return EntityDataUtils.generateValidationResultWithEntityData(validationResult, element.getDataDefinition());
     }
@@ -217,10 +217,21 @@ public class CrudController {
             for (Integer selectedRowId : selectedRows) {
                 entitiesId[i++] = new Long(selectedRowId);
             }
-            dataAccessService.delete(element.getDataDefinition().getEntityName(), entitiesId);
+            dataAccessService.delete(element.getDataDefinition(), entitiesId);
         }
+        return "ok";
+    }
+
+    @RequestMapping(value = "page/{viewName}/{elementName}/move", method = RequestMethod.POST)
+    @ResponseBody
+    public String moveEntities(@PathVariable("viewName") final String viewName,
+            @PathVariable("elementName") final String elementName, @RequestParam final Integer entityId,
+            @RequestParam final Integer direction) {
+        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewElementDefinition element = viewDefinition.getElementByName(elementName);
+
+        dataAccessService.move(element.getDataDefinition(), new Long(entityId), direction);
 
         return "ok";
-
     }
 }

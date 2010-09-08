@@ -22,6 +22,7 @@
 	<script type="text/javascript" src="../js/lib/jquery.ba-serializeobject.min.js"></script>
 	
 	<script type="text/javascript" src="../js/qcd/utils/logger.js"></script>
+	<script type="text/javascript" src="../js/qcd/utils/serializator.js"></script>
 	<script type="text/javascript" src="../js/qcd/core/pageController.js"></script>
 	<script type="text/javascript" src="../js/qcd/core/pageConstructor.js"></script>
 	<script type="text/javascript" src="../js/qcd/elements/qcdForm.js"></script>
@@ -33,28 +34,29 @@
 		var contextEntityId = "${contextEntityId}";
 
 		var controller = null
-		
-		jQuery(document).ready(function(){
-			controller = new QCD.PageController(viewName);
-			controller.init(entityId, contextEntityId);
-		});
 
-		window.insertState = function(serializationObject) {
-			controller.insertState(serializationObject);
+		window.init = function(serializationObject) {
+			controller = new QCD.PageController(viewName);
+			controller.init(entityId, contextEntityId, serializationObject);
 		}
+
+		window.translationsMap = new Object();
+		<c:forEach items="${translationsMap}" var="translation">
+			window.translationsMap["${translation.key}"] = "${translation.value}";
+		</c:forEach>
 
 	</script>
 </head>
 <body>
 
-<c:if test='${viewDefinition.header != null}'><div class="pageHeader">${viewDefinition.header}</div></c:if>
+<c:if test='${viewDefinition.header != null}'><div class="pageHeader">${translationsMap[viewDefinition.header]}</div></c:if>
 
 <c:forEach items="${viewDefinition.elements}" var="viewElement">
 
 	<div>
 		<c:choose>
 			<c:when test="${viewElement.type == 1}">
-				<div class="elementHeader">${viewElement.header}</div>
+				<div class="elementHeader">${translationsMap[viewElement.header]}</div>
 				<table class="element_table" id="${viewElement.name}">
 					<td class=element_options style="display: none">
 						${viewElementsOptions[viewElement.name]}
@@ -64,13 +66,12 @@
 			</c:when>
 			<c:when test="${viewElement.type == 2}">
 				<div class="element_form" id="${viewElement.name}">
-				<div class="elementHeader">${viewElement.header}</div>
+					<div class="elementHeader">${translationsMap[viewElement.header]}</div>
 					<div class=element_options style="display: none">
 						${viewElementsOptions[viewElement.name]}
 					</div>
 					<tiles:insertTemplate template="formTemplate.jsp">
-						<tiles:putAttribute name="formId" value="${ viewElement.name}" />
-						<tiles:putAttribute name="dataDefinition" value="${ viewElement.dataDefinition}" />
+						<tiles:putAttribute name="formElement" value="${viewElement}" />
 					</tiles:insertTemplate>
 				</div>
 

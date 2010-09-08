@@ -11,7 +11,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class RangeValidator implements FieldValidator {
 
-    private static final String OUT_OF_RANGE_ERROR = "core.validation.error.outOfRange";
+    private static final String OUT_OF_RANGE_ERROR = "commons.validate.field.error.outOfRange";
 
     private String errorMessage = OUT_OF_RANGE_ERROR;
 

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
@@ -21,9 +20,6 @@ public final class ValidationService {
 
     @Autowired
     private SessionFactory sessionFactory;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public Entity parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final ValidationResults validationResults) {
@@ -63,7 +59,7 @@ public final class ValidationService {
                 if (fieldValue instanceof String) {
                     fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
                 } else {
-                    validationResults.addError(fieldDefinition, "core.validation.error.wrongType", fieldValue.getClass()
+                    validationResults.addError(fieldDefinition, "commons.validate.field.error.wrongType", fieldValue.getClass()
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                     return null;
                 }
@@ -91,7 +87,7 @@ public final class ValidationService {
                 try {
                     referencedEntityId = Long.valueOf((String) value);
                 } catch (NumberFormatException e) {
-                    validationResults.addError(fieldDefinition, "core.validation.error.wrongType", value.getClass()
+                    validationResults.addError(fieldDefinition, "commons.validate.field.error.wrongType", value.getClass()
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 }
             } else if (value instanceof Long) {
@@ -99,12 +95,12 @@ public final class ValidationService {
             } else if (value instanceof Entity) {
                 referencedEntityId = ((Entity) value).getId();
             } else {
-                validationResults.addError(fieldDefinition, "core.validation.error.wrongType", value.getClass().getSimpleName(),
-                        fieldDefinition.getType().getType().getSimpleName());
+                validationResults.addError(fieldDefinition, "commons.validate.field.error.wrongType", value.getClass()
+                        .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 return null;
             }
             BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
-            DataDefinition referencedDataDefinition = dataDefinitionService.get(belongsToFieldType.getEntityName());
+            DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
             return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validationResults);

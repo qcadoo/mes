@@ -5,152 +5,28 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
-import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
-import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
-import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public class ValidatorTest {
-
-    private final DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-
-    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
-
-    private final DictionaryService dictionaryService = mock(DictionaryService.class);
-
-    private final ApplicationContext applicationContext = mock(ApplicationContext.class);
-
-    private final DataAccessService dataAccessServiceMock = mock(DataAccessService.class);
-
-    private FieldTypeFactory fieldTypeFactory = null;
-
-    private FieldValidatorFactory fieldValidatorFactory = null;
-
-    private EntityService entityService = null;
-
-    private ValidationService validationService = null;
-
-    private DataAccessService dataAccessService = null;
-
-    private DataDefinition parentDataDefinition = null;
-
-    private DataDefinition dataDefinition = null;
-
-    private FieldDefinition fieldDefinitionAge = null;
-
-    private FieldDefinition fieldDefinitionMoney = null;
-
-    private FieldDefinition fieldDefinitionRetired = null;
-
-    private FieldDefinition fieldDefinitionBirthDate = null;
-
-    private FieldDefinition fieldDefinitionName = null;
-
-    private FieldDefinition fieldDefinitionBelongsTo = null;
-
-    private FieldDefinition parentFieldDefinitionName = null;
-
-    private CallbackFactory callbackFactory;
+public class ValidatorTest extends DataAccessTest {
 
     @Before
     public void init() {
-        validationService = new ValidationService();
-        ReflectionTestUtils.setField(validationService, "sessionFactory", sessionFactory);
-        ReflectionTestUtils.setField(validationService, "dataDefinitionService", dataDefinitionService);
-
-        entityService = new EntityService();
-        ReflectionTestUtils.setField(entityService, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(entityService, "validationService", validationService);
-
-        dataAccessService = new DataAccessServiceImpl();
-        ReflectionTestUtils.setField(dataAccessService, "entityService", entityService);
-        ReflectionTestUtils.setField(dataAccessService, "sessionFactory", sessionFactory);
-        ReflectionTestUtils.setField(dataAccessService, "dataDefinitionService", dataDefinitionService);
-
-        fieldTypeFactory = new FieldTypeFactoryImpl();
-        ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
-        ReflectionTestUtils.setField(fieldTypeFactory, "dataAccessService", dataAccessService);
-
-        callbackFactory = new CallbackFactory();
-        ReflectionTestUtils.setField(callbackFactory, "applicationContext", applicationContext);
-
-        fieldValidatorFactory = new FieldValidatorFactoryImpl();
-        ReflectionTestUtils.setField(fieldValidatorFactory, "callbackFactory", callbackFactory);
-        ReflectionTestUtils.setField(fieldValidatorFactory, "dataAccessService", dataAccessServiceMock);
-
         given(applicationContext.getBean("custom")).willReturn(new CustomValidateMethod());
         given(applicationContext.getBean("customEntity")).willReturn(new CustomEntityValidateMethod());
-
-        parentFieldDefinitionName = new FieldDefinition("name");
-        parentFieldDefinitionName.setType(fieldTypeFactory.stringType());
-        parentFieldDefinitionName.setValidators();
-
-        fieldDefinitionBelongsTo = new FieldDefinition("belongsTo");
-        fieldDefinitionBelongsTo.setType(fieldTypeFactory.eagerBelongsToType("parent.entity", "name"));
-        fieldDefinitionBelongsTo.setValidators();
-
-        fieldDefinitionName = new FieldDefinition("name");
-        fieldDefinitionName.setType(fieldTypeFactory.stringType());
-        fieldDefinitionName.setValidators();
-
-        fieldDefinitionAge = new FieldDefinition("age");
-        fieldDefinitionAge.setType(fieldTypeFactory.integerType());
-        fieldDefinitionAge.setValidators();
-
-        fieldDefinitionMoney = new FieldDefinition("money");
-        fieldDefinitionMoney.setType(fieldTypeFactory.decimalType());
-        fieldDefinitionMoney.setValidators();
-
-        fieldDefinitionRetired = new FieldDefinition("retired");
-        fieldDefinitionRetired.setType(fieldTypeFactory.booleanType());
-        fieldDefinitionRetired.setValidators();
-
-        fieldDefinitionBirthDate = new FieldDefinition("birthDate");
-        fieldDefinitionBirthDate.setType(fieldTypeFactory.dateType());
-        fieldDefinitionBirthDate.setValidators();
-
-        parentDataDefinition = new DataDefinition("parent.entity");
-        parentDataDefinition.addField(parentFieldDefinitionName);
-        parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
-
-        dataDefinition = new DataDefinition("simple.entity");
-        dataDefinition.addField(fieldDefinitionName);
-        dataDefinition.addField(fieldDefinitionAge);
-        dataDefinition.addField(fieldDefinitionMoney);
-        dataDefinition.addField(fieldDefinitionRetired);
-        dataDefinition.addField(fieldDefinitionBirthDate);
-        dataDefinition.addField(fieldDefinitionBelongsTo);
-        dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
-
-        given(dataDefinitionService.get("simple.entity")).willReturn(dataDefinition);
-
-        given(dataDefinitionService.get("parent.entity")).willReturn(parentDataDefinition);
     }
 
     @Test
@@ -161,10 +37,10 @@ public class ValidatorTest {
         entity.setField("age", null);
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
         assertTrue(validationResults.isValid());
         assertTrue(validationResults.getErrors().isEmpty());
@@ -180,13 +56,13 @@ public class ValidatorTest {
         fieldDefinitionAge.setValidators(fieldValidatorFactory.required());
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
-        assertEquals("core.validation.error.missing", validationResults.getErrorForField("age").getMessage());
+        assertEquals("commons.validate.field.error.missing", validationResults.getErrorForField("age").getMessage());
         assertEquals(0, validationResults.getGlobalErrors().size());
     }
 
@@ -199,10 +75,10 @@ public class ValidatorTest {
         fieldDefinitionAge.setValidators(fieldValidatorFactory.required().customErrorMessage("missing age"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
         assertEquals("missing age", validationResults.getErrorForField("age").getMessage());
@@ -231,10 +107,10 @@ public class ValidatorTest {
         entity.setField("age", "21w");
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -245,10 +121,10 @@ public class ValidatorTest {
         entity.setField("money", "221.2w");
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -259,10 +135,10 @@ public class ValidatorTest {
         entity.setField("money", "2010-01-a");
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -273,10 +149,10 @@ public class ValidatorTest {
         entity.setField("money", "a");
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -306,10 +182,10 @@ public class ValidatorTest {
         fieldDefinitionAge.setValidators(fieldValidatorFactory.required());
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -322,10 +198,10 @@ public class ValidatorTest {
         fieldDefinitionName.setValidators(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -338,10 +214,10 @@ public class ValidatorTest {
         fieldDefinitionName.setValidators(fieldValidatorFactory.range("a", "c"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -354,10 +230,10 @@ public class ValidatorTest {
         fieldDefinitionName.setValidators(fieldValidatorFactory.range("a", "c"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -370,10 +246,10 @@ public class ValidatorTest {
         fieldDefinitionAge.setValidators(fieldValidatorFactory.range(null, 10));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -386,10 +262,10 @@ public class ValidatorTest {
         fieldDefinitionAge.setValidators(fieldValidatorFactory.range(4, null));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -402,10 +278,10 @@ public class ValidatorTest {
         fieldDefinitionMoney.setValidators(fieldValidatorFactory.range(40, 50));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -418,10 +294,10 @@ public class ValidatorTest {
         fieldDefinitionMoney.setValidators(fieldValidatorFactory.range(30, 40));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -434,10 +310,10 @@ public class ValidatorTest {
         fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.range(new Date(), new Date()));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -450,10 +326,10 @@ public class ValidatorTest {
         fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.range(null, new Date()));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -466,10 +342,10 @@ public class ValidatorTest {
         fieldDefinitionRetired.setValidators(fieldValidatorFactory.range(true, true));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -482,10 +358,10 @@ public class ValidatorTest {
         fieldDefinitionAge.setValidators(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -498,10 +374,10 @@ public class ValidatorTest {
         fieldDefinitionMoney.setValidators(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -514,10 +390,10 @@ public class ValidatorTest {
         fieldDefinitionMoney.setValidators(fieldValidatorFactory.precisionAndScale(6, 2));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -530,10 +406,10 @@ public class ValidatorTest {
         fieldDefinitionMoney.setValidators(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -546,10 +422,10 @@ public class ValidatorTest {
         fieldDefinitionMoney.setValidators(fieldValidatorFactory.precisionAndScale(4, 1));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -562,10 +438,10 @@ public class ValidatorTest {
         fieldDefinitionRetired.setValidators(fieldValidatorFactory.length(0));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -578,10 +454,10 @@ public class ValidatorTest {
         fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.length(0));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -594,10 +470,10 @@ public class ValidatorTest {
         fieldDefinitionName.setValidators(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -611,16 +487,16 @@ public class ValidatorTest {
         resultSet.setTotalNumberOfEntities(0);
 
         given(
-                dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
+                dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
                         .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed")).build())).willReturn(resultSet);
 
         fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -636,24 +512,19 @@ public class ValidatorTest {
         resultSet.setTotalNumberOfEntities(0);
 
         given(
-                dataAccessServiceMock.find(
-                        "simple.entity",
-                        SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
-                                .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed"))
-                                .restrictedWith(Restrictions.idRestriction(1L, RestrictionOperator.NE)).build())).willReturn(
-                resultSet);
+                dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
+                        .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed"))
+                        .restrictedWith(Restrictions.idRestriction(1L, RestrictionOperator.NE)).build())).willReturn(resultSet);
 
-        given(
-                sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
-                        .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
+        given(criteria.uniqueResult()).willReturn(databaseObject);
 
         fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -667,16 +538,16 @@ public class ValidatorTest {
         resultSet.setTotalNumberOfEntities(1);
 
         given(
-                dataAccessServiceMock.find("simple.entity", SearchCriteriaBuilder.forEntity("simple.entity").withMaxResults(1)
+                dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
                         .restrictedWith(Restrictions.eq(fieldDefinitionName, "existed")).build())).willReturn(resultSet);
 
         fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -689,10 +560,10 @@ public class ValidatorTest {
         fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -705,13 +576,13 @@ public class ValidatorTest {
         fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertEquals(1, validationResults.getErrors().size());
-        assertEquals("core.validation.error.custom", validationResults.getErrorForField("name").getMessage());
+        assertEquals("commons.validate.field.error.custom", validationResults.getErrorForField("name").getMessage());
         assertEquals(0, validationResults.getGlobalErrors().size());
     }
 
@@ -724,10 +595,10 @@ public class ValidatorTest {
         fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwertz"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 
@@ -741,10 +612,10 @@ public class ValidatorTest {
         dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession()).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(SimpleDatabaseObject.class));
         assertFalse(validationResults.isNotValid());
     }
 
@@ -759,14 +630,14 @@ public class ValidatorTest {
         dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
         assertTrue(validationResults.getErrors().isEmpty());
         assertEquals(1, validationResults.getGlobalErrors().size());
-        assertEquals("core.validation.error.customEntity", validationResults.getGlobalErrors().get(0).getMessage());
+        assertEquals("commons.validate.field.error.customEntity", validationResults.getGlobalErrors().get(0).getMessage());
     }
 
     @Test
@@ -779,10 +650,10 @@ public class ValidatorTest {
         dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrX"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save("simple.entity", entity);
+        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
 
         // then
-        Mockito.verify(sessionFactory.getCurrentSession(), never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertTrue(validationResults.isNotValid());
     }
 

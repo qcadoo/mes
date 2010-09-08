@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.data.internal;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -22,7 +22,7 @@ import com.qcadoo.mes.core.data.beans.DictionaryItem;
 
 public class DictionaryServiceTest {
 
-    private SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
+    private final SessionFactory sessionFactory = mock(SessionFactory.class, RETURNS_DEEP_STUBS);
 
     private DictionaryService dictionaryService = null;
 
@@ -49,8 +49,8 @@ public class DictionaryServiceTest {
         Set<String> dictionaries = dictionaryService.dictionaries();
 
         // then
-        Assert.assertThat(dictionaries.size(), equalTo(3));
-        Assert.assertThat(dictionaries, hasItems("Dict1", "Dict2", "Dict3"));
+        assertThat(dictionaries.size(), equalTo(3));
+        assertThat(dictionaries, hasItems("Dict1", "Dict2", "Dict3"));
     }
 
     @Test
@@ -72,10 +72,10 @@ public class DictionaryServiceTest {
         List<String> values = dictionaryService.values("dict");
 
         // then
-        Assert.assertThat(values.size(), equalTo(3));
-        Assert.assertThat(values.get(0), equalTo("aaa"));
-        Assert.assertThat(values.get(1), equalTo("bbb"));
-        Assert.assertThat(values.get(2), equalTo("ccc"));
+        assertThat(values.size(), equalTo(3));
+        assertThat(values.get(0), equalTo("aaa"));
+        assertThat(values.get(1), equalTo("bbb"));
+        assertThat(values.get(2), equalTo("ccc"));
     }
 
     @Test(expected = IllegalArgumentException.class)

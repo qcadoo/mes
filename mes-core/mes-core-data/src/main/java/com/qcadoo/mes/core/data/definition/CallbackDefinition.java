@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 
-public class CallbackDefinition {
+public final class CallbackDefinition {
 
     private static final Logger LOG = LoggerFactory.getLogger(CallbackDefinition.class);
 

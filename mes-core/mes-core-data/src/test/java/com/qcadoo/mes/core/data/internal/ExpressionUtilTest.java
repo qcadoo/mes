@@ -1,7 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
 import static junit.framework.Assert.assertEquals;
-import junit.framework.Assert;
+import static junit.framework.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -94,7 +94,7 @@ public class ExpressionUtilTest {
         String value = ExpressionUtil.getValue(entity, columnDefinition);
 
         // then
-        Assert.assertNull(value);
+        assertNull(value);
     }
 
     @Test

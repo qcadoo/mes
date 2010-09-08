@@ -9,7 +9,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class CustomValidator implements FieldValidator {
 
-    private static final String CUSTOM_ERROR = "core.validation.error.custom";
+    private static final String CUSTOM_ERROR = "commons.validate.field.error.custom";
 
     private final CallbackDefinition callback;
 

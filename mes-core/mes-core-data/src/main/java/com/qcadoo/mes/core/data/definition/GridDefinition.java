@@ -6,9 +6,6 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.qcadoo.mes.core.data.search.Order;
-import com.qcadoo.mes.core.data.search.Restriction;
-
 /**
  * Grid defines structure used for listing entities. It contains the list of field that can be used for restrictions and the list
  * of columns. It also have default order and default restrictions.
@@ -25,10 +22,6 @@ public final class GridDefinition extends ViewElementDefinition {
     private Set<FieldDefinition> searchableFields;
 
     private List<ColumnDefinition> columns;
-
-    private Order defaultOrder;
-
-    private Set<Restriction> defaultRestrictions;
 
     public GridDefinition(final String name, final DataDefinition dataDefinition) {
         super(name, dataDefinition);
@@ -55,26 +48,9 @@ public final class GridDefinition extends ViewElementDefinition {
         this.columns = columns;
     }
 
-    public Order getDefaultOrder() {
-        return defaultOrder;
-    }
-
-    public void setDefaultOrder(final Order defaultOrder) {
-        this.defaultOrder = defaultOrder;
-    }
-
-    public Set<Restriction> getDefaultRestrictions() {
-        return defaultRestrictions;
-    }
-
-    public void setDefaultRestrictions(final Set<Restriction> defaultRestrictions) {
-        this.defaultRestrictions = defaultRestrictions;
-    }
-
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(11, 37).append(columns).append(defaultOrder).append(defaultRestrictions)
-                .append(searchableFields).toHashCode();
+        return new HashCodeBuilder(11, 37).append(columns).append(searchableFields).toHashCode();
     }
 
     @Override
@@ -89,8 +65,6 @@ public final class GridDefinition extends ViewElementDefinition {
             return false;
         }
         GridDefinition other = (GridDefinition) obj;
-        return new EqualsBuilder().append(columns, other.columns).append(defaultOrder, other.defaultOrder)
-                .append(defaultRestrictions, other.defaultRestrictions).append(searchableFields, other.searchableFields)
-                .isEquals();
+        return new EqualsBuilder().append(columns, other.columns).append(searchableFields, other.searchableFields).isEquals();
     }
 }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -19,6 +20,7 @@ import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.FieldViewDefinition;
 import com.qcadoo.mes.core.data.definition.FormDefinition;
 import com.qcadoo.mes.core.data.definition.GridDefinition;
 import com.qcadoo.mes.core.data.definition.ViewDefinition;
@@ -71,12 +73,12 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.productGridView");
-        viewDefinition.setHeader("Products:");
+        viewDefinition.setHeader("products.productGridView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("products.product");
-        GridDefinition gridDefinition = new GridDefinition("products", gridDataDefinition);
+        GridDefinition gridDefinition = new GridDefinition("productsGrid", gridDataDefinition);
         gridDefinition.setCorrespondingViewName("products.productDetailsView");
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
@@ -102,7 +104,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView");
-        viewDefinition.setHeader("Product:");
+        viewDefinition.setHeader("products.productDetailsView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -110,13 +112,17 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormDefinition form = new FormDefinition("productDetailsForm", productDataDefinition);
         form.setParent("entityId");
         form.setCorrespondingViewName("products.productGridView");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        for (Entry<String, FieldDefinition> fieldEntry : productDataDefinition.getFields().entrySet())
+            formFields.add(new FieldViewDefinition(fieldEntry.getValue()));
+        form.setFields(formFields);
         elements.add(form);
 
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", substituteDataDefinition);
         substituteGridDefinition.setParent("viewElement:productDetailsForm");
         substituteGridDefinition.setParentField("product");
-        substituteGridDefinition.setHeader("Substitutes:");
+        substituteGridDefinition.setHeader("products.productDetailsView.substitutesGrid.header");
         ColumnDefinition columnNumber = createColumnDefinition("number", substituteDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", substituteDataDefinition.getField("name"), null);
         ColumnDefinition columnPriority = createColumnDefinition("priority", substituteDataDefinition.getField("priority"), null);
@@ -139,11 +145,11 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 substituteComponentDataDefinition);
         substituteComponentGridDefinition.setParent("viewElement:substitutesGrid");
         substituteComponentGridDefinition.setParentField("substitute");
-        substituteComponentGridDefinition.setHeader("Substitute products:");
+        substituteComponentGridDefinition.setHeader("products.productDetailsView.substitutesComponentGrid.header");
         ColumnDefinition columnSubstituteNumber = createColumnDefinition("number",
-                substituteComponentDataDefinition.getField("number"), "fields['product'].fields['number']");
-        ColumnDefinition columnProductName = createColumnDefinition("name", substituteComponentDataDefinition.getField("name"),
-                "fields['product'].fields['name']");
+                substituteComponentDataDefinition.getField("product"), "fields['product'].fields['number']");
+        ColumnDefinition columnProductName = createColumnDefinition("name",
+                substituteComponentDataDefinition.getField("product"), "fields['product'].fields['name']");
         ColumnDefinition columnQuantity = createColumnDefinition("quantity",
                 substituteComponentDataDefinition.getField("quantity"), null);
         substituteComponentGridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber,
@@ -164,7 +170,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductSubstituteDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView");
-        viewDefinition.setHeader("Substitute:");
+        viewDefinition.setHeader("products.substituteDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition substitutesDataDefinition = dataDefinitionService.get("products.substitute");
@@ -172,6 +178,17 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setCorrespondingViewName("products.productDetailsView");
         form.setParent("entityId");
         form.setParentField("product");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        // for (Entry<String, FieldDefinition> fieldEntry : substitutesDataDefinition.getFields().entrySet())
+        // formFields.add(new FieldViewDefinition(fieldEntry.getKey(), fieldEntry.getValue()));
+        // form.setFields(formFields);
+        formFields.add(new FieldViewDefinition(substitutesDataDefinition.getField("number")));
+        formFields.add(new FieldViewDefinition(substitutesDataDefinition.getField("name")));
+        formFields.add(new FieldViewDefinition(substitutesDataDefinition.getField("priority")));
+        formFields.add(new FieldViewDefinition(substitutesDataDefinition.getField("effectiveDateFrom")));
+        formFields.add(new FieldViewDefinition(substitutesDataDefinition.getField("effectiveDateTo")));
+        form.setFields(formFields);
+
         elements.add(form);
 
         viewDefinition.setElements(elements);
@@ -180,7 +197,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createProductSubstituteComponentDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("products.substituteComponentDetailsView");
-        viewDefinition.setHeader("Substitute product:");
+        viewDefinition.setHeader("products.substituteComponentDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
@@ -188,6 +205,10 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setCorrespondingViewName("products.productDetailsView");
         form.setParent("entityId");
         form.setParentField("substitute");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        formFields.add(new FieldViewDefinition(substitutesComponentDataDefinition.getField("product")));
+        formFields.add(new FieldViewDefinition(substitutesComponentDataDefinition.getField("quantity")));
+        form.setFields(formFields);
         elements.add(form);
 
         viewDefinition.setElements(elements);
@@ -196,6 +217,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createUserGroupGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("users.groupGridView");
+        viewDefinition.setHeader("users.groupGridView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -221,12 +243,18 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createUserGroupDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("users.groupDetailsView");
+        viewDefinition.setHeader("users.groupDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition groupDataDefinition = dataDefinitionService.get("users.group");
         FormDefinition form = new FormDefinition("groupDetailsForm", groupDataDefinition);
         form.setParent("entityId");
         form.setCorrespondingViewName("users.groupGridView");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        formFields.add(new FieldViewDefinition(groupDataDefinition.getField("name")));
+        formFields.add(new FieldViewDefinition(groupDataDefinition.getField("description")));
+        formFields.add(new FieldViewDefinition(groupDataDefinition.getField("role")));
+        form.setFields(formFields);
         elements.add(form);
 
         viewDefinition.setElements(elements);
@@ -235,6 +263,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createUserGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("users.userGridView");
+        viewDefinition.setHeader("users.userGridView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -265,12 +294,22 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createUserDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("users.userDetailsView");
+        viewDefinition.setHeader("users.userDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition userDataDefinition = dataDefinitionService.get("users.user");
         FormDefinition form = new FormDefinition("userDetailsForm", userDataDefinition);
         form.setParent("entityId");
         form.setCorrespondingViewName("users.userGridView");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("login")));
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("userGroup")));
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("email")));
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("firstName")));
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("lastName")));
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("description")));
+        formFields.add(new FieldViewDefinition(userDataDefinition.getField("password")));
+        form.setFields(formFields);
         elements.add(form);
 
         viewDefinition.setElements(elements);
@@ -279,7 +318,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createOrderGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("orders.orderGridView");
-        viewDefinition.setHeader("Orders:");
+        viewDefinition.setHeader("orders.orderGridView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
@@ -306,13 +345,30 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createOrderDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("orders.orderDetailsView");
-        viewDefinition.setHeader("Order:");
+        viewDefinition.setHeader("orders.orderDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition orderDataDefinition = dataDefinitionService.get("orders.order");
         FormDefinition form = new FormDefinition("orderDetailsForm", orderDataDefinition);
         form.setParent("entityId");
         form.setCorrespondingViewName("orders.orderGridView");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("number")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("name")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("dateFrom")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("dateTo")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("state")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("machine")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("product")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("defaultInstruction")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("instruction")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("plannedQuantity")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("doneQuantity")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("effectiveDateFrom")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("effectiveDateTo")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("startWorker")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("endWorker")));
+        form.setFields(formFields);
         elements.add(form);
 
         viewDefinition.setElements(elements);
@@ -321,7 +377,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createDictionaryGridView() {
         ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryGridView");
-        viewDefinition.setHeader("Dictonaries:");
+        viewDefinition.setHeader("core.dictionaryGridView.header");
 
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
         DataDefinition gridDataDefinition = dataDefinitionService.get("core.dictionary");
@@ -347,7 +403,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createDictionaryDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryDetailsView");
-        viewDefinition.setHeader("Dictonary:");
+        viewDefinition.setHeader("core.dictionaryDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition gridDataDefinition = dataDefinitionService.get("core.dictionaryItem");
@@ -374,7 +430,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createDictionaryItemDetailsView() {
         ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryItemDetailsView");
-        viewDefinition.setHeader("Dictionary item:");
+        viewDefinition.setHeader("core.dictionaryItemDetailsView.header");
         List<ViewElementDefinition> elements = new LinkedList<ViewElementDefinition>();
 
         DataDefinition orderDataDefinition = dataDefinitionService.get("core.dictionaryItem");
@@ -382,6 +438,10 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         form.setParent("entityId");
         form.setParentField("dictionary");
         form.setCorrespondingViewName("core.dictionaryDetailsView");
+        List<FieldViewDefinition> formFields = new LinkedList<FieldViewDefinition>();
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("name")));
+        formFields.add(new FieldViewDefinition(orderDataDefinition.getField("description")));
+        form.setFields(formFields);
         elements.add(form);
 
         viewDefinition.setElements(elements);

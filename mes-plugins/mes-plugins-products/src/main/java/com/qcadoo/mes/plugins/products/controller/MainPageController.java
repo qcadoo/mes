@@ -9,12 +9,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
+import com.qcadoo.mes.plugins.products.translation.TranslationServiceImpl;
 
 @Controller
 public class MainPageController {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
+
+    @Autowired
+    private TranslationServiceImpl translationService;
 
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getView(final Locale locale) {
@@ -24,6 +28,8 @@ public class MainPageController {
         mav.addObject("headerLabel", "QCADOOmes");
 
         mav.addObject("viewsList", viewDefinitionService.getAllViews());
+
+        mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
 
         return mav;
     }

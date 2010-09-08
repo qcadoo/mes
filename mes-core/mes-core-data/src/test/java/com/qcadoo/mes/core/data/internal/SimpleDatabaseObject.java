@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public final class SimpleDatabaseObject {
 
@@ -13,6 +14,8 @@ public final class SimpleDatabaseObject {
     private String name;
 
     private Integer age;
+
+    private Integer priority;
 
     private BigDecimal money;
 
@@ -24,7 +27,7 @@ public final class SimpleDatabaseObject {
         return money;
     }
 
-    public void setMoney(BigDecimal money) {
+    public void setMoney(final BigDecimal money) {
         this.money = money;
     }
 
@@ -32,7 +35,7 @@ public final class SimpleDatabaseObject {
         return retired;
     }
 
-    public void setRetired(Boolean retired) {
+    public void setRetired(final Boolean retired) {
         this.retired = retired;
     }
 
@@ -40,7 +43,7 @@ public final class SimpleDatabaseObject {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(final Date birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -51,7 +54,7 @@ public final class SimpleDatabaseObject {
     public SimpleDatabaseObject() {
     }
 
-    public SimpleDatabaseObject(Long id) {
+    public SimpleDatabaseObject(final Long id) {
         this.id = id;
     }
 
@@ -83,7 +86,7 @@ public final class SimpleDatabaseObject {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -91,31 +94,31 @@ public final class SimpleDatabaseObject {
         return belongsTo;
     }
 
-    public void setBelongsTo(ParentDatabaseObject belongsTo) {
+    public void setBelongsTo(final ParentDatabaseObject belongsTo) {
         this.belongsTo = belongsTo;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(final Integer priority) {
+        this.priority = priority;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(age).append(id).append(deleted).append(belongsTo).append(money)
-                .append(retired).append(birthDate).toHashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof SimpleDatabaseObject)) {
-            return false;
-        }
-        SimpleDatabaseObject other = (SimpleDatabaseObject) obj;
-        return new EqualsBuilder().append(name, other.name).append(age, other.age).append(id, other.id)
-                .append(deleted, other.deleted).append(belongsTo, other.belongsTo).append(money, other.money)
-                .append(retired, other.retired).append(birthDate, other.birthDate).isEquals();
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }

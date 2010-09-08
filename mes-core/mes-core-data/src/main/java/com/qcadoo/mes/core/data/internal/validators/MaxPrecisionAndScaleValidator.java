@@ -10,7 +10,7 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class MaxPrecisionAndScaleValidator implements FieldValidator {
 
-    private static final String PRECISION_AND_SCALE_EXCEEDED_ERROR = "core.validation.error.maxPrecisionAndScaleExceeded";
+    private static final String PRECISION_AND_SCALE_EXCEEDED_ERROR = "commons.validate.field.error.maxPrecisionAndScaleExceeded";
 
     private final int maxScale;
 
@@ -37,20 +37,31 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
         }
 
         if (fieldClass.equals(BigDecimal.class)) {
-            BigDecimal decimal = (BigDecimal) value;
-            if (decimal.precision() - decimal.scale() > maxPrecision) {
-                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
-                return false;
-            }
-            if (maxScale > 0 && decimal.scale() > maxScale) {
-                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
-                return false;
-            }
+            return validateDecimal(fieldDefinition, validationResults, (BigDecimal) value);
         } else {
-            if (value.toString().length() > maxPrecision) {
-                validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
-                return false;
-            }
+            return validateInteger(fieldDefinition, value, validationResults);
+        }
+    }
+
+    private boolean validateInteger(final FieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
+        if (value.toString().length() > maxPrecision) {
+            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateDecimal(final FieldDefinition fieldDefinition, final ValidationResults validationResults,
+            final BigDecimal decimal) {
+        if (decimal.precision() - decimal.scale() > maxPrecision) {
+            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
+            return false;
+        }
+        if (maxScale > 0 && decimal.scale() > maxScale) {
+            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
+            return false;
         }
 
         return true;
