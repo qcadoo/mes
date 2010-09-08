@@ -277,7 +277,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridOptions.put("multiselect", "true");
         gridOptions.put("height", "450");
         gridDefinition.setOptions(gridOptions);
-        ColumnDefinition columnLogin = createColumnDefinition("login", gridDataDefinition.getField("login"), null);
+        ColumnDefinition columnLogin = createColumnDefinition("login", gridDataDefinition.getField("userName"), null);
         ColumnDefinition columnEmail = createColumnDefinition("email", gridDataDefinition.getField("email"), null);
         ColumnDefinition columnFirstName = createColumnDefinition("firstName", gridDataDefinition.getField("firstName"), null);
         ColumnDefinition columnLastName = createColumnDefinition("lastName", gridDataDefinition.getField("lastName"), null);

@@ -28,6 +28,7 @@ QCD.WindowController = function() {
 
 	this.performLogout = function() {
 		QCDLogger.info("logout");
+		window.location = "j_spring_security_logout";
 	}
 	
 	this.goToPage = function(url, serializationObject) {
