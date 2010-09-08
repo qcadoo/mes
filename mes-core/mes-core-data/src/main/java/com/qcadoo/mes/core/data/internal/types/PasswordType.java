@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.internal.types;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
@@ -10,8 +11,11 @@ public final class PasswordType implements FieldType {
 
     private final int lenght;
 
-    public PasswordType(final int lenght) {
+    private final PasswordEncoder passwordEncoder;
+
+    public PasswordType(final int lenght, final PasswordEncoder passwordEncoder) {
         this.lenght = lenght;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -37,7 +41,7 @@ public final class PasswordType implements FieldType {
     @Override
     public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
             final ValidationResults validationResults) {
-        return value;
+        return passwordEncoder.encodePassword(value, null);
     }
 
     @Override
