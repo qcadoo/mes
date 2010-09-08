@@ -1,18 +1,20 @@
 package com.qcadoo.mes.core.data.beans;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public final class SystemUser {
+public final class Users {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String login;
+    @Column(nullable = false)
+    private String userName;
 
     @ManyToOne
     private UserGroup userGroup;
@@ -25,9 +27,29 @@ public final class SystemUser {
 
     private String description;
 
+    @Column(nullable = false)
     private String password;
 
     private boolean deleted;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean enabled;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(final String userName) {
+        this.userName = userName;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public Long getId() {
         return id;
@@ -43,6 +65,7 @@ public final class SystemUser {
 
     public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
+        this.enabled = !deleted;
     }
 
     public String getDescription() {
@@ -51,14 +74,6 @@ public final class SystemUser {
 
     public void setDescription(final String description) {
         this.description = description;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(final String login) {
-        this.login = login;
     }
 
     public String getEmail() {

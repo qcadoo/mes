@@ -137,8 +137,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private DataDefinition createUserDefinition() {
         DataDefinition dataDefinition = new DataDefinition("users.user");
 
-        FieldDefinition fieldLogin = createFieldDefinition("login", fieldTypeFactory.stringType());
-        fieldLogin.setValidators(fieldValidationFactory.required(), fieldValidationFactory.unique());
+        FieldDefinition fieldUserName = createFieldDefinition("userName", fieldTypeFactory.stringType());
+        fieldUserName.setValidators(fieldValidationFactory.required(), fieldValidationFactory.unique());
         FieldDefinition fieldUserGroup = createFieldDefinition("userGroup",
                 fieldTypeFactory.eagerBelongsToType("users.group", "name"));
 
@@ -151,9 +151,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         fieldPassword.setValidators(fieldValidationFactory.requiredOnCreation());
         fieldPassword.setConfirmable(true);
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SystemUser");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Users");
 
-        dataDefinition.addField(fieldLogin);
+        dataDefinition.addField(fieldUserName);
         dataDefinition.addField(fieldUserGroup);
         dataDefinition.addField(fieldEmail);
         dataDefinition.addField(fieldFirstName);
