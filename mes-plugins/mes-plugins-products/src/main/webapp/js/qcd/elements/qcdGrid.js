@@ -39,6 +39,10 @@ QCD.elements.GridElement = function(args, _mainController) {
 	var navigationButtons = new Object();
 		navigationButtons.newButton = null;
 		navigationButtons.deleteButton = null;
+		
+	var prioritizeButtons = new Object();
+		prioritizeButtons.upButton = null;
+		prioritizeButtons.downButton = null;
 	
 	var parentId = null;
 	
@@ -190,6 +194,8 @@ QCD.elements.GridElement = function(args, _mainController) {
 	}
 	
 	function rowClicked(rowId) {
+		var rowIndex = grid.jqGrid('getInd', rowId);
+		var rowsNumber = grid.getGridParam('records');
 		if (! rowsToSelect) {
 			for (var i in children) {
 				children[i].insertParentId(rowId);
@@ -205,6 +211,18 @@ QCD.elements.GridElement = function(args, _mainController) {
 				}
 			} else {
 				navigationButtons.deleteButton.attr("disabled", false);
+			}
+		}
+		if (gridParameters.isDataDefinitionProritizable) {
+			if (rowIndex > 0) {
+				prioritizeButtons.upButton.attr("disabled", false);
+			} else {
+				prioritizeButtons.upButton.attr("disabled", true);
+			}
+			if (rowIndex < rowsNumber - 1) {
+				prioritizeButtons.downButton.attr("disabled", false);
+			} else {
+				prioritizeButtons.downButton.attr("disabled", true);
 			}
 		}
 	}
@@ -416,6 +434,7 @@ QCD.elements.GridElement = function(args, _mainController) {
 	
 	function changePriority(direction) {
 		var entitiesArray = getSelectedRows();
+		rowsToSelect = entitiesArray;
 		if (entitiesArray && entitiesArray.length == 1) {
 			var entity = entitiesArray[0];
 			if (entity) {
@@ -497,12 +516,14 @@ QCD.elements.GridElement = function(args, _mainController) {
 		if (gridParameters.isDataDefinitionProritizable) {
 			var prorityDiv = $("<div>");
 				prorityDiv.append('<span>'+mainController.getTranslation("commons.grid.span.priority")+'</span>');
-				var upButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.up"));
-				upButton.click(function() {priorityUp();});
-				prorityDiv.append(upButton);
-				var downButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.down"));
-				downButton.click(function() {priorityDown();});
-				prorityDiv.append(downButton);
+				prioritizeButtons.upButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.up"));
+				prioritizeButtons.upButton.click(function() {priorityUp();});
+				prorityDiv.append(prioritizeButtons.upButton);
+				prioritizeButtons.upButton.attr("disabled", true);
+				prioritizeButtons.downButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.down"));
+				prioritizeButtons.downButton.click(function() {priorityDown();});
+				prorityDiv.append(prioritizeButtons.downButton);
+				prioritizeButtons.downButton.attr("disabled", true);
 			element.after(prorityDiv);
 		}
 		
