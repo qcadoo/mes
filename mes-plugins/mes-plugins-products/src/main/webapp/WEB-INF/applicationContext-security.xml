@@ -8,12 +8,13 @@
 
     <http use-expressions="true">
             <intercept-url pattern="/**" access="isAuthenticated()"/>
-            <intercept-url pattern="/logout.jsp" filters="none" />
-            <intercept-url pattern="/timeout.jsp" filters="none" />
+            <intercept-url pattern="/login.html" filters="none" />
+            <intercept-url pattern="/logout.html" filters="none" />
+            <intercept-url pattern="/timeout.html" filters="none" />
             
-        <form-login />
-        <logout logout-success-url="/logout.jsp"/>
-        <session-management invalid-session-url="/timeout.jsp">
+        <form-login login-page="/login.html" authentication-failure-url="/login.html?login_error=1" default-target-url="/main.html"/>
+        <logout logout-success-url="/logout.html"/>
+        <session-management invalid-session-url="/timeout.html">
             <concurrency-control max-sessions="1" error-if-maximum-exceeded="true" />
         </session-management>
     </http>
