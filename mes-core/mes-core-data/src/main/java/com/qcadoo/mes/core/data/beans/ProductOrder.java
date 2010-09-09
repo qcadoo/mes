@@ -47,9 +47,11 @@ public final class ProductOrder {
     @Column(scale = 3, precision = 10)
     private BigDecimal plannedQuantity;
 
-    private String defaultInstruction;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProductInstruction defaultInstruction;
 
-    private String instruction;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProductInstruction instruction;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal doneQuantity;
@@ -154,19 +156,19 @@ public final class ProductOrder {
         this.plannedQuantity = plannedQuantity;
     }
 
-    public String getDefaultInstruction() {
+    public ProductInstruction getDefaultInstruction() {
         return defaultInstruction;
     }
 
-    public void setDefaultInstruction(final String defaultInstruction) {
+    public void setDefaultInstruction(final ProductInstruction defaultInstruction) {
         this.defaultInstruction = defaultInstruction;
     }
 
-    public String getInstruction() {
+    public ProductInstruction getInstruction() {
         return instruction;
     }
 
-    public void setInstruction(final String instruction) {
+    public void setInstruction(final ProductInstruction instruction) {
         this.instruction = instruction;
     }
 

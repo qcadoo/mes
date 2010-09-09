@@ -2,28 +2,60 @@ package com.qcadoo.mes.plugins.products;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
+import com.qcadoo.mes.core.data.search.Restrictions;
+import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.core.data.search.SearchResult;
 
 @Service
 public class ProductService {
 
-    public boolean checkSubstituteDates(final Entity entity) {
+    @Autowired
+    private DataAccessService dataAccessService;
+
+    public boolean checkInstructionDefault(final DataDefinition dataDefinition, final Entity entity) {
+        Boolean master = (Boolean) entity.getField("master");
+
+        if (!master) {
+            return true;
+        }
+
+        SearchResult searchResult = dataAccessService.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
+                .restrictedWith(Restrictions.eq(dataDefinition.getField("master"), true))
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")))
+                .restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE)).build());
+
+        return searchResult.getTotalNumberOfEntities() == 0;
+    }
+
+    public boolean checkSubstituteDates(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = (Date) entity.getField("effectiveDateFrom");
         Date dateTo = (Date) entity.getField("effectiveDateTo");
 
         return compareDates(dateFrom, dateTo);
     }
 
-    public boolean checkOrderDates(final Entity entity) {
+    public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = (Date) entity.getField("dateFrom");
         Date dateTo = (Date) entity.getField("dateTo");
 
         return compareDates(dateFrom, dateTo);
     }
 
-    public void fillOrderDatesAndWorkers(final Entity entity) {
+    public boolean checkInstructionDates(final DataDefinition dataDefinition, final Entity entity) {
+        Date dateFrom = (Date) entity.getField("dateFrom");
+        Date dateTo = (Date) entity.getField("dateTo");
+
+        return compareDates(dateFrom, dateTo);
+    }
+
+    public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
         if (("pending".equals(entity.getField("state")) || "done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());

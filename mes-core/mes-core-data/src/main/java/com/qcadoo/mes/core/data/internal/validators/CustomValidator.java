@@ -22,7 +22,7 @@ public final class CustomValidator implements FieldValidator {
     @Override
     public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
-        boolean result = callback.callWithObjectAndGetBoolean(value);
+        boolean result = callback.callWithObjectAndGetBoolean(dataDefinition, value);
         if (result) {
             return true;
         }

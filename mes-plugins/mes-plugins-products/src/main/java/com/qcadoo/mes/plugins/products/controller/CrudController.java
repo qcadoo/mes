@@ -65,7 +65,7 @@ public class CrudController {
         mav.addObject("viewDefinition", viewDefinition);
         translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
-        Map<String, Map<Long, String>> dictionaryValues = new HashMap<String, Map<Long, String>>();
+        Map<String, Map<String, String>> dictionaryValues = new HashMap<String, Map<String, String>>();
         Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
 
         for (ComponentDefinition viewElement : viewDefinition.getElements()) {
@@ -76,15 +76,18 @@ public class CrudController {
                 for (FormFieldDefinition fieldDefEntry : form.getFields()) {
                     if (fieldDefEntry.getDataField().getType() instanceof BelongsToType) {
                         BelongsToType belongsToField = (BelongsToType) fieldDefEntry.getDataField().getType();
-                        Map<Long, String> fieldOptions = belongsToField.lookup(null);
-                        dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptions);
+                        Map<Long, String> options = belongsToField.lookup(null);
+                        Map<String, String> fieldOptionsMap = new HashMap<String, String>();
+                        for (Map.Entry<Long, String> option : options.entrySet()) {
+                            fieldOptionsMap.put(Long.toString(option.getKey()), option.getValue());
+                        }
+                        dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptionsMap);
                     } else if (fieldDefEntry.getDataField().getType() instanceof EnumeratedFieldType) {
                         EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefEntry.getDataField().getType();
                         List<String> options = enumeratedField.values();
-                        Map<Long, String> fieldOptionsMap = new HashMap<Long, String>();
-                        Long key = (long) 0;
+                        Map<String, String> fieldOptionsMap = new HashMap<String, String>();
                         for (String option : options) {
-                            fieldOptionsMap.put(key++, option);
+                            fieldOptionsMap.put(option, option);
                         }
                         dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptionsMap);
                     }

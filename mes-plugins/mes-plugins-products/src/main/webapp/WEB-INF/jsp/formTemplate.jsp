@@ -72,8 +72,14 @@
 									<select id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]" class="${inputClass}">
 										<option></option>
 										<c:forEach items="${dictionaryValues[fieldName]}" var="dictionaryValue">
-											<option>${dictionaryValue.value}</option>
+											<option value="${dictionaryValue.key}">${dictionaryValue.value}</option>
 										</c:forEach>
+									</select>
+								</c:when>
+								<c:when test='${(field.control.type == "14")}'>
+									<select id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]" class="${inputClass}">
+									<option value="0">nie</option>
+									<option value="1">tak</option>
 									</select>
 								</c:when>
 								<c:when test='${(field.control.type == "10")}'>

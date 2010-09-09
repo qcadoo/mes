@@ -32,7 +32,7 @@ public final class BooleanType implements FieldType {
         if (value instanceof Boolean) {
             return value;
         }
-        return Boolean.parseBoolean(String.valueOf(value));
+        return "1".equals(String.valueOf(value));
     }
 
     @Override

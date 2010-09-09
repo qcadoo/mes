@@ -24,4 +24,6 @@ public interface FieldControlFactory {
 
     FieldControl passwordConfirmationControl();
 
+    FieldControl yesNoControl();
+
 }
