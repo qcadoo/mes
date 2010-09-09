@@ -165,10 +165,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required()).withValidator(fieldValidationFactory.unique());
         DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
-        // TODO KRNA zamienic na relacje
-        DataFieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.enumType("read", "write", "delete"));
+        DataFieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.stringType());
+        fieldRole.setValidators(fieldValidationFactory.required());
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.UserGroup");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Groups");
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldRole);

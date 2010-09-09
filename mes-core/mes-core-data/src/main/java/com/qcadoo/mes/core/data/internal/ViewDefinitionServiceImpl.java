@@ -267,9 +267,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridOptions.put("height", "450");
         gridDefinition.setOptions(gridOptions);
         ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
-        ColumnDefinition columnRole = createColumnDefinition("role", gridDataDefinition.getField("role"), null);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnRole }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
         elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
@@ -291,7 +290,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormFieldDefinition fieldDescription = createFieldDefinition("description", groupDataDefinition.getField("description"),
                 fieldControlFactory.textControl());
         FormFieldDefinition fieldRole = createFieldDefinition("role", groupDataDefinition.getField("role"),
-                fieldControlFactory.selectControl());
+                fieldControlFactory.stringControl());
 
         formDefinition.addField(fieldName);
         formDefinition.addField(fieldDescription);
