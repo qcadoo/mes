@@ -170,9 +170,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteComponentGridDefinition.setParentField("substitute");
         substituteComponentGridDefinition.setHeader("products.productDetailsView.substitutesComponentGrid.header");
         ColumnDefinition columnSubstituteNumber = createColumnDefinition("number",
-                substituteComponentDataDefinition.getField("product"), "fields['product'].fields['number']");
+                substituteComponentDataDefinition.getField("product"), "#product['number']");
         ColumnDefinition columnProductName = createColumnDefinition("name",
-                substituteComponentDataDefinition.getField("product"), "fields['product'].fields['name']");
+                substituteComponentDataDefinition.getField("product"), "#product['name']");
         ColumnDefinition columnQuantity = createColumnDefinition("quantity",
                 substituteComponentDataDefinition.getField("quantity"), null);
         substituteComponentGridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber,
@@ -323,7 +323,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ColumnDefinition columnFirstName = createColumnDefinition("firstName", gridDataDefinition.getField("firstName"), null);
         ColumnDefinition columnLastName = createColumnDefinition("lastName", gridDataDefinition.getField("lastName"), null);
         ColumnDefinition columnUserGroup = createColumnDefinition("userGroup", gridDataDefinition.getField("userGroup"),
-                "fields['userGroup'].fields['name']");
+                "#userGroup['name']");
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnLogin, columnEmail, columnFirstName,
                 columnLastName, columnUserGroup }));
@@ -394,7 +394,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
         ColumnDefinition columnProductName = createColumnDefinition("product", gridDataDefinition.getField("product"),
-                "fields['product'].fields['name']");
+                "#product['name']");
 
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnProductName }));
         elements.add(gridDefinition);

@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.data.internal.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.expression.EvaluationContext;
@@ -36,7 +37,19 @@ public final class ExpressionUtil {
     private static String getValueWithExpression(final Entity entity, final ColumnDefinition columnDefinition) {
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(columnDefinition.getExpression());
-        EvaluationContext context = new StandardEvaluationContext(entity);
+        EvaluationContext context = new StandardEvaluationContext();
+
+        for (DataFieldDefinition fieldDefinition : columnDefinition.getFields()) {
+            Object value = entity.getField(fieldDefinition.getName());
+            if (value instanceof Entity) {
+                Map<String, Object> values = ((Entity) value).getFields();
+                values.put("id", ((Entity) value).getId());
+                context.setVariable(fieldDefinition.getName(), values);
+            } else {
+                context.setVariable(fieldDefinition.getName(), value);
+            }
+        }
+
         return String.valueOf(exp.getValue(context));
     }
 
