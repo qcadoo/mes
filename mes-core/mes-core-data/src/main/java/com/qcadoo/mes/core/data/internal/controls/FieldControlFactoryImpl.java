@@ -6,7 +6,7 @@ import com.qcadoo.mes.core.data.controls.FieldControl;
 import com.qcadoo.mes.core.data.controls.FieldControlFactory;
 
 @Service
-public class FieldControlFactoryImpl implements FieldControlFactory {
+public final class FieldControlFactoryImpl implements FieldControlFactory {
 
     // int NUMERIC_TYPE_BOOLEAN = 1;
     //
@@ -37,7 +37,7 @@ public class FieldControlFactoryImpl implements FieldControlFactory {
 
     @Override
     public FieldControl lookupControl() {
-        return new StringControl(4);
+        return new StringControl(10);
     }
 
     @Override
@@ -73,6 +73,11 @@ public class FieldControlFactoryImpl implements FieldControlFactory {
     @Override
     public FieldControl passwordControl() {
         return new StringControl(11);
+    }
+
+    @Override
+    public FieldControl passwordConfirmationControl() {
+        return new StringControl(13);
     }
 
     @Override

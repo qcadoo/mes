@@ -28,19 +28,19 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private static final FieldType INTEGER_FIELD_TYPE = new NumericType(10, 0);
+    private static final FieldType INTEGER_FIELD_TYPE = new IntegerType();
 
-    private static final FieldType DECIMAL_FIELD_TYPE = new NumericType(10, 3);
+    private static final FieldType DECIMAL_FIELD_TYPE = new DecimalType();
 
-    private static final FieldType STRING_FIELD_TYPE = new StringType(255);
+    private static final FieldType STRING_FIELD_TYPE = new StringType();
 
-    private static final FieldType TEXT_FIELD_TYPE = new StringType(2048);
+    private static final FieldType TEXT_FIELD_TYPE = new TextType();
 
     private static final FieldType BOOLEAN_FIELD_TYPE = new BooleanType();
 
-    private static final FieldType DATE_FIELD_TYPE = new DateType(false);
+    private static final FieldType DATE_FIELD_TYPE = new DateType();
 
-    private static final FieldType DATE_TIME_FIELD_TYPE = new DateType(true);
+    private static final FieldType DATE_TIME_FIELD_TYPE = new DateTimeType();
 
     @Override
     public FieldType booleanType() {
@@ -50,6 +50,11 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Override
     public FieldType stringType() {
         return STRING_FIELD_TYPE;
+    }
+
+    @Override
+    public FieldType textType() {
+        return TEXT_FIELD_TYPE;
     }
 
     @Override
@@ -73,14 +78,9 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     }
 
     @Override
-    public FieldType textType() {
-        return TEXT_FIELD_TYPE;
-    }
-
-    @Override
     public FieldType passwordType() {
         // TODO masz don't create new fieltType every time, use some cache
-        return new PasswordType(255, passwordEncoder);
+        return new PasswordType(passwordEncoder);
     }
 
     @Override

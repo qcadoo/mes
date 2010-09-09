@@ -1,12 +1,12 @@
 package com.qcadoo.mes.core.data.internal.types;
 
-import org.apache.commons.lang.StringUtils;
+import java.math.BigDecimal;
 
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class StringType implements FieldType {
+public final class DecimalType implements FieldType {
 
     @Override
     public boolean isSearchable() {
@@ -20,23 +20,34 @@ public final class StringType implements FieldType {
 
     @Override
     public boolean isAggregable() {
-        return false;
+        return true;
     }
 
     @Override
     public Class<?> getType() {
-        return String.class;
+        return BigDecimal.class;
     }
 
     @Override
     public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
-        String stringValue = String.valueOf(value);
-        if (StringUtils.length(stringValue) > 255) {
-            validationResults.addError(fieldDefinition, "commons.validate.field.error.stringIsTooLong", String.valueOf(255));
+        BigDecimal decimal = null;
+
+        if (value instanceof BigDecimal) {
+            decimal = (BigDecimal) value;
+        } else {
+            try {
+                decimal = new BigDecimal(String.valueOf(value));
+            } catch (NumberFormatException e) {
+                validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
+                return null;
+            }
+        }
+        if (decimal.precision() > 7 || decimal.scale() > 3) {
+            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
             return null;
         }
-        return stringValue;
+        return decimal;
     }
 
     @Override

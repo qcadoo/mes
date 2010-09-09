@@ -107,8 +107,7 @@ public abstract class DataAccessTest {
         ReflectionTestUtils.setField(fieldValidatorFactory, "dataAccessService", dataAccessServiceMock);
 
         parentFieldDefinitionName = new DataFieldDefinition("name");
-        parentFieldDefinitionName.setType(fieldTypeFactory.stringType());
-        parentFieldDefinitionName.setValidators();
+        parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
 
         parentDataDefinition = new DataDefinition("parent.entity");
         parentDataDefinition.addField(parentFieldDefinitionName);
@@ -117,33 +116,26 @@ public abstract class DataAccessTest {
         given(dataDefinitionService.get("parent.entity")).willReturn(parentDataDefinition);
 
         fieldDefinitionBelongsTo = new DataFieldDefinition("belongsTo");
-        fieldDefinitionBelongsTo.setType(fieldTypeFactory.eagerBelongsToType("parent.entity", "name"));
-        fieldDefinitionBelongsTo.setValidators();
+        fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent.entity", "name"));
 
         fieldDefinitionName = new DataFieldDefinition("name");
-        fieldDefinitionName.setType(fieldTypeFactory.stringType());
-        fieldDefinitionName.setValidators();
+        fieldDefinitionName.withType(fieldTypeFactory.stringType());
 
         fieldDefinitionAge = new DataFieldDefinition("age");
-        fieldDefinitionAge.setType(fieldTypeFactory.integerType());
-        fieldDefinitionAge.setValidators();
+        fieldDefinitionAge.withType(fieldTypeFactory.integerType());
 
         fieldDefinitionPriority = new DataFieldDefinition("priority");
-        fieldDefinitionPriority.setType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
-        fieldDefinitionPriority.setValidators();
-        fieldDefinitionPriority.setReadOnly(true);
+        fieldDefinitionPriority.withType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
+        fieldDefinitionPriority.readOnly();
 
         fieldDefinitionMoney = new DataFieldDefinition("money");
-        fieldDefinitionMoney.setType(fieldTypeFactory.decimalType());
-        fieldDefinitionMoney.setValidators();
+        fieldDefinitionMoney.withType(fieldTypeFactory.decimalType());
 
         fieldDefinitionRetired = new DataFieldDefinition("retired");
-        fieldDefinitionRetired.setType(fieldTypeFactory.booleanType());
-        fieldDefinitionRetired.setValidators();
+        fieldDefinitionRetired.withType(fieldTypeFactory.booleanType());
 
         fieldDefinitionBirthDate = new DataFieldDefinition("birthDate");
-        fieldDefinitionBirthDate.setType(fieldTypeFactory.dateType());
-        fieldDefinitionBirthDate.setValidators();
+        fieldDefinitionBirthDate.withType(fieldTypeFactory.dateType());
 
         dataDefinition = new DataDefinition("simple.entity");
         dataDefinition.addField(fieldDefinitionName);

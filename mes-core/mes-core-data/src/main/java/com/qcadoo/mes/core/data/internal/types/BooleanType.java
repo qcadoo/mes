@@ -27,9 +27,12 @@ public final class BooleanType implements FieldType {
     }
 
     @Override
-    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
-        return Boolean.parseBoolean(value);
+        if (value instanceof Boolean) {
+            return value;
+        }
+        return Boolean.parseBoolean(String.valueOf(value));
     }
 
     @Override
@@ -39,12 +42,6 @@ public final class BooleanType implements FieldType {
         } else {
             return "0";
         }
-    }
-
-    @Override
-    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
-        return true;
     }
 
 }

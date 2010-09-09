@@ -1,22 +1,12 @@
 package com.qcadoo.mes.core.data.internal.types;
 
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
-import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class DictionaryType implements EnumeratedFieldType {
-
-    private final String dictionaryName;
-
-    private final DictionaryService dictionaryService;
-
-    public DictionaryType(final String dictionaryName, final DictionaryService dictionaryService) {
-        this.dictionaryName = dictionaryName;
-        this.dictionaryService = dictionaryService;
-    }
+public final class TextType implements FieldType {
 
     @Override
     public boolean isSearchable() {
@@ -34,11 +24,6 @@ public final class DictionaryType implements EnumeratedFieldType {
     }
 
     @Override
-    public List<String> values() {
-        return dictionaryService.values(dictionaryName);
-    }
-
-    @Override
     public Class<?> getType() {
         return String.class;
     }
@@ -47,9 +32,8 @@ public final class DictionaryType implements EnumeratedFieldType {
     public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         String stringValue = String.valueOf(value);
-        if (!values().contains(stringValue)) {
-            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidDictionaryItem",
-                    String.valueOf(values()));
+        if (StringUtils.length(stringValue) > 2048) {
+            validationResults.addError(fieldDefinition, "commons.validate.field.error.stringIsTooLong", String.valueOf(2048));
             return null;
         }
         return stringValue;

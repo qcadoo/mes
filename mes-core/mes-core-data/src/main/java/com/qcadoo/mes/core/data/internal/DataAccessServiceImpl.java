@@ -54,11 +54,18 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(genericEntity, "entity must be given");
 
-        ValidationResults validationResults = validationService.validateGenericEntity(dataDefinition, genericEntity);
+        Object existingDatabaseEntity = getExistingDatabaseEntity(dataDefinition, genericEntity);
+
+        Entity existingGenericEntity = null;
+
+        if (existingDatabaseEntity != null) {
+            existingGenericEntity = entityService.convertToGenericEntity(dataDefinition, existingDatabaseEntity);
+        }
+
+        ValidationResults validationResults = validationService.validateGenericEntity(dataDefinition, genericEntity,
+                existingGenericEntity);
 
         if (validationResults.isValid()) {
-            Object existingDatabaseEntity = getExistingDatabaseEntity(dataDefinition, genericEntity);
-
             Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
             if (genericEntity.getId() == null) {
@@ -181,8 +188,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         if (entity.getId() != null) {
             existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId(), false);
-            checkState(existingDatabaseEntity != null, "entity %s#%s cannot be found", dataDefinition.getName(),
-                    entity.getId());
+            checkState(existingDatabaseEntity != null, "entity %s#%s cannot be found", dataDefinition.getName(), entity.getId());
         }
 
         return existingDatabaseEntity;

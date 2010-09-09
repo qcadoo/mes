@@ -53,7 +53,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("age", "");
 
-        fieldDefinitionAge.setValidators(fieldValidatorFactory.required());
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.required());
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -72,7 +72,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("age", "");
 
-        fieldDefinitionAge.setValidators(fieldValidatorFactory.required().customErrorMessage("missing age"));
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.required().customErrorMessage("missing age"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -88,7 +88,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldBeRequiredIfHasRequiredValidator() throws Exception {
         // given
-        fieldDefinitionName.setValidators(fieldValidatorFactory.required());
+        fieldDefinitionName.withValidator(fieldValidatorFactory.required());
 
         // then
         assertTrue(fieldDefinitionName.isRequired());
@@ -159,7 +159,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldBeUniqueIfHasUniqueValidator() throws Exception {
         // given
-        fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
+        fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 
         // then
         assertTrue(fieldDefinitionName.isUnique());
@@ -178,8 +178,8 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "");
         entity.setField("age", null);
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.required());
-        fieldDefinitionAge.setValidators(fieldValidatorFactory.required());
+        fieldDefinitionName.withValidator(fieldValidatorFactory.required());
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.required());
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -195,7 +195,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.length(5));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -211,7 +211,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "ddd");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.range("a", "c"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -227,7 +227,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "bbb");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.range("a", "c"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -243,7 +243,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("age", "11");
 
-        fieldDefinitionAge.setValidators(fieldValidatorFactory.range(null, 10));
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.range(null, 10));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -259,7 +259,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("age", 5);
 
-        fieldDefinitionAge.setValidators(fieldValidatorFactory.range(4, null));
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.range(4, null));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -275,7 +275,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("money", "31.22");
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.range(40, 50));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(40, 50));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -291,7 +291,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("money", "31.22");
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.range(30, 40));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(30, 40));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -307,7 +307,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("birthDate", "2010-01-01");
 
-        fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.range(new Date(), new Date()));
+        fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(new Date(), new Date()));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -323,7 +323,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("birthDate", "2010-01-01");
 
-        fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.range(null, new Date()));
+        fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(null, new Date()));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -339,7 +339,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("retired", "false");
 
-        fieldDefinitionRetired.setValidators(fieldValidatorFactory.range(true, true));
+        fieldDefinitionRetired.withValidator(fieldValidatorFactory.range(true, true));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -355,7 +355,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("age", 123456);
 
-        fieldDefinitionAge.setValidators(fieldValidatorFactory.length(5));
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -371,7 +371,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("money", new BigDecimal("123.456"));
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.length(5));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -387,7 +387,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("money", new BigDecimal("123.456"));
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.precisionAndScale(6, 2));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.precisionAndScale(6, 2));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -403,7 +403,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("money", new BigDecimal("123.4"));
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.length(5));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -419,7 +419,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("money", new BigDecimal("123.4"));
 
-        fieldDefinitionMoney.setValidators(fieldValidatorFactory.precisionAndScale(4, 1));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.precisionAndScale(4, 1));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -435,7 +435,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("retired", false);
 
-        fieldDefinitionRetired.setValidators(fieldValidatorFactory.length(0));
+        fieldDefinitionRetired.withValidator(fieldValidatorFactory.length(0));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -451,7 +451,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("birthDate", "2010-01-01");
 
-        fieldDefinitionBirthDate.setValidators(fieldValidatorFactory.length(0));
+        fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.length(0));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -467,7 +467,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwert");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.length(5));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.length(5));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -490,7 +490,7 @@ public class ValidatorTest extends DataAccessTest {
                 dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
                         .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed")).build())).willReturn(resultSet);
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
+        fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -518,7 +518,7 @@ public class ValidatorTest extends DataAccessTest {
 
         given(criteria.uniqueResult()).willReturn(databaseObject);
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
+        fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -541,7 +541,7 @@ public class ValidatorTest extends DataAccessTest {
                 dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
                         .restrictedWith(Restrictions.eq(fieldDefinitionName, "existed")).build())).willReturn(resultSet);
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.unique());
+        fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -557,7 +557,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -573,7 +573,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwert");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -592,7 +592,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.setValidators(fieldValidatorFactory.custom("custom", "isEqualToQwertz"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwertz"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);

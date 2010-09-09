@@ -99,7 +99,7 @@ public final class Restrictions {
         if (fieldValue != null) {
             if (!fieldDefinition.getType().getType().isInstance(fieldValue)) {
                 if (fieldValue instanceof String) {
-                    fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
+                    fieldValue = fieldDefinition.getType().toObject(fieldDefinition, (String) fieldValue, validationResults);
                 } else {
                     validationResults.addError(fieldDefinition, "core.validation.error.wrongType", fieldValue.getClass()
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());

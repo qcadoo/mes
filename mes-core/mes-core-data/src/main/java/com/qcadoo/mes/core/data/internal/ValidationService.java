@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.internal;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.hibernate.SessionFactory;
@@ -11,7 +12,6 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
-import com.qcadoo.mes.core.data.internal.types.PasswordType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -22,10 +22,13 @@ public final class ValidationService {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public ValidationResults validateGenericEntity(final DataDefinition dataDefinition, final Entity genericEntity) {
+    public ValidationResults validateGenericEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+            final Entity existingGenericEntity) {
         ValidationResults validationResults = new ValidationResults();
 
         parseAndValidateEntity(dataDefinition, genericEntity, validationResults);
+
+        nullifyReadOnlyFields(dataDefinition, genericEntity, existingGenericEntity);
 
         if (genericEntity.getId() != null) {
             dataDefinition.callOnUpdate(genericEntity);
@@ -34,6 +37,19 @@ public final class ValidationService {
         }
 
         return validationResults;
+    }
+
+    private void nullifyReadOnlyFields(final DataDefinition dataDefinition, final Entity genericEntity,
+            final Entity existingGenericEntity) {
+        for (Map.Entry<String, DataFieldDefinition> field : dataDefinition.getFields().entrySet()) {
+            if (field.getValue().isReadOnly()) {
+                genericEntity.setField(field.getKey(),
+                        existingGenericEntity != null ? existingGenericEntity.getField(field.getKey()) : null);
+            }
+            if (field.getValue().isReadOnlyOnUpdate() && genericEntity.getId() != null) {
+                genericEntity.setField(field.getKey(), existingGenericEntity.getField(field.getKey()));
+            }
+        }
     }
 
     private void parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity,
@@ -65,22 +81,11 @@ public final class ValidationService {
 
     private Object parseAndValidateValue(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
-        Object fieldValue = value;
-        if (fieldValue != null) {
-            if (!fieldDefinition.getType().getType().isInstance(fieldValue) || fieldDefinition.getType() instanceof PasswordType) {
-                if (fieldValue instanceof String) {
-                    fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
-                } else {
-                    validationResults.addError(fieldDefinition, "commons.validate.field.error.wrongType", fieldValue.getClass()
-                            .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
-                    return null;
-                }
-                if (validationResults.isFieldNotValid(fieldDefinition)) {
-                    return null;
-                }
-                if (!fieldDefinition.getType().validate(fieldDefinition, fieldValue, validationResults)) {
-                    return null;
-                }
+        Object fieldValue = null;
+        if (value != null) {
+            fieldValue = fieldDefinition.getType().toObject(fieldDefinition, value, validationResults);
+            if (validationResults.isFieldNotValid(fieldDefinition)) {
+                return null;
             }
         }
         for (FieldValidator fieldValidator : fieldDefinition.getValidators()) {

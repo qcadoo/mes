@@ -28,7 +28,7 @@ import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 
 @Service
-public class ViewDefinitionServiceImpl implements ViewDefinitionService {
+public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -358,7 +358,8 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 fieldControlFactory.textControl());
         FormFieldDefinition fieldPassword = createFieldDefinition("password", userDataDefinition.getField("password"),
                 fieldControlFactory.passwordControl());
-        fieldPassword.setConfirmable(true);
+        FormFieldDefinition fieldPasswordConfirmation = createFieldDefinition("passwordConfirmation",
+                userDataDefinition.getField("password"), fieldControlFactory.passwordConfirmationControl());
 
         formDefinition.addField(fieldUserName);
         formDefinition.addField(fieldUserGroup);
@@ -367,6 +368,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addField(fieldLastName);
         formDefinition.addField(fieldDescription);
         formDefinition.addField(fieldPassword);
+        formDefinition.addField(fieldPasswordConfirmation);
 
         elements.add(formDefinition);
 
@@ -428,7 +430,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormFieldDefinition fieldDefaultInstruction = createFieldDefinition("defaultInstruction",
                 orderDataDefinition.getField("defaultInstruction"), fieldControlFactory.displayControl());
         FormFieldDefinition fieldInstruction = createFieldDefinition("instruction", orderDataDefinition.getField("instruction"),
-                fieldControlFactory.lookupControl());
+                fieldControlFactory.selectControl());
         FormFieldDefinition fieldPlannedQuantity = createFieldDefinition("plannedQuantity",
                 orderDataDefinition.getField("plannedQuantity"), fieldControlFactory.decimalControl());
         FormFieldDefinition fieldDoneQuantity = createFieldDefinition("doneQuantity",
@@ -439,7 +441,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 orderDataDefinition.getField("effectiveDateTo"), fieldControlFactory.displayControl());
         FormFieldDefinition fieldStartWorker = createFieldDefinition("startWorker", orderDataDefinition.getField("startWorker"),
                 fieldControlFactory.displayControl());
-        FormFieldDefinition fieldEndWorker = createFieldDefinition("startWorker", orderDataDefinition.getField("startWorker"),
+        FormFieldDefinition fieldEndWorker = createFieldDefinition("endWorker", orderDataDefinition.getField("endWorker"),
                 fieldControlFactory.displayControl());
 
         formDefinition.addField(fieldNumber);
@@ -461,6 +463,7 @@ public class ViewDefinitionServiceImpl implements ViewDefinitionService {
         elements.add(formDefinition);
 
         viewDefinition.setElements(elements);
+
         return viewDefinition;
     }
 

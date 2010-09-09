@@ -11,11 +11,7 @@ public class FormFieldDefinition {
 
     private FieldControl control;
 
-    private boolean readOnly;
-
     private boolean hidden;
-
-    private boolean confirmable;
 
     public FormFieldDefinition(final String name) {
         this.name = name;
@@ -41,28 +37,12 @@ public class FormFieldDefinition {
         this.control = control;
     }
 
-    public boolean isReadOnly() {
-        return readOnly || dataField.isReadOnly();
-    }
-
-    public void setReadOnly(final boolean readOnly) {
-        this.readOnly = readOnly;
-    }
-
     public boolean isHidden() {
         return hidden;
     }
 
     public void setHidden(final boolean hidden) {
         this.hidden = hidden;
-    }
-
-    public boolean isConfirmable() {
-        return confirmable;
-    }
-
-    public void setConfirmable(final boolean confirmable) {
-        this.confirmable = confirmable;
     }
 
 }

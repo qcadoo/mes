@@ -13,10 +13,8 @@ public interface FieldType {
 
     Class<?> getType();
 
-    Object fromString(DataFieldDefinition fieldDefinition, String value, ValidationResults validationResults);
+    Object toObject(DataFieldDefinition fieldDefinition, Object value, ValidationResults validationResults);
 
     String toString(Object value);
-
-    boolean validate(DataFieldDefinition fieldDefinition, Object value, ValidationResults validationResults);
 
 }

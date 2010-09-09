@@ -33,10 +33,13 @@ public final class PriorityType implements FieldType {
     }
 
     @Override
-    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
+        if (value instanceof Integer) {
+            return value;
+        }
         try {
-            return Integer.parseInt(value);
+            return Integer.parseInt(String.valueOf(value));
         } catch (NumberFormatException e) {
             validationResults.addError(fieldDefinition, "form.validate.errors.invalidNumericFormat");
             return null;
@@ -46,12 +49,6 @@ public final class PriorityType implements FieldType {
     @Override
     public String toString(final Object value) {
         return String.valueOf(value);
-    }
-
-    @Override
-    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
-        return true;
     }
 
     public DataFieldDefinition getScopeFieldDefinition() {

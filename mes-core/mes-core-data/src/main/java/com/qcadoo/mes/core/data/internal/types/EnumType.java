@@ -41,24 +41,20 @@ public final class EnumType implements EnumeratedFieldType {
     }
 
     @Override
-    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
-        return value;
+        String stringValue = String.valueOf(value);
+        if (!values().contains(stringValue)) {
+            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidDictionaryItem",
+                    String.valueOf(values()));
+            return null;
+        }
+        return stringValue;
     }
 
     @Override
     public String toString(final Object value) {
         return String.valueOf(value);
-    }
-
-    @Override
-    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
-        if (!values().contains(value)) {
-            validationResults.addError(fieldDefinition, "form.validate.errors.invalidDictionaryItem", String.valueOf(values()));
-            return false;
-        }
-        return true;
     }
 
 }

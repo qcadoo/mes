@@ -6,8 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.core.data.internal.validators.RequiredOnCreationValidator;
+import com.qcadoo.mes.core.data.internal.validators.RequiredOnCreateValidator;
 import com.qcadoo.mes.core.data.internal.validators.RequiredValidator;
 import com.qcadoo.mes.core.data.internal.validators.UniqueValidator;
 import com.qcadoo.mes.core.data.types.FieldType;
@@ -29,15 +28,15 @@ public class DataFieldDefinition {
 
     private FieldType type;
 
-    private List<FieldValidator> validators = new ArrayList<FieldValidator>();
+    private final List<FieldValidator> validators = new ArrayList<FieldValidator>();
 
-    private boolean editable = true;
+    private boolean readOnlyOnUpdate;
 
     private boolean readOnly;
 
     private boolean required;
 
-    private boolean requiredOnCreation;
+    private boolean requiredOnCreate;
 
     private boolean customField;
 
@@ -53,48 +52,53 @@ public class DataFieldDefinition {
         return name;
     }
 
+    public String getValue(final Object value) {
+        if (value == null) {
+            return null;
+        } else {
+            return type.toString(value);
+        }
+    }
+
     public FieldType getType() {
         return type;
     }
 
-    public void setType(final FieldType type) {
+    public DataFieldDefinition withType(final FieldType type) {
         this.type = type;
+        return this;
     }
 
     public List<FieldValidator> getValidators() {
         return validators;
     }
 
-    public void setValidators(final FieldValidator... validators) {
-        this.validators = Lists.newArrayList(validators);
-        required = false;
-        requiredOnCreation = false;
-        unique = false;
-        if (validators != null) {
-            for (FieldValidator fieldValidator : validators) {
-                if (fieldValidator instanceof RequiredValidator) {
-                    required = true;
-                }
-                if (fieldValidator instanceof RequiredOnCreationValidator) {
-                    requiredOnCreation = true;
-                }
-                if (fieldValidator instanceof UniqueValidator) {
-                    unique = true;
-                }
-            }
+    public DataFieldDefinition withValidator(final FieldValidator validator) {
+        if (validator instanceof RequiredValidator) {
+            required = true;
         }
+        if (validator instanceof RequiredOnCreateValidator) {
+            requiredOnCreate = true;
+        }
+        if (validator instanceof UniqueValidator) {
+            unique = true;
+        }
+        this.validators.add(validator);
+        return this;
     }
 
-    public boolean isEditable() {
-        return editable;
+    public boolean isReadOnlyOnUpdate() {
+        return readOnlyOnUpdate;
     }
 
-    public void setEditable(final boolean editable) {
-        this.editable = editable;
+    public DataFieldDefinition readOnlyOnUpdate() {
+        this.readOnlyOnUpdate = true;
+        return this;
     }
 
-    public void setReadOnly(final boolean readOnly) {
-        this.readOnly = readOnly;
+    public DataFieldDefinition readOnly() {
+        this.readOnly = true;
+        return this;
     }
 
     public boolean isReadOnly() {
@@ -105,8 +109,8 @@ public class DataFieldDefinition {
         return required;
     }
 
-    public boolean isRequiredOnCreation() {
-        return requiredOnCreation;
+    public boolean isRequiredOnCreate() {
+        return requiredOnCreate;
     }
 
     public boolean isCustomField() {
@@ -121,26 +125,20 @@ public class DataFieldDefinition {
         return defaultValue;
     }
 
-    public void setDefaultValue(final Object defaultValue) {
+    public DataFieldDefinition withDefaultValue(final Object defaultValue) {
         this.defaultValue = defaultValue;
+        return this;
     }
 
     public boolean isUnique() {
         return unique;
     }
 
-    public String getValue(final Object value) {
-        if (value == null) {
-            return null;
-        } else {
-            return type.toString(value);
-        }
-    }
-
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(editable).append(name)
-                .append(required).append(type).append(unique).append(validators).toHashCode();
+        return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(readOnlyOnUpdate).append(name)
+                .append(required).append(type).append(unique).append(validators).append(readOnly).append(requiredOnCreate)
+                .toHashCode();
     }
 
     @Override
@@ -156,8 +154,9 @@ public class DataFieldDefinition {
         }
         DataFieldDefinition other = (DataFieldDefinition) obj;
         return new EqualsBuilder().append(customField, other.customField).append(defaultValue, other.defaultValue)
-                .append(editable, other.editable).append(name, other.name).append(required, other.required)
-                .append(type, other.type).append(unique, other.unique).append(validators, other.validators).isEquals();
+                .append(readOnlyOnUpdate, other.readOnlyOnUpdate).append(name, other.name).append(required, other.required)
+                .append(type, other.type).append(unique, other.unique).append(validators, other.validators)
+                .append(readOnly, other.readOnly).append(requiredOnCreate, other.requiredOnCreate).isEquals();
     }
 
 }
