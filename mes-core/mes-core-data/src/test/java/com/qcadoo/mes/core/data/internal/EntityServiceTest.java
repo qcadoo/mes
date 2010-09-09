@@ -78,8 +78,7 @@ public class EntityServiceTest extends DataAccessTest {
         databaseEntity.setName("Mr T");
 
         DataFieldDefinition fieldDefinition = new DataFieldDefinition("name");
-        fieldDefinition.setType(fieldTypeFactory.integerType());
-        fieldDefinition.setValidators();
+        fieldDefinition.withType(fieldTypeFactory.integerType());
 
         // when
         entityService.getField(databaseEntity, fieldDefinition);
@@ -155,8 +154,7 @@ public class EntityServiceTest extends DataAccessTest {
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
 
         DataFieldDefinition fieldDefinition = new DataFieldDefinition("unknown");
-        fieldDefinition.setType(fieldTypeFactory.stringType());
-        fieldDefinition.setValidators();
+        fieldDefinition.withType(fieldTypeFactory.stringType());
 
         // when
         entityService.setField(databaseEntity, fieldDefinition, "XXX");
@@ -258,7 +256,7 @@ public class EntityServiceTest extends DataAccessTest {
 
         given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
-        validationService.validateGenericEntity(dataDefinition, genericEntity);
+        validationService.validateGenericEntity(dataDefinition, genericEntity, null);
 
         // when
         Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, null);
@@ -288,7 +286,7 @@ public class EntityServiceTest extends DataAccessTest {
 
         given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
-        validationService.validateGenericEntity(dataDefinition, genericEntity);
+        validationService.validateGenericEntity(dataDefinition, genericEntity, new Entity(2L));
 
         // when
         Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);

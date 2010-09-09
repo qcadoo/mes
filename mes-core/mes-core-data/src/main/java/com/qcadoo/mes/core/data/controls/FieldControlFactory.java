@@ -22,4 +22,6 @@ public interface FieldControlFactory {
 
     FieldControl editableSelectControl();
 
+    FieldControl passwordConfirmationControl();
+
 }

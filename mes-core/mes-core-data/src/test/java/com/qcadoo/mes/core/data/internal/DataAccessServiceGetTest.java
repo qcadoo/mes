@@ -47,7 +47,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
     @Test
     public void shouldNotFailIfFieldTypeIsNotValid() throws Exception {
         // given
-        fieldDefinitionName.setType(fieldTypeFactory.integerType());
+        fieldDefinitionName.withType(fieldTypeFactory.integerType());
 
         SimpleDatabaseObject simpleDatabaseObject = new SimpleDatabaseObject();
         simpleDatabaseObject.setId(1L);

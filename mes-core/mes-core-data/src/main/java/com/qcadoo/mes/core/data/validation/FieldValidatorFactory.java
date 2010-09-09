@@ -18,7 +18,7 @@ public interface FieldValidatorFactory {
 
     EntityValidator customEntity(final String beanName, final String methodName);
 
-    FieldValidator requiredOnCreation();
+    FieldValidator requiredOnCreate();
 
     FieldValidator precisionAndScale(int scale, int presition);
 

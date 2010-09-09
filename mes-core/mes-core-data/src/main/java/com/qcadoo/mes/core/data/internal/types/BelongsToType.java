@@ -73,20 +73,14 @@ public final class BelongsToType implements LookupedFieldType {
     }
 
     @Override
-    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
-        throw new IllegalStateException("belongsTo field type doesn't suppont fromString method");
+        return value;
     }
 
     @Override
     public String toString(final Object value) {
         return String.valueOf(((Entity) value).getId());
-    }
-
-    @Override
-    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
-        return true;
     }
 
 }

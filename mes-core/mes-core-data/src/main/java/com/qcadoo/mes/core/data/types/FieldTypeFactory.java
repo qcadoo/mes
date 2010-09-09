@@ -8,6 +8,8 @@ public interface FieldTypeFactory {
 
     FieldType stringType();
 
+    FieldType textType();
+
     FieldType integerType();
 
     FieldType decimalType();
@@ -15,8 +17,6 @@ public interface FieldTypeFactory {
     FieldType dateType();
 
     FieldType dateTimeType();
-
-    FieldType textType();
 
     FieldType passwordType();
 

@@ -6,7 +6,7 @@ import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class RequiredOnCreationValidator implements FieldValidator {
+public final class RequiredOnCreateValidator implements FieldValidator {
 
     private static final String MISSING_ERROR = "commons.validate.field.error.missing";
 

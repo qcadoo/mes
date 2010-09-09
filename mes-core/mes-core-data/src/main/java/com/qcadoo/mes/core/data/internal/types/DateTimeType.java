@@ -8,9 +8,9 @@ import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class DateType implements FieldType {
+public final class DateTimeType implements FieldType {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 
     @Override
     public boolean isSearchable() {
@@ -39,16 +39,16 @@ public final class DateType implements FieldType {
             return value;
         }
         try {
-            return new SimpleDateFormat(DATE_FORMAT).parse(String.valueOf(value));
+            return new SimpleDateFormat(DATE_TIME_FORMAT).parse(String.valueOf(value));
         } catch (ParseException e) {
-            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidDateFormat");
+            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidDateTimeFormat");
         }
         return null;
     }
 
     @Override
     public String toString(final Object value) {
-        return new SimpleDateFormat(DATE_FORMAT).format((Date) value);
+        return new SimpleDateFormat(DATE_TIME_FORMAT).format((Date) value);
     }
 
 }

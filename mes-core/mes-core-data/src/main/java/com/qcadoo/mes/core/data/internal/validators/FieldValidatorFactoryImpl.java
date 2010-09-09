@@ -24,8 +24,8 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
     }
 
     @Override
-    public FieldValidator requiredOnCreation() {
-        return new RequiredOnCreationValidator();
+    public FieldValidator requiredOnCreate() {
+        return new RequiredOnCreateValidator();
     }
 
     @Override

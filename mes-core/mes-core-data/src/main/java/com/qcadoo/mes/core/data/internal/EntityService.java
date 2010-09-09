@@ -74,12 +74,6 @@ public final class EntityService {
         Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
         for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            if (fieldDefinitionEntry.getValue().isReadOnly()) {
-                continue;
-            }
-            if (!fieldDefinitionEntry.getValue().isEditable() && existingDatabaseEntity != null) {
-                continue;
-            }
             setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
         }
 

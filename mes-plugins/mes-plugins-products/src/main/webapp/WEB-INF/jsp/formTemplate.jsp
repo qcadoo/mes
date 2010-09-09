@@ -15,7 +15,7 @@
 		<c:forEach items="${formElement.fields}" var="field">
 		
 			<c:choose>
-				<c:when test='${(field.control.type == "11") }'>
+				<c:when test='${(field.control.type == "11" || field.control.type == "13") }'>
 					<c:set var="textInputType" value="password" scope="page" />
 				</c:when>
 				<c:otherwise>
@@ -24,7 +24,7 @@
 			</c:choose>
 		
 			<c:choose>
-				<c:when test='${(field.control.type == "11") }'>
+				<c:when test='${(field.control.type == "11" || field.control.type == "13") }'>
 					<c:set var="valueType" value="type-password" scope="page" />
 				</c:when>
 				<c:when test='${(field.control.type == "7") }'>
@@ -47,9 +47,11 @@
 				</c:otherwise>
 			</c:choose>
 			
-			<c:set var="inputClass" value="${valueType} ${field.dataField.required ? 'required' : ''} ${field.dataField.editable ? '' : 'editable'} ${field.dataField.readOnly ? 'readonly' : ''}" scope="page" />
+			<c:set var="inputClass" value="${valueType} ${field.dataField.required ? 'required' : ''} ${field.dataField.requiredOnCreate ? 'required-on-create' : ''} ${field.dataField.readOnlyOnUpdate ? 'readonly-on-update' : ''} ${field.dataField.readOnly ? 'readonly' : ''} ${field.control.type == '13' ? 'confirmable' : ''}" scope="page" />
 
-			<c:set var="tdClass" value="${(field.dataField.required) ? 'fieldRequired' : ''}" scope="page" />
+			<c:set var="tdClass" value="${(field.dataField.required) ? 'fieldRequired' : ''} ${field.dataField.requiredOnCreate ? 'fieldRequired' : ''}" scope="page" />
+			
+			<c:set var="fieldName" value="${field.dataField.name}${field.control.type == '13' ? '_confirmation' : ''}" scope="page" />
 		
 			<tr>
 				<c:choose>
@@ -61,45 +63,36 @@
 						<td class="${tdClass}">		
 							<c:choose>
 								<c:when test='${(field.control.type == "9")}'>
-									<textarea id="${formElement.name}_field_${field.dataField.name}" name="fields[${field.dataField.name}]" class="${inputClass}"></textarea>
+									<textarea id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]" class="${inputClass}"></textarea>
 								</c:when>
 								<c:when test='${(field.control.type == "1")}'>
-									<input type="checkbox" id="${formElement.name}_field_${field.dataField.name}" name="fields[${field.dataField.name}]"/>
+									<input type="checkbox" id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]"/>
 								</c:when>
 								<c:when test='${(field.control.type == "4")}'>
-									<select id="${formElement.name}_field_${field.dataField.name}" name="fields[${field.dataField.name}]" class="${inputClass}">
+									<select id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]" class="${inputClass}">
 										<option></option>
-										<c:forEach items="${dictionaryValues[field.dataField.name]}" var="dictionaryValue">
+										<c:forEach items="${dictionaryValues[fieldName]}" var="dictionaryValue">
 											<option>${dictionaryValue.value}</option>
 										</c:forEach>
 									</select>
 								</c:when>
 								<c:when test='${(field.control.type == "10")}'>
-									<select id="${formElement.name}_field_${field.dataField.name}" name="fields[${field.dataField.name}]" class="${inputClass}">
+									<select id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]" class="${inputClass}">
 										<option></option>
-										<c:forEach items="${dictionaryValues[field.dataField.name]}" var="dictionaryValue">
+										<c:forEach items="${dictionaryValues[fieldName]}" var="dictionaryValue">
 											<option value="${dictionaryValue.key}">${dictionaryValue.value }</option>
 										</c:forEach>
 									</select>
 								</c:when>
 								<c:otherwise>
-									<input type="${textInputType}" id="${formElement.name}_field_${field.dataField.name}" name="fields[${field.dataField.name}]" class="${inputClass} ${field.confirmable ? 'confirmable' : ''}"/>
+									<input type="${textInputType}" id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]" class="${inputClass}"/>
 								</c:otherwise>
 							</c:choose>
 						</td>
-						<td id="${formElement.name}_field_${field.dataField.name}_error" class="errorMessage fieldValidatorMessage"></td>
-						<c:if test='${(field.confirmable)}'>
-							</tr><tr><td>
-								${translationsMap["commons.form.field.confirmable.label"]}
-							</td>
-							<td class="${tdClass}">
-								<input type="${textInputType}" id="${formElement.name}_field_${field.dataField.name}_confirmation" name="fields[${field.dataField.name}_confirmation]" class="${inputClass}"/>
-							</td>
-							<td id="${formElement.name}_field_${field.dataField.name}_confirmation_error" class="errorMessage fieldValidatorMessage"></td>
-						</c:if>
+						<td id="${formElement.name}_field_${fieldName}_error" class="errorMessage fieldValidatorMessage"></td>
 					</c:when>
 					<c:otherwise>
-						<input type="hidden" id="${formElement.name}_field_${field.dataField.name}" name="fields[${field.dataField.name}]" class="${valueType}"/>
+						<input type="hidden" id="${formElement.name}_field_${fieldName}" name="fields[${fieldName}]" class="${valueType}"/>
 					</c:otherwise>
 				</c:choose>
 			</tr>

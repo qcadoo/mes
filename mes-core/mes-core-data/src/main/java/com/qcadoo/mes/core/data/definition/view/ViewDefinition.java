@@ -44,7 +44,7 @@ public class ViewDefinition {
         return header;
     }
 
-    public void setHeader(String header) {
+    public void setHeader(final String header) {
         this.header = header;
     }
 
