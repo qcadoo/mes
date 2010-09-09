@@ -68,7 +68,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             getCurrentSession().save(databaseEntity);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("entity " + dataDefinition.getEntityName() + "#" + genericEntity.getId() + " has been saved");
+                LOG.debug("entity " + dataDefinition.getName() + "#" + genericEntity.getId() + " has been saved");
             }
 
             validationResults.setEntity(entityService.convertToGenericEntity(dataDefinition, databaseEntity));
@@ -104,7 +104,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("entities " + dataDefinition.getEntityName() + "#" + Arrays.toString(entityIds) + " marked as deleted");
+            LOG.debug("entities " + dataDefinition.getName() + "#" + Arrays.toString(entityIds) + " marked as deleted");
         }
     }
 
@@ -181,7 +181,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         if (entity.getId() != null) {
             existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId(), false);
-            checkState(existingDatabaseEntity != null, "entity %s#%s cannot be found", dataDefinition.getEntityName(),
+            checkState(existingDatabaseEntity != null, "entity %s#%s cannot be found", dataDefinition.getName(),
                     entity.getId());
         }
 
@@ -191,7 +191,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private void deleteEntity(final DataDefinition dataDefinition, final Long entityId) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
 
-        checkNotNull(databaseEntity, "entity %s#%s cannot be found", dataDefinition.getEntityName(), entityId);
+        checkNotNull(databaseEntity, "entity %s#%s cannot be found", dataDefinition.getName(), entityId);
 
         priorityService.deprioritizeEntity(dataDefinition, databaseEntity);
 

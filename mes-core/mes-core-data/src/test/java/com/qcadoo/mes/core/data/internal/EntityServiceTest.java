@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 
 public class EntityServiceTest extends DataAccessTest {
 
@@ -21,7 +21,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
 
-        FieldDefinition fieldDefinition = new FieldDefinition("unknown");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("unknown");
 
         // when
         entityService.getField(databaseEntity, fieldDefinition);
@@ -77,7 +77,7 @@ public class EntityServiceTest extends DataAccessTest {
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
         databaseEntity.setName("Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinition("name");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("name");
         fieldDefinition.setType(fieldTypeFactory.integerType());
         fieldDefinition.setValidators();
 
@@ -154,7 +154,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
 
-        FieldDefinition fieldDefinition = new FieldDefinition("unknown");
+        DataFieldDefinition fieldDefinition = new DataFieldDefinition("unknown");
         fieldDefinition.setType(fieldTypeFactory.stringType());
         fieldDefinition.setValidators();
 

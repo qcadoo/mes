@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
@@ -24,7 +24,7 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         if (value == null) {
             return true;
@@ -43,7 +43,7 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
         }
     }
 
-    private boolean validateInteger(final FieldDefinition fieldDefinition, final Object value,
+    private boolean validateInteger(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
         if (value.toString().length() > maxPrecision) {
             validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
@@ -53,7 +53,7 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
         }
     }
 
-    private boolean validateDecimal(final FieldDefinition fieldDefinition, final ValidationResults validationResults,
+    private boolean validateDecimal(final DataFieldDefinition fieldDefinition, final ValidationResults validationResults,
             final BigDecimal decimal) {
         if (decimal.precision() - decimal.scale() > maxPrecision) {
             validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
@@ -68,7 +68,7 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity,
+    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Entity entity,
             final ValidationResults validationResults) {
         return true;
     }

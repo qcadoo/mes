@@ -9,8 +9,9 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.internal.types.BelongsToFieldType;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
+import com.qcadoo.mes.core.data.internal.types.PasswordType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
@@ -37,13 +38,13 @@ public final class ValidationService {
 
     private void parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final ValidationResults validationResults) {
-        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             Object validateFieldValue = parseAndValidateField(dataDefinition, fieldDefinitionEntry.getValue(),
                     genericEntity.getField(fieldDefinitionEntry.getKey()), validationResults);
             genericEntity.setField(fieldDefinitionEntry.getKey(), validateFieldValue);
         }
 
-        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             if (validationResults.isFieldNotValid(fieldDefinitionEntry.getValue())) {
                 continue;
             }
@@ -62,11 +63,11 @@ public final class ValidationService {
         }
     }
 
-    private Object parseAndValidateValue(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateValue(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         Object fieldValue = value;
         if (fieldValue != null) {
-            if (!fieldDefinition.getType().getType().isInstance(fieldValue)) {
+            if (!fieldDefinition.getType().getType().isInstance(fieldValue) || fieldDefinition.getType() instanceof PasswordType) {
                 if (fieldValue instanceof String) {
                     fieldValue = fieldDefinition.getType().fromString(fieldDefinition, (String) fieldValue, validationResults);
                 } else {
@@ -90,7 +91,7 @@ public final class ValidationService {
         return fieldValue;
     }
 
-    private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         if (value != null) {
             Long referencedEntityId = null;
@@ -110,7 +111,7 @@ public final class ValidationService {
                         .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 return null;
             }
-            BelongsToFieldType belongsToFieldType = (BelongsToFieldType) fieldDefinition.getType();
+            BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
             DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
@@ -120,11 +121,11 @@ public final class ValidationService {
         }
     }
 
-    private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateField(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition,
             final Object value, final ValidationResults validationResults) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToFieldType) {
+        } else if (fieldDefinition.getType() instanceof BelongsToType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validationResults);
         } else {
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validationResults);

@@ -12,19 +12,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.FormDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
-import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.form.FormDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
+import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 
 public class CrudControllerUtilsGenerateJsonOptionsTest {
 
     @Test
     public void shouldTranslateFormElementDefinitionOptionsToJsonWhenAllFieldsAreNotNull() {
         // given
-        ViewElementDefinition viewElement = new FormDefinition("testForm", new DataDefinition("testEntity"));
+        ComponentDefinition viewElement = new FormDefinition("testForm", new DataDefinition("testEntity"));
 
         Map<String, String> options = new HashMap<String, String>();
         options.put("option1", "ov1");
@@ -79,7 +79,7 @@ public class CrudControllerUtilsGenerateJsonOptionsTest {
     @Test
     public void shouldTranslateFormElementDefinitionOptionsToJsonWhenSomeFieldsAreNull() {
         // given
-        ViewElementDefinition viewElement = new FormDefinition("testForm", new DataDefinition("testEntity"));
+        ComponentDefinition viewElement = new FormDefinition("testForm", new DataDefinition("testEntity"));
 
         // when
         String json = CrudControllerUtils.generateJsonViewElementOptions(viewElement);
@@ -105,8 +105,8 @@ public class CrudControllerUtilsGenerateJsonOptionsTest {
         ColumnDefinition c2 = new ColumnDefinition("col2");
         gridElement.setColumns(Arrays.asList(new ColumnDefinition[] { c1, c2 }));
 
-        FieldDefinition f1 = new FieldDefinition("field1");
-        FieldDefinition f2 = new FieldDefinition("field2");
+        DataFieldDefinition f1 = new DataFieldDefinition("field1");
+        DataFieldDefinition f2 = new DataFieldDefinition("field2");
         DataDefinition dataDefinition = new DataDefinition("testDD");
         dataDefinition.addField(f1);
         dataDefinition.addField(f2);

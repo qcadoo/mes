@@ -2,16 +2,15 @@ package com.qcadoo.mes.core.data.internal.types;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
-public final class StringFieldType implements FieldType {
+public final class StringType implements FieldType {
 
     private final int lenght;
 
-    public StringFieldType(final int lenght) {
+    public StringType(final int lenght) {
         this.lenght = lenght;
     }
 
@@ -31,21 +30,13 @@ public final class StringFieldType implements FieldType {
     }
 
     @Override
-    public int getNumericType() {
-        if (lenght == 255) {
-            return FieldTypeFactory.NUMERIC_TYPE_STRING;
-        } else {
-            return FieldTypeFactory.NUMERIC_TYPE_TEXT;
-        }
-    }
-
-    @Override
     public Class<?> getType() {
         return String.class;
     }
 
     @Override
-    public Object fromString(final FieldDefinition fieldDefinition, final String value, final ValidationResults validationResults) {
+    public Object fromString(final DataFieldDefinition fieldDefinition, final String value,
+            final ValidationResults validationResults) {
         return value;
     }
 
@@ -55,7 +46,8 @@ public final class StringFieldType implements FieldType {
     }
 
     @Override
-    public boolean validate(final FieldDefinition fieldDefinition, final Object value, final ValidationResults validationResults) {
+    public boolean validate(final DataFieldDefinition fieldDefinition, final Object value,
+            final ValidationResults validationResults) {
         if (StringUtils.length((String) value) > lenght) {
             validationResults.addError(fieldDefinition, "form.validate.errors.stringIsTooLong", String.valueOf(lenght));
             return false;

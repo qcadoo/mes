@@ -1,12 +1,13 @@
 package com.qcadoo.mes.core.data.internal.types;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
@@ -24,21 +25,22 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static final FieldType INTEGER_FIELD_TYPE = new NumericFieldType(10, 0);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    private static final FieldType DECIMAL_FIELD_TYPE = new NumericFieldType(10, 3);
+    private static final FieldType INTEGER_FIELD_TYPE = new NumericType(10, 0);
 
-    private static final FieldType STRING_FIELD_TYPE = new StringFieldType(255);
+    private static final FieldType DECIMAL_FIELD_TYPE = new NumericType(10, 3);
 
-    private static final FieldType PASSWORD_FIELD_TYPE = new PasswordFieldType(255);
+    private static final FieldType STRING_FIELD_TYPE = new StringType(255);
 
-    private static final FieldType TEXT_FIELD_TYPE = new StringFieldType(2048);
+    private static final FieldType TEXT_FIELD_TYPE = new StringType(2048);
 
-    private static final FieldType BOOLEAN_FIELD_TYPE = new BooleanFieldType();
+    private static final FieldType BOOLEAN_FIELD_TYPE = new BooleanType();
 
-    private static final FieldType DATE_FIELD_TYPE = new DateFieldType(false);
+    private static final FieldType DATE_FIELD_TYPE = new DateType(false);
 
-    private static final FieldType DATE_TIME_FIELD_TYPE = new DateFieldType(true);
+    private static final FieldType DATE_TIME_FIELD_TYPE = new DateType(true);
 
     @Override
     public FieldType booleanType() {
@@ -77,36 +79,37 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Override
     public FieldType passwordType() {
-        return PASSWORD_FIELD_TYPE;
+        // TODO masz don't create new fieltType every time, use some cache
+        return new PasswordType(255, passwordEncoder);
     }
 
     @Override
     public EnumeratedFieldType enumType(final String... values) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new EnumFieldType(values);
+        return new EnumType(values);
     }
 
     @Override
     public EnumeratedFieldType dictionaryType(final String dictionaryName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new DictionaryFieldType(dictionaryName, dictionaryService);
+        return new DictionaryType(dictionaryName, dictionaryService);
     }
 
     @Override
     public LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToFieldType(dataDefinitionService.get(entityName), lookupFieldName, false, dataAccessService);
+        return new BelongsToType(dataDefinitionService.get(entityName), lookupFieldName, false, dataAccessService);
     }
 
     @Override
     public LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToFieldType(dataDefinitionService.get(entityName), lookupFieldName, true, dataAccessService);
+        return new BelongsToType(dataDefinitionService.get(entityName), lookupFieldName, true, dataAccessService);
     }
 
     @Override
-    public FieldType priorityType(final FieldDefinition scopeFieldDefinition) {
-        return new PriorityFieldType(scopeFieldDefinition);
+    public FieldType priorityType(final DataFieldDefinition scopeFieldDefinition) {
+        return new PriorityType(scopeFieldDefinition);
     }
 
 }

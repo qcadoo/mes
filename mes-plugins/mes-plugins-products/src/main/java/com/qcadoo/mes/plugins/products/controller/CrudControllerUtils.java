@@ -6,10 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
-import com.qcadoo.mes.core.data.definition.ViewElementDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
+import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 
 public class CrudControllerUtils {
 
@@ -17,12 +17,12 @@ public class CrudControllerUtils {
 
     }
 
-    public static String generateJsonViewElementOptions(ViewElementDefinition viewElement) {
+    public static String generateJsonViewElementOptions(ComponentDefinition viewElement) {
 
         JSONObject obj = new JSONObject();
         try {
             obj.put("name", viewElement.getName());
-            obj.put("dataDefinition", viewElement.getDataDefinition().getEntityName());
+            obj.put("dataDefinition", viewElement.getDataDefinition().getName());
             obj.put("isDataDefinitionProritizable", viewElement.getDataDefinition().isPrioritizable());
             if (viewElement.getOptions() != null) {
                 JSONObject optionsObject = new JSONObject();
@@ -49,7 +49,7 @@ public class CrudControllerUtils {
                 obj.put("parentField", viewElement.getParentField());
             }
 
-            if (viewElement.getType() == ViewElementDefinition.TYPE_GRID) {
+            if (viewElement.getType() == ComponentDefinition.TYPE_GRID) {
                 GridDefinition gridDefinition = (GridDefinition) viewElement;
                 JSONArray columnsArray = new JSONArray();
                 for (ColumnDefinition column : gridDefinition.getColumns()) {
@@ -57,7 +57,7 @@ public class CrudControllerUtils {
                 }
                 obj.put("columns", columnsArray);
                 JSONArray fieldsArray = new JSONArray();
-                for (Entry<String, FieldDefinition> field : gridDefinition.getDataDefinition().getFields().entrySet()) {
+                for (Entry<String, DataFieldDefinition> field : gridDefinition.getDataDefinition().getFields().entrySet()) {
                     fieldsArray.put(field.getKey());
                 }
                 obj.put("fields", fieldsArray);

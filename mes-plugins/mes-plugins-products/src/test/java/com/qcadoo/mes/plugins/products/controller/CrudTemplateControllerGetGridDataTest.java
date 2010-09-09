@@ -16,10 +16,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.FieldDefinition;
-import com.qcadoo.mes.core.data.definition.GridDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restrictions;
@@ -48,7 +48,7 @@ public class CrudTemplateControllerGetGridDataTest {
         ReflectionTestUtils.setField(controller, "viewDefinitionService", vdsMock);
 
         gridDataDefinition = new DataDefinition("testEntity");
-        gridDataDefinition.addField(new FieldDefinition("parentEntity"));
+        gridDataDefinition.addField(new DataFieldDefinition("parentEntity"));
 
         gridDefinition = new GridDefinition("testGrid", gridDataDefinition);
         gridDefinition.setColumns(new LinkedList<ColumnDefinition>());
@@ -86,7 +86,7 @@ public class CrudTemplateControllerGetGridDataTest {
         arguments.put("sortField", "testCol");
         arguments.put("sortOrder", "desc");
 
-        FieldDefinition parentField = gridDataDefinition.getField("parentEntity");
+        DataFieldDefinition parentField = gridDataDefinition.getField("parentEntity");
         Long parentId = new Long(123);
 
         // TODO mina test for filtering

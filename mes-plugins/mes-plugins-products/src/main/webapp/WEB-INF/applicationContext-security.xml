@@ -9,13 +9,13 @@
 	<beans:bean id="mySessionExpirationFilter" class="com.qcadoo.mes.plugins.products.controller.SessionExpirationFilter" />
 
     <http use-expressions="true">
-            <intercept-url pattern="/**" access="isAuthenticated()"/>
             <intercept-url pattern="/login.html" filters="none" />
             <intercept-url pattern="/logout.html" filters="none" />
             <intercept-url pattern="/timeout.html" filters="none" />
             <intercept-url pattern="/timeoutIframe.html" filters="none" />
             <intercept-url pattern="/css/**" filters="none" />
             <intercept-url pattern="/js/**" filters="none" />
+            <intercept-url pattern="/**" access="isAuthenticated()" />
             
             
             
@@ -31,14 +31,15 @@
     </http>
     
 	 <authentication-manager>
-	 
 	 	<authentication-provider>
-	 	      <!-- 		<password-encoder hash="md5">
-				<salt-source user-property="username"/> 
-  			</password-encoder>-->
+	 	    <password-encoder ref="passwordEncoder"/>
  			<jdbc-user-service data-source-ref="dataSource"/>
         </authentication-provider>
 	 </authentication-manager>
+	 
+	 <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+	     <beans:constructor-arg value="256"/>
+	 </beans:bean>
 
 	
 

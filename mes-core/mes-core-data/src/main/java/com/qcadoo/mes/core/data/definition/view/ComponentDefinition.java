@@ -1,8 +1,10 @@
-package com.qcadoo.mes.core.data.definition;
+package com.qcadoo.mes.core.data.definition.view;
 
 import java.util.Map;
 
-public abstract class ViewElementDefinition {
+import com.qcadoo.mes.core.data.definition.DataDefinition;
+
+public abstract class ComponentDefinition {
 
     public static final int TYPE_GRID = 1;
 
@@ -28,7 +30,7 @@ public abstract class ViewElementDefinition {
 
     public abstract int getType();
 
-    public ViewElementDefinition(final String name, final DataDefinition dataDefinition) {
+    public ComponentDefinition(final String name, final DataDefinition dataDefinition) {
         this.name = name;
         this.dataDefinition = dataDefinition;
     }
