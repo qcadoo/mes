@@ -36,6 +36,16 @@ public class FieldControlFactoryImpl implements FieldControlFactory {
     }
 
     @Override
+    public FieldControl lookupControl() {
+        return new StringControl(4);
+    }
+
+    @Override
+    public FieldControl editableSelectControl() {
+        return new StringControl(4);
+    }
+
+    @Override
     public FieldControl textControl() {
         return new StringControl(9);
     }
