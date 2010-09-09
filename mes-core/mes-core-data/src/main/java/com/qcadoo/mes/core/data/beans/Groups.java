@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public final class UserGroup {
+public final class Groups {
 
     @Id
     @GeneratedValue
@@ -13,9 +13,9 @@ public final class UserGroup {
 
     private String name;
 
-    private String role;
-
     private String description;
+
+    private String role;
 
     private boolean deleted;
 
@@ -43,20 +43,20 @@ public final class UserGroup {
         this.deleted = deleted;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(final String role) {
-        this.role = role;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(final String role) {
+        this.role = role;
     }
 
 }

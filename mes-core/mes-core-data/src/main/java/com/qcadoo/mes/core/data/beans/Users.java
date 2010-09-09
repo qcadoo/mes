@@ -17,7 +17,7 @@ public final class Users {
     private String userName;
 
     @ManyToOne
-    private UserGroup userGroup;
+    private Groups userGroup;
 
     private String email;
 
@@ -32,23 +32,12 @@ public final class Users {
 
     private boolean deleted;
 
-    @Column(columnDefinition = "boolean default true")
-    private boolean enabled;
-
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(final String userName) {
         this.userName = userName;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Long getId() {
@@ -65,7 +54,6 @@ public final class Users {
 
     public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
-        this.enabled = !deleted;
     }
 
     public String getDescription() {
@@ -108,11 +96,11 @@ public final class Users {
         this.password = password;
     }
 
-    public UserGroup getUserGroup() {
+    public Groups getUserGroup() {
         return userGroup;
     }
 
-    public void setUserGroup(final UserGroup userGroup) {
+    public void setUserGroup(final Groups userGroup) {
         this.userGroup = userGroup;
     }
 
