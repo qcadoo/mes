@@ -40,7 +40,7 @@
 		<tr id="headerRow">
 			<td id="headerDiv">
 				<div id="leftPanel">
-					${headerLabel}
+					<img id="logoImage" src="css/images/logo_small.png"></img>
 					<img id="loadingIndicator" src="css/images/loading.gif"></img>
 				</div>
 				<div id="rightPanel">

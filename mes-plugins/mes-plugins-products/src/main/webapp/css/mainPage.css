@@ -37,21 +37,31 @@ html, body {
 #headerDiv {
 	border-bottom: solid black 1px;
 	background: #CCCCCC;
-	padding: 5px;
-	height: 40px;
+	padding: 2px;
+	padding-right: 10px;
+	height: 20px;
 }
 
 #leftPanel {
-	display: inline;
-	line-height: 25px;
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+
+#logoImage {
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
 }
 
 #loadingIndicator {
 	margin-left: 2px;
+	vertical-align: middle;
 	display: none;
 }
 
 #rightPanel {
+	padding-top: 5px;
 	float: right;
 }
 

@@ -6,19 +6,28 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
+	<beans:bean id="mySessionExpirationFilter" class="com.qcadoo.mes.plugins.products.controller.SessionExpirationFilter" />
+
     <http use-expressions="true">
             <intercept-url pattern="/**" access="isAuthenticated()"/>
             <intercept-url pattern="/login.html" filters="none" />
             <intercept-url pattern="/logout.html" filters="none" />
             <intercept-url pattern="/timeout.html" filters="none" />
+            <intercept-url pattern="/timeoutIframe.html" filters="none" />
             <intercept-url pattern="/css/**" filters="none" />
             <intercept-url pattern="/js/**" filters="none" />
             
-        <form-login login-page="/login.html" authentication-failure-url="/login.html?login_error=1" default-target-url="/main.html"/>
+            
+            
+        <form-login login-page="/login.html" authentication-failure-url="/login.html?login_error=1" default-target-url="/main.html" always-use-default-target="false"/>
         <logout logout-success-url="/logout.html"/>
         <session-management invalid-session-url="/timeout.html">
-            <concurrency-control max-sessions="1" error-if-maximum-exceeded="true" />
+            <concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
         </session-management>
+        
+        <custom-filter ref="mySessionExpirationFilter" before="FIRST"/>
+        
+        
     </http>
     
 	 <authentication-manager>
@@ -30,5 +39,7 @@
  			<jdbc-user-service data-source-ref="dataSource"/>
         </authentication-provider>
 	 </authentication-manager>
+
+	
 
 </beans:beans>

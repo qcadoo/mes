@@ -58,4 +58,17 @@ public class LoginController {
         return mav;
     }
 
+    @RequestMapping(value = "timeoutIframe", method = RequestMethod.GET)
+    public ModelAndView getTimeoutIframePageView(final Locale locale) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("loginIframe");
+
+        mav.addObject("translation", translationService.getLoginTranslations(locale));
+        // mav.addObject("currentLanguage", locale.getLanguage());
+
+        // mav.addObject("errorMessage", "login.message.timeout");
+
+        return mav;
+    }
+
 }

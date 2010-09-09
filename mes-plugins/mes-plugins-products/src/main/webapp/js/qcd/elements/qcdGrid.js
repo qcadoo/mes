@@ -308,11 +308,14 @@ QCD.elements.GridElement = function(args, _mainController) {
 			dataType: 'json',
 			data: parameters,
 			contentType: 'application/json; charset=utf-8',
-			success: function(response) {
-				if (response) {
-					if (thisRefreshId != currentRefreshId) {
-						return;
-					}
+			complete: function(XMLHttpRequest, textStatus) {
+				QCDLogger.info(XMLHttpRequest);
+				if (thisRefreshId != currentRefreshId) {
+					return;
+				}
+				if (XMLHttpRequest.status == 200) {
+					var response = JSON.parse(XMLHttpRequest.responseText);
+					QCDLogger.info(response);
 					pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
 					for (var entityNo in response.entities) {
 						var entity = response.entities[entityNo];
@@ -324,13 +327,42 @@ QCD.elements.GridElement = function(args, _mainController) {
 					} else {
 						onDiselect();
 					}
-					unblockList();
+				} else if (XMLHttpRequest.status == 302) {
+					
+				} else {
+					alert(XMLHttpRequest.statusText);
 				}
-			},
-			error: function(xhr, textStatus, errorThrown){
-				alert(textStatus);
 				unblockList();
 			}
+//			success: function(response) {
+//				if (response) {
+//					QCDLogger.info(response.redirect)
+//					QCDLogger.info(response.status)
+//					if (thisRefreshId != currentRefreshId) {
+//						return;
+//					}
+//					if (response.redirect) {
+//						QCDLogger.info("redirect")
+//						return;
+//					}
+//					pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
+//					for (var entityNo in response.entities) {
+//						var entity = response.entities[entityNo];
+//						grid.jqGrid('addRowData',entity.id,entity.fields);
+//					}
+//					if (rowsToSelect) {
+//						setSelectedRows(rowsToSelect);
+//						rowsToSelect = null;
+//					} else {
+//						onDiselect();
+//					}
+//					unblockList();
+//				}
+//			},
+//			error: function(xhr, textStatus, errorThrown){
+//				alert(textStatus);
+//				unblockList();
+//			}
 
 		});
 	}
