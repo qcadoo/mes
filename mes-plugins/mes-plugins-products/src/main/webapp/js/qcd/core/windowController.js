@@ -10,6 +10,8 @@ QCD.WindowController = function() {
 	
 	var serializationObjectToInsert = null;
 	
+	var currentPage = null;
+	
 	function constructor() {
 		QCDLogger.info("init main page");
 		iframe = $("#mainPageIframe");
@@ -23,7 +25,8 @@ QCD.WindowController = function() {
 	
 	this.goToSelectedPage = function() {
 		var selectedValue = $("#viewsSelect").val();
-		performGoToPage("page/"+selectedValue+".html");
+		currentPage = "page/"+selectedValue+".html";
+		performGoToPage(currentPage);
 	}
 
 	this.performLogout = function() {
@@ -37,14 +40,25 @@ QCD.WindowController = function() {
 			serializationObject: serializationObject
 		};
 		statesStack.push(stateObject);
-		performGoToPage("page/"+url);
+		currentPage = "page/"+url;
+		performGoToPage(currentPage);
 	}
 	
 	this.goBack = function() {
 		var stateObject = statesStack.pop();
 		//iframe.insertState(stateObject.serializationObject);
 		serializationObjectToInsert = stateObject.serializationObject;
-		performGoToPage(stateObject.url);
+		currentPage = stateObject.url;
+		performGoToPage(currentPage);
+	}
+	
+	this.goToLastPage = function() {
+		performGoToPage(currentPage);
+	}
+	
+	this.onSessionExpired = function(serializationObject) {
+		serializationObjectToInsert = serializationObject;
+		performGoToPage("login.html");
 	}
 	
 	function performGoToPage(url) {
@@ -66,8 +80,8 @@ QCD.WindowController = function() {
 	function onIframeLoad() {
 		if (iframe[0].contentWindow.init) {
 			iframe[0].contentWindow.init(serializationObjectToInsert);
+			serializationObjectToInsert = null;
 		}
-		serializationObjectToInsert = null;
 		loadingIndicator.hide();
 	}
 	

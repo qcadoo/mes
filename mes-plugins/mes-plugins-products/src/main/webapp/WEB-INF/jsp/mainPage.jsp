@@ -27,6 +27,14 @@
 			windowController.goBack();
 		}
 
+		window.goToLastPage = function() {
+			windowController.goToLastPage();
+		}
+
+		window.onSessionExpired = function(serializationObject) {
+			windowController.onSessionExpired(serializationObject);
+		}
+
 		window.commonTranslations = new Object();
 		<c:forEach items="${commonTranslations}" var="translation">
 			window.commonTranslations["${translation.key}"] = "${translation.value}";

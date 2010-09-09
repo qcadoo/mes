@@ -1,7 +1,9 @@
 .errorBox {
 	color: red;	
+	margin-bottom: 10px;
 }
 
 .successBox {
-	color: green;	
+	color: green;
+	margin-bottom: 10px;	
 }
