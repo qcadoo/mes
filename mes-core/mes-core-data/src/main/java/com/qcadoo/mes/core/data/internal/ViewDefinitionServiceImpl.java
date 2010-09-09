@@ -346,7 +346,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormFieldDefinition fieldUserName = createFieldDefinition("userName", userDataDefinition.getField("userName"),
                 fieldControlFactory.stringControl());
         FormFieldDefinition fieldUserGroup = createFieldDefinition("userGroup", userDataDefinition.getField("userGroup"),
-                fieldControlFactory.selectControl());
+                fieldControlFactory.lookupControl());
         FormFieldDefinition fieldEmail = createFieldDefinition("email", userDataDefinition.getField("email"),
                 fieldControlFactory.stringControl());
         FormFieldDefinition fieldFirstName = createFieldDefinition("firstName", userDataDefinition.getField("firstName"),
