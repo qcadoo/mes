@@ -36,8 +36,8 @@ public final class CallbackDefinition {
         return null;
     }
 
-    public boolean callWithObjectAndGetBoolean(final Object value) {
-        Boolean retults = (Boolean) call(value);
+    public boolean callWithObjectAndGetBoolean(final DataDefinition dataDefinition, final Object value) {
+        Boolean retults = (Boolean) call(dataDefinition, value);
         if (retults == null) {
             return false;
         } else {
@@ -45,8 +45,8 @@ public final class CallbackDefinition {
         }
     }
 
-    public boolean callWithEntityAndGetBoolean(final Entity entity) {
-        Boolean retults = (Boolean) call(entity);
+    public boolean callWithEntityAndGetBoolean(final DataDefinition dataDefinition, final Entity entity) {
+        Boolean retults = (Boolean) call(dataDefinition, entity);
         if (retults == null) {
             return false;
         } else {
@@ -54,8 +54,8 @@ public final class CallbackDefinition {
         }
     }
 
-    public void callWithEntity(final Entity entity) {
-        call(entity);
+    public void callWithEntity(final DataDefinition dataDefinition, final Entity entity) {
+        call(dataDefinition, entity);
     }
 
 }

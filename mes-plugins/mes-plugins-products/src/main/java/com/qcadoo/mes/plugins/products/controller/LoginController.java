@@ -18,15 +18,25 @@ public class LoginController {
     private TranslationService translationService;
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
-    public ModelAndView getLoginPageView(@RequestParam(required = false) Integer login_error, final Locale locale) {
+    public ModelAndView getLoginPageView(@RequestParam(required = false) String login_error,
+            @RequestParam(required = false) Boolean iframe, final Locale locale) {
+
+        if (iframe == null) {
+            iframe = false;
+        }
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("login");
 
         mav.addObject("translation", translationService.getLoginTranslations(locale));
         mav.addObject("currentLanguage", locale.getLanguage());
 
+        mav.addObject("iframe", iframe);
+
         if (login_error != null) {
             mav.addObject("errorMessage", "login.message.error");
+        } else if (iframe) {
+            mav.addObject("errorMessage", "login.message.timeout");
         }
 
         return mav;

@@ -20,7 +20,7 @@ public final class CustomEntityValidator implements EntityValidator {
 
     @Override
     public boolean validate(final DataDefinition dataDefinition, final Entity entity, final ValidationResults validationResults) {
-        boolean result = callback.callWithEntityAndGetBoolean(entity);
+        boolean result = callback.callWithEntityAndGetBoolean(dataDefinition, entity);
         if (result) {
             return true;
         }

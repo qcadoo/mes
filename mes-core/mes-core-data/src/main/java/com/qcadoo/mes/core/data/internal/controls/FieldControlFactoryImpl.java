@@ -85,4 +85,9 @@ public final class FieldControlFactoryImpl implements FieldControlFactory {
         return new StringControl(3);
     }
 
+    @Override
+    public FieldControl yesNoControl() {
+        return new StringControl(14);
+    }
+
 }

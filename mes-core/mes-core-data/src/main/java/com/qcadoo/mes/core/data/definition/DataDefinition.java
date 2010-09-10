@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.types.PriorityType;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
@@ -36,7 +35,7 @@ public final class DataDefinition {
 
     private DataFieldDefinition priorityField;
 
-    private List<EntityValidator> validators = new ArrayList<EntityValidator>();
+    private final List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
     private CallbackDefinition onCreate;
 
@@ -109,8 +108,8 @@ public final class DataDefinition {
         return validators;
     }
 
-    public void setValidators(final EntityValidator... validators) {
-        this.validators = Lists.newArrayList(validators);
+    public void addValidator(final EntityValidator validator) {
+        this.validators.add(validator);
     }
 
     public void setOnCreate(final CallbackDefinition onCreateCallback) {
@@ -127,19 +126,19 @@ public final class DataDefinition {
 
     public void callOnCreate(final Entity entity) {
         if (onCreate != null) {
-            onCreate.callWithEntity(entity);
+            onCreate.callWithEntity(this, entity);
         }
         if (onSave != null) {
-            onSave.callWithEntity(entity);
+            onSave.callWithEntity(this, entity);
         }
     }
 
     public void callOnUpdate(final Entity entity) {
         if (onUpdate != null) {
-            onUpdate.callWithEntity(entity);
+            onUpdate.callWithEntity(this, entity);
         }
         if (onSave != null) {
-            onSave.callWithEntity(entity);
+            onSave.callWithEntity(this, entity);
         }
     }
 

@@ -8,6 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.beans.Dictionary;
+import com.qcadoo.mes.core.data.beans.DictionaryItem;
+import com.qcadoo.mes.core.data.beans.Groups;
+import com.qcadoo.mes.core.data.beans.Product;
+import com.qcadoo.mes.core.data.beans.ProductInstruction;
+import com.qcadoo.mes.core.data.beans.ProductOrder;
+import com.qcadoo.mes.core.data.beans.Substitute;
+import com.qcadoo.mes.core.data.beans.SubstituteComponent;
+import com.qcadoo.mes.core.data.beans.Users;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.callbacks.CallbackFactory;
@@ -45,8 +54,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
             dataDefinition = createUserDefinition();
         } else if ("users.group".equals(entityName)) {
             dataDefinition = createUserGroupDefinition();
-        } else if ("orders.order".equals(entityName)) {
+        } else if ("products.order".equals(entityName)) {
             dataDefinition = createOrderDefinition();
+        } else if ("products.instruction".equals(entityName)) {
+            dataDefinition = createInstructionDefinition();
         } else if ("core.dictionary".equals(entityName)) {
             dataDefinition = createDictionaryDefinition();
         } else if ("core.dictionaryItem".equals(entityName)) {
@@ -72,7 +83,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldCategory = createFieldDefinition("category", fieldTypeFactory.dictionaryType("categories"));
         DataFieldDefinition fieldUnit = createFieldDefinition("unit", fieldTypeFactory.stringType());
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Product");
+        dataDefinition.setFullyQualifiedClassName(Product.class.getCanonicalName());
         dataDefinition.addField(fieldNumber);
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldTypeOfMaterial);
@@ -98,7 +109,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.priorityType(fieldProduct))
                 .readOnly();
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Substitute");
+        dataDefinition.setFullyQualifiedClassName(Substitute.class.getCanonicalName());
         dataDefinition.addField(fieldNumber);
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldEffectiveDateFrom);
@@ -107,7 +118,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         dataDefinition.setPriorityField(fieldPriority);
 
-        dataDefinition.setValidators(fieldValidationFactory.customEntity("productService", "checkSubstituteDates")
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkSubstituteDates")
                 .customErrorMessage("products.validation.error.datesOrder"));
 
         return dataDefinition;
@@ -124,7 +135,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldQuantity = createFieldDefinition("quantity", fieldTypeFactory.decimalType()).withValidator(
                 fieldValidationFactory.required());
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.SubstituteComponent");
+        dataDefinition.setFullyQualifiedClassName(SubstituteComponent.class.getCanonicalName());
         dataDefinition.addField(fieldProduct);
         dataDefinition.addField(fieldSubstitute);
         dataDefinition.addField(fieldQuantity);
@@ -146,7 +157,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldPassword = createFieldDefinition("password", fieldTypeFactory.passwordType()).withValidator(
                 fieldValidationFactory.requiredOnCreate());
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Users");
+        dataDefinition.setFullyQualifiedClassName(Users.class.getCanonicalName());
 
         dataDefinition.addField(fieldUserName);
         dataDefinition.addField(fieldUserGroup);
@@ -168,7 +179,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required());
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Groups");
+        dataDefinition.setFullyQualifiedClassName(Groups.class.getCanonicalName());
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldRole);
@@ -176,8 +187,44 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
+    private DataDefinition createInstructionDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("products.instruction");
+
+        DataFieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType()).withValidator(
+                fieldValidationFactory.required());
+        DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType()).withValidator(
+                fieldValidationFactory.required());
+        DataFieldDefinition fieldProduct = createFieldDefinition("product",
+                fieldTypeFactory.eagerBelongsToType("products.product", "name")).withValidator(fieldValidationFactory.required());
+        DataFieldDefinition fieldTypeOfMaterial = createFieldDefinition("typeOfMaterial",
+                fieldTypeFactory.enumType("product", "intermediate", "component")).withValidator(
+                fieldValidationFactory.required());
+        DataFieldDefinition fieldMaster = createFieldDefinition("master", fieldTypeFactory.booleanType());
+        DataFieldDefinition fieldDateFrom = createFieldDefinition("dateFrom", fieldTypeFactory.dateTimeType());
+        DataFieldDefinition fieldDateTo = createFieldDefinition("dateTo", fieldTypeFactory.dateTimeType());
+        DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
+
+        dataDefinition.setFullyQualifiedClassName(ProductInstruction.class.getCanonicalName());
+
+        dataDefinition.addField(fieldNumber);
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldProduct);
+        dataDefinition.addField(fieldTypeOfMaterial);
+        dataDefinition.addField(fieldMaster);
+        dataDefinition.addField(fieldDateFrom);
+        dataDefinition.addField(fieldDateTo);
+        dataDefinition.addField(fieldDescription);
+
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkInstructionDefault")
+                .customErrorMessage("products.validation.error.default"));
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkInstructionDates")
+                .customErrorMessage("products.validation.error.datesOrder"));
+
+        return dataDefinition;
+    }
+
     private DataDefinition createOrderDefinition() {
-        DataDefinition dataDefinition = new DataDefinition("orders.order");
+        DataDefinition dataDefinition = new DataDefinition("products.order");
 
         DataFieldDefinition fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required()).withValidator(fieldValidationFactory.unique());
@@ -187,14 +234,15 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
                 fieldValidationFactory.required());
         DataFieldDefinition fieldDateTo = createFieldDefinition("dateTo", fieldTypeFactory.dateType()).withValidator(
                 fieldValidationFactory.required());
-        DataFieldDefinition fieldState = createFieldDefinition("state", fieldTypeFactory.enumType("pending", "done"));
+        DataFieldDefinition fieldState = createFieldDefinition("state", fieldTypeFactory.enumType("pending", "done"))
+                .withValidator(fieldValidationFactory.required());
         DataFieldDefinition fieldMachine = createFieldDefinition("machine", fieldTypeFactory.enumType("Maszyna 1", "Maszyna 2"));
         DataFieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
-        DataFieldDefinition fieldDefaultInstruction = createFieldDefinition("defaultInstruction", fieldTypeFactory.textType())
-                .readOnlyOnUpdate();
+        DataFieldDefinition fieldDefaultInstruction = createFieldDefinition("defaultInstruction",
+                fieldTypeFactory.eagerBelongsToType("products.instruction", "name")).readOnly();
         DataFieldDefinition fieldInstruction = createFieldDefinition("instruction",
-                fieldTypeFactory.enumType("Instrukcja 1", "Instrukcja 2"));
+                fieldTypeFactory.eagerBelongsToType("products.instruction", "name"));
         DataFieldDefinition fieldPlannedQuantity = createFieldDefinition("plannedQuantity", fieldTypeFactory.decimalType());
         DataFieldDefinition fieldDoneQuantity = createFieldDefinition("doneQuantity", fieldTypeFactory.decimalType());
         DataFieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateType())
@@ -204,7 +252,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldStartWorker = createFieldDefinition("startWorker", fieldTypeFactory.textType()).readOnly();
         DataFieldDefinition fieldEndWorker = createFieldDefinition("endWorker", fieldTypeFactory.textType()).readOnly();
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.ProductOrder");
+        dataDefinition.setFullyQualifiedClassName(ProductOrder.class.getCanonicalName());
         dataDefinition.addField(fieldNumber);
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDateFrom);
@@ -221,7 +269,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldStartWorker);
         dataDefinition.addField(fieldEndWorker);
 
-        dataDefinition.setValidators(fieldValidationFactory.customEntity("productService", "checkOrderDates").customErrorMessage(
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkOrderDates").customErrorMessage(
                 "products.validation.error.datesOrder"));
         dataDefinition.setOnSave(callbackFactory.getCallback("productService", "fillOrderDatesAndWorkers"));
 
@@ -230,7 +278,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     private DataDefinition createDictionaryDefinition() {
         DataDefinition dataDefinition = new DataDefinition("core.dictionary");
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Dictionary");
+        dataDefinition.setFullyQualifiedClassName(Dictionary.class.getCanonicalName());
         dataDefinition.setDeletable(false);
 
         DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.textType()).withValidator(
@@ -242,7 +290,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     private DataDefinition createDictionaryItemDefinition() {
         DataDefinition dataDefinition = new DataDefinition("core.dictionaryItem");
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.DictionaryItem");
+        dataDefinition.setFullyQualifiedClassName(DictionaryItem.class.getCanonicalName());
 
         DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required());

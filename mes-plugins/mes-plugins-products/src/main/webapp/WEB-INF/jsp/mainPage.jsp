@@ -27,6 +27,14 @@
 			windowController.goBack();
 		}
 
+		window.goToLastPage = function() {
+			windowController.goToLastPage();
+		}
+
+		window.onSessionExpired = function(serializationObject) {
+			windowController.onSessionExpired(serializationObject);
+		}
+
 		window.commonTranslations = new Object();
 		<c:forEach items="${commonTranslations}" var="translation">
 			window.commonTranslations["${translation.key}"] = "${translation.value}";
@@ -40,7 +48,7 @@
 		<tr id="headerRow">
 			<td id="headerDiv">
 				<div id="leftPanel">
-					${headerLabel}
+					<img id="logoImage" src="css/images/logo_small.png"></img>
 					<img id="loadingIndicator" src="css/images/loading.gif"></img>
 				</div>
 				<div id="rightPanel">

@@ -62,5 +62,13 @@ QCD.PageController = function(_viewName) {
 		window.parent.goBack();
 	}
 	
+	this.onSessionExpired = function() {
+		var serializationObject = new Object();
+		for (var i in pageElements) {
+			serializationObject[i] = pageElements[i].serialize();
+		}
+		window.parent.onSessionExpired(serializationObject);
+	}
+	
 	constructor(this);
 }

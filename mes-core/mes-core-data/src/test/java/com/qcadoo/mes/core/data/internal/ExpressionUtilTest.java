@@ -69,7 +69,7 @@ public class ExpressionUtilTest {
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
-        columnDefinition.setExpression("fields['name'].toUpperCase()");
+        columnDefinition.setExpression("#name.toUpperCase()");
 
         // when
         String value = ExpressionUtil.getValue(entity, columnDefinition);
@@ -88,7 +88,7 @@ public class ExpressionUtilTest {
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
-        columnDefinition.setExpression("fields['name']");
+        columnDefinition.setExpression("#name");
 
         // when
         String value = ExpressionUtil.getValue(entity, columnDefinition);
@@ -111,8 +111,7 @@ public class ExpressionUtilTest {
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex));
-        columnDefinition
-                .setExpression("fields['name'] + \" -> (\" + (fields['age']+1) + \") -> \" + (fields['sex'] == \"F\" ? \"female\" : \"male\")");
+        columnDefinition.setExpression("#name + \" -> (\" + (#age+1) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")");
 
         // when
         String value = ExpressionUtil.getValue(entity, columnDefinition);
@@ -134,7 +133,7 @@ public class ExpressionUtilTest {
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
-        columnDefinition.setExpression("fields['product'].fields['name']");
+        columnDefinition.setExpression("#product['name']");
 
         // when
         String value = ExpressionUtil.getValue(entity, columnDefinition);

@@ -308,11 +308,16 @@ QCD.elements.GridElement = function(args, _mainController) {
 			dataType: 'json',
 			data: parameters,
 			contentType: 'application/json; charset=utf-8',
-			success: function(response) {
-				if (response) {
-					if (thisRefreshId != currentRefreshId) {
+			complete: function(XMLHttpRequest, textStatus) {
+				if (thisRefreshId != currentRefreshId) {
+					return;
+				}
+				if (XMLHttpRequest.status == 200) {
+					if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+						mainController.onSessionExpired();
 						return;
 					}
+					var response = JSON.parse(XMLHttpRequest.responseText);
 					pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
 					for (var entityNo in response.entities) {
 						var entity = response.entities[entityNo];
@@ -324,14 +329,11 @@ QCD.elements.GridElement = function(args, _mainController) {
 					} else {
 						onDiselect();
 					}
-					unblockList();
+				} else {
+					alert(XMLHttpRequest.statusText);
 				}
-			},
-			error: function(xhr, textStatus, errorThrown){
-				alert(textStatus);
 				unblockList();
 			}
-
 		});
 	}
 	
@@ -413,12 +415,18 @@ QCD.elements.GridElement = function(args, _mainController) {
 				dataType: 'json',
 				data: dataString,
 				contentType: 'application/json; charset=utf-8',
-				success: function(response) {
-					refresh();
-				},
-				error: function(xhr, textStatus, errorThrown){
-					alert(textStatus);
-					unblockList();
+				complete: function(XMLHttpRequest, textStatus) {
+					if (XMLHttpRequest.status == 200) {
+						if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+							mainController.onSessionExpired();
+							return;
+						}
+						refresh();
+					} else {
+						alert(XMLHttpRequest.statusText);
+						unblockList();
+					}
+					
 				}
 			});
 		}
@@ -444,12 +452,18 @@ QCD.elements.GridElement = function(args, _mainController) {
 					dataType: 'json',
 					data: null,
 					contentType: 'application/json; charset=utf-8',
-					success: function(response) {
-						refresh();
-					},
-					error: function(xhr, textStatus, errorThrown){
-						alert(textStatus);
-						unblockList();
+					complete: function(XMLHttpRequest, textStatus) {
+						if (XMLHttpRequest.status == 200) {
+							if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+								mainController.onSessionExpired();
+								return;
+							}
+							refresh();
+						} else {
+							alert(XMLHttpRequest.statusText);
+							unblockList();
+						}
+						
 					}
 				});
 			}

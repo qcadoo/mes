@@ -39,24 +39,30 @@ QCD.elements.FormElement = function(args, _mainController) {
 			url: url,
 			type: 'POST',
 			data: formData,
-			success: function(response) {
-				if (response.valid) {
-					if (shouldRedirect) {
-						redirectToCorrespondingPage();
+			complete: function(XMLHttpRequest, textStatus) {
+				if (XMLHttpRequest.status == 200) {
+					if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+						mainController.onSessionExpired();
+						return;
+					}
+					var response = JSON.parse(XMLHttpRequest.responseText);
+					if (response.valid) {
+						if (shouldRedirect) {
+							redirectToCorrespondingPage();
+						} else {
+							refreshForm(response.entity, true);
+						}
 					} else {
-						refreshForm(response.entity, true);
+						for(var i in response.globalErrors) {
+							addGlobalErrorMessage(response.globalErrors[i].message);
+						}
+						for (var field in response.errors) {
+							addFieldErrorMessage(parameters.name+'_field_'+field, response.errors[field].message);
+						}
 					}
 				} else {
-					for(var i in response.globalErrors) {
-						addGlobalErrorMessage(response.globalErrors[i].message);
-					}
-					for (var field in response.errors) {
-						addFieldErrorMessage(parameters.name+'_field_'+field, response.errors[field].message);
-					}
+					alert(XMLHttpRequest.statusText);
 				}
-			},
-			error: function(xhr, textStatus, errorThrown){
-				alert(textStatus);
 			}
 
 		});
@@ -142,13 +148,19 @@ QCD.elements.FormElement = function(args, _mainController) {
 		$.ajax({
 			url: url,
 			type: 'GET',
-			success: function(response) {
-				if(response) {
-					refreshForm(response, true);
+			complete: function(XMLHttpRequest, textStatus) {
+				if (XMLHttpRequest.status == 200) {
+					if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+						mainController.onSessionExpired();
+						return;
+					}
+					var response = JSON.parse(XMLHttpRequest.responseText);
+					if(response) {
+						refreshForm(response, true);
+					}
+				} else {
+					alert(XMLHttpRequest.statusText);
 				}
-			},
-			error: function(xhr, textStatus, errorThrown){
-				alert(textStatus);
 			}
 		});
 	}

@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
 import com.qcadoo.mes.core.data.search.Restrictions;
@@ -609,7 +610,7 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 
-        dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
+        dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -627,7 +628,7 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr");
         entity.setField("age", "18");
 
-        dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
+        dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -647,7 +648,7 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 
-        dataDefinition.setValidators(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrX"));
+        dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrX"));
 
         // when
         ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
@@ -659,7 +660,7 @@ public class ValidatorTest extends DataAccessTest {
 
     public class CustomValidateMethod {
 
-        public boolean isEqualToQwerty(final Object object) {
+        public boolean isEqualToQwerty(final DataDefinition dataDefinition, final Object object) {
             return String.valueOf(object).equals("qwerty");
         }
 
@@ -667,7 +668,7 @@ public class ValidatorTest extends DataAccessTest {
 
     public class CustomEntityValidateMethod {
 
-        public boolean hasAge18AndNameMrT(final Entity entity) {
+        public boolean hasAge18AndNameMrT(final DataDefinition dataDefinition, final Entity entity) {
             return (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T"));
         }
 
