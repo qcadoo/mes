@@ -1,7 +1,5 @@
 package com.qcadoo.mes.plugins.products.session;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -24,10 +22,17 @@ public class SessionExpirationFilter implements Filter, InitializingBean {
     public void destroy() {
     }
 
+    @SuppressWarnings("cast")
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
-        checkArgument(request instanceof HttpServletRequest, "must be HttpServletRequest");
-        checkArgument(response instanceof HttpServletResponse, "must be HttpServletResponse");
+        // checkArgument(request instanceof HttpServletRequest, "must be HttpServletRequest");
+        // checkArgument(response instanceof HttpServletResponse, "must be HttpServletResponse");
+        if (!(request instanceof HttpServletRequest)) {
+            return;
+        }
+        if (!(response instanceof HttpServletResponse)) {
+            return;
+        }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
