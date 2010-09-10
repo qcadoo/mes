@@ -11,7 +11,7 @@
     	<expression-handler ref="methodSecurityExpressionHandler"/>
     </global-method-security>
 
-    <http use-expressions="true" auto-config="false">
+    <http use-expressions="true" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint" >
             <intercept-url pattern="/login.html" filters="none" />
             <intercept-url pattern="/logout.html" filters="none" />
             <intercept-url pattern="/timeout.html" filters="none" />
@@ -30,7 +30,7 @@
         
         <custom-filter ref="customAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
         
-        <custom-filter ref="exceptionTranslationFilter" position="EXCEPTION_TRANSLATION_FILTER" />
+        <access-denied-handler ref="accessDeniedHandler"/>
         
     </http>
     
@@ -70,13 +70,7 @@
 	        </beans:value>
 	    </beans:property>
 	 </beans:bean>
-	 
-	 <beans:bean id="exceptionTranslationFilter"
-		  class="org.springframework.security.web.access.ExceptionTranslationFilter">
-		 <beans:property name="authenticationEntryPoint" ref="loginUrlAuthenticationEntryPoint"/>
-		 <beans:property name="accessDeniedHandler" ref="accessDeniedHandler"/>
-	 </beans:bean>
-	
+
 	<beans:bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
  		<beans:property name="loginFormUrl" value="/login.html"/>
 	</beans:bean>
