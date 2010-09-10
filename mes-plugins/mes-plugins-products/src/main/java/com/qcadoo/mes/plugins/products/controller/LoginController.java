@@ -19,10 +19,17 @@ public class LoginController {
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public ModelAndView getLoginPageView(@RequestParam(required = false) String login_error,
-            @RequestParam(required = false) Boolean iframe, final Locale locale) {
+            @RequestParam(required = false) Boolean iframe, @RequestParam(required = false) Boolean logout,
+            @RequestParam(required = false) Boolean timeout, final Locale locale) {
 
         if (iframe == null) {
             iframe = false;
+        }
+        if (logout == null) {
+            logout = false;
+        }
+        if (timeout == null) {
+            timeout = false;
         }
 
         ModelAndView mav = new ModelAndView();
@@ -33,7 +40,11 @@ public class LoginController {
 
         mav.addObject("iframe", iframe);
 
-        if (login_error != null) {
+        if (logout) {
+            mav.addObject("successMessage", "login.message.logout");
+        } else if (timeout) {
+            mav.addObject("errorMessage", "login.message.timeout");
+        } else if (login_error != null) {
             mav.addObject("errorMessage", "login.message.error");
         } else if (iframe) {
             mav.addObject("errorMessage", "login.message.timeout");
@@ -42,30 +53,13 @@ public class LoginController {
         return mav;
     }
 
-    @RequestMapping(value = "logout", method = RequestMethod.GET)
-    public ModelAndView getLogoutPageView(final Locale locale) {
+    @RequestMapping(value = "accessDenied", method = RequestMethod.GET)
+    public ModelAndView getAccessDeniedPageView(final Locale locale) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("login");
+        mav.setViewName("accessDenied");
 
         mav.addObject("translation", translationService.getLoginTranslations(locale));
-        mav.addObject("currentLanguage", locale.getLanguage());
-
-        mav.addObject("successMessage", "login.message.logout");
 
         return mav;
     }
-
-    @RequestMapping(value = "timeout", method = RequestMethod.GET)
-    public ModelAndView getTimeoutPageView(final Locale locale) {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("login");
-
-        mav.addObject("translation", translationService.getLoginTranslations(locale));
-        mav.addObject("currentLanguage", locale.getLanguage());
-
-        mav.addObject("errorMessage", "login.message.timeout");
-
-        return mav;
-    }
-
 }

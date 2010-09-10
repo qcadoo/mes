@@ -7,3 +7,15 @@
 	color: green;
 	margin-bottom: 10px;	
 }
+
+.errorMessageHeader {
+	color: red;	
+	margin: 20px;
+	font-weight: bold;
+	font-size: large;
+}
+
+.errorMessageContent {
+	margin: 10px;
+	width: 500px;
+}

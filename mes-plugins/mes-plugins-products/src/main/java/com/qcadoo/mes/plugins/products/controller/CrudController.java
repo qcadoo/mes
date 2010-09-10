@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +54,7 @@ public class CrudController {
     @Autowired
     private TranslationService translationService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "page/{viewName}", method = RequestMethod.GET)
     public ModelAndView getView(@PathVariable("viewName") final String viewName,
             @RequestParam final Map<String, String> arguments, final Locale locale) {

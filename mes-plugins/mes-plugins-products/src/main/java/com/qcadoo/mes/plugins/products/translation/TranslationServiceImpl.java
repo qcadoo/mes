@@ -36,7 +36,7 @@ public class TranslationServiceImpl implements TranslationService {
 
     private static final String[] loginMessages = new String[] { "login.form.label.language", "login.form.label.login",
             "login.form.label.password", "login.form.button.logIn", "login.message.error", "login.message.logout",
-            "login.message.timeout" };
+            "login.message.timeout", "login.message.accessDenied.header", "login.message.accessDenied.info" };
 
     @Autowired
     private MessageSource messageSource;
