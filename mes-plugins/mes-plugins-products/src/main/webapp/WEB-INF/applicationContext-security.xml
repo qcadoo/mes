@@ -6,13 +6,18 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
-    <http use-expressions="true">
+    <global-method-security pre-post-annotations="enabled" > 
+    	<expression-handler ref="methodSecurityExpressionHandler"/>
+    </global-method-security>
+    
+    <http use-expressions="true" >
             <intercept-url pattern="/login.html" filters="none" />
             <intercept-url pattern="/logout.html" filters="none" />
             <intercept-url pattern="/timeout.html" filters="none" />
             <intercept-url pattern="/css/**" filters="none" />
             <intercept-url pattern="/js/**" filters="none" />
             <intercept-url pattern="/**" access="isAuthenticated()" />
+            <custom-filter position="EXCEPTION_TRANSLATION_FILTER" ref="exceptionTranslationFilter" />
             
         <form-login login-page="/login.html" authentication-failure-url="/login.html?login_error=1" default-target-url="/main.html"/>
         <logout logout-success-url="/logout.html"/>
@@ -21,7 +26,7 @@
         </session-management>
     </http>
     
-	 <authentication-manager>
+	 <authentication-manager alias="authenticationManager">
 	 	<authentication-provider user-service-ref="userDetailsService">
 	 	    <password-encoder ref="passwordEncoder"/>
         </authentication-provider>
@@ -43,5 +48,35 @@
 	 <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
 	     <beans:constructor-arg value="256"/>
 	 </beans:bean>
+	
+	 <beans:bean id="methodSecurityExpressionHandler"
+        class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler" >
+       	<beans:property name="roleHierarchy" ref="roleHierarchy"/>
+     </beans:bean>
+       
+     <beans:bean id="roleHierarchy"
+	    class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+	    <beans:property name="hierarchy">
+	    	<beans:value>
+	        	ROLE_ADMIN > ROLE_USER
+	        </beans:value>
+	    </beans:property>
+	 </beans:bean>
+	 
+	 <beans:bean id="exceptionTranslationFilter"
+		  class="org.springframework.security.web.access.ExceptionTranslationFilter">
+		 <beans:property name="authenticationEntryPoint" ref="authenticationEntryPoint"/>
+		 <beans:property name="accessDeniedHandler" ref="accessDeniedHandler"/>
+	 </beans:bean>
 
+	<beans:bean id="authenticationEntryPoint"
+	    class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+	 	<beans:property name="loginFormUrl" value="/login.html"/>
+	</beans:bean>
+
+	<beans:bean id="accessDeniedHandler"
+	     class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+	     <beans:property name="errorPage" value="/accessDenied.html"/>
+	</beans:bean>
+	 
 </beans:beans>

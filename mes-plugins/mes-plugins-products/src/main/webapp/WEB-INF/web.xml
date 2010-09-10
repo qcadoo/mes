@@ -46,6 +46,7 @@
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>
+				/WEB-INF/applicationContext-security.xml
 				/WEB-INF/applicationContext.xml
 				classpath:com/qcadoo/mes/core/data/context.xml
 			</param-value>
