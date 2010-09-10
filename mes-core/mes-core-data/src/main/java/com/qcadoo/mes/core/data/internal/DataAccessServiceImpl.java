@@ -217,10 +217,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             entityService.addDeletedRestriction(criteria);
         }
 
-        if (searchCriteria != null) {
-            for (Restriction restriction : searchCriteria.getRestrictions()) {
-                addRestrictionToCriteria(restriction, criteria);
-            }
+        for (Restriction restriction : searchCriteria.getRestrictions()) {
+            addRestrictionToCriteria(restriction, criteria);
         }
 
         return criteria;

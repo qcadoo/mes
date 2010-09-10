@@ -79,7 +79,7 @@ public abstract class ComponentDefinition {
         return parent;
     }
 
-    public void setParent(String parent) {
+    public void setParent(final String parent) {
         this.parent = parent;
     }
 
@@ -87,7 +87,7 @@ public abstract class ComponentDefinition {
         return correspondingViewName;
     }
 
-    public void setCorrespondingViewName(String correspondingViewName) {
+    public void setCorrespondingViewName(final String correspondingViewName) {
         this.correspondingViewName = correspondingViewName;
     }
 
@@ -95,7 +95,7 @@ public abstract class ComponentDefinition {
         return correspondingViewModal;
     }
 
-    public void setCorrespondingViewModal(boolean correspondingViewModal) {
+    public void setCorrespondingViewModal(final boolean correspondingViewModal) {
         this.correspondingViewModal = correspondingViewModal;
     }
 
@@ -103,7 +103,7 @@ public abstract class ComponentDefinition {
         return header;
     }
 
-    public void setHeader(String header) {
+    public void setHeader(final String header) {
         this.header = header;
     }
 

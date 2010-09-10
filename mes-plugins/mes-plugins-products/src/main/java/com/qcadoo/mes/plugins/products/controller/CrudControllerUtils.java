@@ -19,7 +19,7 @@ public class CrudControllerUtils {
 
     }
 
-    public static String generateJsonViewElementOptions(ComponentDefinition viewElement) {
+    public static String generateJsonViewElementOptions(final ComponentDefinition viewElement) {
 
         JSONObject obj = new JSONObject();
         try {
