@@ -54,10 +54,6 @@
 			    <artifactId>servlet-api</artifactId>
 			    <version>2.4</version>
 			</dependency>
-			        	
-
-				
-		
 	</dependencies>
 
 	<build>
@@ -68,6 +64,8 @@
 				<configuration>
 					<hostName>localhost</hostName>
 					<port>8181</port>
+			        <jbossHome>/Library/jboss</jbossHome>
+          			<serverName>web</serverName>
 					<fileNames>
 						<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
 					</fileNames>
