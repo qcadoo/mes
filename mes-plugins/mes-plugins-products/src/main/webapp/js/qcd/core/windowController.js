@@ -26,6 +26,7 @@ QCD.WindowController = function() {
 	this.goToSelectedPage = function() {
 		var selectedValue = $("#viewsSelect").val();
 		currentPage = "page/"+selectedValue+".html";
+		statesStack = new Array();
 		performGoToPage(currentPage);
 	}
 

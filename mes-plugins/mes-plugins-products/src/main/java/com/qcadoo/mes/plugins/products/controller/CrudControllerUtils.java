@@ -1,5 +1,7 @@
 package com.qcadoo.mes.plugins.products.controller;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.Map.Entry;
 
 import org.json.JSONArray;
@@ -50,6 +52,7 @@ public class CrudControllerUtils {
             }
 
             if (viewElement.getType() == ComponentDefinition.TYPE_GRID) {
+                checkState(viewElement instanceof GridDefinition, "must be grid");
                 GridDefinition gridDefinition = (GridDefinition) viewElement;
                 JSONArray columnsArray = new JSONArray();
                 for (ColumnDefinition column : gridDefinition.getColumns()) {

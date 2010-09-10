@@ -214,7 +214,7 @@ public class CrudController {
             Long[] entitiesId = new Long[selectedRows.size()];
             int i = 0;
             for (Integer selectedRowId : selectedRows) {
-                entitiesId[i++] = new Long(selectedRowId);
+                entitiesId[i++] = Long.valueOf(selectedRowId);
             }
             dataAccessService.delete(element.getDataDefinition(), entitiesId);
         }
@@ -229,7 +229,7 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         ComponentDefinition element = viewDefinition.getElementByName(elementName);
 
-        dataAccessService.move(element.getDataDefinition(), new Long(entityId), direction);
+        dataAccessService.move(element.getDataDefinition(), Long.valueOf(entityId), direction);
 
         return "ok";
     }

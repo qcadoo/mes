@@ -20,9 +20,17 @@
 	<beans:bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
 		<beans:property name="defaultFailureUrl" value="/login.html?login_error=error"/>
 	</beans:bean>
-		
-
-    <http use-expressions="true" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+	
+	<!--<beans:bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<beans:property name='securityContextRepository' ref="httpSessionSecurityContextRepository"/>
+	</beans:bean>-->
+	
+	<beans:bean id="httpSessionSecurityContextRepository" class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
+		<beans:property name='allowSessionCreation' value='false' />
+		<beans:property name='disableUrlRewriting' value='true' />
+	</beans:bean>
+	
+    <http use-expressions="true" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint" security-context-repository-ref="httpSessionSecurityContextRepository">
             <intercept-url pattern="/login.html" filters="none" />
             <intercept-url pattern="/logout.html" filters="none" />
             <intercept-url pattern="/timeout.html" filters="none" />
@@ -38,6 +46,8 @@
         </session-management>
         
         <custom-filter ref="mySessionExpirationFilter" before="FIRST"/>
+        
+        <!--<custom-filter ref="securityContextPersistenceFilter" position="SECURITY_CONTEXT_FILTER"/>-->
         
         <custom-filter ref="customAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
         

@@ -33,8 +33,6 @@ public class MainPageController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("mainPage");
 
-        mav.addObject("headerLabel", "QCADOOmes");
-
         mav.addObject("viewsList", viewDefinitionService.getAllViews());
 
         mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
