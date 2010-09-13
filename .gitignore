@@ -3,3 +3,4 @@
 .settings
 target
 bin
+mes.log*

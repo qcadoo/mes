@@ -26,10 +26,15 @@ public class ProductService {
             return true;
         }
 
-        SearchResult searchResult = dataAccessService.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
+        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
                 .restrictedWith(Restrictions.eq(dataDefinition.getField("master"), true))
-                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")))
-                .restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE)).build());
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), entity.getField("product")));
+
+        if (entity.getId() != null) {
+            searchCriteriaBuilder.restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE));
+        }
+
+        SearchResult searchResult = dataAccessService.find(searchCriteriaBuilder.build());
 
         return searchResult.getTotalNumberOfEntities() == 0;
     }
