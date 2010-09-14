@@ -85,6 +85,23 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>tomcat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>tomcat-maven-plugin</artifactId>
+						<configuration>
+							<username>tomcat</username>
+							<password>tomcat</password>
+							<url>http://emhyr.qcadoo.private:8282/manager</url>
+							<warFile>${basedir}/target/${pom.artifactId}-${pom.version}.war</warFile>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 </project>
