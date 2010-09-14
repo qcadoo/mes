@@ -9,7 +9,8 @@ import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 public interface ViewDefinitionService {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or ((#viewName != 'users.userGridView') and (#viewName != 'users.userDetailsView')"
-            + " and (#viewName != 'users.groupGridView') and (#viewName != 'users.groupDetailsView'))")
+            + " and (#viewName != 'users.groupGridView') and (#viewName != 'users.groupDetailsView')"
+            + " and (#viewName != 'plugins.pluginGridView'))")
     ViewDefinition getViewDefinition(String viewName);
 
     List<ViewDefinition> getAllViews();

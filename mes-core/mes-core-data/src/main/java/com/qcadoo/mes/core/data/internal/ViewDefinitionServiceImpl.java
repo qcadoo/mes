@@ -56,6 +56,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinitions.put("core.dictionaryGridView", createDictionaryGridView());
         viewDefinitions.put("core.dictionaryDetailsView", createDictionaryDetailsView());
         viewDefinitions.put("core.dictionaryItemDetailsView", createDictionaryItemDetailsView());
+        viewDefinitions.put("plugins.pluginGridView", createPluginGridView());
     }
 
     @Override
@@ -611,6 +612,36 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addField(fieldDescription);
 
         elements.add(formDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createPluginGridView() {
+        ViewDefinition viewDefinition = new ViewDefinition("plugins.pluginGridView");
+        viewDefinition.setHeader("plugins.pluginGridView.header");
+
+        List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
+        DataDefinition gridDataDefinition = dataDefinitionService.get("plugins.plugin");
+        GridDefinition gridDefinition = new GridDefinition("plugins", gridDataDefinition);
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "true");
+        gridOptions.put("sortable", "true");
+        gridOptions.put("filter", "true");
+        gridOptions.put("multiselect", "false");
+        gridOptions.put("height", "450");
+        gridOptions.put("canDelete", "false");
+        gridOptions.put("canNew", "false");
+        gridDefinition.setOptions(gridOptions);
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
+                null);
+        ColumnDefinition columnVersion = createColumnDefinition("version", gridDataDefinition.getField("version"), null);
+        ColumnDefinition columnPublisher = createColumnDefinition("publisher", gridDataDefinition.getField("publisher"), null);
+
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnVersion, columnPublisher,
+                columnDescription }));
+        elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
         return viewDefinition;
