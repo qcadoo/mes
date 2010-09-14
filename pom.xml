@@ -20,9 +20,10 @@
 	</modules>
 
 	<properties>
-		<spring.version>3.0.3.RELEASE</spring.version>
+		<spring.version>3.0.4.RELEASE</spring.version>
+		<spring.security.version>3.0.3.RELEASE</spring.security.version>
 		<slf4j.version>1.5.8</slf4j.version>
-		<hibernate.version>3.5.4-Final</hibernate.version>
+		<hibernate.version>3.5.5-Final</hibernate.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -91,17 +92,17 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-core</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-config</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-web</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -134,9 +135,9 @@
 				<version>8.4-701.jdbc4</version>
 			</dependency>
 			<dependency>
-				<groupId>jstl</groupId>
+				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
-				<version>1.1.2</version>
+				<version>1.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
@@ -285,8 +286,8 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:git://192.168.0.4/Users/git/mes.git</connection>
-		<developerConnection>scm:git:ssh://192.168.0.4/Users/git/mes.git</developerConnection>
+		<connection>scm:git://emhyr.qcadoo.private/Users/git/mes.git</connection>
+		<developerConnection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
 	</scm>
 
 </project>
