@@ -55,6 +55,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
             dataDefinition = createDictionaryDefinition();
         } else if ("core.dictionaryItem".equals(entityName)) {
             dataDefinition = createDictionaryItemDefinition();
+        } else if ("plugins.plugin".equals(entityName)) {
+            dataDefinition = createPluginDefinition();
         }
 
         checkNotNull(dataDefinition, "data definition for %s cannot be found", entityName);
@@ -294,6 +296,25 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldDictionary);
+        return dataDefinition;
+    }
+
+    private DataDefinition createPluginDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("plugins.plugin");
+
+        DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
+                fieldValidationFactory.required());
+        DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
+        DataFieldDefinition fieldPublisher = createFieldDefinition("publisher", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldVersion = createFieldDefinition("version", fieldTypeFactory.stringType()).withValidator(
+                fieldValidationFactory.required());
+
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.plugin.management.beans.Plugin");
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDescription);
+        dataDefinition.addField(fieldVersion);
+        dataDefinition.addField(fieldPublisher);
+
         return dataDefinition;
     }
 
