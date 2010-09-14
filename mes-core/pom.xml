@@ -19,8 +19,6 @@
 		<module>mes-core-data</module>
 		<module>mes-core-modularity</module>
 		<module>mes-core-security</module>
-		<module>mes-core-utils</module>
-		<module>mes-core-test</module>
 	</modules>
 
 	<dependencies>

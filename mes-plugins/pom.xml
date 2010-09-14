@@ -16,9 +16,9 @@
 	<name>Qcadoo MES :: Plugins</name>
 
 	<modules>
+		<module>mes-plugins-user-management</module>
+		<module>mes-plugins-dictionary-management</module>
 		<module>mes-plugins-products</module>
-		<!-- <module>mes-plugins-rad-management</module> -->
-		<!-- <module>mes-plugins-users-management</module> -->
 	</modules>
 
 	<dependencies>
@@ -38,17 +38,6 @@
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-utils</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-test</artifactId>
-			<version>${pom.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
@@ -65,14 +54,5 @@
 			<artifactId>jstl</artifactId>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>
