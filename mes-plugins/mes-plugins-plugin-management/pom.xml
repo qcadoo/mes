@@ -10,9 +10,9 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mes-plugins-products</artifactId>
+	<artifactId>mes-plugins-plugin-management</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Qcadoo MES :: Plugins :: Products</name>
+	<name>Qcadoo MES :: Plugins :: Plugin Management</name>
 
 </project>

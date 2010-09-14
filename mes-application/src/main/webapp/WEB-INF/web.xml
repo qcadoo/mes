@@ -14,7 +14,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath:com/qcadoo/mes/core/security/context.xml
-			classpath:com/qcadoo/mes/core/modularity/context.xml
+			classpath:com/qcadoo/mes/core/plugin/registry/context.xml
 			classpath:com/qcadoo/mes/core/data/context.xml
 			classpath:com/qcadoo/mes/plugins/**/context.xml
 		</param-value>
@@ -50,7 +50,7 @@
 			<param-value>
 				/WEB-INF/applicationContext.xml
 				classpath:com/qcadoo/mes/core/security/context.xml
-				classpath:com/qcadoo/mes/core/modularity/context.xml
+				classpath:com/qcadoo/mes/core/plugin/registry/context.xml
 				classpath:com/qcadoo/mes/core/data/context.xml
 				classpath:com/qcadoo/mes/plugins/**/context.xml
 			</param-value>

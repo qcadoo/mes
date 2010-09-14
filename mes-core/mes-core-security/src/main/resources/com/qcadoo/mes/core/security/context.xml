@@ -85,10 +85,10 @@
 	</beans:bean>
 
 	<beans:bean id="mySessionExpirationFilter"
-		class="com.qcadoo.mes.plugins.products.session.SessionExpirationFilter" />
+		class="com.qcadoo.mes.core.security.SessionExpirationFilter" />
 
 	<beans:bean id="customAuthenticationFilter"
-		class="com.qcadoo.mes.plugins.products.session.CustomAuthenticationFilter">
+		class="com.qcadoo.mes.core.security.CustomAuthenticationFilter">
 		<beans:property name="authenticationManager" ref="authenticationManager" />
 		<beans:property name="authenticationFailureHandler"
 			ref="failureHandler" />

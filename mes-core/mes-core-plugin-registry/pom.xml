@@ -6,13 +6,13 @@
 
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
-		<artifactId>mes-plugins</artifactId>
+		<artifactId>mes-core</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mes-plugins-products</artifactId>
+	<artifactId>mes-core-plugin-registry</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Qcadoo MES :: Plugins :: Products</name>
+	<name>Qcadoo MES :: Core :: Plugin Registry</name>
 
 </project>

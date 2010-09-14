@@ -18,12 +18,22 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
+			<artifactId>mes-plugins-crud</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
 			<artifactId>mes-plugins-dictionary-management</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>mes-plugins-user-management</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>mes-plugins-plugin-management</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>

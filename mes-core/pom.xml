@@ -17,7 +17,7 @@
 
 	<modules>
 		<module>mes-core-data</module>
-		<module>mes-core-modularity</module>
+		<module>mes-core-plugin-registry</module>
 		<module>mes-core-security</module>
 	</modules>
 
