@@ -1,5 +1,6 @@
 package com.qcadoo.mes.plugins.plugin.management.beans;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,6 +21,9 @@ public final class Plugin {
     private String description;
 
     private boolean deleted;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean active;
 
     public Long getId() {
         return id;
@@ -67,6 +71,14 @@ public final class Plugin {
 
     public void setVersion(final String version) {
         this.version = version;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
     }
 
 }

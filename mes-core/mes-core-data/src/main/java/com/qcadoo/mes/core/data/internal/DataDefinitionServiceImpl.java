@@ -308,12 +308,15 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldPublisher = createFieldDefinition("publisher", fieldTypeFactory.stringType());
         DataFieldDefinition fieldVersion = createFieldDefinition("version", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required());
+        DataFieldDefinition fieldActive = createFieldDefinition("active", fieldTypeFactory.booleanType()).withValidator(
+                fieldValidationFactory.required());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.plugin.management.beans.Plugin");
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldVersion);
         dataDefinition.addField(fieldPublisher);
+        dataDefinition.addField(fieldActive);
 
         return dataDefinition;
     }

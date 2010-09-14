@@ -638,9 +638,10 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 null);
         ColumnDefinition columnVersion = createColumnDefinition("version", gridDataDefinition.getField("version"), null);
         ColumnDefinition columnPublisher = createColumnDefinition("publisher", gridDataDefinition.getField("publisher"), null);
+        ColumnDefinition columnActive = createColumnDefinition("active", gridDataDefinition.getField("active"), null);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnVersion, columnPublisher,
-                columnDescription }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnActive, columnName, columnVersion,
+                columnPublisher, columnDescription }));
         elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
