@@ -15,4 +15,8 @@
 
 	<name>Qcadoo MES :: Plugins :: Plugin Management</name>
 
+	<properties>
+		<mes.plugin.identifier>plugins</mes.plugin.identifier>
+	</properties>
+
 </project>
