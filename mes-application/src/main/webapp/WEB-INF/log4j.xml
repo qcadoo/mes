@@ -14,6 +14,18 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
 	</appender>
+	<logger name="org.springframework">
+		<level value="info" />
+	</logger>
+	<logger name="org.hibernate">
+		<level value="info" />
+	</logger>
+	<logger name="com.mchange">
+		<level value="info" />
+	</logger>
+	<logger name="org.apache">
+		<level value="info" />
+	</logger>
 	<root>
 		<priority value="debug" />
 		<appender-ref ref="console" />
