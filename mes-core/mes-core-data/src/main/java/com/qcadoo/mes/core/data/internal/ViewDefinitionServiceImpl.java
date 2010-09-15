@@ -75,8 +75,15 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
-        return viewDefinitions.get(viewName);
+        ViewDefinition viewDefinition = viewDefinitions.get(viewName);
+        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+        Entity entity = getActivePlugin(dataDefinition, viewDefinition.getPluginCodeId());
+        if (entity != null) {
+            return viewDefinition;
+        }
+        return new ViewDefinition("main", "");
     }
 
     @Override
@@ -735,6 +742,24 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         }
 
         return criteria.list();
+    }
+
+    private Entity getActivePlugin(final DataDefinition dataDefinition, final String pluginCodeId) {
+        checkNotNull(dataDefinition, "dataDefinition must be given");
+        checkNotNull(pluginCodeId, "pluginCodeId must be given");
+        Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
+                .add(Restrictions.eq("codeId", pluginCodeId)).add(Restrictions.eq("active", true));
+        if (dataDefinition.isDeletable()) {
+            entityService.addDeletedRestriction(criteria);
+        }
+
+        Object databaseEntity = criteria.uniqueResult();
+
+        if (databaseEntity == null) {
+            return null;
+        }
+
+        return entityService.convertToGenericEntity(dataDefinition, databaseEntity);
     }
 
     private Session getCurrentSession() {
