@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.classic.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,11 +80,20 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
-        List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>(viewDefinitions.values());
-        for (ViewDefinition viewDefinition : viewDefinitions.values()) {
-            DataDefinition gridDataDefinition = dataDefinitionService.get("plugins.plugin");
+        List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
+        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+        List<?> activePluginList = getActivePlugins(dataDefinition);
+        for (Object activePlugin : activePluginList) {
+            Entity entity = entityService.convertToGenericEntity(dataDefinition, activePlugin);
+            for (ViewDefinition viewDefinition : viewDefinitions.values()) {
+                if (((String) entity.getField("codeId")).equals(viewDefinition.getPluginCodeId())) {
+                    viewsList.add(viewDefinition);
+                }
+            }
         }
+
         Collections.sort(viewsList, new Comparator<ViewDefinition>() {
 
             @Override
@@ -92,7 +102,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
             }
         });
         return viewsList;
-
     }
 
     private ViewDefinition createProductGridView() {
@@ -717,22 +726,18 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return field;
     }
 
-    @Transactional
-    private boolean isActivePlugin(final DataDefinition dataDefinition, final String pluginCodeId) {
+    private List<?> getActivePlugins(final DataDefinition dataDefinition) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
-                .add(Restrictions.eq("codeId", pluginCodeId));
+        Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity()).add(
+                Restrictions.eq("active", true));
         if (dataDefinition.isDeletable()) {
             entityService.addDeletedRestriction(criteria);
         }
 
-        Object databaseEntity = criteria.uniqueResult();
-        if (databaseEntity == null) {
-            return false;
-        }
+        return criteria.list();
+    }
 
-        Entity entity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
-        // entity.getField("active").
-        return true;
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
     }
 }

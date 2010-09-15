@@ -313,6 +313,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
                 fieldValidationFactory.requiredOnCreate());
         DataFieldDefinition fieldBase = createFieldDefinition("base", fieldTypeFactory.booleanType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).readOnly();
+        DataFieldDefinition fieldCodeId = createFieldDefinition("codeId", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldPackageName = createFieldDefinition("packageName", fieldTypeFactory.stringType());
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.plugin.management.beans.Plugin");
         dataDefinition.addField(fieldName);
@@ -321,6 +323,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldPublisher);
         dataDefinition.addField(fieldActive);
         dataDefinition.addField(fieldBase);
+        dataDefinition.addField(fieldCodeId);
+        dataDefinition.addField(fieldPackageName);
 
         return dataDefinition;
     }
