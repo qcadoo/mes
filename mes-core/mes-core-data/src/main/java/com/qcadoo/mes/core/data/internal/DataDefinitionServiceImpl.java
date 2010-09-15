@@ -303,13 +303,16 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinition dataDefinition = new DataDefinition("plugins.plugin");
 
         DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
-                fieldValidationFactory.required());
+                fieldValidationFactory.requiredOnCreate()).readOnly();
         DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
-        DataFieldDefinition fieldPublisher = createFieldDefinition("publisher", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldPublisher = createFieldDefinition("publisher", fieldTypeFactory.stringType()).withValidator(
+                fieldValidationFactory.requiredOnCreate()).readOnly();
         DataFieldDefinition fieldVersion = createFieldDefinition("version", fieldTypeFactory.stringType()).withValidator(
-                fieldValidationFactory.required());
+                fieldValidationFactory.requiredOnCreate()).readOnly();
         DataFieldDefinition fieldActive = createFieldDefinition("active", fieldTypeFactory.booleanType()).withValidator(
-                fieldValidationFactory.required());
+                fieldValidationFactory.requiredOnCreate());
+        DataFieldDefinition fieldBase = createFieldDefinition("base", fieldTypeFactory.booleanType()).withValidator(
+                fieldValidationFactory.requiredOnCreate()).readOnly();
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.plugin.management.beans.Plugin");
         dataDefinition.addField(fieldName);
@@ -317,6 +320,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldVersion);
         dataDefinition.addField(fieldPublisher);
         dataDefinition.addField(fieldActive);
+        dataDefinition.addField(fieldBase);
 
         return dataDefinition;
     }

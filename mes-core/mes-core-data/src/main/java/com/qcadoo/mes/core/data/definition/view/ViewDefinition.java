@@ -11,8 +11,11 @@ public class ViewDefinition {
 
     private String header;
 
-    public ViewDefinition(final String name) {
+    private String codeId;
+
+    public ViewDefinition(final String name, final String codeId) {
         this.name = name;
+        this.codeId = codeId;
     }
 
     public String getName() {
@@ -46,6 +49,14 @@ public class ViewDefinition {
 
     public void setHeader(final String header) {
         this.header = header;
+    }
+
+    public String getCodeId() {
+        return codeId;
+    }
+
+    public void setCodeId(final String codeId) {
+        this.codeId = codeId;
     }
 
 }

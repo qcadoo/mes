@@ -20,8 +20,8 @@ import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.form.FormDefinition;
 import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
 import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
-import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
+import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 import com.qcadoo.mes.plugins.crud.mock.MessageSourceMock;
 import com.qcadoo.mes.plugins.crud.translation.TranslationServiceImpl;
 
@@ -44,7 +44,7 @@ public class CrudTemplateControllerGetViewTest {
         ReflectionTestUtils.setField(translationService, "messageSource", new MessageSourceMock());
         ReflectionTestUtils.setField(controller, "translationService", translationService);
 
-        viewDefinition = new ViewDefinition("testView");
+        viewDefinition = new ViewDefinition("testView", "tests");
         ComponentDefinition viewElementDefinition1 = new FormDefinition("testForm", new DataDefinition("testEntity1"));
         GridDefinition viewElementDefinition2 = new GridDefinition("testGrid", new DataDefinition("testEntity2"));
         viewElementDefinition2.setColumns(new LinkedList<ColumnDefinition>());

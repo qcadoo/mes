@@ -28,7 +28,7 @@ public class TranslationServiceImplUpdateTranslationsForViewDefinitionTest {
     @Test
     public void shouldTranslateViewDefinition() {
         // given
-        ViewDefinition viewDefinition = new ViewDefinition("testView");
+        ViewDefinition viewDefinition = new ViewDefinition("testView", "tests");
         viewDefinition.setHeader("view header");
 
         DataDefinition formDD = new DataDefinition("testEntity1");

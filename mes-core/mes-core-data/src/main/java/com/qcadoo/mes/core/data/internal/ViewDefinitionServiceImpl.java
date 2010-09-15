@@ -57,6 +57,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinitions.put("core.dictionaryDetailsView", createDictionaryDetailsView());
         viewDefinitions.put("core.dictionaryItemDetailsView", createDictionaryItemDetailsView());
         viewDefinitions.put("plugins.pluginGridView", createPluginGridView());
+        viewDefinitions.put("plugins.pluginDetailsView", createPluginDetailsView());
     }
 
     @Override
@@ -79,7 +80,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductGridView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.productGridView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.productGridView", "products");
         viewDefinition.setHeader("products.productGridView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
@@ -110,7 +111,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView", "products");
         viewDefinition.setHeader("products.productDetailsView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
@@ -193,7 +194,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductSubstituteDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView", "products");
         viewDefinition.setHeader("products.substituteDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -227,7 +228,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductSubstituteComponentDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.substituteComponentDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.substituteComponentDetailsView", "products");
         viewDefinition.setHeader("products.substituteComponentDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -252,7 +253,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createUserGroupGridView() {
-        ViewDefinition viewDefinition = new ViewDefinition("users.groupGridView");
+        ViewDefinition viewDefinition = new ViewDefinition("users.groupGridView", "users");
         viewDefinition.setHeader("users.groupGridView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
@@ -277,7 +278,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createUserGroupDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("users.groupDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("users.groupDetailsView", "users");
         viewDefinition.setHeader("users.groupDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -304,7 +305,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createUserGridView() {
-        ViewDefinition viewDefinition = new ViewDefinition("users.userGridView");
+        ViewDefinition viewDefinition = new ViewDefinition("users.userGridView", "users");
         viewDefinition.setHeader("users.userGridView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
@@ -335,7 +336,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createUserDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("users.userDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("users.userDetailsView", "users");
         viewDefinition.setHeader("users.userDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -377,7 +378,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createInstructionGridView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.instructionGridView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.instructionGridView", "products");
         viewDefinition.setHeader("products.instructionGridView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
@@ -406,7 +407,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createOrderGridView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.orderGridView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.orderGridView", "products");
         viewDefinition.setHeader("products.orderGridView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
@@ -433,7 +434,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createOrderDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.orderDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.orderDetailsView", "products");
         viewDefinition.setHeader("products.orderDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -497,7 +498,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createInstructionDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("products.instructionDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("products.instructionDetailsView", "products");
         viewDefinition.setHeader("products.instructionDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -540,7 +541,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createDictionaryGridView() {
-        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryGridView");
+        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryGridView", "dictionaries");
         viewDefinition.setHeader("core.dictionaryGridView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
@@ -566,7 +567,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createDictionaryDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryDetailsView", "dictionaries");
         viewDefinition.setHeader("core.dictionaryDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -593,7 +594,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createDictionaryItemDetailsView() {
-        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryItemDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryItemDetailsView", "dictionaries");
         viewDefinition.setHeader("core.dictionaryItemDetailsView.header");
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
 
@@ -618,12 +619,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createPluginGridView() {
-        ViewDefinition viewDefinition = new ViewDefinition("plugins.pluginGridView");
+        ViewDefinition viewDefinition = new ViewDefinition("plugins.pluginGridView", "plugins");
         viewDefinition.setHeader("plugins.pluginGridView.header");
 
         List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
         DataDefinition gridDataDefinition = dataDefinitionService.get("plugins.plugin");
         GridDefinition gridDefinition = new GridDefinition("plugins", gridDataDefinition);
+        gridDefinition.setCorrespondingViewName("plugins.pluginDetailsView");
         Map<String, String> gridOptions = new HashMap<String, String>();
         gridOptions.put("paging", "true");
         gridOptions.put("sortable", "true");
@@ -643,6 +645,42 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnActive, columnName, columnVersion,
                 columnPublisher, columnDescription }));
         elements.add(gridDefinition);
+
+        viewDefinition.setElements(elements);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createPluginDetailsView() {
+        ViewDefinition viewDefinition = new ViewDefinition("plugins.pluginDetailsView", "plugins");
+        viewDefinition.setHeader("plugins.pluginDetailsView.header");
+        List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
+
+        DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins.plugin");
+        FormDefinition formDefinition = new FormDefinition("pluginDetailsForm", pluginDataDefinition);
+        formDefinition.setParent("entityId");
+        formDefinition.setCorrespondingViewName("plugins.pluginGridView");
+
+        FormFieldDefinition fieldName = createFieldDefinition("name", pluginDataDefinition.getField("name"),
+                fieldControlFactory.stringControl());
+        FormFieldDefinition fieldVersion = createFieldDefinition("version", pluginDataDefinition.getField("version"),
+                fieldControlFactory.stringControl());
+        FormFieldDefinition fieldPublisher = createFieldDefinition("publisher", pluginDataDefinition.getField("publisher"),
+                fieldControlFactory.stringControl());
+        FormFieldDefinition fieldDescription = createFieldDefinition("description", pluginDataDefinition.getField("description"),
+                fieldControlFactory.textControl());
+        FormFieldDefinition fieldActive = createFieldDefinition("active", pluginDataDefinition.getField("active"),
+                fieldControlFactory.yesNoControl());
+        FormFieldDefinition fieldBase = createFieldDefinition("base", pluginDataDefinition.getField("base"),
+                fieldControlFactory.yesNoControl());
+
+        formDefinition.addField(fieldName);
+        formDefinition.addField(fieldVersion);
+        formDefinition.addField(fieldPublisher);
+        formDefinition.addField(fieldDescription);
+        formDefinition.addField(fieldActive);
+        formDefinition.addField(fieldBase);
+
+        elements.add(formDefinition);
 
         viewDefinition.setElements(elements);
         return viewDefinition;

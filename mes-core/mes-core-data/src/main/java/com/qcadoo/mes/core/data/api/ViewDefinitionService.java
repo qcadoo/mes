@@ -10,7 +10,7 @@ public interface ViewDefinitionService {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or ((#viewName != 'users.userGridView') and (#viewName != 'users.userDetailsView')"
             + " and (#viewName != 'users.groupGridView') and (#viewName != 'users.groupDetailsView')"
-            + " and (#viewName != 'plugins.pluginGridView'))")
+            + " and (#viewName != 'plugins.pluginGridView') and (#viewName != 'plugins.pluginDetailsView'))")
     ViewDefinition getViewDefinition(String viewName);
 
     List<ViewDefinition> getAllViews();

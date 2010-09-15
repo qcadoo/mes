@@ -25,6 +25,21 @@ public final class Plugin {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean active;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean base;
+
+    private String codeId;
+
+    private String packageName;
+
+    public boolean isBase() {
+        return base;
+    }
+
+    public void setBase(final boolean base) {
+        this.base = base;
+    }
+
     public Long getId() {
         return id;
     }
@@ -79,6 +94,22 @@ public final class Plugin {
 
     public void setActive(final boolean active) {
         this.active = active;
+    }
+
+    public String getCodeId() {
+        return codeId;
+    }
+
+    public void setCodeId(final String codeId) {
+        this.codeId = codeId;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(final String packageName) {
+        this.packageName = packageName;
     }
 
 }
