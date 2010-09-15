@@ -11,7 +11,12 @@
 
 	<name>Qcadoo MES</name>
 
-	<url>http://www.qcadoo.com/public/</url>
+	<organization>
+		<name>Qcadoo Limited</name>
+		<url>http://www.qcadoo.com/</url>
+	</organization>
+
+	<url>http://www.qcadoo.com/</url>
 
 	<modules>
 		<module>mes-core</module>

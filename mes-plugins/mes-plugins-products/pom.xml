@@ -15,4 +15,8 @@
 
 	<name>Qcadoo MES :: Plugins :: Products</name>
 
+	<properties>
+		<mes.plugin.identifier>products</mes.plugin.identifier>
+	</properties>
+
 </project>

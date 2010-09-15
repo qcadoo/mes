@@ -15,6 +15,10 @@
 
 	<name>Qcadoo MES :: Plugins :: CRUD</name>
 
+	<properties>
+		<mes.plugin.identifier>crud</mes.plugin.identifier>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.json</groupId>

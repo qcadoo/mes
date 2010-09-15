@@ -15,4 +15,8 @@
 
 	<name>Qcadoo MES :: Plugins :: User Management</name>
 
+	<properties>
+		<mes.plugin.identifier>users</mes.plugin.identifier>
+	</properties>
+
 </project>
