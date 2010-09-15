@@ -11,11 +11,11 @@ public class ViewDefinition {
 
     private String header;
 
-    private String codeId;
+    private String pluginCodeId;
 
-    public ViewDefinition(final String name, final String codeId) {
+    public ViewDefinition(final String name, final String pluginCodeId) {
         this.name = name;
-        this.codeId = codeId;
+        this.pluginCodeId = pluginCodeId;
     }
 
     public String getName() {
@@ -51,12 +51,12 @@ public class ViewDefinition {
         this.header = header;
     }
 
-    public String getCodeId() {
-        return codeId;
+    public String getPluginCodeId() {
+        return pluginCodeId;
     }
 
-    public void setCodeId(final String codeId) {
-        this.codeId = codeId;
+    public void setPluginCodeId(final String pluginCodeId) {
+        this.pluginCodeId = pluginCodeId;
     }
 
 }

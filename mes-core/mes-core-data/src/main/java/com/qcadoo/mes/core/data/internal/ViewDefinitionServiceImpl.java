@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,11 +13,16 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.controls.FieldControl;
 import com.qcadoo.mes.core.data.controls.FieldControlFactory;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
@@ -29,6 +36,12 @@ import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    @Autowired
+    private EntityService entityService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -68,6 +81,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Override
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>(viewDefinitions.values());
+        for (ViewDefinition viewDefinition : viewDefinitions.values()) {
+            DataDefinition gridDataDefinition = dataDefinitionService.get("plugins.plugin");
+        }
         Collections.sort(viewsList, new Comparator<ViewDefinition>() {
 
             @Override
@@ -701,4 +717,22 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return field;
     }
 
+    @Transactional
+    private boolean isActivePlugin(final DataDefinition dataDefinition, final String pluginCodeId) {
+        checkNotNull(dataDefinition, "dataDefinition must be given");
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
+                .add(Restrictions.eq("codeId", pluginCodeId));
+        if (dataDefinition.isDeletable()) {
+            entityService.addDeletedRestriction(criteria);
+        }
+
+        Object databaseEntity = criteria.uniqueResult();
+        if (databaseEntity == null) {
+            return false;
+        }
+
+        Entity entity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
+        // entity.getField("active").
+        return true;
+    }
 }
