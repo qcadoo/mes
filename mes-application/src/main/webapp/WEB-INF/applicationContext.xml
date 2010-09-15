@@ -8,6 +8,9 @@
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+	<bean class="com.qcadoo.mes.PluginResourcesResolver">
+	</bean>
+
 	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
@@ -57,7 +60,7 @@
 
 	<bean id="messageSource"
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basename" value="/resources/messages" />
+		<property name="basename" value="/WEB-INF/locales/messages" />
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 
