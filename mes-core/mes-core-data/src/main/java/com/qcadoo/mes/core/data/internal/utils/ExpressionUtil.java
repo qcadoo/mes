@@ -13,7 +13,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.view.elements.grid.ColumnDefinition;
 
 public final class ExpressionUtil {
 

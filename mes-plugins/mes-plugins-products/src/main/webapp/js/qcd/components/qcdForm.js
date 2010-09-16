@@ -23,6 +23,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	sendSaveRequest = function(shouldRedirect) {
 		clearErrorMessages();
+		hideSaveInfo();
 		
 		if(!validateForm()) {
 			return;
@@ -50,6 +51,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 						if (shouldRedirect) {
 							redirectToCorrespondingPage();
 						} else {
+							showSaveInfo();
 							refreshForm(response.entity, true);
 						}
 					} else {
@@ -70,6 +72,14 @@ QCD.elements.FormElement = function(args, _mainController) {
 	
 	redirectToCorrespondingPage = function() {
 		mainController.goBack();
+	}
+	
+	showSaveInfo = function() {
+		$('#'+parameters.name+'_globalInfo').show().html(mainController.getTranslation('commons.form.message.save'));
+	}
+	
+	hideSaveInfo = function() {
+		$('#'+parameters.name+'_globalInfo').hide();
 	}
 	
 	validateForm = function() {

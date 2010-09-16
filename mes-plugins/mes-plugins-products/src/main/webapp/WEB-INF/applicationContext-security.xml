@@ -20,7 +20,7 @@
         <logout logout-success-url="/login.html?logout=true"/>
         
         <session-management invalid-session-url="/login.html?timeout=true">
-            <concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
+            <!--<concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>-->
         </session-management>
         
         <custom-filter ref="mySessionExpirationFilter" before="FIRST"/>

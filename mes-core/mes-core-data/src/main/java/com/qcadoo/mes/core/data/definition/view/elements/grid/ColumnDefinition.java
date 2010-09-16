@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.definition.grid;
+package com.qcadoo.mes.core.data.definition.view.elements.grid;
 
 import java.util.List;
 

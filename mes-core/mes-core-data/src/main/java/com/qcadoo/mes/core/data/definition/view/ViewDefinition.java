@@ -1,51 +1,30 @@
 package com.qcadoo.mes.core.data.definition.view;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 
-public class ViewDefinition {
+public class ViewDefinition extends ContainerDefinition {
 
-    private String name;
+    private final DataDefinition dataDefinition;
 
-    private List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
+    private final boolean forEntity;
 
-    private String header;
-
-    public ViewDefinition(final String name) {
-        this.name = name;
+    public ViewDefinition(final String name, final DataDefinition dataDefinition, boolean forEntity) {
+        super(name, null);
+        this.dataDefinition = dataDefinition;
+        this.forEntity = forEntity;
     }
 
-    public String getName() {
-        return name;
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    @Override
+    public int getType() {
+        return ComponentDefinition.TYPE_CONTAINER_WINDOW;
     }
 
-    public List<ComponentDefinition> getElements() {
-        return elements;
-    }
-
-    public void setElements(final List<ComponentDefinition> elements) {
-        this.elements = elements;
-    }
-
-    public ComponentDefinition getElementByName(final String elementName) {
-        for (ComponentDefinition element : elements) {
-            if (elementName.equals(element.getName())) {
-                return element;
-            }
-        }
-        return null;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(final String header) {
-        this.header = header;
+    public boolean isForEntity() {
+        return forEntity;
     }
 
 }

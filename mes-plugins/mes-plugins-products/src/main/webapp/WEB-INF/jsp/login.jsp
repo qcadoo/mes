@@ -15,6 +15,7 @@
 
 		jQuery(document).ready(function(){
 			$("#languageSelect").val("${currentLanguage}");
+			$("#usernameInput").focus();
 		});
 	
 		changeLanguage = function(language) {
@@ -82,7 +83,7 @@
  		
 	<form id="loginForm" name="loginForm" action="<c:url value='j_spring_security_check'/>" method="POST">
  		<table>
-        	<tr><td>${translation["login.form.label.login"]}</td><td><input type='text' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
+        	<tr><td>${translation["login.form.label.login"]}</td><td><input type='text' id="usernameInput" name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
  	       <tr><td>${translation["login.form.label.password"]}</td><td><input type='password' name='j_password'></td></tr>
 		</table>
 		<div>

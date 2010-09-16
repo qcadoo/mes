@@ -2,37 +2,50 @@ package com.qcadoo.mes.core.data.definition.view;
 
 import java.util.Map;
 
+import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 
 public abstract class ComponentDefinition {
 
-    public static final int TYPE_GRID = 1;
+    public static final int TYPE_CONTAINER_WINDOW = 1;
 
-    public static final int TYPE_FORM = 2;
+    public static final int TYPE_CONTAINER_FORM = 2;
+
+    public static final int TYPE_ELEMENT_GRID = 3;
+
+    public static final int TYPE_ELEMENT_TEXT_INPUT = 4;
 
     private String name;
 
-    private String header;
-
-    private DataDefinition dataDefinition;
-
     private Map<String, String> options;
 
-    private Map<String, String> events;
+    // private String parent; // null, "entityId", "viewElement:{name}"
 
-    private String parent; // null, "entityId", "viewElement:{name}"
+    // private String parentField;
 
-    private String parentField;
+    // private String correspondingViewName;
 
-    private String correspondingViewName;
+    // private boolean correspondingViewModal = false;
 
-    private boolean correspondingViewModal = false;
+    private boolean hidden;
+
+    private boolean editable;
+
+    private final String dataSource; // entity, entity.field[.field], #fieldName.field[.field]
+
+    private boolean lisinable = false;
 
     public abstract int getType();
 
-    public ComponentDefinition(final String name, final DataDefinition dataDefinition) {
+    public abstract Object getValue(DataDefinition dataDefinition, DataAccessService dataAccessService, Entity entity);
+
+    public abstract Object getUpdateValues(Map<String, String> updateComponents);
+
+    public ComponentDefinition(final String name, final String dataSource) {
         this.name = name;
-        this.dataDefinition = dataDefinition;
+        this.dataSource = dataSource;
+        // / this.dataDefinition = dataDefinition;
     }
 
     public String getName() {
@@ -43,14 +56,6 @@ public abstract class ComponentDefinition {
         this.name = name;
     }
 
-    public DataDefinition getDataDefinition() {
-        return dataDefinition;
-    }
-
-    public void setDataDefinition(final DataDefinition dataDefinition) {
-        this.dataDefinition = dataDefinition;
-    }
-
     public Map<String, String> getOptions() {
         return options;
     }
@@ -59,52 +64,72 @@ public abstract class ComponentDefinition {
         this.options = options;
     }
 
-    public Map<String, String> getEvents() {
-        return events;
+    public boolean isHidden() {
+        return hidden;
     }
 
-    public void setEvents(final Map<String, String> events) {
-        this.events = events;
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
-    public String getParentField() {
-        return parentField;
+    public boolean isEditable() {
+        return editable;
     }
 
-    public void setParentField(final String parentField) {
-        this.parentField = parentField;
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
-    public String getParent() {
-        return parent;
+    public String getDataSource() {
+        return dataSource;
     }
 
-    public void setParent(final String parent) {
-        this.parent = parent;
+    public boolean isLisinable() {
+        return lisinable;
     }
 
-    public String getCorrespondingViewName() {
-        return correspondingViewName;
+    public void setLisinable(boolean lisinable) {
+        this.lisinable = lisinable;
     }
 
-    public void setCorrespondingViewName(final String correspondingViewName) {
-        this.correspondingViewName = correspondingViewName;
-    }
-
-    public boolean isCorrespondingViewModal() {
-        return correspondingViewModal;
-    }
-
-    public void setCorrespondingViewModal(final boolean correspondingViewModal) {
-        this.correspondingViewModal = correspondingViewModal;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(final String header) {
-        this.header = header;
-    }
+    // public String getParentField() {
+    // return parentField;
+    // }
+    //
+    // public void setParentField(final String parentField) {
+    // this.parentField = parentField;
+    // }
+    //
+    // public String getParent() {
+    // return parent;
+    // }
+    //
+    // public void setParent(final String parent) {
+    // this.parent = parent;
+    // }
+    //
+    // public String getCorrespondingViewName() {
+    // return correspondingViewName;
+    // }
+    //
+    // public void setCorrespondingViewName(final String correspondingViewName) {
+    // this.correspondingViewName = correspondingViewName;
+    // }
+    //
+    // public boolean isCorrespondingViewModal() {
+    // return correspondingViewModal;
+    // }
+    //
+    // public void setCorrespondingViewModal(final boolean correspondingViewModal) {
+    // this.correspondingViewModal = correspondingViewModal;
+    // }
+    //
+    // public String getHeader() {
+    // return header;
+    // }
+    //
+    // public void setHeader(final String header) {
+    // this.header = header;
+    // }
 
 }

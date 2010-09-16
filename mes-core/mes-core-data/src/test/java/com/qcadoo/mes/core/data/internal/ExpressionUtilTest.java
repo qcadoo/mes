@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.view.elements.grid.ColumnDefinition;
 import com.qcadoo.mes.core.data.internal.types.IntegerType;
 import com.qcadoo.mes.core.data.internal.types.StringType;
 import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;

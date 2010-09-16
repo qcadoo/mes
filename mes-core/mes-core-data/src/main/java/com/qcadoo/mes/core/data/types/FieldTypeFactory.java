@@ -30,4 +30,6 @@ public interface FieldTypeFactory {
 
     LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName);
 
+    FieldType hasManyType(final String entityName, final String fieldName);
+
 }

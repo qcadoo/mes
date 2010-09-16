@@ -16,6 +16,9 @@ import com.qcadoo.mes.core.data.beans.ProductInstruction;
 import com.qcadoo.mes.core.data.beans.ProductOrder;
 import com.qcadoo.mes.core.data.beans.Substitute;
 import com.qcadoo.mes.core.data.beans.SubstituteComponent;
+import com.qcadoo.mes.core.data.beans.TestBeanA;
+import com.qcadoo.mes.core.data.beans.TestBeanB;
+import com.qcadoo.mes.core.data.beans.TestBeanC;
 import com.qcadoo.mes.core.data.beans.Users;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
@@ -62,9 +65,69 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
             dataDefinition = createDictionaryDefinition();
         } else if ("core.dictionaryItem".equals(entityName)) {
             dataDefinition = createDictionaryItemDefinition();
+        } else if ("test.testBeanA".equals(entityName)) {
+            dataDefinition = createTestBeanAItemDefinition();
+        } else if ("test.testBeanB".equals(entityName)) {
+            dataDefinition = createTestBeanBItemDefinition();
+        } else if ("test.testBeanC".equals(entityName)) {
+            dataDefinition = createTestBeanCItemDefinition();
         }
 
         checkNotNull(dataDefinition, "data definition for %s cannot be found", entityName);
+
+        return dataDefinition;
+    }
+
+    private DataDefinition createTestBeanAItemDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("test.testBeanA");
+        dataDefinition.setFullyQualifiedClassName(TestBeanA.class.getCanonicalName());
+
+        DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldBeanB = createFieldDefinition("beanB",
+                fieldTypeFactory.eagerBelongsToType("test.testBeanB", "name"));
+        DataFieldDefinition fieldBeansC = createFieldDefinition("beansC", fieldTypeFactory.hasManyType("test.testBeanC", "beanA"));
+
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDescription);
+        dataDefinition.addField(fieldBeanB);
+        dataDefinition.addField(fieldBeansC);
+
+        return dataDefinition;
+    }
+
+    private DataDefinition createTestBeanBItemDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("test.testBeanB");
+        dataDefinition.setFullyQualifiedClassName(TestBeanB.class.getCanonicalName());
+
+        DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldBeansA = createFieldDefinition("beansA", fieldTypeFactory.hasManyType("test.testBeanA", "beanB"));
+        DataFieldDefinition fieldBeanC = createFieldDefinition("beanC",
+                fieldTypeFactory.eagerBelongsToType("test.testBeanC", "name"));
+
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDescription);
+        dataDefinition.addField(fieldBeansA);
+        dataDefinition.addField(fieldBeanC);
+
+        return dataDefinition;
+    }
+
+    private DataDefinition createTestBeanCItemDefinition() {
+        DataDefinition dataDefinition = new DataDefinition("test.testBeanC");
+        dataDefinition.setFullyQualifiedClassName(TestBeanC.class.getCanonicalName());
+
+        DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldBeanA = createFieldDefinition("beanA",
+                fieldTypeFactory.eagerBelongsToType("test.testBeanA", "name"));
+        DataFieldDefinition fieldBeansB = createFieldDefinition("beansB", fieldTypeFactory.hasManyType("test.testBeanB", "beanC"));
+
+        dataDefinition.addField(fieldName);
+        dataDefinition.addField(fieldDescription);
+        dataDefinition.addField(fieldBeanA);
+        dataDefinition.addField(fieldBeansB);
 
         return dataDefinition;
     }
@@ -82,6 +145,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldEan = createFieldDefinition("ean", fieldTypeFactory.stringType());
         DataFieldDefinition fieldCategory = createFieldDefinition("category", fieldTypeFactory.dictionaryType("categories"));
         DataFieldDefinition fieldUnit = createFieldDefinition("unit", fieldTypeFactory.stringType());
+        DataFieldDefinition fieldSubstitutes = createFieldDefinition("substitutes",
+                fieldTypeFactory.hasManyType("products.substitute", "product"));
 
         dataDefinition.setFullyQualifiedClassName(Product.class.getCanonicalName());
         dataDefinition.addField(fieldNumber);
@@ -90,6 +155,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldEan);
         dataDefinition.addField(fieldCategory);
         dataDefinition.addField(fieldUnit);
+        dataDefinition.addField(fieldSubstitutes);
 
         return dataDefinition;
     }
@@ -105,6 +171,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataFieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateTimeType());
         DataFieldDefinition fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name")).withValidator(fieldValidationFactory.required());
+        DataFieldDefinition fieldComponents = createFieldDefinition("components",
+                fieldTypeFactory.hasManyType("products.substituteComponent", "substitute"));
 
         DataFieldDefinition fieldPriority = createFieldDefinition("priority", fieldTypeFactory.priorityType(fieldProduct))
                 .readOnly();
@@ -115,6 +183,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldEffectiveDateFrom);
         dataDefinition.addField(fieldEffectiveDateTo);
         dataDefinition.addField(fieldProduct);
+        dataDefinition.addField(fieldComponents);
 
         dataDefinition.setPriorityField(fieldPriority);
 

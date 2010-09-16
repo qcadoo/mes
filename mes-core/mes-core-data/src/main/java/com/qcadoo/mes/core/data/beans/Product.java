@@ -1,8 +1,13 @@
 package com.qcadoo.mes.core.data.beans;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 @Entity
 public final class Product {
@@ -26,6 +31,10 @@ public final class Product {
     private String unit;
 
     private boolean deleted;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private List<Substitute> substitutes;
 
     public Long getId() {
         return id;
@@ -97,6 +106,14 @@ public final class Product {
 
     public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public List<Substitute> getSubstitutes() {
+        return substitutes;
+    }
+
+    public void setSubstitutes(List<Substitute> substitutes) {
+        this.substitutes = substitutes;
     }
 
 }

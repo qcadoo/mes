@@ -11,6 +11,7 @@
 
 <form id="${formElement.name}_form">
 	<div id="${formElement.name}_globalErrors" class="errorMessage validatorGlobalMessage"></div>
+	<div id="${formElement.name}_globalInfo" class="infoMessage"></div>
 	<table>
 		<c:forEach items="${formElement.fields}" var="field">
 		

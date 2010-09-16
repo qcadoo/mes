@@ -112,4 +112,8 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
         return new PriorityType(scopeFieldDefinition);
     }
 
+    @Override
+    public FieldType hasManyType(final String entityName, final String fieldName) {
+        return new HasManyType(entityName, fieldName);
+    }
 }

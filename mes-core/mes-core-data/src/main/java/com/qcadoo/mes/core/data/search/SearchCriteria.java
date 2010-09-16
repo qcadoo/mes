@@ -3,12 +3,12 @@ package com.qcadoo.mes.core.data.search;
 import java.util.Set;
 
 import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
+import com.qcadoo.mes.core.data.definition.view.elements.grid.GridDefinition;
 
 /**
  * Object represents the criteria for listing entities. Together with definition -
  * {@link com.qcadoo.mes.core.data.definition.DataDefinition} - and grip - optionally
- * {@link com.qcadoo.mes.core.data.definition.grid.GridDefinition} - it is used for building SQL query.
+ * {@link com.qcadoo.mes.core.data.definition.view.elements.grid.GridDefinition} - it is used for building SQL query.
  * 
  * Order can be build only using orderable fields - {@link com.qcadoo.mes.core.data.types.FieldType#isOrderable()}.
  * 

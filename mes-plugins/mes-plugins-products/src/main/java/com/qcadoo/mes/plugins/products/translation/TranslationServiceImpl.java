@@ -3,20 +3,15 @@ package com.qcadoo.mes.plugins.products.translation;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.definition.form.FormDefinition;
-import com.qcadoo.mes.core.data.definition.form.FormFieldDefinition;
-import com.qcadoo.mes.core.data.definition.grid.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.grid.GridDefinition;
-import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
+import com.qcadoo.mes.core.data.definition.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.definition.view.elements.grid.GridDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 
@@ -25,8 +20,8 @@ public class TranslationServiceImpl implements TranslationService {
 
     private static final String[] commonsMessages = new String[] { "commons.confirm.deleteMessage",
             "commons.loading.gridLoading", "commons.button.go", "commons.button.logout", "commons.form.button.accept",
-            "commons.form.button.acceptAndClose", "commons.form.button.cancel", "commons.grid.button.new",
-            "commons.grid.button.delete", "commons.grid.button.sort", "commons.grid.button.sort.asc",
+            "commons.form.button.acceptAndClose", "commons.form.button.cancel", "commons.form.message.save",
+            "commons.grid.button.new", "commons.grid.button.delete", "commons.grid.button.sort", "commons.grid.button.sort.asc",
             "commons.grid.button.sort.desc", "commons.grid.button.filter", "commons.grid.button.filter.null",
             "commons.grid.button.filter.notNull", "commons.grid.button.prev", "commons.grid.button.next",
             "commons.grid.span.pageInfo", "commons.grid.span.priority", "commons.grid.button.up", "commons.grid.button.down",
@@ -87,54 +82,54 @@ public class TranslationServiceImpl implements TranslationService {
         }
     }
 
-    private void addDataFieldTranslation(final ViewDefinition viewDefinition, final ComponentDefinition elementDefinition,
-            final DataFieldDefinition field, final Map<String, String> translationsMap, final Locale locale) {
-        String messageCode = viewDefinition.getName() + "." + elementDefinition.getName() + ".field." + field.getName();
-        try {
-            translationsMap.put(messageCode, translateWithError(messageCode, locale));
-        } catch (NoSuchMessageException e) {
-            String entityFieldCode = "entity." + elementDefinition.getDataDefinition().getName() + ".field." + field.getName();
-            translationsMap.put(messageCode, translate(entityFieldCode, locale));
-        }
-    }
+    // private void addDataFieldTranslation(final ViewDefinition viewDefinition, final ComponentDefinition elementDefinition,
+    // final DataFieldDefinition field, final Map<String, String> translationsMap, final Locale locale) {
+    // String messageCode = viewDefinition.getName() + "." + elementDefinition.getName() + ".field." + field.getName();
+    // try {
+    // translationsMap.put(messageCode, translateWithError(messageCode, locale));
+    // } catch (NoSuchMessageException e) {
+    // String entityFieldCode = "entity." + elementDefinition.getDataDefinition().getName() + ".field." + field.getName();
+    // translationsMap.put(messageCode, translate(entityFieldCode, locale));
+    // }
+    // }
 
-    private void addFormFieldTranslation(final ViewDefinition viewDefinition, final ComponentDefinition elementDefinition,
-            final FormFieldDefinition field, final Map<String, String> translationsMap, final Locale locale) {
-        String messageCode = viewDefinition.getName() + "." + elementDefinition.getName() + ".field." + field.getName();
-        try {
-            translationsMap.put(messageCode, translateWithError(messageCode, locale));
-        } catch (NoSuchMessageException e) {
-            String entityFieldCode = "entity." + elementDefinition.getDataDefinition().getName() + ".field." + field.getName();
-            translationsMap.put(messageCode, translate(entityFieldCode, locale));
-        }
-    }
+    // private void addFormFieldTranslation(final ViewDefinition viewDefinition, final ComponentDefinition elementDefinition,
+    // final FormFieldDefinition field, final Map<String, String> translationsMap, final Locale locale) {
+    // String messageCode = viewDefinition.getName() + "." + elementDefinition.getName() + ".field." + field.getName();
+    // try {
+    // translationsMap.put(messageCode, translateWithError(messageCode, locale));
+    // } catch (NoSuchMessageException e) {
+    // String entityFieldCode = "entity." + elementDefinition.getDataDefinition().getName() + ".field." + field.getName();
+    // translationsMap.put(messageCode, translate(entityFieldCode, locale));
+    // }
+    // }
 
     @Override
     public void updateTranslationsForViewDefinition(final ViewDefinition viewDefinition,
             final Map<String, String> translationsMap, final Locale locale) {
-        if (viewDefinition.getHeader() != null) {
-            putTranslationToMap(viewDefinition.getHeader(), translationsMap, locale);
-        }
-        for (ComponentDefinition viewElement : viewDefinition.getElements()) {
-            if (viewElement.getHeader() != null) {
-                putTranslationToMap(viewElement.getHeader(), translationsMap, locale);
-            }
-            if (viewElement.getType() == ComponentDefinition.TYPE_FORM) {
-                FormDefinition formDefinition = (FormDefinition) viewElement;
-                for (FormFieldDefinition formField : formDefinition.getFields()) {
-                    addFormFieldTranslation(viewDefinition, formDefinition, formField, translationsMap, locale);
-                }
-
-            } else if (viewElement.getType() == ComponentDefinition.TYPE_GRID) {
-                GridDefinition gridDefinition = (GridDefinition) viewElement;
-                for (ColumnDefinition column : gridDefinition.getColumns()) {
-                    addGridColumnTranslation(viewDefinition, gridDefinition, column, translationsMap, locale);
-                }
-                for (Entry<String, DataFieldDefinition> field : viewElement.getDataDefinition().getFields().entrySet()) {
-                    addDataFieldTranslation(viewDefinition, gridDefinition, field.getValue(), translationsMap, locale);
-                }
-            }
-        }
+        // if (viewDefinition.getHeader() != null) {
+        // putTranslationToMap(viewDefinition.getHeader(), translationsMap, locale);
+        // }
+        // for (ComponentDefinition viewElement : viewDefinition.getElements()) {
+        // if (viewElement.getHeader() != null) {
+        // putTranslationToMap(viewElement.getHeader(), translationsMap, locale);
+        // }
+        // if (viewElement.getType() == ComponentDefinition.TYPE_CONTAINER_FORM) {
+        // FormDefinition formDefinition = (FormDefinition) viewElement;
+        // for (FormFieldDefinition formField : formDefinition.getFields()) {
+        // addFormFieldTranslation(viewDefinition, formDefinition, formField, translationsMap, locale);
+        // }
+        //
+        // } else if (viewElement.getType() == ComponentDefinition.TYPE_CONTAINER_GRID) {
+        // GridDefinition gridDefinition = (GridDefinition) viewElement;
+        // for (ColumnDefinition column : gridDefinition.getColumns()) {
+        // addGridColumnTranslation(viewDefinition, gridDefinition, column, translationsMap, locale);
+        // }
+        // for (Entry<String, DataFieldDefinition> field : viewElement.getDataDefinition().getFields().entrySet()) {
+        // addDataFieldTranslation(viewDefinition, gridDefinition, field.getValue(), translationsMap, locale);
+        // }
+        // }
+        // }
     }
 
     @Override

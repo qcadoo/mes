@@ -22,11 +22,8 @@ public class SessionExpirationFilter implements Filter, InitializingBean {
     public void destroy() {
     }
 
-    @SuppressWarnings("cast")
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
-        // checkArgument(request instanceof HttpServletRequest, "must be HttpServletRequest");
-        // checkArgument(response instanceof HttpServletResponse, "must be HttpServletResponse");
         if (!(request instanceof HttpServletRequest)) {
             return;
         }
