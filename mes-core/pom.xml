@@ -17,10 +17,8 @@
 
 	<modules>
 		<module>mes-core-data</module>
-		<module>mes-core-modularity</module>
+		<module>mes-core-plugin-registry</module>
 		<module>mes-core-security</module>
-		<module>mes-core-utils</module>
-		<module>mes-core-test</module>
 	</modules>
 
 	<dependencies>
@@ -41,12 +39,16 @@
 			<artifactId>spring-orm</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-		</dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>hsqldb</groupId>

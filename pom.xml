@@ -11,17 +11,24 @@
 
 	<name>Qcadoo MES</name>
 
-	<url>http://www.qcadoo.com/public/</url>
+	<organization>
+		<name>Qcadoo Limited</name>
+		<url>http://www.qcadoo.com/</url>
+	</organization>
+
+	<url>http://www.qcadoo.com/</url>
 
 	<modules>
 		<module>mes-core</module>
 		<module>mes-plugins</module>
+		<module>mes-application</module>
 	</modules>
 
 	<properties>
-		<spring.version>3.0.3.RELEASE</spring.version>
+		<spring.version>3.0.4.RELEASE</spring.version>
+		<spring.security.version>3.0.3.RELEASE</spring.security.version>
 		<slf4j.version>1.5.8</slf4j.version>
-		<hibernate.version>3.5.4-Final</hibernate.version>
+		<hibernate.version>3.5.5-Final</hibernate.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -88,20 +95,20 @@
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
-            	<groupId>org.springframework.security</groupId>
-            	<artifactId>spring-security-core</artifactId>
-            	<version>${spring.version}</version>
-        	</dependency>
-        	<dependency>
-            	<groupId>org.springframework.security</groupId>
-            	<artifactId>spring-security-config</artifactId>
-            	<version>${spring.version}</version>
-        	</dependency>
-        	<dependency>
-        		<groupId>org.springframework.security</groupId>
-        		<artifactId>spring-security-web</artifactId>
-        		<version>${spring.version}</version>
-    		</dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>${spring.security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+				<version>${spring.security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${spring.security.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-entitymanager</artifactId>
@@ -111,6 +118,16 @@
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-annotations</artifactId>
 				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tiles</groupId>
+				<artifactId>tiles-jsp</artifactId>
+				<version>2.2.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tiles</groupId>
+				<artifactId>tiles-core</artifactId>
+				<version>2.2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -123,9 +140,14 @@
 				<version>8.4-701.jdbc4</version>
 			</dependency>
 			<dependency>
-				<groupId>jstl</groupId>
+				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
-				<version>1.1.2</version>
+				<version>1.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>20090211</version>
 			</dependency>
 			<dependency>
 				<groupId>c3p0</groupId>
@@ -154,6 +176,12 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- Commons -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -169,6 +197,11 @@
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.8.3</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>
@@ -263,8 +296,8 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:git://192.168.0.4/Users/git/mes.git</connection>
-		<developerConnection>scm:git:ssh://192.168.0.4/Users/git/mes.git</developerConnection>
+		<connection>scm:git://emhyr.qcadoo.private/Users/git/mes.git</connection>
+		<developerConnection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
 	</scm>
 
 </project>

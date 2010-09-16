@@ -11,97 +11,12 @@
 	</parent>
 
 	<artifactId>mes-plugins-products</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Products</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20090211</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tiles</groupId>
-			<artifactId>tiles-jsp</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tiles</groupId>
-			<artifactId>tiles-core</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
-		</dependency>
-	</dependencies>
-
-	<profiles>
-		<profile>
-			<id>jboss</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>jboss-maven-plugin</artifactId>
-						<configuration>
-							<hostName>localhost</hostName>
-							<port>8181</port>
-							<jbossHome>/Library/jboss</jbossHome>
-							<serverName>web</serverName>
-							<fileNames>
-								<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.war</fileName>
-							</fileNames>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>install</phase>
-								<goals>
-									<goal>hard-deploy</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>tomcat</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>tomcat-maven-plugin</artifactId>
-						<configuration>
-							<username>tomcat</username>
-							<password>tomcat</password>
-							<url>http://emhyr.qcadoo.private:8282/manager</url>
-							<warFile>${basedir}/target/${pom.artifactId}-${pom.version}.war</warFile>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	<properties>
+		<mes.plugin.identifier>products</mes.plugin.identifier>
+	</properties>
 
 </project>

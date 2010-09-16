@@ -14,11 +14,19 @@
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES :: Plugins</name>
+	<description></description>
+
+	<properties>
+		<mes.plugin.identifier></mes.plugin.identifier>
+		<mes.plugin.dependencies></mes.plugin.dependencies>
+	</properties>
 
 	<modules>
+		<module>mes-plugins-crud</module>
+		<module>mes-plugins-user-management</module>
+		<module>mes-plugins-dictionary-management</module>
+		<module>mes-plugins-plugin-management</module>
 		<module>mes-plugins-products</module>
-		<!-- <module>mes-plugins-rad-management</module> -->
-		<!-- <module>mes-plugins-users-management</module> -->
 	</modules>
 
 	<dependencies>
@@ -29,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-modularity</artifactId>
+			<artifactId>mes-core-plugin-registry</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
@@ -38,39 +46,64 @@
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-utils</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-test</artifactId>
-			<version>${pom.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-lgpl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
+			<artifactId>spring-test</artifactId>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<configuration>
+							<tasks>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+									classpathref="maven.plugin.classpath" />
+								<if>
+									<equals arg1="${pom.artifactId}" arg2="mes-plugins" />
+									<else>
+										<echoxml file="${basedir}/target/classes/plugin.xml">
+											<plugin>
+												<identifier>${mes.plugin.identifier}</identifier>
+												<name>${pom.name}</name>
+												<group>${pom.groupId}</group>
+												<version>${pom.version}</version>
+												<vendor>${pom.organization.name}</vendor>
+												<vendorUrl>${pom.organization.url}</vendorUrl>
+												<description>${pom.description}</description>
+												<dependencies>${mes.plugin.dependencies}</dependencies>
+											</plugin>
+										</echoxml>
+									</else>
+								</if>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

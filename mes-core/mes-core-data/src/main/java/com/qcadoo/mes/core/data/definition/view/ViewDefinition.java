@@ -8,10 +8,13 @@ public class ViewDefinition extends ContainerDefinition {
 
     private final boolean forEntity;
 
-    public ViewDefinition(final String name, final DataDefinition dataDefinition, boolean forEntity) {
+    private String pluginCodeId;
+
+    public ViewDefinition(final String name, final DataDefinition dataDefinition, final String pluginCodeId, boolean forEntity) {
         super(name, null);
         this.dataDefinition = dataDefinition;
         this.forEntity = forEntity;
+        this.pluginCodeId = pluginCodeId;
     }
 
     public DataDefinition getDataDefinition() {
@@ -25,6 +28,14 @@ public class ViewDefinition extends ContainerDefinition {
 
     public boolean isForEntity() {
         return forEntity;
+    }
+
+    public String getPluginCodeId() {
+        return pluginCodeId;
+    }
+
+    public void setPluginCodeId(final String pluginCodeId) {
+        this.pluginCodeId = pluginCodeId;
     }
 
 }
