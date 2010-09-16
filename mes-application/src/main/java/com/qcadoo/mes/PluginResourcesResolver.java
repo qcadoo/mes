@@ -77,11 +77,14 @@ public class PluginResourcesResolver implements ApplicationContextAware, Applica
                 LOG.debug("Copying " + path + " to " + file.getAbsolutePath());
             }
 
-            OutputStream output = new BufferedOutputStream(new FileOutputStream(file));
+            OutputStream output = null;
 
-            IOUtils.copy(resource.getInputStream(), output);
-
-            output.close();
+            try {
+                output = new BufferedOutputStream(new FileOutputStream(file));
+                IOUtils.copy(resource.getInputStream(), output);
+            } finally {
+                IOUtils.closeQuietly(output);
+            }
         }
     }
 }
