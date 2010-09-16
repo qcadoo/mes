@@ -168,11 +168,12 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private DataDefinition createUserGroupDefinition() {
         DataDefinition dataDefinition = new DataDefinition("users.group");
 
-        DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
-                fieldValidationFactory.required()).withValidator(fieldValidationFactory.unique());
+        DataFieldDefinition fieldName = createFieldDefinition("name", fieldTypeFactory.stringType())
+                .withValidator(fieldValidationFactory.requiredOnCreate()).withValidator(fieldValidationFactory.unique())
+                .readOnly();
         DataFieldDefinition fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType());
         DataFieldDefinition fieldRole = createFieldDefinition("role", fieldTypeFactory.stringType()).withValidator(
-                fieldValidationFactory.required());
+                fieldValidationFactory.requiredOnCreate()).readOnly();
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.beans.users.Groups");
         dataDefinition.addField(fieldName);

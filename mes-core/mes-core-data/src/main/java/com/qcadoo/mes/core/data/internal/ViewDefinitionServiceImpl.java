@@ -297,12 +297,15 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         gridOptions.put("paging", "true");
         gridOptions.put("sortable", "true");
         gridOptions.put("filter", "false");
-        gridOptions.put("multiselect", "true");
+        gridOptions.put("multiselect", "false");
         gridOptions.put("height", "450");
+        gridOptions.put("canDelete", "false");
+        gridOptions.put("canNew", "false");
         gridDefinition.setOptions(gridOptions);
         ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        ColumnDefinition columnRole = createColumnDefinition("role", gridDataDefinition.getField("role"), null);
 
-        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
+        gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnName, columnRole }));
         elements.add(gridDefinition);
 
         viewDefinition.setElements(elements);
