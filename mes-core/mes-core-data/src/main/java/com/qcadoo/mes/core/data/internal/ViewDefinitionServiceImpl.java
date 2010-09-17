@@ -78,7 +78,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         // viewDefinitions.put("core.dictionaryItemDetailsView", createDictionaryItemDetailsView());
         // viewDefinitions.put("plugins.pluginGridView", createPluginGridView());
         // viewDefinitions.put("plugins.pluginDetailsView", createPluginDetailsView());
-
     }
 
     @Override

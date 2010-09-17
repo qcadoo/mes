@@ -34,10 +34,10 @@ public abstract class ComponentDefinition {
         this.parentContainter = parentContainer;
         this.fieldPath = fieldPath;
 
-        if (sourceFieldPath.startsWith("#")) {
+        if (sourceFieldPath != null && sourceFieldPath.startsWith("#")) {
             this.sourceComponent = null; // TODO
             this.sourceFieldPath = sourceFieldPath;
-            this.dataDefinition = sourceComponent.getDataDefinition();
+            this.dataDefinition = null; // sourceComponent.getDataDefinition();
         } else {
             this.sourceComponent = null;
             this.sourceFieldPath = sourceFieldPath;
@@ -74,6 +74,7 @@ public abstract class ComponentDefinition {
     public Map<String, Object> getOptions() {
         Map<String, Object> viewOptions = new HashMap<String, Object>(options);
         viewOptions.put("name", name);
+        // lista komponentow ktore na niego nasluchuja
         return viewOptions;
     }
 
