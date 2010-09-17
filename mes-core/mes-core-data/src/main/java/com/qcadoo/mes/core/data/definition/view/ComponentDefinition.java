@@ -48,6 +48,10 @@ public abstract class ComponentDefinition {
 
         this.sourceFieldPath = sourceFieldPath;
 
+        if (parentContainer != null) { // TODO Remove
+            dataDefinition = parentContainer.getDataDefinition();
+        }
+
         if (sourceFieldPath == null || !sourceFieldPath.startsWith("#")) {
             sourceComponent = null;
             if (parentContainer != null) {
@@ -55,22 +59,22 @@ public abstract class ComponentDefinition {
             } else {
                 dataDefinition = null;
             }
-
-            this.initialized = true;
         }
     }
 
     public boolean initializeComponent(final Map<String, ComponentDefinition> componentRegistry) {
-        String[] source = parseSourceFieldPath(sourceFieldPath);
-        sourceComponent = componentRegistry.get(source[0]);
+        if (sourceFieldPath != null && sourceFieldPath.startsWith("#")) {
+            String[] source = parseSourceFieldPath(sourceFieldPath);
+            sourceComponent = componentRegistry.get(source[0]);
 
-        if (sourceComponent == null || !sourceComponent.isInitialized()) {
-            return false;
+            if (sourceComponent == null || !sourceComponent.isInitialized()) {
+                return false;
+            }
+
+            sourceFieldPath = source[1];
+            // dataDefinition = sourceComponent.getDataDefinition();
+            sourceComponent.registerListener(path);
         }
-
-        sourceFieldPath = source[1];
-        dataDefinition = sourceComponent.getDataDefinition();
-        sourceComponent.registerListener(path);
 
         this.initialized = true;
 

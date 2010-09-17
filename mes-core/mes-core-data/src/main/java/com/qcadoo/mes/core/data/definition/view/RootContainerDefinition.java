@@ -3,14 +3,9 @@ package com.qcadoo.mes.core.data.definition.view;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 
 public abstract class RootContainerDefinition extends ContainerDefinition {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ComponentDefinition.class);
 
     private final Map<String, ComponentDefinition> componentRegistry = new LinkedHashMap<String, ComponentDefinition>();
 
