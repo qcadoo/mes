@@ -13,35 +13,38 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var elementName = element.attr('id');
 	
 	var gridParameters;
-//	
-//	var grid;
-//	
+	
+	var grid;
+	
 	var defaultOptions = {
 		paging: true,
 	};
 	
-	function parseOptions() {
+	function parseOptions(options) {
 		gridParameters = new Object();
 
 		var colNames = new Array();
 		var colModel = new Array();
 		
-		for (var i in opts.columns) {
-			var nameToTranslate = opts.windowName+"."+opts.elementName+".column."+opts.columns[i];
+		//options.columns = new Array();
+		//options.columns[0] = "aaa";
+		
+		for (var i in options.columns) {
+			var nameToTranslate = elementName+".column."+options.columns[i];
 			//colNames.push(mainController.getTranslation(nameToTranslate));
 			//colModel.push({name:parameters.columns[i], index:parameters.columns[i], width:100, sortable: false});
 			colNames.push(nameToTranslate);
-			colModel.push({name:opts.columns[i], index:opts.columns[i], width:100, sortable: false});
+			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: false});
 		}
 		
-		gridParameters.element = opts.elementName+"_grid";
+		gridParameters.element = elementName+"_grid";
 //		gridParameters.viewName = viewName,
 //		gridParameters.viewElementName = gridName;
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
 		gridParameters.datatype = 'local';
 		
-		gridParameters.isListenable = opts.listenable;
+		gridParameters.isListenable = options.listenable;
 //		gridParameters.fields = new Array();
 //		for (var i in parameters.fields) {
 //			var nameToTranslate = viewName+"."+gridName+".field."+parameters.fields[i];
@@ -64,7 +67,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		}
 //		gridParameters.events = parameters.events;
 //		gridParameters.parent = parameters.parent;
-		gridParameters.correspondingViewName = opts.correspondingViewName;
+		gridParameters.correspondingViewName = options.correspondingViewName;
 //		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
 		
 		for (var opName in defaultOptions) {
@@ -140,7 +143,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //	}
 //	
 	function constructor(_this) {
-		parseOptions(args);
+		parseOptions(_this.options);
+		QCDLogger.info(gridParameters);
 //		
 //		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
 //			if (gridParameters.canNew) {
@@ -163,7 +167,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		gridParameters.ondblClickRow = function(id){
 //			rowDblClicked(id);
 //        }
-//		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
+		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 //		
 //		//if (! gridParameters.parent) {
 //			//enable();
