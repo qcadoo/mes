@@ -145,6 +145,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createTestFormView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
+        DataDefinition testBDD = dataDefinitionService.get("test.testBeanB");
+        DataDefinition testCDD = dataDefinitionService.get("test.testBeanC");
 
         WindowDefinition windowDefinition = new WindowDefinition("mainWindow", testADD);
 
@@ -154,20 +156,26 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInput("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInput("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInput("nameC", formDefinition, "beanB.beanC.name", null));
-        formDefinition.addComponent(new GridDefinition("beansCGrig", formDefinition, "beansC", null, dataAccessService,
-                dataDefinitionService));
+        GridDefinition beanAForm_beansCGrig = new GridDefinition("beansCGrig", formDefinition, "beansC", null, dataAccessService,
+                dataDefinitionService);
+        beanAForm_beansCGrig.addColumn(createColumnDefinition("name", testCDD.getField("name"), null));
+        formDefinition.addComponent(beanAForm_beansCGrig);
         windowDefinition.addComponent(formDefinition);
 
-        windowDefinition.addComponent(new GridDefinition("beansBGrig", windowDefinition, null,
-                "#{mainWindow.beanAForm.beansCGrig}.beansB", dataAccessService, dataDefinitionService));
+        GridDefinition beansBGrig = new GridDefinition("beansBGrig", windowDefinition, null,
+                "#{mainWindow.beanAForm.beansCGrig}.beansB", dataAccessService, dataDefinitionService);
+        beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
+        windowDefinition.addComponent(beansBGrig);
 
         FormDefinition formCDefinition = new FormDefinition("beanCForm", windowDefinition, null, "#{mainWindow.beansBGrig}.beanC");
         formCDefinition.addComponent(new TextInput("name", formCDefinition, "name", null));
         FormDefinition formCDefinition_formA = new FormDefinition("formA", formCDefinition, "beanA", null);
         formCDefinition_formA.addComponent(new TextInput("name", formCDefinition_formA, "name", null));
         formCDefinition.addComponent(formCDefinition_formA);
-        formCDefinition.addComponent(new GridDefinition("beansBGrig", formCDefinition, "beansB", null, dataAccessService,
-                dataDefinitionService));
+        GridDefinition beanCForm_beansBGrig = new GridDefinition("beansBGrig", formCDefinition, "beansB", null,
+                dataAccessService, dataDefinitionService);
+        beanCForm_beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
+        formCDefinition.addComponent(beanCForm_beansBGrig);
         formDefinition.addComponent(new TextInput("name", formDefinition, null, "#{mainWindow.beanCForm.beansBGrig}.name"));
         windowDefinition.addComponent(formCDefinition);
 

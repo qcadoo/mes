@@ -99,6 +99,7 @@ public final class GridDefinition extends ComponentDefinition {
         viewOptions.put("correspondingViewName", correspondingViewName);
         viewOptions.put("columns", getColumnsForOptions());
         viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
+        // System.out.println("SSSSSSSSSSSS " + viewOptions);
         return viewOptions;
     }
 

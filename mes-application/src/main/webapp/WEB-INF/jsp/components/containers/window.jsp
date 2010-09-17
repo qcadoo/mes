@@ -11,7 +11,7 @@
 
 <div class="component component_container component_container_window" id="${componentFullName}">
 	<div class=element_options style="display: none">
-		${component.options}
+		${component.optionsAsJson}
 	</div>
 	
 	<div style="font-weight: bold; margin-bottom: 10px;">

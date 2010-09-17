@@ -14,7 +14,17 @@ QCD.PageController = function(_viewName) {
 		QCDLogger.info(pageComponents);
 	}
 	
-	this.init = function(entityId, contextEntityId, serializationObject) {
+	this.init = function(entityId) {
+		var parameters = new Object();
+		if (entityId && entityId.trim() != "") {
+			parameters.entityId = entityId;
+		}
+		QCDConnector.sendGet("data", parameters, function(response) {
+			QCDLogger.info(response);
+		});
+	}
+	
+//	this.init = function(entityId, contextEntityId, serializationObject) {
 //		for (var i in pageElements) {
 //			var elementParent = pageElements[i].getParent();
 //			if (elementParent && elementParent.length > 12) {
@@ -47,21 +57,21 @@ QCD.PageController = function(_viewName) {
 //				}
 //			}
 //		}
-		//QCDLogger.info("init");
-		var parameters = new Object();
-		if (entityId && entityId.trim() != "") {
-			parameters.entityId = entityId;
-		}
+//		//QCDLogger.info("init");
+//		var parameters = new Object();
+//		if (entityId && entityId.trim() != "") {
+//			parameters.entityId = entityId;
+//		}
 		
-		QCDConnector.sendGet("data", parameters, function(response) {
-			//QCDLogger.info(response);
-			
-			for (var i in response) {
-				var component = pageComponents[i];
-				component.insterData(response[i]);
-			}
-		});
-	}
+//		QCDConnector.sendGet("data", parameters, function(response) {
+//			//QCDLogger.info(response);
+//			
+//			for (var i in response) {
+//				var component = pageComponents[i];
+//				component.insterData(response[i]);
+//			}
+//		});
+//	}
 	
 	this.getUpdate = function(componentName, value) {
 		var parameters = new Object();
