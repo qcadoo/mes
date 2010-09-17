@@ -26,6 +26,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		var colNames = new Array();
 		var colModel = new Array();
 		
+//		/QCDLogger.info(options);
+		
 		//options.columns = new Array();
 		//options.columns[0] = "aaa";
 		
@@ -144,7 +146,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //	
 	function constructor(_this) {
 		parseOptions(_this.options);
-		QCDLogger.info(gridParameters);
 //		
 //		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
 //			if (gridParameters.canNew) {

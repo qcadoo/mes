@@ -11,7 +11,7 @@
 
 <div class="component component_container component_container_form" id="${componentFullName}" style="border: solid black 1px; margin: 10px; padding: 10px; width: 500px;">
 	<div class=element_options style="display: none">
-		${component.options}
+		${component.optionsAsJson}
 	</div>
 	
 	<div style="font-weight: bold; margin-bottom: 10px;">

@@ -35,13 +35,15 @@
 	
 	<script type="text/javascript"><!--
 
+		var viewName = "${viewDefinition.name}";
 		var entityId = "${entityId}";
 		//var contextEntityId = "${contextEntityId}";
 
 		var controller = null
 
 		window.init = function(serializationObject) {
-			controller = new QCD.PageController();
+			controller = new QCD.PageController(viewName);
+			controller.init(entityId);
 			//if (isForEntity && isForEntity.trim() == "true") {
 			//	if (entityId && entityId.trim() != "") {
 			//		controller.init(entityId);

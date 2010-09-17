@@ -1,9 +1,15 @@
 package com.qcadoo.mes.core.data.definition.view;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
@@ -46,14 +52,14 @@ public abstract class ComponentDefinition {
                 if (value instanceof Entity) {
                     value = entity.getField(field);
                 } else {
-                    return null;
+                    return "";
                 }
             }
 
             return String.valueOf(value);
         }
 
-        return null;
+        return "";
     }
 
     public ComponentDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
@@ -159,6 +165,32 @@ public abstract class ComponentDefinition {
         viewOptions.put("name", name);
         viewOptions.put("listeners", listeners);
         return viewOptions;
+    }
+
+    public String getOptionsAsJson() {
+        JSONObject jsonOptions = new JSONObject();
+        try {
+            for (Entry<String, Object> option : getOptions().entrySet()) {
+                Object value = null;
+                if (option.getValue() instanceof Collection) {
+                    Collection list = (Collection) option.getValue();
+                    JSONArray arr = new JSONArray();
+                    for (Object o : list) {
+                        arr.put(o);
+                    }
+                    value = arr;
+                } else {
+                    jsonOptions.put(option.getKey(), option.getValue());
+                    value = option.getValue();
+                }
+                if (value != null) {
+                    jsonOptions.put(option.getKey(), option.getValue());
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonOptions.toString();
     }
 
     protected ComponentDefinition getSourceComponent() {

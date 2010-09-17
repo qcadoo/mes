@@ -11,7 +11,7 @@
 
 <div class="component component_element component_element_textInput" id="${componentFullName}">
 	<div class="element_options" style="display: none">
-		${component.options}
+		${component.optionsAsJson}
 	</div>
 	
 	${component.name}

@@ -5,7 +5,6 @@ QCD.components.containers = QCD.components.containers || {};
 QCD.components.containers.Window = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Container(_element, _mainController));
 	
-	
 	var mainController = _mainController;
 	var element = _element;
 	var elementName = element.attr('id');
@@ -16,6 +15,4 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	
 	constructor(this);
-	
-	
 }

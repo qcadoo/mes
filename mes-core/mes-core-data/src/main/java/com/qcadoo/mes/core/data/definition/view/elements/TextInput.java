@@ -19,12 +19,7 @@ public class TextInput extends ComponentDefinition {
 
     @Override
     public Object getValue(final Entity entity, final Map<String, Object> selectableValues, final Object viewEntity) {
-        Object value = entity.getField(getSourceFieldPath());
-        if (value == null) {
-            return "";
-        } else {
-            return value.toString();
-        }
+        return getFieldValue(entity);
     }
 
 }
