@@ -21,7 +21,7 @@ public class CrudControllerUtils {
     }
 
     public static void generateJsonViewElementOptions(final ComponentDefinition viewElement,
-            final Map<String, String> viewElementsOptionsJson, String elementNamePath) {
+            final Map<String, String> viewElementsOptionsJson, final String elementNamePath) {
 
         JSONObject obj = new JSONObject();
         try {
@@ -34,7 +34,7 @@ public class CrudControllerUtils {
                 }
                 obj.put("options", optionsObject);
             }
-            obj.put("listenable", viewElement.isLisinable());
+            // obj.put("listenable", viewElement.isLisinable());
             if (viewElement.getType() == ComponentDefinition.TYPE_ELEMENT_GRID) {
                 if (!(viewElement instanceof GridDefinition)) {
                     throw new IllegalSelectorException();

@@ -14,6 +14,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
+import com.qcadoo.mes.core.data.definition.view.ContainerDefinition;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
@@ -35,25 +36,22 @@ public final class GridDefinition extends ComponentDefinition {
 
     private Set<DataFieldDefinition> searchableFields;
 
+    private Set<DataFieldDefinition> orderableFields;
+
     private List<ColumnDefinition> columns;
 
     private String correspondingViewName;
 
-    private final DataDefinition dataDefinition;
-
-    private String header;
+    private final DataAccessService dataAccessService;
 
     private final DataDefinitionService dataDefinitionService;
 
-    public GridDefinition(final String name, DataDefinition dataDefinition, final String dataSource,
+    public GridDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
+            final String sourceFieldPath, final DataAccessService dataAccessService,
             final DataDefinitionService dataDefinitionService) {
-        super(name, dataSource);
-        this.dataDefinition = dataDefinition;
+        super(name, parentContainer, fieldPath, sourceFieldPath, null);
+        this.dataAccessService = dataAccessService;
         this.dataDefinitionService = dataDefinitionService;
-    }
-
-    public DataDefinition getDataDefinition() {
-        return dataDefinition;
     }
 
     @Override
@@ -69,12 +67,67 @@ public final class GridDefinition extends ComponentDefinition {
         this.searchableFields = searchableFields;
     }
 
+    public Set<DataFieldDefinition> getOrderableFields() {
+        return orderableFields;
+    }
+
+    public void setOrderableFields(final Set<DataFieldDefinition> orderableFields) {
+        this.orderableFields = orderableFields;
+    }
+
     public List<ColumnDefinition> getColumns() {
         return columns;
     }
 
     public void setColumns(final List<ColumnDefinition> columns) {
         this.columns = columns;
+    }
+
+    public String getCorrespondingViewName() {
+        return correspondingViewName;
+    }
+
+    public void setCorrespondingViewName(final String correspondingViewName) {
+        this.correspondingViewName = correspondingViewName;
+    }
+
+    @Override
+    public Object getValue(final Entity entity, final Map<String, Object> selectableValues, final Object viewEntity) {
+        if (getSourceFieldPath() != null) { // TODO
+            if (getSourceFieldPath().charAt(0) == '#') {
+                return null;
+            }
+            DataFieldDefinition corespondingField = getDataDefinition().getField(getSourceFieldPath());
+            HasManyType corespondingType = (HasManyType) corespondingField.getType();
+            DataDefinition corespondingDD = dataDefinitionService.get(corespondingType.getEntityName());
+            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(corespondingDD);
+            searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
+                    corespondingDD.getField(corespondingType.getFieldName()), entity.getId()));
+            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+            SearchResult rs = dataAccessService.find(searchCriteria);
+            return generateListData(rs);
+        } else {
+            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
+            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+            SearchResult rs = dataAccessService.find(searchCriteria);
+            return generateListData(rs);
+        }
+    }
+
+    private ListData generateListData(final SearchResult rs) {
+        List<Entity> entities = rs.getEntities();
+        List<Entity> gridEntities = new LinkedList<Entity>();
+
+        for (Entity entity : entities) {
+            Entity gridEntity = new Entity(entity.getId());
+            for (ColumnDefinition column : columns) {
+                gridEntity.setField(column.getName(), column.getValue(entity));
+            }
+            gridEntities.add(gridEntity);
+        }
+
+        int totalNumberOfEntities = rs.getTotalNumberOfEntities();
+        return new ListData(totalNumberOfEntities, gridEntities);
     }
 
     @Override
@@ -97,63 +150,4 @@ public final class GridDefinition extends ComponentDefinition {
         return new EqualsBuilder().append(columns, other.columns).append(searchableFields, other.searchableFields).isEquals();
     }
 
-    public String getCorrespondingViewName() {
-        return correspondingViewName;
-    }
-
-    public void setCorrespondingViewName(String correspondingViewName) {
-        this.correspondingViewName = correspondingViewName;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
-    @Override
-    public ListData getValue(DataDefinition dataDefinition, DataAccessService dataAccessService, Entity entity) {
-        if (getDataSource() != null) {
-            if (getDataSource().charAt(0) == '#') {
-                return null;
-            }
-            DataFieldDefinition corespondingField = dataDefinition.getField(getDataSource());
-            HasManyType corespondingType = (HasManyType) corespondingField.getType();
-            DataDefinition corespondingDD = dataDefinitionService.get(corespondingType.getEntityName());
-            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(corespondingDD);
-            searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
-                    corespondingDD.getField(corespondingType.getFieldName()), entity.getId()));
-            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-            SearchResult rs = dataAccessService.find(searchCriteria);
-            return generateListData(rs);
-        } else {
-            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(dataDefinition);
-            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-            SearchResult rs = dataAccessService.find(searchCriteria);
-            return generateListData(rs);
-        }
-    }
-
-    @Override
-    public Object getUpdateValues(Map<String, String> updateComponents) {
-        return null;
-    }
-
-    private ListData generateListData(SearchResult rs) {
-        List<Entity> entities = rs.getEntities();
-        List<Entity> gridEntities = new LinkedList<Entity>();
-
-        for (Entity entity : entities) {
-            Entity gridEntity = new Entity(entity.getId());
-            for (ColumnDefinition column : columns) {
-                gridEntity.setField(column.getName(), column.getValue(entity));
-            }
-            gridEntities.add(gridEntity);
-        }
-
-        int totalNumberOfEntities = rs.getTotalNumberOfEntities();
-        return new ListData(totalNumberOfEntities, gridEntities);
-    }
 }

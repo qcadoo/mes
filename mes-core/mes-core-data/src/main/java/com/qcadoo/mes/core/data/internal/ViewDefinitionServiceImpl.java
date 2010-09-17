@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -45,6 +46,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private DataAccessService dataAccessService;
+
+    @Autowired
     private FieldControlFactory fieldControlFactory;
 
     private Map<String, ViewDefinition> viewDefinitions;
@@ -52,8 +56,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @PostConstruct
     public void initViews() {
         viewDefinitions = new HashMap<String, ViewDefinition>();
-        viewDefinitions.put("products.productGridView", createProductGridView());
-        viewDefinitions.put("products.productDetailsView", createProductDetailsView());
+        // viewDefinitions.put("products.productGridView", createProductGridView());
+        // viewDefinitions.put("products.productDetailsView", createProductDetailsView());
 
         viewDefinitions.put("test.grid", createTestGridView());
         viewDefinitions.put("test.form", createTestFormView());
@@ -85,7 +89,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         if (entity != null) {
             return viewDefinition;
         }
-        return new ViewDefinition("main", null, "", false);
+        return new ViewDefinition("main", null, "");
     }
 
     @Override
@@ -116,16 +120,15 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createTestGridView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.grid", testADD, "test", false);
-        GridDefinition grid = new GridDefinition("beansAGrid", testADD, null, dataDefinitionService);
+        ViewDefinition viewDefinition = new ViewDefinition("test.grid", testADD, "test");
+        GridDefinition grid = new GridDefinition("beansAGrid", viewDefinition, null, null, dataAccessService,
+                dataDefinitionService);
         grid.setCorrespondingViewName("test.form");
-        Map<String, String> gridOptions = new HashMap<String, String>();
-        gridOptions.put("paging", "true");
-        gridOptions.put("sortable", "true");
-        gridOptions.put("filter", "true");
-        gridOptions.put("multiselect", "true");
-        gridOptions.put("height", "450");
-        grid.setOptions(gridOptions);
+        grid.addOptions("paging", "true");
+        grid.addOptions("sortable", "true");
+        grid.addOptions("filter", "true");
+        grid.addOptions("multiselect", "true");
+        grid.addOptions("height", "450");
         ColumnDefinition columnName = createColumnDefinition("name", testADD.getField("name"), null);
 
         grid.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
@@ -136,119 +139,119 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createTestFormView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
-        DataDefinition testBDD = dataDefinitionService.get("test.testBeanB");
-        DataDefinition testCDD = dataDefinitionService.get("test.testBeanC");
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.form", testADD, "test", false);
+        ViewDefinition viewDefinition = new ViewDefinition("test.form", testADD, "test");
 
-        FormDefinition formDefinition = new FormDefinition("beanAForm", null);
-        formDefinition.addComponent(new TextInput("name", "name"));
-        formDefinition.addComponent(new TextInput("nameB", "beanB.name"));
-        formDefinition.addComponent(new TextInput("nameC", "beanB.beanC.name"));
-        formDefinition.addComponent(new GridDefinition("beansCGrig", testCDD, "beansC", dataDefinitionService));
+        FormDefinition formDefinition = new FormDefinition("beanAForm", viewDefinition, null, null);
+        formDefinition.addComponent(new TextInput("name", formDefinition, "name", null));
+        formDefinition.addComponent(new TextInput("nameB", formDefinition, "beanB.name", null));
+        formDefinition.addComponent(new TextInput("nameC", formDefinition, "beanB.beanC.name", null));
+        formDefinition.addComponent(new GridDefinition("beansCGrig", formDefinition, "beansC", null, dataAccessService,
+                dataDefinitionService));
         viewDefinition.addComponent(formDefinition);
 
-        viewDefinition.addComponent(new GridDefinition("beansBGrig", testBDD, "#{beanAForm.beansCGrig}.beansB",
-                dataDefinitionService));
+        viewDefinition.addComponent(new GridDefinition("beansBGrig", formDefinition, null, "#{beanAForm.beansCGrig}.beansB",
+                dataAccessService, dataDefinitionService));
 
-        FormDefinition formCDefinition = new FormDefinition("beanCForm", "#{beansBGrig}.beanC");
-        formCDefinition.addComponent(new TextInput("name", "name"));
-        FormDefinition formCDefinition_formA = new FormDefinition("formA", "beanA");
-        formCDefinition_formA.addComponent(new TextInput("name", "name"));
+        FormDefinition formCDefinition = new FormDefinition("beanCForm", viewDefinition, null, "#{beansBGrig}.beanC");
+        formCDefinition.addComponent(new TextInput("name", formCDefinition, "name", null));
+        FormDefinition formCDefinition_formA = new FormDefinition("formA", formCDefinition, "beanA", null);
+        formCDefinition_formA.addComponent(new TextInput("name", formCDefinition_formA, "name", null));
         formCDefinition.addComponent(formCDefinition_formA);
-        formCDefinition.addComponent(new GridDefinition("beansBGrig", testBDD, "beansB", dataDefinitionService));
-        formDefinition.addComponent(new TextInput("name", "#{beanCForm.beansBGrig}.name"));
+        formCDefinition.addComponent(new GridDefinition("beansBGrig", formCDefinition, "beansB", null, dataAccessService,
+                dataDefinitionService));
+        formDefinition.addComponent(new TextInput("name", formDefinition, null, "#{beanCForm.beansBGrig}.name"));
         viewDefinition.addComponent(formCDefinition);
 
-        FormDefinition formBDefinition = new FormDefinition("beanBForm", "#{beansBGrig}");
-        formBDefinition.addComponent(new TextInput("name", "name"));
+        FormDefinition formBDefinition = new FormDefinition("beanBForm", viewDefinition, null, "#{beansBGrig}");
+        formBDefinition.addComponent(new TextInput("name", formBDefinition, "name", null));
         viewDefinition.addComponent(formBDefinition);
 
         return viewDefinition;
     }
 
-    private ViewDefinition createProductGridView() {
-        DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
-        ViewDefinition viewDefinition = new ViewDefinition("products.productGridView", productDataDefinition, "products", false);
-        viewDefinition.setHeader("products.productGridView.header");
-
-        GridDefinition grid = new GridDefinition("productsGrid", productDataDefinition, null, dataDefinitionService);
-        grid.setCorrespondingViewName("products.productDetailsView");
-        Map<String, String> gridOptions = new HashMap<String, String>();
-        gridOptions.put("paging", "true");
-        gridOptions.put("sortable", "true");
-        gridOptions.put("filter", "true");
-        gridOptions.put("multiselect", "true");
-        gridOptions.put("height", "450");
-        grid.setOptions(gridOptions);
-        ColumnDefinition columnNumber = createColumnDefinition("number", productDataDefinition.getField("number"), null);
-        ColumnDefinition columnName = createColumnDefinition("name", productDataDefinition.getField("name"), null);
-        ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", productDataDefinition.getField("typeOfMaterial"),
-                null);
-        ColumnDefinition columnEan = createColumnDefinition("ean", productDataDefinition.getField("ean"), null);
-
-        grid.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
-
-        viewDefinition.addComponent(grid);
-        return viewDefinition;
-    }
-
-    private ViewDefinition createProductDetailsView() {
-        DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
-        ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView", productDataDefinition, "products", true);
-        viewDefinition.setHeader("products.productDetailsView.header");
-
-        FormDefinition formDefinition = new FormDefinition("productDetailsForm", "entity");
-
-        formDefinition.addComponent(new TextInput("name", "name"));
-        formDefinition.addComponent(new TextInput("number", "name"));
-        formDefinition.addComponent(new TextInput("ean", "ean"));
-
-        viewDefinition.addComponent(formDefinition);
-
-        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
-        GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", substituteDataDefinition, "substitutes",
-                dataDefinitionService);
-        substituteGridDefinition.setHeader("products.productDetailsView.substitutesGrid.header");
-        ColumnDefinition columnNumber = createColumnDefinition("number", substituteDataDefinition.getField("number"), null);
-        ColumnDefinition columnName = createColumnDefinition("name", substituteDataDefinition.getField("name"), null);
-        ColumnDefinition columnPriority = createColumnDefinition("priority", substituteDataDefinition.getField("priority"), null);
-        substituteGridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnPriority, columnNumber, columnName }));
-        Map<String, String> substituteGridOptions = new HashMap<String, String>();
-        substituteGridOptions.put("paging", "false");
-        substituteGridOptions.put("sortable", "false");
-        substituteGridOptions.put("filter", "false");
-        substituteGridOptions.put("multiselect", "false");
-        substituteGridOptions.put("height", "150");
-        substituteGridDefinition.setOptions(substituteGridOptions);
-        substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
-        substituteGridDefinition.setLisinable(true);
-        viewDefinition.addComponent(substituteGridDefinition);
-
-        DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
-        GridDefinition substituteComponentGridDefinition = new GridDefinition("substitutesComponentGrid",
-                substituteComponentDataDefinition, "#{substitutesGrid}.components", dataDefinitionService);
-        substituteComponentGridDefinition.setHeader("products.productDetailsView.substitutesComponentGrid.header");
-        ColumnDefinition columnSubstituteNumber = createColumnDefinition("number",
-                substituteComponentDataDefinition.getField("product"), "#product['number']");
-        ColumnDefinition columnProductName = createColumnDefinition("name",
-                substituteComponentDataDefinition.getField("product"), "#product['name']");
-        ColumnDefinition columnQuantity = createColumnDefinition("quantity",
-                substituteComponentDataDefinition.getField("quantity"), null);
-        substituteComponentGridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber,
-                columnProductName, columnQuantity }));
-        Map<String, String> substituteComponentGridOptions = new HashMap<String, String>();
-        substituteComponentGridOptions.put("paging", "false");
-        substituteComponentGridOptions.put("sortable", "false");
-        substituteComponentGridOptions.put("filter", "false");
-        substituteComponentGridOptions.put("multiselect", "false");
-        substituteComponentGridOptions.put("height", "150");
-        substituteComponentGridDefinition.setOptions(substituteComponentGridOptions);
-        substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
-        viewDefinition.addComponent(substituteComponentGridDefinition);
-
-        return viewDefinition;
-    }
+    // private ViewDefinition createProductGridView() {
+    // DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
+    // ViewDefinition viewDefinition = new ViewDefinition("products.productGridView", productDataDefinition, "products", false);
+    // viewDefinition.setHeader("products.productGridView.header");
+    //
+    // GridDefinition grid = new GridDefinition("productsGrid", productDataDefinition, null, dataDefinitionService);
+    // grid.setCorrespondingViewName("products.productDetailsView");
+    // Map<String, String> gridOptions = new HashMap<String, String>();
+    // gridOptions.put("paging", "true");
+    // gridOptions.put("sortable", "true");
+    // gridOptions.put("filter", "true");
+    // gridOptions.put("multiselect", "true");
+    // gridOptions.put("height", "450");
+    // grid.setOptions(gridOptions);
+    // ColumnDefinition columnNumber = createColumnDefinition("number", productDataDefinition.getField("number"), null);
+    // ColumnDefinition columnName = createColumnDefinition("name", productDataDefinition.getField("name"), null);
+    // ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", productDataDefinition.getField("typeOfMaterial"),
+    // null);
+    // ColumnDefinition columnEan = createColumnDefinition("ean", productDataDefinition.getField("ean"), null);
+    //
+    // grid.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnType, columnEan }));
+    //
+    // viewDefinition.addComponent(grid);
+    // return viewDefinition;
+    // }
+    //
+    // private ViewDefinition createProductDetailsView() {
+    // DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
+    // ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView", productDataDefinition, "products", true);
+    // viewDefinition.setHeader("products.productDetailsView.header");
+    //
+    // FormDefinition formDefinition = new FormDefinition("productDetailsForm", "entity");
+    //
+    // formDefinition.addComponent(new TextInput("name", "name"));
+    // formDefinition.addComponent(new TextInput("number", "name"));
+    // formDefinition.addComponent(new TextInput("ean", "ean"));
+    //
+    // viewDefinition.addComponent(formDefinition);
+    //
+    // DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
+    // GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", substituteDataDefinition, "substitutes",
+    // dataDefinitionService);
+    // substituteGridDefinition.setHeader("products.productDetailsView.substitutesGrid.header");
+    // ColumnDefinition columnNumber = createColumnDefinition("number", substituteDataDefinition.getField("number"), null);
+    // ColumnDefinition columnName = createColumnDefinition("name", substituteDataDefinition.getField("name"), null);
+    // ColumnDefinition columnPriority = createColumnDefinition("priority", substituteDataDefinition.getField("priority"), null);
+    // substituteGridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnPriority, columnNumber, columnName }));
+    // Map<String, String> substituteGridOptions = new HashMap<String, String>();
+    // substituteGridOptions.put("paging", "false");
+    // substituteGridOptions.put("sortable", "false");
+    // substituteGridOptions.put("filter", "false");
+    // substituteGridOptions.put("multiselect", "false");
+    // substituteGridOptions.put("height", "150");
+    // substituteGridDefinition.setOptions(substituteGridOptions);
+    // substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
+    // substituteGridDefinition.setLisinable(true);
+    // viewDefinition.addComponent(substituteGridDefinition);
+    //
+    // DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
+    // GridDefinition substituteComponentGridDefinition = new GridDefinition("substitutesComponentGrid",
+    // substituteComponentDataDefinition, "#{substitutesGrid}.components", dataDefinitionService);
+    // substituteComponentGridDefinition.setHeader("products.productDetailsView.substitutesComponentGrid.header");
+    // ColumnDefinition columnSubstituteNumber = createColumnDefinition("number",
+    // substituteComponentDataDefinition.getField("product"), "#product['number']");
+    // ColumnDefinition columnProductName = createColumnDefinition("name",
+    // substituteComponentDataDefinition.getField("product"), "#product['name']");
+    // ColumnDefinition columnQuantity = createColumnDefinition("quantity",
+    // substituteComponentDataDefinition.getField("quantity"), null);
+    // substituteComponentGridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnSubstituteNumber,
+    // columnProductName, columnQuantity }));
+    // Map<String, String> substituteComponentGridOptions = new HashMap<String, String>();
+    // substituteComponentGridOptions.put("paging", "false");
+    // substituteComponentGridOptions.put("sortable", "false");
+    // substituteComponentGridOptions.put("filter", "false");
+    // substituteComponentGridOptions.put("multiselect", "false");
+    // substituteComponentGridOptions.put("height", "150");
+    // substituteComponentGridDefinition.setOptions(substituteComponentGridOptions);
+    // substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
+    // viewDefinition.addComponent(substituteComponentGridDefinition);
+    //
+    // return viewDefinition;
+    // }
 
     // private ViewDefinition createProductSubstituteDetailsView() {
     // ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView", "products");

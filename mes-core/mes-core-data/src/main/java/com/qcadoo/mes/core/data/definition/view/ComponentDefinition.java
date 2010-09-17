@@ -1,8 +1,8 @@
 package com.qcadoo.mes.core.data.definition.view;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 
@@ -16,120 +16,83 @@ public abstract class ComponentDefinition {
 
     public static final int TYPE_ELEMENT_TEXT_INPUT = 4;
 
-    private String name;
+    private final String name;
 
-    private Map<String, String> options;
+    private final String path;
 
-    // private String parent; // null, "entityId", "viewElement:{name}"
+    private final String fieldPath;
 
-    // private String parentField;
+    private final String sourceFieldPath; // entity, entity.field[.field], #fieldName.field[.field]
 
-    // private String correspondingViewName;
+    private final Map<String, String> options = new HashMap<String, String>();
 
-    // private boolean correspondingViewModal = false;
+    private final ContainerDefinition parentContainter;
 
-    private boolean hidden;
+    private final ComponentDefinition sourceComponent;
 
-    private boolean editable;
-
-    private final String dataSource; // entity, entity.field[.field], #fieldName.field[.field]
-
-    private boolean lisinable = false;
+    private final DataDefinition dataDefinition;
 
     public abstract int getType();
 
-    public abstract Object getValue(DataDefinition dataDefinition, DataAccessService dataAccessService, Entity entity);
+    public abstract Object getValue(Entity entity, Map<String, Object> selectableValues, Object viewEntity);
 
-    public abstract Object getUpdateValues(Map<String, String> updateComponents);
-
-    public ComponentDefinition(final String name, final String dataSource) {
+    public ComponentDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
+            final String sourceFieldPath, final DataDefinition dataDefinition) {
         this.name = name;
-        this.dataSource = dataSource;
-        // / this.dataDefinition = dataDefinition;
+        this.parentContainter = parentContainer;
+        this.fieldPath = fieldPath;
+
+        if (sourceFieldPath.startsWith("#")) {
+            this.sourceComponent = null; // TODO
+            this.sourceFieldPath = sourceFieldPath;
+            this.dataDefinition = sourceComponent.getDataDefinition();
+        } else {
+            this.sourceComponent = null;
+            this.sourceFieldPath = sourceFieldPath;
+            this.dataDefinition = dataDefinition;
+        }
+
+        if (parentContainer != null) {
+            this.path = parentContainer.getPath() + "." + name;
+        } else {
+            this.path = name;
+        }
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public String getSourceFieldPath() {
+        return sourceFieldPath;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public String getFieldPath() {
+        return fieldPath;
     }
 
     public Map<String, String> getOptions() {
         return options;
     }
 
-    public void setOptions(final Map<String, String> options) {
-        this.options = options;
+    protected ComponentDefinition getSourceComponent() {
+        return sourceComponent;
     }
 
-    public boolean isHidden() {
-        return hidden;
+    protected ContainerDefinition getParentContainer() {
+        return parentContainter;
     }
 
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
-    public boolean isEditable() {
-        return editable;
+    public void addOptions(final String name, final String value) {
+        this.options.put(name, value);
     }
-
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-    }
-
-    public String getDataSource() {
-        return dataSource;
-    }
-
-    public boolean isLisinable() {
-        return lisinable;
-    }
-
-    public void setLisinable(boolean lisinable) {
-        this.lisinable = lisinable;
-    }
-
-    // public String getParentField() {
-    // return parentField;
-    // }
-    //
-    // public void setParentField(final String parentField) {
-    // this.parentField = parentField;
-    // }
-    //
-    // public String getParent() {
-    // return parent;
-    // }
-    //
-    // public void setParent(final String parent) {
-    // this.parent = parent;
-    // }
-    //
-    // public String getCorrespondingViewName() {
-    // return correspondingViewName;
-    // }
-    //
-    // public void setCorrespondingViewName(final String correspondingViewName) {
-    // this.correspondingViewName = correspondingViewName;
-    // }
-    //
-    // public boolean isCorrespondingViewModal() {
-    // return correspondingViewModal;
-    // }
-    //
-    // public void setCorrespondingViewModal(final boolean correspondingViewModal) {
-    // this.correspondingViewModal = correspondingViewModal;
-    // }
-    //
-    // public String getHeader() {
-    // return header;
-    // }
-    //
-    // public void setHeader(final String header) {
-    // this.header = header;
-    // }
 
 }

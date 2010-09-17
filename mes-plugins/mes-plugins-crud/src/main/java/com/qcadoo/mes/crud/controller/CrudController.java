@@ -99,16 +99,11 @@ public class CrudController {
     @ResponseBody
     public Object getData(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        if (viewDefinition.isForEntity()) {
-            if (arguments.get("entityId") != null) {
-                Entity entity = dataAccessService.get(viewDefinition.getDataDefinition(),
-                        Long.parseLong(arguments.get("entityId")));
-                return viewDefinition.getValue(viewDefinition.getDataDefinition(), dataAccessService, entity);
-            } else {
-                return null;
-            }
+        if (arguments.get("entityId") != null) {
+            Entity entity = dataAccessService.get(viewDefinition.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
+            return viewDefinition.getValue(entity, null, null);
         } else {
-            return viewDefinition.getValue(viewDefinition.getDataDefinition(), dataAccessService, null);
+            return viewDefinition.getValue(null, null, null);
         }
     }
 
@@ -124,7 +119,7 @@ public class CrudController {
             }
         }
 
-        return viewDefinition.getUpdateValues(argComponents);
+        return null; // TODO viewDefinition.getUpdateValues(argComponents);
     }
 
     // @RequestMapping(value = "page/{viewName}/{elementName}/list", method = RequestMethod.GET)
