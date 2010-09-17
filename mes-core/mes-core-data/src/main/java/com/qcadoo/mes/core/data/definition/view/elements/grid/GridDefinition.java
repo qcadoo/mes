@@ -11,7 +11,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
@@ -46,14 +45,10 @@ public final class GridDefinition extends ComponentDefinition {
 
     private final DataAccessService dataAccessService;
 
-    private final DataDefinitionService dataDefinitionService;
-
     public GridDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
-            final String sourceFieldPath, final DataAccessService dataAccessService,
-            final DataDefinitionService dataDefinitionService) {
+            final String sourceFieldPath, final DataAccessService dataAccessService) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
         this.dataAccessService = dataAccessService;
-        this.dataDefinitionService = dataDefinitionService;
     }
 
     @Override
@@ -122,7 +117,7 @@ public final class GridDefinition extends ComponentDefinition {
             }
             DataFieldDefinition corespondingField = getDataDefinition().getField(getSourceFieldPath());
             HasManyType corespondingType = (HasManyType) corespondingField.getType();
-            DataDefinition corespondingDD = dataDefinitionService.get(corespondingType.getEntityName());
+            DataDefinition corespondingDD = corespondingType.getDataDefinition();
             SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(corespondingDD);
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
                     corespondingDD.getField(corespondingType.getFieldName()), entity.getId()));

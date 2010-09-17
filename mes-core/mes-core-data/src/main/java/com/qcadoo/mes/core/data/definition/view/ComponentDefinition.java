@@ -7,6 +7,9 @@ import java.util.Set;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
+import com.qcadoo.mes.core.data.internal.types.HasManyType;
 
 public abstract class ComponentDefinition {
 
@@ -34,6 +37,25 @@ public abstract class ComponentDefinition {
 
     public abstract Object getValue(Entity entity, Map<String, Object> selectableValues, Object viewEntity);
 
+    protected String getFieldValue(final Entity entity) {
+        if (fieldPath != null) {
+            String[] fields = fieldPath.split("\\.");
+            Object value = entity;
+
+            for (String field : fields) {
+                if (value instanceof Entity) {
+                    value = entity.getField(field);
+                } else {
+                    return null;
+                }
+            }
+
+            return String.valueOf(value);
+        }
+
+        return null;
+    }
+
     public ComponentDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         this.name = name;
@@ -47,19 +69,6 @@ public abstract class ComponentDefinition {
         }
 
         this.sourceFieldPath = sourceFieldPath;
-
-        if (parentContainer != null) { // TODO Remove
-            dataDefinition = parentContainer.getDataDefinition();
-        }
-
-        if (sourceFieldPath == null || !sourceFieldPath.startsWith("#")) {
-            sourceComponent = null;
-            if (parentContainer != null) {
-                dataDefinition = parentContainer.getDataDefinition();
-            } else {
-                dataDefinition = null;
-            }
-        }
     }
 
     public boolean initializeComponent(final Map<String, ComponentDefinition> componentRegistry) {
@@ -72,13 +81,48 @@ public abstract class ComponentDefinition {
             }
 
             sourceFieldPath = source[1];
-            // dataDefinition = sourceComponent.getDataDefinition();
+            dataDefinition = sourceComponent.getDataDefinition();
             sourceComponent.registerListener(path);
+        } else if (parentContainer != null) {
+            if (!parentContainer.isInitialized()) {
+                return false;
+            }
+            sourceComponent = null;
+            dataDefinition = parentContainer.getDataDefinition();
+        } else {
+            sourceComponent = null;
+            dataDefinition = null;
+        }
+
+        if (sourceFieldPath != null) {
+            dataDefinition = getDataDefinitionBasedOnFieldPath(dataDefinition, sourceFieldPath);
+        } else if (fieldPath != null) {
+            dataDefinition = getDataDefinitionBasedOnFieldPath(dataDefinition, fieldPath);
         }
 
         this.initialized = true;
 
         return true;
+    }
+
+    private DataDefinition getDataDefinitionBasedOnFieldPath(final DataDefinition dataDefinition, final String fieldPath) {
+        String[] fields = fieldPath.split("\\.");
+
+        DataDefinition newDataDefinition = dataDefinition;
+
+        for (String field : fields) {
+            DataFieldDefinition fieldDefinition = newDataDefinition.getField(field);
+            if (fieldDefinition == null) {
+                break;
+            }
+            if (fieldDefinition.getType() instanceof BelongsToType) {
+                newDataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
+            } else if (fieldDefinition.getType() instanceof HasManyType) {
+                newDataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
+            }
+        }
+
+        return newDataDefinition;
     }
 
     private String[] parseSourceFieldPath(final String sourceFieldPath) {

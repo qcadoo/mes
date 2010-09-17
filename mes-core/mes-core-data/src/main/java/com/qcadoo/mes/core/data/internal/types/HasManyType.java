@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.internal.types;
 
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.definition.view.elements.grid.ListData;
 import com.qcadoo.mes.core.data.types.FieldType;
@@ -11,13 +13,12 @@ public class HasManyType implements FieldType {
 
     private final String fieldName;
 
-    public HasManyType(final String entityName, final String fieldName) {
+    private final DataDefinitionService dataDefinitionService;
+
+    public HasManyType(final String entityName, final String fieldName, final DataDefinitionService dataDefinitionService) {
         this.entityName = entityName;
         this.fieldName = fieldName;
-    }
-
-    public String getEntityName() {
-        return entityName;
+        this.dataDefinitionService = dataDefinitionService;
     }
 
     @Override
@@ -54,6 +55,10 @@ public class HasManyType implements FieldType {
 
     public String getFieldName() {
         return fieldName;
+    }
+
+    public DataDefinition getDataDefinition() {
+        return dataDefinitionService.get(entityName);
     }
 
 }

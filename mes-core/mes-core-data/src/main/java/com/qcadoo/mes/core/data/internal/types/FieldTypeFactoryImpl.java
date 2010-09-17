@@ -114,6 +114,6 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Override
     public FieldType hasManyType(final String entityName, final String fieldName) {
-        return new HasManyType(entityName, fieldName);
+        return new HasManyType(entityName, fieldName, dataDefinitionService);
     }
 }

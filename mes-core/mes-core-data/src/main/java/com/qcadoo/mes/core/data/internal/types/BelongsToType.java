@@ -57,8 +57,7 @@ public final class BelongsToType implements LookupedFieldType {
 
     @Override
     public Map<Long, String> lookup(final String prefix) {
-        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
-        SearchResult resultSet = dataAccessService.find(SearchCriteriaBuilder.forEntity(dataDefinition)
+        SearchResult resultSet = dataAccessService.find(SearchCriteriaBuilder.forEntity(getDataDefinition())
                 .orderBy(Order.asc(lookupFieldName)).build());
         Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
 
@@ -73,10 +72,6 @@ public final class BelongsToType implements LookupedFieldType {
         return eagerFetch;
     }
 
-    public String getEntityName() {
-        return entityName;
-    }
-
     @Override
     public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
             final ValidationResults validationResults) {
@@ -86,6 +81,10 @@ public final class BelongsToType implements LookupedFieldType {
     @Override
     public String toString(final Object value) {
         return String.valueOf(((Entity) value).getId());
+    }
+
+    public DataDefinition getDataDefinition() {
+        return dataDefinitionService.get(entityName);
     }
 
 }
