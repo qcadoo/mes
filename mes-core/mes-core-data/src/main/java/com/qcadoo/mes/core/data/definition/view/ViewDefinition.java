@@ -31,9 +31,9 @@ public class ViewDefinition {
         return name;
     }
 
-    public Object getValue(final Entity entity, final Map<String, Object> selectableValues, final Object viewEntity) {
+    public Object getValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
         Map<String, Object> values = new HashMap<String, Object>();
-        values.put(root.getPath(), root.getValue(entity, selectableValues, viewEntity));
+        values.put(root.getPath(), root.getValue(entity, selectableEntities, viewEntity));
         return values;
     }
 

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -106,9 +107,9 @@ public class CrudController {
         if (arguments.get("entityId") != null) {
             Entity entity = dataAccessService.get(viewDefinition.getRoot().getDataDefinition(),
                     Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, null, null);
+            return viewDefinition.getValue(entity, Collections.<String, Entity> emptyMap(), null);
         } else {
-            return viewDefinition.getValue(null, null, null);
+            return viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), null);
         }
     }
 

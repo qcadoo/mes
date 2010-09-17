@@ -24,10 +24,10 @@ public abstract class ContainerDefinition extends ComponentDefinition {
     }
 
     @Override
-    public Object getValue(final Entity entity, final Map<String, Object> selectableValues, final Object viewEntity) {
+    public Object getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
         Map<String, Object> result = new HashMap<String, Object>();
         for (ComponentDefinition component : components.values()) {
-            Object value = component.getValue(entity, selectableValues, viewEntity);
+            Object value = component.getValue(entity, selectableEntities, viewEntity);
             if (value != null) {
                 result.put(component.getName(), value);
             }
