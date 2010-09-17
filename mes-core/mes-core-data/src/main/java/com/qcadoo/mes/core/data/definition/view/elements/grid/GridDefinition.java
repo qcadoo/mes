@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.definition.view.elements.grid;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +36,11 @@ import com.qcadoo.mes.core.data.search.SearchResult;
  */
 public final class GridDefinition extends ComponentDefinition {
 
-    private Set<DataFieldDefinition> searchableFields;
+    private final Set<DataFieldDefinition> searchableFields = new HashSet<DataFieldDefinition>();
 
-    private Set<DataFieldDefinition> orderableFields;
+    private final Set<DataFieldDefinition> orderableFields = new HashSet<DataFieldDefinition>();
 
-    private List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+    private final List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 
     private String correspondingViewName;
 
@@ -64,24 +65,24 @@ public final class GridDefinition extends ComponentDefinition {
         return searchableFields;
     }
 
-    public void setSearchableFields(final Set<DataFieldDefinition> searchableFields) {
-        this.searchableFields = searchableFields;
+    public void addSearchableField(final DataFieldDefinition searchableField) {
+        this.searchableFields.add(searchableField);
     }
 
     public Set<DataFieldDefinition> getOrderableFields() {
         return orderableFields;
     }
 
-    public void setOrderableFields(final Set<DataFieldDefinition> orderableFields) {
-        this.orderableFields = orderableFields;
+    public void addOrderableField(final DataFieldDefinition orderableField) {
+        this.orderableFields.add(orderableField);
     }
 
     public List<ColumnDefinition> getColumns() {
         return columns;
     }
 
-    public void setColumns(final List<ColumnDefinition> columns) {
-        this.columns = columns;
+    public void addColumn(final ColumnDefinition column) {
+        this.columns.add(column);
     }
 
     public String getCorrespondingViewName() {

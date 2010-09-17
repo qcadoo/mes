@@ -19,6 +19,7 @@ public abstract class ContainerDefinition extends ComponentDefinition {
         return components;
     }
 
+    @Override
     public ComponentDefinition lookupComponent(final String componentName) {
         return components.get(componentName);
     }

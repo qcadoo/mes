@@ -1,7 +1,5 @@
 package com.qcadoo.mes.core.data.definition.view;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,17 +16,19 @@ public abstract class ComponentDefinition {
 
     private final String fieldPath;
 
-    private final String sourceFieldPath;
+    private String sourceFieldPath;
+
+    private ComponentDefinition sourceComponent;
+
+    private boolean initialized;
 
     private final Map<String, String> options = new HashMap<String, String>();
 
-    private final ContainerDefinition parentContainter;
-
-    private final ComponentDefinition sourceComponent;
+    private final ContainerDefinition parentContainer;
 
     private final Set<String> listeners = new HashSet<String>();
 
-    private final DataDefinition dataDefinition;
+    private DataDefinition dataDefinition;
 
     public abstract String getType();
 
@@ -37,7 +37,7 @@ public abstract class ComponentDefinition {
     public ComponentDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         this.name = name;
-        this.parentContainter = parentContainer;
+        this.parentContainer = parentContainer;
         this.fieldPath = fieldPath;
 
         if (parentContainer != null) {
@@ -46,20 +46,35 @@ public abstract class ComponentDefinition {
             this.path = name;
         }
 
-        if (sourceFieldPath != null && sourceFieldPath.startsWith("#")) {
-            String[] source = parseSourceFieldPath(sourceFieldPath);
-            this.sourceComponent = lookupComponent(source[0]);
-            checkNotNull(this.sourceComponent, "source component cannot be found");
-            this.sourceFieldPath = source[1];
-            this.dataDefinition = sourceComponent.getDataDefinition();
-            this.sourceComponent.registerListener(path);
-        } else {
-            this.sourceComponent = null;
-            this.sourceFieldPath = sourceFieldPath;
-            this.dataDefinition = parentContainer.getDataDefinition();
+        this.sourceFieldPath = sourceFieldPath;
+
+        if (sourceFieldPath == null || !sourceFieldPath.startsWith("#")) {
+            sourceComponent = null;
+            if (parentContainer != null) {
+                dataDefinition = parentContainer.getDataDefinition();
+            } else {
+                dataDefinition = null;
+            }
+
+            this.initialized = true;
+        }
+    }
+
+    public boolean initialize() {
+        String[] source = parseSourceFieldPath(sourceFieldPath);
+        sourceComponent = lookupComponent(source[0]);
+
+        if (sourceComponent == null || !sourceComponent.isInitialized()) {
+            return false;
         }
 
-        registerComponent(this);
+        sourceFieldPath = source[1];
+        dataDefinition = sourceComponent.getDataDefinition();
+        sourceComponent.registerListener(path);
+
+        this.initialized = true;
+
+        return true;
     }
 
     private String[] parseSourceFieldPath(final String sourceFieldPath) {
@@ -103,27 +118,37 @@ public abstract class ComponentDefinition {
     }
 
     protected ContainerDefinition getParentContainer() {
-        return parentContainter;
+        return parentContainer;
     }
 
     public DataDefinition getDataDefinition() {
         return dataDefinition;
     }
 
+    public void setDataDefinition(final DataDefinition dataDefinition) {
+        this.dataDefinition = dataDefinition;
+    }
+
     public void addOptions(final String name, final String value) {
         this.options.put(name, value);
     }
 
-    protected ComponentDefinition lookupComponent(final String path) {
-        return parentContainter.lookupComponent(path);
-    }
-
-    protected void registerComponent(final ComponentDefinition componentDefinition) {
-        parentContainter.registerComponent(componentDefinition);
+    public ComponentDefinition lookupComponent(final String path) {
+        return parentContainer.lookupComponent(path);
     }
 
     protected void registerListener(final String path) {
         listeners.add(path);
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    @Override
+    public String toString() {
+        String dd = dataDefinition != null ? dataDefinition.getName() : "";
+        return path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sourceComponent + "], " + listeners + ", " + dd;
     }
 
 }

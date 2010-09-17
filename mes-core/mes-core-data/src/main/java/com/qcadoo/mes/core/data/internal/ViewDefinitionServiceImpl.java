@@ -134,9 +134,12 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         grid.addOptions("height", "450");
         ColumnDefinition columnName = createColumnDefinition("name", testADD.getField("name"), null);
 
-        grid.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
+        grid.addColumn(columnName);
 
         windowDefinition.addComponent(grid);
+
+        windowDefinition.initialize();
+
         return viewDefinition;
     }
 
@@ -171,6 +174,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormDefinition formBDefinition = new FormDefinition("beanBForm", windowDefinition, null, "#{beansBGrig}");
         formBDefinition.addComponent(new TextInput("name", formBDefinition, "name", null));
         windowDefinition.addComponent(formBDefinition);
+
+        windowDefinition.initialize();
 
         return viewDefinition;
     }
