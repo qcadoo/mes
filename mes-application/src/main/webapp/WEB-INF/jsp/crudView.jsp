@@ -26,6 +26,8 @@
 	<script type="text/javascript" src="../js/qcd/utils/options.js"></script>
 	<script type="text/javascript" src="../js/qcd/utils/pageConstructor.js"></script>
 	<script type="text/javascript" src="../js/qcd/core/pageController.js"></script>
+	<script type="text/javascript" src="../js/qcd/components/component.js"></script>
+	<script type="text/javascript" src="../js/qcd/components/container.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/containers/window.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/containers/form.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/elements/grid.js"></script>

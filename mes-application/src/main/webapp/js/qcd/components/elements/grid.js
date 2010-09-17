@@ -3,78 +3,77 @@ QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 
 QCD.components.elements.Grid = function(_element, _mainController) {
+	$.extend(this, new QCD.components.Component(_element, _mainController));
 	
 //	var elementFullName = args.elementFullName;
 //	this.elementName = args.elementName;
 	
 	var mainController = _mainController;
-	
 	var element = _element;
+	var elementName = element.attr('id');
 	
-//	var gridParameters;
+	var gridParameters;
 //	
 //	var grid;
 //	
-//	var defaultOptions = {
-//		paging: true,
-//	};
-//	
-//	function parseOptions(opts) {
-//		gridParameters = new Object();
-//		
-//		
-//		
-//		var colNames = new Array();
-//		var colModel = new Array();
-//		
-//		for (var i in opts.columns) {
-//			var nameToTranslate = opts.windowName+"."+opts.elementName+".column."+opts.columns[i];
-//			//colNames.push(mainController.getTranslation(nameToTranslate));
-//			//colModel.push({name:parameters.columns[i], index:parameters.columns[i], width:100, sortable: false});
-//			colNames.push(nameToTranslate);
-//			colModel.push({name:opts.columns[i], index:opts.columns[i], width:100, sortable: false});
+	var defaultOptions = {
+		paging: true,
+	};
+	
+	function parseOptions() {
+		gridParameters = new Object();
+
+		var colNames = new Array();
+		var colModel = new Array();
+		
+		for (var i in opts.columns) {
+			var nameToTranslate = opts.windowName+"."+opts.elementName+".column."+opts.columns[i];
+			//colNames.push(mainController.getTranslation(nameToTranslate));
+			//colModel.push({name:parameters.columns[i], index:parameters.columns[i], width:100, sortable: false});
+			colNames.push(nameToTranslate);
+			colModel.push({name:opts.columns[i], index:opts.columns[i], width:100, sortable: false});
+		}
+		
+		gridParameters.element = opts.elementName+"_grid";
+//		gridParameters.viewName = viewName,
+//		gridParameters.viewElementName = gridName;
+		gridParameters.colNames = colNames;
+		gridParameters.colModel = colModel;
+		gridParameters.datatype = 'local';
+		
+		gridParameters.isListenable = opts.listenable;
+//		gridParameters.fields = new Array();
+//		for (var i in parameters.fields) {
+//			var nameToTranslate = viewName+"."+gridName+".field."+parameters.fields[i];
+//			gridParameters.fields.push({
+//				name: parameters.fields[i],
+//				label: mainController.getTranslation(nameToTranslate)
+//			});
 //		}
-//		
-//		gridParameters.element = opts.elementName+"_grid";
-////		gridParameters.viewName = viewName,
-////		gridParameters.viewElementName = gridName;
-//		gridParameters.colNames = colNames;
-//		gridParameters.colModel = colModel;
-//		gridParameters.datatype = 'local';
-//		
-//		gridParameters.isListenable = opts.listenable;
-////		gridParameters.fields = new Array();
-////		for (var i in parameters.fields) {
-////			var nameToTranslate = viewName+"."+gridName+".field."+parameters.fields[i];
-////			gridParameters.fields.push({
-////				name: parameters.fields[i],
-////				label: mainController.getTranslation(nameToTranslate)
-////			});
-////		}
-////		gridParameters.paging = parameters.options.paging == "true" ? true : false;
-////		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;
-////		gridParameters.isDataDefinitionProritizable = parameters.isDataDefinitionProritizable;
-////		if (parameters.options) {
-////			gridParameters.paging = parameters.options.paging == "true" ? true : false;
-////			gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
-////			gridParameters.filter = parameters.options.filter == "true" ? true : false;
-////			gridParameters.multiselect = parameters.options.multiselect == "true" ? true : false;
-////			gridParameters.canNew = parameters.options.canNew == "false" ? false : true;
-////			gridParameters.canDelete = parameters.options.canDelete == "false" ? false : true;
-////			if (parameters.options.height) { gridParameters.height = parseInt(parameters.options.height); }
-////		}
-////		gridParameters.events = parameters.events;
-////		gridParameters.parent = parameters.parent;
-//		gridParameters.correspondingViewName = opts.correspondingViewName;
-////		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
-//		
-//		for (var opName in defaultOptions) {
-//			if (gridParameters[opName] == undefined) {
-//				gridParameters[opName] = defaultOptions[opName];
-//			}
+//		gridParameters.paging = parameters.options.paging == "true" ? true : false;
+//		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;
+//		gridParameters.isDataDefinitionProritizable = parameters.isDataDefinitionProritizable;
+//		if (parameters.options) {
+//			gridParameters.paging = parameters.options.paging == "true" ? true : false;
+//			gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
+//			gridParameters.filter = parameters.options.filter == "true" ? true : false;
+//			gridParameters.multiselect = parameters.options.multiselect == "true" ? true : false;
+//			gridParameters.canNew = parameters.options.canNew == "false" ? false : true;
+//			gridParameters.canDelete = parameters.options.canDelete == "false" ? false : true;
+//			if (parameters.options.height) { gridParameters.height = parseInt(parameters.options.height); }
 //		}
-//		
-//	};
+//		gridParameters.events = parameters.events;
+//		gridParameters.parent = parameters.parent;
+		gridParameters.correspondingViewName = opts.correspondingViewName;
+//		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
+		
+		for (var opName in defaultOptions) {
+			if (gridParameters[opName] == undefined) {
+				gridParameters[opName] = defaultOptions[opName];
+			}
+		}
+		
+	};
 //	
 ////	function refresh() {
 ////		
@@ -140,9 +139,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		}
 //	}
 //	
-//	function constructor(args) {
-//		
-//		parseOptions(args);
+	function constructor(_this) {
+		parseOptions(args);
 //		
 //		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
 //			if (gridParameters.canNew) {
@@ -171,7 +169,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //			//enable();
 //			//refresh();
 //		//}
-//	}
-//	
-//	constructor(args);
+	}
+	
+	constructor(this);
 }
