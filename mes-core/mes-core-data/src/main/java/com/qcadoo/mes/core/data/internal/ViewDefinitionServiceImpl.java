@@ -155,20 +155,20 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 dataDefinitionService));
         windowDefinition.addComponent(formDefinition);
 
-        windowDefinition.addComponent(new GridDefinition("beansBGrig", formDefinition, null, "#{beanAForm.beansCGrig}.beansB",
-                dataAccessService, dataDefinitionService));
+        windowDefinition.addComponent(new GridDefinition("beansBGrig", formDefinition, null,
+                "#{mainWindow.beanAForm.beansCGrig}.beansB", dataAccessService, dataDefinitionService));
 
-        FormDefinition formCDefinition = new FormDefinition("beanCForm", windowDefinition, null, "#{beansBGrig}.beanC");
+        FormDefinition formCDefinition = new FormDefinition("beanCForm", windowDefinition, null, "#{mainWindow.beansBGrig}.beanC");
         formCDefinition.addComponent(new TextInput("name", formCDefinition, "name", null));
         FormDefinition formCDefinition_formA = new FormDefinition("formA", formCDefinition, "beanA", null);
         formCDefinition_formA.addComponent(new TextInput("name", formCDefinition_formA, "name", null));
         formCDefinition.addComponent(formCDefinition_formA);
         formCDefinition.addComponent(new GridDefinition("beansBGrig", formCDefinition, "beansB", null, dataAccessService,
                 dataDefinitionService));
-        formDefinition.addComponent(new TextInput("name", formDefinition, null, "#{beanCForm.beansBGrig}.name"));
+        formDefinition.addComponent(new TextInput("name", formDefinition, null, "#{mainWindow.beanCForm.beansBGrig}.name"));
         windowDefinition.addComponent(formCDefinition);
 
-        FormDefinition formBDefinition = new FormDefinition("beanBForm", windowDefinition, null, "#{beansBGrig}");
+        FormDefinition formBDefinition = new FormDefinition("beanBForm", windowDefinition, null, "#{mainWindow.beansBGrig}");
         formBDefinition.addComponent(new TextInput("name", formBDefinition, "name", null));
         windowDefinition.addComponent(formBDefinition);
 

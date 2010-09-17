@@ -3,8 +3,11 @@ QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 
 QCD.components.elements.TextInput = function(_element, _mainController) {
-	//QCDLogger.info("init text element");
+	$.extend(this, new QCD.components.Component(_element, _mainController));
+
 	var mainController = _mainController;
+	
+	var element = _element;
 	
 //	this.elementFullName = args.elementFullName;
 //	this.elementName = args.elementName;

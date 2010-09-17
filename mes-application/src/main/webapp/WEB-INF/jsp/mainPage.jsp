@@ -52,6 +52,7 @@
 					<img id="loadingIndicator" src="css/images/loading.gif"></img>
 				</div>
 				<div id="rightPanel">
+					<!--<button onclick="windowController.goBack()">back</button>-->
 					<div id="navigationDiv">
 						<select id="viewsSelect">
 							<c:forEach items="${viewsList}" var="view">

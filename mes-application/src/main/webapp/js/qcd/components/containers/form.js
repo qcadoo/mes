@@ -3,14 +3,11 @@ QCD.components = QCD.components || {};
 QCD.components.containers = QCD.components.containers || {};
 
 QCD.components.containers.Form = function(_element, _mainController) {
+	$.extend(this, new QCD.components.Container(_element, _mainController));
+	
 	var mainController = _mainController;
 	var element = _element;
-	
 	var elementName = element.attr('id');
-	
-	var options;
-	
-	var components;
 	
 //	this.insterData = function(data) {
 //		QCDLogger.info(this.containerComponents);
@@ -26,10 +23,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 //	}
 	
 	function constructor(_this) {
-		options = QCDOptions.getElementOptions(elementName);
 		var childrenElement = $("#"+elementName+" .formComponents");
-		components = QCDPageConstructor.getChildrenComponents(childrenElement.children(), mainController);
-		_this.components = components;
+		_this.constructChildren(childrenElement.children());
 		//$("#"+_this.elementFullName+"_cancelButton").click(performCancel);
 	}
 	
