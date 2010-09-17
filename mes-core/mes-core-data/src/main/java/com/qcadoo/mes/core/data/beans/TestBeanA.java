@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -26,8 +25,7 @@ public class TestBeanA {
     @ManyToOne(fetch = FetchType.LAZY)
     private TestBeanB beanB;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "beanA")
     private List<TestBeanC> beansC;
 
     public Long getId() {
