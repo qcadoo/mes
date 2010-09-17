@@ -76,11 +76,26 @@ QCD.PageController = function(_viewName) {
 //	}
 	
 	this.getUpdate = function(componentName, value) {
-		var parameters = new Object();
-		parameters["comp-"+componentName] = value;
-		QCDConnector.sendGet("dataUpdate", parameters, function(response) {
+		QCDLogger.info(componentName+"->"+value);
+		var values = new Object();
+		for (var i in pageComponents) {
+			var value = pageComponents[i].getValue();
+			if (value) {
+				values[i] = value;
+			}
+		}
+		QCDLogger.info(values);
+		values = JSON.stringify(values);
+		QCDLogger.info(values);
+		QCDConnector.sendPost("dataUpdate", values, function(response) {
 			QCDLogger.info(response);
 		});
+
+//		var parameters = new Object();
+//		parameters["comp-"+componentName] = value;
+//		QCDConnector.sendGet("dataUpdate", parameters, function(response) {
+//			QCDLogger.info(response);
+//		});
 	}
 	
 	this.getTranslation = function(key) {

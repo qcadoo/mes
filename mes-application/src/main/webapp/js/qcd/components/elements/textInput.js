@@ -15,4 +15,10 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 		input.val(data);
 	}
 	
+	this.getValue = function() {
+		if (input.val() && input.val().trim() != "") {
+			return input.val();
+		}
+		return null;
+	}
 }

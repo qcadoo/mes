@@ -50,3 +50,39 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 		}
 	});
 }
+
+QCDConnector.sendPost = function(type, parameters, responseFunction, errorFunction) {
+	if (!QCDConnector.windowName) {
+		throw("no window name defined in conector");
+	}
+	var url = QCDConnector.windowName+"/"+type+".html";
+	
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: parameters,
+		dataType: 'json',
+		contentType: 'application/json; charset=utf-8',
+		complete: function(XMLHttpRequest, textStatus) {
+			if (XMLHttpRequest.status == 200) {
+				if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+					mainController.onSessionExpired();
+					return;
+				}
+				if (responseFunction) {
+					if (XMLHttpRequest.responseText && XMLHttpRequest.responseText.trim != "") {
+						var response = JSON.parse(XMLHttpRequest.responseText);
+						responseFunction(response);
+					} else {
+						responseFunction(null);
+					}
+				}
+			} else {
+				alert(XMLHttpRequest.statusText);
+				if (errorFunction) {
+					errorFunction(XMLHttpRequest.statusText);
+				}
+			}
+		}
+	});
+}

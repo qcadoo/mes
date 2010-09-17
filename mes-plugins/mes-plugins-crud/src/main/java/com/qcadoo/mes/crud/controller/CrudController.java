@@ -1,13 +1,22 @@
 package com.qcadoo.mes.crud.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -103,20 +112,70 @@ public class CrudController {
         }
     }
 
-    @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.GET)
-    @ResponseBody
-    public Object getDataUpdate(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
-        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-
-        Map<String, String> argComponents = new HashMap<String, String>();
-        for (Entry<String, String> argEntry : arguments.entrySet()) {
-            if ("comp-".equals(argEntry.getKey().substring(0, 5))) {
-                argComponents.put(argEntry.getKey().substring(5), argEntry.getValue());
+    @InitBinder("jsonBody")
+    public void initBinder(WebDataBinder binder, HttpServletRequest request) {
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+        try {
+            InputStream inputStream = request.getInputStream();
+            if (inputStream != null) {
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                char[] charBuffer = new char[128];
+                int bytesRead = -1;
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            } else {
+                stringBuilder.append("");
+            }
+        } catch (IOException ex) {
+            // throw ex;
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException ex) {
+                    // throw ex;
+                }
             }
         }
-
-        return null; // TODO viewDefinition.getUpdateValues(argComponents);
+        String body = stringBuilder.toString();
+        ((StringBuilder) binder.getTarget()).append(body);
     }
+
+    @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.POST)
+    @ResponseBody
+    public Object getDataUpdate(@PathVariable("viewName") final String viewName,
+            @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") StringBuilder body) {
+        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+
+        try {
+
+            JSONObject jsonValues = new JSONObject(body.toString());
+
+            System.out.println("TODO: " + jsonValues.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "getDataUpdateResponse";
+    }
+
+    // @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.GET)
+    // @ResponseBody
+    // public Object getDataUpdate(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String>
+    // arguments) {
+    // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+    //
+    // Map<String, String> argComponents = new HashMap<String, String>();
+    // for (Entry<String, String> argEntry : arguments.entrySet()) {
+    // if ("comp-".equals(argEntry.getKey().substring(0, 5))) {
+    // argComponents.put(argEntry.getKey().substring(5), argEntry.getValue());
+    // }
+    // }
+    //
+    // return null; // TODO viewDefinition.getUpdateValues(argComponents);
+    // }
 
     // @RequestMapping(value = "page/{viewName}/{elementName}/list", method = RequestMethod.GET)
     // @ResponseBody

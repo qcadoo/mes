@@ -46,7 +46,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.colModel = colModel;
 		gridParameters.datatype = 'local';
 		
-		gridParameters.isListenable = options.listenable;
+		gridParameters.listeners = options.listeners;
+		
 //		gridParameters.fields = new Array();
 //		for (var i in parameters.fields) {
 //			var nameToTranslate = viewName+"."+gridName+".field."+parameters.fields[i];
@@ -107,12 +108,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 ////		refresh();
 ////	}
 //	
-//	function rowClicked(rowId) {
-//		if (gridParameters.isListenable) {
-//			mainController.getUpdate(elementFullName, rowId);
-//		}
-//	}
-//	
+	function rowClicked(rowId) {
+		if (gridParameters.listeners.length > 0) {
+			//QCDLogger.info("SEND");
+			mainController.getUpdate(elementName, rowId);
+		}
+	}
+	
 	function rowDblClicked(rowId) {
 		redirectToCorrespondingPage(rowId);
 	}
@@ -146,6 +148,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
+	this.getValue = function() {
+		return "gridValue";
+	}
+	
 	function constructor(_this) {
 		parseOptions(_this.options);
 //		
@@ -164,9 +170,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //			}
 //		element.before(topButtonsDiv);
 //		
-//		gridParameters.onSelectRow = function(id){
-//			rowClicked(id);
-//        }
+		gridParameters.onSelectRow = function(id){
+			rowClicked(id);
+        }
 		gridParameters.ondblClickRow = function(id){
 			rowDblClicked(id);
         }
