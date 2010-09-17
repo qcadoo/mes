@@ -96,8 +96,8 @@ public final class GridDefinition extends ComponentDefinition {
     public Map<String, Object> getOptions() {
         Map<String, Object> viewOptions = super.getOptions();
         viewOptions.put("correspondingViewName", correspondingViewName);
-        viewOptions.put("columns", getColumnsForOptions());
-        viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
+        // viewOptions.put("columns", getColumnsForOptions());
+        // viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
         return viewOptions;
     }
 

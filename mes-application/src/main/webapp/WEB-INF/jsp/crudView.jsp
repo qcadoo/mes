@@ -23,30 +23,30 @@
 	<script type="text/javascript" src="../js/qcd/utils/logger.js"></script>
 	<script type="text/javascript" src="../js/qcd/utils/serializator.js"></script>
 	<script type="text/javascript" src="../js/qcd/utils/connector.js"></script>
+	<script type="text/javascript" src="../js/qcd/utils/options.js"></script>
+	<script type="text/javascript" src="../js/qcd/utils/pageConstructor.js"></script>
 	<script type="text/javascript" src="../js/qcd/core/pageController.js"></script>
-	<script type="text/javascript" src="../js/qcd/core/pageConstructor.js"></script>
+	<script type="text/javascript" src="../js/qcd/components/containers/window.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/containers/form.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/elements/grid.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/elements/textInput.js"></script>
 	
-	<script type="text/javascript">
+	<script type="text/javascript"><!--
 
-		var viewName = "${viewDefinition.name}";
-		var isForEntity = "${viewDefinition.forEntity}";
 		var entityId = "${entityId}";
 		//var contextEntityId = "${contextEntityId}";
 
 		var controller = null
 
 		window.init = function(serializationObject) {
-			controller = new QCD.PageController(viewName);
-			if (isForEntity && isForEntity.trim() == "true") {
-				if (entityId && entityId.trim() != "") {
-					controller.init(entityId);
-				}
-			} else {
-				controller.init();
-			}
+			controller = new QCD.PageController();
+			//if (isForEntity && isForEntity.trim() == "true") {
+			//	if (entityId && entityId.trim() != "") {
+			//		controller.init(entityId);
+			//	}
+			//} else {
+			//	controller.init();
+			//}
 			//controller.init(entityId, contextEntityId, serializationObject);
 		}
 
@@ -55,17 +55,15 @@
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
 
-	</script>
+	--></script>
 </head>
 <body>
 
-	<c:if test='${viewDefinition.header != null}'><div class="pageHeader">${translationsMap[viewDefinition.header]} ${viewDefinition.header}</div></c:if>
-	
-	<div id="windowComponents">
-		<tiles:insertTemplate template="components/components.jsp">
-			<tiles:putAttribute name="componentsMap" value="${viewDefinition.components}" />
+	<div id="content">
+		<tiles:insertTemplate template="components/component.jsp">
+			<tiles:putAttribute name="component" value="${viewDefinition.root}" />
 		</tiles:insertTemplate>
-	</div>
+	</div>	
 	
 </body>
 </html>

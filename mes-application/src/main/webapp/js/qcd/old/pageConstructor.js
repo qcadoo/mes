@@ -50,8 +50,10 @@ QCD.PageConstructor = function(_viewName, _mainController) {
 	}
 	
 	this.constructPageElements = function() {
-		var pageComponents = getComponents($("#windowComponents"));
-		QCDLogger.info(pageComponents);
-		return pageComponents;
+		var contentElement = $("#content");
+		var window = QCDPageConstructor.getChildrenComponents(contentElement.children(), mainController);
+		//var pageComponents = getComponents($("#windowComponents"));
+		//QCDLogger.info(pageComponents);
+		//return pageComponents;
 	}
 }
