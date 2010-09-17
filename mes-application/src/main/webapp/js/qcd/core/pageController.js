@@ -10,6 +10,7 @@ QCD.PageController = function(_viewName) {
 		
 		var contentElement = $("#content");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
+		QCDLogger.info(pageComponents);
 	}
 	
 	this.init = function(entityId) {
