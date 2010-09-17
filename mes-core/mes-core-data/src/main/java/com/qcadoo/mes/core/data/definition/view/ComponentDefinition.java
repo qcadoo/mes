@@ -71,8 +71,10 @@ public abstract class ComponentDefinition {
         return fieldPath;
     }
 
-    public Map<String, String> getOptions() {
-        return options;
+    public Map<String, Object> getOptions() {
+        Map<String, Object> viewOptions = new HashMap<String, Object>(options);
+        viewOptions.put("name", name);
+        return viewOptions;
     }
 
     protected ComponentDefinition getSourceComponent() {

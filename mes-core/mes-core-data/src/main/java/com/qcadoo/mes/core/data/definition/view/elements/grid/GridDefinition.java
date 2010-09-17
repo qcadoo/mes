@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.definition.view.elements.grid;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,27 @@ public final class GridDefinition extends ComponentDefinition {
 
     public void setCorrespondingViewName(final String correspondingViewName) {
         this.correspondingViewName = correspondingViewName;
+    }
+
+    @Override
+    public Map<String, Object> getOptions() {
+        Map<String, Object> viewOptions = super.getOptions();
+        viewOptions.put("correspondingViewName", correspondingViewName);
+        viewOptions.put("columns", getColumnsForOptions());
+        viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
+        return viewOptions;
+    }
+
+    private Object getFieldsForOptions(final Map<String, DataFieldDefinition> fields) {
+        return new ArrayList<String>(fields.keySet());
+    }
+
+    private List<String> getColumnsForOptions() {
+        List<String> columnsForOptions = new ArrayList<String>();
+        for (ColumnDefinition column : columns) {
+            columnsForOptions.add(column.getName());
+        }
+        return columnsForOptions;
     }
 
     @Override

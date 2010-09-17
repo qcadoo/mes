@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
@@ -21,6 +22,9 @@ public final class ValidationService {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public ValidationResults validateGenericEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
@@ -117,7 +121,7 @@ public final class ValidationService {
                 return null;
             }
             BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-            DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
+            DataDefinition referencedDataDefinition = dataDefinitionService.get(belongsToFieldType.getEntityName());
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
             return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validationResults);

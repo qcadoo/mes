@@ -5,8 +5,10 @@ import java.util.Map.Entry;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
@@ -15,6 +17,9 @@ import com.qcadoo.mes.core.data.internal.types.PasswordType;
 
 @Service
 public final class EntityService {
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public static final String FIELD_ID = "id";
 
@@ -99,7 +104,7 @@ public final class EntityService {
 
     private Object getBelongsToField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
         BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-        DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
+        DataDefinition referencedDataDefinition = dataDefinitionService.get(belongsToFieldType.getEntityName());
         if (belongsToFieldType.isEagerFetch()) {
             Object value = getField(databaseEntity, fieldDefinition.getName());
             if (value != null) {

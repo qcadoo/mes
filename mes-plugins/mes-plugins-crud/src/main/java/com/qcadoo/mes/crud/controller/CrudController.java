@@ -50,11 +50,7 @@ public class CrudController {
         translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
         Map<String, Map<String, String>> dictionaryValues = new HashMap<String, Map<String, String>>();
-        Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
 
-        for (ComponentDefinition component : viewDefinition.getRoot().getComponents().values()) {
-            CrudControllerUtils.generateJsonViewElementOptions(component, viewElementsOptionsJson, null);
-        }
         // CrudControllerUtils.generateJsonViewElementOptions(viewDefinition, viewElementsOptionsJson, null);
 
         for (ComponentDefinition component : viewDefinition.getRoot().getComponents().values()) {
@@ -85,7 +81,6 @@ public class CrudController {
             // }
         }
         mav.addObject("dictionaryValues", dictionaryValues);
-        mav.addObject("viewElementsOptions", viewElementsOptionsJson);
 
         mav.addObject("entityId", arguments.get("entityId"));
         mav.addObject("contextEntityId", arguments.get("contextEntityId"));

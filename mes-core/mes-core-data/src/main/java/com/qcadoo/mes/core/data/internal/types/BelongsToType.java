@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
@@ -15,20 +16,23 @@ import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class BelongsToType implements LookupedFieldType {
 
-    private final DataDefinition dataDefinition;
-
     private final DataAccessService dataAccessService;
+
+    private final DataDefinitionService dataDefinitionService;
 
     private final String lookupFieldName;
 
     private final boolean eagerFetch;
 
-    public BelongsToType(final DataDefinition dataDefinition, final String lookupFieldName, final boolean eagerFetch,
-            final DataAccessService dataAccessService) {
-        this.dataDefinition = dataDefinition;
+    private final String entityName;
+
+    public BelongsToType(final String entityName, final String lookupFieldName, final boolean eagerFetch,
+            final DataAccessService dataAccessService, final DataDefinitionService dataDefinitionService) {
+        this.entityName = entityName;
         this.lookupFieldName = lookupFieldName;
         this.eagerFetch = eagerFetch;
         this.dataAccessService = dataAccessService;
+        this.dataDefinitionService = dataDefinitionService;
     }
 
     @Override
@@ -53,6 +57,7 @@ public final class BelongsToType implements LookupedFieldType {
 
     @Override
     public Map<Long, String> lookup(final String prefix) {
+        DataDefinition dataDefinition = dataDefinitionService.get(entityName);
         SearchResult resultSet = dataAccessService.find(SearchCriteriaBuilder.forEntity(dataDefinition)
                 .orderBy(Order.asc(lookupFieldName)).build());
         Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
@@ -64,12 +69,12 @@ public final class BelongsToType implements LookupedFieldType {
         return possibleValues;
     }
 
-    public DataDefinition getDataDefinition() {
-        return dataDefinition;
-    }
-
     public boolean isEagerFetch() {
         return eagerFetch;
+    }
+
+    public String getEntityName() {
+        return entityName;
     }
 
     @Override
