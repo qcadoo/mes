@@ -113,37 +113,39 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		}
 //	}
 //	
-//	function rowDblClicked(rowId) {
-//		redirectToCorrespondingPage(rowId);
-//	}
-//	
-//	function redirectToCorrespondingPage(rowId) {
-//		if (gridParameters.correspondingViewName && gridParameters.correspondingViewName != '') {
-//			var url = gridParameters.correspondingViewName + ".html";
-////			if (parentId || rowId) {
-////				url += "?";
-////				if (parentId) {
-////					url += "contextEntityId="+parentId;
-////				}
-//				if (rowId) {
-////					if (parentId) {
-////						url += "&";
-////					}
-//					url += "?entityId="+rowId;
+	function rowDblClicked(rowId) {
+		redirectToCorrespondingPage(rowId);
+	}
+	
+	function redirectToCorrespondingPage(rowId) {
+		if (gridParameters.correspondingViewName && gridParameters.correspondingViewName != '') {
+			var url = gridParameters.correspondingViewName + ".html";
+//			if (parentId || rowId) {
+//				url += "?";
+//				if (parentId) {
+//					url += "contextEntityId="+parentId;
 //				}
-////			}
-//			mainController.goToPage(url);
-//		}
-//	}
-//	
-//	this.insterData = function(data) {
-//		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
-//		for (var entityNo in data.entities) {
-//			var entity = data.entities[entityNo];
-//			grid.jqGrid('addRowData', entity.id, entity.fields);
-//		}
-//	}
-//	
+				if (rowId) {
+//					if (parentId) {
+//						url += "&";
+//					}
+					url += "?entityId="+rowId;
+				}
+//			}
+				QCDLogger.info(mainController);
+			mainController.goToPage(url);
+		}
+	}
+	
+	this.insterData = function(data) {
+		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
+		grid.jqGrid('clearGridData');
+		for (var entityNo in data.entities) {
+			var entity = data.entities[entityNo];
+			grid.jqGrid('addRowData', entity.id, entity.fields);
+		}
+	}
+	
 	function constructor(_this) {
 		parseOptions(_this.options);
 //		
@@ -165,9 +167,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		gridParameters.onSelectRow = function(id){
 //			rowClicked(id);
 //        }
-//		gridParameters.ondblClickRow = function(id){
-//			rowDblClicked(id);
-//        }
+		gridParameters.ondblClickRow = function(id){
+			rowDblClicked(id);
+        }
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 //		
 //		//if (! gridParameters.parent) {

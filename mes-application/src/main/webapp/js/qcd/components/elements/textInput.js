@@ -9,13 +9,10 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	
 	var element = _element;
 	
-//	this.elementFullName = args.elementFullName;
-//	this.elementName = args.elementName;
-//	
-//	var input = $("#"+this.elementFullName+"_input");
-//	
-//	this.insterData = function(data) {
-//		QCDLogger.info(input);
-//		input.val(data);
-//	}
+	var input = $("#"+element.attr('id')+"_input");
+	
+	this.insterData = function(data) {
+		input.val(data);
+	}
+	
 }

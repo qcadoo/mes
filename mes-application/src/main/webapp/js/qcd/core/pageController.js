@@ -9,9 +9,7 @@ QCD.PageController = function(_viewName) {
 		QCDConnector.windowName = viewName;
 		
 		var contentElement = $("#content");
-		var pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), this);
-		
-		QCDLogger.info(pageComponents);
+		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
 	}
 	
 	this.init = function(entityId) {
@@ -20,7 +18,10 @@ QCD.PageController = function(_viewName) {
 			parameters.entityId = entityId;
 		}
 		QCDConnector.sendGet("data", parameters, function(response) {
-			QCDLogger.info(response);
+			for (var i in response) {
+				var component = pageComponents[i];
+				component.insterData(response[i]);
+			}
 		});
 	}
 	

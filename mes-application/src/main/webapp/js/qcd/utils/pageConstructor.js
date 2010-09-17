@@ -8,7 +8,6 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 			var component = null;
 			var elementFullName = element.attr('id');
 			var elementName = elementFullName.split("-")[elementFullName.split("-").length - 1];
-			
 			if (element.hasClass("component_container_window")) {
 				component = new QCD.components.containers.Window(element, mainController);
 			} if (element.hasClass("component_container_form")) {

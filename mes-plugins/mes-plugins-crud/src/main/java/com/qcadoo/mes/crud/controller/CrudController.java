@@ -97,9 +97,9 @@ public class CrudController {
         if (arguments.get("entityId") != null) {
             Entity entity = dataAccessService.get(viewDefinition.getRoot().getDataDefinition(),
                     Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getRoot().getValue(entity, null, null);
+            return viewDefinition.getValue(entity, null, null);
         } else {
-            return viewDefinition.getRoot().getValue(null, null, null);
+            return viewDefinition.getValue(null, null, null);
         }
     }
 
