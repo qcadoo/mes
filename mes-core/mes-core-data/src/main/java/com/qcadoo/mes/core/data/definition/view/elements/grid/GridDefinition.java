@@ -12,12 +12,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.definition.view.ContainerDefinition;
-import com.qcadoo.mes.core.data.internal.types.HasManyType;
-import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
@@ -94,7 +91,6 @@ public final class GridDefinition extends ComponentDefinition {
         viewOptions.put("correspondingViewName", correspondingViewName);
         viewOptions.put("columns", getColumnsForOptions());
         viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
-        // System.out.println("SSSSSSSSSSSS " + viewOptions);
         return viewOptions;
     }
 
@@ -112,25 +108,26 @@ public final class GridDefinition extends ComponentDefinition {
 
     @Override
     public Object getValue(final Entity entity, final Map<String, Object> selectableValues, final Object viewEntity) {
-        if (getSourceFieldPath() != null) { // TODO
-            if (getSourceFieldPath().charAt(0) == '#') {
-                return null;
-            }
-            DataFieldDefinition corespondingField = getDataDefinition().getField(getSourceFieldPath());
-            HasManyType corespondingType = (HasManyType) corespondingField.getType();
-            DataDefinition corespondingDD = corespondingType.getDataDefinition();
-            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(corespondingDD);
-            searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
-                    corespondingDD.getField(corespondingType.getFieldName()), entity.getId()));
-            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-            SearchResult rs = dataAccessService.find(searchCriteria);
-            return generateListData(rs);
-        } else {
-            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
-            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-            SearchResult rs = dataAccessService.find(searchCriteria);
-            return generateListData(rs);
-        }
+        // if (getSourceFieldPath() != null) { // TODO
+        // if (getSourceFieldPath().charAt(0) == '#') {
+        // return null;
+        // }
+        // DataFieldDefinition corespondingField = getDataDefinition().getField(getSourceFieldPath());
+        // HasManyType corespondingType = (HasManyType) corespondingField.getType();
+        // DataDefinition corespondingDD = corespondingType.getDataDefinition();
+        // SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(corespondingDD);
+        // searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
+        // corespondingDD.getField(corespondingType.getFieldName()), entity.getId()));
+        // SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+        // SearchResult rs = dataAccessService.find(searchCriteria);
+        // return generateListData(rs);
+        // } else {
+
+        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
+        SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+        SearchResult rs = dataAccessService.find(searchCriteria);
+        return generateListData(rs);
+        // }
     }
 
     private ListData generateListData(final SearchResult rs) {

@@ -44,8 +44,10 @@ public abstract class ComponentDefinition {
     public abstract Object getValue(Entity entity, Map<String, Object> selectableValues, Object viewEntity);
 
     protected String getFieldValue(final Entity entity) {
-        if (fieldPath != null) {
-            String[] fields = fieldPath.split("\\.");
+        String path = fieldPath != null ? fieldPath : sourceFieldPath;
+
+        if (path != null) {
+            String[] fields = path.split("\\.");
             Object value = entity;
 
             for (String field : fields) {
