@@ -95,7 +95,8 @@ public class CrudController {
     public Object getData(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         if (arguments.get("entityId") != null) {
-            Entity entity = dataAccessService.get(viewDefinition.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
+            Entity entity = dataAccessService.get(viewDefinition.getRoot().getDataDefinition(),
+                    Long.parseLong(arguments.get("entityId")));
             return viewDefinition.getRoot().getValue(entity, null, null);
         } else {
             return viewDefinition.getRoot().getValue(null, null, null);

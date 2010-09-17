@@ -9,7 +9,7 @@ import com.qcadoo.mes.core.data.definition.view.ContainerDefinition;
 public class TextInput extends ComponentDefinition {
 
     public TextInput(final String name, final ContainerDefinition parent, final String fieldName, final String dataSource) {
-        super(name, parent, fieldName, dataSource, null);
+        super(name, parent, fieldName, dataSource);
     }
 
     @Override

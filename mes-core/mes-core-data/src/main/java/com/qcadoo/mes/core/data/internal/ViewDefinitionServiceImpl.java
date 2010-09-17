@@ -89,7 +89,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         if (entity != null) {
             return viewDefinition;
         }
-        return new ViewDefinition("main", null, "", null);
+        return new ViewDefinition("main", null, "");
     }
 
     @Override
@@ -122,7 +122,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         WindowDefinition windowDefinition = new WindowDefinition("test.grid", testADD);
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.grid", windowDefinition, "test", testADD);
+        ViewDefinition viewDefinition = new ViewDefinition("test.grid", windowDefinition, "test");
 
         GridDefinition grid = new GridDefinition("beansAGrid", windowDefinition, null, null, dataAccessService,
                 dataDefinitionService);
@@ -145,7 +145,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         WindowDefinition windowDefinition = new WindowDefinition("test.form", testADD);
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.form", windowDefinition, "test", testADD);
+        ViewDefinition viewDefinition = new ViewDefinition("test.form", windowDefinition, "test");
 
         FormDefinition formDefinition = new FormDefinition("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInput("name", formDefinition, "name", null));

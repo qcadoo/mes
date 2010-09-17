@@ -5,22 +5,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
 
 public abstract class ContainerDefinition extends ComponentDefinition {
 
     private final Map<String, ComponentDefinition> components = new LinkedHashMap<String, ComponentDefinition>();
 
     public ContainerDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
-            final String sourceFieldPath, final DataDefinition dataDefinition) {
-        super(name, parentContainer, fieldPath, sourceFieldPath, dataDefinition);
+            final String sourceFieldPath) {
+        super(name, parentContainer, fieldPath, sourceFieldPath);
     }
 
     public Map<String, ComponentDefinition> getComponents() {
         return components;
     }
 
-    public ComponentDefinition getComponent(final String componentName) {
+    public ComponentDefinition lookupComponent(final String componentName) {
         return components.get(componentName);
     }
 

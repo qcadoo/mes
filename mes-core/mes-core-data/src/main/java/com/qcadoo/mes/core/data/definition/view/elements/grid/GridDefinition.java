@@ -39,7 +39,7 @@ public final class GridDefinition extends ComponentDefinition {
 
     private Set<DataFieldDefinition> orderableFields;
 
-    private List<ColumnDefinition> columns;
+    private List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 
     private String correspondingViewName;
 
@@ -50,7 +50,7 @@ public final class GridDefinition extends ComponentDefinition {
     public GridDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
             final String sourceFieldPath, final DataAccessService dataAccessService,
             final DataDefinitionService dataDefinitionService) {
-        super(name, parentContainer, fieldPath, sourceFieldPath, null);
+        super(name, parentContainer, fieldPath, sourceFieldPath);
         this.dataAccessService = dataAccessService;
         this.dataDefinitionService = dataDefinitionService;
     }

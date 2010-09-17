@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.data.definition.view;
 
-import com.qcadoo.mes.core.data.definition.DataDefinition;
 
 public class ViewDefinition {
 
@@ -10,14 +9,10 @@ public class ViewDefinition {
 
     private final String name;
 
-    private final DataDefinition dataDefinition;
-
-    public ViewDefinition(final String name, final ContainerDefinition root, final String pluginIdentifier,
-            final DataDefinition dataDefinition) {
+    public ViewDefinition(final String name, final ContainerDefinition root, final String pluginIdentifier) {
         this.name = name;
         this.root = root;
         this.pluginIdentifier = pluginIdentifier;
-        this.dataDefinition = dataDefinition;
     }
 
     public String getPluginIdentifier() {
@@ -30,10 +25,6 @@ public class ViewDefinition {
 
     public String getName() {
         return name;
-    }
-
-    public DataDefinition getDataDefinition() {
-        return dataDefinition;
     }
 
 }
