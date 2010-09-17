@@ -7,8 +7,11 @@ QCD.PageController = function(_viewName) {
 	
 	function constructor(_this) {
 		QCDConnector.windowName = viewName;
-		var pageConstructor = new QCD.PageConstructor(viewName, _this);
-		pageComponents = pageConstructor.constructPageElements();
+		
+		var contentElement = $("#content");
+		var pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), this);
+		
+		QCDLogger.info(pageComponents);
 	}
 	
 	this.init = function(entityId, contextEntityId, serializationObject) {

@@ -7,12 +7,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <tiles:useAttribute name="component" />
-<tiles:useAttribute name="componentPath"/>
+<tiles:useAttribute name="componentFullName"/>
 
-<div class="component component_element component_element_textInput" id="${componentPath}">
+<div class="component component_element component_element_textInput" id="${componentFullName}">
 	<div class="element_options" style="display: none">
-		${viewElementsOptions[componentPath]}
+		${component.options}
 	</div>
+	
 	${component.name}
-	<input type="text" id="${componentPath}_input" name="fields[${component.name}]" />
+	<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
 </div>

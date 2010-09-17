@@ -7,17 +7,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <tiles:useAttribute name="component" />
-<tiles:useAttribute name="componentFullName"/>
+<tiles:useAttribute name="componentFullName" ignore="true"/>
 
-<div class="component component_element component_element_grid" id="${componentFullName}" style="margin: 10px;">
+<div class="component component_container component_container_window" id="${componentFullName}">
 	<div class=element_options style="display: none">
 		${component.options}
 	</div>
 	
 	<div style="font-weight: bold; margin-bottom: 10px;">
-		Grid ${componentFullName}
+		Window ${componentFullName}
 	</div>
 	
-	<table class="element_table" id="${componentFullName}_grid">
-	</table>
+	<div class="windowComponents">
+		<c:forEach items="${component.components}" var="componentEntry">
+			<tiles:insertTemplate template="../component.jsp">
+				<tiles:putAttribute name="component" value="${componentEntry.value}" />
+				<tiles:putAttribute name="parentComponentFullName" value="${componentFullName}" />
+			</tiles:insertTemplate>
+		</c:forEach>
+	
+	</div>
 </div>
+
+

@@ -120,7 +120,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createTestGridView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
-        WindowDefinition windowDefinition = new WindowDefinition("test.grid", testADD);
+        WindowDefinition windowDefinition = new WindowDefinition("mainWindow", testADD);
 
         ViewDefinition viewDefinition = new ViewDefinition("test.grid", windowDefinition, "test");
 
@@ -146,7 +146,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createTestFormView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
-        WindowDefinition windowDefinition = new WindowDefinition("test.form", testADD);
+        WindowDefinition windowDefinition = new WindowDefinition("mainWindow", testADD);
 
         ViewDefinition viewDefinition = new ViewDefinition("test.form", windowDefinition, "test");
 
