@@ -35,7 +35,7 @@ public class CrudControllerUtils {
                 obj.put("options", optionsObject);
             }
             // obj.put("listenable", viewElement.isLisinable());
-            if (viewElement.getType() == ComponentDefinition.TYPE_ELEMENT_GRID) {
+            if ("grip".equals(viewElement.getType())) {
                 if (!(viewElement instanceof GridDefinition)) {
                     throw new IllegalSelectorException();
                 }
