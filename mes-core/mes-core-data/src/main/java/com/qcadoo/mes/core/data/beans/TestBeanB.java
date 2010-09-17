@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -23,8 +22,7 @@ public class TestBeanB {
 
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "beanB")
     private List<TestBeanA> beansA;
 
     @ManyToOne(fetch = FetchType.LAZY)
