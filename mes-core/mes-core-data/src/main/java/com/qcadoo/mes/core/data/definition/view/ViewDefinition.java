@@ -2,26 +2,38 @@ package com.qcadoo.mes.core.data.definition.view;
 
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 
-public class ViewDefinition extends ContainerDefinition {
+public class ViewDefinition {
 
-    private String pluginCodeId;
+    private final ContainerDefinition root;
 
-    public ViewDefinition(final String name, final DataDefinition dataDefinition, final String pluginCodeId) {
-        super(name, null, null, null, dataDefinition);
-        this.pluginCodeId = pluginCodeId;
+    private final String pluginIdentifier;
+
+    private final String name;
+
+    private final DataDefinition dataDefinition;
+
+    public ViewDefinition(final String name, final ContainerDefinition root, final String pluginIdentifier,
+            final DataDefinition dataDefinition) {
+        this.name = name;
+        this.root = root;
+        this.pluginIdentifier = pluginIdentifier;
+        this.dataDefinition = dataDefinition;
     }
 
-    @Override
-    public int getType() {
-        return ComponentDefinition.TYPE_CONTAINER_WINDOW;
+    public String getPluginIdentifier() {
+        return pluginIdentifier;
     }
 
-    public String getPluginCodeId() {
-        return pluginCodeId;
+    public ContainerDefinition getRoot() {
+        return root;
     }
 
-    public void setPluginCodeId(final String pluginCodeId) {
-        this.pluginCodeId = pluginCodeId;
+    public String getName() {
+        return name;
+    }
+
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
 }

@@ -55,8 +55,8 @@ public final class GridDefinition extends ComponentDefinition {
     }
 
     @Override
-    public int getType() {
-        return ComponentDefinition.TYPE_ELEMENT_GRID;
+    public String getType() {
+        return "grid";
     }
 
     public Set<DataFieldDefinition> getSearchableFields() {

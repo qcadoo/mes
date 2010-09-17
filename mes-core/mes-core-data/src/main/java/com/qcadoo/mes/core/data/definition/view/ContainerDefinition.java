@@ -40,4 +40,9 @@ public abstract class ContainerDefinition extends ComponentDefinition {
         return result;
     }
 
+    @Override
+    public boolean isContainer() {
+        return true;
+    }
+
 }

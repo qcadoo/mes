@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.data.definition.view.containers.form;
 
-import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.definition.view.ContainerDefinition;
 
 public final class FormDefinition extends ContainerDefinition {
@@ -11,8 +10,8 @@ public final class FormDefinition extends ContainerDefinition {
     }
 
     @Override
-    public int getType() {
-        return ComponentDefinition.TYPE_CONTAINER_FORM;
+    public String getType() {
+        return "form";
     }
 
 }

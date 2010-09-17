@@ -52,12 +52,12 @@ public class CrudController {
         Map<String, Map<String, String>> dictionaryValues = new HashMap<String, Map<String, String>>();
         Map<String, String> viewElementsOptionsJson = new HashMap<String, String>();
 
-        for (ComponentDefinition component : viewDefinition.getComponents().values()) {
+        for (ComponentDefinition component : viewDefinition.getRoot().getComponents().values()) {
             CrudControllerUtils.generateJsonViewElementOptions(component, viewElementsOptionsJson, null);
         }
         // CrudControllerUtils.generateJsonViewElementOptions(viewDefinition, viewElementsOptionsJson, null);
 
-        for (ComponentDefinition component : viewDefinition.getComponents().values()) {
+        for (ComponentDefinition component : viewDefinition.getRoot().getComponents().values()) {
             // viewElementsOptionsJson.put(component.getName(), CrudControllerUtils.generateJsonViewElementOptions(component));
 
             //
@@ -101,9 +101,9 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         if (arguments.get("entityId") != null) {
             Entity entity = dataAccessService.get(viewDefinition.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, null, null);
+            return viewDefinition.getRoot().getValue(entity, null, null);
         } else {
-            return viewDefinition.getValue(null, null, null);
+            return viewDefinition.getRoot().getValue(null, null, null);
         }
     }
 

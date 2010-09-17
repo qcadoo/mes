@@ -8,14 +8,6 @@ import com.qcadoo.mes.core.data.definition.DataDefinition;
 
 public abstract class ComponentDefinition {
 
-    public static final int TYPE_CONTAINER_WINDOW = 1;
-
-    public static final int TYPE_CONTAINER_FORM = 2;
-
-    public static final int TYPE_ELEMENT_GRID = 3;
-
-    public static final int TYPE_ELEMENT_TEXT_INPUT = 4;
-
     private final String name;
 
     private final String path;
@@ -32,7 +24,7 @@ public abstract class ComponentDefinition {
 
     private final DataDefinition dataDefinition;
 
-    public abstract int getType();
+    public abstract String getType();
 
     public abstract Object getValue(Entity entity, Map<String, Object> selectableValues, Object viewEntity);
 
@@ -57,6 +49,10 @@ public abstract class ComponentDefinition {
         } else {
             this.path = name;
         }
+    }
+
+    public boolean isContainer() {
+        return false;
     }
 
     public String getName() {

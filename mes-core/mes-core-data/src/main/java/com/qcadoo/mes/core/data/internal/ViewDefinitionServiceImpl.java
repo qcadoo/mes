@@ -28,6 +28,7 @@ import com.qcadoo.mes.core.data.controls.FieldControlFactory;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
+import com.qcadoo.mes.core.data.definition.view.WindowDefinition;
 import com.qcadoo.mes.core.data.definition.view.containers.form.FormDefinition;
 import com.qcadoo.mes.core.data.definition.view.elements.TextInput;
 import com.qcadoo.mes.core.data.definition.view.elements.grid.ColumnDefinition;
@@ -85,11 +86,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
         DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
-        Entity entity = getActivePlugin(dataDefinition, viewDefinition.getPluginCodeId());
+        Entity entity = getActivePlugin(dataDefinition, viewDefinition.getPluginIdentifier());
         if (entity != null) {
             return viewDefinition;
         }
-        return new ViewDefinition("main", null, "");
+        return new ViewDefinition("main", null, "", null);
     }
 
     @Override
@@ -101,7 +102,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         for (Object activePlugin : activePluginList) {
             Entity entity = entityService.convertToGenericEntity(dataDefinition, activePlugin);
             for (ViewDefinition viewDefinition : viewDefinitions.values()) {
-                if (((String) entity.getField("codeId")).equals(viewDefinition.getPluginCodeId())) {
+                if (((String) entity.getField("codeId")).equals(viewDefinition.getPluginIdentifier())) {
                     viewsList.add(viewDefinition);
                 }
             }
@@ -120,8 +121,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createTestGridView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.grid", testADD, "test");
-        GridDefinition grid = new GridDefinition("beansAGrid", viewDefinition, null, null, dataAccessService,
+        WindowDefinition windowDefinition = new WindowDefinition("test.grid", testADD);
+
+        ViewDefinition viewDefinition = new ViewDefinition("test.grid", windowDefinition, "test", testADD);
+
+        GridDefinition grid = new GridDefinition("beansAGrid", windowDefinition, null, null, dataAccessService,
                 dataDefinitionService);
         grid.setCorrespondingViewName("test.form");
         grid.addOptions("paging", "true");
@@ -133,27 +137,29 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         grid.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
 
-        viewDefinition.addComponent(grid);
+        windowDefinition.addComponent(grid);
         return viewDefinition;
     }
 
     private ViewDefinition createTestFormView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.form", testADD, "test");
+        WindowDefinition windowDefinition = new WindowDefinition("test.form", testADD);
 
-        FormDefinition formDefinition = new FormDefinition("beanAForm", viewDefinition, null, null);
+        ViewDefinition viewDefinition = new ViewDefinition("test.form", windowDefinition, "test", testADD);
+
+        FormDefinition formDefinition = new FormDefinition("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInput("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInput("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInput("nameC", formDefinition, "beanB.beanC.name", null));
         formDefinition.addComponent(new GridDefinition("beansCGrig", formDefinition, "beansC", null, dataAccessService,
                 dataDefinitionService));
-        viewDefinition.addComponent(formDefinition);
+        windowDefinition.addComponent(formDefinition);
 
-        viewDefinition.addComponent(new GridDefinition("beansBGrig", formDefinition, null, "#{beanAForm.beansCGrig}.beansB",
+        windowDefinition.addComponent(new GridDefinition("beansBGrig", formDefinition, null, "#{beanAForm.beansCGrig}.beansB",
                 dataAccessService, dataDefinitionService));
 
-        FormDefinition formCDefinition = new FormDefinition("beanCForm", viewDefinition, null, "#{beansBGrig}.beanC");
+        FormDefinition formCDefinition = new FormDefinition("beanCForm", windowDefinition, null, "#{beansBGrig}.beanC");
         formCDefinition.addComponent(new TextInput("name", formCDefinition, "name", null));
         FormDefinition formCDefinition_formA = new FormDefinition("formA", formCDefinition, "beanA", null);
         formCDefinition_formA.addComponent(new TextInput("name", formCDefinition_formA, "name", null));
@@ -161,11 +167,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formCDefinition.addComponent(new GridDefinition("beansBGrig", formCDefinition, "beansB", null, dataAccessService,
                 dataDefinitionService));
         formDefinition.addComponent(new TextInput("name", formDefinition, null, "#{beanCForm.beansBGrig}.name"));
-        viewDefinition.addComponent(formCDefinition);
+        windowDefinition.addComponent(formCDefinition);
 
-        FormDefinition formBDefinition = new FormDefinition("beanBForm", viewDefinition, null, "#{beansBGrig}");
+        FormDefinition formBDefinition = new FormDefinition("beanBForm", windowDefinition, null, "#{beansBGrig}");
         formBDefinition.addComponent(new TextInput("name", formBDefinition, "name", null));
-        viewDefinition.addComponent(formBDefinition);
+        windowDefinition.addComponent(formBDefinition);
 
         return viewDefinition;
     }

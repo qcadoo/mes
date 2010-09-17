@@ -13,8 +13,8 @@ public class TextInput extends ComponentDefinition {
     }
 
     @Override
-    public int getType() {
-        return ComponentDefinition.TYPE_ELEMENT_TEXT_INPUT;
+    public String getType() {
+        return "textInput";
     }
 
     @Override
