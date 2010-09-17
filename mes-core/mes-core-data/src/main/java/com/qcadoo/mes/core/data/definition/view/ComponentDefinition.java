@@ -51,17 +51,10 @@ public abstract class ComponentDefinition {
         }
     }
 
-    protected String getFieldValue(final Entity entity) {
-
-        System.out.println(" 1 ---> " + this.path + ", " + (entity != null));
-
+    protected String getFieldValue(final Entity entity, final String path) {
         if (entity == null) {
             return "";
         }
-
-        String path = fieldPath != null ? fieldPath : sourceFieldPath;
-
-        System.out.println(" 2 ---> " + this.path + ", " + path);
 
         if (path != null) {
             String[] fields = path.split("\\.");
@@ -74,8 +67,6 @@ public abstract class ComponentDefinition {
                     return "";
                 }
             }
-
-            System.out.println(" 3 ---> " + this.path + ", " + value);
 
             return String.valueOf(value);
         }

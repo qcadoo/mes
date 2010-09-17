@@ -19,7 +19,7 @@ public class TextInput extends ComponentDefinition {
 
     @Override
     public Object getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
-        return getFieldValue(entity);
+        return getFieldValue(entity, getFieldPath());
     }
 
 }

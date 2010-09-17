@@ -1,6 +1,10 @@
 package com.qcadoo.mes.core.data.definition.view.elements.grid;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,9 +16,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.definition.view.ContainerDefinition;
+import com.qcadoo.mes.core.data.internal.types.HasManyType;
+import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
@@ -107,27 +114,41 @@ public final class GridDefinition extends ComponentDefinition {
     }
 
     @Override
-    public Object getComponentValue(final Entity entity, final Map<String, Entity> selectableValues, final Object viewEntity) {
-        // if (getSourceFieldPath() != null) { // TODO
-        // if (getSourceFieldPath().charAt(0) == '#') {
-        // return null;
-        // }
-        // DataFieldDefinition corespondingField = getDataDefinition().getField(getSourceFieldPath());
-        // HasManyType corespondingType = (HasManyType) corespondingField.getType();
-        // DataDefinition corespondingDD = corespondingType.getDataDefinition();
-        // SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(corespondingDD);
-        // searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
-        // corespondingDD.getField(corespondingType.getFieldName()), entity.getId()));
-        // SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-        // SearchResult rs = dataAccessService.find(searchCriteria);
-        // return generateListData(rs);
-        // } else {
+    public Object getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
+        if ((getSourceFieldPath() != null && getSourceComponent() != null) || getFieldPath() != null) {
+            if (entity == null) {
+                return new ListData(0, Collections.<Entity> emptyList());
+            }
+            HasManyType hasManyType = null;
+            if (getFieldPath() != null) {
+                hasManyType = getHasManyType(getParentContainer().getDataDefinition(), getFieldPath());
+            } else {
+                hasManyType = getHasManyType(getSourceComponent().getDataDefinition(), getSourceFieldPath());
+            }
+            System.out.println(" ! ---> " + getPath() + ", hasManyType: " + hasManyType.getFieldName());
+            checkState(hasManyType.getDataDefinition().getName().equals(getDataDefinition().getName()),
+                    "Grid and hasMany relation have different data definitions");
+            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
+            searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
+                    getDataDefinition().getField(hasManyType.getFieldName()), entity.getId()));
+            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+            SearchResult rs = dataAccessService.find(searchCriteria);
+            return generateListData(rs);
+        } else {
+            System.out.println(" ! ---> " + getPath() + ", hasManyType: null");
+            SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
+            SearchCriteria searchCriteria = searchCriteriaBuilder.build();
+            SearchResult rs = dataAccessService.find(searchCriteria);
+            return generateListData(rs);
+        }
+    }
 
-        SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
-        SearchCriteria searchCriteria = searchCriteriaBuilder.build();
-        SearchResult rs = dataAccessService.find(searchCriteria);
-        return generateListData(rs);
-        // }
+    private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {
+        checkState(!fieldPath.matches("\\."), "Grid doesn't support sequential path");
+        DataFieldDefinition fieldDefinition = dataDefinition.getField(fieldPath);
+        checkNotNull((fieldDefinition != null && fieldDefinition.getType() instanceof HasManyType),
+                "Grid data definition cannot be found");
+        return (HasManyType) fieldDefinition.getType();
     }
 
     private ListData generateListData(final SearchResult rs) {
