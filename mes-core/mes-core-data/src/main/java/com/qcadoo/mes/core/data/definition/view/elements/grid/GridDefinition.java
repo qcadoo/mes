@@ -107,7 +107,7 @@ public final class GridDefinition extends ComponentDefinition {
     }
 
     @Override
-    public Object getValue(final Entity entity, final Map<String, Object> selectableValues, final Object viewEntity) {
+    public Object getComponentValue(final Entity entity, final Map<String, Entity> selectableValues, final Object viewEntity) {
         // if (getSourceFieldPath() != null) { // TODO
         // if (getSourceFieldPath().charAt(0) == '#') {
         // return null;

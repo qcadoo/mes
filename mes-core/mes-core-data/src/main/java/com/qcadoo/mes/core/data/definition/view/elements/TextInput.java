@@ -18,7 +18,7 @@ public class TextInput extends ComponentDefinition {
     }
 
     @Override
-    public Object getValue(final Entity entity, final Map<String, Object> selectableValues, final Object viewEntity) {
+    public Object getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
         return getFieldValue(entity);
     }
 

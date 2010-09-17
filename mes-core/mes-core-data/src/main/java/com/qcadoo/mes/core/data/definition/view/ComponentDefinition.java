@@ -41,10 +41,27 @@ public abstract class ComponentDefinition {
 
     public abstract String getType();
 
-    public abstract Object getValue(Entity entity, Map<String, Object> selectableValues, Object viewEntity);
+    public abstract Object getComponentValue(Entity entity, Map<String, Entity> selectableEntities, Object viewEntity);
+
+    public Object getValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
+        if (sourceComponent != null) {
+            return getComponentValue(selectableEntities.get(sourceComponent.getPath()), selectableEntities, viewEntity);
+        } else {
+            return getComponentValue(entity, selectableEntities, viewEntity);
+        }
+    }
 
     protected String getFieldValue(final Entity entity) {
+
+        System.out.println(" 1 ---> " + this.path + ", " + (entity != null));
+
+        if (entity == null) {
+            return "";
+        }
+
         String path = fieldPath != null ? fieldPath : sourceFieldPath;
+
+        System.out.println(" 2 ---> " + this.path + ", " + path);
 
         if (path != null) {
             String[] fields = path.split("\\.");
@@ -52,11 +69,13 @@ public abstract class ComponentDefinition {
 
             for (String field : fields) {
                 if (value instanceof Entity) {
-                    value = entity.getField(field);
+                    value = ((Entity) value).getField(field);
                 } else {
                     return "";
                 }
             }
+
+            System.out.println(" 3 ---> " + this.path + ", " + value);
 
             return String.valueOf(value);
         }
