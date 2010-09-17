@@ -54,6 +54,10 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinitions = new HashMap<String, ViewDefinition>();
         viewDefinitions.put("products.productGridView", createProductGridView());
         viewDefinitions.put("products.productDetailsView", createProductDetailsView());
+
+        viewDefinitions.put("test.grid", createTestGridView());
+        viewDefinitions.put("test.form", createTestFormView());
+
         // viewDefinitions.put("products.substituteDetailsView", createProductSubstituteDetailsView());
         // viewDefinitions.put("products.substituteComponentDetailsView", createProductSubstituteComponentDetailsView());
         // viewDefinitions.put("products.orderGridView", createOrderGridView());
@@ -107,6 +111,60 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
             }
         });
         return viewsList;
+    }
+
+    private ViewDefinition createTestGridView() {
+        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
+
+        ViewDefinition viewDefinition = new ViewDefinition("test.grid", testADD, "test", false);
+        GridDefinition grid = new GridDefinition("beansAGrid", testADD, null, dataDefinitionService);
+        grid.setCorrespondingViewName("test.form");
+        Map<String, String> gridOptions = new HashMap<String, String>();
+        gridOptions.put("paging", "true");
+        gridOptions.put("sortable", "true");
+        gridOptions.put("filter", "true");
+        gridOptions.put("multiselect", "true");
+        gridOptions.put("height", "450");
+        grid.setOptions(gridOptions);
+        ColumnDefinition columnName = createColumnDefinition("name", testADD.getField("name"), null);
+
+        grid.setColumns(Arrays.asList(new ColumnDefinition[] { columnName }));
+
+        viewDefinition.addComponent(grid);
+        return viewDefinition;
+    }
+
+    private ViewDefinition createTestFormView() {
+        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
+        DataDefinition testBDD = dataDefinitionService.get("test.testBeanB");
+        DataDefinition testCDD = dataDefinitionService.get("test.testBeanC");
+
+        ViewDefinition viewDefinition = new ViewDefinition("test.form", testADD, "test", false);
+
+        FormDefinition formDefinition = new FormDefinition("beanAForm", null);
+        formDefinition.addComponent(new TextInput("name", "name"));
+        formDefinition.addComponent(new TextInput("nameB", "beanB.name"));
+        formDefinition.addComponent(new TextInput("nameC", "beanB.beanC.name"));
+        formDefinition.addComponent(new GridDefinition("beansCGrig", testCDD, "beansC", dataDefinitionService));
+        viewDefinition.addComponent(formDefinition);
+
+        viewDefinition.addComponent(new GridDefinition("beansBGrig", testBDD, "#{beanAForm.beansCGrig}.beansB",
+                dataDefinitionService));
+
+        FormDefinition formCDefinition = new FormDefinition("beanCForm", "#{beansBGrig}.beanC");
+        formCDefinition.addComponent(new TextInput("name", "name"));
+        FormDefinition formCDefinition_formA = new FormDefinition("formA", "beanA");
+        formCDefinition_formA.addComponent(new TextInput("name", "name"));
+        formCDefinition.addComponent(formCDefinition_formA);
+        formCDefinition.addComponent(new GridDefinition("beansBGrig", testBDD, "beansB", dataDefinitionService));
+        formDefinition.addComponent(new TextInput("name", "#{beanCForm.beansBGrig}.name"));
+        viewDefinition.addComponent(formCDefinition);
+
+        FormDefinition formBDefinition = new FormDefinition("beanBForm", "#{beansBGrig}");
+        formBDefinition.addComponent(new TextInput("name", "name"));
+        viewDefinition.addComponent(formBDefinition);
+
+        return viewDefinition;
     }
 
     private ViewDefinition createProductGridView() {
