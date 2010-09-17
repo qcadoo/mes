@@ -60,9 +60,9 @@ public abstract class ComponentDefinition {
         }
     }
 
-    public boolean initialize() {
+    public boolean initializeComponent(final Map<String, ComponentDefinition> componentRegistry) {
         String[] source = parseSourceFieldPath(sourceFieldPath);
-        sourceComponent = lookupComponent(source[0]);
+        sourceComponent = componentRegistry.get(source[0]);
 
         if (sourceComponent == null || !sourceComponent.isInitialized()) {
             return false;
@@ -133,10 +133,6 @@ public abstract class ComponentDefinition {
         this.options.put(name, value);
     }
 
-    public ComponentDefinition lookupComponent(final String path) {
-        return parentContainer.lookupComponent(path);
-    }
-
     protected void registerListener(final String path) {
         listeners.add(path);
     }
@@ -147,8 +143,9 @@ public abstract class ComponentDefinition {
 
     @Override
     public String toString() {
-        String dd = dataDefinition != null ? dataDefinition.getName() : "";
-        return path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sourceComponent + "], " + listeners + ", " + dd;
+        String dd = dataDefinition != null ? dataDefinition.getName() : "null";
+        String sc = sourceComponent != null ? sourceComponent.getPath() : "null";
+        return path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sc + "], [" + listeners + "], " + dd;
     }
 
 }

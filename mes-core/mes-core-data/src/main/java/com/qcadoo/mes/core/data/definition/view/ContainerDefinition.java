@@ -19,11 +19,6 @@ public abstract class ContainerDefinition extends ComponentDefinition {
         return components;
     }
 
-    @Override
-    public ComponentDefinition lookupComponent(final String componentName) {
-        return components.get(componentName);
-    }
-
     public void addComponent(final ComponentDefinition component) {
         components.put(component.getName(), component);
     }

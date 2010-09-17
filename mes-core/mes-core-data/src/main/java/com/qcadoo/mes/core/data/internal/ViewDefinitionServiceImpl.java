@@ -158,7 +158,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 dataDefinitionService));
         windowDefinition.addComponent(formDefinition);
 
-        windowDefinition.addComponent(new GridDefinition("beansBGrig", formDefinition, null,
+        windowDefinition.addComponent(new GridDefinition("beansBGrig", windowDefinition, null,
                 "#{mainWindow.beanAForm.beansCGrig}.beansB", dataAccessService, dataDefinitionService));
 
         FormDefinition formCDefinition = new FormDefinition("beanCForm", windowDefinition, null, "#{mainWindow.beansBGrig}.beanC");
