@@ -153,7 +153,9 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
 
         try {
-            JSONObject jsonValues = new JSONObject(body.toString());
+            JSONObject jsonBody = new JSONObject(body.toString());
+            String componentName = jsonBody.getString("componentName");
+            JSONObject jsonValues = jsonBody.getJSONObject("data");
 
             Entity entity = null;
 
