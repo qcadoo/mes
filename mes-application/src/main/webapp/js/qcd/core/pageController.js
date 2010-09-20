@@ -10,7 +10,7 @@ QCD.PageController = function(_viewName) {
 		
 		var contentElement = $("#content");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
-		QCDLogger.info(pageComponents);
+		QCDLogger.debug(pageComponents);
 	}
 	
 	this.init = function(entityId) {
@@ -19,11 +19,7 @@ QCD.PageController = function(_viewName) {
 			parameters.entityId = entityId;
 		}
 		QCDConnector.sendGet("data", parameters, function(response) {
-			QCDLogger.info(response.components);
-			for (var i in response.components) {
-				var component = pageComponents[i];
-				component.setValue(response.components[i]);
-			}
+			updateData(response);
 		});
 	}
 	
@@ -42,6 +38,14 @@ QCD.PageController = function(_viewName) {
 		QCDConnector.sendPost("dataUpdate", values, function(response) {
 			QCDLogger.info(response);
 		});
+	}
+	
+	function updateData(data) {
+		QCDLogger.debug(data);
+		for (var i in data.components) {
+			var component = pageComponents[i];
+			component.setValue(data.components[i]);
+		}
 	}
 	
 	this.getTranslation = function(key) {
