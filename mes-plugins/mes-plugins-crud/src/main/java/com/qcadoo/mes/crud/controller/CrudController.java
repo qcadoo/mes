@@ -156,6 +156,12 @@ public class CrudController {
 
             System.out.println("TODO: " + jsonValues.toString());
 
+            // dla Macka:
+            // VE = viewDefinition.cast(jsonValues);
+            // E = ??
+            // NVE = viewDefinition.getValue(VE, E);
+            // return NVE;
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

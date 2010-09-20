@@ -28,5 +28,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		//$("#"+_this.elementFullName+"_cancelButton").click(performCancel);
 	}
 	
+	this.getComponentValue = function() {
+		return null;
+	}
+	
 	constructor(this);
 }

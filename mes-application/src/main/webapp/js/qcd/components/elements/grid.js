@@ -148,7 +148,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
-	this.getValue = function() {
+	this.getComponentValue = function() {
 		return "gridValue";
 	}
 	
