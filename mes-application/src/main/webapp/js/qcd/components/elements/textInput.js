@@ -22,7 +22,15 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 		return null;
 	}
 	
-	this.setComponentValue = function(componentValue) {
-		input.val(componentValue.value);
+	this.setComponentValue = function(value) {
+		input.val(value);
+	}
+	
+	this.setComponentEnabled = function(isEnabled) {
+		if (isEnabled) {
+			input.removeAttr('disabled');
+		} else {
+			input.attr('disabled', 'true');
+		}
 	}
 }

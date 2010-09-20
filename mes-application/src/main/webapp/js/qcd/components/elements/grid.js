@@ -149,16 +149,21 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.getComponentValue = function() {
-		return "gridValue";
+		return {
+			selectedEntityId: grid.getGridParam('selrow')
+		}
 	}
 	
-	this.setComponentValue = function(componentValue) {
-		var value = componentValue.value;
+	this.setComponentValue = function(value) {
 		grid.jqGrid('clearGridData');
 		for (var entityNo in value.entities) {
 			var entity = value.entities[entityNo];
 			grid.jqGrid('addRowData', entity.id, entity.fields);
 		}
+	}
+	
+	this.setComponentEnabled = function(isEnabled) {
+		
 	}
 	
 	function constructor(_this) {

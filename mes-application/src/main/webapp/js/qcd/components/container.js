@@ -40,6 +40,12 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 	}
 	
+	this.setComponentEnabled = function(isEnabled) {
+		for (var i in components) {
+			components[i].setEnabled(isEnabled);
+		}
+	}
+	
 	function constructor(_this) {
 		//QCDLogger.info("Container");
 	}

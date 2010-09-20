@@ -9,6 +9,9 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	var options;
 	
+	var isVisible;
+	var isEnabled;
+	
 	function constructor(_this) {
 		options = QCDOptions.getElementOptions(elementName);
 		_this.options = options;
@@ -17,20 +20,17 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.getValue = function() {
 		return {
-			enabled: true,
-			visible: true,
+			enabled: this.isEnabled(),
+			visible: this.isVisible(),
 			value: this.getComponentValue(),
 			components: this.getComponentsValue()
 		}
 	}
 	
 	this.setValue = function(value) {
-		var componentValue = {
-			enabled: value.enabled,
-			visible: value.visible,
-			value: value.value
-		}
-		this.setComponentValue(componentValue);
+		this.setEnabled(value.enabled);
+		this.setVisible(value.visible);
+		this.setComponentValue(value.value);
 		if (value.components) {
 			this.setComponentsValue(value.components);
 		}
@@ -41,6 +41,33 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	this.setComponentsValue = function() {
 		
+	}
+	
+	this.setEnabled = function(_isEnabled) {
+		isEnabled = _isEnabled;
+		this.setComponentEnabled(isEnabled);
+	}
+	
+	this.isEnabled = function() {
+		return isEnabled;
+	}
+	
+	this.setVisible = function(_isVisible) {
+		isVisible = _isVisible;
+		if (this.setComponentVisible) {
+			this.setComponentVisible(isVisible);
+		} else {
+			if (isVisible) {
+				element.show();
+			} else {
+				element.hide();
+			}
+		}
+		
+	}
+	
+	this.isVisible = function() {
+		return isVisible;
 	}
 	
 	constructor(this);
