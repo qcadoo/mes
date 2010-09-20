@@ -15,6 +15,19 @@ QCD.components.Component = function(_element, _mainController) {
 		//QCDLogger.info("Component");
 	}
 	
+	this.getValue = function() {
+		return {
+			enabled: true,
+			visible: true,
+			value: this.getComponentValue(),
+			components: this.getComponentsValue()
+		}
+	}
+	
+	this.getComponentsValue = function() {
+		return null;
+	}
+	
 	constructor(this);
 	
 }

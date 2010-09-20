@@ -26,55 +26,6 @@ QCD.PageController = function(_viewName) {
 		});
 	}
 	
-//	this.init = function(entityId, contextEntityId, serializationObject) {
-//		for (var i in pageElements) {
-//			var elementParent = pageElements[i].getParent();
-//			if (elementParent && elementParent.length > 12) {
-//				var parts = elementParent.split(":");
-//				if (parts.length == 2 && parts[0] == "viewElement") {
-//					var parentViewName = parts[1];
-//					pageElements[parentViewName].addChild(pageElements[i]);
-//					QCDLogger.debug("attach "+i+" to "+parentViewName);	
-//				}
-//			}
-//		}
-//		if (contextEntityId && contextEntityId != "") {
-//			for (var i in pageElements) {
-//				pageElements[i].insertContext(contextEntityId);
-//			}
-//		}
-//		if (serializationObject) {
-//			for (var i in pageElements) {
-//				pageElements[i].deserialize(serializationObject[i]);
-//			}
-//		} else {
-//			for (var i in pageElements) {
-//				var elementParent = pageElements[i].getParent();
-//				if (!elementParent) {
-//					pageElements[i].refresh();
-//				} else if (elementParent == "entityId") {
-//					if (entityId && entityId != "") {
-//						pageElements[i].insertParentId(entityId);
-//					}
-//				}
-//			}
-//		}
-//		//QCDLogger.info("init");
-//		var parameters = new Object();
-//		if (entityId && entityId.trim() != "") {
-//			parameters.entityId = entityId;
-//		}
-		
-//		QCDConnector.sendGet("data", parameters, function(response) {
-//			//QCDLogger.info(response);
-//			
-//			for (var i in response) {
-//				var component = pageComponents[i];
-//				component.insterData(response[i]);
-//			}
-//		});
-//	}
-	
 	this.getUpdate = function(componentName, value) {
 		QCDLogger.info(componentName+"->"+value);
 		var values = new Object();
@@ -90,17 +41,10 @@ QCD.PageController = function(_viewName) {
 		QCDConnector.sendPost("dataUpdate", values, function(response) {
 			QCDLogger.info(response);
 		});
-
-//		var parameters = new Object();
-//		parameters["comp-"+componentName] = value;
-//		QCDConnector.sendGet("dataUpdate", parameters, function(response) {
-//			QCDLogger.info(response);
-//		});
 	}
 	
 	this.getTranslation = function(key) {
 		return window.translationsMap[key] ? window.translationsMap[key] : "TT: "+key;
-		//return window.parent.commonTranslations[key] ? window.parent.commonTranslations[key] : "ToTranslate";
 	}
 	
 	this.goToPage = function(url) {
