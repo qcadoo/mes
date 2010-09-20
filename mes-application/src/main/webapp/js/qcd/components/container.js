@@ -33,6 +33,13 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		return values;
 	}
 	
+	this.setComponentsValue = function(componentsValues) {
+		for (var i in componentsValues) {
+			var componentValue = componentsValues[i];
+			components[i].setValue(componentValue);
+		}
+	}
+	
 	function constructor(_this) {
 		//QCDLogger.info("Container");
 	}

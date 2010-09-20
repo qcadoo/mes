@@ -32,5 +32,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		return null;
 	}
 	
+	this.setComponentValue = function() {
+	}
+	
 	constructor(this);
 }

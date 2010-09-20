@@ -152,6 +152,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		return "gridValue";
 	}
 	
+	this.setComponentValue = function(componentValue) {
+		var value = componentValue.value;
+		grid.jqGrid('clearGridData');
+		for (var entityNo in value.entities) {
+			var entity = value.entities[entityNo];
+			grid.jqGrid('addRowData', entity.id, entity.fields);
+		}
+	}
+	
 	function constructor(_this) {
 		parseOptions(_this.options);
 //		

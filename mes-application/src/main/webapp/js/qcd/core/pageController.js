@@ -19,9 +19,10 @@ QCD.PageController = function(_viewName) {
 			parameters.entityId = entityId;
 		}
 		QCDConnector.sendGet("data", parameters, function(response) {
-			for (var i in response) {
+			QCDLogger.info(response.components);
+			for (var i in response.components) {
 				var component = pageComponents[i];
-				component.insterData(response[i]);
+				component.setValue(response.components[i]);
 			}
 		});
 	}
