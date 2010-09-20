@@ -18,7 +18,7 @@
 		Form ${componentFullName}
 	</div>
 	
-	<div class="formComponents">
+	<div id="${componentFullName}_formComponents">
 		<c:forEach items="${component.components}" var="componentEntry">
 			<tiles:insertTemplate template="../component.jsp">
 				<tiles:putAttribute name="component" value="${componentEntry.value}" />

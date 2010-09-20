@@ -33,4 +33,10 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 			input.attr('disabled', 'true');
 		}
 	}
+	
+	this.setComponentLoading = function(isLoadingVisible) {
+		if (isLoadingVisible) {
+			input.val("loading");
+		}
+	}
 }

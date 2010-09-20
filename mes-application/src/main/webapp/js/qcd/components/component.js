@@ -5,7 +5,9 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	var element = _element;
-	var elementName = element.attr('id');
+	this.elementPath = element.attr('id');
+	var elementName = this.elementPath.split("-")[this.elementPath.split("-").length - 1];
+	this.elementName = elementName;
 	
 	var options;
 	
@@ -13,9 +15,8 @@ QCD.components.Component = function(_element, _mainController) {
 	var isEnabled;
 	
 	function constructor(_this) {
-		options = QCDOptions.getElementOptions(elementName);
+		options = QCDOptions.getElementOptions(_this.elementPath);
 		_this.options = options;
-		//QCD.info("Component");
 	}
 	
 	this.getValue = function() {
@@ -28,6 +29,8 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.setValue = function(value) {
+		//QCD.info(this.elementPath+" - setValue:");
+		//QCD.info(value.value);
 		this.setEnabled(value.enabled);
 		this.setVisible(value.visible);
 		this.setComponentValue(value.value);
@@ -46,7 +49,7 @@ QCD.components.Component = function(_element, _mainController) {
 		if (this.setComponentLoading) {
 			this.setComponentLoading(isLoadingVisible);
 		} else {
-			QCD.error(elementName+".setLoading() no implemented");
+			QCD.error(this.elementPath+".setLoading() no implemented");
 		}
 	}
 	

@@ -30,7 +30,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	function constructor(_this) {
-		var childrenElement = $("#"+elementName+" .formComponents");
+		var childrenElement = $("#"+_this.elementPath+"_formComponents");
 		_this.constructChildren(childrenElement.children());
 		//mainWindow-beanAForm_saveButton
 		buttons.saveButton.click(performSave);
