@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.definition.view;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -67,7 +68,7 @@ public abstract class RootContainerDefinition extends ContainerDefinition<Object
     }
 
     @Override
-    public Object getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public Object getContainerValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<Object> viewEntity) {
         return null;
     }

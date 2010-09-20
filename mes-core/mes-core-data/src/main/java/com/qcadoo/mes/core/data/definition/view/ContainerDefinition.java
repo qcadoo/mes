@@ -1,8 +1,10 @@
 package com.qcadoo.mes.core.data.definition.view;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -25,20 +27,19 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
     }
 
     @Override
-    public ViewEntity<T> castValue(final Entity entity, final Map<String, Entity> selectedEntities, final JSONObject viewObject) {
+    public ViewEntity<T> castComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+            final JSONObject viewObject) throws JSONException {
         ViewEntity<T> value = new ViewEntity<T>();
-
         for (ComponentDefinition<?> component : components.values()) {
-            value.addComponent(component.getName(), component.castValue(entity, selectedEntities, viewObject));
+            value.addComponent(component.getName(), component.castValue(entity, selectedEntities, viewObject != null ? viewObject
+                    .getJSONObject("components").getJSONObject(component.getName()) : null));
         }
-
         value.setValue(castContainerValue(entity, viewObject));
-
         return value;
     }
 
     @Override
-    public ViewEntity<T> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public ViewEntity<T> getComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity) {
         ViewEntity<T> value = new ViewEntity<T>();
 
@@ -56,7 +57,7 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
 
     public abstract T castContainerValue(final Entity entity, final Object viewObject);
 
-    public abstract T getContainerValue(final Entity entity, final Map<String, Entity> selectableEntities,
+    public abstract T getContainerValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity);
 
     @Override

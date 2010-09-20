@@ -13,8 +13,10 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
@@ -116,14 +118,26 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
     }
 
     @Override
-    public ViewEntity<ListData> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewEntity) {
-        // TODO Auto-generated method stub
-        return null;
+    public ViewEntity<ListData> castComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+            final JSONObject viewObject) throws JSONException {
+
+        System.out.println(" 1 ----> " + viewObject.toString());
+
+        String selectedEntityId = viewObject.getString("selectedEntityId");
+
+        if (selectedEntityId != null) {
+            Entity selectedEntity = dataAccessService.get(getDataDefinition(), Long.parseLong(selectedEntityId));
+            System.out.println(" 2 ----> " + selectedEntity);
+            if (selectedEntity != null) {
+                selectedEntities.put(getPath(), Lists.newArrayList(selectedEntity));
+            }
+        }
+
+        return new ViewEntity<ListData>();
     }
 
     @Override
-    public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<ListData> viewEntity) {
         // TODO viewEntity
 

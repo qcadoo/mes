@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.definition.view.containers.form;
 
+import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -14,7 +15,7 @@ public final class FormDefinition extends ContainerDefinition<Long> {
     }
 
     @Override
-    public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public Long getContainerValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<Long> viewEntity) {
         return null;
     }

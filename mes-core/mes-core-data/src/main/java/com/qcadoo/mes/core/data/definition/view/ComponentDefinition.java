@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.definition.view;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -41,17 +42,31 @@ public abstract class ComponentDefinition<T> {
 
     public abstract String getType();
 
-    public abstract ViewEntity<T> castValue(Entity entity, Map<String, Entity> selectedEntities, JSONObject viewEntity);
+    public abstract ViewEntity<T> castComponentValue(Entity entity, Map<String, List<Entity>> selectedEntities,
+            JSONObject viewObject) throws JSONException;
 
-    public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities,
+    public final ViewEntity<T> castValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+            final JSONObject viewObject) throws JSONException {
+        ViewEntity<T> value = castComponentValue(entity, selectedEntities, viewObject);
+        if (viewObject != null) {
+            value.setEnabled(viewObject.getBoolean("enabled"));
+            value.setVisible(viewObject.getBoolean("visible"));
+        }
+        return value;
+    }
+
+    public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, List<Entity>> selectedEntities,
             ViewEntity<Object> globalViewEntity, ViewEntity<T> viewEntity);
 
     @SuppressWarnings("unchecked")
-    public ViewEntity<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public ViewEntity<T> getValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<?> viewEntity) {
         if (sourceComponent != null) {
-            return getComponentValue(selectedEntities.get(sourceComponent.getPath()), selectedEntities, globalViewEntity,
-                    (ViewEntity<T>) viewEntity);
+            Entity selectedEntity = selectedEntities.get(sourceComponent.getPath()) != null
+                    && selectedEntities.get(sourceComponent.getPath()).size() == 1 ? selectedEntities.get(
+                    sourceComponent.getPath()).get(0) : null;
+            // TODO multiselection?
+            return getComponentValue(selectedEntity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity);
         } else {
             return getComponentValue(entity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity);
         }
