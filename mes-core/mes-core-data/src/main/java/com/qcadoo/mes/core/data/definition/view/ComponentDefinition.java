@@ -250,6 +250,10 @@ public abstract class ComponentDefinition<T> {
         listeners.add(path);
     }
 
+    public Set<String> getListeners() {
+        return listeners;
+    }
+
     public boolean isInitialized() {
         return initialized;
     }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -162,6 +163,9 @@ public class CrudController {
             }
 
             Map<String, List<Entity>> selectedEntities = new HashMap<String, List<Entity>>();
+
+            Set<String> a = viewDefinition.getRoot().getListenersForPath("xxs");
+
             ViewEntity<Object> viewEntity = viewDefinition.castValue(entity, selectedEntities, jsonValues);
             ViewEntity<Object> newViewEntity = viewDefinition.getValue(entity, selectedEntities, viewEntity);
 

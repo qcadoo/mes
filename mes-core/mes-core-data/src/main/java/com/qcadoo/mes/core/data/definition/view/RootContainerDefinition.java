@@ -1,8 +1,10 @@
 package com.qcadoo.mes.core.data.definition.view;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
@@ -59,6 +61,21 @@ public abstract class RootContainerDefinition extends ContainerDefinition<Object
                 registerComponents(((ContainerDefinition<?>) component).getComponents());
             }
 
+        }
+    }
+
+    public Set<String> getListenersForPath(final String path) {
+        Set<String> paths = new HashSet<String>();
+        getListenersForPath(path, paths);
+        return paths;
+    }
+
+    private void getListenersForPath(final String path, final Set<String> paths) {
+        Set<String> listenerPaths = componentRegistry.get(path).getListeners();
+        listenerPaths.removeAll(paths);
+        paths.addAll(listenerPaths);
+        for (String listenerPath : listenerPaths) {
+            getListenersForPath(listenerPath, paths);
         }
     }
 
