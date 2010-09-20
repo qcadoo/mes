@@ -48,7 +48,7 @@ public abstract class ComponentDefinition<T> {
     public final ViewEntity<T> castValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         ViewEntity<T> value = castComponentValue(entity, selectedEntities, viewObject);
-        if (viewObject != null) {
+        if (viewObject != null && value != null) {
             value.setEnabled(viewObject.getBoolean("enabled"));
             value.setVisible(viewObject.getBoolean("visible"));
         }

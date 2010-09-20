@@ -36,7 +36,10 @@ public class ViewDefinition {
 
     public ViewEntity<Object> castValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final JSONObject viewObject) throws JSONException {
-        return root.castValue(entity, selectedEntities, viewObject != null ? viewObject.getJSONObject(root.getName()) : null);
+        ViewEntity<Object> value = new ViewEntity<Object>();
+        value.addComponent(root.getName(),
+                root.castValue(entity, selectedEntities, viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
+        return value;
     }
 
     public ViewEntity<Object> getValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,

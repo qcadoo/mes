@@ -43,16 +43,24 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
             final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity) {
         ViewEntity<T> value = new ViewEntity<T>();
 
+        boolean isAnyNotNull = false;
+
         for (ComponentDefinition<?> component : components.values()) {
-            value.addComponent(
-                    component.getName(),
-                    component.getValue(entity, selectedEntities, globalViewEntity,
-                            viewEntity != null ? viewEntity.getComponent(component.getName()) : null));
+            ViewEntity<?> componentViewEntity = component.getValue(entity, selectedEntities, globalViewEntity,
+                    viewEntity != null ? viewEntity.getComponent(component.getName()) : null);
+            if (componentViewEntity != null) {
+                isAnyNotNull = true;
+                value.addComponent(component.getName(), componentViewEntity);
+            }
         }
 
         value.setValue(getContainerValue(entity, selectedEntities, globalViewEntity, viewEntity));
 
-        return value;
+        if (isAnyNotNull || value.getValue() != null) {
+            return value;
+        } else {
+            return null;
+        }
     }
 
     public abstract T castContainerValue(final Entity entity, final Object viewObject);
