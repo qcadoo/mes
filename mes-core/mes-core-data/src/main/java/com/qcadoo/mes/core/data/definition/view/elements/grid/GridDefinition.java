@@ -16,7 +16,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
@@ -118,7 +117,7 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
     }
 
     @Override
-    public ViewEntity<ListData> castComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+    public ViewEntity<ListData> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
 
         JSONObject value = viewObject.getJSONObject("value");
@@ -128,9 +127,7 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
 
             if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
                 Entity selectedEntity = dataAccessService.get(getDataDefinition(), Long.parseLong(selectedEntityId));
-                if (selectedEntity != null) {
-                    selectedEntities.put(getPath(), Lists.newArrayList(selectedEntity));
-                }
+                selectedEntities.put(getPath(), selectedEntity);
             }
         }
 
@@ -138,10 +135,8 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
     }
 
     @Override
-    public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final ViewEntity<ListData> viewEntity, final Set<String> pathsToUpdate) {
-        // TODO viewEntity
-
+    public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewEntity<ListData> viewEntity, final Set<String> pathsToUpdate) {
         if ((getSourceFieldPath() != null && getSourceComponent() != null) || getFieldPath() != null) {
             if (entity == null) {
                 return new ViewEntity<ListData>(new ListData(0, Collections.<Entity> emptyList()));

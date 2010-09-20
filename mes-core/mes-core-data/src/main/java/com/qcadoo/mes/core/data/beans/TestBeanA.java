@@ -25,14 +25,14 @@ public class TestBeanA {
     @ManyToOne(fetch = FetchType.LAZY)
     private TestBeanB beanB;
 
-    @OneToMany(mappedBy = "beanA")
+    @OneToMany(mappedBy = "beanA", fetch = FetchType.LAZY)
     private List<TestBeanC> beansC;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -40,7 +40,7 @@ public class TestBeanA {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -48,7 +48,7 @@ public class TestBeanA {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -56,7 +56,7 @@ public class TestBeanA {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -64,7 +64,7 @@ public class TestBeanA {
         return beanB;
     }
 
-    public void setBeanB(TestBeanB beanB) {
+    public void setBeanB(final TestBeanB beanB) {
         this.beanB = beanB;
     }
 
@@ -72,7 +72,7 @@ public class TestBeanA {
         return beansC;
     }
 
-    public void setBeansC(List<TestBeanC> beansC) {
+    public void setBeansC(final List<TestBeanC> beansC) {
         this.beansC = beansC;
     }
 
