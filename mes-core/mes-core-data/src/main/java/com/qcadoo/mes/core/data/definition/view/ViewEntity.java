@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class ViewEntity<T> {
 
-    private boolean hidden;
+    private boolean visible = true;
 
-    private boolean enabled;
+    private boolean enabled = true;
 
     private T value;
 
@@ -20,12 +20,12 @@ public class ViewEntity<T> {
         this.value = value;
     }
 
-    public boolean isHidden() {
-        return hidden;
+    public boolean isVisible() {
+        return visible;
     }
 
-    public void setHidden(final boolean hidden) {
-        this.hidden = hidden;
+    public void setVisible(final boolean visible) {
+        this.visible = visible;
     }
 
     public boolean isEnabled() {

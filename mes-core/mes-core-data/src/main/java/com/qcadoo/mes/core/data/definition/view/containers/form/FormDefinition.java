@@ -14,7 +14,7 @@ public final class FormDefinition extends ContainerDefinition<Long> {
     }
 
     @Override
-    public Long getContainerValue(final Entity entity, final Map<String, Entity> selectableEntities,
+    public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<Long> viewEntity) {
         return null;
     }

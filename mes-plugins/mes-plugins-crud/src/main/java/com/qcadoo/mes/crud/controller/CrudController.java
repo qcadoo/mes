@@ -32,6 +32,7 @@ import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
+import com.qcadoo.mes.core.data.definition.view.ViewEntity;
 import com.qcadoo.mes.core.data.validation.ValidationResults;
 import com.qcadoo.mes.crud.translation.TranslationService;
 
@@ -151,17 +152,20 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
 
         try {
-
             JSONObject jsonValues = new JSONObject(body.toString());
 
-            System.out.println("TODO: " + jsonValues.toString());
+            Entity entity = null;
 
-            // dla Macka:
-            // VE = viewDefinition.cast(jsonValues);
-            // E = ??
-            // NVE = viewDefinition.getValue(VE, E);
-            // return NVE;
+            if (arguments.get("entityId") != null) {
+                entity = dataAccessService.get(viewDefinition.getRoot().getDataDefinition(),
+                        Long.parseLong(arguments.get("entityId")));
+            }
 
+            Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+            ViewEntity<Object> viewEntity = viewDefinition.castValue(entity, selectedEntities, jsonValues);
+            ViewEntity<Object> newViewEntity = viewDefinition.getValue(entity, selectedEntities, viewEntity);
+
+            return newViewEntity;
         } catch (JSONException e) {
             e.printStackTrace();
         }

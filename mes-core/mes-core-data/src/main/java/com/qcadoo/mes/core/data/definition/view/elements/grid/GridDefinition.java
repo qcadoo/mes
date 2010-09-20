@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
@@ -115,13 +116,14 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
     }
 
     @Override
-    public ViewEntity<ListData> castValue(final Entity entity, final Object viewEntity) {
+    public ViewEntity<ListData> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final JSONObject viewEntity) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities,
+    public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<ListData> viewEntity) {
         // TODO viewEntity
 

@@ -3,6 +3,8 @@ package com.qcadoo.mes.core.data.definition.view;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
@@ -23,11 +25,11 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
     }
 
     @Override
-    public ViewEntity<T> castValue(final Entity entity, final Object viewObject) {
+    public ViewEntity<T> castValue(final Entity entity, final Map<String, Entity> selectedEntities, final JSONObject viewObject) {
         ViewEntity<T> value = new ViewEntity<T>();
 
         for (ComponentDefinition<?> component : components.values()) {
-            value.addComponent(component.getName(), component.castValue(entity, viewObject));
+            value.addComponent(component.getName(), component.castValue(entity, selectedEntities, viewObject));
         }
 
         value.setValue(castContainerValue(entity, viewObject));
@@ -36,18 +38,18 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
     }
 
     @Override
-    public ViewEntity<T> getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities,
+    public ViewEntity<T> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity) {
         ViewEntity<T> value = new ViewEntity<T>();
 
         for (ComponentDefinition<?> component : components.values()) {
             value.addComponent(
                     component.getName(),
-                    component.getValue(entity, selectableEntities, globalViewEntity,
+                    component.getValue(entity, selectedEntities, globalViewEntity,
                             viewEntity != null ? viewEntity.getComponent(component.getName()) : null));
         }
 
-        value.setValue(getContainerValue(entity, selectableEntities, globalViewEntity, viewEntity));
+        value.setValue(getContainerValue(entity, selectedEntities, globalViewEntity, viewEntity));
 
         return value;
     }

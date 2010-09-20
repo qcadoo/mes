@@ -2,6 +2,8 @@ package com.qcadoo.mes.core.data.definition.view;
 
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public class ViewDefinition {
@@ -30,12 +32,17 @@ public class ViewDefinition {
         return name;
     }
 
-    public ViewEntity<Object> getValue(final Entity entity, final Map<String, Entity> selectableEntities,
+    public ViewEntity<Object> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final JSONObject viewObject) {
+        return root.castValue(entity, selectedEntities, viewObject);
+    }
+
+    public ViewEntity<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewEntity<Object> globalViewEntity) {
         ViewEntity<Object> value = new ViewEntity<Object>();
         value.addComponent(
                 root.getName(),
-                root.getValue(entity, selectableEntities, globalViewEntity,
+                root.getValue(entity, selectedEntities, globalViewEntity,
                         globalViewEntity != null ? globalViewEntity.getComponent(root.getName()) : null));
         return value;
     }

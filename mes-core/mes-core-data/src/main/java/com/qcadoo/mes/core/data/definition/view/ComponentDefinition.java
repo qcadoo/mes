@@ -41,19 +41,19 @@ public abstract class ComponentDefinition<T> {
 
     public abstract String getType();
 
-    public abstract ViewEntity<T> castValue(Entity entity, Object viewEntity);
+    public abstract ViewEntity<T> castValue(Entity entity, Map<String, Entity> selectedEntities, JSONObject viewEntity);
 
-    public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, Entity> selectableEntities,
+    public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities,
             ViewEntity<Object> globalViewEntity, ViewEntity<T> viewEntity);
 
     @SuppressWarnings("unchecked")
-    public ViewEntity<T> getValue(final Entity entity, final Map<String, Entity> selectableEntities,
+    public ViewEntity<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<?> viewEntity) {
         if (sourceComponent != null) {
-            return getComponentValue(selectableEntities.get(sourceComponent.getPath()), selectableEntities, globalViewEntity,
+            return getComponentValue(selectedEntities.get(sourceComponent.getPath()), selectedEntities, globalViewEntity,
                     (ViewEntity<T>) viewEntity);
         } else {
-            return getComponentValue(entity, selectableEntities, globalViewEntity, (ViewEntity<T>) viewEntity);
+            return getComponentValue(entity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity);
         }
     }
 
