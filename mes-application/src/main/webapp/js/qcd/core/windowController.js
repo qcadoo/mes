@@ -13,7 +13,7 @@ QCD.WindowController = function() {
 	var currentPage = null;
 	
 	function constructor() {
-		QCDLogger.info("init main page");
+		QCD.info("init main page");
 		iframe = $("#mainPageIframe");
 		loadingIndicator = $("#loadingIndicator");
 		loadingIndicator.hide();
@@ -31,7 +31,7 @@ QCD.WindowController = function() {
 	}
 
 	this.performLogout = function() {
-		QCDLogger.info("logout");
+		QCD.info("logout");
 		window.location = "j_spring_security_logout";
 	}
 	

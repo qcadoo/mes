@@ -26,7 +26,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		var colNames = new Array();
 		var colModel = new Array();
 		
-//		/QCDLogger.info(options);
+//		/QCD.info(options);
 		
 		//options.columns = new Array();
 		//options.columns[0] = "aaa";
@@ -110,8 +110,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //	
 	function rowClicked(rowId) {
 		if (gridParameters.listeners.length > 0) {
-			//QCDLogger.info("SEND");
-			mainController.getUpdate(elementName, rowId);
+			//QCD.info("SEND");
+			mainController.getUpdate(elementName, rowId, gridParameters.listeners);
 		}
 	}
 	
@@ -138,15 +138,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
-	this.insterData = function(data) {
-		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
-		grid.jqGrid('clearGridData');
-		for (var entityNo in data.entities) {
-			var entity = data.entities[entityNo];
-			grid.jqGrid('addRowData', entity.id, entity.fields);
-		}
-	}
-	
 	this.getComponentValue = function() {
 		return {
 			selectedEntityId: grid.getGridParam('selrow')
@@ -154,6 +145,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
 		grid.jqGrid('clearGridData');
 		for (var entityNo in value.entities) {
 			var entity = value.entities[entityNo];
@@ -163,7 +155,22 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.setComponentEnabled = function(isEnabled) {
 		if (!isEnabled) {
-			QCDLogger.info("QCD.components.elements.Grid.setComponentEnabled() not implemented yet");
+			QCD.error("QCD.components.elements.Grid.setComponentEnabled() not implemented yet");
+		}
+	}
+	
+	this.setLoading = function(isLoadingVisible) {
+		if (isLoadingVisible) {
+			grid.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+	            border: 'none', 
+	            padding: '15px', 
+	            backgroundColor: '#000', 
+	            '-webkit-border-radius': '10px', 
+	            '-moz-border-radius': '10px', 
+	            opacity: .5, 
+	            color: '#fff' } });
+		} else {
+			grid.unblock();
 		}
 	}
 	
