@@ -37,7 +37,17 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.setLoading = function(isLoadingVisible) {
-		QCD.error(elementName+".setLoading() no implemented");
+		var listeners = options.listeners;
+		if (listeners) {
+			for (var i in listeners) {
+				mainController.getComponent(listeners[i]).setLoading(isLoadingVisible);
+			}
+		}
+		if (this.setComponentLoading) {
+			this.setComponentLoading(isLoadingVisible);
+		} else {
+			QCD.error(elementName+".setLoading() no implemented");
+		}
 	}
 	
 	this.getComponent = function(componentName) {
@@ -57,6 +67,9 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.setEnabled = function(_isEnabled) {
 		isEnabled = _isEnabled;
+		if (this.isContainer) {
+			this.setComponentsEnabled(isEnabled);	
+		}
 		this.setComponentEnabled(isEnabled);
 	}
 	

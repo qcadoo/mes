@@ -20,5 +20,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	this.setComponentValue = function() {
 	}
 	
+	this.setComponentEnabled = function(isEnabled) {
+		
+	}
+	
 	constructor(this);
 }

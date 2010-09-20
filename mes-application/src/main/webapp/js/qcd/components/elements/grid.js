@@ -159,7 +159,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
-	this.setLoading = function(isLoadingVisible) {
+	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {
 			grid.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 

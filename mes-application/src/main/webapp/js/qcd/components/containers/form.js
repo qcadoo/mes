@@ -9,6 +9,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	var element = _element;
 	var elementName = element.attr('id');
 	
+	var buttons = new Object();
+	buttons.saveButton = $("#"+elementName+"_saveButton");
+	
 //	this.insterData = function(data) {
 //		QCD.info(this.containerComponents);
 //		for (var i in data) {
@@ -30,7 +33,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		var childrenElement = $("#"+elementName+" .formComponents");
 		_this.constructChildren(childrenElement.children());
 		//mainWindow-beanAForm_saveButton
-		$("#"+elementName+"_saveButton").click(performSave);
+		buttons.saveButton.click(performSave);
 	}
 	
 	this.getComponentValue = function() {
@@ -39,6 +42,31 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.setComponentValue = function() {
 		
+	}
+	
+	this.setComponentEnabled = function(isEnabled) {
+		if (buttons.saveButton) {
+			if (isEnabled) {
+				buttons.saveButton.removeAttr('disabled');
+			} else {
+				buttons.saveButton.attr('disabled', 'true');
+			}
+		}
+	}
+	
+	this.setComponentLoading = function(isLoadingVisible) {
+		if (isLoadingVisible) {
+			element.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+	            border: 'none', 
+	            padding: '15px', 
+	            backgroundColor: '#000', 
+	            '-webkit-border-radius': '10px', 
+	            '-moz-border-radius': '10px', 
+	            opacity: .5, 
+	            color: '#fff' } });
+		} else {
+			element.unblock();
+		}
 	}
 	
 	constructor(this);
