@@ -48,7 +48,7 @@ public abstract class ComponentDefinition<T> {
     public final ViewEntity<T> castValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         ViewEntity<T> value = castComponentValue(entity, selectedEntities, viewObject);
-        if (viewObject != null) {
+        if (viewObject != null && value != null) {
             value.setEnabled(viewObject.getBoolean("enabled"));
             value.setVisible(viewObject.getBoolean("visible"));
         }
@@ -56,25 +56,76 @@ public abstract class ComponentDefinition<T> {
     }
 
     public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, List<Entity>> selectedEntities,
-            ViewEntity<Object> globalViewEntity, ViewEntity<T> viewEntity);
+            ViewEntity<Object> globalViewEntity, ViewEntity<T> viewEntity, final Set<String> pathsToUpdate);
 
     @SuppressWarnings("unchecked")
     public ViewEntity<T> getValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final ViewEntity<?> viewEntity) {
+            final ViewEntity<Object> globalViewEntity, final ViewEntity<?> viewEntity, final Set<String> pathsToUpdate) {
+        if (shouldNotBeUpdated(pathsToUpdate)) {
+            return null;
+        }
         if (sourceComponent != null) {
             Entity selectedEntity = selectedEntities.get(sourceComponent.getPath()) != null
                     && selectedEntities.get(sourceComponent.getPath()).size() == 1 ? selectedEntities.get(
                     sourceComponent.getPath()).get(0) : null;
+
+            if (this instanceof ContainerDefinition && selectedEntity != null && sourceFieldPath != null) {
+                selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
+            }
+
             // TODO multiselection?
-            return getComponentValue(selectedEntity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity);
+            return getComponentValue(selectedEntity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity,
+                    pathsToUpdate);
         } else {
-            return getComponentValue(entity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity);
+            Entity contextEntity = entity;
+            if (this instanceof ContainerDefinition && entity != null && fieldPath != null) {
+                contextEntity = getFieldEntityValue(entity, fieldPath);
+            }
+
+            return getComponentValue(contextEntity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity, pathsToUpdate);
         }
     }
 
-    protected String getFieldValue(final Entity entity, final String path) {
-        if (entity == null) {
+    private boolean shouldNotBeUpdated(final Set<String> pathsToUpdate) {
+        if (pathsToUpdate == null || pathsToUpdate.isEmpty()) {
+            return false;
+        }
+        for (String path : pathsToUpdate) {
+            if (getPath().startsWith(path)) {
+                return false;
+            }
+            if (this instanceof ContainerDefinition && path.startsWith(getPath())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected String getFieldStringValue(final Entity entity, final String path) {
+        Object value = getFieldValue(entity, path);
+
+        if (value == null) {
             return "";
+        } else {
+            return String.valueOf(value);
+        }
+    }
+
+    protected Entity getFieldEntityValue(final Entity entity, final String path) {
+        Object value = getFieldValue(entity, path);
+
+        if (value == null) {
+            return null;
+        } else if (value instanceof Entity) {
+            return (Entity) value;
+        } else {
+            throw new IllegalStateException("Field " + path + " should has Entity type");
+        }
+    }
+
+    protected Object getFieldValue(final Entity entity, final String path) {
+        if (entity == null) {
+            return null;
         }
 
         if (path != null) {
@@ -85,14 +136,14 @@ public abstract class ComponentDefinition<T> {
                 if (value instanceof Entity) {
                     value = ((Entity) value).getField(field);
                 } else {
-                    return "";
+                    return null;
                 }
             }
 
-            return String.valueOf(value);
+            return value;
         }
 
-        return "";
+        return null;
     }
 
     public ComponentDefinition(final String name, final ContainerDefinition<?> parentContainer, final String fieldPath,
@@ -248,6 +299,10 @@ public abstract class ComponentDefinition<T> {
 
     protected void registerListener(final String path) {
         listeners.add(path);
+    }
+
+    public Set<String> getListeners() {
+        return listeners;
     }
 
     public boolean isInitialized() {
