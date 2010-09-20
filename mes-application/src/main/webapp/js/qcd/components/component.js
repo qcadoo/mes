@@ -24,8 +24,23 @@ QCD.components.Component = function(_element, _mainController) {
 		}
 	}
 	
+	this.setValue = function(value) {
+		var componentValue = {
+			enabled: value.enabled,
+			visible: value.visible,
+			value: value.value
+		}
+		this.setComponentValue(componentValue);
+		if (value.components) {
+			this.setComponentsValue(value.components);
+		}
+	}
+	
 	this.getComponentsValue = function() {
 		return null;
+	}
+	this.setComponentsValue = function() {
+		
 	}
 	
 	constructor(this);

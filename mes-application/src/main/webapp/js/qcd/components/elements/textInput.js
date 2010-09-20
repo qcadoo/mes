@@ -21,4 +21,8 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 		}
 		return null;
 	}
+	
+	this.setComponentValue = function(componentValue) {
+		input.val(componentValue.value);
+	}
 }
