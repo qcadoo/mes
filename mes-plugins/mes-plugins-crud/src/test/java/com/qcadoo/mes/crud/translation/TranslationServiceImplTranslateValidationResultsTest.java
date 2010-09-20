@@ -11,25 +11,21 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
-import com.qcadoo.mes.crud.translation.TranslationServiceImpl;
+import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
 
 public class TranslationServiceImplTranslateValidationResultsTest {
 
     @Test
     public void shouldTranslateValidationResult() {
         // given
-        ValidationResults validationResults = new ValidationResults();
-        validationResults.addGlobalError("globalMsg1", new String[] { "aa" });
-        validationResults.addGlobalError("globalMsg2", new String[] {});
-
-        validationResults.addError(new DataFieldDefinition("f1"), "f11", new String[] {});
-        validationResults.addError(new DataFieldDefinition("f2"), "f22", new String[] { "1", "2", "3" });
-        validationResults.addError(new DataFieldDefinition("f3"), "f33", new String[] {});
-
         Entity entity = new Entity((long) 21);
-        validationResults.setEntity(entity);
+
+        entity.addGlobalError("globalMsg1", new String[] { "aa" });
+        entity.addGlobalError("globalMsg2", new String[] {});
+
+        entity.addError(new FieldDefinitionImpl("f1"), "f11", new String[] {});
+        entity.addError(new FieldDefinitionImpl("f2"), "f22", new String[] { "1", "2", "3" });
+        entity.addError(new FieldDefinitionImpl("f3"), "f33", new String[] {});
 
         Locale locale = new Locale("test");
 
@@ -44,16 +40,14 @@ public class TranslationServiceImplTranslateValidationResultsTest {
         given(ms.getMessage("f33", new String[] {}, "TO TRANSLATE: f33", locale)).willReturn("f3ok");
 
         // when
-        translationService.translateValidationResults(validationResults, locale);
+        translationService.translateEntity(entity, locale);
 
         // then
-        assertEquals(entity, validationResults.getEntity());
-        assertEquals(2, validationResults.getGlobalErrors().size());
-        assertEquals("globalMsg1ok", validationResults.getGlobalErrors().get(0).getMessage());
-        assertEquals("globalMsg2ok", validationResults.getGlobalErrors().get(1).getMessage());
-        assertEquals(3, validationResults.getErrors().size());
-        assertEquals("f1ok", validationResults.getErrorForField("f1").getMessage());
-        assertEquals("f2ok", validationResults.getErrorForField("f2").getMessage());
-        assertEquals("f3ok", validationResults.getErrorForField("f3").getMessage());
+        assertEquals(2, entity.getGlobalErrors().size());
+        assertEquals("globalMsg1ok", entity.getGlobalErrors().get(0).getMessage());
+        assertEquals("globalMsg2ok", entity.getGlobalErrors().get(1).getMessage());
+        assertEquals("f1ok", entity.getError("f1").getMessage());
+        assertEquals("f2ok", entity.getError("f2").getMessage());
+        assertEquals("f3ok", entity.getError("f3").getMessage());
     }
 }

@@ -3,8 +3,8 @@ package com.qcadoo.mes.crud.translation;
 import java.util.Locale;
 import java.util.Map;
 
-import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.view.ViewDefinition;
 
 public interface TranslationService {
 
@@ -14,5 +14,5 @@ public interface TranslationService {
 
     void updateTranslationsForViewDefinition(ViewDefinition viewDefinition, Map<String, String> translationsMap, Locale locale);
 
-    void translateValidationResults(ValidationResults validationResults, Locale locale);
+    void translateEntity(Entity entity, Locale locale);
 }

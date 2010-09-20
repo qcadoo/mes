@@ -1,30 +1,29 @@
 package com.qcadoo.mes.core.data.internal.validators;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.CallbackDefinition;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.model.HookDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class CustomEntityValidator implements EntityValidator {
 
     private static final String CUSTOM_ERROR = "commons.validate.field.error.customEntity";
 
-    private final CallbackDefinition callback;
+    private final HookDefinition callback;
 
     private String errorMessage = CUSTOM_ERROR;
 
-    public CustomEntityValidator(final CallbackDefinition callback) {
+    public CustomEntityValidator(final HookDefinition callback) {
         this.callback = callback;
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final Entity entity, final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final Entity entity) {
         boolean result = callback.callWithEntityAndGetBoolean(dataDefinition, entity);
         if (result) {
             return true;
         }
-        validationResults.addGlobalError(errorMessage);
+        entity.addGlobalError(errorMessage);
         return false;
     }
 

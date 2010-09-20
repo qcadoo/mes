@@ -20,19 +20,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.controls.FieldControlFactory;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
-import com.qcadoo.mes.core.data.definition.view.WindowDefinition;
-import com.qcadoo.mes.core.data.definition.view.containers.form.FormDefinition;
-import com.qcadoo.mes.core.data.definition.view.elements.TextInput;
-import com.qcadoo.mes.core.data.definition.view.elements.grid.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.view.elements.grid.GridDefinition;
+import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
+import com.qcadoo.mes.core.data.internal.view.WindowDefinitionImpl;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.containers.form.FormDefinition;
+import com.qcadoo.mes.core.data.view.elements.TextInput;
+import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.view.elements.grid.GridDefinition;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
@@ -46,17 +45,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private DataAccessService dataAccessService;
-
-    @Autowired
-    private FieldControlFactory fieldControlFactory;
-
-    private Map<String, ViewDefinition> viewDefinitions;
+    private Map<String, ViewDefinitionImpl> viewDefinitions;
 
     @PostConstruct
     public void initViews() {
-        viewDefinitions = new HashMap<String, ViewDefinition>();
+        viewDefinitions = new HashMap<String, ViewDefinitionImpl>();
         // viewDefinitions.put("products.productGridView", createProductGridView());
         // viewDefinitions.put("products.productDetailsView", createProductDetailsView());
 
@@ -84,23 +77,23 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+        ModelDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
         Entity entity = getActivePlugin(dataDefinition, viewDefinition.getPluginIdentifier());
         if (entity != null) {
             return viewDefinition;
         }
-        return new ViewDefinition("main", null, "");
+        return new ViewDefinitionImpl("main", null, "");
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+        ModelDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
         List<?> activePluginList = getActivePlugins(dataDefinition);
         for (Object activePlugin : activePluginList) {
             Entity entity = entityService.convertToGenericEntity(dataDefinition, activePlugin);
-            for (ViewDefinition viewDefinition : viewDefinitions.values()) {
+            for (ViewDefinitionImpl viewDefinition : viewDefinitions.values()) {
                 if (((String) entity.getField("codeId")).equals(viewDefinition.getPluginIdentifier())) {
                     viewsList.add(viewDefinition);
                 }
@@ -117,14 +110,14 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return viewsList;
     }
 
-    private ViewDefinition createTestGridView() {
-        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
+    private ViewDefinitionImpl createTestGridView() {
+        ModelDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
-        WindowDefinition windowDefinition = new WindowDefinition("mainWindow", testADD);
+        WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", testADD);
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.grid", windowDefinition, "test");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "test");
 
-        GridDefinition grid = new GridDefinition("beansAGrid", windowDefinition, null, null, dataAccessService);
+        GridDefinition grid = new GridDefinition("beansAGrid", windowDefinition, null, null);
         grid.setCorrespondingViewName("test.form");
         grid.addOptions("paging", "true");
         grid.addOptions("sortable", "true");
@@ -142,26 +135,26 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return viewDefinition;
     }
 
-    private ViewDefinition createTestFormView() {
-        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
-        DataDefinition testBDD = dataDefinitionService.get("test.testBeanB");
-        DataDefinition testCDD = dataDefinitionService.get("test.testBeanC");
+    private ViewDefinitionImpl createTestFormView() {
+        ModelDefinition testADD = dataDefinitionService.get("test.testBeanA");
+        ModelDefinition testBDD = dataDefinitionService.get("test.testBeanB");
+        ModelDefinition testCDD = dataDefinitionService.get("test.testBeanC");
 
-        WindowDefinition windowDefinition = new WindowDefinition("mainWindow", testADD);
+        WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", testADD);
 
-        ViewDefinition viewDefinition = new ViewDefinition("test.form", windowDefinition, "test");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "test");
 
         FormDefinition formDefinition = new FormDefinition("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInput("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInput("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInput("nameC", formDefinition, "beanB.beanC.name", null));
-        GridDefinition beanAForm_beansCGrig = new GridDefinition("beansCGrig", formDefinition, "beansC", null, dataAccessService);
+        GridDefinition beanAForm_beansCGrig = new GridDefinition("beansCGrig", formDefinition, "beansC", null);
         beanAForm_beansCGrig.addColumn(createColumnDefinition("name", testCDD.getField("name"), null));
         formDefinition.addComponent(beanAForm_beansCGrig);
         windowDefinition.addComponent(formDefinition);
 
         GridDefinition beansBGrig = new GridDefinition("beansBGrig", windowDefinition, null,
-                "#{mainWindow.beanAForm.beansCGrig}.beansB", dataAccessService);
+                "#{mainWindow.beanAForm.beansCGrig}.beansB");
         beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
         windowDefinition.addComponent(beansBGrig);
 
@@ -170,7 +163,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormDefinition formCDefinition_formA = new FormDefinition("formA", formCDefinition, "beanA", null);
         formCDefinition_formA.addComponent(new TextInput("name", formCDefinition_formA, "name", null));
         formCDefinition.addComponent(formCDefinition_formA);
-        GridDefinition beanCForm_beansBGrig = new GridDefinition("beansBGrig", formCDefinition, "beansB", null, dataAccessService);
+        GridDefinition beanCForm_beansBGrig = new GridDefinition("beansBGrig", formCDefinition, "beansB", null);
         beanCForm_beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
         formCDefinition.addComponent(beanCForm_beansBGrig);
         formCDefinition.addComponent(new TextInput("nameB", formCDefinition, null, "#{mainWindow.beanCForm.beansBGrig}.name"));
@@ -765,9 +758,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // return viewDefinition;
     // }
 
-    private ColumnDefinition createColumnDefinition(final String name, final DataFieldDefinition field, final String expression) {
+    private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field, final String expression) {
         ColumnDefinition columnDefinition = new ColumnDefinition(name);
-        columnDefinition.setFields(Arrays.asList(new DataFieldDefinition[] { field }));
+        columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
         columnDefinition.setExpression(expression);
         return columnDefinition;
     }
@@ -780,7 +773,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // return field;
     // }
 
-    private List<?> getActivePlugins(final DataDefinition dataDefinition) {
+    private List<?> getActivePlugins(final ModelDefinition dataDefinition) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity()).add(
                 Restrictions.eq("active", true));
@@ -791,7 +784,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return criteria.list();
     }
 
-    private Entity getActivePlugin(final DataDefinition dataDefinition, final String pluginCodeId) {
+    private Entity getActivePlugin(final ModelDefinition dataDefinition, final String pluginCodeId) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(pluginCodeId, "pluginCodeId must be given");
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity())

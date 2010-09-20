@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class PriorityTest extends DataAccessTest {
 
@@ -44,10 +43,10 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.uniqueResult()).willReturn(10);
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
-        assertEquals(11, validationResults.getEntity().getField("priority"));
+        assertEquals(11, entity.getField("priority"));
     }
 
     @Test
@@ -63,10 +62,10 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.uniqueResult()).willReturn(existingDatabaseObject);
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
-        assertEquals(11, validationResults.getEntity().getField("priority"));
+        assertEquals(11, entity.getField("priority"));
     }
 
     @Test
@@ -82,7 +81,7 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.list()).willReturn(Lists.newArrayList(otherDatabaseObject));
 
         // when
-        dataAccessService.delete(dataDefinition, 1L);
+        dataDefinition.delete(1L);
 
         // then
         SimpleDatabaseObject deletedDatabaseObject = new SimpleDatabaseObject(1L);
@@ -110,7 +109,7 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.list()).willReturn(Lists.newArrayList(otherDatabaseObject));
 
         // when
-        dataAccessService.move(dataDefinition, 1L, 1);
+        dataDefinition.move(1L, 1);
 
         // then
         SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);
@@ -137,7 +136,7 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.list()).willReturn(Lists.newArrayList(otherDatabaseObject));
 
         // when
-        dataAccessService.moveTo(dataDefinition, 1L, 6);
+        dataDefinition.moveTo(1L, 6);
 
         // then
         SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);
@@ -154,7 +153,7 @@ public class PriorityTest extends DataAccessTest {
     @Test(expected = IllegalStateException.class)
     public void shouldNotMoveToPositionBelowOne() throws Exception {
         // when
-        dataAccessService.moveTo(dataDefinition, 1L, -2);
+        dataDefinition.moveTo(1L, -2);
     }
 
     @Test
@@ -167,7 +166,7 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.list()).willReturn(Lists.newArrayList());
 
         // when
-        dataAccessService.move(dataDefinition, 1L, -20);
+        dataDefinition.move(1L, -20);
 
         // then
         SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);
@@ -186,7 +185,7 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.list()).willReturn(Lists.newArrayList());
 
         // when
-        dataAccessService.moveTo(dataDefinition, 1L, 10);
+        dataDefinition.moveTo(1L, 10);
 
         // then
         SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);
@@ -205,7 +204,7 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.list()).willReturn(Lists.newArrayList());
 
         // when
-        dataAccessService.moveTo(dataDefinition, 1L, 15);
+        dataDefinition.moveTo(1L, 15);
 
         // then
         verify(session, never()).update(Mockito.any(SimpleDatabaseObject.class));
@@ -221,7 +220,7 @@ public class PriorityTest extends DataAccessTest {
         given(criteria.list()).willReturn(Lists.newArrayList());
 
         // when
-        dataAccessService.moveTo(dataDefinition, 1L, 20);
+        dataDefinition.moveTo(1L, 20);
 
         // then
         SimpleDatabaseObject movedDatabaseObject = new SimpleDatabaseObject(1L);

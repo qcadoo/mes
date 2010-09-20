@@ -2,9 +2,9 @@ package com.qcadoo.mes.core.data.internal.types;
 
 import java.math.BigDecimal;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class DecimalType implements FieldType {
 
@@ -29,8 +29,7 @@ public final class DecimalType implements FieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         BigDecimal decimal = null;
 
         if (value instanceof BigDecimal) {
@@ -39,12 +38,12 @@ public final class DecimalType implements FieldType {
             try {
                 decimal = new BigDecimal(String.valueOf(value));
             } catch (NumberFormatException e) {
-                validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
+                validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
                 return null;
             }
         }
         if (decimal.precision() > 7 || decimal.scale() > 3) {
-            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
+            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
             return null;
         }
         return decimal;

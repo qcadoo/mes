@@ -8,10 +8,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.PasswordType;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 @Service
 public final class EntityService {
@@ -36,7 +36,7 @@ public final class EntityService {
         criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
     }
 
-    public void setField(final Object databaseEntity, final DataFieldDefinition fieldDefinition, final Object value) {
+    public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else if (!(fieldDefinition.getType() instanceof PasswordType && value == null)) {
@@ -44,7 +44,7 @@ public final class EntityService {
         }
     }
 
-    public Object getField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
+    public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
         } else if (fieldDefinition.getType() instanceof BelongsToType) {
@@ -54,10 +54,10 @@ public final class EntityService {
         }
     }
 
-    public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
+    public Entity convertToGenericEntity(final ModelDefinition dataDefinition, final Object databaseEntity) {
         Entity genericEntity = new Entity(getId(databaseEntity));
 
-        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
         }
 
@@ -69,18 +69,22 @@ public final class EntityService {
         return genericEntity;
     }
 
-    public Object convertToDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+    public Object convertToDatabaseEntity(final ModelDefinition dataDefinition, final Entity genericEntity,
             final Object existingDatabaseEntity) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
-        for (Entry<String, DataFieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
+        }
+
+        if (dataDefinition.isPrioritizable()) {
+            genericEntity.setField(dataDefinition.getPriorityField().getName(), null);
         }
 
         return databaseEntity;
     }
 
-    private Object getDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+    private Object getDatabaseEntity(final ModelDefinition dataDefinition, final Entity genericEntity,
             final Object existingDatabaseEntity) {
         Object databaseEntity = null;
 
@@ -93,13 +97,13 @@ public final class EntityService {
         return databaseEntity;
     }
 
-    private Object getPrimitiveField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
+    private Object getPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         return getField(databaseEntity, fieldDefinition.getName());
     }
 
-    private Object getBelongsToField(final Object databaseEntity, final DataFieldDefinition fieldDefinition) {
+    private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-        DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
+        ModelDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
         if (belongsToFieldType.isEagerFetch()) {
             Object value = getField(databaseEntity, fieldDefinition.getName());
             if (value != null) {

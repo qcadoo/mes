@@ -4,10 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
@@ -18,9 +17,6 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Autowired
     private DictionaryService dictionaryService;
-
-    @Autowired
-    private DataAccessService dataAccessService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -98,17 +94,17 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     @Override
     public LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToType(entityName, lookupFieldName, false, dataAccessService, dataDefinitionService);
+        return new BelongsToType(entityName, lookupFieldName, false, dataDefinitionService);
     }
 
     @Override
     public LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToType(entityName, lookupFieldName, true, dataAccessService, dataDefinitionService);
+        return new BelongsToType(entityName, lookupFieldName, true, dataDefinitionService);
     }
 
     @Override
-    public FieldType priorityType(final DataFieldDefinition scopeFieldDefinition) {
+    public FieldType priorityType(final FieldDefinition scopeFieldDefinition) {
         return new PriorityType(scopeFieldDefinition);
     }
 

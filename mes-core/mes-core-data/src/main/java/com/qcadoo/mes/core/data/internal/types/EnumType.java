@@ -3,9 +3,9 @@ package com.qcadoo.mes.core.data.internal.types;
 import java.util.Arrays;
 import java.util.List;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class EnumType implements EnumeratedFieldType {
 
@@ -41,11 +41,10 @@ public final class EnumType implements EnumeratedFieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         String stringValue = String.valueOf(value);
         if (!values().contains(stringValue)) {
-            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidDictionaryItem",
+            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidDictionaryItem",
                     String.valueOf(values()));
             return null;
         }

@@ -3,10 +3,9 @@ package com.qcadoo.mes.core.data.internal.validators;
 import java.math.BigDecimal;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class MaxPrecisionAndScaleValidator implements FieldValidator {
 
@@ -24,8 +23,8 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+            final Entity validatedEntity) {
         if (value == null) {
             return true;
         }
@@ -37,30 +36,28 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
         }
 
         if (fieldClass.equals(BigDecimal.class)) {
-            return validateDecimal(fieldDefinition, validationResults, (BigDecimal) value);
+            return validateDecimal(fieldDefinition, validatedEntity, (BigDecimal) value);
         } else {
-            return validateInteger(fieldDefinition, value, validationResults);
+            return validateInteger(fieldDefinition, value, validatedEntity);
         }
     }
 
-    private boolean validateInteger(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    private boolean validateInteger(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         if (value.toString().length() > maxPrecision) {
-            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
+            validatedEntity.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
             return false;
         } else {
             return true;
         }
     }
 
-    private boolean validateDecimal(final DataFieldDefinition fieldDefinition, final ValidationResults validationResults,
-            final BigDecimal decimal) {
+    private boolean validateDecimal(final FieldDefinition fieldDefinition, final Entity validatedEntity, final BigDecimal decimal) {
         if (decimal.precision() - decimal.scale() > maxPrecision) {
-            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
+            validatedEntity.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
             return false;
         }
         if (maxScale > 0 && decimal.scale() > maxScale) {
-            validationResults.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
+            validatedEntity.addError(fieldDefinition, errorMessage, String.valueOf(maxPrecision), String.valueOf(maxScale));
             return false;
         }
 
@@ -68,8 +65,7 @@ public final class MaxPrecisionAndScaleValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Entity entity,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity) {
         return true;
     }
 

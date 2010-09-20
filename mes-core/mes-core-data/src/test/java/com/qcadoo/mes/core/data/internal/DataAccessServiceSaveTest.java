@@ -8,14 +8,13 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class DataAccessServiceSaveTest extends DataAccessTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfEntityWithGivenIdNotExist() throws Exception {
         // then
-        dataAccessService.save(dataDefinition, new Entity(1L));
+        dataDefinition.save(new Entity(1L));
     }
 
     @Test
@@ -30,11 +29,11 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         databaseObject.setAge(66);
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(databaseObject);
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -57,11 +56,11 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         databaseObject.setAge(66);
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(databaseObject);
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -72,10 +71,10 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         entity.setField("age", "r");
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -86,10 +85,10 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         entity.setField("age", "66");
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
 }

@@ -1,10 +1,9 @@
 package com.qcadoo.mes.core.data.internal.validators;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class RequiredValidator implements FieldValidator {
 
@@ -13,18 +12,17 @@ public final class RequiredValidator implements FieldValidator {
     private String errorMessage = MISSING_ERROR;
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+            final Entity validatedEntity) {
         if (value == null) {
-            validationResults.addError(fieldDefinition, errorMessage);
+            validatedEntity.addError(fieldDefinition, errorMessage);
             return false;
         }
         return true;
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Entity entity,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity) {
         return true;
     }
 

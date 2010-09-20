@@ -2,19 +2,19 @@ package com.qcadoo.mes.core.data.api;
 
 import java.util.List;
 
-import com.qcadoo.mes.core.data.definition.DataDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
 
 /**
  * @apiviz.uses com.qcadoo.mes.core.data.definition.DataDefinition
  */
 public interface DataDefinitionService {
 
-    void save(DataDefinition dataDefinition);
+    void save(ModelDefinition dataDefinition);
 
-    DataDefinition get(String entityName);
+    ModelDefinition get(String entityName);
 
     void delete(String entityName);
 
-    List<DataDefinition> list();
+    List<ModelDefinition> list();
 
 }

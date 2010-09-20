@@ -2,9 +2,9 @@ package com.qcadoo.mes.core.data.internal.types;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class StringType implements FieldType {
 
@@ -29,11 +29,10 @@ public final class StringType implements FieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         String stringValue = String.valueOf(value);
         if (StringUtils.length(stringValue) > 255) {
-            validationResults.addError(fieldDefinition, "commons.validate.field.error.stringIsTooLong", String.valueOf(255));
+            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.stringIsTooLong", String.valueOf(255));
             return null;
         }
         return stringValue;

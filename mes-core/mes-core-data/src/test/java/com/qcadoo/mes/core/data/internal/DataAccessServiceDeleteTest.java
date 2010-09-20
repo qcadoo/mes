@@ -19,7 +19,7 @@ public class DataAccessServiceDeleteTest extends DataAccessTest {
         given(session.get(SimpleDatabaseObject.class, 1L)).willReturn(simpleDatabaseObject);
 
         // when
-        dataAccessService.delete(dataDefinition, 1L);
+        dataDefinition.delete(1L);
 
         // then
         SimpleDatabaseObject simpleDatabaseObjectDeleted = new SimpleDatabaseObject();
@@ -37,6 +37,6 @@ public class DataAccessServiceDeleteTest extends DataAccessTest {
         given(session.get(SimpleDatabaseObject.class, 1L)).willReturn(null);
 
         // when
-        dataAccessService.delete(dataDefinition, 1L);
+        dataDefinition.delete(1L);
     }
 }

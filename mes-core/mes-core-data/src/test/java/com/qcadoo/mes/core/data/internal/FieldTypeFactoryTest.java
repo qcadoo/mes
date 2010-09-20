@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.BooleanType;
 import com.qcadoo.mes.core.data.internal.types.DateTimeType;
@@ -32,19 +32,19 @@ import com.qcadoo.mes.core.data.internal.types.PasswordType;
 import com.qcadoo.mes.core.data.internal.types.PriorityType;
 import com.qcadoo.mes.core.data.internal.types.StringType;
 import com.qcadoo.mes.core.data.internal.types.TextType;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public class FieldTypeFactoryTest extends DataAccessTest {
 
-    private ValidationResults validationResults = null;
+    private Entity entity = null;
 
-    private final DataFieldDefinition fieldDefinition = new DataFieldDefinition("aa");
+    private final FieldDefinition fieldDefinition = new FieldDefinitionImpl("aa");
 
     @Before
     public void init() {
-        validationResults = new ValidationResults();
+        entity = new Entity();
     }
 
     @Test
@@ -60,10 +60,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
 
-        assertNotNull(fieldType.toObject(fieldDefinition, "val1", validationResults));
-        assertNull(fieldType.toObject(fieldDefinition, "val4", validationResults));
-        assertEquals("commons.validate.field.error.invalidDictionaryItem", validationResults.getErrorForField("aa").getMessage());
-        assertEquals("[val1, val2, val3]", validationResults.getErrorForField("aa").getVars()[0]);
+        assertNotNull(fieldType.toObject(fieldDefinition, "val1", entity));
+        assertNull(fieldType.toObject(fieldDefinition, "val4", entity));
+        assertEquals("commons.validate.field.error.invalidDictionaryItem", entity.getError("aa").getMessage());
+        assertEquals("[val1, val2, val3]", entity.getError("aa").getVars()[0]);
     }
 
     @Test
@@ -81,10 +81,10 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, "val1", validationResults));
-        assertNull(fieldType.toObject(fieldDefinition, "val4", validationResults));
-        assertEquals("commons.validate.field.error.invalidDictionaryItem", validationResults.getErrorForField("aa").getMessage());
-        assertEquals("[val1, val2, val3]", validationResults.getErrorForField("aa").getVars()[0]);
+        assertNotNull(fieldType.toObject(fieldDefinition, "val1", entity));
+        assertNull(fieldType.toObject(fieldDefinition, "val4", entity));
+        assertEquals("commons.validate.field.error.invalidDictionaryItem", entity.getError("aa").getMessage());
+        assertEquals("[val1, val2, val3]", entity.getError("aa").getVars()[0]);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Boolean.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, false, validationResults));
+        assertNotNull(fieldType.toObject(fieldDefinition, false, entity));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Date.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, new Date(), validationResults));
+        assertNotNull(fieldType.toObject(fieldDefinition, new Date(), entity));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Date.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, new Date(), validationResults));
+        assertNotNull(fieldType.toObject(fieldDefinition, new Date(), entity));
     }
 
     @Test
@@ -140,12 +140,12 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertTrue(fieldType.isAggregable());
         assertEquals(BigDecimal.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1.21), validationResults));
-        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), validationResults));
-        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), validationResults));
-        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1234567), validationResults));
-        assertNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(12345678), validationResults));
-        assertEquals("commons.validate.field.error.invalidNumericFormat", validationResults.getErrorForField("aa").getMessage());
+        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1.21), entity));
+        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), entity));
+        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), entity));
+        assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1234567), entity));
+        assertNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(12345678), entity));
+        assertEquals("commons.validate.field.error.invalidNumericFormat", entity.getError("aa").getMessage());
     }
 
     @Test
@@ -159,8 +159,8 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertTrue(fieldType.isAggregable());
         assertEquals(Integer.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, 1, validationResults));
-        assertNotNull(fieldType.toObject(fieldDefinition, 1234567890, validationResults));
+        assertNotNull(fieldType.toObject(fieldDefinition, 1, entity));
+        assertNotNull(fieldType.toObject(fieldDefinition, 1234567890, entity));
     }
 
     @Test
@@ -174,11 +174,11 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, "test", validationResults));
-        assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 255), validationResults));
-        assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 256), validationResults));
-        assertEquals("commons.validate.field.error.stringIsTooLong", validationResults.getErrorForField("aa").getMessage());
-        assertEquals("255", validationResults.getErrorForField("aa").getVars()[0]);
+        assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
+        assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 255), entity));
+        assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 256), entity));
+        assertEquals("commons.validate.field.error.stringIsTooLong", entity.getError("aa").getMessage());
+        assertEquals("255", entity.getError("aa").getVars()[0]);
     }
 
     @Test
@@ -192,11 +192,11 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(String.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, "test", validationResults));
-        assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2048), validationResults));
-        assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2049), validationResults));
-        assertEquals("commons.validate.field.error.stringIsTooLong", validationResults.getErrorForField("aa").getMessage());
-        assertEquals("2048", validationResults.getErrorForField("aa").getVars()[0]);
+        assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
+        assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2048), entity));
+        assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2049), entity));
+        assertEquals("commons.validate.field.error.stringIsTooLong", entity.getError("aa").getMessage());
+        assertEquals("2048", entity.getError("aa").getVars()[0]);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Object.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, new Entity(), validationResults));
+        assertNotNull(fieldType.toObject(fieldDefinition, new Entity(), entity));
     }
 
     @Test
@@ -229,7 +229,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnPriorityType() throws Exception {
         // given
-        DataFieldDefinition fieldDefinition = new DataFieldDefinition("aaa");
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl("aaa");
 
         // when
         FieldType fieldType = fieldTypeFactory.priorityType(fieldDefinition);
@@ -240,7 +240,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertTrue(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Integer.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, 1, validationResults));
+        assertNotNull(fieldType.toObject(fieldDefinition, 1, entity));
         assertEquals(fieldDefinition, ((PriorityType) fieldType).getScopeFieldDefinition());
     }
 }

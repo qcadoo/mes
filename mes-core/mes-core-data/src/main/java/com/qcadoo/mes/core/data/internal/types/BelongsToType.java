@@ -3,20 +3,15 @@ package com.qcadoo.mes.core.data.internal.types;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.search.Order;
-import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.types.LookupedFieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class BelongsToType implements LookupedFieldType {
-
-    private final DataAccessService dataAccessService;
 
     private final DataDefinitionService dataDefinitionService;
 
@@ -27,11 +22,10 @@ public final class BelongsToType implements LookupedFieldType {
     private final String entityName;
 
     public BelongsToType(final String entityName, final String lookupFieldName, final boolean eagerFetch,
-            final DataAccessService dataAccessService, final DataDefinitionService dataDefinitionService) {
+            final DataDefinitionService dataDefinitionService) {
         this.entityName = entityName;
         this.lookupFieldName = lookupFieldName;
         this.eagerFetch = eagerFetch;
-        this.dataAccessService = dataAccessService;
         this.dataDefinitionService = dataDefinitionService;
     }
 
@@ -57,8 +51,7 @@ public final class BelongsToType implements LookupedFieldType {
 
     @Override
     public Map<Long, String> lookup(final String prefix) {
-        SearchResult resultSet = dataAccessService.find(SearchCriteriaBuilder.forEntity(getDataDefinition())
-                .orderBy(Order.asc(lookupFieldName)).build());
+        SearchResult resultSet = getDataDefinition().find().orderBy(Order.asc(lookupFieldName)).list();
         Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
 
         for (Entity entity : resultSet.getEntities()) {
@@ -73,8 +66,7 @@ public final class BelongsToType implements LookupedFieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         return value;
     }
 
@@ -83,7 +75,7 @@ public final class BelongsToType implements LookupedFieldType {
         return String.valueOf(((Entity) value).getId());
     }
 
-    public DataDefinition getDataDefinition() {
+    public ModelDefinition getDataDefinition() {
         return dataDefinitionService.get(entityName);
     }
 

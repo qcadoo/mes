@@ -4,9 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class DateTimeType implements FieldType {
 
@@ -33,15 +33,14 @@ public final class DateTimeType implements FieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         if (value instanceof Date) {
             return value;
         }
         try {
             return new SimpleDateFormat(DATE_TIME_FORMAT).parse(String.valueOf(value));
         } catch (ParseException e) {
-            validationResults.addError(fieldDefinition, "commons.validate.field.error.invalidDateTimeFormat");
+            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidDateTimeFormat");
         }
         return null;
     }
