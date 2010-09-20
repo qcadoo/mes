@@ -121,15 +121,16 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
     public ViewEntity<ListData> castComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
             final JSONObject viewObject) throws JSONException {
 
-        System.out.println(" 1 ----> " + viewObject.toString());
+        JSONObject value = viewObject.getJSONObject("value");
 
-        String selectedEntityId = viewObject.getString("selectedEntityId");
+        if (value != null) {
+            String selectedEntityId = value.getString("selectedEntityId");
 
-        if (selectedEntityId != null) {
-            Entity selectedEntity = dataAccessService.get(getDataDefinition(), Long.parseLong(selectedEntityId));
-            System.out.println(" 2 ----> " + selectedEntity);
-            if (selectedEntity != null) {
-                selectedEntities.put(getPath(), Lists.newArrayList(selectedEntity));
+            if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
+                Entity selectedEntity = dataAccessService.get(getDataDefinition(), Long.parseLong(selectedEntityId));
+                if (selectedEntity != null) {
+                    selectedEntities.put(getPath(), Lists.newArrayList(selectedEntity));
+                }
             }
         }
 
