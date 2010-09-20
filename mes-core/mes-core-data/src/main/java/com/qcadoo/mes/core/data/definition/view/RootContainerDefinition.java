@@ -2,11 +2,9 @@ package com.qcadoo.mes.core.data.definition.view;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.definition.DataDefinition;
 
 public abstract class RootContainerDefinition extends ContainerDefinition<Object> {
@@ -82,17 +80,6 @@ public abstract class RootContainerDefinition extends ContainerDefinition<Object
         for (String listenerPath : listenerPaths) {
             getListenersForPath(listenerPath, paths);
         }
-    }
-
-    @Override
-    public Object castContainerValue(final Entity entity, final Object viewObject) {
-        return null;
-    }
-
-    @Override
-    public Object getContainerValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final ViewEntity<Object> viewEntity) {
-        return null;
     }
 
 }

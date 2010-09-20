@@ -3,7 +3,6 @@ package com.qcadoo.mes.core.data.definition.view;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -42,10 +41,10 @@ public abstract class ComponentDefinition<T> {
 
     public abstract String getType();
 
-    public abstract ViewEntity<T> castComponentValue(Entity entity, Map<String, List<Entity>> selectedEntities,
-            JSONObject viewObject) throws JSONException;
+    public abstract ViewEntity<T> castComponentValue(Entity entity, Map<String, Entity> selectedEntities, JSONObject viewObject)
+            throws JSONException;
 
-    public final ViewEntity<T> castValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+    public final ViewEntity<T> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         ViewEntity<T> value = castComponentValue(entity, selectedEntities, viewObject);
         if (viewObject != null && value != null) {
@@ -55,34 +54,30 @@ public abstract class ComponentDefinition<T> {
         return value;
     }
 
-    public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, List<Entity>> selectedEntities,
-            ViewEntity<Object> globalViewEntity, ViewEntity<T> viewEntity, final Set<String> pathsToUpdate);
+    public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities,
+            ViewEntity<T> viewEntity, final Set<String> pathsToUpdate);
 
     @SuppressWarnings("unchecked")
-    public ViewEntity<T> getValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final ViewEntity<?> viewEntity, final Set<String> pathsToUpdate) {
+    public ViewEntity<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewEntity<?> viewEntity, final Set<String> pathsToUpdate) {
         if (shouldNotBeUpdated(pathsToUpdate)) {
             return null;
         }
         if (sourceComponent != null) {
-            Entity selectedEntity = selectedEntities.get(sourceComponent.getPath()) != null
-                    && selectedEntities.get(sourceComponent.getPath()).size() == 1 ? selectedEntities.get(
-                    sourceComponent.getPath()).get(0) : null;
+            Entity selectedEntity = selectedEntities.get(sourceComponent.getPath());
 
             if (this instanceof ContainerDefinition && selectedEntity != null && sourceFieldPath != null) {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
 
-            // TODO multiselection?
-            return getComponentValue(selectedEntity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity,
-                    pathsToUpdate);
+            return getComponentValue(selectedEntity, selectedEntities, (ViewEntity<T>) viewEntity, pathsToUpdate);
         } else {
             Entity contextEntity = entity;
             if (this instanceof ContainerDefinition && entity != null && fieldPath != null) {
                 contextEntity = getFieldEntityValue(entity, fieldPath);
             }
 
-            return getComponentValue(contextEntity, selectedEntities, globalViewEntity, (ViewEntity<T>) viewEntity, pathsToUpdate);
+            return getComponentValue(contextEntity, selectedEntities, (ViewEntity<T>) viewEntity, pathsToUpdate);
         }
     }
 
@@ -101,8 +96,14 @@ public abstract class ComponentDefinition<T> {
         return true;
     }
 
-    protected String getFieldStringValue(final Entity entity, final String path) {
-        Object value = getFieldValue(entity, path);
+    protected String getFieldStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {
+        Object value = null;
+
+        if (getSourceComponent() != null) {
+            value = getFieldValue(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
+        } else {
+            value = getFieldValue(entity, getFieldPath());
+        }
 
         if (value == null) {
             return "";
@@ -124,26 +125,22 @@ public abstract class ComponentDefinition<T> {
     }
 
     protected Object getFieldValue(final Entity entity, final String path) {
-        if (entity == null) {
+        if (entity == null || path == null) {
             return null;
         }
 
-        if (path != null) {
-            String[] fields = path.split("\\.");
-            Object value = entity;
+        String[] fields = path.split("\\.");
+        Object value = entity;
 
-            for (String field : fields) {
-                if (value instanceof Entity) {
-                    value = ((Entity) value).getField(field);
-                } else {
-                    return null;
-                }
+        for (String field : fields) {
+            if (value instanceof Entity) {
+                value = ((Entity) value).getField(field);
+            } else {
+                return null;
             }
-
-            return value;
         }
 
-        return null;
+        return value;
     }
 
     public ComponentDefinition(final String name, final ContainerDefinition<?> parentContainer, final String fieldPath,

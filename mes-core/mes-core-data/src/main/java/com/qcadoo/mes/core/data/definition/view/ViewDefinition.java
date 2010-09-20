@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.data.definition.view;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,7 +34,7 @@ public class ViewDefinition {
         return name;
     }
 
-    public ViewEntity<Object> castValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+    public ViewEntity<Object> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         ViewEntity<Object> value = new ViewEntity<Object>();
         value.addComponent(root.getName(),
@@ -43,13 +42,11 @@ public class ViewDefinition {
         return value;
     }
 
-    public ViewEntity<Object> getValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+    public ViewEntity<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewEntity<Object> globalViewEntity, final Set<String> pathsToUpdate) {
         ViewEntity<Object> value = new ViewEntity<Object>();
-        value.addComponent(
-                root.getName(),
-                root.getValue(entity, selectedEntities, globalViewEntity,
-                        globalViewEntity != null ? globalViewEntity.getComponent(root.getName()) : null, pathsToUpdate));
+        value.addComponent(root.getName(), root.getValue(entity, selectedEntities,
+                globalViewEntity != null ? globalViewEntity.getComponent(root.getName()) : null, pathsToUpdate));
         return value;
     }
 

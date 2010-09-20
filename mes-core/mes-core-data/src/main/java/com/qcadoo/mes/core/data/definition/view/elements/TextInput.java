@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.data.definition.view.elements;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,14 +23,14 @@ public class TextInput extends ComponentDefinition<String> {
     }
 
     @Override
-    public ViewEntity<String> castComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
+    public ViewEntity<String> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         return new ViewEntity<String>(viewObject.getString("value"));
     }
 
     @Override
-    public ViewEntity<String> getComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final ViewEntity<String> viewEntity, final Set<String> pathsToUpdate) {
-        return new ViewEntity<String>(getFieldStringValue(entity, getFieldPath()));
+    public ViewEntity<String> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewEntity<String> viewEntity, final Set<String> pathsToUpdate) {
+        return new ViewEntity<String>(getFieldStringValue(entity, selectedEntities));
     }
 }
