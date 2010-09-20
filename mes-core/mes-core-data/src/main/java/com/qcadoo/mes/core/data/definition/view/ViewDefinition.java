@@ -1,19 +1,18 @@
 package com.qcadoo.mes.core.data.definition.view;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public class ViewDefinition {
 
-    private final ContainerDefinition root;
+    private final RootContainerDefinition root;
 
     private final String pluginIdentifier;
 
     private final String name;
 
-    public ViewDefinition(final String name, final ContainerDefinition root, final String pluginIdentifier) {
+    public ViewDefinition(final String name, final RootContainerDefinition root, final String pluginIdentifier) {
         this.name = name;
         this.root = root;
         this.pluginIdentifier = pluginIdentifier;
@@ -23,7 +22,7 @@ public class ViewDefinition {
         return pluginIdentifier;
     }
 
-    public ContainerDefinition getRoot() {
+    public RootContainerDefinition getRoot() {
         return root;
     }
 
@@ -31,10 +30,14 @@ public class ViewDefinition {
         return name;
     }
 
-    public Object getValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
-        Map<String, Object> values = new HashMap<String, Object>();
-        values.put(root.getPath(), root.getValue(entity, selectableEntities, viewEntity));
-        return values;
+    public ViewEntity<Object> getValue(final Entity entity, final Map<String, Entity> selectableEntities,
+            final ViewEntity<Object> globalViewEntity) {
+        ViewEntity<Object> value = new ViewEntity<Object>();
+        value.addComponent(
+                root.getName(),
+                root.getValue(entity, selectableEntities, globalViewEntity,
+                        globalViewEntity != null ? globalViewEntity.getComponent(root.getName()) : null));
+        return value;
     }
 
 }

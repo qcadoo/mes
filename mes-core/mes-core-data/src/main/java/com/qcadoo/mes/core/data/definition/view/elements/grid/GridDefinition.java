@@ -20,6 +20,7 @@ import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.definition.view.ContainerDefinition;
+import com.qcadoo.mes.core.data.definition.view.ViewEntity;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
@@ -37,7 +38,7 @@ import com.qcadoo.mes.core.data.search.SearchResult;
  * @apiviz.uses com.qcadoo.mes.core.data.search.Order
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
  */
-public final class GridDefinition extends ComponentDefinition {
+public final class GridDefinition extends ComponentDefinition<ListData> {
 
     private final Set<DataFieldDefinition> searchableFields = new HashSet<DataFieldDefinition>();
 
@@ -49,7 +50,7 @@ public final class GridDefinition extends ComponentDefinition {
 
     private final DataAccessService dataAccessService;
 
-    public GridDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
+    public GridDefinition(final String name, final ContainerDefinition<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final DataAccessService dataAccessService) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
         this.dataAccessService = dataAccessService;
@@ -114,10 +115,13 @@ public final class GridDefinition extends ComponentDefinition {
     }
 
     @Override
-    public Object getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
+    public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities,
+            final ViewEntity<Object> globalViewEntity, final ViewEntity<ListData> viewEntity) {
+        // TODO viewEntity
+
         if ((getSourceFieldPath() != null && getSourceComponent() != null) || getFieldPath() != null) {
             if (entity == null) {
-                return new ListData(0, Collections.<Entity> emptyList());
+                return new ViewEntity<ListData>(new ListData(0, Collections.<Entity> emptyList()));
             }
             HasManyType hasManyType = null;
             if (getFieldPath() != null) {
@@ -125,7 +129,6 @@ public final class GridDefinition extends ComponentDefinition {
             } else {
                 hasManyType = getHasManyType(getSourceComponent().getDataDefinition(), getSourceFieldPath());
             }
-            System.out.println(" ! ---> " + getPath() + ", hasManyType: " + hasManyType.getFieldName());
             checkState(hasManyType.getDataDefinition().getName().equals(getDataDefinition().getName()),
                     "Grid and hasMany relation have different data definitions");
             SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
@@ -133,13 +136,12 @@ public final class GridDefinition extends ComponentDefinition {
                     getDataDefinition().getField(hasManyType.getFieldName()), entity.getId()));
             SearchCriteria searchCriteria = searchCriteriaBuilder.build();
             SearchResult rs = dataAccessService.find(searchCriteria);
-            return generateListData(rs);
+            return new ViewEntity<ListData>(generateListData(rs));
         } else {
-            System.out.println(" ! ---> " + getPath() + ", hasManyType: null");
             SearchCriteriaBuilder searchCriteriaBuilder = SearchCriteriaBuilder.forEntity(getDataDefinition());
             SearchCriteria searchCriteria = searchCriteriaBuilder.build();
             SearchResult rs = dataAccessService.find(searchCriteria);
-            return generateListData(rs);
+            return new ViewEntity<ListData>(generateListData(rs));
         }
     }
 

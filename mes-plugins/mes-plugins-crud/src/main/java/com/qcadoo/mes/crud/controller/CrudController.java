@@ -114,7 +114,7 @@ public class CrudController {
     }
 
     @InitBinder("jsonBody")
-    public void initBinder(WebDataBinder binder, HttpServletRequest request) {
+    public void initBinder(final WebDataBinder binder, final HttpServletRequest request) {
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;
         try {
@@ -147,7 +147,7 @@ public class CrudController {
     @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.POST)
     @ResponseBody
     public Object getDataUpdate(@PathVariable("viewName") final String viewName,
-            @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") StringBuilder body) {
+            @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
 
         try {

@@ -17,7 +17,7 @@ import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 
-public abstract class ComponentDefinition {
+public abstract class ComponentDefinition<T> {
 
     private final String name;
 
@@ -27,13 +27,13 @@ public abstract class ComponentDefinition {
 
     private String sourceFieldPath;
 
-    private ComponentDefinition sourceComponent;
+    private ComponentDefinition<?> sourceComponent;
 
     private boolean initialized;
 
     private final Map<String, String> options = new HashMap<String, String>();
 
-    private final ContainerDefinition parentContainer;
+    private final ContainerDefinition<?> parentContainer;
 
     private final Set<String> listeners = new HashSet<String>();
 
@@ -41,13 +41,17 @@ public abstract class ComponentDefinition {
 
     public abstract String getType();
 
-    public abstract Object getComponentValue(Entity entity, Map<String, Entity> selectableEntities, Object viewEntity);
+    public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, Entity> selectableEntities,
+            ViewEntity<Object> globalViewEntity, ViewEntity<T> viewEntity);
 
-    public Object getValue(final Entity entity, final Map<String, Entity> selectableEntities, final Object viewEntity) {
+    @SuppressWarnings("unchecked")
+    public ViewEntity<T> getValue(final Entity entity, final Map<String, Entity> selectableEntities,
+            final ViewEntity<Object> globalViewEntity, final ViewEntity<?> viewEntity) {
         if (sourceComponent != null) {
-            return getComponentValue(selectableEntities.get(sourceComponent.getPath()), selectableEntities, viewEntity);
+            return getComponentValue(selectableEntities.get(sourceComponent.getPath()), selectableEntities, globalViewEntity,
+                    (ViewEntity<T>) viewEntity);
         } else {
-            return getComponentValue(entity, selectableEntities, viewEntity);
+            return getComponentValue(entity, selectableEntities, globalViewEntity, (ViewEntity<T>) viewEntity);
         }
     }
 
@@ -74,7 +78,7 @@ public abstract class ComponentDefinition {
         return "";
     }
 
-    public ComponentDefinition(final String name, final ContainerDefinition parentContainer, final String fieldPath,
+    public ComponentDefinition(final String name, final ContainerDefinition<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         this.name = name;
         this.parentContainer = parentContainer;
@@ -89,7 +93,7 @@ public abstract class ComponentDefinition {
         this.sourceFieldPath = sourceFieldPath;
     }
 
-    public boolean initializeComponent(final Map<String, ComponentDefinition> componentRegistry) {
+    public boolean initializeComponent(final Map<String, ComponentDefinition<?>> componentRegistry) {
         if (sourceFieldPath != null && sourceFieldPath.startsWith("#")) {
             String[] source = parseSourceFieldPath(sourceFieldPath);
             sourceComponent = componentRegistry.get(source[0]);
@@ -185,7 +189,7 @@ public abstract class ComponentDefinition {
             for (Entry<String, Object> option : getOptions().entrySet()) {
                 Object value = null;
                 if (option.getValue() instanceof Collection) {
-                    Collection list = (Collection) option.getValue();
+                    Collection<?> list = (Collection<?>) option.getValue();
                     JSONArray arr = new JSONArray();
                     for (Object o : list) {
                         arr.put(o);
@@ -205,11 +209,11 @@ public abstract class ComponentDefinition {
         return jsonOptions.toString();
     }
 
-    protected ComponentDefinition getSourceComponent() {
+    protected ComponentDefinition<?> getSourceComponent() {
         return sourceComponent;
     }
 
-    protected ContainerDefinition getParentContainer() {
+    protected ContainerDefinition<?> getParentContainer() {
         return parentContainer;
     }
 
