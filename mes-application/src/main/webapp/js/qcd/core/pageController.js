@@ -30,7 +30,11 @@ QCD.PageController = function(_viewName) {
 				getComponent(listeners[i]).setLoading(true);
 			}
 		}
-		var valuesJson = JSON.stringify(getValueData());
+		var parameters = {
+			componentName: componentName,
+			data: getValueData()
+		};
+		var valuesJson = JSON.stringify(parameters);
 		QCD.info(valuesJson);
 		QCDConnector.sendPost("dataUpdate", valuesJson, function(response) {
 			QCD.info(response);
