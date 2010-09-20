@@ -109,9 +109,9 @@ public class CrudController {
         if (arguments.get("entityId") != null) {
             Entity entity = dataAccessService.get(viewDefinition.getRoot().getDataDefinition(),
                     Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, Collections.<String, List<Entity>> emptyMap(), null);
+            return viewDefinition.getValue(entity, Collections.<String, List<Entity>> emptyMap(), null, null);
         } else {
-            return viewDefinition.getValue(null, Collections.<String, List<Entity>> emptyMap(), null);
+            return viewDefinition.getValue(null, Collections.<String, List<Entity>> emptyMap(), null, null);
         }
     }
 
@@ -166,10 +166,10 @@ public class CrudController {
 
             Map<String, List<Entity>> selectedEntities = new HashMap<String, List<Entity>>();
 
-            Set<String> a = viewDefinition.getRoot().getListenersForPath("xxs");
+            Set<String> pathsToUpdate = viewDefinition.getRoot().getListenersForPath(componentName.replaceAll("-", "."));
 
             ViewEntity<Object> viewEntity = viewDefinition.castValue(entity, selectedEntities, jsonValues);
-            ViewEntity<Object> newViewEntity = viewDefinition.getValue(entity, selectedEntities, viewEntity);
+            ViewEntity<Object> newViewEntity = viewDefinition.getValue(entity, selectedEntities, viewEntity, pathsToUpdate);
 
             return newViewEntity;
         } catch (JSONException e) {

@@ -139,7 +139,7 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
 
     @Override
     public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final ViewEntity<ListData> viewEntity) {
+            final ViewEntity<Object> globalViewEntity, final ViewEntity<ListData> viewEntity, final Set<String> pathsToUpdate) {
         // TODO viewEntity
 
         if ((getSourceFieldPath() != null && getSourceComponent() != null) || getFieldPath() != null) {

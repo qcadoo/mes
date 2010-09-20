@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.definition.view;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,14 +41,15 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
 
     @Override
     public ViewEntity<T> getComponentValue(final Entity entity, final Map<String, List<Entity>> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity) {
+            final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity, final Set<String> pathsToUpdate) {
+
         ViewEntity<T> value = new ViewEntity<T>();
 
         boolean isAnyNotNull = false;
 
         for (ComponentDefinition<?> component : components.values()) {
             ViewEntity<?> componentViewEntity = component.getValue(entity, selectedEntities, globalViewEntity,
-                    viewEntity != null ? viewEntity.getComponent(component.getName()) : null);
+                    viewEntity != null ? viewEntity.getComponent(component.getName()) : null, pathsToUpdate);
             if (componentViewEntity != null) {
                 isAnyNotNull = true;
                 value.addComponent(component.getName(), componentViewEntity);

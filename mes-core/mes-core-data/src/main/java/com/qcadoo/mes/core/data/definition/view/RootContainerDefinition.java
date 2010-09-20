@@ -26,6 +26,11 @@ public abstract class RootContainerDefinition extends ContainerDefinition<Object
     public void initialize() {
         registerComponents(getComponents());
         initializeComponents(0);
+
+        for (ComponentDefinition<?> component : componentRegistry.values()) {
+            System.out.println(" ---> " + component);
+        }
+
     }
 
     private void initializeComponents(final int previousNotInitialized) {

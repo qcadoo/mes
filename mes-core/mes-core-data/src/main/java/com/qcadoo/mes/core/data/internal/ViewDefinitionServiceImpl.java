@@ -173,7 +173,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         GridDefinition beanCForm_beansBGrig = new GridDefinition("beansBGrig", formCDefinition, "beansB", null, dataAccessService);
         beanCForm_beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
         formCDefinition.addComponent(beanCForm_beansBGrig);
-        formCDefinition.addComponent(new TextInput("name", formCDefinition, null, "#{mainWindow.beanCForm.beansBGrig}.name"));
+        formCDefinition.addComponent(new TextInput("nameB", formCDefinition, null, "#{mainWindow.beanCForm.beansBGrig}.name"));
         windowDefinition.addComponent(formCDefinition);
 
         FormDefinition formBDefinition = new FormDefinition("beanBForm", windowDefinition, null, "#{mainWindow.beansBGrig}");
