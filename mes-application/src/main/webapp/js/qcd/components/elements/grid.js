@@ -134,7 +134,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 					url += "?entityId="+rowId;
 				}
 //			}
-				QCDLogger.info(mainController);
 			mainController.goToPage(url);
 		}
 	}
@@ -163,7 +162,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
-		
+		if (!isEnabled) {
+			QCDLogger.info("QCD.components.elements.Grid.setComponentEnabled() not implemented yet");
+		}
 	}
 	
 	function constructor(_this) {
