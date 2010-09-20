@@ -23,6 +23,19 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
     }
 
     @Override
+    public ViewEntity<T> castValue(final Entity entity, final Object viewObject) {
+        ViewEntity<T> value = new ViewEntity<T>();
+
+        for (ComponentDefinition<?> component : components.values()) {
+            value.addComponent(component.getName(), component.castValue(entity, viewObject));
+        }
+
+        value.setValue(castContainerValue(entity, viewObject));
+
+        return value;
+    }
+
+    @Override
     public ViewEntity<T> getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity) {
         ViewEntity<T> value = new ViewEntity<T>();
@@ -38,6 +51,8 @@ public abstract class ContainerDefinition<T> extends ComponentDefinition<T> {
 
         return value;
     }
+
+    public abstract T castContainerValue(final Entity entity, final Object viewObject);
 
     public abstract T getContainerValue(final Entity entity, final Map<String, Entity> selectableEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<T> viewEntity);

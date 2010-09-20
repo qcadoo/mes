@@ -20,6 +20,11 @@ public final class FormDefinition extends ContainerDefinition<Long> {
     }
 
     @Override
+    public Long castContainerValue(final Entity entity, final Object viewObject) {
+        return null;
+    }
+
+    @Override
     public String getType() {
         return "form";
     }

@@ -115,6 +115,12 @@ public final class GridDefinition extends ComponentDefinition<ListData> {
     }
 
     @Override
+    public ViewEntity<ListData> castValue(final Entity entity, final Object viewEntity) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public ViewEntity<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<ListData> viewEntity) {
         // TODO viewEntity

@@ -62,6 +62,11 @@ public abstract class RootContainerDefinition extends ContainerDefinition<Object
     }
 
     @Override
+    public Object castContainerValue(final Entity entity, final Object viewObject) {
+        return null;
+    }
+
+    @Override
     public Object getContainerValue(final Entity entity, final Map<String, Entity> selectableEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<Object> viewEntity) {
         return null;

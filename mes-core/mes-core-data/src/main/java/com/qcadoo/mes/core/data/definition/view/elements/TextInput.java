@@ -19,6 +19,12 @@ public class TextInput extends ComponentDefinition<String> {
     }
 
     @Override
+    public ViewEntity<String> castValue(final Entity entity, final Object viewEntity) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public ViewEntity<String> getComponentValue(final Entity entity, final Map<String, Entity> selectableEntities,
             final ViewEntity<Object> globalViewEntity, final ViewEntity<String> viewEntity) {
         return new ViewEntity<String>(getFieldValue(entity, getFieldPath()));

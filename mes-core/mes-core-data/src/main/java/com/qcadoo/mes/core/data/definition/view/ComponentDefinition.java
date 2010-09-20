@@ -41,6 +41,8 @@ public abstract class ComponentDefinition<T> {
 
     public abstract String getType();
 
+    public abstract ViewEntity<T> castValue(Entity entity, Object viewEntity);
+
     public abstract ViewEntity<T> getComponentValue(Entity entity, Map<String, Entity> selectableEntities,
             ViewEntity<Object> globalViewEntity, ViewEntity<T> viewEntity);
 
