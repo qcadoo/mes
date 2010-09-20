@@ -46,8 +46,18 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 	}
 	
+	this.getComponent = function(componentName) {
+		if (! componentName || componentName.trim() == "") {
+			return this;
+		} else {
+			var name = componentName.split(".")[0];
+			var path = componentName.substring(name.length+1);
+			return components[name].getComponent(path);
+		}
+	}
+	
 	function constructor(_this) {
-		//QCDLogger.info("Container");
+		//QCD.info("Container");
 	}
 	
 	constructor(this);

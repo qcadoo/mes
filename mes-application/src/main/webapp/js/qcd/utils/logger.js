@@ -1,13 +1,19 @@
-var QCDLogger = {};
+var QCD = QCD || {};
 
-QCDLogger.info = function(msg) {
+QCD.info = function(msg) {
 	if (window.console && window.console.info) {
 		window.console.info(msg);
 	}
 };
 
-QCDLogger.debug = function(msg) {
+QCD.debug = function(msg) {
 	if (window.console && window.console.debug) {
 		window.console.debug(msg);
+	}
+};
+
+QCD.error = function(msg) {
+	if (window.console && window.console.error) {
+		window.console.error(msg);
 	}
 };

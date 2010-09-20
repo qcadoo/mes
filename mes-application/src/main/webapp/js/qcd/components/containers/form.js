@@ -10,10 +10,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	var elementName = element.attr('id');
 	
 //	this.insterData = function(data) {
-//		QCDLogger.info(this.containerComponents);
+//		QCD.info(this.containerComponents);
 //		for (var i in data) {
 //			var component = this.containerComponents[i];
-//			QCDLogger.info(component);
+//			QCD.info(component);
 //			component.insterData(data[i]);
 //		}
 //	}
@@ -22,10 +22,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 //		mainController.goBack();
 //	}
 	
+	function performSave() {
+		mainController.performSave(elementName);
+	}
+	
 	function constructor(_this) {
 		var childrenElement = $("#"+elementName+" .formComponents");
 		_this.constructChildren(childrenElement.children());
-		//$("#"+_this.elementFullName+"_cancelButton").click(performCancel);
+		//mainWindow-beanAForm_saveButton
+		$("#"+elementName+"_saveButton").click(performSave);
 	}
 	
 	this.getComponentValue = function() {

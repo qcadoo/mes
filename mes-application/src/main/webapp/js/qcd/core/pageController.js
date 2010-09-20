@@ -10,7 +10,7 @@ QCD.PageController = function(_viewName) {
 		
 		var contentElement = $("#content");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
-		QCDLogger.debug(pageComponents);
+		QCD.debug(pageComponents);
 	}
 	
 	this.init = function(entityId) {
@@ -19,12 +19,45 @@ QCD.PageController = function(_viewName) {
 			parameters.entityId = entityId;
 		}
 		QCDConnector.sendGet("data", parameters, function(response) {
-			updateData(response);
+			setValueData(response);
 		});
 	}
 	
-	this.getUpdate = function(componentName, value) {
-		QCDLogger.info(componentName+"->"+value);
+	this.getUpdate = function(componentName, value, listeners) {
+		QCD.info(componentName+"->"+value);
+		if (listeners) {
+			for (var i in listeners) {
+				getComponent(listeners[i]).setLoading(true);
+			}
+		}
+		var valuesJson = JSON.stringify(getValueData());
+		QCD.info(valuesJson);
+		QCDConnector.sendPost("dataUpdate", valuesJson, function(response) {
+			QCD.info(response);
+			setValueData(response);
+			if (listeners) {
+				for (var i in listeners) {
+					getComponent(listeners[i]).setLoading(false);
+				}
+			}
+		});
+	}
+	
+	this.performSave = function(componentName) {
+		QCD.info("save " +componentName);
+		var parameters = {
+			componentName: componentName,
+			data: getValueData()
+		};
+		var parametersJson = JSON.stringify(parameters);
+		QCD.info(parametersJson);
+		QCDConnector.sendPost("save", parametersJson, function(response) {
+			QCD.info(response);
+			//setValueData(response);
+		});
+	}
+	
+	function getValueData() {
 		var values = new Object();
 		for (var i in pageComponents) {
 			var value = pageComponents[i].getValue();
@@ -32,20 +65,22 @@ QCD.PageController = function(_viewName) {
 				values[i] = value;
 			}
 		}
-		QCDLogger.info(values);
-		values = JSON.stringify(values);
-		QCDLogger.info(values);
-		QCDConnector.sendPost("dataUpdate", values, function(response) {
-			QCDLogger.info(response);
-		});
+		//QCD.info(values);
+		return values;
 	}
 	
-	function updateData(data) {
-		QCDLogger.debug(data);
+	function setValueData(data) {
+		QCD.debug(data);
 		for (var i in data.components) {
 			var component = pageComponents[i];
 			component.setValue(data.components[i]);
 		}
+	}
+	
+	function getComponent(componentPath) {
+		var componentName = componentPath.split(".")[0];
+		var path = componentPath.substring(componentName.length+1);
+		return pageComponents[componentName].getComponent(path);
 	}
 	
 	this.getTranslation = function(key) {

@@ -172,6 +172,25 @@ public class CrudController {
         return "getDataUpdateResponse";
     }
 
+    @RequestMapping(value = "page/{viewName}/save", method = RequestMethod.POST)
+    @ResponseBody
+    public Object performSave(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute("jsonBody") final StringBuilder body) {
+        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+
+        try {
+            String bodyStr = body.toString();
+            System.out.println(bodyStr);
+            JSONObject jsonValues = new JSONObject(bodyStr);
+
+            Entity entity = null;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "performSaveResponse";
+    }
+
     // @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.GET)
     // @ResponseBody
     // public Object getDataUpdate(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String>

@@ -28,8 +28,6 @@
 	</div>
 	
 	<button id="${componentFullName}_saveButton">${translationsMap["commons.form.button.accept"] }</button>
-	<button id="${componentFullName}_saveCloseButton">${translationsMap["commons.form.button.acceptAndClose"] }</button>
-	<button id="${componentFullName}_cancelButton">${translationsMap["commons.form.button.cancel"] }</button>
 	
 </div>
 

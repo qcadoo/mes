@@ -15,7 +15,7 @@ QCD.components.Component = function(_element, _mainController) {
 	function constructor(_this) {
 		options = QCDOptions.getElementOptions(elementName);
 		_this.options = options;
-		//QCDLogger.info("Component");
+		//QCD.info("Component");
 	}
 	
 	this.getValue = function() {
@@ -33,6 +33,18 @@ QCD.components.Component = function(_element, _mainController) {
 		this.setComponentValue(value.value);
 		if (value.components) {
 			this.setComponentsValue(value.components);
+		}
+	}
+	
+	this.setLoading = function(isLoadingVisible) {
+		QCD.error(elementName+".setLoading() no implemented");
+	}
+	
+	this.getComponent = function(componentName) {
+		if (! componentName || componentName.trim() == "") {
+			return this;
+		} else {
+			QCD.error("no component");
 		}
 	}
 	
