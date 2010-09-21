@@ -8,13 +8,17 @@
 
 <tiles:useAttribute name="component" />
 <tiles:useAttribute name="parentComponentFullName" ignore="true"/>
+<tiles:useAttribute name="parentComponentFullNameWithDots" ignore="true"/>
+<tiles:useAttribute name="viewName" ignore="true"/>
 
 	<c:choose>
 		<c:when test='${parentComponentFullName == null}'>
 			<c:set var="componentFullName" value="${component.name}"/>
+			<c:set var="componentFullNameWithDots" value="${component.name}"/>
 		</c:when>
 		<c:otherwise>
 			<c:set var="componentFullName" value="${parentComponentFullName}-${component.name}"/>
+			<c:set var="componentFullNameWithDots" value="${parentComponentFullNameWithDots}.${component.name}"/>
 		</c:otherwise>
 	</c:choose>
 	
@@ -36,6 +40,8 @@
 	<tiles:insertTemplate template="${componentJsp}">
 		<tiles:putAttribute name="component" value="${component}" />
 		<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
+		<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
+		<tiles:putAttribute name="viewName" value="${viewName}" />
 	</tiles:insertTemplate>
 	
 	

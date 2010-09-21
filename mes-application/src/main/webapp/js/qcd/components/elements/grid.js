@@ -35,10 +35,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		var colModel = new Array();
 		
 		for (var i in options.columns) {
-			var nameToTranslate = elementName+".column."+options.columns[i];
-			//colNames.push(mainController.getTranslation(nameToTranslate));
-			//colModel.push({name:parameters.columns[i], index:parameters.columns[i], width:100, sortable: false});
-			colNames.push(nameToTranslate);
+			var nameToTranslate = mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+options.columns[i];
+			colNames.push(mainController.getTranslation(nameToTranslate));
 			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: false});
 		}
 		

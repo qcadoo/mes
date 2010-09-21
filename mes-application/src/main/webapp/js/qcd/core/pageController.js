@@ -23,6 +23,10 @@ QCD.PageController = function(_viewName) {
 		});
 	}
 	
+	this.getViewName = function() {
+		return viewName;
+	}
+	
 	this.getUpdate = function(componentName, value, listeners) {
 		QCD.info("getUpdate "+componentName+"->"+value);
 		if (listeners) {
@@ -60,7 +64,7 @@ QCD.PageController = function(_viewName) {
 		//QCD.info(parametersJson);
 		QCDConnector.sendPost("save", parametersJson, function(response) {
 			QCD.info(response);
-			//setValueData(response);
+			setValueData(response);
 		});
 	}
 	
