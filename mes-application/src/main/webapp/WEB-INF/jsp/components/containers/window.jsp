@@ -15,6 +15,7 @@
 	</div>
 	
 	<div style="font-weight: bold; margin-bottom: 10px;">
+		<button id="${componentFullName}_backButton">back</button>
 		Window ${componentFullName}
 	</div>
 	

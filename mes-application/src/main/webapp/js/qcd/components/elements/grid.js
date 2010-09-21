@@ -20,6 +20,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var grid;
 	
+	var actionButtons = new Object();
+	actionButtons.newButton = null;
+	actionButtons.deleteButton = null;
+	
 	var defaultOptions = {
 		paging: true,
 	};
@@ -69,6 +73,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		}
 //		gridParameters.events = parameters.events;
 //		gridParameters.parent = parameters.parent;
+		gridParameters.canNew = options.canNew == "false" ? false : true;
+		gridParameters.canDelete = options.canDelete == "false" ? false : true;
+		if (options.height) { gridParameters.height = parseInt(options.height); }
+
 		gridParameters.correspondingViewName = options.correspondingViewName;
 //		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
 		
@@ -108,6 +116,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 ////	}
 //	
 	function rowClicked(rowId) {
+		actionButtons.deleteButton.removeAttr('disabled');
 		if (gridParameters.listeners.length > 0) {
 			//QCD.info("SEND");
 			mainController.getUpdate(elementPath, rowId, gridParameters.listeners);
@@ -145,6 +154,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
+		actionButtons.deleteButton.attr('disabled', 'true');
 		grid.jqGrid('clearGridData');
 		for (var entityNo in value.entities) {
 			var entity = value.entities[entityNo];
@@ -153,8 +163,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
-		if (!isEnabled) {
-			QCD.error("QCD.components.elements.Grid.setComponentEnabled() not implemented yet");
+		if (actionButtons.newButton) {
+			if (isEnabled) {
+				actionButtons.newButton.removeAttr('disabled');
+			} else {
+				actionButtons.newButton.attr('disabled', 'true');
+			}
 		}
 	}
 	
@@ -173,24 +187,35 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
+	function newClicked() {
+		redirectToCorrespondingPage(null);
+	}
+	
+	function deleteClicked() {
+		var selectedId = grid.getGridParam('selrow');
+		if (selectedId) {
+			alert("delete "+selectedId);
+		}
+	}
+	
 	function constructor(_this) {
 		parseOptions(_this.options, _this);
-//		
-//		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
-//			if (gridParameters.canNew) {
-//				navigationButtons.newButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.new"));
-//				navigationButtons.newButton.click(newClicked);
-//				navigationButtons.newButton.attr("disabled", true);
-//				topButtonsDiv.append(navigationButtons.newButton);
-//			}
-//			if (gridParameters.canDelete) {
-//				navigationButtons.deleteButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.delete"));
-//				navigationButtons.deleteButton.click(deleteClicked);
-//				navigationButtons.deleteButton.attr("disabled", true);
-//				topButtonsDiv.append(navigationButtons.deleteButton);
-//			}
-//		element.before(topButtonsDiv);
-//		
+		
+		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
+			if (gridParameters.canNew) {
+				actionButtons.newButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.new"));
+				actionButtons.newButton.click(newClicked);
+				actionButtons.newButton.attr("disabled", true);
+				topButtonsDiv.append(actionButtons.newButton);
+			}
+			if (gridParameters.canDelete) {
+				actionButtons.deleteButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.delete"));
+				actionButtons.deleteButton.click(deleteClicked);
+				actionButtons.deleteButton.attr("disabled", true);
+				topButtonsDiv.append(actionButtons.deleteButton);
+			}
+		element.append(topButtonsDiv);
+		
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
         }
@@ -198,11 +223,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			rowDblClicked(id);
         }
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
-//		
-//		//if (! gridParameters.parent) {
-//			//enable();
-//			//refresh();
-//		//}
 	}
 	
 	constructor(this);
