@@ -197,11 +197,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", productDataDefinition.getField("typeOfMaterial"),
                 null);
         ColumnDefinition columnEan = createColumnDefinition("ean", productDataDefinition.getField("ean"), null);
-
         grid.addColumn(columnNumber);
         grid.addColumn(columnName);
         grid.addColumn(columnType);
         grid.addColumn(columnEan);
+        windowDefinition.addComponent(grid);
+
+        windowDefinition.initialize();
 
         return viewDefinition;
     }
@@ -216,10 +218,10 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productDetailsView", windowDefinition, "products");
 
         FormDefinition formDefinition = new FormDefinition("productDetailsForm", windowDefinition, null, null);
-
         formDefinition.addComponent(new TextInput("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInput("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInput("ean", formDefinition, "ean", null));
+        windowDefinition.addComponent(formDefinition);
 
         GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", windowDefinition, "substitutes", null);
         substituteGridDefinition.addColumn(createColumnDefinition("number", substituteDataDefinition.getField("number"), null));
@@ -232,21 +234,25 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteGridDefinition.addOptions("multiselect", "false");
         substituteGridDefinition.addOptions("height", "150");
         substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
+        windowDefinition.addComponent(substituteGridDefinition);
 
         GridDefinition substituteComponentGridDefinition = new GridDefinition("substitutesComponentGrid", windowDefinition, null,
                 "#{substitutesGrid}.components");
-        substituteComponentGridDefinition.addColumn(createColumnDefinition("number",
-                substituteComponentDataDefinition.getField("product"), "#product['number']"));
-        substituteComponentGridDefinition.addColumn(createColumnDefinition("name",
-                substituteComponentDataDefinition.getField("product"), "#product['name']"));
-        substituteComponentGridDefinition.addColumn(createColumnDefinition("quantity",
-                substituteComponentDataDefinition.getField("quantity"), null));
-        substituteComponentGridDefinition.addOptions("paging", "false");
-        substituteComponentGridDefinition.addOptions("sortable", "false");
-        substituteComponentGridDefinition.addOptions("filter", "false");
-        substituteComponentGridDefinition.addOptions("multiselect", "false");
-        substituteComponentGridDefinition.addOptions("height", "150");
-        substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
+        // substituteComponentGridDefinition.addColumn(createColumnDefinition("number",
+        // substituteComponentDataDefinition.getField("product"), "#product['number']"));
+        // substituteComponentGridDefinition.addColumn(createColumnDefinition("name",
+        // substituteComponentDataDefinition.getField("product"), "#product['name']"));
+        // substituteComponentGridDefinition.addColumn(createColumnDefinition("quantity",
+        // substituteComponentDataDefinition.getField("quantity"), null));
+        // substituteComponentGridDefinition.addOptions("paging", "false");
+        // substituteComponentGridDefinition.addOptions("sortable", "false");
+        // substituteComponentGridDefinition.addOptions("filter", "false");
+        // substituteComponentGridDefinition.addOptions("multiselect", "false");
+        // substituteComponentGridDefinition.addOptions("height", "150");
+        // substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
+        windowDefinition.addComponent(substituteComponentGridDefinition);
+
+        windowDefinition.initialize();
 
         return viewDefinition;
     }
