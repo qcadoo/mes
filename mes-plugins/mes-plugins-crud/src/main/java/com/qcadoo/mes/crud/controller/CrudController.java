@@ -54,7 +54,7 @@ public class CrudController {
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         mav.addObject("viewDefinition", viewDefinition);
-        translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
+        // translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
         Map<String, Map<String, String>> dictionaryValues = new HashMap<String, Map<String, String>>();
 

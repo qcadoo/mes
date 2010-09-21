@@ -51,7 +51,6 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
-        translationService.translate(getPath() + ".header", locale);
     }
 
     private String getStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {
