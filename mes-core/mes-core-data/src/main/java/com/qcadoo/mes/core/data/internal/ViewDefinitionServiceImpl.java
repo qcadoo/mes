@@ -25,8 +25,8 @@ import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.view.WindowDefinitionImpl;
-import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.form.FormDefinition;
 import com.qcadoo.mes.core.data.view.elements.TextInput;
@@ -45,7 +45,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private Map<String, ViewDefinitionImpl> viewDefinitions;
+    private Map<String, ViewDefinition> viewDefinitions;
 
     @PostConstruct
     public void initViews() {
@@ -93,7 +93,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         List<?> activePluginList = getActivePlugins(dataDefinition);
         for (Object activePlugin : activePluginList) {
             Entity entity = entityService.convertToGenericEntity(dataDefinition, activePlugin);
-            for (ViewDefinitionImpl viewDefinition : viewDefinitions.values()) {
+            for (ViewDefinition viewDefinition : viewDefinitions.values()) {
                 if (((String) entity.getField("codeId")).equals(viewDefinition.getPluginIdentifier())) {
                     viewsList.add(viewDefinition);
                 }
@@ -181,11 +181,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createProductGridView() {
         DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
 
-        WindowDefinition windowDefinition = new WindowDefinition("mainWindow", productDataDefinition);
+        WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", productDataDefinition);
 
-        ViewDefinition viewDefinition = new ViewDefinition("products.productGridView", windowDefinition, "products");
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productGridView", windowDefinition, "products");
 
-        GridDefinition grid = new GridDefinition("productsGrid", windowDefinition, null, null, dataAccessService);
+        GridDefinition grid = new GridDefinition("productsGrid", windowDefinition, null, null);
         grid.setCorrespondingViewName("products.productDetailsView");
         grid.addOptions("paging", "true");
         grid.addOptions("sortable", "true");
@@ -211,9 +211,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
 
-        WindowDefinition windowDefinition = new WindowDefinition("mainWindow", productDataDefinition);
+        WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", productDataDefinition);
 
-        ViewDefinition viewDefinition = new ViewDefinition("products.productDetailsView", windowDefinition, "products");
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productDetailsView", windowDefinition, "products");
 
         FormDefinition formDefinition = new FormDefinition("productDetailsForm", windowDefinition, null, null);
 
@@ -221,8 +221,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInput("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInput("ean", formDefinition, "ean", null));
 
-        GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", windowDefinition, "substitutes", null,
-                dataAccessService);
+        GridDefinition substituteGridDefinition = new GridDefinition("substitutesGrid", windowDefinition, "substitutes", null);
         substituteGridDefinition.addColumn(createColumnDefinition("number", substituteDataDefinition.getField("number"), null));
         substituteGridDefinition.addColumn(createColumnDefinition("name", substituteDataDefinition.getField("name"), null));
         substituteGridDefinition
@@ -235,7 +234,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
 
         GridDefinition substituteComponentGridDefinition = new GridDefinition("substitutesComponentGrid", windowDefinition, null,
-                "#{substitutesGrid}.components", dataAccessService);
+                "#{substitutesGrid}.components");
         substituteComponentGridDefinition.addColumn(createColumnDefinition("number",
                 substituteComponentDataDefinition.getField("product"), "#product['number']"));
         substituteComponentGridDefinition.addColumn(createColumnDefinition("name",
