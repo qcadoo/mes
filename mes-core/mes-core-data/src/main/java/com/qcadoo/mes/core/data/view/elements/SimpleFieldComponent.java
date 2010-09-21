@@ -14,7 +14,7 @@ import com.qcadoo.mes.core.data.view.ViewValue;
 
 public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
-    public SimpleFieldComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
+    public SimpleFieldComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }

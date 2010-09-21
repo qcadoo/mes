@@ -79,11 +79,7 @@ public class ProductService {
             return true;
         }
 
-        if (dateFrom.after(dateTo)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !dateFrom.after(dateTo);
     }
 
 }

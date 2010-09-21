@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.data.view.elements;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
     private String correspondingViewName;
 
-    public GridComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
+    public GridComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }
@@ -155,9 +154,11 @@ public final class GridComponent extends AbstractComponent<ListData> {
     private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {
         checkState(!fieldPath.matches("\\."), "Grid doesn't support sequential path");
         FieldDefinition fieldDefinition = dataDefinition.getField(fieldPath);
-        checkNotNull((fieldDefinition != null && fieldDefinition.getType() instanceof HasManyType),
-                "Grid data definition cannot be found");
-        return (HasManyType) fieldDefinition.getType();
+        if (fieldDefinition != null && fieldDefinition.getType() instanceof HasManyType) {
+            return (HasManyType) fieldDefinition.getType();
+        } else {
+            throw new IllegalStateException("Grid data definition cannot be found");
+        }
     }
 
     private ListData generateListData(final SearchResult rs) {

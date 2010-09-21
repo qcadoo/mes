@@ -4,7 +4,8 @@ import com.qcadoo.mes.core.data.view.ContainerComponent;
 
 public class TextInputComponent extends SimpleFieldComponent {
 
-    public TextInputComponent(final String name, final ContainerComponent parent, final String fieldName, final String dataSource) {
+    public TextInputComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
+            final String dataSource) {
         super(name, parent, fieldName, dataSource);
     }
 
