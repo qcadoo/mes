@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
@@ -21,7 +21,7 @@ public final class ValidationService {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public void validateGenericEntity(final ModelDefinition dataDefinition, final Entity genericEntity,
+    public void validateGenericEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
         parseAndValidateEntity(dataDefinition, genericEntity);
 
@@ -34,7 +34,7 @@ public final class ValidationService {
         }
     }
 
-    private void nullifyReadOnlyFields(final ModelDefinition dataDefinition, final Entity genericEntity,
+    private void nullifyReadOnlyFields(final DataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
         for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
             if (field.getValue().isReadOnly()) {
@@ -47,7 +47,7 @@ public final class ValidationService {
         }
     }
 
-    private void parseAndValidateEntity(final ModelDefinition dataDefinition, final Entity genericEntity) {
+    private void parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity) {
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             Object validateFieldValue = parseAndValidateField(dataDefinition, fieldDefinitionEntry.getValue(),
                     genericEntity.getField(fieldDefinitionEntry.getKey()), genericEntity);
@@ -73,7 +73,7 @@ public final class ValidationService {
         }
     }
 
-    private Object parseAndValidateValue(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateValue(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
         Object fieldValue = null;
         if (value != null) {
@@ -90,7 +90,7 @@ public final class ValidationService {
         return fieldValue;
     }
 
-    private Object parseAndValidateBelongsToField(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
         if (value != null) {
             Long referencedEntityId = null;
@@ -111,7 +111,7 @@ public final class ValidationService {
                 return null;
             }
             BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-            ModelDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
+            DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
             Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
             return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validatedEntity);
@@ -120,7 +120,7 @@ public final class ValidationService {
         }
     }
 
-    private Object parseAndValidateField(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");

@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.view.CastableComponent;
 import com.qcadoo.mes.core.data.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
@@ -15,7 +15,7 @@ public abstract class RootContainerDefinitionImpl extends ContainerDefinitionImp
 
     private final Map<String, ComponentDefinition<?>> componentRegistry = new LinkedHashMap<String, ComponentDefinition<?>>();
 
-    public RootContainerDefinitionImpl(final String name, final ModelDefinition dataDefinition) {
+    public RootContainerDefinitionImpl(final String name, final DataDefinition dataDefinition) {
         super(name, null, null, null);
         setDataDefinition(dataDefinition);
     }

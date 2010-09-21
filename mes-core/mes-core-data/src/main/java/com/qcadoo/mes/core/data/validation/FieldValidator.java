@@ -1,7 +1,7 @@
 package com.qcadoo.mes.core.data.validation;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 /**
@@ -9,9 +9,9 @@ import com.qcadoo.mes.core.data.model.FieldDefinition;
  */
 public interface FieldValidator {
 
-    boolean validate(ModelDefinition dataDefinition, FieldDefinition fieldDefinition, Object value, Entity validatedEntity);
+    boolean validate(DataDefinition dataDefinition, FieldDefinition fieldDefinition, Object value, Entity validatedEntity);
 
-    boolean validate(ModelDefinition dataDefinition, FieldDefinition fieldDefinition, Entity entity);
+    boolean validate(DataDefinition dataDefinition, FieldDefinition fieldDefinition, Entity entity);
 
     FieldValidator customErrorMessage(String message);
 }

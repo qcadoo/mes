@@ -15,7 +15,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewEntity;
@@ -40,7 +40,7 @@ public abstract class ComponentDefinitionImpl<T> implements ComponentDefinition<
 
     private final Set<String> listeners = new HashSet<String>();
 
-    private ModelDefinition dataDefinition;
+    private DataDefinition dataDefinition;
 
     @Override
     public abstract String getType();
@@ -199,10 +199,10 @@ public abstract class ComponentDefinitionImpl<T> implements ComponentDefinition<
         return true;
     }
 
-    private ModelDefinition getDataDefinitionBasedOnFieldPath(final ModelDefinition dataDefinition, final String fieldPath) {
+    private DataDefinition getDataDefinitionBasedOnFieldPath(final DataDefinition dataDefinition, final String fieldPath) {
         String[] fields = fieldPath.split("\\.");
 
-        ModelDefinition newDataDefinition = dataDefinition;
+        DataDefinition newDataDefinition = dataDefinition;
 
         for (String field : fields) {
             FieldDefinition fieldDefinition = newDataDefinition.getField(field);
@@ -294,11 +294,11 @@ public abstract class ComponentDefinitionImpl<T> implements ComponentDefinition<
     }
 
     @Override
-    public ModelDefinition getModelDefinition() {
+    public DataDefinition getModelDefinition() {
         return dataDefinition;
     }
 
-    public void setDataDefinition(final ModelDefinition dataDefinition) {
+    public void setDataDefinition(final DataDefinition dataDefinition) {
         this.dataDefinition = dataDefinition;
     }
 

@@ -15,9 +15,9 @@ import com.qcadoo.mes.core.data.beans.TestBeanA;
 import com.qcadoo.mes.core.data.beans.TestBeanB;
 import com.qcadoo.mes.core.data.beans.TestBeanC;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
-import com.qcadoo.mes.core.data.internal.model.ModelDefinitionImpl;
+import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
@@ -38,13 +38,13 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private FieldValidatorFactory fieldValidationFactory;
 
     @Override
-    public void save(final ModelDefinition dataDefinition) {
+    public void save(final DataDefinition dataDefinition) {
         throw new UnsupportedOperationException("implement me");
     }
 
     @Override
-    public ModelDefinition get(final String entityName) {
-        ModelDefinition dataDefinition = null;
+    public DataDefinition get(final String entityName) {
+        DataDefinition dataDefinition = null;
         if ("products.product".equals(entityName)) {
             dataDefinition = createProductDefinition();
         } else if ("products.substitute".equals(entityName)) {
@@ -78,8 +78,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createTestBeanAItemDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("test.testBeanA", dataAccessService);
+    private DataDefinition createTestBeanAItemDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("test.testBeanA", dataAccessService);
         dataDefinition.setFullyQualifiedClassName(TestBeanA.class.getCanonicalName());
 
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
@@ -95,8 +95,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createTestBeanBItemDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("test.testBeanB", dataAccessService);
+    private DataDefinition createTestBeanBItemDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("test.testBeanB", dataAccessService);
         dataDefinition.setFullyQualifiedClassName(TestBeanB.class.getCanonicalName());
 
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
@@ -112,8 +112,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createTestBeanCItemDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("test.testBeanC", dataAccessService);
+    private DataDefinition createTestBeanCItemDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("test.testBeanC", dataAccessService);
         dataDefinition.setFullyQualifiedClassName(TestBeanC.class.getCanonicalName());
 
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
@@ -129,8 +129,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createProductDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("products.product", dataAccessService);
+    private DataDefinition createProductDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("products.product", dataAccessService);
 
         FieldDefinitionImpl fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required());
@@ -157,8 +157,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createSubstituteDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("products.substitute", dataAccessService);
+    private DataDefinition createSubstituteDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("products.substitute", dataAccessService);
 
         FieldDefinitionImpl fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required());
@@ -189,8 +189,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createSubstituteComponentDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("products.substituteComponent", dataAccessService);
+    private DataDefinition createSubstituteComponentDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("products.substituteComponent", dataAccessService);
 
         FieldDefinitionImpl fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name")).withValidator(fieldValidationFactory.required());
@@ -208,8 +208,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createUserDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("users.user", dataAccessService);
+    private DataDefinition createUserDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("users.user", dataAccessService);
 
         FieldDefinitionImpl fieldUserName = createFieldDefinition("userName", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required()).withValidator(fieldValidationFactory.unique());
@@ -235,8 +235,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createUserGroupDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("users.group", dataAccessService);
+    private DataDefinition createUserGroupDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("users.group", dataAccessService);
 
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType())
                 .withValidator(fieldValidationFactory.requiredOnCreate()).withValidator(fieldValidationFactory.unique())
@@ -253,8 +253,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createInstructionDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("products.instruction", dataAccessService);
+    private DataDefinition createInstructionDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("products.instruction", dataAccessService);
 
         FieldDefinitionImpl fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required());
@@ -289,8 +289,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createOrderDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("products.order", dataAccessService);
+    private DataDefinition createOrderDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("products.order", dataAccessService);
 
         FieldDefinitionImpl fieldNumber = createFieldDefinition("number", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.required()).withValidator(fieldValidationFactory.unique());
@@ -341,8 +341,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createDictionaryDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("core.dictionary", dataAccessService);
+    private DataDefinition createDictionaryDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("core.dictionary", dataAccessService);
         dataDefinition.setFullyQualifiedClassName(Dictionary.class.getCanonicalName());
         dataDefinition.setDeletable(false);
 
@@ -353,8 +353,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createDictionaryItemDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("core.dictionaryItem", dataAccessService);
+    private DataDefinition createDictionaryItemDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("core.dictionaryItem", dataAccessService);
         dataDefinition.setFullyQualifiedClassName(DictionaryItem.class.getCanonicalName());
 
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
@@ -369,8 +369,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         return dataDefinition;
     }
 
-    private ModelDefinition createPluginDefinition() {
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl("plugins.plugin", dataAccessService);
+    private DataDefinition createPluginDefinition() {
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("plugins.plugin", dataAccessService);
 
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).readOnly();
@@ -409,7 +409,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     }
 
     @Override
-    public List<ModelDefinition> list() {
+    public List<DataDefinition> list() {
         throw new UnsupportedOperationException("implement me");
     }
 

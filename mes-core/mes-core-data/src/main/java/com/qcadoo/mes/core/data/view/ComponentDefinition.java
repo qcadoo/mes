@@ -4,14 +4,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 
 public interface ComponentDefinition<T> extends CastableComponent<T>, ListenableComponent, InitializableComponent {
 
     String getType();
 
-    ViewEntity<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities, final ViewEntity<?> viewEntity,
-            final Set<String> pathsToUpdate);
+    ViewEntity<T> getValue(Entity entity, Map<String, Entity> selectedEntities, ViewEntity<?> viewEntity,
+            Set<String> pathsToUpdate);
 
     String getName();
 
@@ -21,6 +21,6 @@ public interface ComponentDefinition<T> extends CastableComponent<T>, Listenable
 
     String getFieldPath();
 
-    ModelDefinition getModelDefinition();
+    DataDefinition getModelDefinition();
 
 }

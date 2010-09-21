@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.model.ModelDefinitionImpl;
+import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 public class EntityDataUtilsGenerateEntityDataTest {
@@ -30,7 +30,7 @@ public class EntityDataUtilsGenerateEntityDataTest {
         given(f3.getName()).willReturn("testField3");
         given(f3.getValue("testField3Val")).willReturn("testField3Ok");
 
-        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl(null, null);
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(null, null);
         dataDefinition.addField(f1);
         dataDefinition.addField(f2);
         dataDefinition.addField(f3);

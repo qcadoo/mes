@@ -14,25 +14,25 @@ import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
 import com.qcadoo.mes.core.data.internal.types.PriorityType;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.model.HookDefinition;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 /**
- * Object defines database structure and its representation on grids and forms. The {@link ModelDefinitionImpl#getName()} points
+ * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points
  * to virtual table ("virtual.tablename"), plugin table ("pluginname.tablename") or core table ("core.tablename").
  * 
- * The method {@link ModelDefinitionImpl#getFullyQualifiedClassName()} returns the full name of the class that is used for mapping
+ * The method {@link DataDefinitionImpl#getFullyQualifiedClassName()} returns the full name of the class that is used for mapping
  * table.
  * 
- * The method {@link ModelDefinitionImpl#getDiscriminator()} returns value of the column that discriminate which virtual table is
+ * The method {@link DataDefinitionImpl#getDiscriminator()} returns value of the column that discriminate which virtual table is
  * used.
  * 
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.owns com.qcadoo.mes.core.data.definition.GridDefinition
  */
-public final class ModelDefinitionImpl implements ModelDefinition {
+public final class DataDefinitionImpl implements DataDefinition {
 
     private final DataAccessService dataAccessService;
 
@@ -60,7 +60,7 @@ public final class ModelDefinitionImpl implements ModelDefinition {
 
     private Class<?> classForEntity;
 
-    public ModelDefinitionImpl(final String name, final DataAccessService dataAccessService) {
+    public DataDefinitionImpl(final String name, final DataAccessService dataAccessService) {
         this.name = name;
         this.dataAccessService = dataAccessService;
     }
@@ -239,7 +239,7 @@ public final class ModelDefinitionImpl implements ModelDefinition {
             throw new UnsupportedOperationException("virtual tables are not supported");
         } else {
             try {
-                return ModelDefinition.class.getClassLoader().loadClass(getFullyQualifiedClassName());
+                return DataDefinition.class.getClassLoader().loadClass(getFullyQualifiedClassName());
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
             }

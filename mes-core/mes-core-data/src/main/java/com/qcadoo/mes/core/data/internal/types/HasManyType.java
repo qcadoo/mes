@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.data.internal.types;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.view.elements.grid.ListData;
@@ -55,7 +55,7 @@ public class HasManyType implements FieldType {
         return fieldName;
     }
 
-    public ModelDefinition getDataDefinition() {
+    public DataDefinition getDataDefinition() {
         return dataDefinitionService.get(entityName);
     }
 

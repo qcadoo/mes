@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.SearchResult;
@@ -75,7 +75,7 @@ public final class BelongsToType implements LookupedFieldType {
         return String.valueOf(((Entity) value).getId());
     }
 
-    public ModelDefinition getDataDefinition() {
+    public DataDefinition getDataDefinition() {
         return dataDefinitionService.get(entityName);
     }
 

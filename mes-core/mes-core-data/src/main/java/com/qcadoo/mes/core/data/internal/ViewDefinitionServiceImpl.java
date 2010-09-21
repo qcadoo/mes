@@ -26,7 +26,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.view.WindowDefinitionImpl;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.form.FormDefinition;
 import com.qcadoo.mes.core.data.view.elements.TextInput;
@@ -77,7 +77,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        ModelDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
         Entity entity = getActivePlugin(dataDefinition, viewDefinition.getPluginIdentifier());
         if (entity != null) {
             return viewDefinition;
@@ -89,7 +89,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
-        ModelDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
         List<?> activePluginList = getActivePlugins(dataDefinition);
         for (Object activePlugin : activePluginList) {
             Entity entity = entityService.convertToGenericEntity(dataDefinition, activePlugin);
@@ -111,7 +111,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinitionImpl createTestGridView() {
-        ModelDefinition testADD = dataDefinitionService.get("test.testBeanA");
+        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
         WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", testADD);
 
@@ -136,9 +136,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinitionImpl createTestFormView() {
-        ModelDefinition testADD = dataDefinitionService.get("test.testBeanA");
-        ModelDefinition testBDD = dataDefinitionService.get("test.testBeanB");
-        ModelDefinition testCDD = dataDefinitionService.get("test.testBeanC");
+        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
+        DataDefinition testBDD = dataDefinitionService.get("test.testBeanB");
+        DataDefinition testCDD = dataDefinitionService.get("test.testBeanC");
 
         WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", testADD);
 
@@ -763,7 +763,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // return field;
     // }
 
-    private List<?> getActivePlugins(final ModelDefinition dataDefinition) {
+    private List<?> getActivePlugins(final DataDefinition dataDefinition) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity()).add(
                 Restrictions.eq("active", true));
@@ -774,7 +774,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return criteria.list();
     }
 
-    private Entity getActivePlugin(final ModelDefinition dataDefinition, final String pluginCodeId) {
+    private Entity getActivePlugin(final DataDefinition dataDefinition, final String pluginCodeId) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(pluginCodeId, "pluginCodeId must be given");
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity())

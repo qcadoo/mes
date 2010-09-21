@@ -3,7 +3,7 @@ package com.qcadoo.mes.core.data.internal.validators;
 import java.math.BigDecimal;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 
@@ -20,7 +20,7 @@ public final class MaxLenghtValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
             final Entity validatedEntity) {
         if (value == null) {
             return true;
@@ -41,7 +41,7 @@ public final class MaxLenghtValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity) {
+    public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity) {
         return true;
     }
 
