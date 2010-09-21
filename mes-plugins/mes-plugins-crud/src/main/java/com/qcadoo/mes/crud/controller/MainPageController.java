@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.crud.translation.TranslationServiceImpl;
+import com.qcadoo.mes.core.data.internal.TranslationServiceImpl;
 
 @Controller
 public class MainPageController {

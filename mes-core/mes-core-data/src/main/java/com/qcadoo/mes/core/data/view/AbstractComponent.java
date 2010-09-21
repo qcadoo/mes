@@ -1,8 +1,9 @@
-package com.qcadoo.mes.core.data.internal.view;
+package com.qcadoo.mes.core.data.view;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -12,13 +13,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
-import com.qcadoo.mes.core.data.view.Component;
-import com.qcadoo.mes.core.data.view.ContainerComponent;
-import com.qcadoo.mes.core.data.view.ViewValue;
 
 public abstract class AbstractComponent<T> implements Component<T> {
 
@@ -36,14 +35,26 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private final Map<String, String> options = new HashMap<String, String>();
 
-    private final ContainerComponent<?> parentContainer;
+    private final ContainerComponent parentContainer;
 
     private final Set<String> listeners = new HashSet<String>();
 
     private DataDefinition dataDefinition;
 
-    @Override
-    public abstract String getType();
+    public AbstractComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
+            final String sourceFieldPath) {
+        this.name = name;
+        this.parentContainer = parentContainer;
+        this.fieldPath = fieldPath;
+
+        if (parentContainer != null) {
+            this.path = parentContainer.getPath() + "." + name;
+        } else {
+            this.path = name;
+        }
+
+        this.sourceFieldPath = sourceFieldPath;
+    }
 
     public abstract ViewValue<T> castComponentValue(Entity entity, Map<String, Entity> selectedEntities, JSONObject viewObject)
             throws JSONException;
@@ -87,83 +98,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
     }
 
-    private boolean shouldNotBeUpdated(final Set<String> pathsToUpdate) {
-        if (pathsToUpdate == null || pathsToUpdate.isEmpty()) {
-            return false;
-        }
-        for (String path : pathsToUpdate) {
-            if (getPath().startsWith(path)) {
-                return false;
-            }
-            if (this instanceof ContainerComponent && path.startsWith(getPath())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected String getFieldStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {
-        Object value = null;
-
-        if (getSourceComponent() != null) {
-            value = getFieldValue(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
-        } else {
-            value = getFieldValue(entity, getFieldPath());
-        }
-
-        if (value == null) {
-            return "";
-        } else {
-            return String.valueOf(value);
-        }
-    }
-
-    protected Entity getFieldEntityValue(final Entity entity, final String path) {
-        Object value = getFieldValue(entity, path);
-
-        if (value == null) {
-            return null;
-        } else if (value instanceof Entity) {
-            return (Entity) value;
-        } else {
-            throw new IllegalStateException("Field " + path + " should has Entity type");
-        }
-    }
-
-    protected Object getFieldValue(final Entity entity, final String path) {
-        if (entity == null || path == null) {
-            return null;
-        }
-
-        String[] fields = path.split("\\.");
-        Object value = entity;
-
-        for (String field : fields) {
-            if (value instanceof Entity) {
-                value = ((Entity) value).getField(field);
-            } else {
-                return null;
-            }
-        }
-
-        return value;
-    }
-
-    public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
-            final String sourceFieldPath) {
-        this.name = name;
-        this.parentContainer = parentContainer;
-        this.fieldPath = fieldPath;
-
-        if (parentContainer != null) {
-            this.path = parentContainer.getPath() + "." + name;
-        } else {
-            this.path = name;
-        }
-
-        this.sourceFieldPath = sourceFieldPath;
-    }
-
     @Override
     public final boolean initializeComponent(final Map<String, Component<?>> componentRegistry) {
         if (sourceFieldPath != null && sourceFieldPath.startsWith("#")) {
@@ -200,6 +134,150 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return true;
     }
 
+    @Override
+    public final String getName() {
+        return name;
+    }
+
+    @Override
+    public final String getSourceFieldPath() {
+        return sourceFieldPath;
+    }
+
+    @Override
+    public final String getPath() {
+        return path;
+    }
+
+    @Override
+    public final String getFieldPath() {
+        return fieldPath;
+    }
+
+    @Override
+    public final DataDefinition getDataDefinition() {
+        return dataDefinition;
+    }
+
+    @Override
+    public final void registerListener(final String path) {
+        listeners.add(path);
+    }
+
+    @Override
+    public final Set<String> getListeners() {
+        return listeners;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public boolean isContainer() {
+        return false;
+    }
+
+    public final void setDataDefinition(final DataDefinition dataDefinition) {
+        this.dataDefinition = dataDefinition;
+    }
+
+    public final void addOptions(final String name, final String value) {
+        this.options.put(name, value);
+    }
+
+    public final Map<String, Object> getOptions() {
+        Map<String, Object> viewOptions = new HashMap<String, Object>(options);
+        viewOptions.put("name", name);
+        viewOptions.put("listeners", listeners);
+        addComponentOptions(viewOptions);
+        return viewOptions;
+    }
+
+    public void addComponentOptions(final Map<String, Object> viewOptions) {
+        // can be implemented
+    }
+
+    public final String getOptionsAsJson() {
+        JSONObject jsonOptions = new JSONObject();
+        try {
+            for (Entry<String, Object> option : getOptions().entrySet()) {
+                Object value = null;
+                if (option.getValue() instanceof Collection) {
+                    Collection<?> list = (Collection<?>) option.getValue();
+                    JSONArray arr = new JSONArray();
+                    for (Object o : list) {
+                        arr.put(o);
+                    }
+                    value = arr;
+                } else {
+                    jsonOptions.put(option.getKey(), option.getValue());
+                    value = option.getValue();
+                }
+                if (value != null) {
+                    jsonOptions.put(option.getKey(), option.getValue());
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonOptions.toString();
+    }
+
+    @Override
+    public final void updateTranslations(Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        addComponentTranslations(translationsMap, translationService, locale);
+        if (this.isContainer()) {
+            AbstractContainerComponent container = (AbstractContainerComponent) this;
+            container.updateComponentsTranslations(translationsMap, translationService, locale);
+        }
+    }
+
+    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        // can be implemented
+    }
+
+    protected final Component<?> getSourceComponent() {
+        return sourceComponent;
+    }
+
+    protected final ContainerComponent getParentContainer() {
+        return parentContainer;
+    }
+
+    protected final Object getFieldValue(final Entity entity, final String path) {
+        if (entity == null || path == null) {
+            return null;
+        }
+
+        String[] fields = path.split("\\.");
+        Object value = entity;
+
+        for (String field : fields) {
+            if (value instanceof Entity) {
+                value = ((Entity) value).getField(field);
+            } else {
+                return null;
+            }
+        }
+
+        return value;
+    }
+
+    private Entity getFieldEntityValue(final Entity entity, final String path) {
+        Object value = getFieldValue(entity, path);
+
+        if (value == null) {
+            return null;
+        } else if (value instanceof Entity) {
+            return (Entity) value;
+        } else {
+            throw new IllegalStateException("Field " + path + " should has Entity type");
+        }
+    }
+
     private DataDefinition getDataDefinitionBasedOnFieldPath(final DataDefinition dataDefinition, final String fieldPath) {
         String[] fields = fieldPath.split("\\.");
 
@@ -229,97 +307,19 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
     }
 
-    public boolean isContainer() {
-        return false;
-    }
-
-    @Override
-    public final String getName() {
-        return name;
-    }
-
-    @Override
-    public final String getSourceFieldPath() {
-        return sourceFieldPath;
-    }
-
-    @Override
-    public final String getPath() {
-        return path;
-    }
-
-    @Override
-    public final String getFieldPath() {
-        return fieldPath;
-    }
-
-    public Map<String, Object> getOptions() {
-        Map<String, Object> viewOptions = new HashMap<String, Object>(options);
-        viewOptions.put("name", name);
-        viewOptions.put("listeners", listeners);
-        return viewOptions;
-    }
-
-    public String getOptionsAsJson() {
-        JSONObject jsonOptions = new JSONObject();
-        try {
-            for (Entry<String, Object> option : getOptions().entrySet()) {
-                Object value = null;
-                if (option.getValue() instanceof Collection) {
-                    Collection<?> list = (Collection<?>) option.getValue();
-                    JSONArray arr = new JSONArray();
-                    for (Object o : list) {
-                        arr.put(o);
-                    }
-                    value = arr;
-                } else {
-                    jsonOptions.put(option.getKey(), option.getValue());
-                    value = option.getValue();
-                }
-                if (value != null) {
-                    jsonOptions.put(option.getKey(), option.getValue());
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private boolean shouldNotBeUpdated(final Set<String> pathsToUpdate) {
+        if (pathsToUpdate == null || pathsToUpdate.isEmpty()) {
+            return false;
         }
-        return jsonOptions.toString();
-    }
-
-    protected Component<?> getSourceComponent() {
-        return sourceComponent;
-    }
-
-    protected ContainerComponent<?> getParentContainer() {
-        return parentContainer;
-    }
-
-    @Override
-    public final DataDefinition getDataDefinition() {
-        return dataDefinition;
-    }
-
-    public void setDataDefinition(final DataDefinition dataDefinition) {
-        this.dataDefinition = dataDefinition;
-    }
-
-    public void addOptions(final String name, final String value) {
-        this.options.put(name, value);
-    }
-
-    @Override
-    public final void registerListener(final String path) {
-        listeners.add(path);
-    }
-
-    @Override
-    public final Set<String> getListeners() {
-        return listeners;
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
+        for (String path : pathsToUpdate) {
+            if (getPath().startsWith(path)) {
+                return false;
+            }
+            if (this instanceof ContainerComponent && path.startsWith(getPath())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

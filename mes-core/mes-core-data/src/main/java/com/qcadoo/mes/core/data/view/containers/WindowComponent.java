@@ -1,13 +1,17 @@
 package com.qcadoo.mes.core.data.view.containers;
 
+import java.util.Locale;
 import java.util.Map;
 
-import com.qcadoo.mes.core.data.internal.view.AbstractRootComponent;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.view.AbstractRootComponent;
 
 public class WindowComponent extends AbstractRootComponent {
 
     private boolean backButton = true;
+
+    private boolean header = true;
 
     public WindowComponent(final String name, final DataDefinition dataDefinition) {
         super(name, dataDefinition);
@@ -19,10 +23,17 @@ public class WindowComponent extends AbstractRootComponent {
     }
 
     @Override
-    public Map<String, Object> getOptions() {
-        Map<String, Object> viewOptions = super.getOptions();
+    public void addComponentOptions(final Map<String, Object> viewOptions) {
         viewOptions.put("backButton", backButton);
-        return viewOptions;
+        viewOptions.put("header", header);
+    }
+
+    @Override
+    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        if (header) {
+            translationService.translate(getPath() + ".header", locale);
+        }
     }
 
     public boolean isBackButton() {
@@ -33,4 +44,11 @@ public class WindowComponent extends AbstractRootComponent {
         this.backButton = backButton;
     }
 
+    public boolean isHeader() {
+        return header;
+    }
+
+    public void setHeader(boolean header) {
+        this.header = header;
+    }
 }

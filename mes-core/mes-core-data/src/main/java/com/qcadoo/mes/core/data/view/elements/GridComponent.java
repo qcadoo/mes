@@ -11,19 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
-import com.qcadoo.mes.core.data.internal.view.AbstractComponent;
-import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchResult;
+import com.qcadoo.mes.core.data.view.AbstractComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
 import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
@@ -50,7 +48,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
     private String correspondingViewName;
 
-    public GridComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
+    public GridComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }
@@ -60,63 +58,48 @@ public final class GridComponent extends AbstractComponent<ListData> {
         return "grid";
     }
 
-    public Set<FieldDefinition> getSearchableFields() {
+    public final Set<FieldDefinition> getSearchableFields() {
         return searchableFields;
     }
 
-    public void addSearchableField(final FieldDefinition searchableField) {
+    public final void addSearchableField(final FieldDefinition searchableField) {
         this.searchableFields.add(searchableField);
     }
 
-    public Set<FieldDefinition> getOrderableFields() {
+    public final Set<FieldDefinition> getOrderableFields() {
         return orderableFields;
     }
 
-    public void addOrderableField(final FieldDefinition orderableField) {
+    public final void addOrderableField(final FieldDefinition orderableField) {
         this.orderableFields.add(orderableField);
     }
 
-    public List<ColumnDefinition> getColumns() {
+    public final List<ColumnDefinition> getColumns() {
         return columns;
     }
 
-    public void addColumn(final ColumnDefinition column) {
+    public final void addColumn(final ColumnDefinition column) {
         this.columns.add(column);
     }
 
-    public String getCorrespondingViewName() {
+    public final String getCorrespondingViewName() {
         return correspondingViewName;
     }
 
-    public void setCorrespondingViewName(final String correspondingViewName) {
+    public final void setCorrespondingViewName(final String correspondingViewName) {
         this.correspondingViewName = correspondingViewName;
     }
 
     @Override
-    public Map<String, Object> getOptions() {
-        Map<String, Object> viewOptions = super.getOptions();
+    public void addComponentOptions(final Map<String, Object> viewOptions) {
         viewOptions.put("correspondingViewName", correspondingViewName);
         viewOptions.put("columns", getColumnsForOptions());
         viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
-        return viewOptions;
-    }
-
-    private Object getFieldsForOptions(final Map<String, FieldDefinition> fields) {
-        return new ArrayList<String>(fields.keySet());
-    }
-
-    private List<String> getColumnsForOptions() {
-        List<String> columnsForOptions = new ArrayList<String>();
-        for (ColumnDefinition column : columns) {
-            columnsForOptions.add(column.getName());
-        }
-        return columnsForOptions;
     }
 
     @Override
     public ViewValue<ListData> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
-
         JSONObject value = viewObject.getJSONObject("value");
 
         if (value != null) {
@@ -157,6 +140,18 @@ public final class GridComponent extends AbstractComponent<ListData> {
         }
     }
 
+    private Object getFieldsForOptions(final Map<String, FieldDefinition> fields) {
+        return new ArrayList<String>(fields.keySet());
+    }
+
+    private List<String> getColumnsForOptions() {
+        List<String> columnsForOptions = new ArrayList<String>();
+        for (ColumnDefinition column : columns) {
+            columnsForOptions.add(column.getName());
+        }
+        return columnsForOptions;
+    }
+
     private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {
         checkState(!fieldPath.matches("\\."), "Grid doesn't support sequential path");
         FieldDefinition fieldDefinition = dataDefinition.getField(fieldPath);
@@ -179,26 +174,6 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
         int totalNumberOfEntities = rs.getTotalNumberOfEntities();
         return new ListData(totalNumberOfEntities, gridEntities);
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(11, 37).append(columns).append(searchableFields).toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof GridComponent)) {
-            return false;
-        }
-        GridComponent other = (GridComponent) obj;
-        return new EqualsBuilder().append(columns, other.columns).append(searchableFields, other.searchableFields).isEquals();
     }
 
 }

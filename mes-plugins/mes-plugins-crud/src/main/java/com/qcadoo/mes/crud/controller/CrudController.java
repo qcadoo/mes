@@ -30,11 +30,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.view.CastableComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.ViewValue;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
-import com.qcadoo.mes.crud.translation.TranslationService;
 
 @Controller
 public class CrudController {
