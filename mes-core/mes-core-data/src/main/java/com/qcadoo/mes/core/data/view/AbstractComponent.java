@@ -93,7 +93,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
             return getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
         } else {
             Entity contextEntity = entity;
-            if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
+
+            if (contextEntity == null) {
+                contextEntity = selectedEntities.get(getPath());
+
+                if (contextEntity != null) {
+                    System.out.println(" 3 ---> " + getPath() + ", " + contextEntity.getId());
+                }
+
+            } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
                 contextEntity = getFieldEntityValue(entity, fieldPath);
             }
 
@@ -337,7 +345,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return viewName;
     }
 
-    public void setViewName(String viewName) {
+    public void setViewName(final String viewName) {
         this.viewName = viewName;
     }
 

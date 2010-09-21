@@ -182,6 +182,7 @@ public class CrudController {
             String componentPath = componentName.replaceAll("-", ".");
 
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentPath);
+            pathsToUpdate.add(componentPath);
 
             ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
 
@@ -189,17 +190,28 @@ public class CrudController {
 
             Entity entity = saveableComponent.getFormEntity(viewEntity);
 
+            entity.setField("name", entity.getField("name") + "_saved");
+
             saveableComponent.getDataDefinition().save(entity);
 
-            System.out.println(" 1 ---> " + entity.isValid());
-            System.out.println(" 2 ---> " + entity.getField("name"));
-            if (entity.getError("name") != null) {
-                System.out.println(" 3 ---> " + entity.getError("name").getMessage());
-            }
+            selectedEntities.put(componentPath, entity);
 
-            return viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
+            System.out.println(" 1 ---> " + pathsToUpdate);
+
+            ViewValue<Object> value = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
+
+            drawValue("", value);
+
+            return value;
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private void drawValue(final String name, final ViewValue<?> value) {
+        System.out.println(" 2 ---> " + name + ", " + value.getValue());
+        for (Map.Entry<String, ViewValue<?>> v : value.getComponents().entrySet()) {
+            drawValue(name + "." + v.getKey(), v.getValue());
         }
     }
 
