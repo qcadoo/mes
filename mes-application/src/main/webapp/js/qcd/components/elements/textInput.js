@@ -35,8 +35,11 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
-		if (isLoadingVisible) {
-			input.val("loading");
-		}
+//		if (isLoadingVisible) {
+//			input.val("loading");
+//		} else {
+//			if (input.val() == "loading")
+//				input.val("");
+//		}
 	}
 }
