@@ -9,9 +9,9 @@ import org.json.JSONObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.view.RootComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
-import com.qcadoo.mes.core.data.view.ViewEntity;
+import com.qcadoo.mes.core.data.view.ViewValue;
 
-public class ViewDefinitionImpl implements ViewDefinition {
+public final class ViewDefinitionImpl implements ViewDefinition {
 
     private final RootComponent root;
 
@@ -41,20 +41,22 @@ public class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public ViewEntity<Object> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public ViewValue<Object> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
-        ViewEntity<Object> value = new ViewEntity<Object>();
-        value.addComponent(root.getName(),
-                root.castValue(entity, selectedEntities, viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
-        return value;
+        return wrapIntoViewValue(root.castValue(entity, selectedEntities,
+                viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
     }
 
     @Override
-    public ViewEntity<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final Set<String> pathsToUpdate) {
-        ViewEntity<Object> value = new ViewEntity<Object>();
-        value.addComponent(root.getName(), root.getValue(entity, selectedEntities,
+    public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<Object> globalViewEntity, final Set<String> pathsToUpdate) {
+        return wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewEntity != null ? globalViewEntity.getComponent(root.getName()) : null, pathsToUpdate));
+    }
+
+    private ViewValue<Object> wrapIntoViewValue(final ViewValue<?> viewValue) {
+        ViewValue<Object> value = new ViewValue<Object>();
+        value.addComponent(root.getName(), viewValue);
         return value;
     }
 

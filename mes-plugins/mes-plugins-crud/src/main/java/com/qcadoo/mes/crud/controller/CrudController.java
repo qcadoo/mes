@@ -32,8 +32,8 @@ import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.view.CastableComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
-import com.qcadoo.mes.core.data.view.ViewEntity;
-import com.qcadoo.mes.core.data.view.containers.form.FormDefinition;
+import com.qcadoo.mes.core.data.view.ViewValue;
+import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.crud.translation.TranslationService;
 
 @Controller
@@ -154,10 +154,10 @@ public class CrudController {
 
             Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            Set<String> pathsToUpdate = viewDefinition.getRoot().getListenersForPath(componentName.replaceAll("-", "."));
+            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName.replaceAll("-", "."));
 
-            ViewEntity<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
-            ViewEntity<Object> newViewEntity = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
+            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+            ViewValue<Object> newViewEntity = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
 
             return newViewEntity;
         } catch (JSONException e) {
@@ -177,9 +177,9 @@ public class CrudController {
             String componentName = jsonBody.getString("componentName");
             JSONObject jsonValues = jsonBody.getJSONObject("data");
 
-            ViewEntity<Object> viewEntity = viewDefinition.castValue(null, new HashMap<String, Entity>(), jsonValues);
+            ViewValue<Object> viewEntity = viewDefinition.castValue(null, new HashMap<String, Entity>(), jsonValues);
 
-            FormDefinition form = (FormDefinition) viewDefinition.getRoot().getComponentForPath(
+            FormComponent form = (FormComponent) viewDefinition.getRoot().lookupComponent(
                     componentName.replaceAll("-", "."));
 
             Entity entity = form.getFormEntity(viewEntity, componentName.replaceAll("-", "."));
