@@ -67,9 +67,4 @@ public abstract class AbstractContainerComponent extends AbstractComponent<Objec
         }
     }
 
-    @Override
-    public final boolean isContainer() {
-        return true;
-    }
-
 }

@@ -168,11 +168,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
     }
 
     @Override
-    public final boolean isInitialized() {
+    public boolean isInitialized() {
         return initialized;
     }
 
-    public final boolean isContainer() {
+    public boolean isContainer() {
         return false;
     }
 
