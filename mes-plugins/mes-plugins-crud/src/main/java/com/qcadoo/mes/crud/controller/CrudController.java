@@ -61,6 +61,8 @@ public class CrudController {
 
         // CrudControllerUtils.generateJsonViewElementOptions(viewDefinition, viewElementsOptionsJson, null);
 
+        viewDefinition.addComponentTranslations(translationsMap, translationService, locale);
+
         for (CastableComponent component : viewDefinition.getRoot().getComponents().values()) {
             // viewElementsOptionsJson.put(component.getName(), CrudControllerUtils.generateJsonViewElementOptions(component));
 

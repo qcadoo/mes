@@ -113,7 +113,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinitionImpl createTestGridView() {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.grid");
         windowDefinition.setBackButton(false);
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "test");
@@ -141,7 +141,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition testBDD = dataDefinitionService.get("test.testBeanB");
         DataDefinition testCDD = dataDefinitionService.get("test.testBeanC");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.form");
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "test");
 
@@ -164,7 +164,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormComponent formCDefinition_formA = new FormComponent("formA", formCDefinition, "beanA", null);
         formCDefinition_formA.addComponent(new TextInputComponent("name", formCDefinition_formA, "name", null));
         formCDefinition.addComponent(formCDefinition_formA);
-        GridComponent beanCForm_beansBGrig = new GridComponent("beansBGrig", formCDefinition, "beansB", null);
+        GridComponent beanCForm_beansBGrig = new GridComponent("beansBGrig", formCDefinition, null, "beansB");
         beanCForm_beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
         formCDefinition.addComponent(beanCForm_beansBGrig);
         formCDefinition.addComponent(new TextInputComponent("nameB", formCDefinition, null,
@@ -183,7 +183,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createProductGridView() {
         DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productGridView");
         windowDefinition.setBackButton(false);
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productGridView", windowDefinition, "products");
@@ -216,7 +216,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
         DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productDetailsView");
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productDetailsView", windowDefinition, "products");
 
@@ -263,7 +263,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createProductSubstituteDetailsView() {
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition,
+                "products.substituteDetailsView");
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteDetailsView", windowDefinition, "products");
 
@@ -298,7 +299,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createProductSubstituteComponentDetailsView() {
         DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", substitutesComponentDataDefinition);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substitutesComponentDataDefinition,
+                "products.substituteComponentDetailsView");
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteComponentDetailsView", windowDefinition,
                 "products");

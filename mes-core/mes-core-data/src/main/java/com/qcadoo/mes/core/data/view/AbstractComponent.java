@@ -27,6 +27,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private final String fieldPath;
 
+    private String viewName;
+
     private String sourceFieldPath;
 
     private Component<?> sourceComponent;
@@ -49,6 +51,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
         if (parentContainer != null) {
             this.path = parentContainer.getPath() + "." + name;
+            this.viewName = parentContainer.getViewName();
         } else {
             this.path = name;
         }
@@ -327,6 +330,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
         String dd = dataDefinition != null ? dataDefinition.getName() : "null";
         String sc = sourceComponent != null ? sourceComponent.getPath() : "null";
         return path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sc + "], [" + listeners + "], " + dd;
+    }
+
+    @Override
+    public String getViewName() {
+        return viewName;
+    }
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
 
 }

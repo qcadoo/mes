@@ -13,8 +13,8 @@ public class WindowComponent extends AbstractRootComponent {
 
     private boolean header = true;
 
-    public WindowComponent(final String name, final DataDefinition dataDefinition) {
-        super(name, dataDefinition);
+    public WindowComponent(final String name, final DataDefinition dataDefinition, String viewName) {
+        super(name, dataDefinition, viewName);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class WindowComponent extends AbstractRootComponent {
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         if (header) {
-            String messageCode = getPath() + ".header";
+            String messageCode = getViewName() + "." + getPath() + ".header";
             translationsMap.put(messageCode, translationService.translate(messageCode, locale));
         }
     }
