@@ -42,7 +42,7 @@ public final class FormComponent extends AbstractContainerComponent {
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         if (header) {
-            String messageCode = getPath() + ".header";
+            String messageCode = getViewName() + "." + getPath() + ".header";
             translationsMap.put(messageCode, translationService.translate(messageCode, locale));
         }
     }

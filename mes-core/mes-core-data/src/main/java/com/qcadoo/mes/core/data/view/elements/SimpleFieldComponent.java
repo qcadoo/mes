@@ -54,7 +54,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         List<String> messageCodes = new LinkedList<String>();
-        messageCodes.add(getPath() + ".label");
+        messageCodes.add(getViewName() + "." + getPath() + ".label");
         messageCodes.add(getDataDefinition().getName() + "." + getName() + ".label");
         translationsMap.put(getPath() + ".label", translationService.translate(messageCodes, locale));
     }
