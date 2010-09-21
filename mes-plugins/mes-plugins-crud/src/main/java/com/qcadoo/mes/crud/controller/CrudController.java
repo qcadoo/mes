@@ -192,7 +192,7 @@ public class CrudController {
 
             entity.setField("name", entity.getField("name") + "_saved");
 
-            saveableComponent.getDataDefinition().save(entity);
+            entity = saveableComponent.getDataDefinition().save(entity);
 
             selectedEntities.put(componentPath, entity);
 

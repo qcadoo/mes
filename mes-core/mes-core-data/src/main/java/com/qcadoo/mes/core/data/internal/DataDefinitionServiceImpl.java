@@ -82,9 +82,11 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinitionImpl dataDefinition = new DataDefinitionImpl("test.testBeanA", dataAccessService);
         dataDefinition.setFullyQualifiedClassName(TestBeanA.class.getCanonicalName());
 
-        FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
+        FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
+                fieldValidationFactory.required()).withValidator(fieldValidationFactory.length(5));
         FieldDefinitionImpl fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
-        FieldDefinitionImpl fieldBeanB = createFieldDefinition("beanB", fieldTypeFactory.eagerBelongsToType("test.testBeanB", "name"));
+        FieldDefinitionImpl fieldBeanB = createFieldDefinition("beanB",
+                fieldTypeFactory.eagerBelongsToType("test.testBeanB", "name"));
         FieldDefinitionImpl fieldBeansC = createFieldDefinition("beansC", fieldTypeFactory.hasManyType("test.testBeanC", "beanA"));
 
         dataDefinition.addField(fieldName);
@@ -102,7 +104,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
         FieldDefinitionImpl fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
         FieldDefinitionImpl fieldBeansA = createFieldDefinition("beansA", fieldTypeFactory.hasManyType("test.testBeanA", "beanB"));
-        FieldDefinitionImpl fieldBeanC = createFieldDefinition("beanC", fieldTypeFactory.eagerBelongsToType("test.testBeanC", "name"));
+        FieldDefinitionImpl fieldBeanC = createFieldDefinition("beanC",
+                fieldTypeFactory.eagerBelongsToType("test.testBeanC", "name"));
 
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
@@ -118,7 +121,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
         FieldDefinitionImpl fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
-        FieldDefinitionImpl fieldBeanA = createFieldDefinition("beanA", fieldTypeFactory.eagerBelongsToType("test.testBeanA", "name"));
+        FieldDefinitionImpl fieldBeanA = createFieldDefinition("beanA",
+                fieldTypeFactory.eagerBelongsToType("test.testBeanA", "name"));
         FieldDefinitionImpl fieldBeansB = createFieldDefinition("beansB", fieldTypeFactory.hasManyType("test.testBeanB", "beanC"));
 
         dataDefinition.addField(fieldName);
@@ -171,7 +175,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldComponents = createFieldDefinition("components",
                 fieldTypeFactory.hasManyType("products.substituteComponent", "substitute"));
 
-        FieldDefinitionImpl fieldPriority = createFieldDefinition("priority", fieldTypeFactory.priorityType(fieldProduct)).readOnly();
+        FieldDefinitionImpl fieldPriority = createFieldDefinition("priority", fieldTypeFactory.priorityType(fieldProduct))
+                .readOnly();
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.beans.products.Substitute");
         dataDefinition.addField(fieldNumber);
@@ -300,8 +305,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
                 fieldValidationFactory.required());
         FieldDefinitionImpl fieldDateTo = createFieldDefinition("dateTo", fieldTypeFactory.dateType()).withValidator(
                 fieldValidationFactory.required());
-        FieldDefinitionImpl fieldState = createFieldDefinition("state", fieldTypeFactory.enumType("pending", "done")).withValidator(
-                fieldValidationFactory.required());
+        FieldDefinitionImpl fieldState = createFieldDefinition("state", fieldTypeFactory.enumType("pending", "done"))
+                .withValidator(fieldValidationFactory.required());
         FieldDefinitionImpl fieldMachine = createFieldDefinition("machine", fieldTypeFactory.enumType("Maszyna 1", "Maszyna 2"));
         FieldDefinitionImpl fieldProduct = createFieldDefinition("product",
                 fieldTypeFactory.eagerBelongsToType("products.product", "name"));
@@ -313,7 +318,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldDoneQuantity = createFieldDefinition("doneQuantity", fieldTypeFactory.decimalType());
         FieldDefinitionImpl fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateType())
                 .readOnly();
-        FieldDefinitionImpl fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateType()).readOnly();
+        FieldDefinitionImpl fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo", fieldTypeFactory.dateType())
+                .readOnly();
         FieldDefinitionImpl fieldStartWorker = createFieldDefinition("startWorker", fieldTypeFactory.textType()).readOnly();
         FieldDefinitionImpl fieldEndWorker = createFieldDefinition("endWorker", fieldTypeFactory.textType()).readOnly();
 

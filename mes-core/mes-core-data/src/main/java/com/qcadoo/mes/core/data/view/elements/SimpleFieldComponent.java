@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
+import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.view.AbstractComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -43,11 +44,17 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
             final ViewValue<String> viewEntity, final Set<String> pathsToUpdate) {
         String value = getStringValue(entity, selectedEntities);
 
+        ViewValue<String> viewValue = null;
+
         if (StringUtils.hasText(value)) {
-            return new ViewValue<String>(convertToViewValue(value.trim()));
+            viewValue = new ViewValue<String>(convertToViewValue(value.trim()));
         } else {
-            return new ViewValue<String>();
+            viewValue = new ViewValue<String>();
         }
+
+        viewValue.addErrorMessage(getErrorMessage(entity, selectedEntities));
+
+        return viewValue;
     }
 
     @Override
@@ -74,6 +81,24 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
             return "";
         } else {
             return String.valueOf(value);
+        }
+    }
+
+    private String getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {
+        ValidationError value = null;
+
+        if (getSourceComponent() != null) {
+            value = getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
+        } else if (getSourceFieldPath() != null) {
+            value = getFieldError(entity, getSourceFieldPath());
+        } else {
+            value = getFieldError(entity, getFieldPath());
+        }
+
+        if (value == null) {
+            return null;
+        } else {
+            return value.getMessage(); // TODO
         }
     }
 

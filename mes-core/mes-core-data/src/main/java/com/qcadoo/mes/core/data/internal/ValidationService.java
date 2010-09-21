@@ -37,14 +37,15 @@ public final class ValidationService {
     private void copyReadOnlyAndMissingFields(final DataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
         for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
+            Object value = existingGenericEntity != null ? existingGenericEntity.getField(field.getKey()) : null;
             if (field.getValue().isReadOnly()) {
-                genericEntity.setField(field.getKey(), existingGenericEntity.getField(field.getKey()));
+                genericEntity.setField(field.getKey(), value);
             }
             if (field.getValue().isReadOnlyOnUpdate() && genericEntity.getId() != null) {
-                genericEntity.setField(field.getKey(), existingGenericEntity.getField(field.getKey()));
+                genericEntity.setField(field.getKey(), value);
             }
             if (!genericEntity.getFields().containsKey(field.getKey()) && genericEntity.getId() != null) {
-                genericEntity.setField(field.getKey(), existingGenericEntity.getField(field.getKey()));
+                genericEntity.setField(field.getKey(), value);
             }
         }
     }

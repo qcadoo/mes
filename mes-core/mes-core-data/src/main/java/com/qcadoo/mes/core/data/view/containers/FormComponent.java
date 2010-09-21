@@ -12,6 +12,7 @@ import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.data.view.Component;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
@@ -45,6 +46,13 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Long> viewValue, final Set<String> pathsToUpdate) {
         return entity != null ? entity.getId() : null;
+    }
+
+    @Override
+    public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue) {
+        for (ValidationError validationError : entity.getGlobalErrors()) {
+            viewValue.addErrorMessage(validationError.getMessage()); // TODO
+        }
     }
 
     @Override
