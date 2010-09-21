@@ -7,6 +7,8 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 
 	var components;
 	
+	this.isContainer = true;
+	
 	this.constructChildren = function(childrenElements) {
 		components = QCDPageConstructor.getChildrenComponents(childrenElements, mainController);
 		this.components = components;
@@ -40,7 +42,7 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 	}
 	
-	this.setComponentEnabled = function(isEnabled) {
+	this.setComponentsEnabled = function(isEnabled) {
 		for (var i in components) {
 			components[i].setEnabled(isEnabled);
 		}

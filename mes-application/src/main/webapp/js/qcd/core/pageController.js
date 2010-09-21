@@ -27,7 +27,7 @@ QCD.PageController = function(_viewName) {
 		QCD.info(componentName+"->"+value);
 		if (listeners) {
 			for (var i in listeners) {
-				getComponent(listeners[i]).setLoading(true);
+				this.getComponent(listeners[i]).setLoading(true);
 			}
 		}
 		var parameters = {
@@ -36,12 +36,13 @@ QCD.PageController = function(_viewName) {
 		};
 		var valuesJson = JSON.stringify(parameters);
 		QCD.info(valuesJson);
+		var _this = this;
 		QCDConnector.sendPost("dataUpdate", valuesJson, function(response) {
 			QCD.info(response);
 			setValueData(response);
 			if (listeners) {
 				for (var i in listeners) {
-					getComponent(listeners[i]).setLoading(false);
+					_this.getComponent(listeners[i]).setLoading(false);
 				}
 			}
 		});
@@ -81,7 +82,7 @@ QCD.PageController = function(_viewName) {
 		}
 	}
 	
-	function getComponent(componentPath) {
+	this.getComponent = function(componentPath) {
 		var componentName = componentPath.split(".")[0];
 		var path = componentPath.substring(componentName.length+1);
 		return pageComponents[componentName].getComponent(path);

@@ -10,7 +10,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	var element = _element;
-	var elementName = element.attr('id');
+	
+	var elementPath = this.elementPath;
+	var elementName = this.elementName;
+	
+	QCD.info(this.elementName);
 	
 	var gridParameters;
 	
@@ -26,11 +30,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		var colNames = new Array();
 		var colModel = new Array();
 		
-//		/QCD.info(options);
-		
-		//options.columns = new Array();
-		//options.columns[0] = "aaa";
-		
 		for (var i in options.columns) {
 			var nameToTranslate = elementName+".column."+options.columns[i];
 			//colNames.push(mainController.getTranslation(nameToTranslate));
@@ -39,7 +38,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: false});
 		}
 		
-		gridParameters.element = elementName+"_grid";
+		gridParameters.element = elementPath+"_grid";
 //		gridParameters.viewName = viewName,
 //		gridParameters.viewElementName = gridName;
 		gridParameters.colNames = colNames;
@@ -111,7 +110,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function rowClicked(rowId) {
 		if (gridParameters.listeners.length > 0) {
 			//QCD.info("SEND");
-			mainController.getUpdate(elementName, rowId, gridParameters.listeners);
+			mainController.getUpdate(elementPath, rowId, gridParameters.listeners);
 		}
 	}
 	
@@ -159,7 +158,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
-	this.setLoading = function(isLoadingVisible) {
+	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {
 			grid.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
@@ -175,7 +174,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function constructor(_this) {
-		parseOptions(_this.options);
+		parseOptions(_this.options, _this);
 //		
 //		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
 //			if (gridParameters.canNew) {

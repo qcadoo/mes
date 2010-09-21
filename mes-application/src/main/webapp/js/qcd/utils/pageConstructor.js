@@ -19,8 +19,6 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 			}
 			
 			if (component) {
-				//component.elementFullName = elementFullName;
-				component.elementName = elementName;
 				components[elementName] = component;
 			}
 		}

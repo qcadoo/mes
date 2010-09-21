@@ -18,7 +18,7 @@
 		Form ${componentFullName}
 	</div>
 	
-	<div class="formComponents">
+	<div id="${componentFullName}_formComponents">
 		<c:forEach items="${component.components}" var="componentEntry">
 			<tiles:insertTemplate template="../component.jsp">
 				<tiles:putAttribute name="component" value="${componentEntry.value}" />
@@ -27,7 +27,7 @@
 		</c:forEach>
 	</div>
 	
-	<button id="${componentFullName}_saveButton">${translationsMap["commons.form.button.accept"] }</button>
+	<button id="${componentFullName}_saveButton" style="margin-top: 5px;">${translationsMap["commons.form.button.accept"] }</button>
 	
 </div>
 
