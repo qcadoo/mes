@@ -12,6 +12,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	var buttons = new Object();
 	buttons.saveButton = $("#"+elementName+"_saveButton");
 	
+	var formValue = null;
+	
 //	this.insterData = function(data) {
 //		QCD.info(this.containerComponents);
 //		for (var i in data) {
@@ -37,11 +39,11 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.getComponentValue = function() {
-		return null;
+		return formValue;
 	}
 	
-	this.setComponentValue = function() {
-		
+	this.setComponentValue = function(value) {
+		formValue = value;
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {

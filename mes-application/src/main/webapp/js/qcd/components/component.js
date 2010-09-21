@@ -20,7 +20,6 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.getValue = function() {
-		QCD.info("get value "+this.elementName+" "+isVisible);
 		return {
 			enabled: this.isEnabled(),
 			visible: this.isVisible(),
@@ -30,8 +29,6 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.setValue = function(value) {
-		//QCD.info(this.elementPath+" - setValue:");
-		//QCD.info(value.value);
 		this.setEnabled(value.enabled);
 		this.setVisible(value.visible);
 		this.setComponentValue(value.value);
