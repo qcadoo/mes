@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 
 public class HookTest extends DataAccessTest {
 
@@ -157,19 +157,19 @@ public class HookTest extends DataAccessTest {
 
     public class CustomCallbackMethod {
 
-        public void onUpdate(final ModelDefinition dataDefinition, final Entity entity) {
+        public void onUpdate(final DataDefinition dataDefinition, final Entity entity) {
             entity.setField("name", "update");
         }
 
-        public void onSave(final ModelDefinition dataDefinition, final Entity entity) {
+        public void onSave(final DataDefinition dataDefinition, final Entity entity) {
             entity.setField("age", 11);
         }
 
-        public void onCreate(final ModelDefinition dataDefinition, final Entity entity) {
+        public void onCreate(final DataDefinition dataDefinition, final Entity entity) {
             entity.setField("name", "create");
         }
 
-        public void onDelete(final ModelDefinition dataDefinition, final Entity entity) {
+        public void onDelete(final DataDefinition dataDefinition, final Entity entity) {
             entity.setField("name", "delete");
         }
 

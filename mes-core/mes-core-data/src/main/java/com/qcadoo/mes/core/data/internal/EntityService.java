@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.PasswordType;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 @Service
@@ -54,7 +54,7 @@ public final class EntityService {
         }
     }
 
-    public Entity convertToGenericEntity(final ModelDefinition dataDefinition, final Object databaseEntity) {
+    public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
         Entity genericEntity = new Entity(getId(databaseEntity));
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
@@ -69,7 +69,7 @@ public final class EntityService {
         return genericEntity;
     }
 
-    public Object convertToDatabaseEntity(final ModelDefinition dataDefinition, final Entity genericEntity,
+    public Object convertToDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final Object existingDatabaseEntity) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
@@ -84,7 +84,7 @@ public final class EntityService {
         return databaseEntity;
     }
 
-    private Object getDatabaseEntity(final ModelDefinition dataDefinition, final Entity genericEntity,
+    private Object getDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final Object existingDatabaseEntity) {
         Object databaseEntity = null;
 
@@ -103,7 +103,7 @@ public final class EntityService {
 
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-        ModelDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
+        DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
         if (belongsToFieldType.isEagerFetch()) {
             Object value = getField(databaseEntity, fieldDefinition.getName());
             if (value != null) {

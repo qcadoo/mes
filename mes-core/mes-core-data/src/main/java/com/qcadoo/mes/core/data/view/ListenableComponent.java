@@ -4,8 +4,8 @@ import java.util.Set;
 
 public interface ListenableComponent {
 
-    public abstract Set<String> getListeners();
+    Set<String> getListeners();
 
-    public abstract void registerListener(String path);
+    void registerListener(String path);
 
 }

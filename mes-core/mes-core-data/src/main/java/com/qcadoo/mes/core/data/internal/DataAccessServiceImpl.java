@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
@@ -49,7 +49,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public Entity save(final ModelDefinition dataDefinition, final Entity genericEntity) {
+    public Entity save(final DataDefinition dataDefinition, final Entity genericEntity) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(genericEntity, "entity must be given");
 
@@ -84,7 +84,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional(readOnly = true)
-    public Entity get(final ModelDefinition dataDefinition, final Long entityId) {
+    public Entity get(final DataDefinition dataDefinition, final Long entityId) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(entityId, "entityId must be given");
 
@@ -99,7 +99,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void delete(final ModelDefinition dataDefinition, final Long... entityIds) {
+    public void delete(final DataDefinition dataDefinition, final Long... entityIds) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkState(dataDefinition.isDeletable(), "entity must be deletable");
         checkState(entityIds.length > 0, "entityIds must be given");
@@ -118,7 +118,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     public SearchResult find(final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
 
-        ModelDefinition dataDefinition = searchCriteria.getDataDefinition();
+        DataDefinition dataDefinition = searchCriteria.getDataDefinition();
 
         int totalNumberOfEntities = getTotalNumberOfEntities(getCriteria(searchCriteria));
 
@@ -149,7 +149,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void moveTo(final ModelDefinition dataDefinition, final Long entityId, final int position) {
+    public void moveTo(final DataDefinition dataDefinition, final Long entityId, final int position) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
         checkNotNull(entityId, "entityId must be given");
@@ -166,7 +166,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void move(final ModelDefinition dataDefinition, final Long entityId, final int offset) {
+    public void move(final DataDefinition dataDefinition, final Long entityId, final int offset) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
         checkNotNull(entityId, "entityId must be given");
@@ -181,7 +181,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         priorityService.move(dataDefinition, databaseEntity, 0, offset);
     }
 
-    private Object getExistingDatabaseEntity(final ModelDefinition dataDefinition, final Entity entity) {
+    private Object getExistingDatabaseEntity(final DataDefinition dataDefinition, final Entity entity) {
         Object existingDatabaseEntity = null;
 
         if (entity.getId() != null) {
@@ -192,7 +192,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return existingDatabaseEntity;
     }
 
-    private void deleteEntity(final ModelDefinition dataDefinition, final Long entityId) {
+    private void deleteEntity(final DataDefinition dataDefinition, final Long entityId) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
 
         checkNotNull(databaseEntity, "entity %s#%s cannot be found", dataDefinition.getName(), entityId);
@@ -226,7 +226,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return Integer.valueOf(criteria.setProjection(Projections.rowCount()).uniqueResult().toString());
     }
 
-    private SearchResultImpl getResultSet(final SearchCriteria searchCriteria, final ModelDefinition dataDefinition,
+    private SearchResultImpl getResultSet(final SearchCriteria searchCriteria, final DataDefinition dataDefinition,
             final int totalNumberOfEntities, final List<?> results) {
         List<Entity> genericResults = new ArrayList<Entity>();
 
@@ -254,7 +254,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
     }
 
-    private Object getDatabaseEntity(final ModelDefinition dataDefinition, final Long entityId, final boolean withDeleted) {
+    private Object getDatabaseEntity(final DataDefinition dataDefinition, final Long entityId, final boolean withDeleted) {
         if (withDeleted || !dataDefinition.isDeletable()) {
             return getCurrentSession().get(dataDefinition.getClassForEntity(), entityId);
         } else {

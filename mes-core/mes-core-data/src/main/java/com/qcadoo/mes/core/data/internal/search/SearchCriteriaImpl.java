@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
@@ -31,11 +31,11 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
 
     private final Set<Restriction> restrictions = new HashSet<Restriction>();
 
-    private final ModelDefinition dataDefinition;
+    private final DataDefinition dataDefinition;
 
     private GridDefinition gridDefinition;
 
-    public SearchCriteriaImpl(final ModelDefinition dataDefinition) {
+    public SearchCriteriaImpl(final DataDefinition dataDefinition) {
         checkNotNull(dataDefinition);
         this.dataDefinition = dataDefinition;
         if (dataDefinition.isPrioritizable()) {
@@ -46,7 +46,7 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     }
 
     @Override
-    public ModelDefinition getDataDefinition() {
+    public DataDefinition getDataDefinition() {
         return dataDefinition;
     }
 

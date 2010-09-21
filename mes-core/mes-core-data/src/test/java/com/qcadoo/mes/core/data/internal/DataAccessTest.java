@@ -20,7 +20,7 @@ import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
-import com.qcadoo.mes.core.data.internal.model.ModelDefinitionImpl;
+import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
@@ -57,9 +57,9 @@ public abstract class DataAccessTest {
 
     protected DataAccessService dataAccessService = null;
 
-    protected ModelDefinitionImpl parentDataDefinition = null;
+    protected DataDefinitionImpl parentDataDefinition = null;
 
-    protected ModelDefinitionImpl dataDefinition = null;
+    protected DataDefinitionImpl dataDefinition = null;
 
     protected FieldDefinitionImpl fieldDefinitionPriority = null;
 
@@ -107,7 +107,7 @@ public abstract class DataAccessTest {
         parentFieldDefinitionName = new FieldDefinitionImpl("name");
         parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
 
-        parentDataDefinition = new ModelDefinitionImpl("parent.entity", dataAccessService);
+        parentDataDefinition = new DataDefinitionImpl("parent.entity", dataAccessService);
         parentDataDefinition.addField(parentFieldDefinitionName);
         parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
 
@@ -135,7 +135,7 @@ public abstract class DataAccessTest {
         fieldDefinitionBirthDate = new FieldDefinitionImpl("birthDate");
         fieldDefinitionBirthDate.withType(fieldTypeFactory.dateType());
 
-        dataDefinition = new ModelDefinitionImpl("simple.entity", dataAccessService);
+        dataDefinition = new DataDefinitionImpl("simple.entity", dataAccessService);
         dataDefinition.addField(fieldDefinitionName);
         dataDefinition.addField(fieldDefinitionAge);
         dataDefinition.addField(fieldDefinitionMoney);

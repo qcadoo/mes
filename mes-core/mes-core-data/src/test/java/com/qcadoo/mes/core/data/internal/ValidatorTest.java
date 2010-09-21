@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 
 public class ValidatorTest extends DataAccessTest {
 
@@ -636,7 +636,7 @@ public class ValidatorTest extends DataAccessTest {
 
     public class CustomValidateMethod {
 
-        public boolean isEqualToQwerty(final ModelDefinition dataDefinition, final Object object) {
+        public boolean isEqualToQwerty(final DataDefinition dataDefinition, final Object object) {
             return String.valueOf(object).equals("qwerty");
         }
 
@@ -644,7 +644,7 @@ public class ValidatorTest extends DataAccessTest {
 
     public class CustomEntityValidateMethod {
 
-        public boolean hasAge18AndNameMrT(final ModelDefinition dataDefinition, final Entity entity) {
+        public boolean hasAge18AndNameMrT(final DataDefinition dataDefinition, final Entity entity) {
             return (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T"));
         }
 

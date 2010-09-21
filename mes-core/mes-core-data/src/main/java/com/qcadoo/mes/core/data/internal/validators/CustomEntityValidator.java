@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.data.internal.validators;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.model.HookDefinition;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 public final class CustomEntityValidator implements EntityValidator {
@@ -18,7 +18,7 @@ public final class CustomEntityValidator implements EntityValidator {
     }
 
     @Override
-    public boolean validate(final ModelDefinition dataDefinition, final Entity entity) {
+    public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
         boolean result = callback.callWithEntityAndGetBoolean(dataDefinition, entity);
         if (result) {
             return true;

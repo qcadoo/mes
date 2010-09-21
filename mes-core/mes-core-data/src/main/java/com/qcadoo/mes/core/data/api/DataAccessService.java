@@ -1,7 +1,7 @@
 package com.qcadoo.mes.core.data.api;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchResult;
 
@@ -12,15 +12,15 @@ import com.qcadoo.mes.core.data.search.SearchResult;
  */
 public interface DataAccessService {
 
-    Entity save(ModelDefinition dataDefinition, Entity entity);
+    Entity save(DataDefinition dataDefinition, Entity entity);
 
-    Entity get(ModelDefinition dataDefinition, Long entityId);
+    Entity get(DataDefinition dataDefinition, Long entityId);
 
-    void delete(ModelDefinition dataDefinition, Long... entityId);
+    void delete(DataDefinition dataDefinition, Long... entityId);
 
     SearchResult find(SearchCriteria searchCriteria);
 
-    void moveTo(ModelDefinition dataDefinition, Long entityId, int position);
+    void moveTo(DataDefinition dataDefinition, Long entityId, int position);
 
-    void move(ModelDefinition dataDefinition, Long entityId, int offset);
+    void move(DataDefinition dataDefinition, Long entityId, int offset);
 }

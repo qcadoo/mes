@@ -21,7 +21,7 @@ import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.internal.view.ComponentDefinitionImpl;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
@@ -155,7 +155,7 @@ public final class GridDefinition extends ComponentDefinitionImpl<ListData> {
         }
     }
 
-    private HasManyType getHasManyType(final ModelDefinition dataDefinition, final String fieldPath) {
+    private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {
         checkState(!fieldPath.matches("\\."), "Grid doesn't support sequential path");
         FieldDefinition fieldDefinition = dataDefinition.getField(fieldPath);
         checkNotNull((fieldDefinition != null && fieldDefinition.getType() instanceof HasManyType),

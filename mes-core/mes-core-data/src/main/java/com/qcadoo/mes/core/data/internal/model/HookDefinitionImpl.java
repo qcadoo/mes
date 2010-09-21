@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.model.HookDefinition;
-import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 
 public final class HookDefinitionImpl implements HookDefinition {
 
@@ -42,7 +42,7 @@ public final class HookDefinitionImpl implements HookDefinition {
      * @see com.qcadoo.mes.core.data.model.HookDefinition#callWithObjectAndGetBoolean(com.qcadoo.mes.core.data.model.ModelDefinition, java.lang.Object)
      */
     @Override
-    public boolean callWithObjectAndGetBoolean(final ModelDefinition dataDefinition, final Object value) {
+    public boolean callWithObjectAndGetBoolean(final DataDefinition dataDefinition, final Object value) {
         Boolean retults = (Boolean) call(dataDefinition, value);
         if (retults == null) {
             return false;
@@ -55,7 +55,7 @@ public final class HookDefinitionImpl implements HookDefinition {
      * @see com.qcadoo.mes.core.data.model.HookDefinition#callWithEntityAndGetBoolean(com.qcadoo.mes.core.data.model.ModelDefinition, com.qcadoo.mes.core.data.beans.Entity)
      */
     @Override
-    public boolean callWithEntityAndGetBoolean(final ModelDefinition dataDefinition, final Entity entity) {
+    public boolean callWithEntityAndGetBoolean(final DataDefinition dataDefinition, final Entity entity) {
         Boolean retults = (Boolean) call(dataDefinition, entity);
         if (retults == null) {
             return false;
@@ -68,7 +68,7 @@ public final class HookDefinitionImpl implements HookDefinition {
      * @see com.qcadoo.mes.core.data.model.HookDefinition#callWithEntity(com.qcadoo.mes.core.data.model.ModelDefinition, com.qcadoo.mes.core.data.beans.Entity)
      */
     @Override
-    public void callWithEntity(final ModelDefinition dataDefinition, final Entity entity) {
+    public void callWithEntity(final DataDefinition dataDefinition, final Entity entity) {
         call(dataDefinition, entity);
     }
 

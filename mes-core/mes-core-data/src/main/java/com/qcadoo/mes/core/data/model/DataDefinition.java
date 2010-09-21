@@ -9,7 +9,7 @@ import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
-public interface ModelDefinition {
+public interface DataDefinition {
 
     public abstract Entity get(final Long id);
 
