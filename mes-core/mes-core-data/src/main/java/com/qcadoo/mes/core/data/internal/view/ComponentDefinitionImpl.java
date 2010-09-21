@@ -14,8 +14,8 @@ import org.json.JSONObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
-import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewEntity;
@@ -72,14 +72,14 @@ public abstract class ComponentDefinitionImpl<T> implements ComponentDefinition<
         if (sourceComponent != null) {
             Entity selectedEntity = selectedEntities.get(sourceComponent.getPath());
 
-            if (this instanceof ContainerDefinitionImpl && selectedEntity != null && sourceFieldPath != null) {
+            if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
 
             return getComponentValue(selectedEntity, selectedEntities, (ViewEntity<T>) viewEntity, pathsToUpdate);
         } else {
             Entity contextEntity = entity;
-            if (this instanceof ContainerDefinitionImpl && entity != null && fieldPath != null) {
+            if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
                 contextEntity = getFieldEntityValue(entity, fieldPath);
             }
 
@@ -95,7 +95,7 @@ public abstract class ComponentDefinitionImpl<T> implements ComponentDefinition<
             if (getPath().startsWith(path)) {
                 return false;
             }
-            if (this instanceof ContainerDefinitionImpl && path.startsWith(getPath())) {
+            if (this instanceof ContainerComponent && path.startsWith(getPath())) {
                 return false;
             }
         }
@@ -175,14 +175,14 @@ public abstract class ComponentDefinitionImpl<T> implements ComponentDefinition<
             }
 
             sourceFieldPath = source[1];
-            dataDefinition = sourceComponent.getModelDefinition();
+            dataDefinition = sourceComponent.getDataDefinition();
             sourceComponent.registerListener(path);
         } else if (parentContainer != null) {
             if (!parentContainer.isInitialized()) {
                 return false;
             }
             sourceComponent = null;
-            dataDefinition = parentContainer.getModelDefinition();
+            dataDefinition = parentContainer.getDataDefinition();
         } else {
             sourceComponent = null;
             dataDefinition = null;
@@ -294,7 +294,7 @@ public abstract class ComponentDefinitionImpl<T> implements ComponentDefinition<
     }
 
     @Override
-    public DataDefinition getModelDefinition() {
+    public DataDefinition getDataDefinition() {
         return dataDefinition;
     }
 

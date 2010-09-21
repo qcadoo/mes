@@ -95,7 +95,7 @@ public final class GridDefinition extends ComponentDefinitionImpl<ListData> {
         Map<String, Object> viewOptions = super.getOptions();
         viewOptions.put("correspondingViewName", correspondingViewName);
         viewOptions.put("columns", getColumnsForOptions());
-        viewOptions.put("fields", getFieldsForOptions(getModelDefinition().getFields()));
+        viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
         return viewOptions;
     }
 
@@ -121,7 +121,7 @@ public final class GridDefinition extends ComponentDefinitionImpl<ListData> {
             String selectedEntityId = value.getString("selectedEntityId");
 
             if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
-                Entity selectedEntity = getModelDefinition().get(Long.parseLong(selectedEntityId));
+                Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
                 selectedEntities.put(getPath(), selectedEntity);
             }
         }
@@ -138,19 +138,19 @@ public final class GridDefinition extends ComponentDefinitionImpl<ListData> {
             }
             HasManyType hasManyType = null;
             if (getFieldPath() != null) {
-                hasManyType = getHasManyType(getParentContainer().getModelDefinition(), getFieldPath());
+                hasManyType = getHasManyType(getParentContainer().getDataDefinition(), getFieldPath());
             } else {
-                hasManyType = getHasManyType(getSourceComponent().getModelDefinition(), getSourceFieldPath());
+                hasManyType = getHasManyType(getSourceComponent().getDataDefinition(), getSourceFieldPath());
             }
-            checkState(hasManyType.getDataDefinition().getName().equals(getModelDefinition().getName()),
+            checkState(hasManyType.getDataDefinition().getName().equals(getDataDefinition().getName()),
                     "Grid and hasMany relation have different data definitions");
-            SearchCriteriaBuilder searchCriteriaBuilder = getModelDefinition().find();
+            SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find();
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
-                    getModelDefinition().getField(hasManyType.getFieldName()), entity.getId()));
+                    getDataDefinition().getField(hasManyType.getFieldName()), entity.getId()));
             SearchResult rs = searchCriteriaBuilder.list();
             return new ViewEntity<ListData>(generateListData(rs));
         } else {
-            SearchResult rs = getModelDefinition().find().list();
+            SearchResult rs = getDataDefinition().find().list();
             return new ViewEntity<ListData>(generateListData(rs));
         }
     }

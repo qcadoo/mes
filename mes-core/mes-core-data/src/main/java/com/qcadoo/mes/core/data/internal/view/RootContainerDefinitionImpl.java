@@ -10,8 +10,9 @@ import com.qcadoo.mes.core.data.view.CastableComponent;
 import com.qcadoo.mes.core.data.view.ComponentDefinition;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.InitializableComponent;
+import com.qcadoo.mes.core.data.view.RootComponent;
 
-public abstract class RootContainerDefinitionImpl extends ContainerDefinitionImpl<Object> {
+public abstract class RootContainerDefinitionImpl extends ContainerDefinitionImpl<Object> implements RootComponent {
 
     private final Map<String, ComponentDefinition<?>> componentRegistry = new LinkedHashMap<String, ComponentDefinition<?>>();
 
@@ -25,6 +26,11 @@ public abstract class RootContainerDefinitionImpl extends ContainerDefinitionImp
         return true;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.qcadoo.mes.core.data.internal.view.RootComponent#initialize()
+     */
+    @Override
     public void initialize() {
         registerComponents(getComponents());
         initializeComponents(0);
@@ -54,6 +60,12 @@ public abstract class RootContainerDefinitionImpl extends ContainerDefinitionImp
                         continue;
                     }
                 }
+                for (InitializableComponent component : componentRegistry.values()) {
+                    if (component.isInitialized()) {
+                        continue;
+                    }
+                    System.out.println(" ---> " + component.toString());
+                }
                 throw new IllegalStateException("Cyclic dependency in view definition");
             } else {
                 initializeComponents(notInitialized);
@@ -71,6 +83,11 @@ public abstract class RootContainerDefinitionImpl extends ContainerDefinitionImp
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.qcadoo.mes.core.data.internal.view.RootComponent#getListenersForPath(java.lang.String)
+     */
+    @Override
     public Set<String> getListenersForPath(final String path) {
         Set<String> paths = new HashSet<String>();
         getListenersForPath(path, paths);
@@ -86,6 +103,11 @@ public abstract class RootContainerDefinitionImpl extends ContainerDefinitionImp
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.qcadoo.mes.core.data.internal.view.RootComponent#getComponentForPath(java.lang.String)
+     */
+    @Override
     public CastableComponent<?> getComponentForPath(final String path) {
         return componentRegistry.get(path);
     }

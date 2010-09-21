@@ -76,7 +76,7 @@ public class TranslationServiceImpl implements TranslationService {
         try {
             translationsMap.put(messageCode, translateWithError(messageCode, locale));
         } catch (NoSuchMessageException e) {
-            String entityFieldCode = "entity." + gridDefinition.getModelDefinition().getName() + ".field."
+            String entityFieldCode = "entity." + gridDefinition.getDataDefinition().getName() + ".field."
                     + column.getFields().get(0).getName();
             translationsMap.put(messageCode, translate(entityFieldCode, locale));
         }

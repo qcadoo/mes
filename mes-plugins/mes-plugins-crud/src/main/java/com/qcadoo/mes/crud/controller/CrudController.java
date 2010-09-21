@@ -103,7 +103,7 @@ public class CrudController {
     public Object getData(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         if (arguments.get("entityId") != null) {
-            Entity entity = viewDefinition.getRoot().getModelDefinition().get(Long.parseLong(arguments.get("entityId")));
+            Entity entity = viewDefinition.getRoot().getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
             return viewDefinition.getValue(entity, Collections.<String, Entity> emptyMap(), null, null);
         } else {
             return viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), null, null);
@@ -184,7 +184,7 @@ public class CrudController {
 
             Entity entity = form.getFormEntity(viewEntity, componentName.replaceAll("-", "."));
 
-            form.getModelDefinition().save(entity);
+            form.getDataDefinition().save(entity);
 
             return null; // form.addValidationResults(viewEntity, componentName.replaceAll("-", "."), null);
         } catch (JSONException e) {

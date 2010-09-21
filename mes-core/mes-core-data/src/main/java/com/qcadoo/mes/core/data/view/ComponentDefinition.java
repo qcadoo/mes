@@ -21,6 +21,6 @@ public interface ComponentDefinition<T> extends CastableComponent<T>, Listenable
 
     String getFieldPath();
 
-    DataDefinition getModelDefinition();
+    DataDefinition getDataDefinition();
 
 }

@@ -7,18 +7,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.view.RootComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.ViewEntity;
 
 public class ViewDefinitionImpl implements ViewDefinition {
 
-    private final RootContainerDefinitionImpl root;
+    private final RootComponent root;
 
     private final String pluginIdentifier;
 
     private final String name;
 
-    public ViewDefinitionImpl(final String name, final RootContainerDefinitionImpl root, final String pluginIdentifier) {
+    public ViewDefinitionImpl(final String name, final RootComponent root, final String pluginIdentifier) {
         this.name = name;
         this.root = root;
         this.pluginIdentifier = pluginIdentifier;
@@ -30,7 +31,7 @@ public class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public RootContainerDefinitionImpl getRoot() {
+    public RootComponent getRoot() {
         return root;
     }
 
