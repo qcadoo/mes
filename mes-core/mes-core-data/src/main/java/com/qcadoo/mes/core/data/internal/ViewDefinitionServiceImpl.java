@@ -189,6 +189,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productGridView", windowDefinition, "products");
 
         GridComponent grid = new GridComponent("productsGrid", windowDefinition, null, null);
+        grid.setHeader(false);
         grid.setCorrespondingViewName("products.productDetailsView");
         grid.addOptions("paging", "true");
         grid.addOptions("sortable", "true");
@@ -221,6 +222,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productDetailsView", windowDefinition, "products");
 
         FormComponent formDefinition = new FormComponent("productDetailsForm", windowDefinition, null, null);
+        formDefinition.setHeader(false);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("ean", formDefinition, "ean", null));
@@ -269,6 +271,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteDetailsView", windowDefinition, "products");
 
         FormComponent formDefinition = new FormComponent("substitutesDetailsForm", windowDefinition, null, null);
+        formDefinition.setHeader(false);
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("priority", formDefinition, "priority", null));
@@ -306,6 +309,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 "products");
 
         FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
+        formDefinition.setHeader(false);
         formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
 
         // FormFieldDefinition fieldProduct = createFieldDefinition("product",
