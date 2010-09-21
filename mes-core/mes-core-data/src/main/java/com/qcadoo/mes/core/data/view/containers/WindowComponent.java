@@ -1,7 +1,7 @@
 package com.qcadoo.mes.core.data.view.containers;
 
-import com.qcadoo.mes.core.data.internal.view.AbstractRootComponent;
 import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.view.AbstractRootComponent;
 
 public class WindowComponent extends AbstractRootComponent {
 

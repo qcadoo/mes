@@ -1,13 +1,13 @@
 package com.qcadoo.mes.core.data.view.containers;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.view.AbstractContainerComponent;
+import com.qcadoo.mes.core.data.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
 
-public final class FormComponent extends AbstractContainerComponent<Long> {
+public final class FormComponent extends AbstractContainerComponent {
 
-    public FormComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
+    public FormComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }

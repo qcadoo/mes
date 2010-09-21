@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal.view;
+package com.qcadoo.mes.core.data.view;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -6,13 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.qcadoo.mes.core.data.model.DataDefinition;
-import com.qcadoo.mes.core.data.view.CastableComponent;
-import com.qcadoo.mes.core.data.view.Component;
-import com.qcadoo.mes.core.data.view.ContainerComponent;
-import com.qcadoo.mes.core.data.view.InitializableComponent;
-import com.qcadoo.mes.core.data.view.RootComponent;
 
-public abstract class AbstractRootComponent extends AbstractContainerComponent<Object> implements RootComponent {
+public abstract class AbstractRootComponent extends AbstractContainerComponent implements RootComponent {
 
     private final Map<String, Component<?>> componentRegistry = new LinkedHashMap<String, Component<?>>();
 
@@ -74,7 +69,7 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
         for (Component<?> component : components.values()) {
             componentRegistry.put(component.getPath(), component);
             if (component instanceof ContainerComponent) {
-                registerComponents(((ContainerComponent<?>) component).getComponents());
+                registerComponents(((ContainerComponent) component).getComponents());
             }
 
         }

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal.view;
+package com.qcadoo.mes.core.data.view;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -8,15 +8,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.view.Component;
-import com.qcadoo.mes.core.data.view.ContainerComponent;
-import com.qcadoo.mes.core.data.view.ViewValue;
 
-public abstract class AbstractContainerComponent<T> extends AbstractComponent<T> implements ContainerComponent<T> {
+public abstract class AbstractContainerComponent extends AbstractComponent<Object> implements ContainerComponent {
 
     private final Map<String, Component<?>> components = new LinkedHashMap<String, Component<?>>();
 
-    public AbstractContainerComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
+    public AbstractContainerComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }
@@ -32,9 +29,9 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
     }
 
     @Override
-    public final ViewValue<T> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public final ViewValue<Object> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
-        ViewValue<T> value = new ViewValue<T>();
+        ViewValue<Object> value = new ViewValue<Object>();
 
         for (Component<?> component : components.values()) {
             JSONObject componentViewObject = viewObject != null ? viewObject.getJSONObject("components").getJSONObject(
@@ -47,10 +44,10 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
     }
 
     @Override
-    public final ViewValue<T> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<T> viewValue, final Set<String> pathsToUpdate) {
+    public final ViewValue<Object> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<Object> viewValue, final Set<String> pathsToUpdate) {
 
-        ViewValue<T> value = new ViewValue<T>();
+        ViewValue<Object> value = new ViewValue<Object>();
 
         boolean isAnyViewValueNotNull = false;
 

@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.data.view;
 
 import java.util.Set;
 
-public interface RootComponent extends ContainerComponent<Object> {
+public interface RootComponent extends ContainerComponent {
 
     void initialize();
 
