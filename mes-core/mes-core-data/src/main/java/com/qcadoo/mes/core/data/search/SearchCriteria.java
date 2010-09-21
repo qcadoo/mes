@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.search;
 import java.util.Set;
 
 import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.view.elements.GridComponent;
 
 /**
  * Object represents the criteria for listing entities. Together with definition -

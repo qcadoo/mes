@@ -27,6 +27,10 @@ import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.containers.FormComponent;
+import com.qcadoo.mes.core.data.view.containers.WindowComponent;
+import com.qcadoo.mes.core.data.view.elements.GridComponent;
+import com.qcadoo.mes.core.data.view.elements.TextInputComponent;
 import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
 
 @Service
@@ -110,6 +114,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD);
+        windowDefinition.setBackButton(false);
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "test");
 
@@ -179,6 +184,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition);
+        windowDefinition.setBackButton(false);
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productGridView", windowDefinition, "products");
 
@@ -233,7 +239,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
         windowDefinition.addComponent(substituteGridDefinition);
 
-        GridDefinition substituteComponentGridDefinition = new GridDefinition("substitutesComponentGrid", windowDefinition, null,
+        GridComponent substituteComponentGridDefinition = new GridComponent("substitutesComponentGrid", windowDefinition, null,
                 "#{mainWindow.substitutesGrid}.components");
         substituteComponentGridDefinition.addColumn(createColumnDefinition("number",
                 substituteComponentDataDefinition.getField("product"), "#product['number']"));
@@ -257,14 +263,14 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createProductSubstituteDetailsView() {
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
 
-        WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", substituteDataDefinition);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition);
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteDetailsView", windowDefinition, "products");
 
-        FormDefinition formDefinition = new FormDefinition("substitutesDetailsForm", windowDefinition, null, null);
-        formDefinition.addComponent(new TextInput("number", formDefinition, "number", null));
-        formDefinition.addComponent(new TextInput("name", formDefinition, "name", null));
-        formDefinition.addComponent(new TextInput("priority", formDefinition, "priority", null));
+        FormComponent formDefinition = new FormComponent("substitutesDetailsForm", windowDefinition, null, null);
+        formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
+        formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new TextInputComponent("priority", formDefinition, "priority", null));
 
         // FormFieldDefinition fieldNumber = createFieldDefinition("number", substitutesDataDefinition.getField("number"),
         // fieldControlFactory.stringControl());
@@ -292,13 +298,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createProductSubstituteComponentDetailsView() {
         DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
 
-        WindowDefinitionImpl windowDefinition = new WindowDefinitionImpl("mainWindow", substitutesComponentDataDefinition);
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substitutesComponentDataDefinition);
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteComponentDetailsView", windowDefinition,
                 "products");
 
-        FormDefinition formDefinition = new FormDefinition("substitutesComponentDetailsForm", windowDefinition, null, null);
-        formDefinition.addComponent(new TextInput("quantity", formDefinition, "quantity", null));
+        FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
+        formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
 
         // FormFieldDefinition fieldProduct = createFieldDefinition("product",
         // substitutesComponentDataDefinition.getField("product"), fieldControlFactory.lookupControl());

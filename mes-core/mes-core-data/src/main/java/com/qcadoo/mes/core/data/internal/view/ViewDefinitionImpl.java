@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.view.RootComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.ViewValue;
 
 public final class ViewDefinitionImpl implements ViewDefinition {
 
