@@ -31,7 +31,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
-import com.qcadoo.mes.core.data.view.CastableComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.ViewValue;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
@@ -63,33 +62,33 @@ public class CrudController {
 
         viewDefinition.addComponentTranslations(translationsMap, translationService, locale);
 
-        for (CastableComponent component : viewDefinition.getRoot().getComponents().values()) {
-            // viewElementsOptionsJson.put(component.getName(), CrudControllerUtils.generateJsonViewElementOptions(component));
+        // for (CastableComponent component : viewDefinition.getRoot().getComponents().values()) {
+        // viewElementsOptionsJson.put(component.getName(), CrudControllerUtils.generateJsonViewElementOptions(component));
 
-            //
-            // if (viewElement instanceof FormDefinition) {
-            // FormDefinition form = (FormDefinition) viewElement;
-            // for (FormFieldDefinition fieldDefEntry : form.getFields()) {
-            // if (fieldDefEntry.getDataField().getType() instanceof BelongsToType) {
-            // BelongsToType belongsToField = (BelongsToType) fieldDefEntry.getDataField().getType();
-            // Map<Long, String> options = belongsToField.lookup(null);
-            // Map<String, String> fieldOptionsMap = new HashMap<String, String>();
-            // for (Map.Entry<Long, String> option : options.entrySet()) {
-            // fieldOptionsMap.put(Long.toString(option.getKey()), option.getValue());
-            // }
-            // dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptionsMap);
-            // } else if (fieldDefEntry.getDataField().getType() instanceof EnumeratedFieldType) {
-            // EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefEntry.getDataField().getType();
-            // List<String> options = enumeratedField.values();
-            // Map<String, String> fieldOptionsMap = new HashMap<String, String>();
-            // for (String option : options) {
-            // fieldOptionsMap.put(option, option);
-            // }
-            // dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptionsMap);
-            // }
-            // }
-            // }
-        }
+        //
+        // if (viewElement instanceof FormDefinition) {
+        // FormDefinition form = (FormDefinition) viewElement;
+        // for (FormFieldDefinition fieldDefEntry : form.getFields()) {
+        // if (fieldDefEntry.getDataField().getType() instanceof BelongsToType) {
+        // BelongsToType belongsToField = (BelongsToType) fieldDefEntry.getDataField().getType();
+        // Map<Long, String> options = belongsToField.lookup(null);
+        // Map<String, String> fieldOptionsMap = new HashMap<String, String>();
+        // for (Map.Entry<Long, String> option : options.entrySet()) {
+        // fieldOptionsMap.put(Long.toString(option.getKey()), option.getValue());
+        // }
+        // dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptionsMap);
+        // } else if (fieldDefEntry.getDataField().getType() instanceof EnumeratedFieldType) {
+        // EnumeratedFieldType enumeratedField = (EnumeratedFieldType) fieldDefEntry.getDataField().getType();
+        // List<String> options = enumeratedField.values();
+        // Map<String, String> fieldOptionsMap = new HashMap<String, String>();
+        // for (String option : options) {
+        // fieldOptionsMap.put(option, option);
+        // }
+        // dictionaryValues.put(fieldDefEntry.getDataField().getName(), fieldOptionsMap);
+        // }
+        // }
+        // }
+        // }
         mav.addObject("dictionaryValues", dictionaryValues);
 
         mav.addObject("entityId", arguments.get("entityId"));
@@ -163,9 +162,8 @@ public class CrudController {
 
             return newViewEntity;
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
         }
-        return "getDataUpdateResponse";
     }
 
     @RequestMapping(value = "page/{viewName}/save", method = RequestMethod.POST)
@@ -183,15 +181,14 @@ public class CrudController {
 
             FormComponent form = (FormComponent) viewDefinition.getRoot().lookupComponent(componentName.replaceAll("-", "."));
 
-            Entity entity = form.getFormEntity(viewEntity, componentName.replaceAll("-", "."));
+            Entity entity = form.getFormEntity(viewEntity);
 
             form.getDataDefinition().save(entity);
 
             return null; // form.addValidationResults(viewEntity, componentName.replaceAll("-", "."), null);
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
         }
-        return "performSaveResponse";
     }
 
     // @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.GET)

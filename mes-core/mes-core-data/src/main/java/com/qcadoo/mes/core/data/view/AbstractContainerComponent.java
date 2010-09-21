@@ -11,11 +11,17 @@ import org.json.JSONObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
 
-public abstract class AbstractContainerComponent extends AbstractComponent<Object> implements ContainerComponent {
+public abstract class AbstractContainerComponent<T> extends AbstractComponent<T> implements ContainerComponent<T> {
 
     private final Map<String, Component<?>> components = new LinkedHashMap<String, Component<?>>();
 
-    public AbstractContainerComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
+    public abstract T castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final JSONObject viewObject) throws JSONException;
+
+    public abstract T getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<T> viewValue, final Set<String> pathsToUpdate);
+
+    public AbstractContainerComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }
@@ -31,9 +37,9 @@ public abstract class AbstractContainerComponent extends AbstractComponent<Objec
     }
 
     @Override
-    public final ViewValue<Object> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+    public final ViewValue<T> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
-        ViewValue<Object> value = new ViewValue<Object>();
+        ViewValue<T> value = new ViewValue<T>();
 
         for (Component<?> component : components.values()) {
             JSONObject componentViewObject = viewObject != null ? viewObject.getJSONObject("components").getJSONObject(
@@ -42,14 +48,16 @@ public abstract class AbstractContainerComponent extends AbstractComponent<Objec
             value.addComponent(component.getName(), componentViewValue);
         }
 
+        value.setValue(castContainerValue(entity, selectedEntities, viewObject));
+
         return value;
     }
 
     @Override
-    public final ViewValue<Object> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> viewValue, final Set<String> pathsToUpdate) {
+    public final ViewValue<T> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<T> viewValue, final Set<String> pathsToUpdate) {
 
-        ViewValue<Object> value = new ViewValue<Object>();
+        ViewValue<T> value = new ViewValue<T>();
 
         boolean isAnyViewValueNotNull = false;
 
@@ -62,7 +70,9 @@ public abstract class AbstractContainerComponent extends AbstractComponent<Objec
             }
         }
 
-        if (isAnyViewValueNotNull) {
+        value.setValue(getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate));
+
+        if (isAnyViewValueNotNull || value.getValue() != null) {
             return value;
         } else {
             return null;

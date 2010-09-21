@@ -5,9 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 
-public abstract class AbstractRootComponent extends AbstractContainerComponent implements RootComponent {
+public abstract class AbstractRootComponent extends AbstractContainerComponent<Object> implements RootComponent {
 
     private final Map<String, Component<?>> componentRegistry = new LinkedHashMap<String, Component<?>>();
 
@@ -40,6 +44,18 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent i
         return paths;
     }
 
+    @Override
+    public final Object castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final JSONObject viewObject) throws JSONException {
+        return null;
+    }
+
+    @Override
+    public final Object getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<Object> viewValue, final Set<String> pathsToUpdate) {
+        return null;
+    }
+
     private void initializeComponents(final int previousNotInitialized) {
         int notInitialized = 0;
 
@@ -70,7 +86,7 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent i
         for (Component<?> component : components.values()) {
             componentRegistry.put(component.getPath(), component);
             if (component instanceof ContainerComponent) {
-                registerComponents(((ContainerComponent) component).getComponents());
+                registerComponents(((ContainerComponent<?>) component).getComponents());
             }
 
         }

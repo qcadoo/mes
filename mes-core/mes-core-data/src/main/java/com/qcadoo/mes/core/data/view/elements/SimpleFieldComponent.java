@@ -18,7 +18,7 @@ import com.qcadoo.mes.core.data.view.ViewValue;
 
 public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
-    public SimpleFieldComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
+    public SimpleFieldComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }
@@ -34,7 +34,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         if (StringUtils.hasText(value)) {
             return new ViewValue<String>(convertToDatabaseValue(value.trim()));
         } else {
-            return null;
+            return new ViewValue<String>();
         }
     }
 
@@ -46,7 +46,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         if (StringUtils.hasText(value)) {
             return new ViewValue<String>(convertToViewValue(value.trim()));
         } else {
-            return null;
+            return new ViewValue<String>();
         }
     }
 
@@ -64,6 +64,8 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
         if (getSourceComponent() != null) {
             value = getFieldValue(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
+        } else if (getSourceFieldPath() != null) {
+            value = getFieldValue(entity, getSourceFieldPath());
         } else {
             value = getFieldValue(entity, getFieldPath());
         }

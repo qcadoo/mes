@@ -7,26 +7,26 @@ import com.qcadoo.mes.core.data.validation.FieldValidator;
 
 public interface FieldDefinition {
 
-    public abstract String getName();
+    String getName();
 
-    public abstract String getValue(final Object value);
+    String getValue(final Object value);
 
-    public abstract FieldType getType();
+    FieldType getType();
 
-    public abstract List<FieldValidator> getValidators();
+    List<FieldValidator> getValidators();
 
-    public abstract boolean isReadOnlyOnUpdate();
+    boolean isReadOnlyOnUpdate();
 
-    public abstract boolean isReadOnly();
+    boolean isReadOnly();
 
-    public abstract boolean isRequired();
+    boolean isRequired();
 
-    public abstract boolean isRequiredOnCreate();
+    boolean isRequiredOnCreate();
 
-    public abstract boolean isCustomField();
+    boolean isCustomField();
 
-    public abstract Object getDefaultValue();
+    Object getDefaultValue();
 
-    public abstract boolean isUnique();
+    boolean isUnique();
 
 }

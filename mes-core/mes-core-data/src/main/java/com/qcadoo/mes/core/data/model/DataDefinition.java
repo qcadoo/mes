@@ -11,48 +11,48 @@ import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 public interface DataDefinition {
 
-    public abstract Entity get(final Long id);
+    Entity get(final Long id);
 
-    public abstract void delete(final Long id);
+    void delete(final Long id);
 
-    public abstract Entity save(final Entity entity);
+    Entity save(final Entity entity);
 
-    public abstract SearchCriteriaBuilder find();
+    SearchCriteriaBuilder find();
 
-    public abstract SearchResult find(final SearchCriteria searchCriteria);
+    SearchResult find(final SearchCriteria searchCriteria);
 
-    public abstract void move(final Long id, final int offset);
+    void move(final Long id, final int offset);
 
-    public abstract void moveTo(final Long id, final int position);
+    void moveTo(final Long id, final int position);
 
-    public abstract String getName();
+    String getName();
 
-    public abstract String getFullyQualifiedClassName();
+    String getFullyQualifiedClassName();
 
-    public abstract Map<String, FieldDefinition> getFields();
+    Map<String, FieldDefinition> getFields();
 
-    public abstract FieldDefinition getField(final String fieldName);
+    FieldDefinition getField(final String fieldName);
 
-    public abstract boolean isVirtualTable();
+    boolean isVirtualTable();
 
-    public abstract boolean isCoreTable();
+    boolean isCoreTable();
 
-    public abstract boolean isPluginTable();
+    boolean isPluginTable();
 
-    public abstract List<EntityValidator> getValidators();
+    List<EntityValidator> getValidators();
 
-    public abstract void callOnCreate(final Entity entity);
+    void callOnCreate(final Entity entity);
 
-    public abstract void callOnUpdate(final Entity entity);
+    void callOnUpdate(final Entity entity);
 
-    public abstract Class<?> getClassForEntity();
+    Class<?> getClassForEntity();
 
-    public abstract Object getInstanceForEntity();
+    Object getInstanceForEntity();
 
-    public abstract boolean isPrioritizable();
+    boolean isPrioritizable();
 
-    public abstract FieldDefinition getPriorityField();
+    FieldDefinition getPriorityField();
 
-    public abstract boolean isDeletable();
+    boolean isDeletable();
 
 }

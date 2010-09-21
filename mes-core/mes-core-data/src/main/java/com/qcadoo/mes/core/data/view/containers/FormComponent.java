@@ -2,18 +2,26 @@ package com.qcadoo.mes.core.data.view.containers;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
+import com.qcadoo.mes.core.data.internal.types.BelongsToType;
+import com.qcadoo.mes.core.data.internal.types.HasManyType;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.view.AbstractContainerComponent;
+import com.qcadoo.mes.core.data.view.Component;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
 
-public final class FormComponent extends AbstractContainerComponent {
+public final class FormComponent extends AbstractContainerComponent<Long> {
 
     private boolean header = true;
 
-    public FormComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
+    public FormComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
     }
@@ -24,16 +32,73 @@ public final class FormComponent extends AbstractContainerComponent {
     }
 
     @Override
+    public Long castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
+        if (viewObject.has("value")) {
+            return viewObject.getLong("value");
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<Long> viewValue, final Set<String> pathsToUpdate) {
+        return entity.getId();
+    }
+
+    @Override
     public void addComponentOptions(final Map<String, Object> viewOptions) {
         viewOptions.put("header", header);
     }
 
-    public Entity getFormEntity(final ViewValue<Object> viewEntity, final String path) {
-        // TODO Auto-generated method stub
-        return null;
+    @SuppressWarnings("unchecked")
+    private ViewValue<Long> lookViewValue(final ViewValue<Object> viewValue) {
+        ViewValue<?> lookupedViewEntity = viewValue;
+        String[] fields = getPath().split("\\.");
+
+        for (String field : fields) {
+            lookupedViewEntity = lookupedViewEntity.getComponent(field);
+            if (lookupedViewEntity == null) {
+                return null;
+            }
+        }
+
+        return (ViewValue<Long>) lookupedViewEntity;
+
     }
 
-    public Object addValidationResults(final ViewValue<Object> viewEntity, final String path, final Entity results) {
+    public Entity getFormEntity(final ViewValue<Object> viewValue) {
+        ViewValue<Long> formValue = lookViewValue(viewValue);
+        Entity entity = new Entity(formValue.getValue());
+
+        for (Map.Entry<String, Component<?>> component : getComponents().entrySet()) {
+            String fieldPath = component.getValue().getFieldPath();
+
+            if (fieldPath == null || fieldPath.split("\\.").length > 1) {
+                continue;
+            }
+
+            FieldDefinition fieldDefinition = getDataDefinition().getField(fieldPath);
+
+            if (fieldDefinition.getType() instanceof HasManyType) {
+                continue;
+            }
+
+            ViewValue<?> componentValue = formValue.getComponent(component.getKey());
+
+            if (fieldDefinition.getType() instanceof BelongsToType) {
+                entity.setField(fieldPath, String.valueOf(componentValue.getValue()));
+            } else {
+                entity.setField(fieldPath, String.valueOf(componentValue.getValue()));
+            }
+
+        }
+
+        return entity;
+    }
+
+    public Object addValidationResults(final ViewValue<Object> viewValue, final String path, final Entity results) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -51,7 +116,7 @@ public final class FormComponent extends AbstractContainerComponent {
         return header;
     }
 
-    public void setHeader(boolean header) {
+    public void setHeader(final boolean header) {
         this.header = header;
     }
 

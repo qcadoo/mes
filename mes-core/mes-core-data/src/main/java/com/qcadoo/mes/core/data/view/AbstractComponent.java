@@ -37,13 +37,13 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private final Map<String, String> options = new HashMap<String, String>();
 
-    private final ContainerComponent parentContainer;
+    private final ContainerComponent<?> parentContainer;
 
     private final Set<String> listeners = new HashSet<String>();
 
     private DataDefinition dataDefinition;
 
-    public AbstractComponent(final String name, final ContainerComponent parentContainer, final String fieldPath,
+    public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         this.name = name;
         this.parentContainer = parentContainer;
@@ -222,17 +222,17 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 }
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
         }
         return jsonOptions.toString();
     }
 
     @Override
-    public final void updateTranslations(Map<String, String> translationsMap, final TranslationService translationService,
+    public final void updateTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         addComponentTranslations(translationsMap, translationService, locale);
         if (this.isContainer()) {
-            AbstractContainerComponent container = (AbstractContainerComponent) this;
+            AbstractContainerComponent<?> container = (AbstractContainerComponent<?>) this;
             container.updateComponentsTranslations(translationsMap, translationService, locale);
         }
     }
@@ -246,7 +246,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return sourceComponent;
     }
 
-    protected final ContainerComponent getParentContainer() {
+    protected final ContainerComponent<?> getParentContainer() {
         return parentContainer;
     }
 
@@ -314,11 +314,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
         if (pathsToUpdate == null || pathsToUpdate.isEmpty()) {
             return false;
         }
-        for (String path : pathsToUpdate) {
-            if (getPath().startsWith(path)) {
+        for (String pathToUpdate : pathsToUpdate) {
+            if (getPath().startsWith(pathToUpdate)) {
                 return false;
             }
-            if (this instanceof ContainerComponent && path.startsWith(getPath())) {
+            if (this instanceof ContainerComponent && pathToUpdate.startsWith(getPath())) {
                 return false;
             }
         }
