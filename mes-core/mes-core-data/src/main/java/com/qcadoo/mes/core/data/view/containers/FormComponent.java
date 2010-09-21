@@ -17,7 +17,7 @@ import com.qcadoo.mes.core.data.view.Component;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
 
-public final class FormComponent extends AbstractContainerComponent<Long> {
+public final class FormComponent extends AbstractContainerComponent<Long> implements SaveableComponent {
 
     private boolean header = true;
 
@@ -44,7 +44,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> {
     @Override
     public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Long> viewValue, final Set<String> pathsToUpdate) {
-        return entity.getId();
+        return entity != null ? entity.getId() : null;
     }
 
     @Override
@@ -68,6 +68,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> {
 
     }
 
+    @Override
     public Entity getFormEntity(final ViewValue<Object> viewValue) {
         ViewValue<Long> formValue = lookViewValue(viewValue);
         Entity entity = new Entity(formValue.getValue());
@@ -98,6 +99,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> {
         return entity;
     }
 
+    @Override
     public Object addValidationResults(final ViewValue<Object> viewValue, final String path, final Entity results) {
         // TODO Auto-generated method stub
         return null;
