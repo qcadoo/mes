@@ -55,7 +55,7 @@ public class CrudController {
 
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         mav.addObject("viewDefinition", viewDefinition);
-        translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
+        // translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
         Map<String, Map<String, String>> dictionaryValues = new HashMap<String, Map<String, String>>();
 
@@ -179,8 +179,7 @@ public class CrudController {
 
             ViewValue<Object> viewEntity = viewDefinition.castValue(null, new HashMap<String, Entity>(), jsonValues);
 
-            FormComponent form = (FormComponent) viewDefinition.getRoot().lookupComponent(
-                    componentName.replaceAll("-", "."));
+            FormComponent form = (FormComponent) viewDefinition.getRoot().lookupComponent(componentName.replaceAll("-", "."));
 
             Entity entity = form.getFormEntity(viewEntity, componentName.replaceAll("-", "."));
 

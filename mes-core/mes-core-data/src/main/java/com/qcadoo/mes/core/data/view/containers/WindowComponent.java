@@ -32,7 +32,8 @@ public class WindowComponent extends AbstractRootComponent {
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         if (header) {
-            translationService.translate(getPath() + ".header", locale);
+            String messageCode = getPath() + ".header";
+            translationsMap.put(messageCode, translationService.translate(messageCode, locale));
         }
     }
 
