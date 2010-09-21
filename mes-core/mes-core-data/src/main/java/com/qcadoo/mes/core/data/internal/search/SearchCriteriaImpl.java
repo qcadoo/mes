@@ -10,13 +10,14 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.view.elements.grid.GridDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
+import com.qcadoo.mes.core.data.search.SearchResult;
+import com.qcadoo.mes.core.data.view.elements.grid.GridDefinition;
 
-public final class SearchCriteriaImpl implements SearchCriteria {
+public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaBuilder {
 
     private static final int DEFAULT_MAX_RESULTS = 25;
 
@@ -30,11 +31,11 @@ public final class SearchCriteriaImpl implements SearchCriteria {
 
     private final Set<Restriction> restrictions = new HashSet<Restriction>();
 
-    private final DataDefinition dataDefinition;
+    private final ModelDefinition dataDefinition;
 
     private GridDefinition gridDefinition;
 
-    public SearchCriteriaImpl(final DataDefinition dataDefinition) {
+    public SearchCriteriaImpl(final ModelDefinition dataDefinition) {
         checkNotNull(dataDefinition);
         this.dataDefinition = dataDefinition;
         if (dataDefinition.isPrioritizable()) {
@@ -45,7 +46,7 @@ public final class SearchCriteriaImpl implements SearchCriteria {
     }
 
     @Override
-    public DataDefinition getDataDefinition() {
+    public ModelDefinition getDataDefinition() {
         return dataDefinition;
     }
 
@@ -54,17 +55,9 @@ public final class SearchCriteriaImpl implements SearchCriteria {
         return gridDefinition;
     }
 
-    public void setGridDefinition(final GridDefinition gridDefinition) {
-        this.gridDefinition = gridDefinition;
-    }
-
     @Override
     public int getMaxResults() {
         return maxResults;
-    }
-
-    public void setMaxResults(final int maxResults) {
-        this.maxResults = maxResults;
     }
 
     @Override
@@ -72,18 +65,9 @@ public final class SearchCriteriaImpl implements SearchCriteria {
         return firstResult;
     }
 
-    public void setFirstResult(final int firstResult) {
-        this.firstResult = firstResult;
-    }
-
     @Override
     public Order getOrder() {
         return order;
-    }
-
-    public void setOrder(final Order order) {
-        checkNotNull(order);
-        this.order = order;
     }
 
     @Override
@@ -91,9 +75,41 @@ public final class SearchCriteriaImpl implements SearchCriteria {
         return restrictions;
     }
 
-    public void addRestriction(final Restriction restriction) {
+    @Override
+    public SearchCriteriaBuilder forGrid(final GridDefinition gridDefinition) {
+        this.gridDefinition = gridDefinition;
+        return this;
+    }
+
+    @Override
+    public SearchResult list() {
+        return dataDefinition.find(this);
+    }
+
+    @Override
+    public SearchCriteriaBuilder restrictedWith(final Restriction restriction) {
         checkState(restrictions.size() < MAX_RESTRICTIONS, "too many restriction, max is %s", MAX_RESTRICTIONS);
         this.restrictions.add(restriction);
+        return this;
+    }
+
+    @Override
+    public SearchCriteriaBuilder orderBy(final Order order) {
+        checkNotNull(order);
+        this.order = order;
+        return this;
+    }
+
+    @Override
+    public SearchCriteriaBuilder withMaxResults(final int maxResults) {
+        this.maxResults = maxResults;
+        return this;
+    }
+
+    @Override
+    public SearchCriteriaBuilder withFirstResult(final int firstResult) {
+        this.firstResult = firstResult;
+        return this;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.qcadoo.mes.core.data.types;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 public interface FieldType {
 
@@ -13,7 +13,7 @@ public interface FieldType {
 
     Class<?> getType();
 
-    Object toObject(DataFieldDefinition fieldDefinition, Object value, ValidationResults validationResults);
+    Object toObject(FieldDefinition fieldDefinition, Object value, Entity validatedEntity);
 
     String toString(Object value);
 

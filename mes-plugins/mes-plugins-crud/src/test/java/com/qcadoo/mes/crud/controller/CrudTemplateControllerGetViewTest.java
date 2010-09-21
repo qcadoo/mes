@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.ViewDefinition;
 
 public class CrudTemplateControllerGetViewTest {
 

@@ -1,38 +1,36 @@
 package com.qcadoo.mes.core.data.internal.validators;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.CallbackDefinition;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.model.HookDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class CustomValidator implements FieldValidator {
 
     private static final String CUSTOM_ERROR = "commons.validate.field.error.custom";
 
-    private final CallbackDefinition callback;
+    private final HookDefinition callback;
 
     private String errorMessage = CUSTOM_ERROR;
 
-    public CustomValidator(final CallbackDefinition callback) {
+    public CustomValidator(final HookDefinition callback) {
         this.callback = callback;
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+            final Entity validatedEntity) {
         boolean result = callback.callWithObjectAndGetBoolean(dataDefinition, value);
         if (result) {
             return true;
         }
-        validationResults.addError(fieldDefinition, errorMessage);
+        validatedEntity.addError(fieldDefinition, errorMessage);
         return false;
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Entity entity,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity) {
         return true;
     }
 

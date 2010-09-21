@@ -4,10 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class RangeValidator implements FieldValidator {
 
@@ -25,8 +24,8 @@ public final class RangeValidator implements FieldValidator {
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
+            final Entity validatedEntity) {
         if (value == null) {
             return true;
         }
@@ -34,62 +33,58 @@ public final class RangeValidator implements FieldValidator {
         Class<?> fieldClass = fieldDefinition.getType().getType();
 
         if (fieldClass.equals(String.class)) {
-            return validateStringRange(fieldDefinition, (String) value, validationResults);
+            return validateStringRange(fieldDefinition, (String) value, validatedEntity);
         } else if (fieldClass.equals(Integer.class) || fieldClass.equals(BigDecimal.class)) {
-            return validateNumberRange(fieldDefinition, (Number) value, validationResults);
+            return validateNumberRange(fieldDefinition, (Number) value, validatedEntity);
         } else if (fieldClass.equals(Date.class)) {
-            return validateDateRange(fieldDefinition, (Date) value, validationResults);
+            return validateDateRange(fieldDefinition, (Date) value, validatedEntity);
         }
 
         return true;
     }
 
-    private boolean validateDateRange(final DataFieldDefinition fieldDefinition, final Date value,
-            final ValidationResults validationResults) {
+    private boolean validateDateRange(final FieldDefinition fieldDefinition, final Date value, final Entity validatedEntity) {
         if (from != null && value.before((Date) from)) {
-            addError(fieldDefinition, validationResults);
+            addError(fieldDefinition, validatedEntity);
             return false;
         }
         if (to != null && value.after((Date) to)) {
-            addError(fieldDefinition, validationResults);
+            addError(fieldDefinition, validatedEntity);
             return false;
         }
         return true;
     }
 
-    private boolean validateNumberRange(final DataFieldDefinition fieldDefinition, final Number value,
-            final ValidationResults validationResults) {
+    private boolean validateNumberRange(final FieldDefinition fieldDefinition, final Number value, final Entity validatedEntity) {
         if (from != null && value.doubleValue() < ((Number) from).doubleValue()) {
-            addError(fieldDefinition, validationResults);
+            addError(fieldDefinition, validatedEntity);
             return false;
         }
         if (to != null && value.doubleValue() > ((Number) to).doubleValue()) {
-            addError(fieldDefinition, validationResults);
+            addError(fieldDefinition, validatedEntity);
             return false;
         }
         return true;
     }
 
-    private boolean validateStringRange(final DataFieldDefinition fieldDefinition, final String value,
-            final ValidationResults validationResults) {
+    private boolean validateStringRange(final FieldDefinition fieldDefinition, final String value, final Entity validatedEntity) {
         if (from != null && value.compareTo((String) from) < 0) {
-            addError(fieldDefinition, validationResults);
+            addError(fieldDefinition, validatedEntity);
             return false;
         }
         if (to != null && value.compareTo((String) to) > 0) {
-            addError(fieldDefinition, validationResults);
+            addError(fieldDefinition, validatedEntity);
             return false;
         }
         return true;
     }
 
-    private void addError(final DataFieldDefinition fieldDefinition, final ValidationResults validationResults) {
-        validationResults.addError(fieldDefinition, errorMessage, String.valueOf(from), String.valueOf(to));
+    private void addError(final FieldDefinition fieldDefinition, final Entity validatedEntity) {
+        validatedEntity.addError(fieldDefinition, errorMessage, String.valueOf(from), String.valueOf(to));
     }
 
     @Override
-    public boolean validate(final DataDefinition dataDefinition, final DataFieldDefinition fieldDefinition, final Entity entity,
-            final ValidationResults validationResults) {
+    public boolean validate(final ModelDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity entity) {
         return true;
     }
 

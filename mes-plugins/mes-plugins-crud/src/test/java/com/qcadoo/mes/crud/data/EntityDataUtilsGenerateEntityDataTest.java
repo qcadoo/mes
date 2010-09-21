@@ -7,9 +7,8 @@ import static org.mockito.Mockito.mock;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.crud.data.EntityDataUtils;
+import com.qcadoo.mes.core.data.internal.model.ModelDefinitionImpl;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 public class EntityDataUtilsGenerateEntityDataTest {
 
@@ -21,17 +20,17 @@ public class EntityDataUtilsGenerateEntityDataTest {
         entity.setField("testField2", "testField2Val");
         entity.setField("testField3", "testField3Val");
 
-        DataFieldDefinition f1 = mock(DataFieldDefinition.class);
+        FieldDefinition f1 = mock(FieldDefinition.class);
         given(f1.getName()).willReturn("testField1");
         given(f1.getValue("testField1Val")).willReturn("testField1Ok");
-        DataFieldDefinition f2 = mock(DataFieldDefinition.class);
+        FieldDefinition f2 = mock(FieldDefinition.class);
         given(f2.getName()).willReturn("testField2");
         given(f2.getValue("testField2Val")).willReturn("testField2Ok");
-        DataFieldDefinition f3 = mock(DataFieldDefinition.class);
+        FieldDefinition f3 = mock(FieldDefinition.class);
         given(f3.getName()).willReturn("testField3");
         given(f3.getValue("testField3Val")).willReturn("testField3Ok");
 
-        DataDefinition dataDefinition = new DataDefinition(null);
+        ModelDefinitionImpl dataDefinition = new ModelDefinitionImpl(null, null);
         dataDefinition.addField(f1);
         dataDefinition.addField(f2);
         dataDefinition.addField(f3);

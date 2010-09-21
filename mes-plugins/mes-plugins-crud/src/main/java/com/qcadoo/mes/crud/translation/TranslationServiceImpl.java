@@ -9,11 +9,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 
-import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
-import com.qcadoo.mes.core.data.definition.view.elements.grid.ColumnDefinition;
-import com.qcadoo.mes.core.data.definition.view.elements.grid.GridDefinition;
+import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.validation.ValidationError;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.core.data.view.elements.grid.GridDefinition;
 
 @Controller
 public class TranslationServiceImpl implements TranslationService {
@@ -76,7 +76,7 @@ public class TranslationServiceImpl implements TranslationService {
         try {
             translationsMap.put(messageCode, translateWithError(messageCode, locale));
         } catch (NoSuchMessageException e) {
-            String entityFieldCode = "entity." + gridDefinition.getDataDefinition().getName() + ".field."
+            String entityFieldCode = "entity." + gridDefinition.getModelDefinition().getName() + ".field."
                     + column.getFields().get(0).getName();
             translationsMap.put(messageCode, translate(entityFieldCode, locale));
         }
@@ -133,11 +133,11 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public void translateValidationResults(final ValidationResults validationResults, final Locale locale) {
-        for (ValidationError error : validationResults.getGlobalErrors()) {
+    public void translateEntity(final Entity entity, final Locale locale) {
+        for (ValidationError error : entity.getGlobalErrors()) {
             error.setMessage(translate(error.getMessage(), error.getVars(), locale));
         }
-        for (ValidationError error : validationResults.getErrors().values()) {
+        for (ValidationError error : entity.getErrors().values()) {
             error.setMessage(translate(error.getMessage(), error.getVars(), locale));
         }
     }

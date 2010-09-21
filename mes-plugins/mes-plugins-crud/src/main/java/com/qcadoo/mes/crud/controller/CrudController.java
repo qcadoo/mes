@@ -28,13 +28,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.view.ComponentDefinition;
-import com.qcadoo.mes.core.data.definition.view.ViewDefinition;
-import com.qcadoo.mes.core.data.definition.view.ViewEntity;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.core.data.view.CastableComponent;
+import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.ViewEntity;
+import com.qcadoo.mes.core.data.view.containers.form.FormDefinition;
 import com.qcadoo.mes.crud.translation.TranslationService;
 
 @Controller
@@ -42,9 +41,6 @@ public class CrudController {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
-
-    @Autowired
-    private DataAccessService dataAccessService;
 
     @Autowired
     private TranslationService translationService;
@@ -65,7 +61,7 @@ public class CrudController {
 
         // CrudControllerUtils.generateJsonViewElementOptions(viewDefinition, viewElementsOptionsJson, null);
 
-        for (ComponentDefinition component : viewDefinition.getRoot().getComponents().values()) {
+        for (CastableComponent component : viewDefinition.getRoot().getComponents().values()) {
             // viewElementsOptionsJson.put(component.getName(), CrudControllerUtils.generateJsonViewElementOptions(component));
 
             //
@@ -107,8 +103,7 @@ public class CrudController {
     public Object getData(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         if (arguments.get("entityId") != null) {
-            Entity entity = dataAccessService.get(viewDefinition.getRoot().getDataDefinition(),
-                    Long.parseLong(arguments.get("entityId")));
+            Entity entity = viewDefinition.getRoot().getModelDefinition().get(Long.parseLong(arguments.get("entityId")));
             return viewDefinition.getValue(entity, Collections.<String, Entity> emptyMap(), null, null);
         } else {
             return viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), null, null);
@@ -157,19 +152,12 @@ public class CrudController {
             String componentName = jsonBody.getString("componentName");
             JSONObject jsonValues = jsonBody.getJSONObject("data");
 
-            Entity entity = null;
-
-            if (arguments.get("entityId") != null) {
-                entity = dataAccessService.get(viewDefinition.getRoot().getDataDefinition(),
-                        Long.parseLong(arguments.get("entityId")));
-            }
-
             Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
             Set<String> pathsToUpdate = viewDefinition.getRoot().getListenersForPath(componentName.replaceAll("-", "."));
 
-            ViewEntity<Object> viewEntity = viewDefinition.castValue(entity, selectedEntities, jsonValues);
-            ViewEntity<Object> newViewEntity = viewDefinition.getValue(entity, selectedEntities, viewEntity, pathsToUpdate);
+            ViewEntity<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+            ViewEntity<Object> newViewEntity = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
 
             return newViewEntity;
         } catch (JSONException e) {
@@ -185,12 +173,20 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
 
         try {
-            String bodyStr = body.toString();
-            System.out.println(bodyStr);
-            JSONObject jsonValues = new JSONObject(bodyStr);
+            JSONObject jsonBody = new JSONObject(body.toString());
+            String componentName = jsonBody.getString("componentName");
+            JSONObject jsonValues = jsonBody.getJSONObject("data");
 
-            Entity entity = null;
+            ViewEntity<Object> viewEntity = viewDefinition.castValue(null, new HashMap<String, Entity>(), jsonValues);
 
+            FormDefinition form = (FormDefinition) viewDefinition.getRoot().getComponentForPath(
+                    componentName.replaceAll("-", "."));
+
+            Entity entity = form.getFormEntity(viewEntity, componentName.replaceAll("-", "."));
+
+            form.getModelDefinition().save(entity);
+
+            return null; // form.addValidationResults(viewEntity, componentName.replaceAll("-", "."), null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -301,7 +297,7 @@ public class CrudController {
 
     @RequestMapping(value = "page/{viewName}/{elementName}/save", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResults saveEntity(@PathVariable("viewName") final String viewName,
+    public Entity saveEntity(@PathVariable("viewName") final String viewName,
             @PathVariable("elementName") final String elementName, @ModelAttribute final Entity entity, final Locale locale) {
         // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         // ComponentDefinition element = viewDefinition.getElementByName(elementName);

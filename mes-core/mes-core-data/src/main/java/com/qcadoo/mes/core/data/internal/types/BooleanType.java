@@ -1,8 +1,8 @@
 package com.qcadoo.mes.core.data.internal.types;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class BooleanType implements FieldType {
 
@@ -27,8 +27,7 @@ public final class BooleanType implements FieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         if (value instanceof Boolean) {
             return value;
         }

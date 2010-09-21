@@ -16,13 +16,13 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         dataDefinition.setFullyQualifiedClassName("not.existing.class.Name");
 
         // when
-        dataAccessService.get(dataDefinition, 1L);
+        dataDefinition.get(1L);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldFailIfIdIsNull() throws Exception {
         // when
-        dataAccessService.get(dataDefinition, null);
+        dataDefinition.get(null);
     }
 
     @Test
@@ -36,7 +36,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         given(criteria.uniqueResult()).willReturn(simpleDatabaseObject);
 
         // when
-        Entity entity = dataAccessService.get(dataDefinition, 1L);
+        Entity entity = dataDefinition.get(1L);
 
         // then
         assertEquals(1L, entity.getId().longValue());
@@ -57,7 +57,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         given(criteria.uniqueResult()).willReturn(simpleDatabaseObject);
 
         // when
-        dataAccessService.get(dataDefinition, 1L);
+        dataDefinition.get(1L);
     }
 
     public void shouldReturnNullIfEntityNotFound() throws Exception {
@@ -67,7 +67,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         given(criteria.uniqueResult()).willReturn(null);
 
         // when
-        Entity entity = dataAccessService.get(dataDefinition, 1L);
+        Entity entity = dataDefinition.get(1L);
 
         // then
         assertNull(entity);

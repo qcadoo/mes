@@ -1,11 +1,11 @@
 package com.qcadoo.mes.core.data.internal.types;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.definition.view.elements.grid.ListData;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.core.data.view.elements.grid.ListData;
 
 public class HasManyType implements FieldType {
 
@@ -42,9 +42,7 @@ public class HasManyType implements FieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
-
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         return null;
     }
 
@@ -57,7 +55,7 @@ public class HasManyType implements FieldType {
         return fieldName;
     }
 
-    public DataDefinition getDataDefinition() {
+    public ModelDefinition getDataDefinition() {
         return dataDefinitionService.get(entityName);
     }
 

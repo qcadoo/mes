@@ -15,12 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
-import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
-import com.qcadoo.mes.core.data.search.Restrictions;
-import com.qcadoo.mes.core.data.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
+import com.qcadoo.mes.core.data.model.ModelDefinition;
 
 public class ValidatorTest extends DataAccessTest {
 
@@ -38,14 +33,13 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("age", null);
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
-        assertTrue(validationResults.isValid());
-        assertTrue(validationResults.getErrors().isEmpty());
-        assertTrue(validationResults.getGlobalErrors().isEmpty());
+        assertTrue(entity.isValid());
+        assertTrue(entity.getErrors().isEmpty());
+        assertTrue(entity.getGlobalErrors().isEmpty());
     }
 
     @Test
@@ -57,14 +51,14 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionAge.withValidator(fieldValidatorFactory.required());
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
-        assertEquals(1, validationResults.getErrors().size());
-        assertEquals("commons.validate.field.error.missing", validationResults.getErrorForField("age").getMessage());
-        assertEquals(0, validationResults.getGlobalErrors().size());
+        assertFalse(entity.isValid());
+        assertEquals(1, entity.getErrors().size());
+        assertEquals("commons.validate.field.error.missing", entity.getError("age").getMessage());
+        assertEquals(0, entity.getGlobalErrors().size());
     }
 
     @Test
@@ -76,14 +70,14 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionAge.withValidator(fieldValidatorFactory.required().customErrorMessage("missing age"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
-        assertEquals(1, validationResults.getErrors().size());
-        assertEquals("missing age", validationResults.getErrorForField("age").getMessage());
-        assertEquals(0, validationResults.getGlobalErrors().size());
+        assertFalse(entity.isValid());
+        assertEquals(1, entity.getErrors().size());
+        assertEquals("missing age", entity.getError("age").getMessage());
+        assertEquals(0, entity.getGlobalErrors().size());
     }
 
     @Test
@@ -108,11 +102,11 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("age", "21w");
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -122,11 +116,11 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("money", "221.2w");
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -136,11 +130,11 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("money", "2010-01-a");
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -150,11 +144,11 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("money", "a");
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -183,11 +177,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionAge.withValidator(fieldValidatorFactory.required());
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -199,11 +193,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionName.withValidator(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -215,11 +209,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -231,11 +225,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -247,11 +241,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionAge.withValidator(fieldValidatorFactory.range(null, 10));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -263,11 +257,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionAge.withValidator(fieldValidatorFactory.range(4, null));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -279,11 +273,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(40, 50));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -295,11 +289,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(30, 40));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -311,11 +305,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(new Date(), new Date()));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -327,11 +321,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(null, new Date()));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -343,11 +337,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionRetired.withValidator(fieldValidatorFactory.range(true, true));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -359,11 +353,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionAge.withValidator(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -375,11 +369,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -391,11 +385,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.precisionAndScale(6, 2));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -407,11 +401,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -423,11 +417,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.precisionAndScale(4, 1));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -439,11 +433,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionRetired.withValidator(fieldValidatorFactory.length(0));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -455,11 +449,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.length(0));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -471,11 +465,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionName.withValidator(fieldValidatorFactory.length(5));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -484,21 +478,16 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "not existed");
 
-        SearchResultImpl resultSet = new SearchResultImpl();
-        resultSet.setTotalNumberOfEntities(0);
-
-        given(
-                dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
-                        .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed")).build())).willReturn(resultSet);
+        given(criteria.uniqueResult()).willReturn(0);
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -509,24 +498,16 @@ public class ValidatorTest extends DataAccessTest {
 
         SimpleDatabaseObject databaseObject = new SimpleDatabaseObject(1L);
 
-        SearchResultImpl resultSet = new SearchResultImpl();
-        resultSet.setTotalNumberOfEntities(0);
-
-        given(
-                dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
-                        .restrictedWith(Restrictions.eq(fieldDefinitionName, "not existed"))
-                        .restrictedWith(Restrictions.idRestriction(1L, RestrictionOperator.NE)).build())).willReturn(resultSet);
-
-        given(criteria.uniqueResult()).willReturn(databaseObject);
+        given(criteria.uniqueResult()).willReturn(databaseObject, 0);
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -535,21 +516,16 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "existed");
 
-        SearchResultImpl resultSet = new SearchResultImpl();
-        resultSet.setTotalNumberOfEntities(1);
-
-        given(
-                dataAccessServiceMock.find(SearchCriteriaBuilder.forEntity(dataDefinition).withMaxResults(1)
-                        .restrictedWith(Restrictions.eq(fieldDefinitionName, "existed")).build())).willReturn(resultSet);
+        given(criteria.uniqueResult()).willReturn(1);
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -561,11 +537,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -577,14 +553,14 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
-        assertEquals(1, validationResults.getErrors().size());
-        assertEquals("commons.validate.field.error.custom", validationResults.getErrorForField("name").getMessage());
-        assertEquals(0, validationResults.getGlobalErrors().size());
+        assertFalse(entity.isValid());
+        assertEquals(1, entity.getErrors().size());
+        assertEquals("commons.validate.field.error.custom", entity.getError("name").getMessage());
+        assertEquals(0, entity.getGlobalErrors().size());
     }
 
     @Test
@@ -596,11 +572,11 @@ public class ValidatorTest extends DataAccessTest {
         fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwertz"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     @Test
@@ -613,11 +589,11 @@ public class ValidatorTest extends DataAccessTest {
         dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session).save(any(SimpleDatabaseObject.class));
-        assertFalse(validationResults.isNotValid());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -631,14 +607,14 @@ public class ValidatorTest extends DataAccessTest {
         dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
-        assertTrue(validationResults.getErrors().isEmpty());
-        assertEquals(1, validationResults.getGlobalErrors().size());
-        assertEquals("commons.validate.field.error.customEntity", validationResults.getGlobalErrors().get(0).getMessage());
+        assertFalse(entity.isValid());
+        assertTrue(entity.getErrors().isEmpty());
+        assertEquals(1, entity.getGlobalErrors().size());
+        assertEquals("commons.validate.field.error.customEntity", entity.getGlobalErrors().get(0).getMessage());
     }
 
     @Test
@@ -651,16 +627,16 @@ public class ValidatorTest extends DataAccessTest {
         dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrX"));
 
         // when
-        ValidationResults validationResults = dataAccessService.save(dataDefinition, entity);
+        entity = dataDefinition.save(entity);
 
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
-        assertTrue(validationResults.isNotValid());
+        assertFalse(entity.isValid());
     }
 
     public class CustomValidateMethod {
 
-        public boolean isEqualToQwerty(final DataDefinition dataDefinition, final Object object) {
+        public boolean isEqualToQwerty(final ModelDefinition dataDefinition, final Object object) {
             return String.valueOf(object).equals("qwerty");
         }
 
@@ -668,7 +644,7 @@ public class ValidatorTest extends DataAccessTest {
 
     public class CustomEntityValidateMethod {
 
-        public boolean hasAge18AndNameMrT(final DataDefinition dataDefinition, final Entity entity) {
+        public boolean hasAge18AndNameMrT(final ModelDefinition dataDefinition, final Entity entity) {
             return (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T"));
         }
 
