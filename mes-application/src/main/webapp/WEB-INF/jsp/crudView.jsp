@@ -34,7 +34,7 @@
 	<script type="text/javascript" src="../js/qcd/components/elements/grid.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/elements/textInput.js"></script>
 	
-	<script type="text/javascript"><!--
+	<script type="text/javascript">
 
 		var viewName = "${viewDefinition.name}";
 		var entityId = "${entityId}";
@@ -60,18 +60,14 @@
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
 
-	--></script>
+	</script>
 </head>
 <body>
-	<div>
-		<c:forEach items="${translationsMap}" var="translation">
-			<!--<div>${translation.key} - ${translation.value}</div>-->
-		</c:forEach>
-	</div>
 
 	<div id="content">
 		<tiles:insertTemplate template="components/component.jsp">
 			<tiles:putAttribute name="component" value="${viewDefinition.root}" />
+			<tiles:putAttribute name="viewName" value="${viewDefinition.name}" />
 		</tiles:insertTemplate>
 	</div>	
 	

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.DataDefinition;
@@ -46,6 +48,8 @@ public final class GridComponent extends AbstractComponent<ListData> {
     private final List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 
     private String correspondingViewName;
+
+    private boolean header = true;
 
     public GridComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
@@ -139,6 +143,22 @@ public final class GridComponent extends AbstractComponent<ListData> {
         }
     }
 
+    @Override
+    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        if (header) {
+            String messageCode = getViewName() + "." + getPath() + ".header";
+            translationsMap.put(messageCode, translationService.translate(messageCode, locale));
+        }
+        for (ColumnDefinition column : columns) {
+            List<String> messageCodes = new LinkedList<String>();
+            messageCodes.add(getViewName() + "." + getPath() + ".column." + column.getName());
+            messageCodes.add(getDataDefinition().getName() + "." + column.getName() + ".label");
+            translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
+        }
+
+    }
+
     private Object getFieldsForOptions(final Map<String, FieldDefinition> fields) {
         return new ArrayList<String>(fields.keySet());
     }
@@ -175,6 +195,14 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
         int totalNumberOfEntities = rs.getTotalNumberOfEntities();
         return new ListData(totalNumberOfEntities, gridEntities);
+    }
+
+    public boolean isHeader() {
+        return header;
+    }
+
+    public void setHeader(boolean header) {
+        this.header = header;
     }
 
 }

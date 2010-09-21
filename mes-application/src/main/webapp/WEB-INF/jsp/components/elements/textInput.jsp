@@ -8,12 +8,16 @@
 
 <tiles:useAttribute name="component" />
 <tiles:useAttribute name="componentFullName"/>
+<tiles:useAttribute name="componentFullNameWithDots"/>
+<tiles:useAttribute name="viewName" ignore="true"/>
 
 <div class="component component_element component_element_textInput" id="${componentFullName}">
 	<div class="element_options" style="display: none">
 		${component.optionsAsJson}
 	</div>
 	
-	${component.name}
+	<c:set var="headerLabel" value="${viewName}.${componentFullNameWithDots}.label"/>
+	${translationsMap[headerLabel]}
+	
 	<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
 </div>

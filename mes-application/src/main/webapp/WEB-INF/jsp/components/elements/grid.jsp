@@ -8,6 +8,8 @@
 
 <tiles:useAttribute name="component" />
 <tiles:useAttribute name="componentFullName"/>
+<tiles:useAttribute name="componentFullNameWithDots"/>
+<tiles:useAttribute name="viewName" ignore="true"/>
 
 <div class="component component_element component_element_grid" id="${componentFullName}" style="margin: 10px;">
 	<div class=element_options style="display: none">
@@ -15,7 +17,10 @@
 	</div>
 	
 	<div style="font-weight: bold; margin-bottom: 10px;">
-		Grid ${componentFullName}
+		<c:if test="${component.header}">
+			<c:set var="headerLabel" value="${viewName}.${componentFullNameWithDots}.header"/>
+			${translationsMap[headerLabel]}
+		</c:if>
 	</div>
 	
 	<table class="element_table" id="${componentFullName}_grid">
