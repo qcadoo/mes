@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.internal.view;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.view.RootComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -52,6 +54,12 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             final ViewValue<Object> globalViewEntity, final Set<String> pathsToUpdate) {
         return wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewEntity != null ? globalViewEntity.getComponent(root.getName()) : null, pathsToUpdate));
+    }
+
+    @Override
+    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        root.updateTranslations(translationsMap, translationService, locale);
     }
 
     private ViewValue<Object> wrapIntoViewValue(final ViewValue<?> viewValue) {

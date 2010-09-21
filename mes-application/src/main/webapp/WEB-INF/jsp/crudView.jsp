@@ -63,6 +63,11 @@
 	--></script>
 </head>
 <body>
+	<div>
+		<c:forEach items="${translationsMap}" var="translation">
+			<!--<div>${translation.key} - ${translation.value}</div>-->
+		</c:forEach>
+	</div>
 
 	<div id="content">
 		<tiles:insertTemplate template="components/component.jsp">

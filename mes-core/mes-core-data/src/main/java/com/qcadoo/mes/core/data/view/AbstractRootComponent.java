@@ -15,8 +15,9 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
 
     private final Map<String, Component<?>> componentRegistry = new LinkedHashMap<String, Component<?>>();
 
-    public AbstractRootComponent(final String name, final DataDefinition dataDefinition) {
+    public AbstractRootComponent(final String name, final DataDefinition dataDefinition, final String viewName) {
         super(name, null, null, null);
+        setViewName(viewName);
         setDataDefinition(dataDefinition);
     }
 

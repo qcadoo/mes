@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.data.view.elements;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +53,10 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
+        List<String> messageCodes = new LinkedList<String>();
+        messageCodes.add(getPath() + ".label");
+        messageCodes.add(getDataDefinition().getName() + "." + getName() + ".label");
+        translationsMap.put(getPath() + ".label", translationService.translate(messageCodes, locale));
     }
 
     private String getStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {

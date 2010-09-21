@@ -20,6 +20,8 @@ public interface Component<T> extends CastableComponent<T>, ListenableComponent,
 
     String getPath();
 
+    String getViewName();
+
     String getFieldPath();
 
     DataDefinition getDataDefinition();
