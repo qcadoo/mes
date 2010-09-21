@@ -34,13 +34,17 @@ public final class FormComponent extends AbstractContainerComponent<Long> {
     @Override
     public Long castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
-        return null;
+        if (viewObject.has("value")) {
+            return viewObject.getLong("value");
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Long> viewValue, final Set<String> pathsToUpdate) {
-        return null;
+        return entity.getId();
     }
 
     @Override
@@ -71,7 +75,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> {
         for (Map.Entry<String, Component<?>> component : getComponents().entrySet()) {
             String fieldPath = component.getValue().getFieldPath();
 
-            if (fieldPath == null || fieldPath.matches("\\.")) {
+            if (fieldPath == null || fieldPath.split("\\.").length > 1) {
                 continue;
             }
 
@@ -90,9 +94,6 @@ public final class FormComponent extends AbstractContainerComponent<Long> {
             }
 
         }
-
-        System.out.println(" 1 ----> " + entity.getId());
-        System.out.println(" 2 ----> " + entity.getFields());
 
         return entity;
     }

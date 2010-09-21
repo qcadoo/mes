@@ -225,11 +225,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
     }
 
     @Override
-    public final void updateTranslations(Map<String, String> translationsMap, final TranslationService translationService,
+    public final void updateTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         addComponentTranslations(translationsMap, translationService, locale);
         if (this.isContainer()) {
-            AbstractContainerComponent container = (AbstractContainerComponent) this;
+            AbstractContainerComponent<?> container = (AbstractContainerComponent<?>) this;
             container.updateComponentsTranslations(translationsMap, translationService, locale);
         }
     }

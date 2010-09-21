@@ -32,7 +32,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         if (StringUtils.hasText(value)) {
             return new ViewValue<String>(convertToDatabaseValue(value.trim()));
         } else {
-            return null;
+            return new ViewValue<String>();
         }
     }
 
@@ -44,7 +44,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         if (StringUtils.hasText(value)) {
             return new ViewValue<String>(convertToViewValue(value.trim()));
         } else {
-            return null;
+            return new ViewValue<String>();
         }
     }
 
@@ -58,6 +58,8 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
         if (getSourceComponent() != null) {
             value = getFieldValue(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
+        } else if (getSourceFieldPath() != null) {
+            value = getFieldValue(entity, getSourceFieldPath());
         } else {
             value = getFieldValue(entity, getFieldPath());
         }
