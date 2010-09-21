@@ -64,7 +64,7 @@ QCD.PageController = function(_viewName) {
 		//QCD.info(parametersJson);
 		QCDConnector.sendPost("save", parametersJson, function(response) {
 			QCD.info(response);
-			//setValueData(response);
+			setValueData(response);
 		});
 	}
 	
