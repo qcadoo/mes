@@ -15,6 +15,7 @@
 	</div>
 	
 	<div style="font-weight: bold; margin-bottom: 10px;">
+		<c:if test="${component.backButton}"><button id="${componentFullName}_backButton">back</button></c:if>
 		Window ${componentFullName}
 	</div>
 	

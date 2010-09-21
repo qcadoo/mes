@@ -1,6 +1,7 @@
-package com.qcadoo.mes.crud.translation;
+package com.qcadoo.mes.core.data.internal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -36,16 +37,46 @@ public class TranslationServiceImpl implements TranslationService {
     @Autowired
     private MessageSource messageSource;
 
-    private String translateWithError(final String messageCode, final Locale locale) {
-        return messageSource.getMessage(messageCode, null, locale);
-    }
-
+    @Override
     public String translate(final String messageCode, final Locale locale) {
         return messageSource.getMessage(messageCode, null, "TO TRANSLATE: " + messageCode, locale);
     }
 
+    @Override
     public String translate(final String messageCode, final Object[] args, final Locale locale) {
         return messageSource.getMessage(messageCode, args, "TO TRANSLATE: " + messageCode, locale);
+    }
+
+    @Override
+    public String translate(final List<String> messageCodes, final Locale locale) {
+        for (String messageCode : messageCodes) {
+            try {
+                return translateWithError(messageCode, locale);
+            } catch (NoSuchMessageException e) {
+
+            }
+        }
+        return "TO TRANSLATE: " + messageCodes;
+    }
+
+    @Override
+    public String translate(final List<String> messageCodes, final Object[] args, final Locale locale) {
+        for (String messageCode : messageCodes) {
+            try {
+                return translateWithError(messageCode, args, locale);
+            } catch (NoSuchMessageException e) {
+
+            }
+        }
+        return "TO TRANSLATE: " + messageCodes;
+    }
+
+    private String translateWithError(final String messageCode, final Locale locale) {
+        return messageSource.getMessage(messageCode, null, locale);
+    }
+
+    private String translateWithError(final String messageCode, final Object[] args, final Locale locale) {
+        return messageSource.getMessage(messageCode, args, locale);
     }
 
     @Override
@@ -104,7 +135,6 @@ public class TranslationServiceImpl implements TranslationService {
     // }
     // }
 
-    @Override
     public void updateTranslationsForViewDefinition(final ViewDefinition viewDefinition,
             final Map<String, String> translationsMap, final Locale locale) {
         // if (viewDefinition.getHeader() != null) {
@@ -132,7 +162,6 @@ public class TranslationServiceImpl implements TranslationService {
         // }
     }
 
-    @Override
     public void translateEntity(final Entity entity, final Locale locale) {
         for (ValidationError error : entity.getGlobalErrors()) {
             error.setMessage(translate(error.getMessage(), error.getVars(), locale));

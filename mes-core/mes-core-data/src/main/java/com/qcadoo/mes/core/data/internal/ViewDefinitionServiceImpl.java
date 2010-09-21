@@ -52,12 +52,12 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinitions = new HashMap<String, ViewDefinition>();
         viewDefinitions.put("products.productGridView", createProductGridView());
         viewDefinitions.put("products.productDetailsView", createProductDetailsView());
+        viewDefinitions.put("products.substituteDetailsView", createProductSubstituteDetailsView());
+        viewDefinitions.put("products.substituteComponentDetailsView", createProductSubstituteComponentDetailsView());
 
         viewDefinitions.put("test.grid", createTestGridView());
         viewDefinitions.put("test.form", createTestFormView());
 
-        // viewDefinitions.put("products.substituteDetailsView", createProductSubstituteDetailsView());
-        // viewDefinitions.put("products.substituteComponentDetailsView", createProductSubstituteComponentDetailsView());
         // viewDefinitions.put("products.orderGridView", createOrderGridView());
         // viewDefinitions.put("products.orderDetailsView", createOrderDetailsView());
         // viewDefinitions.put("products.instructionGridView", createInstructionGridView());
@@ -114,6 +114,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD);
+        windowDefinition.setBackButton(false);
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "test");
 
@@ -166,7 +167,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         GridComponent beanCForm_beansBGrig = new GridComponent("beansBGrig", formCDefinition, "beansB", null);
         beanCForm_beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
         formCDefinition.addComponent(beanCForm_beansBGrig);
-        formCDefinition.addComponent(new TextInputComponent("nameB", formCDefinition, null, "#{mainWindow.beanCForm.beansBGrig}.name"));
+        formCDefinition.addComponent(new TextInputComponent("nameB", formCDefinition, null,
+                "#{mainWindow.beanCForm.beansBGrig}.name"));
         windowDefinition.addComponent(formCDefinition);
 
         FormComponent formBDefinition = new FormComponent("beanBForm", windowDefinition, null, "#{mainWindow.beansBGrig}");
@@ -182,6 +184,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition);
+        windowDefinition.setBackButton(false);
 
         ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productGridView", windowDefinition, "products");
 
@@ -237,19 +240,19 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         windowDefinition.addComponent(substituteGridDefinition);
 
         GridComponent substituteComponentGridDefinition = new GridComponent("substitutesComponentGrid", windowDefinition, null,
-                "#{substitutesGrid}.components");
-        // substituteComponentGridDefinition.addColumn(createColumnDefinition("number",
-        // substituteComponentDataDefinition.getField("product"), "#product['number']"));
-        // substituteComponentGridDefinition.addColumn(createColumnDefinition("name",
-        // substituteComponentDataDefinition.getField("product"), "#product['name']"));
-        // substituteComponentGridDefinition.addColumn(createColumnDefinition("quantity",
-        // substituteComponentDataDefinition.getField("quantity"), null));
-        // substituteComponentGridDefinition.addOptions("paging", "false");
-        // substituteComponentGridDefinition.addOptions("sortable", "false");
-        // substituteComponentGridDefinition.addOptions("filter", "false");
-        // substituteComponentGridDefinition.addOptions("multiselect", "false");
-        // substituteComponentGridDefinition.addOptions("height", "150");
-        // substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
+                "#{mainWindow.substitutesGrid}.components");
+        substituteComponentGridDefinition.addColumn(createColumnDefinition("number",
+                substituteComponentDataDefinition.getField("product"), "#product['number']"));
+        substituteComponentGridDefinition.addColumn(createColumnDefinition("name",
+                substituteComponentDataDefinition.getField("product"), "#product['name']"));
+        substituteComponentGridDefinition.addColumn(createColumnDefinition("quantity",
+                substituteComponentDataDefinition.getField("quantity"), null));
+        substituteComponentGridDefinition.addOptions("paging", "false");
+        substituteComponentGridDefinition.addOptions("sortable", "false");
+        substituteComponentGridDefinition.addOptions("filter", "false");
+        substituteComponentGridDefinition.addOptions("multiselect", "false");
+        substituteComponentGridDefinition.addOptions("height", "150");
+        substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
         windowDefinition.addComponent(substituteComponentGridDefinition);
 
         windowDefinition.initialize();
@@ -257,64 +260,65 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return viewDefinition;
     }
 
-    // private ViewDefinition createProductSubstituteDetailsView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("products.substituteDetailsView", "products");
-    // viewDefinition.setHeader("products.substituteDetailsView.header");
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    //
-    // DataDefinition substitutesDataDefinition = dataDefinitionService.get("products.substitute");
-    // FormDefinition formDefinition = new FormDefinition("substitutesDetailsForm", substitutesDataDefinition);
-    // formDefinition.setCorrespondingViewName("products.productDetailsView");
-    // formDefinition.setParent("entityId");
-    // formDefinition.setParentField("product");
-    //
-    // FormFieldDefinition fieldNumber = createFieldDefinition("number", substitutesDataDefinition.getField("number"),
-    // fieldControlFactory.stringControl());
-    // FormFieldDefinition fieldName = createFieldDefinition("name", substitutesDataDefinition.getField("name"),
-    // fieldControlFactory.stringControl());
-    // FormFieldDefinition fieldPriority = createFieldDefinition("priority", substitutesDataDefinition.getField("priority"),
-    // fieldControlFactory.displayControl());
-    // FormFieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom",
-    // substitutesDataDefinition.getField("effectiveDateFrom"), fieldControlFactory.dateTimeControl());
-    // FormFieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo",
-    // substitutesDataDefinition.getField("effectiveDateTo"), fieldControlFactory.dateTimeControl());
-    //
-    // formDefinition.addField(fieldPriority);
-    // formDefinition.addField(fieldNumber);
-    // formDefinition.addField(fieldName);
-    // formDefinition.addField(fieldEffectiveDateFrom);
-    // formDefinition.addField(fieldEffectiveDateTo);
-    //
-    // elements.add(formDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    // return viewDefinition;
-    // }
-    //
-    // private ViewDefinition createProductSubstituteComponentDetailsView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("products.substituteComponentDetailsView", "products");
-    // viewDefinition.setHeader("products.substituteComponentDetailsView.header");
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    //
-    // DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
-    // FormDefinition formDefinition = new FormDefinition("substitutesComponentDetailsForm", substitutesComponentDataDefinition);
-    // formDefinition.setCorrespondingViewName("products.productDetailsView");
-    // formDefinition.setParent("entityId");
-    // formDefinition.setParentField("substitute");
-    //
-    // FormFieldDefinition fieldProduct = createFieldDefinition("product",
-    // substitutesComponentDataDefinition.getField("product"), fieldControlFactory.lookupControl());
-    // FormFieldDefinition fieldQuantity = createFieldDefinition("quantity",
-    // substitutesComponentDataDefinition.getField("quantity"), fieldControlFactory.decimalControl());
-    //
-    // formDefinition.addField(fieldProduct);
-    // formDefinition.addField(fieldQuantity);
-    //
-    // elements.add(formDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    // return viewDefinition;
-    // }
+    private ViewDefinition createProductSubstituteDetailsView() {
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
+
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition);
+
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteDetailsView", windowDefinition, "products");
+
+        FormComponent formDefinition = new FormComponent("substitutesDetailsForm", windowDefinition, null, null);
+        formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
+        formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new TextInputComponent("priority", formDefinition, "priority", null));
+
+        // FormFieldDefinition fieldNumber = createFieldDefinition("number", substitutesDataDefinition.getField("number"),
+        // fieldControlFactory.stringControl());
+        // FormFieldDefinition fieldName = createFieldDefinition("name", substitutesDataDefinition.getField("name"),
+        // fieldControlFactory.stringControl());
+        // FormFieldDefinition fieldPriority = createFieldDefinition("priority", substitutesDataDefinition.getField("priority"),
+        // fieldControlFactory.displayControl());
+        // FormFieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom",
+        // substitutesDataDefinition.getField("effectiveDateFrom"), fieldControlFactory.dateTimeControl());
+        // FormFieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo",
+        // substitutesDataDefinition.getField("effectiveDateTo"), fieldControlFactory.dateTimeControl());
+        // formDefinition.addField(fieldPriority);
+        // formDefinition.addField(fieldNumber);
+        // formDefinition.addField(fieldName);
+        // formDefinition.addField(fieldEffectiveDateFrom);
+        // formDefinition.addField(fieldEffectiveDateTo);
+
+        windowDefinition.addComponent(formDefinition);
+
+        windowDefinition.initialize();
+
+        return viewDefinition;
+    }
+
+    private ViewDefinition createProductSubstituteComponentDetailsView() {
+        DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
+
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substitutesComponentDataDefinition);
+
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteComponentDetailsView", windowDefinition,
+                "products");
+
+        FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
+        formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
+
+        // FormFieldDefinition fieldProduct = createFieldDefinition("product",
+        // substitutesComponentDataDefinition.getField("product"), fieldControlFactory.lookupControl());
+        // FormFieldDefinition fieldQuantity = createFieldDefinition("quantity",
+        // substitutesComponentDataDefinition.getField("quantity"), fieldControlFactory.decimalControl());
+        // formDefinition.addField(fieldProduct);
+        // formDefinition.addField(fieldQuantity);
+
+        windowDefinition.addComponent(formDefinition);
+
+        windowDefinition.initialize();
+
+        return viewDefinition;
+    }
 
     // private ViewDefinition createUserGroupGridView() {
     // ViewDefinition viewDefinition = new ViewDefinition("users.groupGridView", "users");

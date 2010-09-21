@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationServiceImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
 
 public class TranslationServiceImplTranslateValidationResultsTest {

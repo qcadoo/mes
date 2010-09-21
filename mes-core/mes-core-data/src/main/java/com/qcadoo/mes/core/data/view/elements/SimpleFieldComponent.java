@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.view.elements;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,6 +9,7 @@ import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.view.AbstractComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -44,6 +46,12 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        translationService.translate(getPath() + ".header", locale);
     }
 
     private String getStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {

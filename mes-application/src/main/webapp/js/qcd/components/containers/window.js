@@ -12,6 +12,11 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	function constructor(_this) {
 		var childrenElement = $("#"+elementName+" .windowComponents");
 		_this.constructChildren(childrenElement.children());
+		$("#"+elementName+"_backButton").click(performBack);
+	}
+	
+	function performBack() {
+		mainController.goBack();
 	}
 	
 	this.getComponentValue = function() {

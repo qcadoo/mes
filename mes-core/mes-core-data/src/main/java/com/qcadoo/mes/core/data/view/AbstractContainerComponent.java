@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.view;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 
 public abstract class AbstractContainerComponent<T> extends AbstractComponent<T> implements ContainerComponent<T> {
 
@@ -74,6 +76,13 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
             return value;
         } else {
             return null;
+        }
+    }
+
+    public final void updateComponentsTranslations(Map<String, String> translationsMap,
+            final TranslationService translationService, final Locale locale) {
+        for (Component<?> component : components.values()) {
+            component.updateTranslations(translationsMap, translationService, locale);
         }
     }
 

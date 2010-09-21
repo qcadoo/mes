@@ -3,6 +3,7 @@ package com.qcadoo.mes.core.data.view;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.DataDefinition;
@@ -220,6 +222,21 @@ public abstract class AbstractComponent<T> implements Component<T> {
             throw new RuntimeException(e.getMessage(), e);
         }
         return jsonOptions.toString();
+    }
+
+    @Override
+    public final void updateTranslations(Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        addComponentTranslations(translationsMap, translationService, locale);
+        if (this.isContainer()) {
+            AbstractContainerComponent container = (AbstractContainerComponent) this;
+            container.updateComponentsTranslations(translationsMap, translationService, locale);
+        }
+    }
+
+    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
+            final Locale locale) {
+        // can be implemented
     }
 
     protected final Component<?> getSourceComponent() {
