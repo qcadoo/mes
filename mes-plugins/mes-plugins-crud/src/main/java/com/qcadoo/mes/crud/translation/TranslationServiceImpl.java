@@ -12,8 +12,8 @@ import org.springframework.stereotype.Controller;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.elements.GridComponent;
 import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
-import com.qcadoo.mes.core.data.view.elements.grid.GridDefinition;
 
 @Controller
 public class TranslationServiceImpl implements TranslationService {
@@ -70,7 +70,7 @@ public class TranslationServiceImpl implements TranslationService {
         translationsMap.put(messageCode, translate(messageCode, locale));
     }
 
-    private void addGridColumnTranslation(final ViewDefinition viewDefinition, final GridDefinition gridDefinition,
+    private void addGridColumnTranslation(final ViewDefinition viewDefinition, final GridComponent gridDefinition,
             final ColumnDefinition column, final Map<String, String> translationsMap, final Locale locale) {
         String messageCode = viewDefinition.getName() + "." + gridDefinition.getName() + ".column." + column.getName();
         try {

@@ -2,10 +2,10 @@ package com.qcadoo.mes.core.data.view;
 
 import java.util.Map;
 
-public interface ContainerComponent<T> extends ComponentDefinition<T> {
+public interface ContainerComponent<T> extends Component<T> {
 
-    Map<String, ComponentDefinition<?>> getComponents();
+    Map<String, Component<?>> getComponents();
 
-    void addComponent(ComponentDefinition<?> component);
+    void addComponent(Component<?> component);
 
 }

@@ -13,7 +13,7 @@ public interface ViewDefinition extends CastableComponent<Object> {
 
     RootComponent getRoot();
 
-    ViewEntity<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewEntity<Object> globalViewEntity, final Set<String> pathsToUpdate);
+    ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<Object> globalViewEntity, final Set<String> pathsToUpdate);
 
 }

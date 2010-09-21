@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.search.SearchResult;
+import com.qcadoo.mes.core.data.view.elements.GridComponent;
 import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
-import com.qcadoo.mes.core.data.view.elements.grid.GridDefinition;
 
 public class ListDataUtils {
 
@@ -14,7 +14,7 @@ public class ListDataUtils {
 
     }
 
-    public static ListData generateListData(SearchResult rs, GridDefinition gridDefinition) {
+    public static ListData generateListData(SearchResult rs, GridComponent gridDefinition) {
         List<Entity> entities = rs.getEntities();
         List<Entity> gridEntities = new LinkedList<Entity>();
 

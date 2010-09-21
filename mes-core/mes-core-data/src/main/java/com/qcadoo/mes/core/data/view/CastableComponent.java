@@ -9,6 +9,6 @@ import com.qcadoo.mes.core.data.beans.Entity;
 
 public interface CastableComponent<T> {
 
-    ViewEntity<T> castValue(Entity entity, Map<String, Entity> selectedEntities, JSONObject viewObject) throws JSONException;
+    ViewValue<T> castValue(Entity entity, Map<String, Entity> selectedEntities, JSONObject viewObject) throws JSONException;
 
 }
