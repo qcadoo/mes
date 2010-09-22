@@ -54,6 +54,7 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     @Override
     public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<ComboBoxValue> viewEntity, final Set<String> pathsToUpdate) {
+
         // if ((getSourceFieldPath() != null && getSourceComponent() != null) || getFieldPath() != null) {
         // if (entity == null) {
         // return new ViewValue<ListData>(new ListData(0, Collections.<Entity> emptyList()));
