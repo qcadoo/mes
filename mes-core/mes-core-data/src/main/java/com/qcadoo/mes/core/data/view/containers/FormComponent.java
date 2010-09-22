@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
-import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationError;
@@ -102,10 +101,10 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
             if (value == null) {
                 entity.setField(fieldPath, null);
-            } else if (fieldDefinition.getType() instanceof BelongsToType) {
-                entity.setField(fieldPath, String.valueOf(value));
+                // } else if (fieldDefinition.getType() instanceof BelongsToType) {
+                // entity.setField(fieldPath, String.valueOf(value));
             } else {
-                entity.setField(fieldPath, String.valueOf(value));
+                entity.setField(fieldPath, value.toString());
             }
 
         }
