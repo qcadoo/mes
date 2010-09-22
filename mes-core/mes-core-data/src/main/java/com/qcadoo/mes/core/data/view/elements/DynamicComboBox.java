@@ -55,19 +55,13 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     @Override
     public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<ComboBoxValue> viewEntity, final Set<String> pathsToUpdate) {
-
         Object value = getFieldValue(entity, getFieldPath());
-        System.out.println("BBB getValue " + value);
         String strValue;
-
         if (value == null) {
             strValue = "";
         } else {
             strValue = String.valueOf(value);
         }
-
-        System.out.println("BBB getValue " + value + " - " + strValue);
-
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
         return new ViewValue<ComboBoxValue>(comboValue);
     }

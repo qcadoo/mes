@@ -32,8 +32,13 @@ QCD.components.Component = function(_element, _mainController) {
 		this.setEnabled(value.enabled);
 		this.setVisible(value.visible);
 		this.setComponentValue(value.value);
+		this.setMessages({
+			error: value.errorMessages,
+			info: value.infoMessages,
+			success: value.successMessages
+		});
 		if (value.components) {
-			this.setComponentsValue(value.components);
+			this.setComponentsValue(value);
 		}
 	}
 	
@@ -59,6 +64,9 @@ QCD.components.Component = function(_element, _mainController) {
 		}
 	}
 	
+	this.setMessages = function(messages) {
+	}
+	
 	this.getComponentsValue = function() {
 		return null;
 	}
@@ -68,10 +76,10 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.setEnabled = function(_isEnabled) {
 		isEnabled = _isEnabled;
-		if (this.isContainer) {
-			this.setComponentsEnabled(isEnabled);	
-		}
 		this.setComponentEnabled(isEnabled);
+		//if (this.isContainer) {
+		//	this.setComponentsEnabled(isEnabled);	
+		//}
 	}
 	
 	this.isEnabled = function() {

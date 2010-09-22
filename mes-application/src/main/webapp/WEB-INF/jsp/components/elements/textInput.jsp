@@ -20,4 +20,5 @@
 	${translationsMap[headerLabel]}
 	
 	<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
+	<span id="${componentFullName}_messagesSpan"></span>
 </div>
