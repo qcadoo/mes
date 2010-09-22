@@ -50,8 +50,10 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
     @Override
     public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue) {
-        for (ValidationError validationError : entity.getGlobalErrors()) {
-            viewValue.addErrorMessage(validationError.getMessage()); // TODO
+        if (entity != null) {
+            for (ValidationError validationError : entity.getGlobalErrors()) {
+                viewValue.addErrorMessage(validationError.getMessage()); // TODO
+            }
         }
     }
 
@@ -77,7 +79,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public Entity getFormEntity(final ViewValue<Object> viewValue) {
+    public Entity getSaveableEntity(final ViewValue<Object> viewValue) {
         ViewValue<Long> formValue = lookViewValue(viewValue);
         Entity entity = new Entity(formValue.getValue());
 
@@ -96,21 +98,19 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
             ViewValue<?> componentValue = formValue.getComponent(component.getKey());
 
-            if (fieldDefinition.getType() instanceof BelongsToType) {
-                entity.setField(fieldPath, String.valueOf(componentValue.getValue()));
+            Object value = componentValue.getValue();
+
+            if (value == null) {
+                entity.setField(fieldPath, null);
+            } else if (fieldDefinition.getType() instanceof BelongsToType) {
+                entity.setField(fieldPath, String.valueOf(value));
             } else {
-                entity.setField(fieldPath, String.valueOf(componentValue.getValue()));
+                entity.setField(fieldPath, String.valueOf(value));
             }
 
         }
 
         return entity;
-    }
-
-    @Override
-    public Object addValidationResults(final ViewValue<Object> viewValue, final String path, final Entity results) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

@@ -97,11 +97,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
             if (contextEntity == null) {
                 contextEntity = selectedEntities.get(getPath());
-
-                if (contextEntity != null) {
-                    System.out.println(" 3 ---> " + getPath() + ", " + contextEntity.getId());
-                }
-
             } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
                 contextEntity = getFieldEntityValue(entity, fieldPath);
             }

@@ -188,30 +188,15 @@ public class CrudController {
 
             SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentPath);
 
-            Entity entity = saveableComponent.getFormEntity(viewEntity);
-
-            entity.setField("name", entity.getField("name") + "_saved");
+            Entity entity = saveableComponent.getSaveableEntity(viewEntity);
 
             entity = saveableComponent.getDataDefinition().save(entity);
 
             selectedEntities.put(componentPath, entity);
 
-            System.out.println(" 1 ---> " + pathsToUpdate);
-
-            ViewValue<Object> value = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
-
-            drawValue("", value);
-
-            return value;
+            return viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
-    private void drawValue(final String name, final ViewValue<?> value) {
-        System.out.println(" 2 ---> " + name + ", " + value.getValue());
-        for (Map.Entry<String, ViewValue<?>> v : value.getComponents().entrySet()) {
-            drawValue(name + "." + v.getKey(), v.getValue());
         }
     }
 

@@ -46,6 +46,10 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     }
 
     @Override
+    public final void addContainerMessages(final Entity entity, final ViewValue<Object> viewValue) {
+    }
+
+    @Override
     public final Object castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         return null;

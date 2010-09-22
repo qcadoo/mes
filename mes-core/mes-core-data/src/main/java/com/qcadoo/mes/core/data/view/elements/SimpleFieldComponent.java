@@ -31,7 +31,10 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     @Override
     public final ViewValue<String> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
-        String value = viewObject.getString("value");
+        String value = null;
+        if (!viewObject.isNull("value")) {
+            value = viewObject.getString("value");
+        }
         if (StringUtils.hasText(value)) {
             return new ViewValue<String>(convertToDatabaseValue(value.trim()));
         } else {
@@ -52,7 +55,11 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
             viewValue = new ViewValue<String>();
         }
 
-        viewValue.addErrorMessage(getErrorMessage(entity, selectedEntities));
+        String errorMessage = getErrorMessage(entity, selectedEntities);
+
+        if (errorMessage != null) {
+            viewValue.addErrorMessage(errorMessage);
+        }
 
         return viewValue;
     }
