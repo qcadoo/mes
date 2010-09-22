@@ -1,4 +1,4 @@
-package com.qcadoo.mes.crud.controller;
+package com.qcadoo.mes.plugins.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import com.qcadoo.mes.core.data.internal.EntityService;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 
 @Controller
-public class InstallController {
+public class PluginManagementController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
