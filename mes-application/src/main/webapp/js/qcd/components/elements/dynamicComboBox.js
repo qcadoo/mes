@@ -11,6 +11,8 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	
 	var select = $("#"+element.attr('id')+"_select");
 	
+	var messagesSpan = $("#"+element.attr('id')+"_messagesSpan");
+	
 	this.getComponentValue = function() {
 		var selectedVal = select.val();
 		if (!selectedVal || selectedVal.trim() == "") {
@@ -42,5 +44,28 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	
 	this.setComponentLoading = function(isLoadingVisible) {
 
+	}
+	
+	this.setMessages = function(messages) {
+		var message = "";
+		for (var i in messages.error) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.error[i];
+		}
+		for (var i in messages.info) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.info[i];
+		}
+		for (var i in messages.success) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.success[i];
+		}
+		messagesSpan.html(message);
 	}
 }

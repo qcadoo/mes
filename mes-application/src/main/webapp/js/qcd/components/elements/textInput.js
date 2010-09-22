@@ -11,6 +11,8 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	
 	var input = $("#"+element.attr('id')+"_input");
 	
+	var messagesSpan = $("#"+element.attr('id')+"_messagesSpan");
+	
 	this.insterData = function(data) {
 		input.val(data);
 	}
@@ -32,6 +34,29 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 		} else {
 			input.attr('disabled', 'true');
 		}
+	}
+	
+	this.setMessages = function(messages) {
+		var message = "";
+		for (var i in messages.error) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.error[i];
+		}
+		for (var i in messages.info) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.info[i];
+		}
+		for (var i in messages.success) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.success[i];
+		}
+		messagesSpan.html(message);
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {

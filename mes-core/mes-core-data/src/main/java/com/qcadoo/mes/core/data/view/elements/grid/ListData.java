@@ -20,11 +20,11 @@ public class ListData {
         this.entities = entities;
     }
 
-    public int getTotalNumberOfEntities() {
+    public Integer getTotalNumberOfEntities() {
         return totalNumberOfEntities;
     }
 
-    public void setTotalNumberOfEntities(final int totalNumberOfEntities) {
+    public void setTotalNumberOfEntities(final Integer totalNumberOfEntities) {
         this.totalNumberOfEntities = totalNumberOfEntities;
     }
 

@@ -1,6 +1,7 @@
 var QCDConnector = {};
 
 QCDConnector.windowName = null;
+QCDConnector.mainController = null;
 
 QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunction) {
 	if (!QCDConnector.windowName) {
@@ -30,7 +31,7 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 		complete: function(XMLHttpRequest, textStatus) {
 			if (XMLHttpRequest.status == 200) {
 				if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
-					mainController.onSessionExpired();
+					QCDConnector.mainController.onSessionExpired();
 					return;
 				}
 				if (responseFunction) {
@@ -66,7 +67,7 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 		complete: function(XMLHttpRequest, textStatus) {
 			if (XMLHttpRequest.status == 200) {
 				if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
-					mainController.onSessionExpired();
+					QCDConnector.mainController.onSessionExpired();
 					return;
 				}
 				if (responseFunction) {

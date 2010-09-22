@@ -21,4 +21,6 @@
 	
 	<select id="${componentFullName}_select">
 	</select>
+	
+	<span id="${componentFullName}_messagesSpan"></span>
 </div>

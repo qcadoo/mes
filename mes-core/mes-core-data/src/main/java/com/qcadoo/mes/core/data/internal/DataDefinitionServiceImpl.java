@@ -188,8 +188,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         dataDefinition.setPriorityField(fieldPriority);
 
-        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkSubstituteDates")
-                .customErrorMessage("products.validation.error.datesOrder"));
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("com.qcadoo.mes.products.ProductService",
+                "checkSubstituteDates").customErrorMessage("products.validation.error.datesOrder"));
 
         return dataDefinition;
     }
@@ -286,10 +286,10 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldDateTo);
         dataDefinition.addField(fieldDescription);
 
-        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkInstructionDefault")
-                .customErrorMessage("products.validation.error.default"));
-        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkInstructionDates")
-                .customErrorMessage("products.validation.error.datesOrder"));
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("com.qcadoo.mes.products.ProductService",
+                "checkInstructionDefault").customErrorMessage("products.validation.error.default"));
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("com.qcadoo.mes.products.ProductService",
+                "checkInstructionDates").customErrorMessage("products.validation.error.datesOrder"));
 
         return dataDefinition;
     }
@@ -340,8 +340,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldStartWorker);
         dataDefinition.addField(fieldEndWorker);
 
-        dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkOrderDates").customErrorMessage(
-                "products.validation.error.datesOrder"));
+        dataDefinition.addValidator(fieldValidationFactory.customEntity("com.qcadoo.mes.products.ProductService",
+                "checkOrderDates").customErrorMessage("products.validation.error.datesOrder"));
         dataDefinition.setSaveHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "fillOrderDatesAndWorkers"));
 
         return dataDefinition;
