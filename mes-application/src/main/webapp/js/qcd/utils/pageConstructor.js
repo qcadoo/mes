@@ -18,6 +18,8 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 				component = new QCD.components.elements.TextInput(element, mainController);
 			} else if (element.hasClass("component_element_dynamicComboBox")) {
 				component = new QCD.components.elements.DynamicComboBox(element, mainController);
+			} else if (element.hasClass("component_element_entityComboBox")) {
+				component = new QCD.components.elements.EntityComboBox(element, mainController);
 			} else if (element.hasClass("component_element_linkButton")) {
 				component = new QCD.components.elements.LinkButton(element, mainController);
 			}

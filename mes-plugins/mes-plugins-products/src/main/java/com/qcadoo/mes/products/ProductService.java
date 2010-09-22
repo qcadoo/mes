@@ -2,8 +2,10 @@ package com.qcadoo.mes.products;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
@@ -15,6 +17,9 @@ import com.qcadoo.mes.core.data.view.elements.grid.ListData;
 
 @Service
 public class ProductService {
+
+    @Autowired
+    private DataAccessService dataAccessService;
 
     @SuppressWarnings("unchecked")
     public void getBeanAName(final ViewValue<Object> value) {
@@ -30,6 +35,10 @@ public class ProductService {
                         + (valueNameC != null && valueNameC.getValue() != null
                                 && valueNameC.getValue().getSelectedEntityId() != null ? valueNameC.getValue()
                                 .getSelectedEntityId() : null));
+        // if (valueNameC.getValue().getSelectedEntityId() != null) {
+        // valueNameA.setValue(valueNameB.getValue());
+        // }
+        // dataAccessService.get(dataDefinition, entityId)
     }
 
     public boolean checkInstructionDefault(final DataDefinition dataDefinition, final Entity entity) {

@@ -31,6 +31,7 @@ import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.core.data.view.containers.WindowComponent;
 import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
+import com.qcadoo.mes.core.data.view.elements.EntityComboBox;
 import com.qcadoo.mes.core.data.view.elements.GridComponent;
 import com.qcadoo.mes.core.data.view.elements.LinkButton;
 import com.qcadoo.mes.core.data.view.elements.TextInputComponent;
@@ -287,6 +288,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("priority", formDefinition, "priority", null));
+        formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
+        formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
 
         // FormFieldDefinition fieldNumber = createFieldDefinition("number", substitutesDataDefinition.getField("number"),
         // fieldControlFactory.stringControl());
@@ -322,6 +325,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
+        formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
         formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
 
         // FormFieldDefinition fieldProduct = createFieldDefinition("product",
