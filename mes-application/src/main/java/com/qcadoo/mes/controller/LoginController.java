@@ -1,4 +1,4 @@
-package com.qcadoo.mes.crud.controller;
+package com.qcadoo.mes.controller;
 
 import java.util.Locale;
 
