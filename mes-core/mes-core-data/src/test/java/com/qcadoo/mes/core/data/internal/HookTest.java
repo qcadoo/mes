@@ -40,7 +40,7 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getCallback("callback", "onCreate"));
+        dataDefinition.setOnCreate(callbackFactory.getHook("callback", "onCreate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -63,7 +63,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnUpdate(callbackFactory.getCallback("callback", "onUpdate"));
+        dataDefinition.setOnUpdate(callbackFactory.getHook("callback", "onUpdate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -80,8 +80,8 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getCallback("callback", "onCreate"));
-        dataDefinition.setOnSave(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setOnCreate(callbackFactory.getHook("callback", "onCreate"));
+        dataDefinition.setOnSave(callbackFactory.getHook("callback", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -104,7 +104,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnSave(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setOnSave(callbackFactory.getHook("callback", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -127,8 +127,8 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnUpdate(callbackFactory.getCallback("callback", "onUpdate"));
-        dataDefinition.setOnSave(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setOnUpdate(callbackFactory.getHook("callback", "onUpdate"));
+        dataDefinition.setOnSave(callbackFactory.getHook("callback", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -145,7 +145,7 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setOnCreate(callbackFactory.getHook("callback", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);

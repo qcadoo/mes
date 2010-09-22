@@ -15,8 +15,8 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
 
     private final Map<String, Component<?>> components = new LinkedHashMap<String, Component<?>>();
 
-    public abstract T castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException;
+    public abstract T castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException;
 
     public abstract T getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<T> viewValue, final Set<String> pathsToUpdate);
@@ -39,18 +39,18 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
     }
 
     @Override
-    public final ViewValue<T> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
+    public final ViewValue<T> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         ViewValue<T> value = new ViewValue<T>();
 
         for (Component<?> component : components.values()) {
             JSONObject componentViewObject = viewObject != null ? viewObject.getJSONObject("components").getJSONObject(
                     component.getName()) : null;
-            ViewValue<?> componentViewValue = component.castValue(entity, selectedEntities, componentViewObject);
+            ViewValue<?> componentViewValue = component.castValue(selectedEntities, componentViewObject);
             value.addComponent(component.getName(), componentViewValue);
         }
 
-        value.setValue(castContainerValue(entity, selectedEntities, viewObject));
+        value.setValue(castContainerValue(selectedEntities, viewObject));
 
         return value;
     }

@@ -157,7 +157,7 @@ public class CrudController {
 
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
 
-            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+            ViewValue<Object> viewEntity = viewDefinition.castValue(selectedEntities, jsonValues);
             ViewValue<Object> newViewEntity = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
 
             return newViewEntity;
@@ -182,7 +182,7 @@ public class CrudController {
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
             pathsToUpdate.add(componentName);
 
-            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+            ViewValue<Object> viewEntity = viewDefinition.castValue(selectedEntities, jsonValues);
 
             SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentName);
 
@@ -215,7 +215,7 @@ public class CrudController {
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
             pathsToUpdate.add(componentName);
 
-            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+            ViewValue<Object> viewEntity = viewDefinition.castValue(selectedEntities, jsonValues);
 
             GridComponent gridComponent = (GridComponent) viewDefinition.getRoot().lookupComponent(componentName);
 

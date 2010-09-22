@@ -33,8 +33,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public Long castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities, final JSONObject viewObject)
-            throws JSONException {
+    public Long castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) throws JSONException {
         if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
             return viewObject.getLong("value");
         } else {

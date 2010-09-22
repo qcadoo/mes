@@ -31,10 +31,9 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     public final void initialize() {
         registerComponents(getComponents());
         initializeComponents(0);
-
-        for (Component<?> component : componentRegistry.values()) {
-            System.out.println(" 1 ----> " + component);
-        }
+        // for (Component<?> component : componentRegistry.values()) {
+        // System.out.println(" 1 ----> " + component);
+        // }
     }
 
     @Override
@@ -70,8 +69,8 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     }
 
     @Override
-    public final Object castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
+    public final Object castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         return null;
     }
 

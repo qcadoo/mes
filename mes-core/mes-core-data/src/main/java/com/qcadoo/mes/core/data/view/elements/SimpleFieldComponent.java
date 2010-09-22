@@ -29,8 +29,8 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     public abstract String convertToDatabaseValue(final String value);
 
     @Override
-    public final ViewValue<String> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
+    public final ViewValue<String> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         String value = null;
         if (!viewObject.isNull("value")) {
             value = viewObject.getString("value");

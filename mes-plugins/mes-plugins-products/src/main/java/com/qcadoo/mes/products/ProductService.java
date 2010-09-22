@@ -10,9 +10,18 @@ import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchResult;
+import com.qcadoo.mes.core.data.view.ViewValue;
 
 @Service
 public class ProductService {
+
+    public Object getBeanAName(final DataDefinition dataDefinition, final Entity entity, final ViewValue<Object> value) {
+        if (entity == null) {
+            return "nie ma encji";
+        } else {
+            return "encja: " + entity.getField("name");
+        }
+    }
 
     public boolean checkInstructionDefault(final DataDefinition dataDefinition, final Entity entity) {
         Boolean master = (Boolean) entity.getField("master");

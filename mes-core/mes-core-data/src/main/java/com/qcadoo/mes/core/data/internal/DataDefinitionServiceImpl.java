@@ -342,7 +342,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkOrderDates").customErrorMessage(
                 "products.validation.error.datesOrder"));
-        dataDefinition.setOnSave(callbackFactory.getCallback("productService", "fillOrderDatesAndWorkers"));
+        dataDefinition.setOnSave(callbackFactory.getHook("productService", "fillOrderDatesAndWorkers"));
 
         return dataDefinition;
     }

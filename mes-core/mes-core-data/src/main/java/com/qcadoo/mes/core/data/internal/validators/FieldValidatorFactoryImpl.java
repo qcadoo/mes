@@ -46,11 +46,11 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Override
     public FieldValidator custom(final String beanName, final String validateMethodName) {
-        return new CustomValidator(callbackFactory.getCallback(beanName, validateMethodName));
+        return new CustomValidator(callbackFactory.getHook(beanName, validateMethodName));
     }
 
     @Override
     public EntityValidator customEntity(final String beanName, final String validateMethodName) {
-        return new CustomEntityValidator(callbackFactory.getCallback(beanName, validateMethodName));
+        return new CustomEntityValidator(callbackFactory.getHook(beanName, validateMethodName));
     }
 }

@@ -101,8 +101,8 @@ public final class GridComponent extends AbstractComponent<ListData> {
     }
 
     @Override
-    public ViewValue<ListData> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
+    public ViewValue<ListData> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         JSONObject value = viewObject.getJSONObject("value");
 
         ListData listData = new ListData(0, Collections.<Entity> emptyList());

@@ -43,10 +43,10 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public ViewValue<Object> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
-        return wrapIntoViewValue(root.castValue(entity, selectedEntities,
-                viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
+    public ViewValue<Object> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
+        return wrapIntoViewValue(root.castValue(selectedEntities, viewObject != null ? viewObject.getJSONObject(root.getName())
+                : null));
     }
 
     @Override
