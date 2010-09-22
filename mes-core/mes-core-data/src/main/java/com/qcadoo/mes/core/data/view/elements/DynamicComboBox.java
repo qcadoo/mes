@@ -15,6 +15,7 @@ import com.qcadoo.mes.core.data.internal.types.DictionaryType;
 import com.qcadoo.mes.core.data.internal.types.EnumType;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
+import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.view.AbstractComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -63,7 +64,14 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
             strValue = String.valueOf(value);
         }
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
-        return new ViewValue<ComboBoxValue>(comboValue);
+        ViewValue<ComboBoxValue> viewValue = new ViewValue<ComboBoxValue>(comboValue);
+
+        ValidationError validationError = getFieldError(entity, getFieldPath());
+        if (validationError != null && validationError.getMessage() != null) {
+            viewValue.addErrorMessage(validationError.getMessage());
+        }
+
+        return viewValue;
     }
 
     private List<String> getComboBoxValues() {
