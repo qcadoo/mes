@@ -157,10 +157,10 @@ public class CrudController {
 
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
 
-            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
-            ViewValue<Object> newViewEntity = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
+            ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
 
-            return newViewEntity;
+            return newViewValue;
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -182,17 +182,17 @@ public class CrudController {
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
             pathsToUpdate.add(componentName);
 
-            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+            ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
             SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentName);
 
-            Entity entity = saveableComponent.getSaveableEntity(viewEntity);
+            Entity entity = saveableComponent.getSaveableEntity(viewValue);
 
             entity = saveableComponent.getDataDefinition().save(entity);
 
             selectedEntities.put(componentName, entity);
 
-            return viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -215,17 +215,17 @@ public class CrudController {
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
             pathsToUpdate.add(componentName);
 
-            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+            ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
             GridComponent gridComponent = (GridComponent) viewDefinition.getRoot().lookupComponent(componentName);
 
-            ViewValue<ListData> gridValue = (ViewValue<ListData>) viewDefinition.getRoot().lookupValue(viewEntity, componentName);
+            ViewValue<ListData> gridValue = (ViewValue<ListData>) viewValue.lookupValue(componentName);
 
             gridComponent.getDataDefinition().delete(gridValue.getValue().getSelectedEntityId());
 
             selectedEntities.remove(componentName);
 
-            return viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

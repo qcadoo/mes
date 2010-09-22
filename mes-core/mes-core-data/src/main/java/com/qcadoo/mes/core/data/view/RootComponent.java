@@ -10,6 +10,4 @@ public interface RootComponent extends ContainerComponent<Object> {
 
     Component<?> lookupComponent(String path);
 
-    ViewValue<?> lookupValue(ViewValue<Object> viewValue, String path);
-
 }

@@ -88,4 +88,19 @@ public class ViewValue<T> {
         this.successMessages.add(successMessage);
     }
 
+    public ViewValue<?> lookupValue(final String path) {
+        String[] fields = path.split("\\.");
+
+        ViewValue<?> viewValue = this;
+
+        for (String field : fields) {
+            viewValue = viewValue.getComponent(field);
+            if (viewValue == null) {
+                return null;
+            }
+        }
+
+        return viewValue;
+    }
+
 }

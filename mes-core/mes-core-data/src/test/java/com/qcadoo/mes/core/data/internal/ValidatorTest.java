@@ -15,14 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.DataDefinition;
 
 public class ValidatorTest extends DataAccessTest {
 
     @Before
     public void init() {
-        given(applicationContext.getBean("custom")).willReturn(new CustomValidateMethod());
-        given(applicationContext.getBean("customEntity")).willReturn(new CustomEntityValidateMethod());
+        given(applicationContext.getBean(CustomValidateMethod.class)).willReturn(new CustomValidateMethod(this));
+        given(applicationContext.getBean(CustomEntityValidateMethod.class)).willReturn(new CustomEntityValidateMethod(this));
     }
 
     @Test
@@ -534,7 +533,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(CustomValidateMethod.class.getName(), "isEqualToQwerty"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -550,7 +549,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwert");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwerty"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(CustomValidateMethod.class.getName(), "isEqualToQwerty"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -569,7 +568,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.custom("custom", "isEqualToQwertz"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(CustomValidateMethod.class.getName(), "isEqualToQwertz"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -586,7 +585,8 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 
-        dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
+        dataDefinition.addValidator(fieldValidatorFactory.customEntity(CustomEntityValidateMethod.class.getName(),
+                "hasAge18AndNameMrT"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -604,7 +604,8 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr");
         entity.setField("age", "18");
 
-        dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrT"));
+        dataDefinition.addValidator(fieldValidatorFactory.customEntity(CustomEntityValidateMethod.class.getName(),
+                "hasAge18AndNameMrT"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -624,7 +625,8 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 
-        dataDefinition.addValidator(fieldValidatorFactory.customEntity("customEntity", "hasAge18AndNameMrX"));
+        dataDefinition.addValidator(fieldValidatorFactory.customEntity(CustomEntityValidateMethod.class.getName(),
+                "hasAge18AndNameMrX"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -632,22 +634,6 @@ public class ValidatorTest extends DataAccessTest {
         // then
         verify(session, never()).save(any(SimpleDatabaseObject.class));
         assertFalse(entity.isValid());
-    }
-
-    public class CustomValidateMethod {
-
-        public boolean isEqualToQwerty(final DataDefinition dataDefinition, final Object object) {
-            return String.valueOf(object).equals("qwerty");
-        }
-
-    }
-
-    public class CustomEntityValidateMethod {
-
-        public boolean hasAge18AndNameMrT(final DataDefinition dataDefinition, final Entity entity) {
-            return (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T"));
-        }
-
     }
 
 }

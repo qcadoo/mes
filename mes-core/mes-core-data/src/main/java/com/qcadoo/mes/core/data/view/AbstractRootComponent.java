@@ -31,10 +31,9 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     public final void initialize() {
         registerComponents(getComponents());
         initializeComponents(0);
-
-        for (Component<?> component : componentRegistry.values()) {
-            System.out.println(" 1 ----> " + component);
-        }
+        // for (Component<?> component : componentRegistry.values()) {
+        // System.out.println(" 1 ----> " + component);
+        // }
     }
 
     @Override
@@ -50,28 +49,12 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     }
 
     @Override
-    public ViewValue<?> lookupValue(final ViewValue<Object> viewValue, final String path) {
-        String[] fields = path.split("\\.");
-
-        ViewValue<?> newViewValue = viewValue;
-
-        for (String field : fields) {
-            newViewValue = newViewValue.getComponent(field);
-            if (newViewValue == null) {
-                return null;
-            }
-        }
-
-        return newViewValue;
-    }
-
-    @Override
     public final void addContainerMessages(final Entity entity, final ViewValue<Object> viewValue) {
     }
 
     @Override
-    public final Object castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
+    public final Object castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         return null;
     }
 

@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
+import com.qcadoo.mes.core.data.model.HookDefinition;
 import com.qcadoo.mes.core.data.view.RootComponent;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -20,6 +21,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     private final String pluginIdentifier;
 
     private final String name;
+
+    private HookDefinition viewHook;
 
     public ViewDefinitionImpl(final String name, final RootComponent root, final String pluginIdentifier) {
         this.name = name;
@@ -42,18 +45,31 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         return name;
     }
 
+    public void setViewHook(final HookDefinition viewHook) {
+        this.viewHook = viewHook;
+    }
+
     @Override
-    public ViewValue<Object> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
-        return wrapIntoViewValue(root.castValue(entity, selectedEntities,
-                viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
+    public ViewValue<Object> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
+        return wrapIntoViewValue(root.castValue(selectedEntities, viewObject != null ? viewObject.getJSONObject(root.getName())
+                : null));
     }
 
     @Override
     public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalViewEntity, final Set<String> pathsToUpdate) {
-        return wrapIntoViewValue(root.getValue(entity, selectedEntities,
-                globalViewEntity != null ? globalViewEntity.getComponent(root.getName()) : null, pathsToUpdate));
+            final ViewValue<Object> globalViewValue, final Set<String> pathsToUpdate) {
+        ViewValue<Object> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
+                globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate));
+        callOnViewHook(value);
+        return value;
+
+    }
+
+    private void callOnViewHook(final ViewValue<Object> value) {
+        if (viewHook != null) {
+            viewHook.callWithViewValue(value);
+        }
     }
 
     @Override

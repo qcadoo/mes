@@ -36,14 +36,14 @@ public class LinkButton extends AbstractComponent<String> {
     }
 
     @Override
-    public ViewValue<String> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
+    public ViewValue<String> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         return null;
     }
 
     @Override
     public ViewValue<String> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<String> viewEntity, final Set<String> pathsToUpdate) {
+            final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
         if (entity != null) {
             return new ViewValue<String>(pageUrl + "?entityId=" + entity.getId());
         }
@@ -54,7 +54,7 @@ public class LinkButton extends AbstractComponent<String> {
         return pageUrl;
     }
 
-    public void setPageUrl(String pageUrl) {
+    public void setPageUrl(final String pageUrl) {
         this.pageUrl = pageUrl;
     }
 }
