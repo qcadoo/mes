@@ -72,7 +72,7 @@ QCD.PageController = function(_viewName) {
 		QCD.info("delete " +componentName+" - "+entityId);
 		var parameters = {
 			componentName: componentName,
-			data: entityId
+			data: getValueData()
 		};
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("delete", parametersJson, function(response) {
