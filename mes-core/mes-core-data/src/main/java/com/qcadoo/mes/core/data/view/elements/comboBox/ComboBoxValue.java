@@ -30,4 +30,9 @@ public class ComboBoxValue {
         this.values = values;
     }
 
+    @Override
+    public String toString() {
+        return selectedValue;
+    }
+
 }
