@@ -77,7 +77,7 @@ QCD.PageController = function(_viewName) {
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("delete", parametersJson, function(response) {
 			QCD.info(response);
-			//setValueData(response);
+			setValueData(response);
 		});
 	}
 	

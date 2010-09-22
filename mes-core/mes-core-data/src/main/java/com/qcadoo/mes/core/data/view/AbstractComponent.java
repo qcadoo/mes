@@ -85,8 +85,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
     @SuppressWarnings("unchecked")
     public final ViewValue<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<?> viewEntity, final Set<String> pathsToUpdate) {
+
         if (shouldNotBeUpdated(pathsToUpdate)) {
-            return null;
+            return (ViewValue<T>) viewEntity;
         }
 
         Entity selectedEntity = null;

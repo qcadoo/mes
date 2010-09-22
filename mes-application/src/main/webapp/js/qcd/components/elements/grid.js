@@ -114,7 +114,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 ////	}
 //	
 	function rowClicked(rowId) {
-		actionButtons.deleteButton.removeAttr('disabled');
+		if (actionButtons.deleteButton) {
+			actionButtons.deleteButton.removeAttr('disabled');
+		}
 		if (gridParameters.listeners.length > 0) {
 			//QCD.info("SEND");
 			mainController.getUpdate(elementPath, rowId, gridParameters.listeners);
@@ -152,7 +154,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
-		actionButtons.deleteButton.attr('disabled', 'true');
+		if (actionButtons.deleteButton) {
+			actionButtons.deleteButton.attr('disabled', 'true');
+		}
 		grid.jqGrid('clearGridData');
 		for (var entityNo in value.entities) {
 			var entity = value.entities[entityNo];

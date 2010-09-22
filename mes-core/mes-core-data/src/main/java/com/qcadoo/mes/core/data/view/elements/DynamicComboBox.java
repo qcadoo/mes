@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
@@ -41,11 +40,12 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     @Override
     public ViewValue<ComboBoxValue> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
+        JSONObject valueObject = viewObject.getJSONObject("value");
         String value = null;
-        if (!viewObject.isNull("selectedValue")) {
-            value = viewObject.getString("selectedValue");
+        if (!valueObject.isNull("selectedValue")) {
+            value = valueObject.getString("selectedValue");
         }
-        if (StringUtils.hasText(value)) {
+        if (value != null) {
             return new ViewValue<ComboBoxValue>(new ComboBoxValue(getComboBoxValues(), value));
         } else {
             return new ViewValue<ComboBoxValue>();
@@ -57,6 +57,7 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
             final ViewValue<ComboBoxValue> viewEntity, final Set<String> pathsToUpdate) {
 
         Object value = getFieldValue(entity, getFieldPath());
+        System.out.println("BBB getValue " + value);
         String strValue;
 
         if (value == null) {
@@ -64,6 +65,8 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
         } else {
             strValue = String.valueOf(value);
         }
+
+        System.out.println("BBB getValue " + value + " - " + strValue);
 
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
         return new ViewValue<ComboBoxValue>(comboValue);
