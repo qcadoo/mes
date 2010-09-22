@@ -6,11 +6,14 @@ import com.qcadoo.mes.core.data.beans.Entity;
 
 public class ListData {
 
-    private int totalNumberOfEntities;
+    private Integer totalNumberOfEntities;
 
     private Long selectedEntityId;
 
     private List<Entity> entities;
+
+    public ListData() {
+    }
 
     public ListData(final int totalNumberOfEntities, final List<Entity> entities) {
         this.totalNumberOfEntities = totalNumberOfEntities;

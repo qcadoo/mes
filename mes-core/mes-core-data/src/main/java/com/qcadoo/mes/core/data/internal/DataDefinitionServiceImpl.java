@@ -32,7 +32,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
     private FieldTypeFactory fieldTypeFactory;
 
     @Autowired
-    private HookFactory callbackFactory;
+    private HookFactory hookFactory;
 
     @Autowired
     private FieldValidatorFactory fieldValidationFactory;
@@ -342,7 +342,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkOrderDates").customErrorMessage(
                 "products.validation.error.datesOrder"));
-        dataDefinition.setOnSave(callbackFactory.getHook("productService", "fillOrderDatesAndWorkers"));
+        dataDefinition.setSaveHook(hookFactory.getHook("productService", "fillOrderDatesAndWorkers"));
 
         return dataDefinition;
     }

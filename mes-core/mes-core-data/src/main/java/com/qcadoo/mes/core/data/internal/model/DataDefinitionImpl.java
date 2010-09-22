@@ -48,11 +48,11 @@ public final class DataDefinitionImpl implements DataDefinition {
 
     private final List<EntityValidator> validators = new ArrayList<EntityValidator>();
 
-    private HookDefinition onCreate;
+    private HookDefinition createHook;
 
-    private HookDefinition onUpdate;
+    private HookDefinition updateHook;
 
-    private HookDefinition onSave;
+    private HookDefinition saveHook;
 
     // TODO masz onGet, onDelete, onFind?
 
@@ -160,35 +160,35 @@ public final class DataDefinitionImpl implements DataDefinition {
         this.validators.add(validator);
     }
 
-    public void setOnCreate(final HookDefinition onCreateCallback) {
-        this.onCreate = onCreateCallback;
+    public void setCreateHook(final HookDefinition createHook) {
+        this.createHook = createHook;
     }
 
-    public void setOnUpdate(final HookDefinition onUpdateCallback) {
-        this.onUpdate = onUpdateCallback;
+    public void setUpdateHook(final HookDefinition updateHook) {
+        this.updateHook = updateHook;
     }
 
-    public void setOnSave(final HookDefinition onSaveCallback) {
-        this.onSave = onSaveCallback;
-    }
-
-    @Override
-    public void callOnCreate(final Entity entity) {
-        if (onCreate != null) {
-            onCreate.callWithEntity(this, entity);
-        }
-        if (onSave != null) {
-            onSave.callWithEntity(this, entity);
-        }
+    public void setSaveHook(final HookDefinition saveHook) {
+        this.saveHook = saveHook;
     }
 
     @Override
-    public void callOnUpdate(final Entity entity) {
-        if (onUpdate != null) {
-            onUpdate.callWithEntity(this, entity);
+    public void callCreateHook(final Entity entity) {
+        if (createHook != null) {
+            createHook.callWithEntity(this, entity);
         }
-        if (onSave != null) {
-            onSave.callWithEntity(this, entity);
+        if (saveHook != null) {
+            saveHook.callWithEntity(this, entity);
+        }
+    }
+
+    @Override
+    public void callUpdateHook(final Entity entity) {
+        if (updateHook != null) {
+            updateHook.callWithEntity(this, entity);
+        }
+        if (saveHook != null) {
+            saveHook.callWithEntity(this, entity);
         }
     }
 

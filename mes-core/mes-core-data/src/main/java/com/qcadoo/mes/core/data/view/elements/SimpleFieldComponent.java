@@ -44,24 +44,24 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
     @Override
     public final ViewValue<String> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<String> viewEntity, final Set<String> pathsToUpdate) {
+            final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
         String value = getStringValue(entity, selectedEntities);
 
-        ViewValue<String> viewValue = null;
+        ViewValue<String> newViewValue = null;
 
         if (StringUtils.hasText(value)) {
-            viewValue = new ViewValue<String>(convertToViewValue(value.trim()));
+            newViewValue = new ViewValue<String>(convertToViewValue(value.trim()));
         } else {
-            viewValue = new ViewValue<String>();
+            newViewValue = new ViewValue<String>();
         }
 
         String errorMessage = getErrorMessage(entity, selectedEntities);
 
         if (errorMessage != null) {
-            viewValue.addErrorMessage(errorMessage);
+            newViewValue.addErrorMessage(errorMessage);
         }
 
-        return viewValue;
+        return newViewValue;
     }
 
     @Override

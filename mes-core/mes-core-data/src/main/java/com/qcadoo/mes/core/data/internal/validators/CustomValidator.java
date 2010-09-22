@@ -10,18 +10,18 @@ public final class CustomValidator implements FieldValidator {
 
     private static final String CUSTOM_ERROR = "commons.validate.field.error.custom";
 
-    private final HookDefinition callback;
+    private final HookDefinition validateHook;
 
     private String errorMessage = CUSTOM_ERROR;
 
-    public CustomValidator(final HookDefinition callback) {
-        this.callback = callback;
+    public CustomValidator(final HookDefinition validateHook) {
+        this.validateHook = validateHook;
     }
 
     @Override
     public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
             final Entity validatedEntity) {
-        boolean result = callback.callWithObjectAndGetBoolean(dataDefinition, value);
+        boolean result = validateHook.callWithObjectAndGetBoolean(dataDefinition, value);
         if (result) {
             return true;
         }

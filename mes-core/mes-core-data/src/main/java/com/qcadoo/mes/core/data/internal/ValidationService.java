@@ -28,9 +28,9 @@ public final class ValidationService {
         parseAndValidateEntity(dataDefinition, genericEntity);
 
         if (genericEntity.getId() != null) {
-            dataDefinition.callOnUpdate(genericEntity);
+            dataDefinition.callUpdateHook(genericEntity);
         } else {
-            dataDefinition.callOnCreate(genericEntity);
+            dataDefinition.callCreateHook(genericEntity);
         }
     }
 

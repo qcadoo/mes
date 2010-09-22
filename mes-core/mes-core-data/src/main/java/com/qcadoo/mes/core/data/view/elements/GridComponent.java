@@ -105,7 +105,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
             throws JSONException {
         JSONObject value = viewObject.getJSONObject("value");
 
-        ListData listData = new ListData(0, Collections.<Entity> emptyList());
+        ListData listData = new ListData();
 
         if (value != null) {
             String selectedEntityId = value.getString("selectedEntityId");
@@ -122,7 +122,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
     @Override
     public ViewValue<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<ListData> viewEntity, final Set<String> pathsToUpdate) {
+            final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate) {
         if (getSourceFieldPath() != null || getFieldPath() != null) {
             if (entity == null) {
                 return new ViewValue<ListData>(new ListData(0, Collections.<Entity> emptyList()));

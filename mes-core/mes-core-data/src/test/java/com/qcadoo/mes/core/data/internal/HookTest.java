@@ -15,11 +15,11 @@ public class HookTest extends DataAccessTest {
 
     @Before
     public void init() {
-        given(applicationContext.getBean("callback")).willReturn(new CustomCallbackMethod());
+        given(applicationContext.getBean("hook")).willReturn(new CustomHookMethod());
     }
 
     @Test
-    public void shouldNotCallAnyCallbackIfNotDefined() throws Exception {
+    public void shouldNotCallAnyHookIfNotDefined() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
@@ -34,13 +34,13 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnCreateCallback() throws Exception {
+    public void shouldCallOnCreateHook() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getHook("callback", "onCreate"));
+        dataDefinition.setCreateHook(hookFactory.getHook("hook", "onCreate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -51,7 +51,7 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnUpdateCallback() throws Exception {
+    public void shouldCallOnUpdateHook() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", null);
@@ -63,7 +63,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnUpdate(callbackFactory.getHook("callback", "onUpdate"));
+        dataDefinition.setUpdateHook(hookFactory.getHook("hook", "onUpdate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -74,14 +74,14 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallAllDefinedCallbacksWhileCreating() throws Exception {
+    public void shouldCallAllDefinedHooksWhileCreating() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getHook("callback", "onCreate"));
-        dataDefinition.setOnSave(callbackFactory.getHook("callback", "onSave"));
+        dataDefinition.setCreateHook(hookFactory.getHook("hook", "onCreate"));
+        dataDefinition.setSaveHook(hookFactory.getHook("hook", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -92,7 +92,7 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnSaveCallbackWhileUpdating() throws Exception {
+    public void shouldCallOnSaveHookWhileUpdating() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", null);
@@ -104,7 +104,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnSave(callbackFactory.getHook("callback", "onSave"));
+        dataDefinition.setSaveHook(hookFactory.getHook("hook", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -115,7 +115,7 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallAllDefinedCallbacksWhileUpdating() throws Exception {
+    public void shouldCallAllDefinedHooksWhileUpdating() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", null);
@@ -127,8 +127,8 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnUpdate(callbackFactory.getHook("callback", "onUpdate"));
-        dataDefinition.setOnSave(callbackFactory.getHook("callback", "onSave"));
+        dataDefinition.setUpdateHook(hookFactory.getHook("hook", "onUpdate"));
+        dataDefinition.setSaveHook(hookFactory.getHook("hook", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -139,13 +139,13 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnSaveCallbackWhileCreating() throws Exception {
+    public void shouldCallOnSaveHookWhileCreating() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getHook("callback", "onSave"));
+        dataDefinition.setCreateHook(hookFactory.getHook("hook", "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -155,7 +155,7 @@ public class HookTest extends DataAccessTest {
         assertEquals(Integer.valueOf(11), entity.getField("age"));
     }
 
-    public class CustomCallbackMethod {
+    public class CustomHookMethod {
 
         public void onUpdate(final DataDefinition dataDefinition, final Entity entity) {
             entity.setField("name", "update");

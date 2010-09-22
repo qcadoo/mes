@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
-import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.DataDefinition;
@@ -67,7 +66,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
     public abstract ViewValue<T> castComponentValue(Map<String, Entity> selectedEntities, JSONObject viewObject)
             throws JSONException;
 
-    public abstract ViewValue<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<T> viewEntity,
+    public abstract ViewValue<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<T> viewValue,
             final Set<String> pathsToUpdate);
 
     @Override
@@ -84,10 +83,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final ViewValue<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<?> viewEntity, final Set<String> pathsToUpdate) {
+            final ViewValue<?> viewValue, final Set<String> pathsToUpdate) {
 
         if (shouldNotBeUpdated(pathsToUpdate)) {
-            return (ViewValue<T>) viewEntity;
+            return (ViewValue<T>) viewValue;
         }
 
         Entity selectedEntity = null;
@@ -100,7 +99,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
 
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
+            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
         } else {
             selectedEntity = entity;
 
@@ -110,7 +109,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 selectedEntity = getFieldEntityValue(entity, fieldPath);
             }
 
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
+            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
         }
 
         if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
@@ -123,9 +122,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     @Override
     public final boolean initializeComponent(final Map<String, Component<?>> componentRegistry) {
-        if (sourceFieldPath != null && sourceFieldPath.startsWith("$")) {
-            hookDefinition = parseHook(sourceFieldPath);
-        } else if (sourceFieldPath != null && sourceFieldPath.startsWith("#")) {
+        if (sourceFieldPath != null && sourceFieldPath.startsWith("#")) {
             String[] source = parseSourceFieldPath(sourceFieldPath);
             sourceComponent = componentRegistry.get(source[0]);
 
@@ -347,15 +344,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
 
         return newDataDefinition;
-    }
-
-    private HookDefinition parseHook(final String sourceFieldPath) {
-        if (sourceFieldPath.endsWith("}")) {
-            String[] hook = sourceFieldPath.substring(2, sourceFieldPath.length() - 1).split("#");
-            return HookFactory.getInstance().getHook(hook[0], hook[1]);
-        } else {
-            throw new IllegalStateException("Illegal hook definition: " + sourceFieldPath);
-        }
     }
 
     private String[] parseSourceFieldPath(final String sourceFieldPath) {
