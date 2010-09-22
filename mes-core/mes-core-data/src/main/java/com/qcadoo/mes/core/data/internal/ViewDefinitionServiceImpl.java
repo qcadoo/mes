@@ -31,6 +31,7 @@ import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.core.data.view.containers.WindowComponent;
 import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
 import com.qcadoo.mes.core.data.view.elements.GridComponent;
+import com.qcadoo.mes.core.data.view.elements.LinkButton;
 import com.qcadoo.mes.core.data.view.elements.TextInputComponent;
 import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
 
@@ -733,6 +734,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         grid.addColumn(columnDescription);
 
         windowDefinition.addComponent(grid);
+
+        windowDefinition.addComponent(new LinkButton("addButton", windowDefinition, "test1"));
+        windowDefinition.addComponent(new LinkButton("removeButton", windowDefinition, "test2", "#{mainWindow.pluginsGrid}"));
 
         windowDefinition.initialize();
 

@@ -19,7 +19,6 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		var value = {
 			selectedValue: selectedVal
 		}
-		QCD.info(value);
 		return value;
 	}
 	

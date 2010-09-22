@@ -34,6 +34,7 @@
 	<script type="text/javascript" src="../js/qcd/components/elements/grid.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/elements/textInput.js"></script>
 	<script type="text/javascript" src="../js/qcd/components/elements/dynamicComboBox.js"></script>
+	<script type="text/javascript" src="../js/qcd/components/elements/linkButton.js"></script>
 	
 	<script type="text/javascript">
 

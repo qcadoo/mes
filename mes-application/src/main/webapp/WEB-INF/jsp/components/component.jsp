@@ -38,6 +38,9 @@
 		<c:when test='${component.type == "dynamicComboBox"}'>
 			<c:set var="componentJsp" value="elements/dynamicComboBox.jsp"/>
 		</c:when>
+		<c:when test='${component.type == "linkButton"}'>
+			<c:set var="componentJsp" value="elements/linkButton.jsp"/>
+		</c:when>
 	</c:choose>
 	
 	<tiles:insertTemplate template="${componentJsp}">
