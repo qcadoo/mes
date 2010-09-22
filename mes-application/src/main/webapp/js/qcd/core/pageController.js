@@ -68,6 +68,19 @@ QCD.PageController = function(_viewName) {
 		});
 	}
 	
+	this.performDelete = function(componentName, entityId) {
+		QCD.info("delete " +componentName+" - "+entityId);
+		var parameters = {
+			componentName: componentName,
+			data: entityId
+		};
+		var parametersJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("delete", parametersJson, function(response) {
+			QCD.info(response);
+			//setValueData(response);
+		});
+	}
+	
 	function getValueData() {
 		var values = new Object();
 		for (var i in pageComponents) {
