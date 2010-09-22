@@ -70,8 +70,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         // viewDefinitions.put("core.dictionaryGridView", createDictionaryGridView());
         // viewDefinitions.put("core.dictionaryDetailsView", createDictionaryDetailsView());
         // viewDefinitions.put("core.dictionaryItemDetailsView", createDictionaryItemDetailsView());
-        // viewDefinitions.put("plugins.pluginGridView", createPluginGridView());
-        // viewDefinitions.put("plugins.pluginDetailsView", createPluginDetailsView());
+        viewDefinitions.put("plugins.pluginGridView", createPluginGridView());
+        viewDefinitions.put("plugins.pluginDetailsView", createPluginDetailsView());
     }
 
     @Override
@@ -699,75 +699,84 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // viewDefinition.setElements(elements);
     // return viewDefinition;
     // }
-    //
-    // private ViewDefinition createPluginGridView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("plugins.pluginGridView", "plugins");
-    // viewDefinition.setHeader("plugins.pluginGridView.header");
-    //
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    // DataDefinition gridDataDefinition = dataDefinitionService.get("plugins.plugin");
-    // GridDefinition gridDefinition = new GridDefinition("plugins", gridDataDefinition);
-    // gridDefinition.setCorrespondingViewName("plugins.pluginDetailsView");
-    // Map<String, String> gridOptions = new HashMap<String, String>();
-    // gridOptions.put("paging", "true");
-    // gridOptions.put("sortable", "true");
-    // gridOptions.put("filter", "true");
-    // gridOptions.put("multiselect", "false");
-    // gridOptions.put("height", "450");
-    // gridOptions.put("canDelete", "false");
-    // gridOptions.put("canNew", "false");
-    // gridDefinition.setOptions(gridOptions);
-    // ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
-    // ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
-    // null);
-    // ColumnDefinition columnVersion = createColumnDefinition("version", gridDataDefinition.getField("version"), null);
-    // ColumnDefinition columnPublisher = createColumnDefinition("publisher", gridDataDefinition.getField("publisher"), null);
-    // ColumnDefinition columnActive = createColumnDefinition("active", gridDataDefinition.getField("active"), null);
-    //
-    // gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnActive, columnName, columnVersion,
-    // columnPublisher, columnDescription }));
-    // elements.add(gridDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    // return viewDefinition;
-    // }
-    //
-    // private ViewDefinition createPluginDetailsView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("plugins.pluginDetailsView", "plugins");
-    // viewDefinition.setHeader("plugins.pluginDetailsView.header");
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    //
-    // DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins.plugin");
-    // FormDefinition formDefinition = new FormDefinition("pluginDetailsForm", pluginDataDefinition);
-    // formDefinition.setParent("entityId");
-    // formDefinition.setCorrespondingViewName("plugins.pluginGridView");
-    //
-    // FormFieldDefinition fieldName = createFieldDefinition("name", pluginDataDefinition.getField("name"),
-    // fieldControlFactory.stringControl());
-    // FormFieldDefinition fieldVersion = createFieldDefinition("version", pluginDataDefinition.getField("version"),
-    // fieldControlFactory.stringControl());
-    // FormFieldDefinition fieldPublisher = createFieldDefinition("publisher", pluginDataDefinition.getField("publisher"),
-    // fieldControlFactory.stringControl());
-    // FormFieldDefinition fieldDescription = createFieldDefinition("description", pluginDataDefinition.getField("description"),
-    // fieldControlFactory.textControl());
-    // FormFieldDefinition fieldActive = createFieldDefinition("active", pluginDataDefinition.getField("active"),
-    // fieldControlFactory.yesNoControl());
-    // FormFieldDefinition fieldBase = createFieldDefinition("base", pluginDataDefinition.getField("base"),
-    // fieldControlFactory.yesNoControl());
-    //
-    // formDefinition.addField(fieldName);
-    // formDefinition.addField(fieldVersion);
-    // formDefinition.addField(fieldPublisher);
-    // formDefinition.addField(fieldDescription);
-    // formDefinition.addField(fieldActive);
-    // formDefinition.addField(fieldBase);
-    //
-    // elements.add(formDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    // return viewDefinition;
-    // }
 
+    private ViewDefinition createPluginGridView() {
+        DataDefinition gridDataDefinition = dataDefinitionService.get("plugins.plugin");
+
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", gridDataDefinition, "plugins.pluginGridView");
+        windowDefinition.setBackButton(false);
+
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("plugins.pluginGridView", windowDefinition, "plugins");
+
+        GridComponent grid = new GridComponent("pluginsGrid", windowDefinition, null, null);
+        grid.setHeader(false);
+        grid.setCorrespondingViewName("plugins.pluginDetailsView");
+        grid.addOptions("paging", "true");
+        grid.addOptions("sortable", "true");
+        grid.addOptions("filter", "true");
+        grid.addOptions("multiselect", "false");
+        grid.addOptions("height", "450");
+        grid.addOptions("canDelete", "false");
+        grid.addOptions("canNew", "false");
+
+        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
+        ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
+                null);
+        ColumnDefinition columnVersion = createColumnDefinition("version", gridDataDefinition.getField("version"), null);
+        ColumnDefinition columnPublisher = createColumnDefinition("publisher", gridDataDefinition.getField("publisher"), null);
+        ColumnDefinition columnActive = createColumnDefinition("active", gridDataDefinition.getField("active"), null);
+
+        grid.addColumn(columnActive);
+        grid.addColumn(columnName);
+        grid.addColumn(columnVersion);
+        grid.addColumn(columnPublisher);
+        grid.addColumn(columnDescription);
+
+        windowDefinition.addComponent(grid);
+
+        windowDefinition.initialize();
+
+        return viewDefinition;
+    }
+
+    private ViewDefinition createPluginDetailsView() {
+
+        DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins.plugin");
+
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", pluginDataDefinition, "plugins.pluginDetailsView");
+
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("plugins.pluginDetailsView", windowDefinition, "plugins");
+
+        FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
+        formDefinition.setHeader(false);
+
+        /*
+         * FormFieldDefinition fieldDescription = createFieldDefinition("description",
+         * pluginDataDefinition.getField("description"), fieldControlFactory.textControl()); FormFieldDefinition fieldActive =
+         * createFieldDefinition("active", pluginDataDefinition.getField("active"), fieldControlFactory.yesNoControl());
+         * FormFieldDefinition fieldBase = createFieldDefinition("base", pluginDataDefinition.getField("base"),
+         * fieldControlFactory.yesNoControl());
+         */
+
+        formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new TextInputComponent("version", formDefinition, "version", null));
+        formDefinition.addComponent(new TextInputComponent("publisher", formDefinition, "publisher", null));
+        formDefinition.addComponent(new TextInputComponent("description", formDefinition, "description", null));
+        formDefinition.addComponent(new DynamicComboBox("active", formDefinition, "active", null));
+        formDefinition.addComponent(new DynamicComboBox("base", formDefinition, "base", null));
+        windowDefinition.addComponent(formDefinition);
+
+        windowDefinition.initialize();
+
+        return viewDefinition;
+    }
+
+    /**
+     * @param name
+     * @param field
+     * @param expression
+     * @return
+     */
     private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field, final String expression) {
         ColumnDefinition columnDefinition = new ColumnDefinition(name);
         columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
