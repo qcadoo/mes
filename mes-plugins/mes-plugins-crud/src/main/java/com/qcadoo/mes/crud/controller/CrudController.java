@@ -33,7 +33,7 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.ViewValue;
-import com.qcadoo.mes.core.data.view.containers.FormComponent;
+import com.qcadoo.mes.core.data.view.containers.SaveableComponent;
 
 @Controller
 public class CrudController {
@@ -177,15 +177,24 @@ public class CrudController {
             String componentName = jsonBody.getString("componentName");
             JSONObject jsonValues = jsonBody.getJSONObject("data");
 
-            ViewValue<Object> viewEntity = viewDefinition.castValue(null, new HashMap<String, Entity>(), jsonValues);
+            Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            FormComponent form = (FormComponent) viewDefinition.getRoot().lookupComponent(componentName.replaceAll("-", "."));
+            String componentPath = componentName.replaceAll("-", ".");
 
-            Entity entity = form.getFormEntity(viewEntity);
+            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentPath);
+            pathsToUpdate.add(componentPath);
 
-            form.getDataDefinition().save(entity);
+            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
 
-            return null; // form.addValidationResults(viewEntity, componentName.replaceAll("-", "."), null);
+            SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentPath);
+
+            Entity entity = saveableComponent.getSaveableEntity(viewEntity);
+
+            entity = saveableComponent.getDataDefinition().save(entity);
+
+            selectedEntities.put(componentPath, entity);
+
+            return viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

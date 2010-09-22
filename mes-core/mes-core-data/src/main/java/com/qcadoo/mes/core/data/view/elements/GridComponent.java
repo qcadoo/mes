@@ -120,15 +120,19 @@ public final class GridComponent extends AbstractComponent<ListData> {
     @Override
     public ViewValue<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<ListData> viewEntity, final Set<String> pathsToUpdate) {
-        if ((getSourceFieldPath() != null && getSourceComponent() != null) || getFieldPath() != null) {
+        if (getSourceFieldPath() != null || getFieldPath() != null) {
             if (entity == null) {
                 return new ViewValue<ListData>(new ListData(0, Collections.<Entity> emptyList()));
             }
+            DataDefinition gridDataDefinition = getParentContainer().getDataDefinition();
+            if (getSourceComponent() != null) {
+                gridDataDefinition = getSourceComponent().getDataDefinition();
+            }
             HasManyType hasManyType = null;
             if (getFieldPath() != null) {
-                hasManyType = getHasManyType(getParentContainer().getDataDefinition(), getFieldPath());
+                hasManyType = getHasManyType(gridDataDefinition, getFieldPath());
             } else {
-                hasManyType = getHasManyType(getSourceComponent().getDataDefinition(), getSourceFieldPath());
+                hasManyType = getHasManyType(gridDataDefinition, getSourceFieldPath());
             }
             checkState(hasManyType.getDataDefinition().getName().equals(getDataDefinition().getName()),
                     "Grid and hasMany relation have different data definitions");

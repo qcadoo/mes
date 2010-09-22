@@ -12,6 +12,7 @@ import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.data.view.Component;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
@@ -34,7 +35,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     public Long castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
-        if (viewObject.has("value")) {
+        if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
             return viewObject.getLong("value");
         } else {
             return null;
@@ -45,6 +46,15 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Long> viewValue, final Set<String> pathsToUpdate) {
         return entity != null ? entity.getId() : null;
+    }
+
+    @Override
+    public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue) {
+        if (entity != null) {
+            for (ValidationError validationError : entity.getGlobalErrors()) {
+                viewValue.addErrorMessage(validationError.getMessage()); // TODO
+            }
+        }
     }
 
     @Override
@@ -69,7 +79,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public Entity getFormEntity(final ViewValue<Object> viewValue) {
+    public Entity getSaveableEntity(final ViewValue<Object> viewValue) {
         ViewValue<Long> formValue = lookViewValue(viewValue);
         Entity entity = new Entity(formValue.getValue());
 
@@ -88,21 +98,19 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
             ViewValue<?> componentValue = formValue.getComponent(component.getKey());
 
-            if (fieldDefinition.getType() instanceof BelongsToType) {
-                entity.setField(fieldPath, String.valueOf(componentValue.getValue()));
+            Object value = componentValue.getValue();
+
+            if (value == null) {
+                entity.setField(fieldPath, null);
+            } else if (fieldDefinition.getType() instanceof BelongsToType) {
+                entity.setField(fieldPath, String.valueOf(value));
             } else {
-                entity.setField(fieldPath, String.valueOf(componentValue.getValue()));
+                entity.setField(fieldPath, String.valueOf(value));
             }
 
         }
 
         return entity;
-    }
-
-    @Override
-    public Object addValidationResults(final ViewValue<Object> viewValue, final String path, final Entity results) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

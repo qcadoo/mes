@@ -18,6 +18,7 @@ import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.validation.ValidationError;
 
 public abstract class AbstractComponent<T> implements Component<T> {
 
@@ -93,7 +94,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
             return getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
         } else {
             Entity contextEntity = entity;
-            if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
+
+            if (contextEntity == null) {
+                contextEntity = selectedEntities.get(getPath());
+            } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
                 contextEntity = getFieldEntityValue(entity, fieldPath);
             }
 
@@ -269,6 +273,28 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return value;
     }
 
+    protected final ValidationError getFieldError(final Entity entity, final String path) {
+        if (entity == null || path == null) {
+            return null;
+        }
+
+        String[] fields = path.split("\\.");
+        Object value = entity;
+
+        for (int i = 0; i < fields.length - 1; i++) {
+            value = ((Entity) value).getField(fields[i]);
+            if (!(value instanceof Entity)) {
+                return null;
+            }
+        }
+
+        if (fields.length > 0) {
+            return ((Entity) value).getError(fields[fields.length - 1]);
+        } else {
+            return null;
+        }
+    }
+
     private Entity getFieldEntityValue(final Entity entity, final String path) {
         Object value = getFieldValue(entity, path);
 
@@ -337,7 +363,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return viewName;
     }
 
-    public void setViewName(String viewName) {
+    public void setViewName(final String viewName) {
         this.viewName = viewName;
     }
 

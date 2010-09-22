@@ -82,7 +82,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         DataDefinitionImpl dataDefinition = new DataDefinitionImpl("test.testBeanA", dataAccessService);
         dataDefinition.setFullyQualifiedClassName(TestBeanA.class.getCanonicalName());
 
-        FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType());
+        FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
+                fieldValidationFactory.required()).withValidator(fieldValidationFactory.length(5));
         FieldDefinitionImpl fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
         FieldDefinitionImpl fieldBeanB = createFieldDefinition("beanB",
                 fieldTypeFactory.eagerBelongsToType("test.testBeanB", "name"));

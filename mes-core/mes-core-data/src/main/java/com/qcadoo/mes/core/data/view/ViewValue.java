@@ -1,6 +1,8 @@
 package com.qcadoo.mes.core.data.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ViewValue<T> {
@@ -8,6 +10,12 @@ public class ViewValue<T> {
     private boolean visible = true;
 
     private boolean enabled = true;
+
+    private final List<String> errorMessages = new ArrayList<String>();
+
+    private final List<String> infoMessages = new ArrayList<String>();
+
+    private final List<String> successMessages = new ArrayList<String>();
 
     private T value;
 
@@ -54,6 +62,30 @@ public class ViewValue<T> {
 
     public void addComponent(final String name, final ViewValue<?> value) {
         this.components.put(name, value);
+    }
+
+    public List<String> getErrorMessages() {
+        return errorMessages;
+    }
+
+    public void addErrorMessage(final String errorMessage) {
+        this.errorMessages.add(errorMessage);
+    }
+
+    public List<String> getInfoMessages() {
+        return infoMessages;
+    }
+
+    public void addInfoMessage(final String infoMessage) {
+        this.infoMessages.add(infoMessage);
+    }
+
+    public List<String> getSuccessMessages() {
+        return successMessages;
+    }
+
+    public void addSuccessMessage(final String successMessage) {
+        this.successMessages.add(successMessage);
     }
 
 }

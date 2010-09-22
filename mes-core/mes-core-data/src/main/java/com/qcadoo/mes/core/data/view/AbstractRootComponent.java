@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.data.view;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,6 +43,10 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
         Set<String> paths = new HashSet<String>();
         getListenersForPath(path, paths);
         return paths;
+    }
+
+    @Override
+    public final void addContainerMessages(final Entity entity, final ViewValue<Object> viewValue) {
     }
 
     @Override
@@ -93,7 +98,23 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     }
 
     private void getListenersForPath(final String path, final Set<String> paths) {
-        Set<String> listenerPaths = componentRegistry.get(path).getListeners();
+        Component<?> component = componentRegistry.get(path);
+        if (component == null) {
+            return;
+        }
+        if (component instanceof ContainerComponent<?>) {
+            Collection<Component<?>> children = ((ContainerComponent<?>) component).getComponents().values();
+            Set<String> childrenPaths = new HashSet<String>();
+            for (Component<?> child : children) {
+                childrenPaths.add(child.getPath());
+            }
+            childrenPaths.removeAll(paths);
+            paths.addAll(childrenPaths);
+            for (String childerPath : childrenPaths) {
+                getListenersForPath(childerPath, paths);
+            }
+        }
+        Set<String> listenerPaths = component.getListeners();
         listenerPaths.removeAll(paths);
         paths.addAll(listenerPaths);
         for (String listenerPath : listenerPaths) {
