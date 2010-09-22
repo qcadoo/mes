@@ -172,25 +172,23 @@ public class CrudController {
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
-            String componentName = jsonBody.getString("componentName");
+            String componentName = jsonBody.getString("componentName").replaceAll("-", ".");
             JSONObject jsonValues = jsonBody.getJSONObject("data");
 
             Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            String componentPath = componentName.replaceAll("-", ".");
-
-            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentPath);
-            pathsToUpdate.add(componentPath);
+            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
+            pathsToUpdate.add(componentName);
 
             ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
 
-            SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentPath);
+            SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentName);
 
             Entity entity = saveableComponent.getSaveableEntity(viewEntity);
 
             entity = saveableComponent.getDataDefinition().save(entity);
 
-            selectedEntities.put(componentPath, entity);
+            selectedEntities.put(componentName, entity);
 
             return viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
         } catch (JSONException e) {
