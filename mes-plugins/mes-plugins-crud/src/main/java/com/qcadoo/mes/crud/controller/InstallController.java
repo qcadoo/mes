@@ -32,9 +32,9 @@ import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.internal.DataAccessServiceImpl;
 import com.qcadoo.mes.core.data.internal.EntityService;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 
 @Controller
 public class InstallController {
