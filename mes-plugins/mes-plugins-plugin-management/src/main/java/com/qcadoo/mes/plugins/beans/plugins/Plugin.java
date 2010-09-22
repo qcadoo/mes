@@ -32,6 +32,8 @@ public final class Plugin {
 
     private String packageName;
 
+    private String fileName;
+
     public boolean isBase() {
         return base;
     }
@@ -110,6 +112,14 @@ public final class Plugin {
 
     public void setPackageName(final String packageName) {
         this.packageName = packageName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(final String fileName) {
+        this.fileName = fileName;
     }
 
 }

@@ -17,6 +17,11 @@
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
+	
+	<bean id="multipartResolver"
+    	class="org.springframework.web.multipart.commons.CommonsMultipartResolver">	
+	    <property name="maxUploadSize" value="500000"/>
+	</bean>
 
 	<!-- Maps incoming requests to the appropriate controller based on the annotations 
 		on the controller methods. -->
