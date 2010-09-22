@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
@@ -43,6 +44,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Autowired
     private EntityService entityService;
+
+    @Autowired
+    private HookFactory hookFactory;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -146,9 +150,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.form");
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "test");
+        viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "getBeanAName"));
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new TextInputComponent("nameM", formDefinition, null, null));
         formDefinition.addComponent(new TextInputComponent("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInputComponent("nameC", formDefinition, "beanB.beanC.name", null));
         GridComponent beanAForm_beansCGrig = new GridComponent("beansCGrig", formDefinition, null, "beansC");

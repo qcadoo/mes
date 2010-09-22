@@ -342,7 +342,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
         dataDefinition.addValidator(fieldValidationFactory.customEntity("productService", "checkOrderDates").customErrorMessage(
                 "products.validation.error.datesOrder"));
-        dataDefinition.setSaveHook(hookFactory.getHook("productService", "fillOrderDatesAndWorkers"));
+        dataDefinition.setSaveHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "fillOrderDatesAndWorkers"));
 
         return dataDefinition;
     }

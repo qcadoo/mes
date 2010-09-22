@@ -22,7 +22,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     private final String name;
 
-    private HookDefinition onViewHook;
+    private HookDefinition viewHook;
 
     public ViewDefinitionImpl(final String name, final RootComponent root, final String pluginIdentifier) {
         this.name = name;
@@ -45,8 +45,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         return name;
     }
 
-    public void setOnViewHook(final HookDefinition onViewHook) {
-        this.onViewHook = onViewHook;
+    public void setViewHook(final HookDefinition viewHook) {
+        this.viewHook = viewHook;
     }
 
     @Override
@@ -67,8 +67,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     private void callOnViewHook(final ViewValue<Object> value) {
-        if (onViewHook != null) {
-            onViewHook.callWithViewValue(value);
+        if (viewHook != null) {
+            viewHook.callWithViewValue(value);
         }
     }
 
