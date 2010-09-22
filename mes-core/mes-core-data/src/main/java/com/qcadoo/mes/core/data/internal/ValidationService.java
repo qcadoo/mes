@@ -23,9 +23,9 @@ public final class ValidationService {
 
     public void validateGenericEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
-        parseAndValidateEntity(dataDefinition, genericEntity);
+        copyReadOnlyAndMissingFields(dataDefinition, genericEntity, existingGenericEntity);
 
-        nullifyReadOnlyFields(dataDefinition, genericEntity, existingGenericEntity);
+        parseAndValidateEntity(dataDefinition, genericEntity);
 
         if (genericEntity.getId() != null) {
             dataDefinition.callOnUpdate(genericEntity);
@@ -34,15 +34,18 @@ public final class ValidationService {
         }
     }
 
-    private void nullifyReadOnlyFields(final DataDefinition dataDefinition, final Entity genericEntity,
+    private void copyReadOnlyAndMissingFields(final DataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
         for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
+            Object value = existingGenericEntity != null ? existingGenericEntity.getField(field.getKey()) : null;
             if (field.getValue().isReadOnly()) {
-                genericEntity.setField(field.getKey(),
-                        existingGenericEntity != null ? existingGenericEntity.getField(field.getKey()) : null);
+                genericEntity.setField(field.getKey(), value);
             }
             if (field.getValue().isReadOnlyOnUpdate() && genericEntity.getId() != null) {
-                genericEntity.setField(field.getKey(), existingGenericEntity.getField(field.getKey()));
+                genericEntity.setField(field.getKey(), value);
+            }
+            if (!genericEntity.getFields().containsKey(field.getKey()) && genericEntity.getId() != null) {
+                genericEntity.setField(field.getKey(), value);
             }
         }
     }

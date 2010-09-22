@@ -21,6 +21,8 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
     public abstract T getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<T> viewValue, final Set<String> pathsToUpdate);
 
+    public abstract void addContainerMessages(final Entity entity, final ViewValue<T> viewValue);
+
     public AbstractContainerComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
@@ -72,6 +74,8 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
 
         value.setValue(getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate));
 
+        addContainerMessages(entity, value);
+
         if (isAnyViewValueNotNull || value.getValue() != null) {
             return value;
         } else {
@@ -79,7 +83,7 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
         }
     }
 
-    public final void updateComponentsTranslations(Map<String, String> translationsMap,
+    public final void updateComponentsTranslations(final Map<String, String> translationsMap,
             final TranslationService translationService, final Locale locale) {
         for (Component<?> component : components.values()) {
             component.updateTranslations(translationsMap, translationService, locale);
