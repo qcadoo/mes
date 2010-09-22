@@ -9,38 +9,39 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	
 	var element = _element;
 	
-	//var input = $("#"+element.attr('id')+"_input");
-	
-	this.insterData = function(data) {
-		//input.val(data);
-		QCD.info("QCD.components.elements.DynamicComboBox.insterData()");
-	}
+	var select = $("#"+element.attr('id')+"_select");
 	
 	this.getComponentValue = function() {
-		//if (input.val() && input.val().trim() != "") {
-			//return input.val();
-		//}
-		//return null;
+		var selectedVal = select.val();
+		if (!selectedVal || selectedVal.trim() == "") {
+			selectedVal = null;
+		}
+		var value = {
+			selectedValue: selectedVal
+		}
+		QCD.info(value);
+		return value;
 	}
 	
 	this.setComponentValue = function(value) {
-		//input.val(value);
+		select.children().remove();
+		select.append("<option value=''></option>");
+		for (var i in value.values) {
+			var val = value.values[i];
+			select.append("<option value='"+val+"'>"+val+"</option>");
+		}
+		select.val(value.selectedValue);
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
-		//if (isEnabled) {
-			//input.removeAttr('disabled');
-		//} else {
-			//input.attr('disabled', 'true');
-		//}
+		if (isEnabled) {
+			select.removeAttr('disabled');
+		} else {
+			select.attr('disabled', 'true');
+		}
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
-//		if (isLoadingVisible) {
-//			input.val("loading");
-//		} else {
-//			if (input.val() == "loading")
-//				input.val("");
-//		}
+
 	}
 }

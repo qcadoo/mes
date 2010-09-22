@@ -8,9 +8,14 @@ import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
+import com.qcadoo.mes.core.data.internal.types.DictionaryType;
+import com.qcadoo.mes.core.data.internal.types.EnumType;
+import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.view.AbstractComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -36,47 +41,41 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     @Override
     public ViewValue<ComboBoxValue> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
-        // JSONObject value = viewObject.getJSONObject("value");
-        //
-        // if (value != null) {
-        // String selectedEntityId = value.getString("selectedEntityId");
-        //
-        // if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
-        // Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
-        // selectedEntities.put(getPath(), selectedEntity);
-        // }
-        // }
-        //
-        // return new ViewValue<ComboBoxValue>();
-        return null;
+        String value = null;
+        if (!viewObject.isNull("selectedValue")) {
+            value = viewObject.getString("selectedValue");
+        }
+        if (StringUtils.hasText(value)) {
+            return new ViewValue<ComboBoxValue>(new ComboBoxValue(getComboBoxValues(), value));
+        } else {
+            return new ViewValue<ComboBoxValue>();
+        }
     }
 
     @Override
     public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<ComboBoxValue> viewEntity, final Set<String> pathsToUpdate) {
 
-        // if ((getSourceFieldPath() != null && getSourceComponent() != null) || getFieldPath() != null) {
-        // if (entity == null) {
-        // return new ViewValue<ListData>(new ListData(0, Collections.<Entity> emptyList()));
-        // }
-        // HasManyType hasManyType = null;
-        // if (getFieldPath() != null) {
-        // hasManyType = getHasManyType(getParentContainer().getDataDefinition(), getFieldPath());
-        // } else {
-        // hasManyType = getHasManyType(getSourceComponent().getDataDefinition(), getSourceFieldPath());
-        // }
-        // checkState(hasManyType.getDataDefinition().getName().equals(getDataDefinition().getName()),
-        // "Grid and hasMany relation have different data definitions");
-        // SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find();
-        // searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
-        // getDataDefinition().getField(hasManyType.getFieldName()), entity.getId()));
-        // SearchResult rs = searchCriteriaBuilder.list();
-        // return new ViewValue<ListData>(generateListData(rs));
-        // } else {
-        // SearchResult rs = getDataDefinition().find().list();
-        // return new ViewValue<ListData>(generateListData(rs));
-        // }
-        return null;
+        Object value = getFieldValue(entity, getFieldPath());
+        String strValue;
+
+        if (value == null) {
+            strValue = "";
+        } else {
+            strValue = String.valueOf(value);
+        }
+
+        ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
+        return new ViewValue<ComboBoxValue>(comboValue);
+    }
+
+    private List<String> getComboBoxValues() {
+        FieldType def = getDataDefinition().getField(getName()).getType();
+        if (!(def instanceof DictionaryType || def instanceof EnumType)) {
+            // TODO mina
+        }
+        EnumeratedFieldType fieldDefinition = (EnumeratedFieldType) def;
+        return fieldDefinition.values();
     }
 
     @Override
