@@ -64,14 +64,14 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
             strValue = String.valueOf(value);
         }
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
-        ViewValue<ComboBoxValue> viewValue = new ViewValue<ComboBoxValue>(comboValue);
+        ViewValue<ComboBoxValue> newViewValue = new ViewValue<ComboBoxValue>(comboValue);
 
         ValidationError validationError = getFieldError(entity, getFieldPath());
         if (validationError != null && validationError.getMessage() != null) {
-            viewValue.addErrorMessage(validationError.getMessage());
+            newViewValue.addErrorMessage(validationError.getMessage());
         }
 
-        return viewValue;
+        return newViewValue;
     }
 
     private List<String> getComboBoxValues() {
