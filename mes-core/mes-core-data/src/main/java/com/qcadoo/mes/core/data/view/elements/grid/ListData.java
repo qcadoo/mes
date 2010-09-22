@@ -8,9 +8,11 @@ public class ListData {
 
     private int totalNumberOfEntities;
 
+    private Long selectedEntityId;
+
     private List<Entity> entities;
 
-    public ListData(int totalNumberOfEntities, List<Entity> entities) {
+    public ListData(final int totalNumberOfEntities, final List<Entity> entities) {
         this.totalNumberOfEntities = totalNumberOfEntities;
         this.entities = entities;
     }
@@ -19,7 +21,7 @@ public class ListData {
         return totalNumberOfEntities;
     }
 
-    public void setTotalNumberOfEntities(int totalNumberOfEntities) {
+    public void setTotalNumberOfEntities(final int totalNumberOfEntities) {
         this.totalNumberOfEntities = totalNumberOfEntities;
     }
 
@@ -27,8 +29,16 @@ public class ListData {
         return entities;
     }
 
-    public void setEntities(List<Entity> entities) {
+    public void setEntities(final List<Entity> entities) {
         this.entities = entities;
+    }
+
+    public Long getSelectedEntityId() {
+        return selectedEntityId;
+    }
+
+    public void setSelectedEntityId(final Long selectedEntityId) {
+        this.selectedEntityId = selectedEntityId;
     }
 
 }

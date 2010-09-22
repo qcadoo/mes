@@ -32,6 +32,8 @@ import com.qcadoo.mes.core.data.internal.TranslationService;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.ViewValue;
 import com.qcadoo.mes.core.data.view.containers.SaveableComponent;
+import com.qcadoo.mes.core.data.view.elements.GridComponent;
+import com.qcadoo.mes.core.data.view.elements.grid.ListData;
 
 @Controller
 public class CrudController {
@@ -148,12 +150,12 @@ public class CrudController {
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
-            String componentName = jsonBody.getString("componentName");
+            String componentName = jsonBody.getString("componentName").replaceAll("-", ".");
             JSONObject jsonValues = jsonBody.getJSONObject("data");
 
             Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName.replaceAll("-", "."));
+            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
 
             ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
             ViewValue<Object> newViewEntity = viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
@@ -196,6 +198,7 @@ public class CrudController {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "page/{viewName}/delete", method = RequestMethod.POST)
     @ResponseBody
     public Object performDelete(@PathVariable("viewName") final String viewName,
@@ -204,10 +207,25 @@ public class CrudController {
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
-            String componentName = jsonBody.getString("componentName");
-            String entityIdStr = jsonBody.getString("data");
+            String componentName = jsonBody.getString("componentName").replaceAll("-", ".");
+            JSONObject jsonValues = jsonBody.getJSONObject("data");
 
-            return null; // form.addValidationResults(viewEntity, componentName.replaceAll("-", "."), null);
+            Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+
+            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
+            pathsToUpdate.add(componentName);
+
+            ViewValue<Object> viewEntity = viewDefinition.castValue(null, selectedEntities, jsonValues);
+
+            GridComponent gridComponent = (GridComponent) viewDefinition.getRoot().lookupComponent(componentName);
+
+            ViewValue<ListData> gridValue = (ViewValue<ListData>) viewDefinition.getRoot().lookupValue(viewEntity, componentName);
+
+            gridComponent.getDataDefinition().delete(gridValue.getValue().getSelectedEntityId());
+
+            selectedEntities.remove(componentName);
+
+            return viewDefinition.getValue(null, selectedEntities, viewEntity, pathsToUpdate);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

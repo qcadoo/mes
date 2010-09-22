@@ -6,8 +6,10 @@ public interface RootComponent extends ContainerComponent<Object> {
 
     void initialize();
 
-    Set<String> lookupListeners(final String path);
+    Set<String> lookupListeners(String path);
 
-    CastableComponent<?> lookupComponent(final String path);
+    Component<?> lookupComponent(String path);
+
+    ViewValue<?> lookupValue(ViewValue<Object> viewValue, String path);
 
 }

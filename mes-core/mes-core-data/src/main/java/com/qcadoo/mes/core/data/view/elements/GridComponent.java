@@ -105,16 +105,19 @@ public final class GridComponent extends AbstractComponent<ListData> {
             final JSONObject viewObject) throws JSONException {
         JSONObject value = viewObject.getJSONObject("value");
 
+        ListData listData = new ListData(0, Collections.<Entity> emptyList());
+
         if (value != null) {
             String selectedEntityId = value.getString("selectedEntityId");
 
             if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
                 Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
                 selectedEntities.put(getPath(), selectedEntity);
+                listData.setSelectedEntityId(Long.parseLong(selectedEntityId));
             }
         }
 
-        return new ViewValue<ListData>();
+        return new ViewValue<ListData>(listData);
     }
 
     @Override
@@ -205,7 +208,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
         return header;
     }
 
-    public void setHeader(boolean header) {
+    public void setHeader(final boolean header) {
         this.header = header;
     }
 

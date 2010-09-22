@@ -34,7 +34,7 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     }
 
     @Override
-    public CastableComponent<?> lookupComponent(final String path) {
+    public Component<?> lookupComponent(final String path) {
         return componentRegistry.get(path);
     }
 
@@ -43,6 +43,22 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
         Set<String> paths = new HashSet<String>();
         getListenersForPath(path, paths);
         return paths;
+    }
+
+    @Override
+    public ViewValue<?> lookupValue(final ViewValue<Object> viewValue, final String path) {
+        String[] fields = path.split("\\.");
+
+        ViewValue<?> newViewValue = viewValue;
+
+        for (String field : fields) {
+            newViewValue = newViewValue.getComponent(field);
+            if (newViewValue == null) {
+                return null;
+            }
+        }
+
+        return newViewValue;
     }
 
     @Override
