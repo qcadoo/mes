@@ -29,6 +29,7 @@ import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.core.data.view.containers.WindowComponent;
+import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
 import com.qcadoo.mes.core.data.view.elements.GridComponent;
 import com.qcadoo.mes.core.data.view.elements.TextInputComponent;
 import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
@@ -223,9 +224,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         FormComponent formDefinition = new FormComponent("productDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
+
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
+        formDefinition.addComponent(new DynamicComboBox("typeOfMaterial", formDefinition, "typeOfMaterial", null));
         formDefinition.addComponent(new TextInputComponent("ean", formDefinition, "ean", null));
+        formDefinition.addComponent(new DynamicComboBox("category", formDefinition, "category", null));
+        formDefinition.addComponent(new TextInputComponent("unit", formDefinition, "unit", null));
         windowDefinition.addComponent(formDefinition);
 
         GridComponent substituteGridDefinition = new GridComponent("substitutesGrid", windowDefinition, "substitutes", null);

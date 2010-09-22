@@ -192,7 +192,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function deleteClicked() {
 		var selectedId = grid.getGridParam('selrow');
 		if (selectedId) {
-			alert("delete "+selectedId);
+			//alert("delete "+selectedId);
+			mainController.performDelete(elementPath, selectedId);
 		}
 	}
 	

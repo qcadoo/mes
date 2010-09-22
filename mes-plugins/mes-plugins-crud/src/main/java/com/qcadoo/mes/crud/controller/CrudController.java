@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -200,6 +198,23 @@ public class CrudController {
         }
     }
 
+    @RequestMapping(value = "page/{viewName}/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Object performDelete(@PathVariable("viewName") final String viewName,
+            @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") final StringBuilder body) {
+        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+
+        try {
+            JSONObject jsonBody = new JSONObject(body.toString());
+            String componentName = jsonBody.getString("componentName");
+            String entityIdStr = jsonBody.getString("data");
+
+            return null; // form.addValidationResults(viewEntity, componentName.replaceAll("-", "."), null);
+        } catch (JSONException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
     // @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.GET)
     // @ResponseBody
     // public Object getDataUpdate(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String>
@@ -302,49 +317,49 @@ public class CrudController {
         return null;
     }
 
-    @RequestMapping(value = "page/{viewName}/{elementName}/save", method = RequestMethod.POST)
-    @ResponseBody
-    public Entity saveEntity(@PathVariable("viewName") final String viewName,
-            @PathVariable("elementName") final String elementName, @ModelAttribute final Entity entity, final Locale locale) {
-        // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        // ComponentDefinition element = viewDefinition.getElementByName(elementName);
-        //
-        // ValidationResults validationResult = dataAccessService.save(element.getDataDefinition(), entity);
-        //
-        // translationService.translateValidationResults(validationResult, locale);
-        //
-        // return EntityDataUtils.generateValidationResultWithEntityData(validationResult, element.getDataDefinition());
-        return null;
-    }
+    // @RequestMapping(value = "page/{viewName}/{elementName}/save", method = RequestMethod.POST)
+    // @ResponseBody
+    // public Entity saveEntity(@PathVariable("viewName") final String viewName,
+    // @PathVariable("elementName") final String elementName, @ModelAttribute final Entity entity, final Locale locale) {
+    // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+    // ComponentDefinition element = viewDefinition.getElementByName(elementName);
+    //
+    // ValidationResults validationResult = dataAccessService.save(element.getDataDefinition(), entity);
+    //
+    // translationService.translateValidationResults(validationResult, locale);
+    //
+    // return EntityDataUtils.generateValidationResultWithEntityData(validationResult, element.getDataDefinition());
+    // return null;
+    // }
 
-    @RequestMapping(value = "page/{viewName}/{elementName}/delete", method = RequestMethod.POST)
-    @ResponseBody
-    public String deleteEntities(@PathVariable("viewName") final String viewName,
-            @PathVariable("elementName") final String elementName, @RequestBody final List<Integer> selectedRows) {
-        // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        // ComponentDefinition element = viewDefinition.getElementByName(elementName);
-        //
-        // if (selectedRows.size() > 0) {
-        // Long[] entitiesId = new Long[selectedRows.size()];
-        // int i = 0;
-        // for (Integer selectedRowId : selectedRows) {
-        // entitiesId[i++] = Long.valueOf(selectedRowId);
-        // }
-        // dataAccessService.delete(element.getDataDefinition(), entitiesId);
-        // }
-        return "ok";
-    }
+    // @RequestMapping(value = "page/{viewName}/{elementName}/delete", method = RequestMethod.POST)
+    // @ResponseBody
+    // public String deleteEntities(@PathVariable("viewName") final String viewName,
+    // @PathVariable("elementName") final String elementName, @RequestBody final List<Integer> selectedRows) {
+    // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+    // ComponentDefinition element = viewDefinition.getElementByName(elementName);
+    //
+    // if (selectedRows.size() > 0) {
+    // Long[] entitiesId = new Long[selectedRows.size()];
+    // int i = 0;
+    // for (Integer selectedRowId : selectedRows) {
+    // entitiesId[i++] = Long.valueOf(selectedRowId);
+    // }
+    // dataAccessService.delete(element.getDataDefinition(), entitiesId);
+    // }
+    // return "ok";
+    // }
 
-    @RequestMapping(value = "page/{viewName}/{elementName}/move", method = RequestMethod.POST)
-    @ResponseBody
-    public String moveEntities(@PathVariable("viewName") final String viewName,
-            @PathVariable("elementName") final String elementName, @RequestParam final Integer entityId,
-            @RequestParam final Integer direction) {
-        // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        // ComponentDefinition element = viewDefinition.getElementByName(elementName);
-        //
-        // dataAccessService.move(element.getDataDefinition(), Long.valueOf(entityId), direction);
+    // @RequestMapping(value = "page/{viewName}/{elementName}/move", method = RequestMethod.POST)
+    // @ResponseBody
+    // public String moveEntities(@PathVariable("viewName") final String viewName,
+    // @PathVariable("elementName") final String elementName, @RequestParam final Integer entityId,
+    // @RequestParam final Integer direction) {
+    // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+    // ComponentDefinition element = viewDefinition.getElementByName(elementName);
+    //
+    // dataAccessService.move(element.getDataDefinition(), Long.valueOf(entityId), direction);
 
-        return "ok";
-    }
+    // return "ok";
+    // }
 }
