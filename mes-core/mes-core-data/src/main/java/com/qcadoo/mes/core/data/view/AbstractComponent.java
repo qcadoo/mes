@@ -84,25 +84,36 @@ public abstract class AbstractComponent<T> implements Component<T> {
         if (shouldNotBeUpdated(pathsToUpdate)) {
             return null;
         }
+
+        Entity selectedEntity = null;
+        ViewValue<T> value = null;
+
         if (sourceComponent != null) {
-            Entity selectedEntity = selectedEntities.get(sourceComponent.getPath());
+            selectedEntity = selectedEntities.get(sourceComponent.getPath());
 
             if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
 
-            return getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
+            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
         } else {
-            Entity contextEntity = entity;
+            selectedEntity = entity;
 
-            if (contextEntity == null) {
-                contextEntity = selectedEntities.get(getPath());
+            if (selectedEntity == null) {
+                selectedEntity = selectedEntities.get(getPath());
             } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
-                contextEntity = getFieldEntityValue(entity, fieldPath);
+                selectedEntity = getFieldEntityValue(entity, fieldPath);
             }
 
-            return getComponentValue(contextEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
+            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
         }
+
+        if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
+            value.setEnabled(false);
+        }
+
+        return value;
+
     }
 
     @Override
