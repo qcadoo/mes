@@ -22,14 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
 import com.qcadoo.mes.core.data.internal.search.SearchResultImpl;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchResult;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {
@@ -50,7 +49,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public ValidationResults save(final DataDefinition dataDefinition, final Entity genericEntity) {
+    public Entity save(final DataDefinition dataDefinition, final Entity genericEntity) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(genericEntity, "entity must be given");
 
@@ -62,26 +61,25 @@ public final class DataAccessServiceImpl implements DataAccessService {
             existingGenericEntity = entityService.convertToGenericEntity(dataDefinition, existingDatabaseEntity);
         }
 
-        ValidationResults validationResults = validationService.validateGenericEntity(dataDefinition, genericEntity,
-                existingGenericEntity);
+        validationService.validateGenericEntity(dataDefinition, genericEntity, existingGenericEntity);
 
-        if (validationResults.isValid()) {
-            Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
-
-            if (genericEntity.getId() == null) {
-                priorityService.prioritizeEntity(dataDefinition, databaseEntity);
-            }
-
-            getCurrentSession().save(databaseEntity);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("entity " + dataDefinition.getName() + "#" + genericEntity.getId() + " has been saved");
-            }
-
-            validationResults.setEntity(entityService.convertToGenericEntity(dataDefinition, databaseEntity));
+        if (!genericEntity.isValid()) {
+            return genericEntity;
         }
 
-        return validationResults;
+        Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
+
+        if (genericEntity.getId() == null) {
+            priorityService.prioritizeEntity(dataDefinition, databaseEntity);
+        }
+
+        getCurrentSession().save(databaseEntity);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("entity " + dataDefinition.getName() + "#" + genericEntity.getId() + " has been saved");
+        }
+
+        return entityService.convertToGenericEntity(dataDefinition, databaseEntity);
     }
 
     @Override

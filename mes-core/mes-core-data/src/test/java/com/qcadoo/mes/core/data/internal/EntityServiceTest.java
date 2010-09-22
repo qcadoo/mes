@@ -11,8 +11,9 @@ import static org.springframework.util.Assert.isInstanceOf;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
+import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 public class EntityServiceTest extends DataAccessTest {
 
@@ -21,7 +22,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
 
-        DataFieldDefinition fieldDefinition = new DataFieldDefinition("unknown");
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl("unknown");
 
         // when
         entityService.getField(databaseEntity, fieldDefinition);
@@ -77,8 +78,7 @@ public class EntityServiceTest extends DataAccessTest {
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
         databaseEntity.setName("Mr T");
 
-        DataFieldDefinition fieldDefinition = new DataFieldDefinition("name");
-        fieldDefinition.withType(fieldTypeFactory.integerType());
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl("name").withType(fieldTypeFactory.integerType());
 
         // when
         entityService.getField(databaseEntity, fieldDefinition);
@@ -96,7 +96,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrownAnExceptionIfClassForGivenDataDefinitionDoesNotExist() throws Exception {
         // given
-        DataDefinition dataDefinition = new DataDefinition("definition");
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("definition", null);
         dataDefinition.setFullyQualifiedClassName("java.lang.SomeUselessNotExistingClass");
 
         // when
@@ -153,8 +153,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
 
-        DataFieldDefinition fieldDefinition = new DataFieldDefinition("unknown");
-        fieldDefinition.withType(fieldTypeFactory.stringType());
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl("unknown").withType(fieldTypeFactory.stringType());
 
         // when
         entityService.setField(databaseEntity, fieldDefinition, "XXX");

@@ -76,7 +76,7 @@
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
 				<configuration>
-				<webAppSourceDirectory>${basedir}/target/${pom.artifactId}-${pom.version}</webAppSourceDirectory>
+				<!--<webAppSourceDirectory>${basedir}/target/${pom.artifactId}-${pom.version}</webAppSourceDirectory>-->
 				</configuration>
 			</plugin>
 		</plugins>

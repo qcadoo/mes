@@ -2,59 +2,107 @@ var QCD = QCD || {};
 
 QCD.PageController = function(_viewName) {
 	
-	var pageElements;
+	var pageComponents;
 	var viewName = _viewName;
 	
 	function constructor(_this) {
-		var pageConstructor = new QCD.PageConstructor(viewName);
-		pageElements = pageConstructor.constructPageElements(_this);
+		QCDConnector.windowName = viewName;
+		
+		var contentElement = $("#content");
+		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
+		QCD.debug(pageComponents);
 	}
 	
-	this.init = function(entityId, contextEntityId, serializationObject) {
-		for (var i in pageElements) {
-			var elementParent = pageElements[i].getParent();
-			if (elementParent && elementParent.length > 12) {
-				var parts = elementParent.split(":");
-				if (parts.length == 2 && parts[0] == "viewElement") {
-					var parentViewName = parts[1];
-					pageElements[parentViewName].addChild(pageElements[i]);
-					QCDLogger.debug("attach "+i+" to "+parentViewName);	
+	this.init = function(entityId) {
+		var parameters = new Object();
+		if (entityId && entityId.trim() != "") {
+			parameters.entityId = entityId;
+		}
+		QCDConnector.sendGet("data", parameters, function(response) {
+			setValueData(response);
+		});
+	}
+	
+	this.getViewName = function() {
+		return viewName;
+	}
+	
+	this.getUpdate = function(componentName, value, listeners) {
+		QCD.info("getUpdate "+componentName+"->"+value);
+		if (listeners) {
+			for (var i in listeners) {
+				this.getComponent(listeners[i]).setLoading(true);
+			}
+		}
+		var parameters = {
+			componentName: componentName,
+			data: getValueData()
+		};
+		QCD.info(parameters);
+		var valuesJson = JSON.stringify(parameters);
+		//QCD.info(valuesJson);
+		var _this = this;
+		QCDConnector.sendPost("dataUpdate", valuesJson, function(response) {
+			QCD.info(response);
+			setValueData(response);
+			if (listeners) {
+				for (var i in listeners) {
+					_this.getComponent(listeners[i]).setLoading(false);
 				}
 			}
-		}
-		if (contextEntityId && contextEntityId != "") {
-			for (var i in pageElements) {
-				pageElements[i].insertContext(contextEntityId);
+		});
+	}
+	
+	this.performSave = function(componentName) {
+		QCD.info("save " +componentName);
+		var parameters = {
+			componentName: componentName,
+			data: getValueData()
+		};
+		QCD.info(parameters);
+		var parametersJson = JSON.stringify(parameters);
+		//QCD.info(parametersJson);
+		QCDConnector.sendPost("save", parametersJson, function(response) {
+			QCD.info(response);
+			setValueData(response);
+		});
+	}
+	
+	function getValueData() {
+		var values = new Object();
+		for (var i in pageComponents) {
+			var value = pageComponents[i].getValue();
+			if (value) {
+				values[i] = value;
 			}
 		}
-		if (serializationObject) {
-			for (var i in pageElements) {
-				pageElements[i].deserialize(serializationObject[i]);
-			}
-		} else {
-			for (var i in pageElements) {
-				var elementParent = pageElements[i].getParent();
-				if (!elementParent) {
-					pageElements[i].refresh();
-				} else if (elementParent == "entityId") {
-					if (entityId && entityId != "") {
-						pageElements[i].insertParentId(entityId);
-					}
-				}
-			}
+		//QCD.info(values);
+		return values;
+	}
+	
+	function setValueData(data) {
+		QCD.debug(data);
+		for (var i in data.components) {
+			var component = pageComponents[i];
+			component.setValue(data.components[i]);
 		}
+	}
+	
+	this.getComponent = function(componentPath) {
+		var componentName = componentPath.split(".")[0];
+		var path = componentPath.substring(componentName.length+1);
+		return pageComponents[componentName].getComponent(path);
 	}
 	
 	this.getTranslation = function(key) {
 		return window.translationsMap[key] ? window.translationsMap[key] : "TT: "+key;
-		//return window.parent.commonTranslations[key] ? window.parent.commonTranslations[key] : "ToTranslate";
 	}
 	
 	this.goToPage = function(url) {
 		var serializationObject = new Object();
-		for (var i in pageElements) {
-			serializationObject[i] = pageElements[i].serialize();
-		}
+//		for (var i in pageElements) {
+//			serializationObject[i] = pageElements[i].serialize();
+//		}
 		window.parent.goToPage(url, serializationObject);
 	}
 	

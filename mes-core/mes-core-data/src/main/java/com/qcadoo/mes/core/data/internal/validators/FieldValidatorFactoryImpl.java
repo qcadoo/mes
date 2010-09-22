@@ -3,8 +3,7 @@ package com.qcadoo.mes.core.data.internal.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.internal.callbacks.CallbackFactory;
+import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
@@ -13,10 +12,7 @@ import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Autowired
-    private CallbackFactory callbackFactory;
-
-    @Autowired
-    private DataAccessService dataAccessService;
+    private HookFactory callbackFactory;
 
     @Override
     public FieldValidator required() {
@@ -30,7 +26,7 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Override
     public FieldValidator unique() {
-        return new UniqueValidator(dataAccessService);
+        return new UniqueValidator();
     }
 
     @Override

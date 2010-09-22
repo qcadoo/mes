@@ -1,14 +1,14 @@
 package com.qcadoo.mes.core.data.internal.types;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
-import com.qcadoo.mes.core.data.validation.ValidationResults;
 
 public final class PriorityType implements FieldType {
 
-    private final DataFieldDefinition scopeFieldDefinition;
+    private final FieldDefinition scopeFieldDefinition;
 
-    public PriorityType(final DataFieldDefinition scopeFieldDefinition) {
+    public PriorityType(final FieldDefinition scopeFieldDefinition) {
         this.scopeFieldDefinition = scopeFieldDefinition;
     }
 
@@ -33,15 +33,14 @@ public final class PriorityType implements FieldType {
     }
 
     @Override
-    public Object toObject(final DataFieldDefinition fieldDefinition, final Object value,
-            final ValidationResults validationResults) {
+    public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         if (value instanceof Integer) {
             return value;
         }
         try {
             return Integer.parseInt(String.valueOf(value));
         } catch (NumberFormatException e) {
-            validationResults.addError(fieldDefinition, "form.validate.errors.invalidNumericFormat");
+            validatedEntity.addError(fieldDefinition, "form.validate.errors.invalidNumericFormat");
             return null;
         }
     }
@@ -51,7 +50,7 @@ public final class PriorityType implements FieldType {
         return String.valueOf(value);
     }
 
-    public DataFieldDefinition getScopeFieldDefinition() {
+    public FieldDefinition getScopeFieldDefinition() {
         return scopeFieldDefinition;
     }
 

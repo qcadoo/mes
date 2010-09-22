@@ -19,9 +19,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.definition.DataDefinition;
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
-import com.qcadoo.mes.core.data.internal.callbacks.CallbackFactory;
+import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
+import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
+import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
@@ -53,29 +53,29 @@ public abstract class DataAccessTest {
 
     protected PriorityService priorityService = null;
 
-    protected CallbackFactory callbackFactory;
+    protected HookFactory callbackFactory;
 
     protected DataAccessService dataAccessService = null;
 
-    protected DataDefinition parentDataDefinition = null;
+    protected DataDefinitionImpl parentDataDefinition = null;
 
-    protected DataDefinition dataDefinition = null;
+    protected DataDefinitionImpl dataDefinition = null;
 
-    protected DataFieldDefinition fieldDefinitionPriority = null;
+    protected FieldDefinitionImpl fieldDefinitionPriority = null;
 
-    protected DataFieldDefinition fieldDefinitionBelongsTo = null;
+    protected FieldDefinitionImpl fieldDefinitionBelongsTo = null;
 
-    protected DataFieldDefinition fieldDefinitionAge = null;
+    protected FieldDefinitionImpl fieldDefinitionAge = null;
 
-    protected DataFieldDefinition fieldDefinitionMoney = null;
+    protected FieldDefinitionImpl fieldDefinitionMoney = null;
 
-    protected DataFieldDefinition fieldDefinitionRetired = null;
+    protected FieldDefinitionImpl fieldDefinitionRetired = null;
 
-    protected DataFieldDefinition fieldDefinitionBirthDate = null;
+    protected FieldDefinitionImpl fieldDefinitionBirthDate = null;
 
-    protected DataFieldDefinition fieldDefinitionName = null;
+    protected FieldDefinitionImpl fieldDefinitionName = null;
 
-    protected DataFieldDefinition parentFieldDefinitionName = null;
+    protected FieldDefinitionImpl parentFieldDefinitionName = null;
 
     @Before
     public void superInit() {
@@ -96,48 +96,46 @@ public abstract class DataAccessTest {
 
         fieldTypeFactory = new FieldTypeFactoryImpl();
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
-        ReflectionTestUtils.setField(fieldTypeFactory, "dataAccessService", dataAccessService);
         ReflectionTestUtils.setField(fieldTypeFactory, "dataDefinitionService", dataDefinitionService);
 
-        callbackFactory = new CallbackFactory();
+        callbackFactory = new HookFactory();
         ReflectionTestUtils.setField(callbackFactory, "applicationContext", applicationContext);
 
         fieldValidatorFactory = new FieldValidatorFactoryImpl();
         ReflectionTestUtils.setField(fieldValidatorFactory, "callbackFactory", callbackFactory);
-        ReflectionTestUtils.setField(fieldValidatorFactory, "dataAccessService", dataAccessServiceMock);
 
-        parentFieldDefinitionName = new DataFieldDefinition("name");
+        parentFieldDefinitionName = new FieldDefinitionImpl("name");
         parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
 
-        parentDataDefinition = new DataDefinition("parent.entity");
+        parentDataDefinition = new DataDefinitionImpl("parent.entity", dataAccessService);
         parentDataDefinition.addField(parentFieldDefinitionName);
         parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
 
         given(dataDefinitionService.get("parent.entity")).willReturn(parentDataDefinition);
 
-        fieldDefinitionBelongsTo = new DataFieldDefinition("belongsTo");
+        fieldDefinitionBelongsTo = new FieldDefinitionImpl("belongsTo");
         fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent.entity", "name"));
 
-        fieldDefinitionName = new DataFieldDefinition("name");
+        fieldDefinitionName = new FieldDefinitionImpl("name");
         fieldDefinitionName.withType(fieldTypeFactory.stringType());
 
-        fieldDefinitionAge = new DataFieldDefinition("age");
+        fieldDefinitionAge = new FieldDefinitionImpl("age");
         fieldDefinitionAge.withType(fieldTypeFactory.integerType());
 
-        fieldDefinitionPriority = new DataFieldDefinition("priority");
+        fieldDefinitionPriority = new FieldDefinitionImpl("priority");
         fieldDefinitionPriority.withType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
         fieldDefinitionPriority.readOnly();
 
-        fieldDefinitionMoney = new DataFieldDefinition("money");
+        fieldDefinitionMoney = new FieldDefinitionImpl("money");
         fieldDefinitionMoney.withType(fieldTypeFactory.decimalType());
 
-        fieldDefinitionRetired = new DataFieldDefinition("retired");
+        fieldDefinitionRetired = new FieldDefinitionImpl("retired");
         fieldDefinitionRetired.withType(fieldTypeFactory.booleanType());
 
-        fieldDefinitionBirthDate = new DataFieldDefinition("birthDate");
+        fieldDefinitionBirthDate = new FieldDefinitionImpl("birthDate");
         fieldDefinitionBirthDate.withType(fieldTypeFactory.dateType());
 
-        dataDefinition = new DataDefinition("simple.entity");
+        dataDefinition = new DataDefinitionImpl("simple.entity", dataAccessService);
         dataDefinition.addField(fieldDefinitionName);
         dataDefinition.addField(fieldDefinitionAge);
         dataDefinition.addField(fieldDefinitionMoney);

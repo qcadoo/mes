@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
+import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
 
 public class DataAccessServiceFindTest extends DataAccessTest {
@@ -22,16 +22,13 @@ public class DataAccessServiceFindTest extends DataAccessTest {
         databaseObjects.add(createDatabaseObject(3L, "name3", 3));
         databaseObjects.add(createDatabaseObject(4L, "name4", 4));
 
-        SearchCriteriaImpl searchCriteria = new SearchCriteriaImpl(dataDefinition);
-        searchCriteria.setFirstResult(0);
-        searchCriteria.setMaxResults(4);
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinition.find().withFirstResult(0).withMaxResults(4);
 
         given(criteria.uniqueResult()).willReturn(4);
-
         given(criteria.list()).willReturn(databaseObjects);
 
         // when
-        SearchResult resultSet = dataAccessService.find(searchCriteria);
+        SearchResult resultSet = searchCriteriaBuilder.list();
 
         // then
         assertEquals(4, resultSet.getTotalNumberOfEntities());

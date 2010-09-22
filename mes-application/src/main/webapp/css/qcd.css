@@ -52,6 +52,11 @@ body {
 	padding-bottom: 10px;
 }
 
+.infoMessage {
+	color: green;
+	padding-bottom: 10px;
+}
+
 input, textarea, select {
 	border: solid #777777 1px;	
 }

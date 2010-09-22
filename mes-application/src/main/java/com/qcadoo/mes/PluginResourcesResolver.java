@@ -19,11 +19,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.qcadoo.mes.core.data.internal.DataAccessServiceImpl;
-
 public class PluginResourcesResolver implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PluginResourcesResolver.class);
 
     private ApplicationContext applicationContext;
 

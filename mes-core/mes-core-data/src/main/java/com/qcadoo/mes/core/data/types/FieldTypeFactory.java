@@ -1,6 +1,6 @@
 package com.qcadoo.mes.core.data.types;
 
-import com.qcadoo.mes.core.data.definition.DataFieldDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
 
 public interface FieldTypeFactory {
 
@@ -20,7 +20,7 @@ public interface FieldTypeFactory {
 
     FieldType passwordType();
 
-    FieldType priorityType(final DataFieldDefinition scopeFieldDefinition);
+    FieldType priorityType(final FieldDefinition scopeFieldDefinition);
 
     EnumeratedFieldType enumType(final String... values);
 
@@ -29,5 +29,7 @@ public interface FieldTypeFactory {
     LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName);
 
     LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName);
+
+    FieldType hasManyType(final String entityName, final String fieldName);
 
 }
