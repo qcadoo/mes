@@ -79,9 +79,8 @@ public class PluginManagementController {
                 plugin.setFileName(file.getOriginalFilename());
 
                 pluginManagementService.savePlugin(plugin);
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
             }
-
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
         } else {
             // TODO KRNA error
             return "redirect:page/plugins.pluginGridView.html?iframe=true";
@@ -263,6 +262,16 @@ public class PluginManagementController {
         return "ok";
     }
 
+    @RequestMapping(value = "disable", method = RequestMethod.GET)
+    @Transactional
+    public String getDisablePageView(@RequestParam("entityId") final String entityId) {
+        Plugin plugin = pluginManagementService.getPlugin(entityId);
+        // TODO KRNA enum status
+        plugin.setStatus("installed");
+        pluginManagementService.savePlugin(plugin);
+        return "redirect:page/plugins.pluginGridView.html?iframe=true";
+    }
+
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
     @Transactional
     public ModelAndView getDeinstallPageView(@RequestParam("entityId") final String entityId) {
@@ -299,6 +308,55 @@ public class PluginManagementController {
             }
         }
         return (path.delete());
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.GET)
+    public ModelAndView getUpdatePageView() {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("update");
+        return mav;
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @Transactional
+    public String handleUpdate(@RequestParam("file") final MultipartFile file) {
+        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
+        if (!file.isEmpty()) {
+            // TODO KRNA max upload
+            File pluginFile = transferFile(file);
+            Plugin plugin = readDescriptor(pluginFile);
+            Plugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
+            if (databasePlugin.getStatus().equals("downloaded")) {
+                // TODO KRNA plugin has bad status
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            }
+            if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
+                pluginFile.delete();
+                // TODO KRNA plugin has good version
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            } else {
+                plugin.setDeleted(false);
+                // TODO KRNA enum status
+                plugin.setStatus(databasePlugin.getStatus());
+                plugin.setBase(false);
+                plugin.setFileName(file.getOriginalFilename());
+                databasePlugin.setDeleted(true);
+                pluginManagementService.savePlugin(plugin);
+                pluginManagementService.savePlugin(databasePlugin);
+                removeResources("js", "js", plugin.getIdentifier());
+                removeResources("css", "css", plugin.getIdentifier());
+                removeResources("img", "img", plugin.getIdentifier());
+                removeResources("jsp", "WEB-INF/jsp", plugin.getIdentifier());
+                boolean success = moveFile(plugin.getFileName());
+                if (!success)
+                    throw new IllegalArgumentException("Move: move failed");
+                return "redirect:enablePage.html";
+            }
+        } else {
+            // TODO KRNA error
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
+
     }
 
 }
