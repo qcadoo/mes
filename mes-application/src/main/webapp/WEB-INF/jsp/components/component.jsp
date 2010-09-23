@@ -41,9 +41,13 @@
 		<c:when test='${component.type == "entityComboBox"}'>
 			<c:set var="componentJsp" value="elements/entityComboBox.jsp"/>
 		</c:when>
+		<c:when test='${component.type == "checkBox"}'>
+			<c:set var="componentJsp" value="elements/checkBox.jsp"/>
+		</c:when>
 		<c:when test='${component.type == "linkButton"}'>
 			<c:set var="componentJsp" value="elements/linkButton.jsp"/>
 		</c:when>
+		
 	</c:choose>
 	
 	<tiles:insertTemplate template="${componentJsp}">

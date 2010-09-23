@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.qcadoo.mes.core.data.model.DataDefinition;
+
 public interface TranslationService {
 
     Map<String, String> getCommonsTranslations(Locale locale);
@@ -21,5 +23,7 @@ public interface TranslationService {
     String translate(final List<String> messageCodes, final Locale locale);
 
     String translate(final List<String> messageCodes, final Object[] args, final Locale locale);
+
+    String getEntityFieldMessageCode(DataDefinition dataDefinition, String fieldName);
 
 }

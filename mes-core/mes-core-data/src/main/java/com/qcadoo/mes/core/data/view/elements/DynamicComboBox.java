@@ -88,7 +88,7 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
             final Locale locale) {
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewName() + "." + getPath() + ".label");
-        messageCodes.add(getDataDefinition().getName() + "." + getName() + ".label");
+        messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
     }
 }

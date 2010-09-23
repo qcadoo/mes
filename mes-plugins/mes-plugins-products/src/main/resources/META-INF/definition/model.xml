@@ -17,6 +17,7 @@
 		<dictionary name="category" dictionary="categories" />
 		<string name="unit" />
 		<hasMany name="substitutes" model="substitute" joinField="product" />
+		<hasMany name="instructions" model="instruction" joinField="product" />
 	</model>
 	<model name="substitute">
 		<string name="number">

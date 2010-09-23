@@ -78,18 +78,20 @@ public class EntityComboBox extends AbstractComponent<EntityComboBoxValue> {
                     "EntityComboBox and hasMany relation have different data definitions");
 
             Entity selectedEntity = selectedEntities.get(getSourceComponent().getPath());
+
+            Map<Long, String> valuesMap = new HashMap<Long, String>();
             if (selectedEntity != null) {
                 SearchCriteriaBuilder searchCriteriaBuilder = hasManyType.getDataDefinition().find();
                 searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(hasManyType
                         .getDataDefinition().getField(hasManyType.getFieldName()), selectedEntity.getId()));
                 SearchResult rs = searchCriteriaBuilder.list();
 
-                Map<Long, String> valuesMap = new HashMap<Long, String>();
                 for (Entity e : rs.getEntities()) {
                     valuesMap.put(e.getId(), e.getField(belongsToType.getLookupFieldName()).toString());
                 }
-                value.setValues(valuesMap);
+
             }
+            value.setValues(valuesMap);
 
         } else {
 
@@ -97,19 +99,11 @@ public class EntityComboBox extends AbstractComponent<EntityComboBoxValue> {
             value.setValues(valuesMap);
         }
 
-        Entity selectedEntity = parentEntity;
-        if (selectedEntity == null) {
-            // selectedEntity = selectedEntities.get(getSourceComponent().getPath());
-            // selectedEntity = getParentContainer().g
-        }
-        if (selectedEntity != null) {
-            System.out.println("AAAAA: " + getName() + " - " + selectedEntity.getId() + " - "
-                    + selectedEntity.getField(getFieldPath()));
+        if (parentEntity != null && value.getValues() != null) {
             checkState(!getFieldPath().matches("\\."), "EntityComboBox doesn't support sequential path");
-            Entity field = (Entity) selectedEntity.getField(getFieldPath());
+            Entity field = (Entity) parentEntity.getField(getFieldPath());
 
             if (field != null) {
-                System.out.println("AAAAA: " + getName() + " - " + field.getId());
                 Long entityId = field.getId();
                 value.setSelectedValue(entityId);
                 selectedEntities.put(getPath(), field);
@@ -122,10 +116,9 @@ public class EntityComboBox extends AbstractComponent<EntityComboBoxValue> {
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
-        DataDefinition parentDefinition = getParentContainer().getDataDefinition();
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewName() + "." + getPath() + ".label");
-        messageCodes.add(parentDefinition.getName() + "." + getName() + ".label");
+        messageCodes.add(translationService.getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
     }
 

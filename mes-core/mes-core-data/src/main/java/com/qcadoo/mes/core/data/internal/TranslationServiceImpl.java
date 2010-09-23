@@ -11,6 +11,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 
 import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.elements.GridComponent;
@@ -95,6 +96,11 @@ public class TranslationServiceImpl implements TranslationService {
             loginTranslations.put(loginMessage, translate(loginMessage, locale));
         }
         return loginTranslations;
+    }
+
+    @Override
+    public String getEntityFieldMessageCode(DataDefinition dataDefinition, String fieldName) {
+        return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName + ".label";
     }
 
     private void putTranslationToMap(final String messageCode, final Map<String, String> translationsMap, final Locale locale) {

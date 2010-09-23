@@ -18,14 +18,14 @@
 				url: "handleRestart.html",
 				type: 'POST',
 				complete: function(XMLHttpRequest, textStatus) {
-				setTimeout("checkStatus();",5000);
+					setTimeout("checkStatus();",5000);
 				}
 			});
 		});
 
 		function checkStatus() {
 			$.ajax({
-				url: "restart.html",
+				url: "enablePage.html",
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {

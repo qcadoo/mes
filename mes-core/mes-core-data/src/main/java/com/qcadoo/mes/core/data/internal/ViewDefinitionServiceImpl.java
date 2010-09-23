@@ -25,6 +25,7 @@ import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.core.data.view.containers.WindowComponent;
+import com.qcadoo.mes.core.data.view.elements.CheckBoxComponent;
 import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
 import com.qcadoo.mes.core.data.view.elements.EntityComboBox;
 import com.qcadoo.mes.core.data.view.elements.GridComponent;
@@ -144,6 +145,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new CheckBoxComponent("active", formDefinition, "active", null));
         formDefinition.addComponent(new EntityComboBox("beanB", formDefinition, "beanB", null));
         formDefinition.addComponent(new EntityComboBox("beanA", formDefinition, "beanA", "#{mainWindow.beanAForm.beanB}.beansA"));
         formDefinition.addComponent(new TextInputComponent("nameM", formDefinition, null, null));
@@ -713,10 +715,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         windowDefinition.addComponent(grid);
 
-        windowDefinition.addComponent(new LinkButton("addButton", windowDefinition, "../upload.html"));
+        windowDefinition.addComponent(new LinkButton("downloadButton", windowDefinition, "../download.html"));
         windowDefinition.addComponent(new LinkButton("removeButton", windowDefinition, "../remove.html",
                 "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButton("installButton", windowDefinition, "../restart.html"));
+        windowDefinition.addComponent(new LinkButton("enableButton", windowDefinition, "../enable.html",
+                "#{mainWindow.pluginsGrid}"));
         windowDefinition.addComponent(new LinkButton("deinstallButton", windowDefinition, "../deinstall.html",
                 "#{mainWindow.pluginsGrid}"));
 
