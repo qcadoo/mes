@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.qcadoo.mes.core.data.api.DictionaryService;
 import com.qcadoo.mes.core.data.beans.Dictionary;
 import com.qcadoo.mes.core.data.beans.DictionaryItem;
+import com.qcadoo.mes.core.data.internal.DictionaryServiceImpl;
 
 public class DictionaryServiceTest {
 

@@ -121,7 +121,7 @@ public final class DataDefinitionImpl implements DataDefinition {
         return fields;
     }
 
-    public void addField(final FieldDefinition field) {
+    public void withField(final FieldDefinition field) {
         fields.put(field.getName(), field);
     }
 
@@ -156,19 +156,19 @@ public final class DataDefinitionImpl implements DataDefinition {
         return validators;
     }
 
-    public void addValidator(final EntityValidator validator) {
+    public void withValidator(final EntityValidator validator) {
         this.validators.add(validator);
     }
 
-    public void setCreateHook(final HookDefinition createHook) {
+    public void withCreateHook(final HookDefinition createHook) {
         this.createHook = createHook;
     }
 
-    public void setUpdateHook(final HookDefinition updateHook) {
+    public void withUpdateHook(final HookDefinition updateHook) {
         this.updateHook = updateHook;
     }
 
-    public void setSaveHook(final HookDefinition saveHook) {
+    public void withSaveHook(final HookDefinition saveHook) {
         this.saveHook = saveHook;
     }
 
@@ -214,7 +214,7 @@ public final class DataDefinitionImpl implements DataDefinition {
         return priorityField != null;
     }
 
-    public void setPriorityField(final FieldDefinition priorityField) {
+    public void withPriorityField(final FieldDefinition priorityField) {
         checkState(priorityField.getType() instanceof PriorityType, "priority field has wrong type");
         checkState(!priorityField.isCustomField(), "priority field cannot be custom field");
         this.priorityField = priorityField;

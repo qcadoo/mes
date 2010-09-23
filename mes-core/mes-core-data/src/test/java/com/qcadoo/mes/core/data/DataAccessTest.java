@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -19,13 +19,17 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
+import com.qcadoo.mes.core.data.internal.DataAccessServiceImpl;
+import com.qcadoo.mes.core.data.internal.EntityService;
+import com.qcadoo.mes.core.data.internal.PriorityService;
+import com.qcadoo.mes.core.data.internal.ValidationService;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
-import com.qcadoo.mes.core.data.internal.validators.FieldValidatorFactoryImpl;
+import com.qcadoo.mes.core.data.internal.validators.ValidatorFactoryImpl;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
-import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
+import com.qcadoo.mes.core.data.validation.ValidatorFactory;
 
 public abstract class DataAccessTest {
 
@@ -45,7 +49,7 @@ public abstract class DataAccessTest {
 
     protected FieldTypeFactory fieldTypeFactory = null;
 
-    protected FieldValidatorFactory fieldValidatorFactory = null;
+    protected ValidatorFactory fieldValidatorFactory = null;
 
     protected EntityService entityService = null;
 
@@ -101,14 +105,13 @@ public abstract class DataAccessTest {
         hookFactory = new HookFactory();
         ReflectionTestUtils.setField(hookFactory, "applicationContext", applicationContext);
 
-        fieldValidatorFactory = new FieldValidatorFactoryImpl();
-        ReflectionTestUtils.setField(fieldValidatorFactory, "hookFactory", hookFactory);
+        fieldValidatorFactory = new ValidatorFactoryImpl();
 
         parentFieldDefinitionName = new FieldDefinitionImpl("name");
         parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
 
         parentDataDefinition = new DataDefinitionImpl("parent.entity", dataAccessService);
-        parentDataDefinition.addField(parentFieldDefinitionName);
+        parentDataDefinition.withField(parentFieldDefinitionName);
         parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
 
         given(dataDefinitionService.get("parent.entity")).willReturn(parentDataDefinition);
@@ -124,7 +127,7 @@ public abstract class DataAccessTest {
 
         fieldDefinitionPriority = new FieldDefinitionImpl("priority");
         fieldDefinitionPriority.withType(fieldTypeFactory.priorityType(fieldDefinitionBelongsTo));
-        fieldDefinitionPriority.readOnly();
+        fieldDefinitionPriority.withReadOnly(true);
 
         fieldDefinitionMoney = new FieldDefinitionImpl("money");
         fieldDefinitionMoney.withType(fieldTypeFactory.decimalType());
@@ -136,12 +139,12 @@ public abstract class DataAccessTest {
         fieldDefinitionBirthDate.withType(fieldTypeFactory.dateType());
 
         dataDefinition = new DataDefinitionImpl("simple.entity", dataAccessService);
-        dataDefinition.addField(fieldDefinitionName);
-        dataDefinition.addField(fieldDefinitionAge);
-        dataDefinition.addField(fieldDefinitionMoney);
-        dataDefinition.addField(fieldDefinitionRetired);
-        dataDefinition.addField(fieldDefinitionBirthDate);
-        dataDefinition.addField(fieldDefinitionBelongsTo);
+        dataDefinition.withField(fieldDefinitionName);
+        dataDefinition.withField(fieldDefinitionAge);
+        dataDefinition.withField(fieldDefinitionMoney);
+        dataDefinition.withField(fieldDefinitionRetired);
+        dataDefinition.withField(fieldDefinitionBirthDate);
+        dataDefinition.withField(fieldDefinitionBelongsTo);
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 
         given(dataDefinitionService.get("simple.entity")).willReturn(dataDefinition);

@@ -31,9 +31,9 @@ public class EntityDataUtilsGenerateEntityDataTest {
         given(f3.getValue("testField3Val")).willReturn("testField3Ok");
 
         DataDefinitionImpl dataDefinition = new DataDefinitionImpl(null, null);
-        dataDefinition.addField(f1);
-        dataDefinition.addField(f2);
-        dataDefinition.addField(f3);
+        dataDefinition.withField(f1);
+        dataDefinition.withField(f2);
+        dataDefinition.withField(f3);
 
         // when
         Entity stringEntity = EntityDataUtils.generateEntityData(entity, dataDefinition);

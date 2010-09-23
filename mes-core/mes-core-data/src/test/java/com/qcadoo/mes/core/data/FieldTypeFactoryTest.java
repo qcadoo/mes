@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static junit.framework.Assert.assertNotNull;

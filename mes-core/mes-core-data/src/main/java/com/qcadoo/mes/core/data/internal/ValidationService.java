@@ -113,6 +113,9 @@ public final class ValidationService {
                         .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 return null;
             }
+            if (referencedEntityId == null) {
+                return null;
+            }
             BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
             DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();

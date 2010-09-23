@@ -97,13 +97,13 @@ public class FieldDefinitionImpl implements FieldDefinition {
         return readOnlyOnUpdate;
     }
 
-    public FieldDefinition readOnlyOnUpdate() {
-        this.readOnlyOnUpdate = true;
+    public FieldDefinition withReadOnlyOnUpdate(final boolean readOnlyOnUpdate) {
+        this.readOnlyOnUpdate = readOnlyOnUpdate;
         return this;
     }
 
-    public FieldDefinitionImpl readOnly() {
-        this.readOnly = true;
+    public FieldDefinitionImpl withReadOnly(final boolean readOnly) {
+        this.readOnly = readOnly;
         return this;
     }
 

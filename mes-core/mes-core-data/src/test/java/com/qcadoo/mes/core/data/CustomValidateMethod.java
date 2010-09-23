@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import com.qcadoo.mes.core.data.model.DataDefinition;
 

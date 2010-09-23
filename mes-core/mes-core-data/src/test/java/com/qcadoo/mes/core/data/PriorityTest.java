@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -18,7 +18,7 @@ public class PriorityTest extends DataAccessTest {
 
     @Before
     public void init() {
-        dataDefinition.setPriorityField(fieldDefinitionPriority);
+        dataDefinition.withPriorityField(fieldDefinitionPriority);
     }
 
     @Test
