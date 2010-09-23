@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -29,6 +30,7 @@ import com.qcadoo.mes.core.data.search.Order;
 import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchResult;
+import com.qcadoo.mes.core.data.validation.ValidationError;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {
@@ -53,6 +55,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(genericEntity, "entity must be given");
 
+        Entity genericEntityToSave = genericEntity.copy();
+
         Object existingDatabaseEntity = getExistingDatabaseEntity(dataDefinition, genericEntity);
 
         Entity existingGenericEntity = null;
@@ -64,7 +68,11 @@ public final class DataAccessServiceImpl implements DataAccessService {
         validationService.validateGenericEntity(dataDefinition, genericEntity, existingGenericEntity);
 
         if (!genericEntity.isValid()) {
-            return genericEntity;
+            copyValidationErrors(dataDefinition, genericEntityToSave, genericEntity);
+            if (existingGenericEntity != null) {
+                copyMissingFields(dataDefinition, genericEntityToSave, existingGenericEntity);
+            }
+            return genericEntityToSave;
         }
 
         Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
@@ -264,6 +272,26 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 entityService.addDeletedRestriction(criteria);
             }
             return criteria.uniqueResult();
+        }
+    }
+
+    private void copyMissingFields(final DataDefinition dataDefinition, final Entity genericEntityToSave,
+            final Entity existingGenericEntity) {
+        for (Map.Entry<String, Object> field : existingGenericEntity.getFields().entrySet()) {
+            if (!genericEntityToSave.getFields().containsKey(field.getKey())) {
+                genericEntityToSave.setField(field.getKey(), field.getValue());
+            }
+        }
+    }
+
+    private void copyValidationErrors(final DataDefinition dataDefinition, final Entity genericEntityToSave,
+            final Entity genericEntity) {
+        for (ValidationError error : genericEntity.getGlobalErrors()) {
+            genericEntityToSave.addGlobalError(error.getMessage(), error.getVars());
+        }
+        for (Map.Entry<String, ValidationError> error : genericEntity.getErrors().entrySet()) {
+            genericEntityToSave.addError(dataDefinition.getField(error.getKey()), error.getValue().getMessage(), error.getValue()
+                    .getVars());
         }
     }
 

@@ -157,6 +157,9 @@ public class CrudController {
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
 
             ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+
+            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
+
             ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
 
             return newViewValue;
@@ -188,6 +191,8 @@ public class CrudController {
             Entity entity = saveableComponent.getSaveableEntity(viewValue);
 
             entity = saveableComponent.getDataDefinition().save(entity);
+
+            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
 
             selectedEntities.put(componentName, entity);
 
@@ -222,7 +227,7 @@ public class CrudController {
 
             gridComponent.getDataDefinition().delete(gridValue.getValue().getSelectedEntityId());
 
-            selectedEntities.remove(componentName);
+            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
 
             return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
         } catch (JSONException e) {

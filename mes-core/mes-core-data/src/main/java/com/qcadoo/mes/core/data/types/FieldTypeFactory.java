@@ -26,10 +26,10 @@ public interface FieldTypeFactory {
 
     EnumeratedFieldType dictionaryType(final String dictionaryName);
 
-    LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName);
+    LookupedFieldType lazyBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
 
-    LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName);
+    LookupedFieldType eagerBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
 
-    FieldType hasManyType(final String entityName, final String fieldName);
+    FieldType hasManyType(String pluginIdentifier, final String entityName, final String fieldName);
 
 }

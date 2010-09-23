@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.beans.test;
 
 import java.math.BigDecimal;
 import java.util.Date;

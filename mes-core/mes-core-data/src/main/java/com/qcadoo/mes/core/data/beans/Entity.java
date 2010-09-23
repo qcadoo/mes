@@ -111,6 +111,14 @@ public final class Entity {
                 .append(globalErrors, this.globalErrors).isEquals();
     }
 
+    public Entity copy() {
+        Entity entity = new Entity(id);
+        for (Map.Entry<String, Object> field : fields.entrySet()) {
+            entity.setField(field.getKey(), field.getValue());
+        }
+        return entity;
+    }
+
     @Override
     public String toString() {
         // return "#" + id + ", " + fields.toString();

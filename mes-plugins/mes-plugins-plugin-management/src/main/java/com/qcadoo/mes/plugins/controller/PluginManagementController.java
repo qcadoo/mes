@@ -153,7 +153,6 @@ public class PluginManagementController {
     }
 
     private void removePlugin(final String entityId) {
-
         Plugin databasePlugin = pluginManagementService.getPlugin(entityId);
 
         databasePlugin.setDeleted(true);

@@ -14,8 +14,8 @@ import org.hibernate.impl.CriteriaImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.internal.DataAccessTest;
-import com.qcadoo.mes.core.data.internal.SimpleDatabaseObject;
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
+import com.qcadoo.mes.core.data.DataAccessTest;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Restriction;
 import com.qcadoo.mes.core.data.search.Restrictions;

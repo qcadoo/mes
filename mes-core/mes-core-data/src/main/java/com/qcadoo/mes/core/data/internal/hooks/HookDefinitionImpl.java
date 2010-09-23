@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal.model;
+package com.qcadoo.mes.core.data.internal.hooks;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -12,16 +12,16 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
 import com.qcadoo.mes.core.data.internal.types.PriorityType;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.model.HookDefinition;
-import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 /**
- * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points
- * to virtual table ("virtual.tablename"), plugin table ("pluginname.tablename") or core table ("core.tablename").
+ * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points to
+ * virtual table ("virtual.tablename"), plugin table ("pluginname.tablename") or core table ("core.tablename").
  * 
  * The method {@link DataDefinitionImpl#getFullyQualifiedClassName()} returns the full name of the class that is used for mapping
  * table.
@@ -35,6 +35,8 @@ import com.qcadoo.mes.core.data.validation.EntityValidator;
 public final class DataDefinitionImpl implements DataDefinition {
 
     private final DataAccessService dataAccessService;
+
+    private final String pluginIdentifier;
 
     private final String name;
 
@@ -60,7 +62,8 @@ public final class DataDefinitionImpl implements DataDefinition {
 
     private Class<?> classForEntity;
 
-    public DataDefinitionImpl(final String name, final DataAccessService dataAccessService) {
+    public DataDefinitionImpl(final String pluginIdentifier, final String name, final DataAccessService dataAccessService) {
+        this.pluginIdentifier = pluginIdentifier;
         this.name = name;
         this.dataAccessService = dataAccessService;
     }
@@ -106,6 +109,10 @@ public final class DataDefinitionImpl implements DataDefinition {
         return name;
     }
 
+    public String getPluginIdentifier() {
+        return pluginIdentifier;
+    }
+
     @Override
     public String getFullyQualifiedClassName() {
         return fullyQualifiedClassName;
@@ -121,7 +128,7 @@ public final class DataDefinitionImpl implements DataDefinition {
         return fields;
     }
 
-    public void addField(final FieldDefinition field) {
+    public void withField(final FieldDefinition field) {
         fields.put(field.getName(), field);
     }
 
@@ -156,19 +163,19 @@ public final class DataDefinitionImpl implements DataDefinition {
         return validators;
     }
 
-    public void addValidator(final EntityValidator validator) {
+    public void withValidator(final EntityValidator validator) {
         this.validators.add(validator);
     }
 
-    public void setCreateHook(final HookDefinition createHook) {
+    public void withCreateHook(final HookDefinition createHook) {
         this.createHook = createHook;
     }
 
-    public void setUpdateHook(final HookDefinition updateHook) {
+    public void withUpdateHook(final HookDefinition updateHook) {
         this.updateHook = updateHook;
     }
 
-    public void setSaveHook(final HookDefinition saveHook) {
+    public void withSaveHook(final HookDefinition saveHook) {
         this.saveHook = saveHook;
     }
 
@@ -214,7 +221,7 @@ public final class DataDefinitionImpl implements DataDefinition {
         return priorityField != null;
     }
 
-    public void setPriorityField(final FieldDefinition priorityField) {
+    public void withPriorityField(final FieldDefinition priorityField) {
         checkState(priorityField.getType() instanceof PriorityType, "priority field has wrong type");
         checkState(!priorityField.isCustomField(), "priority field cannot be custom field");
         this.priorityField = priorityField;

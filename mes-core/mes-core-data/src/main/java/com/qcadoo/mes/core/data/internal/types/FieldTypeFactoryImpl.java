@@ -92,15 +92,17 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     }
 
     @Override
-    public LookupedFieldType lazyBelongsToType(final String entityName, final String lookupFieldName) {
+    public LookupedFieldType lazyBelongsToType(final String pluginIdentifier, final String entityName,
+            final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToType(entityName, lookupFieldName, false, dataDefinitionService);
+        return new BelongsToType(pluginIdentifier, entityName, lookupFieldName, false, dataDefinitionService);
     }
 
     @Override
-    public LookupedFieldType eagerBelongsToType(final String entityName, final String lookupFieldName) {
+    public LookupedFieldType eagerBelongsToType(final String pluginIdentifier, final String entityName,
+            final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new BelongsToType(entityName, lookupFieldName, true, dataDefinitionService);
+        return new BelongsToType(pluginIdentifier, entityName, lookupFieldName, true, dataDefinitionService);
     }
 
     @Override
@@ -109,7 +111,7 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     }
 
     @Override
-    public FieldType hasManyType(final String entityName, final String fieldName) {
-        return new HasManyType(entityName, fieldName, dataDefinitionService);
+    public FieldType hasManyType(final String pluginIdentifier, final String entityName, final String fieldName) {
+        return new HasManyType(pluginIdentifier, entityName, fieldName, dataDefinitionService);
     }
 }
