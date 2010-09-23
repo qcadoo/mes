@@ -2,7 +2,7 @@ package com.qcadoo.mes.crud.data;
 
 import java.util.List;
 
-import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.api.Entity;
 
 public class ListData {
 

@@ -12,10 +12,10 @@ import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
-import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
+import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
+import com.qcadoo.mes.core.model.FieldDefinition;
 
 public class EntityServiceTest extends DataAccessTest {
 

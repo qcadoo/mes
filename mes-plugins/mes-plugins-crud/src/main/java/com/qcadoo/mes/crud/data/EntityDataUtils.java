@@ -2,8 +2,8 @@ package com.qcadoo.mes.crud.data;
 
 import java.util.Map;
 
-import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.model.DataDefinition;
 
 public class EntityDataUtils {
 

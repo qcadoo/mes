@@ -7,7 +7,7 @@ import static org.mockito.BDDMockito.given;
 import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.api.Entity;
 
 public final class DataAccessServiceGetTest extends DataAccessTest {
 

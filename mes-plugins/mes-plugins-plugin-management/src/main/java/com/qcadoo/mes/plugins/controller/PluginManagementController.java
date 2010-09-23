@@ -29,7 +29,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
-import com.qcadoo.mes.core.data.api.PluginManagementService;
+import com.qcadoo.mes.core.api.PluginManagementService;
 
 @Controller
 public class PluginManagementController {

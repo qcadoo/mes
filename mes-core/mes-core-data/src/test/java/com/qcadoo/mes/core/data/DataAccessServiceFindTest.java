@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.data.search.SearchResult;
+import com.qcadoo.mes.core.internal.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.core.search.SearchResult;
 
 public class DataAccessServiceFindTest extends DataAccessTest {
 

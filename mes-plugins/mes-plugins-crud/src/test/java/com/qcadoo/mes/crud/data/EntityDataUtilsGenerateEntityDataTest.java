@@ -6,9 +6,9 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
-import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
+import com.qcadoo.mes.core.model.FieldDefinition;
 
 public class EntityDataUtilsGenerateEntityDataTest {
 

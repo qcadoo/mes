@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.internal.TranslationServiceImpl;
+import com.qcadoo.mes.core.api.ViewDefinitionService;
+import com.qcadoo.mes.core.internal.TranslationServiceImpl;
 
 @Controller
 public class MainPageController {

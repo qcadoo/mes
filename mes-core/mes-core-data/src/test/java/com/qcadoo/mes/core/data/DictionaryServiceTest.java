@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
-import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.internal.DictionaryServiceImpl;
+import com.qcadoo.mes.core.api.DictionaryService;
+import com.qcadoo.mes.core.internal.DictionaryServiceImpl;
 
 public class DictionaryServiceTest {
 
@@ -65,9 +68,9 @@ public class DictionaryServiceTest {
         item3.setName("bbb");
 
         given(
-                sessionFactory.getCurrentSession()
-                        .createQuery("from DictionaryItem where dictionary.name = :dictionaryName order by name")
-                        .setString("dictionaryName", "dict").list()).willReturn(newArrayList(item1, item3, item2));
+                sessionFactory.getCurrentSession().createCriteria(DictionariesDictionaryItem.class)
+                        .createAlias("dictionary", "dc").add(Mockito.any(Criterion.class)).addOrder(Mockito.any(Order.class))
+                        .list()).willReturn(newArrayList(item1, item3, item2));
 
         // when
         List<String> values = dictionaryService.values("dict");

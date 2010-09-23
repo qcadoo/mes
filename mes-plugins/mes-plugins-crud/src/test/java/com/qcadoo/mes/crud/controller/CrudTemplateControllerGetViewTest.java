@@ -3,8 +3,8 @@ package com.qcadoo.mes.crud.controller;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.api.ViewDefinitionService;
+import com.qcadoo.mes.core.view.ViewDefinition;
 
 public class CrudTemplateControllerGetViewTest {
 

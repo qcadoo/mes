@@ -18,20 +18,20 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.internal.DataAccessServiceImpl;
-import com.qcadoo.mes.core.data.internal.EntityService;
-import com.qcadoo.mes.core.data.internal.PriorityService;
-import com.qcadoo.mes.core.data.internal.ValidationService;
-import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
-import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
-import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.data.internal.types.FieldTypeFactoryImpl;
-import com.qcadoo.mes.core.data.internal.validators.ValidatorFactoryImpl;
-import com.qcadoo.mes.core.data.types.FieldTypeFactory;
-import com.qcadoo.mes.core.data.validation.ValidatorFactory;
+import com.qcadoo.mes.core.api.DataAccessService;
+import com.qcadoo.mes.core.api.DataDefinitionService;
+import com.qcadoo.mes.core.api.DictionaryService;
+import com.qcadoo.mes.core.internal.DataAccessServiceImpl;
+import com.qcadoo.mes.core.internal.EntityService;
+import com.qcadoo.mes.core.internal.PriorityService;
+import com.qcadoo.mes.core.internal.ValidationService;
+import com.qcadoo.mes.core.internal.hooks.HookFactory;
+import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
+import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
+import com.qcadoo.mes.core.internal.types.FieldTypeFactoryImpl;
+import com.qcadoo.mes.core.internal.validators.ValidatorFactoryImpl;
+import com.qcadoo.mes.core.types.FieldTypeFactory;
+import com.qcadoo.mes.core.validation.ValidatorFactory;
 
 public abstract class DataAccessTest {
 

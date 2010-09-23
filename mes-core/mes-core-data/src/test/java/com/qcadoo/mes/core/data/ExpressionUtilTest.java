@@ -6,13 +6,13 @@ import static junit.framework.Assert.assertNull;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.data.internal.types.IntegerType;
-import com.qcadoo.mes.core.data.internal.types.StringType;
-import com.qcadoo.mes.core.data.internal.utils.ExpressionUtil;
-import com.qcadoo.mes.core.data.model.FieldDefinition;
-import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
+import com.qcadoo.mes.core.internal.types.IntegerType;
+import com.qcadoo.mes.core.internal.types.StringType;
+import com.qcadoo.mes.core.internal.utils.ExpressionUtil;
+import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 
 public class ExpressionUtilTest {
 

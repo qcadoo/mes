@@ -3,10 +3,10 @@ package com.qcadoo.mes.crud.data;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.search.SearchResult;
-import com.qcadoo.mes.core.data.view.elements.GridComponent;
-import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.search.SearchResult;
+import com.qcadoo.mes.core.view.elements.GridComponent;
+import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 
 public class ListDataUtils {
 

@@ -5,15 +5,15 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.core.data.api.DataAccessService;
-import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
-import com.qcadoo.mes.core.data.model.DataDefinition;
-import com.qcadoo.mes.core.data.search.Restrictions;
-import com.qcadoo.mes.core.data.search.SearchResult;
-import com.qcadoo.mes.core.data.view.ViewValue;
-import com.qcadoo.mes.core.data.view.elements.grid.ListData;
+import com.qcadoo.mes.core.api.DataAccessService;
+import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.core.internal.search.restrictions.RestrictionOperator;
+import com.qcadoo.mes.core.model.DataDefinition;
+import com.qcadoo.mes.core.search.Restrictions;
+import com.qcadoo.mes.core.search.SearchResult;
+import com.qcadoo.mes.core.view.ViewValue;
+import com.qcadoo.mes.core.view.elements.grid.ListData;
 
 @Service
 public class ProductService {

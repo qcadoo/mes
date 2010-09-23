@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.core.data.internal.TranslationService;
+import com.qcadoo.mes.core.internal.TranslationService;
 
 @Controller
 public class LoginController {

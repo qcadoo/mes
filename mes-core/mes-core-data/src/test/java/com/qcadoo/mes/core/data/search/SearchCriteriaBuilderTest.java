@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.qcadoo.mes.core.data.DataAccessTest;
+import com.qcadoo.mes.core.search.Restrictions;
+import com.qcadoo.mes.core.search.SearchCriteria;
 
 public final class SearchCriteriaBuilderTest extends DataAccessTest {
 
