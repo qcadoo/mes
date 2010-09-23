@@ -33,7 +33,7 @@ String ctx = request.getContextPath();
 				if (hash['error'] == 1) {
 					document.getElementById('errorBox').innerHTML="Błąd instalacji";
 				} else if(hash['error'] == 2) {
-					document.getElementById('errorBox').innerHTML="Wersja jest zainstalowana";
+					document.getElementById('errorBox').innerHTML="Plugin jest zainstalowany";
 				} else if(hash['error'] == 3) {
 					document.getElementById('errorBox').innerHTML="Przekroczono wielkość pliku";
 				}
