@@ -9,8 +9,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.xml.stream.FactoryConfigurationError;
@@ -181,15 +179,8 @@ public class DataDefinitionParser {
     }
 
     private FieldType getEnumType(final XMLStreamReader reader) throws XMLStreamException {
-        Set<String> values = new HashSet<String>();
-        while (reader.hasNext() && reader.next() > 0) {
-            if (isTagNotStarted(reader, "value")) {
-                break;
-            } else if (isTagStarted(reader, "value")) {
-                values.add(reader.getElementText().trim());
-            }
-        }
-        return fieldTypeFactory.enumType(values.toArray(new String[values.size()]));
+        String values = getStringAttribute(reader, "values");
+        return fieldTypeFactory.enumType(values.split(","));
     }
 
     private FieldType getHasManyType(final XMLStreamReader reader, final String pluginIdentifier) {

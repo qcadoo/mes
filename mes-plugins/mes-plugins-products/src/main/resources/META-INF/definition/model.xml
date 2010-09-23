@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin name="products">
+<qcd:plugin name="products" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="product">
 		<string name="number">
 			<validates_presence />
@@ -7,10 +7,7 @@
 		<text name="name">
 			<validates_presence />
 		</text>
-		<enum name="typeOfMaterial">
-			<value>product</value>
-			<value>intermediate</value>
-			<value>component</value>
+		<enum name="typeOfMaterial" values="product,intermediate,component">
 			<validates_presence />
 		</enum>
 		<string name="ean" />
@@ -56,10 +53,7 @@
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validates_presence /> 
 		</belongsTo>
-		<enum name="typeOfMaterial">
-			<value>product</value>
-			<value>intermediate</value>
-			<value>component</value>
+		<enum name="typeOfMaterial" values="product,intermediate,component">
 			<validates_presence />
 		</enum>
 		<boolean name="master" />
@@ -83,15 +77,10 @@
 		<date name="dateTo">
 			<validates_presence />
 		</date>
-		<enum name="state">
-			<value>pending</value>
-			<value>done</value>
+		<enum name="state" values="pending,done">
 			<validates_presence />
 		</enum>
-		<enum name="machine">
-			<value>machine 1</value>
-			<value>machine 2</value>
-		</enum>
+		<enum name="machine" values="machine1,machine2" />
 		<belongsTo name="product" model="product" lookupField="name" />
 		<belongsTo name="defaultInstruction" model="instruction" lookupField="name" readonly="true" />
 		<belongsTo name="instruction" model="instruction" lookupField="name" />
@@ -104,4 +93,4 @@
 		<validates_with bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" message="products.validation.error.datesOrder" />
 		<onSave bean="com.qcadoo.mes.beans.test.CustomEntityService" method="fillOrderDatesAndWorkers" />
 	</model>
-</plugin>
+</qcd:plugin>

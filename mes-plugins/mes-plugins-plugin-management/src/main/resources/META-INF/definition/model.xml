@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin name="plugins">
+<qcd:plugin name="plugins" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="plugin">
 		<string name="name" readonly="true" >
 			<validates_presence_on_create />
@@ -11,10 +11,7 @@
 		<string name="version" readonly="true" >
 			<validates_presence_on_create />
 		</string>
-		<enum name="status">
-			<value>downloaded</value>
-			<value>installed</value>
-			<value>active</value>
+		<enum name="status" values="downloaded,installed,active">
 			<validates_presence_on_create />
 		</enum>
 		<boolean name="base" readonly="true">
@@ -24,4 +21,4 @@
 		<string name="packageName" readonly="true" />
 		<string name="fileName" readonly="true" />
 	</model>
-</plugin>
+</qcd:plugin>
