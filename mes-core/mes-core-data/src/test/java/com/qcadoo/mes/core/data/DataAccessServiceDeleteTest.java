@@ -1,9 +1,11 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
+
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
 
 public class DataAccessServiceDeleteTest extends DataAccessTest {
 

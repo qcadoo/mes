@@ -54,12 +54,12 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     }
 
     @Override
-    public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<ComboBoxValue> viewValue, final Set<String> pathsToUpdate) {
+    public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<ComboBoxValue> viewValue, final Set<String> pathsToUpdate) {
         Object value = getFieldValue(entity, getFieldPath());
         String strValue;
         if (value == null) {
-            strValue = "";
+            strValue = null;
         } else {
             strValue = String.valueOf(value);
         }
@@ -88,7 +88,7 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
             final Locale locale) {
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewName() + "." + getPath() + ".label");
-        messageCodes.add(getDataDefinition().getName() + "." + getName() + ".label");
+        messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
     }
 }

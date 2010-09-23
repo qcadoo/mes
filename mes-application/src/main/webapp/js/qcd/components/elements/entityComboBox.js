@@ -8,10 +8,22 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 	var mainController = _mainController;
 	
 	var element = _element;
+	var options = this.options;
+	var elementPath = this.elementPath;
 	
 	var select = $("#"+element.attr('id')+"_select");
 	
 	var messagesSpan = $("#"+element.attr('id')+"_messagesSpan");
+	
+	function constructor(_this) {
+		select.change(onChange);
+	}
+	
+	function onChange() {
+		if (options.listeners.length > 0) {
+			mainController.getUpdate(elementPath, select.val(), options.listeners);
+		}
+	}
 	
 	this.getComponentValue = function() {
 		var selectedVal = select.val();
@@ -25,13 +37,20 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-		select.children().remove();
-		select.append("<option value=''></option>");
-		for (var i in value.values) {
-			var val = value.values[i];
-			select.append("<option value='"+i+"'>"+val+"</option>");
+		var previousSelectedVal = select.val();
+		if (value.values != null) {
+			select.children().remove();
+			select.append("<option value=''></option>");
+			for (var i in value.values) {
+				var val = value.values[i];
+				select.append("<option value='"+i+"'>"+val+"</option>");
+			}
 		}
-		select.val(value.selectedValue);
+		if (value.selectedValue != null) {
+			select.val(value.selectedValue);
+		} else {
+			select.val(previousSelectedVal);
+		}
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -68,4 +87,6 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 		}
 		messagesSpan.html(message);
 	}
+	
+	constructor(this);
 }

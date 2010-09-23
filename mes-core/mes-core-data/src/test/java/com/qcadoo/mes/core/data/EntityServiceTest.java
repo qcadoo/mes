@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -10,6 +10,8 @@ import static org.springframework.util.Assert.isInstanceOf;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.beans.test.ParentDatabaseObject;
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
@@ -96,7 +98,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrownAnExceptionIfClassForGivenDataDefinitionDoesNotExist() throws Exception {
         // given
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("definition", null);
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("", "definition", null);
         dataDefinition.setFullyQualifiedClassName("java.lang.SomeUselessNotExistingClass");
 
         // when

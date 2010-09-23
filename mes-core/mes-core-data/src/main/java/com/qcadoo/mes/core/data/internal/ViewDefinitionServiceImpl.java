@@ -25,6 +25,7 @@ import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.core.data.view.containers.WindowComponent;
+import com.qcadoo.mes.core.data.view.elements.CheckBoxComponent;
 import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
 import com.qcadoo.mes.core.data.view.elements.EntityComboBox;
 import com.qcadoo.mes.core.data.view.elements.GridComponent;
@@ -89,7 +90,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
         List<Plugin> activePluginList = pluginManagementService.getPluginsWithStatus("active");
         for (Plugin activePlugin : activePluginList) {
-
             for (ViewDefinition viewDefinition : viewDefinitions.values()) {
                 if (activePlugin.getIdentifier().equals(viewDefinition.getPluginIdentifier())) {
                     viewsList.add(viewDefinition);
@@ -108,12 +108,12 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinitionImpl createTestGridView() {
-        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
+        DataDefinition testADD = dataDefinitionService.get("test", "testBeanA");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.grid");
         windowDefinition.setBackButton(false);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "test");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "products");
 
         GridComponent grid = new GridComponent("beansAGrid", windowDefinition, null, null);
         grid.setCorrespondingViewName("test.form");
@@ -134,17 +134,20 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinitionImpl createTestFormView() {
-        DataDefinition testADD = dataDefinitionService.get("test.testBeanA");
-        DataDefinition testBDD = dataDefinitionService.get("test.testBeanB");
-        DataDefinition testCDD = dataDefinitionService.get("test.testBeanC");
+        DataDefinition testADD = dataDefinitionService.get("test", "testBeanA");
+        DataDefinition testBDD = dataDefinitionService.get("test", "testBeanB");
+        DataDefinition testCDD = dataDefinitionService.get("test", "testBeanC");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.form");
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "test");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "products");
         viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "getBeanAName"));
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new CheckBoxComponent("active", formDefinition, "active", null));
+        formDefinition.addComponent(new EntityComboBox("beanB", formDefinition, "beanB", null));
+        formDefinition.addComponent(new EntityComboBox("beanA", formDefinition, "beanA", "#{mainWindow.beanAForm.beanB}.beansA"));
         formDefinition.addComponent(new TextInputComponent("nameM", formDefinition, null, null));
         formDefinition.addComponent(new TextInputComponent("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInputComponent("nameC", formDefinition, "beanB.beanC.name", null));
@@ -180,7 +183,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductGridView() {
-        DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
+        DataDefinition productDataDefinition = dataDefinitionService.get("products", "product");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productGridView");
         windowDefinition.setBackButton(false);
@@ -212,9 +215,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductDetailsView() {
-        DataDefinition productDataDefinition = dataDefinitionService.get("products.product");
-        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
-        DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
+        DataDefinition productDataDefinition = dataDefinitionService.get("products", "product");
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products", "substitute");
+        DataDefinition substituteComponentDataDefinition = dataDefinitionService.get("products", "substituteComponent");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productDetailsView");
 
@@ -266,7 +269,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductSubstituteDetailsView() {
-        DataDefinition substituteDataDefinition = dataDefinitionService.get("products.substitute");
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products", "substitute");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition,
                 "products.substituteDetailsView");
@@ -281,22 +284,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
         formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
 
-        // FormFieldDefinition fieldNumber = createFieldDefinition("number", substitutesDataDefinition.getField("number"),
-        // fieldControlFactory.stringControl());
-        // FormFieldDefinition fieldName = createFieldDefinition("name", substitutesDataDefinition.getField("name"),
-        // fieldControlFactory.stringControl());
-        // FormFieldDefinition fieldPriority = createFieldDefinition("priority", substitutesDataDefinition.getField("priority"),
-        // fieldControlFactory.displayControl());
-        // FormFieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom",
-        // substitutesDataDefinition.getField("effectiveDateFrom"), fieldControlFactory.dateTimeControl());
-        // FormFieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo",
-        // substitutesDataDefinition.getField("effectiveDateTo"), fieldControlFactory.dateTimeControl());
-        // formDefinition.addField(fieldPriority);
-        // formDefinition.addField(fieldNumber);
-        // formDefinition.addField(fieldName);
-        // formDefinition.addField(fieldEffectiveDateFrom);
-        // formDefinition.addField(fieldEffectiveDateTo);
-
         windowDefinition.addComponent(formDefinition);
 
         windowDefinition.initialize();
@@ -305,7 +292,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinition createProductSubstituteComponentDetailsView() {
-        DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products.substituteComponent");
+        DataDefinition substitutesComponentDataDefinition = dataDefinitionService.get("products", "substituteComponent");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", substitutesComponentDataDefinition,
                 "products.substituteComponentDetailsView");
@@ -317,13 +304,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.setHeader(false);
         formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
         formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
-
-        // FormFieldDefinition fieldProduct = createFieldDefinition("product",
-        // substitutesComponentDataDefinition.getField("product"), fieldControlFactory.lookupControl());
-        // FormFieldDefinition fieldQuantity = createFieldDefinition("quantity",
-        // substitutesComponentDataDefinition.getField("quantity"), fieldControlFactory.decimalControl());
-        // formDefinition.addField(fieldProduct);
-        // formDefinition.addField(fieldQuantity);
 
         windowDefinition.addComponent(formDefinition);
 
@@ -702,7 +682,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // }
 
     private ViewDefinition createPluginGridView() {
-        DataDefinition gridDataDefinition = dataDefinitionService.get("plugins.plugin");
+        DataDefinition gridDataDefinition = dataDefinitionService.get("plugins", "plugin");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", gridDataDefinition, "plugins.pluginGridView");
         windowDefinition.setBackButton(false);
@@ -750,7 +730,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private ViewDefinition createPluginDetailsView() {
 
-        DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins.plugin");
+        DataDefinition pluginDataDefinition = dataDefinitionService.get("plugins", "plugin");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", pluginDataDefinition, "plugins.pluginDetailsView");
 

@@ -7,16 +7,22 @@ import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.validation.FieldValidator;
 
-public final class MaxLenghtValidator implements FieldValidator {
+public final class LengthValidator implements FieldValidator {
 
-    private static final String LENGTH_EXCEEDED_ERROR = "commons.validate.field.error.maxLengthExceeded";
+    private static final String INVALID_LENGTH_ERROR = "commons.validate.field.error.invalidLength";
 
-    private final int maxLength;
+    private final Integer max;
 
-    private String errorMessage = LENGTH_EXCEEDED_ERROR;
+    private final Integer min;
 
-    public MaxLenghtValidator(final int maxLength) {
-        this.maxLength = maxLength;
+    private final Integer is;
+
+    private String errorMessage = INVALID_LENGTH_ERROR;
+
+    public LengthValidator(final Integer min, final Integer is, final Integer max) {
+        this.min = min;
+        this.is = is;
+        this.max = max;
     }
 
     @Override
@@ -32,8 +38,18 @@ public final class MaxLenghtValidator implements FieldValidator {
             return true;
         }
 
-        if (value.toString().length() > maxLength) {
-            validatedEntity.addError(fieldDefinition, errorMessage, String.valueOf(maxLength));
+        int length = value.toString().length();
+
+        if (max != null && length > max) {
+            validatedEntity.addError(fieldDefinition, errorMessage);
+            return false;
+        }
+        if (min != null && length < min) {
+            validatedEntity.addError(fieldDefinition, errorMessage);
+            return false;
+        }
+        if (is != null && !is.equals(length)) {
+            validatedEntity.addError(fieldDefinition, errorMessage);
             return false;
         }
 

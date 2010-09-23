@@ -43,13 +43,13 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     }
 
     @Override
-    public final ViewValue<String> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
+    public final ViewValue<String> getComponentValue(final Entity entity, Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
         String value = getStringValue(entity, selectedEntities);
 
         ViewValue<String> newViewValue = null;
-
-        if (StringUtils.hasText(value)) {
+        // if (StringUtils.hasText(value)) {
+        if (value != null) {
             newViewValue = new ViewValue<String>(convertToViewValue(value.trim()));
         } else {
             newViewValue = new ViewValue<String>();
@@ -69,7 +69,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
             final Locale locale) {
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewName() + "." + getPath() + ".label");
-        messageCodes.add(getDataDefinition().getName() + "." + getName() + ".label");
+        messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
     }
 

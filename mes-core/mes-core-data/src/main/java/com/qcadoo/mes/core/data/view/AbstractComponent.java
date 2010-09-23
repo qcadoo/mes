@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.view;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -41,7 +42,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private final ContainerComponent<?> parentContainer;
 
-    private final Set<String> listeners = new HashSet<String>();
+    private Set<String> listeners = new HashSet<String>();
 
     private DataDefinition dataDefinition;
 
@@ -66,8 +67,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
     public abstract ViewValue<T> castComponentValue(Map<String, Entity> selectedEntities, JSONObject viewObject)
             throws JSONException;
 
-    public abstract ViewValue<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<T> viewValue,
-            final Set<String> pathsToUpdate);
+    public abstract ViewValue<T> getComponentValue(Entity entity, Entity parentEntity, Map<String, Entity> selectedEntities,
+            ViewValue<T> viewValue, final Set<String> pathsToUpdate);
 
     @Override
     public final ViewValue<T> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
@@ -85,12 +86,22 @@ public abstract class AbstractComponent<T> implements Component<T> {
     public final ViewValue<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<?> viewValue, final Set<String> pathsToUpdate) {
 
+        listeners = Collections.unmodifiableSet(listeners);
+
         if (shouldNotBeUpdated(pathsToUpdate)) {
             return (ViewValue<T>) viewValue;
         }
 
         Entity selectedEntity = null;
+        Entity parentEntity = null;
         ViewValue<T> value = null;
+
+        parentEntity = entity;
+        if (parentEntity == null) {
+            parentEntity = selectedEntities.get(getPath());
+        } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
+            parentEntity = getFieldEntityValue(entity, fieldPath);
+        }
 
         if (sourceComponent != null) {
             selectedEntity = selectedEntities.get(sourceComponent.getPath());
@@ -99,18 +110,28 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
 
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
         } else {
-            selectedEntity = entity;
-
-            if (selectedEntity == null) {
-                selectedEntity = selectedEntities.get(getPath());
-            } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
-                selectedEntity = getFieldEntityValue(entity, fieldPath);
-            }
-
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
+            selectedEntity = parentEntity;
         }
+
+        // if (sourceComponent != null) {
+        // selectedEntity = selectedEntities.get(sourceComponent.getPath());
+        //
+        // if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
+        // selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
+        // }
+        //
+        // } else {
+        // selectedEntity = entity;
+        //
+        // if (selectedEntity == null) {
+        // selectedEntity = selectedEntities.get(getPath());
+        // } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
+        // selectedEntity = getFieldEntityValue(entity, fieldPath);
+        // }
+        // }
+
+        value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
 
         if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
             value.setEnabled(false);
@@ -372,9 +393,25 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     @Override
     public final String toString() {
+        return printComponent(0);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public final String printComponent(int tab) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tab; i++) {
+            sb.append("    ");
+        }
         String dd = dataDefinition != null ? dataDefinition.getName() : "null";
         String sc = sourceComponent != null ? sourceComponent.getPath() : "null";
-        return path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sc + "], [" + listeners + "], " + dd;
+        sb.append(path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sc + "], [" + listeners + "], " + dd + "\n");
+        if (isContainer()) {
+            AbstractContainerComponent container = (AbstractContainerComponent) this;
+            for (Object co : container.getComponents().values()) {
+                sb.append(((AbstractComponent) co).printComponent(tab + 1));
+            }
+        }
+        return sb.toString();
     }
 
     @Override

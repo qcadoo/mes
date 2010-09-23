@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.internal;
+package com.qcadoo.mes.core.data;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static junit.framework.Assert.assertNotNull;
@@ -202,7 +202,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnBelongToType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent.entity", "name");
+        FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent", "entity", "name");
 
         // then
         assertThat(fieldType, is(BelongsToType.class));

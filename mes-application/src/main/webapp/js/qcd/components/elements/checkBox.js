@@ -2,53 +2,38 @@ var QCD = QCD || {};
 QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 
-QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
+QCD.components.elements.CheckBox = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Component(_element, _mainController));
 
 	var mainController = _mainController;
 	
 	var element = _element;
 	
-	var select = $("#"+element.attr('id')+"_select");
+	var input = $("#"+element.attr('id')+"_input");
 	
 	var messagesSpan = $("#"+element.attr('id')+"_messagesSpan");
 	
 	this.getComponentValue = function() {
-		var selectedVal = select.val();
-		if (!selectedVal || selectedVal.trim() == "") {
-			selectedVal = null;
+		if (input.attr('checked')) {
+			return "1";
 		}
-		var value = {
-			selectedValue: selectedVal
-		}
-		return value;
+		return "0";
 	}
 	
 	this.setComponentValue = function(value) {
-		var previousSelectedVal = select.val();
-		select.children().remove();
-		select.append("<option value=''></option>");
-		for (var i in value.values) {
-			var val = value.values[i];
-			select.append("<option value='"+val+"'>"+val+"</option>");
-		}
-		if (value.selectedValue != null) {
-			select.val(value.selectedValue);
+		if (value == 1) {
+			input.attr('checked', true);
 		} else {
-			select.val(previousSelectedVal);
+			input.attr('checked', false);
 		}
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
-			select.removeAttr('disabled');
+			input.removeAttr('disabled');
 		} else {
-			select.attr('disabled', 'true');
+			input.attr('disabled', 'true');
 		}
-	}
-	
-	this.setComponentLoading = function(isLoadingVisible) {
-
 	}
 	
 	this.setMessages = function(messages) {
@@ -72,5 +57,14 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 			message += messages.success[i];
 		}
 		messagesSpan.html(message);
+	}
+	
+	this.setComponentLoading = function(isLoadingVisible) {
+//		if (isLoadingVisible) {
+//			input.val("loading");
+//		} else {
+//			if (input.val() == "loading")
+//				input.val("");
+//		}
 	}
 }

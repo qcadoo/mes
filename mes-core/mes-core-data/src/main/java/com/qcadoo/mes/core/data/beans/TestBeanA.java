@@ -20,10 +20,15 @@ public class TestBeanA {
 
     private String name;
 
+    private Boolean active;
+
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private TestBeanB beanB;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private TestBeanA beanA;
 
     @OneToMany(mappedBy = "beanA", fetch = FetchType.LAZY)
     private List<TestBeanC> beansC;
@@ -74,6 +79,22 @@ public class TestBeanA {
 
     public void setBeansC(final List<TestBeanC> beansC) {
         this.beansC = beansC;
+    }
+
+    public TestBeanA getBeanA() {
+        return beanA;
+    }
+
+    public void setBeanA(TestBeanA beanA) {
+        this.beanA = beanA;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
 }

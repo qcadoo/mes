@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.data.view.elements;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -13,9 +14,13 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.TranslationService;
+import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.types.BelongsToType;
+import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.search.Restrictions;
+import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.view.AbstractComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -42,32 +47,67 @@ public class EntityComboBox extends AbstractComponent<EntityComboBoxValue> {
     public ViewValue<EntityComboBoxValue> castComponentValue(final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         JSONObject valueObject = viewObject.getJSONObject("value");
-        EntityComboBoxValue value = new EntityComboBoxValue();
         if (!valueObject.isNull("selectedValue")) {
-            value.setSelectedValue(Long.parseLong(valueObject.getString("selectedValue")));
+            EntityComboBoxValue value = new EntityComboBoxValue();
+            Long selectedEntityId = Long.parseLong(valueObject.getString("selectedValue"));
+            value.setSelectedValue(selectedEntityId);
+            Entity selectedEntity = getDataDefinition().get(selectedEntityId);
+            selectedEntities.put(getPath(), selectedEntity);
+            return new ViewValue<EntityComboBoxValue>(value);
         }
-        return new ViewValue<EntityComboBoxValue>(value);
+        return new ViewValue<EntityComboBoxValue>();
     }
 
     @Override
-    public ViewValue<EntityComboBoxValue> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<EntityComboBoxValue> viewValue, final Set<String> pathsToUpdate) {
+    public ViewValue<EntityComboBoxValue> getComponentValue(final Entity entity, Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<EntityComboBoxValue> viewValue,
+            final Set<String> pathsToUpdate) {
 
         DataDefinition parentDefinition = getParentContainer().getDataDefinition();
         EntityComboBoxValue value = new EntityComboBoxValue();
 
+        BelongsToType belongsToType = getBelongsToType(parentDefinition, getFieldPath());
         if (getSourceFieldPath() != null) {
-            // TODO mina
+            DataDefinition listDataDefinition = getParentContainer().getDataDefinition();
+            if (getSourceComponent() != null) {
+                listDataDefinition = getSourceComponent().getDataDefinition();
+            }
+            HasManyType hasManyType = getHasManyType(listDataDefinition, getSourceFieldPath());
+
+            checkState(hasManyType.getDataDefinition().getName().equals(belongsToType.getDataDefinition().getName()),
+                    "EntityComboBox and hasMany relation have different data definitions");
+
+            Entity selectedEntity = selectedEntities.get(getSourceComponent().getPath());
+
+            Map<Long, String> valuesMap = new HashMap<Long, String>();
+            if (selectedEntity != null) {
+                SearchCriteriaBuilder searchCriteriaBuilder = hasManyType.getDataDefinition().find();
+                searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(hasManyType
+                        .getDataDefinition().getField(hasManyType.getFieldName()), selectedEntity.getId()));
+                SearchResult rs = searchCriteriaBuilder.list();
+
+                for (Entity e : rs.getEntities()) {
+                    valuesMap.put(e.getId(), e.getField(belongsToType.getLookupFieldName()).toString());
+                }
+
+            }
+            value.setValues(valuesMap);
+
         } else {
-            BelongsToType belongsToType = getBelongsToType(parentDefinition, getFieldPath());
+
             Map<Long, String> valuesMap = belongsToType.lookup("");
             value.setValues(valuesMap);
         }
 
-        if (entity != null) {
+        if (parentEntity != null && value.getValues() != null) {
             checkState(!getFieldPath().matches("\\."), "EntityComboBox doesn't support sequential path");
-            Long entityId = ((Entity) entity.getField(getFieldPath())).getId();
-            value.setSelectedValue(entityId);
+            Entity field = (Entity) parentEntity.getField(getFieldPath());
+
+            if (field != null) {
+                Long entityId = field.getId();
+                value.setSelectedValue(entityId);
+                selectedEntities.put(getPath(), field);
+            }
         }
 
         return new ViewValue<EntityComboBoxValue>(value);
@@ -76,10 +116,9 @@ public class EntityComboBox extends AbstractComponent<EntityComboBoxValue> {
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
-        DataDefinition parentDefinition = getParentContainer().getDataDefinition();
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewName() + "." + getPath() + ".label");
-        messageCodes.add(parentDefinition.getName() + "." + getName() + ".label");
+        messageCodes.add(translationService.getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
     }
 
@@ -88,6 +127,16 @@ public class EntityComboBox extends AbstractComponent<EntityComboBoxValue> {
         FieldDefinition fieldDefinition = dataDefinition.getField(fieldPath);
         if (fieldDefinition != null && fieldDefinition.getType() instanceof BelongsToType) {
             return (BelongsToType) fieldDefinition.getType();
+        } else {
+            throw new IllegalStateException("EntityComboBox data definition cannot be found");
+        }
+    }
+
+    private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {
+        checkState(!fieldPath.matches("\\."), "EntityComboBox doesn't support sequential path");
+        FieldDefinition fieldDefinition = dataDefinition.getField(fieldPath);
+        if (fieldDefinition != null && fieldDefinition.getType() instanceof HasManyType) {
+            return (HasManyType) fieldDefinition.getType();
         } else {
             throw new IllegalStateException("EntityComboBox data definition cannot be found");
         }

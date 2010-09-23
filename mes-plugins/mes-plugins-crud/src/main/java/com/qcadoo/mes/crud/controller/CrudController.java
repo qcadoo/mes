@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -105,9 +104,9 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         if (arguments.get("entityId") != null) {
             Entity entity = viewDefinition.getRoot().getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, Collections.<String, Entity> emptyMap(), null, null);
+            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, null);
         } else {
-            return viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), null, null);
+            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, null);
         }
     }
 
@@ -158,6 +157,9 @@ public class CrudController {
             Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
 
             ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+
+            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
+
             ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
 
             return newViewValue;
@@ -189,6 +191,8 @@ public class CrudController {
             Entity entity = saveableComponent.getSaveableEntity(viewValue);
 
             entity = saveableComponent.getDataDefinition().save(entity);
+
+            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
 
             selectedEntities.put(componentName, entity);
 
@@ -223,7 +227,7 @@ public class CrudController {
 
             gridComponent.getDataDefinition().delete(gridValue.getValue().getSelectedEntityId());
 
-            selectedEntities.remove(componentName);
+            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
 
             return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
         } catch (JSONException e) {
