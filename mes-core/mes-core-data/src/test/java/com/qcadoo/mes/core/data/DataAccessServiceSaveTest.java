@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public final class DataAccessServiceSaveTest extends DataAccessTest {

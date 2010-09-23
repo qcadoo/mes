@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
 

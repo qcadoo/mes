@@ -14,14 +14,15 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qcadoo.mes.beans.test.CustomEntityService;
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public class ValidatorTest extends DataAccessTest {
 
     @Before
     public void init() {
-        given(applicationContext.getBean(CustomValidateMethod.class)).willReturn(new CustomValidateMethod(this));
-        given(applicationContext.getBean(CustomEntityValidateMethod.class)).willReturn(new CustomEntityValidateMethod(this));
+        given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
     }
 
     @Test
@@ -535,7 +536,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomValidateMethod.class.getName(),
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomEntityService.class.getName(),
                 "isEqualToQwerty")));
 
         // when
@@ -552,7 +553,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwert");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomValidateMethod.class.getName(),
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomEntityService.class.getName(),
                 "isEqualToQwerty")));
 
         // when
@@ -572,7 +573,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity();
         entity.setField("name", "qwerty");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomValidateMethod.class.getName(),
+        fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomEntityService.class.getName(),
                 "isEqualToQwertz")));
 
         // when
@@ -590,8 +591,8 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 
-        dataDefinition.withValidator(fieldValidatorFactory.customEntity(hookFactory.getHook(
-                CustomEntityValidateMethod.class.getName(), "hasAge18AndNameMrT")));
+        dataDefinition.withValidator(fieldValidatorFactory.customEntity(hookFactory.getHook(CustomEntityService.class.getName(),
+                "hasAge18AndNameMrT")));
 
         // when
         entity = dataDefinition.save(entity);
@@ -609,8 +610,8 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr");
         entity.setField("age", "18");
 
-        dataDefinition.withValidator(fieldValidatorFactory.customEntity(hookFactory.getHook(
-                CustomEntityValidateMethod.class.getName(), "hasAge18AndNameMrT")));
+        dataDefinition.withValidator(fieldValidatorFactory.customEntity(hookFactory.getHook(CustomEntityService.class.getName(),
+                "hasAge18AndNameMrT")));
 
         // when
         entity = dataDefinition.save(entity);
@@ -630,8 +631,8 @@ public class ValidatorTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 
-        dataDefinition.withValidator(fieldValidatorFactory.customEntity(hookFactory.getHook(
-                CustomEntityValidateMethod.class.getName(), "hasAge18AndNameMrX")));
+        dataDefinition.withValidator(fieldValidatorFactory.customEntity(hookFactory.getHook(CustomEntityService.class.getName(),
+                "hasAge18AndNameMrX")));
 
         // when
         entity = dataDefinition.save(entity);

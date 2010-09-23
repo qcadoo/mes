@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public class PriorityTest extends DataAccessTest {

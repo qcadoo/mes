@@ -5,6 +5,8 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
+
 public class DataAccessServiceDeleteTest extends DataAccessTest {
 
     @Test

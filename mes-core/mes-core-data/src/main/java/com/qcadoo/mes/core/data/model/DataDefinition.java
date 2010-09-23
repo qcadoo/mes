@@ -27,6 +27,8 @@ public interface DataDefinition {
 
     String getName();
 
+    String getPluginIdentifier();
+
     String getFullyQualifiedClassName();
 
     Map<String, FieldDefinition> getFields();

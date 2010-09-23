@@ -8,13 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.mes.beans.test.CustomEntityService;
+import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public class HookTest extends DataAccessTest {
 
     @Before
     public void init() {
-        given(applicationContext.getBean(CustomHookMethod.class)).willReturn(new CustomHookMethod());
+        given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
     }
 
     @Test
@@ -39,7 +41,7 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.withCreateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onCreate"));
+        dataDefinition.withCreateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onCreate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -62,7 +64,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.withUpdateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onUpdate"));
+        dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -79,8 +81,8 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.withCreateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onCreate"));
-        dataDefinition.withSaveHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
+        dataDefinition.withCreateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onCreate"));
+        dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -103,7 +105,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.withSaveHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
+        dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -126,8 +128,8 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.withUpdateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onUpdate"));
-        dataDefinition.withSaveHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
+        dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
+        dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -144,7 +146,7 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.withCreateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
+        dataDefinition.withCreateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
