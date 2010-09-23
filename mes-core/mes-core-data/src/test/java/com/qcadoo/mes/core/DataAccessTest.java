@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data;
+package com.qcadoo.mes.core;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;

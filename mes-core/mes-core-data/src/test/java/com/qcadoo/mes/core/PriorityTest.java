@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data;
+package com.qcadoo.mes.core;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;

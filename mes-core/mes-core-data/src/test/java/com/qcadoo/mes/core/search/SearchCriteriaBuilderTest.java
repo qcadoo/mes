@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.search;
+package com.qcadoo.mes.core.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.core.data.DataAccessTest;
+import com.qcadoo.mes.core.DataAccessTest;
 import com.qcadoo.mes.core.search.Restrictions;
 import com.qcadoo.mes.core.search.SearchCriteria;
 

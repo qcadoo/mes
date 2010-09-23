@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data;
+package com.qcadoo.mes.core;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
