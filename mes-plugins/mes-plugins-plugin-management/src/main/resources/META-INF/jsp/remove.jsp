@@ -5,11 +5,8 @@
 String ctx = request.getContextPath();
 %>
 <html>
-    <head>
-        <title>Usuwanie modułów</title>
-    </head>
     <body>
         <h1>Usunięto moduł</h1>
-		<input type="button" value="Wróć" name="return" onclick="location.href='install.html'"/>
+		<input type="button" value="Wróć" name="return" onclick="location.href='page/plugins.pluginGridView.html?iframe=true'"/>
     </body>
 </html>

@@ -9,9 +9,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,25 +27,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.internal.DataAccessServiceImpl;
-import com.qcadoo.mes.core.data.internal.EntityService;
-import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.api.PluginManagementService;
+import com.qcadoo.mes.core.data.beans.Plugin;
 
 @Controller
 public class PluginManagementController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PluginManagementController.class);
 
     @Autowired
-    private SessionFactory sessionFactory;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private EntityService entityService;
+    private PluginManagementService pluginManagementService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -88,25 +76,25 @@ public class PluginManagementController {
 
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
     @Transactional
-    public ModelAndView getDeinstallPageView(@RequestParam("entityId") final String entityId,
-            @RequestParam("codeId") final String codeId) {
+    public ModelAndView getDeinstallPageView(@RequestParam("entityId") final String entityId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("restart");
+        Plugin databaseEntity = pluginManagementService.getPlugin(entityId);
 
-        removeResources("js", "js", codeId);
-        removeResources("css", "css", codeId);
-        removeResources("img", "img", codeId);
-        removeResources("jsp", "WEB-INF/jsp", codeId);
+        removeResources("js", "js", databaseEntity.getIdentifier());
+        removeResources("css", "css", databaseEntity.getIdentifier());
+        removeResources("img", "img", databaseEntity.getIdentifier());
+        removeResources("jsp", "WEB-INF/jsp", databaseEntity.getIdentifier());
 
         removePlugin(entityId);
 
         return mav;
     }
 
-    private void removeResources(final String type, final String targetPath, final String codeId) {
+    private void removeResources(final String type, final String targetPath, final String identifier) {
         LOG.info("Removing resources " + type + " ...");
 
-        deleteDirectory(new File(webappPath + "/" + targetPath + "/" + codeId));
+        deleteDirectory(new File(webappPath + "/" + targetPath + "/" + identifier));
     }
 
     private boolean deleteDirectory(final File path) {
@@ -157,22 +145,14 @@ public class PluginManagementController {
     }
 
     private void removePlugin(final String entityId) {
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
 
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
-                .add(Restrictions.idEq(Long.valueOf(entityId)));
-        if (dataDefinition.isDeletable()) {
-            entityService.addDeletedRestriction(criteria);
-        }
+        Plugin databasePlugin = pluginManagementService.getPlugin(entityId);
 
-        Object databaseEntity = criteria.uniqueResult();
+        databasePlugin.setDeleted(true);
 
-        entityService.setDeleted(databaseEntity);
+        pluginManagementService.savePlugin(databasePlugin);
 
-        sessionFactory.getCurrentSession().update(databaseEntity);
-
-        String fileName = (String) entityService.getField(databaseEntity, dataDefinition.getField("fileName"));
-        removePluginFile(fileName);
+        removePluginFile(databasePlugin.getFileName());
     }
 
     private void removePluginFile(final String fileName) {
@@ -214,48 +194,41 @@ public class PluginManagementController {
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document doc = db.parse(in);
                 doc.getDocumentElement().normalize();
-                Entity genericEntity = new Entity();
+                Plugin plugin = new Plugin();
                 for (String property : pluginProperties) {
                     String value = null;
                     Node fstNode = doc.getElementsByTagName(property).item(0);
                     if (fstNode.getNodeType() == Node.ELEMENT_NODE && fstNode.getFirstChild() != null) {
                         value = ((Element) fstNode).getFirstChild().getNodeValue();
                     }
-                    if (property.equals("vendor")) {
-                        genericEntity.setField("publisher", value);
+
+                    if (property.equals("identifier")) {
+                        plugin.setIdentifier(value);
+                    } else if (property.equals("name")) {
+                        plugin.setName(value);
                     } else if (property.equals("group")) {
-                        genericEntity.setField("packageName", value);
-                    } else if (property.equals("identifier")) {
-                        genericEntity.setField("codeId", value);
-                    } else {
-                        genericEntity.setField(property, value);
+                        plugin.setGroup(value);
+                    } else if (property.equals("version")) {
+                        plugin.setVersion(value);
+                    } else if (property.equals("vendor")) {
+                        plugin.setVendor(value);
+                    } else if (property.equals("description")) {
+                        plugin.setDescription(value);
                     }
 
                 }
-                genericEntity.setField("deleted", false);
-                DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
-                Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
-                        .add(Restrictions.eq("name", genericEntity.getField("name")))
-                        .add(Restrictions.eq("publisher", genericEntity.getField("publisher")))
-                        .add(Restrictions.ge("version", genericEntity.getField("version")));
 
-                if (dataDefinition.isDeletable()) {
-                    entityService.addDeletedRestriction(criteria);
-                }
-
-                Object databaseEntity = criteria.uniqueResult();
-                if (databaseEntity != null) {
+                Plugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
+                if (databasePlugin != null) {
                     pluginFile.delete();
                     return "redirect:install.html?error=2";
                 } else {
+                    plugin.setDeleted(false);
+                    plugin.setActive(false);
+                    plugin.setBase(false);
+                    plugin.setFileName(file.getOriginalFilename());
 
-                    genericEntity.setField("active", false);
-                    genericEntity.setField("base", false);
-                    genericEntity.setField("fileName", file.getOriginalFilename());
-
-                    databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, null);
-
-                    sessionFactory.getCurrentSession().save(databaseEntity);
+                    pluginManagementService.savePlugin(plugin);
                 }
 
             } catch (IOException e) {
@@ -268,7 +241,7 @@ public class PluginManagementController {
                 return "redirect:install.html?error=3";
             }
 
-            return "redirect:install.html";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
         } else {
             return "redirect:install.html?error=1";
         }

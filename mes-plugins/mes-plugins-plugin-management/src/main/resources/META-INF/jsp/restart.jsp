@@ -15,7 +15,7 @@
 
 		jQuery(document).ready(function(){
 			$.ajax({
-				url: "handleRestart",
+				url: "handleRestart.html",
 				type: 'POST',
 				complete: function(XMLHttpRequest, textStatus) {
 				setTimeout("checkStatus();",5000);
@@ -29,7 +29,7 @@
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
-						window.location = "install.html";
+						window.location = "page/plugins.pluginGridView.html?iframe=true";
 						return;
 					} else {
 						setTimeout("checkStatus();",1000);

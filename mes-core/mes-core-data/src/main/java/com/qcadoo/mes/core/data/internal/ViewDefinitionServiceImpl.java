@@ -1,7 +1,5 @@
 package com.qcadoo.mes.core.data.internal;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,17 +10,14 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.api.PluginManagementService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.beans.Plugin;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
@@ -39,13 +34,10 @@ import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Autowired
-    private SessionFactory sessionFactory;
-
-    @Autowired
-    private EntityService entityService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private PluginManagementService pluginManagementService;
 
     private Map<String, ViewDefinition> viewDefinitions;
 
@@ -79,9 +71,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
-        Entity entity = getActivePlugin(dataDefinition, viewDefinition.getPluginIdentifier());
-        if (entity != null) {
+        Plugin plugin = pluginManagementService.getActivePlugin(viewDefinition.getPluginIdentifier());
+        if (plugin != null) {
             return viewDefinition;
         }
         return new ViewDefinitionImpl("main", null, "");
@@ -91,12 +82,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
-        List<?> activePluginList = getActivePlugins(dataDefinition);
-        for (Object activePlugin : activePluginList) {
-            Entity entity = entityService.convertToGenericEntity(dataDefinition, activePlugin);
+        List<Plugin> activePluginList = pluginManagementService.getActivePlugins();
+        for (Plugin activePlugin : activePluginList) {
+
             for (ViewDefinition viewDefinition : viewDefinitions.values()) {
-                if (((String) entity.getField("codeId")).equals(viewDefinition.getPluginIdentifier())) {
+                if (activePlugin.getIdentifier().equals(viewDefinition.getPluginIdentifier())) {
                     viewsList.add(viewDefinition);
                 }
             }
@@ -738,6 +728,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         windowDefinition.addComponent(new LinkButton("addButton", windowDefinition, "../upload.html"));
         windowDefinition.addComponent(new LinkButton("removeButton", windowDefinition, "../remove.html",
                 "#{mainWindow.pluginsGrid}"));
+        windowDefinition.addComponent(new LinkButton("installButton", windowDefinition, "../restart.html"));
+        windowDefinition.addComponent(new LinkButton("deinstallButton", windowDefinition, "../deinstall.html",
+                "#{mainWindow.pluginsGrid}"));
 
         windowDefinition.initialize();
 
@@ -797,36 +790,4 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // return field;
     // }
 
-    private List<?> getActivePlugins(final DataDefinition dataDefinition) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity()).add(
-                Restrictions.eq("active", true));
-        if (dataDefinition.isDeletable()) {
-            entityService.addDeletedRestriction(criteria);
-        }
-
-        return criteria.list();
-    }
-
-    private Entity getActivePlugin(final DataDefinition dataDefinition, final String pluginCodeId) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkNotNull(pluginCodeId, "pluginCodeId must be given");
-        Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
-                .add(Restrictions.eq("codeId", pluginCodeId)).add(Restrictions.eq("active", true));
-        if (dataDefinition.isDeletable()) {
-            entityService.addDeletedRestriction(criteria);
-        }
-
-        Object databaseEntity = criteria.uniqueResult();
-
-        if (databaseEntity == null) {
-            return null;
-        }
-
-        return entityService.convertToGenericEntity(dataDefinition, databaseEntity);
-    }
-
-    private Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
-    }
 }
