@@ -11,9 +11,9 @@ public interface DataDefinitionService {
 
     void save(DataDefinition dataDefinition);
 
-    DataDefinition get(String pluginIdentifier, String entityName);
+    DataDefinition get(String pluginIdentifier, String modelName);
 
-    void delete(String pluginIdentifier, String entityName);
+    void delete(String pluginIdentifier, String modelName);
 
     List<DataDefinition> list();
 

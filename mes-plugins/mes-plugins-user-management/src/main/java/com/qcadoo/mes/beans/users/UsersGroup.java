@@ -1,12 +1,11 @@
-package com.qcadoo.mes.core.data.beans;
+package com.qcadoo.mes.beans.users;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 
 @Entity
-public final class DictionaryItem {
+public final class UsersGroup {
 
     @Id
     @GeneratedValue
@@ -16,10 +15,9 @@ public final class DictionaryItem {
 
     private String description;
 
-    private boolean deleted;
+    private String role;
 
-    @ManyToOne
-    private Dictionary dictionary;
+    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -37,14 +35,6 @@ public final class DictionaryItem {
         this.name = name;
     }
 
-    public Dictionary getDictionary() {
-        return dictionary;
-    }
-
-    public void setDictionary(final Dictionary dictionary) {
-        this.dictionary = dictionary;
-    }
-
     public boolean isDeleted() {
         return deleted;
     }
@@ -59,6 +49,14 @@ public final class DictionaryItem {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(final String role) {
+        this.role = role;
     }
 
 }

@@ -10,8 +10,8 @@ import static org.springframework.util.Assert.isInstanceOf;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.beans.test.ParentDatabaseObject;
-import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
+import com.qcadoo.mes.beans.test.TestParentDatabaseObject;
+import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
@@ -22,7 +22,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrownAnExceptionWhileGettingNotExistingField() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(1L);
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("unknown");
 
@@ -33,7 +33,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldReturnNullWhileGettingEmptyField() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(1L);
 
         // when
         Object value = entityService.getField(databaseEntity, fieldDefinitionName);
@@ -45,7 +45,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldReturnProperValueOfTheField() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(1L);
         databaseEntity.setName("Mr T");
 
         // when
@@ -58,10 +58,10 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldReturnProperValueOfTheBelongsToField() throws Exception {
         // given
-        ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
+        TestParentDatabaseObject parentDatabaseEntity = new TestParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(2L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(2L);
         databaseEntity.setName("Mr T");
         databaseEntity.setBelongsTo(parentDatabaseEntity);
 
@@ -77,7 +77,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldNotThrownAnExceptionWhileGettingFieldWithInvalidType() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(1L);
         databaseEntity.setName("Mr T");
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("name").withType(fieldTypeFactory.integerType());
@@ -92,7 +92,7 @@ public class EntityServiceTest extends DataAccessTest {
         Class<?> clazz = dataDefinition.getClassForEntity();
 
         // then
-        assertEquals(SimpleDatabaseObject.class, clazz);
+        assertEquals(TestSimpleDatabaseObject.class, clazz);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -108,7 +108,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldReturnProperId() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(13L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(13L);
 
         // when
         Long id = entityService.getId(databaseEntity);
@@ -120,7 +120,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetProperId() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject();
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject();
 
         // when
         entityService.setId(databaseEntity, 13L);
@@ -132,7 +132,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetEntityAsDeleted() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject();
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject();
 
         // when
         entityService.setDeleted(databaseEntity);
@@ -144,7 +144,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldNotBeDeletedAfterEntityCreation() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject();
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject();
 
         // then
         assertFalse(databaseEntity.isDeleted());
@@ -153,7 +153,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrownAnExceptionWhileSettingNotExistingField() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(1L);
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("unknown").withType(fieldTypeFactory.stringType());
 
@@ -164,7 +164,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetEmptyField() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(1L);
         databaseEntity.setName("name");
 
         // when
@@ -177,7 +177,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetNotEmptyField() throws Exception {
         // given
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(1L);
         databaseEntity.setName("name");
 
         // when
@@ -190,12 +190,12 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetBelongsToField() throws Exception {
         // given
-        ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
+        TestParentDatabaseObject parentDatabaseEntity = new TestParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(2L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(2L);
 
-        given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.get(TestParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         // when
         entityService.setField(databaseEntity, fieldDefinitionBelongsTo, parentDatabaseEntity);
@@ -208,10 +208,10 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldSetNullIfBelongsToFieldIsEmpty() throws Exception {
         // given
-        ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
+        TestParentDatabaseObject parentDatabaseEntity = new TestParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(2L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(2L);
         databaseEntity.setBelongsTo(parentDatabaseEntity);
 
         // when
@@ -224,10 +224,10 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldConvertDatabaseEntityIntoGenericOne() throws Exception {
         // given
-        ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
+        TestParentDatabaseObject parentDatabaseEntity = new TestParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        SimpleDatabaseObject databaseEntity = new SimpleDatabaseObject(2L);
+        TestSimpleDatabaseObject databaseEntity = new TestSimpleDatabaseObject(2L);
         databaseEntity.setAge(12);
         databaseEntity.setName("Mr T");
         databaseEntity.setBelongsTo(parentDatabaseEntity);
@@ -252,10 +252,10 @@ public class EntityServiceTest extends DataAccessTest {
         genericEntity.setField("age", 12);
         genericEntity.setField("belongsTo", 1L);
 
-        ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
+        TestParentDatabaseObject parentDatabaseEntity = new TestParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.get(TestParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         validationService.validateGenericEntity(dataDefinition, genericEntity, null);
 
@@ -264,12 +264,12 @@ public class EntityServiceTest extends DataAccessTest {
 
         // then
         assertNotNull(databaseEntity);
-        isInstanceOf(SimpleDatabaseObject.class, databaseEntity);
-        assertEquals(Long.valueOf(2), ((SimpleDatabaseObject) databaseEntity).getId());
-        assertEquals(Integer.valueOf(12), ((SimpleDatabaseObject) databaseEntity).getAge());
-        assertEquals("Mr T", ((SimpleDatabaseObject) databaseEntity).getName());
-        assertNotNull(((SimpleDatabaseObject) databaseEntity).getBelongsTo());
-        assertEquals("Mr X", ((SimpleDatabaseObject) databaseEntity).getBelongsTo().getName());
+        isInstanceOf(TestSimpleDatabaseObject.class, databaseEntity);
+        assertEquals(Long.valueOf(2), ((TestSimpleDatabaseObject) databaseEntity).getId());
+        assertEquals(Integer.valueOf(12), ((TestSimpleDatabaseObject) databaseEntity).getAge());
+        assertEquals("Mr T", ((TestSimpleDatabaseObject) databaseEntity).getName());
+        assertNotNull(((TestSimpleDatabaseObject) databaseEntity).getBelongsTo());
+        assertEquals("Mr X", ((TestSimpleDatabaseObject) databaseEntity).getBelongsTo().getName());
     }
 
     @Test
@@ -280,12 +280,12 @@ public class EntityServiceTest extends DataAccessTest {
         genericEntity.setField("age", 12);
         genericEntity.setField("belongsTo", 1L);
 
-        SimpleDatabaseObject existingDatabaseEntity = new SimpleDatabaseObject(11L);
+        TestSimpleDatabaseObject existingDatabaseEntity = new TestSimpleDatabaseObject(11L);
 
-        ParentDatabaseObject parentDatabaseEntity = new ParentDatabaseObject(1L);
+        TestParentDatabaseObject parentDatabaseEntity = new TestParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        given(session.get(ParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.get(TestParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         validationService.validateGenericEntity(dataDefinition, genericEntity, new Entity(2L));
 
@@ -294,12 +294,12 @@ public class EntityServiceTest extends DataAccessTest {
 
         // then
         assertNotNull(databaseEntity);
-        isInstanceOf(SimpleDatabaseObject.class, databaseEntity);
-        assertEquals(Long.valueOf(11), ((SimpleDatabaseObject) databaseEntity).getId());
-        assertEquals(Integer.valueOf(12), ((SimpleDatabaseObject) databaseEntity).getAge());
-        assertEquals("Mr T", ((SimpleDatabaseObject) databaseEntity).getName());
-        assertNotNull(((SimpleDatabaseObject) databaseEntity).getBelongsTo());
-        assertEquals("Mr X", ((SimpleDatabaseObject) databaseEntity).getBelongsTo().getName());
+        isInstanceOf(TestSimpleDatabaseObject.class, databaseEntity);
+        assertEquals(Long.valueOf(11), ((TestSimpleDatabaseObject) databaseEntity).getId());
+        assertEquals(Integer.valueOf(12), ((TestSimpleDatabaseObject) databaseEntity).getAge());
+        assertEquals("Mr T", ((TestSimpleDatabaseObject) databaseEntity).getName());
+        assertNotNull(((TestSimpleDatabaseObject) databaseEntity).getBelongsTo());
+        assertEquals("Mr X", ((TestSimpleDatabaseObject) databaseEntity).getBelongsTo().getName());
     }
 
 }

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.beans;
+package com.qcadoo.mes.beans.plugins;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public final class Plugin {
+public final class PluginsPlugin {
 
     @Id
     @GeneratedValue

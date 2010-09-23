@@ -2,18 +2,18 @@ package com.qcadoo.mes.core.data.api;
 
 import java.util.List;
 
-import com.qcadoo.mes.core.data.beans.Plugin;
+import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 
 public interface PluginManagementService {
 
-    List<Plugin> getPluginsWithStatus(String status);
+    List<PluginsPlugin> getPluginsWithStatus(String status);
 
-    Plugin getPluginWithStatus(String identifier, String status);
+    PluginsPlugin getPluginWithStatus(String identifier, String status);
 
-    Plugin getPlugin(String entityId);
+    PluginsPlugin getPlugin(String entityId);
 
-    void savePlugin(Plugin plugin);
+    void savePlugin(PluginsPlugin plugin);
 
-    Plugin getInstalledPlugin(Plugin plugin);
+    PluginsPlugin getInstalledPlugin(PluginsPlugin plugin);
 
 }

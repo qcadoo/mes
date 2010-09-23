@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.data.api.PluginManagementService;
-import com.qcadoo.mes.core.data.beans.Plugin;
 
 @Service
 public final class PluginManagementServiceImpl implements PluginManagementService {
@@ -25,23 +25,23 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementServiceImpl.class);
 
     @Override
-    public List<Plugin> getPluginsWithStatus(final String status) {
-        Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("status", status))
+    public List<PluginsPlugin> getPluginsWithStatus(final String status) {
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("status", status))
                 .add(Restrictions.eq("deleted", false));
 
         return criteria.list();
     }
 
     @Override
-    public Plugin getPluginWithStatus(final String identifier, final String status) {
+    public PluginsPlugin getPluginWithStatus(final String identifier, final String status) {
         checkNotNull(identifier, "identifier must be given");
-        Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("identifier", identifier))
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("identifier", identifier))
                 .add(Restrictions.eq("deleted", false));
         if (status != null) {
             criteria.add(Restrictions.eq("status", status));
         }
 
-        Plugin databaseEntity = (Plugin) criteria.uniqueResult();
+        PluginsPlugin databaseEntity = (PluginsPlugin) criteria.uniqueResult();
 
         if (databaseEntity == null) {
             return null;
@@ -51,24 +51,24 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
-    public Plugin getPlugin(final String entityId) {
+    public PluginsPlugin getPlugin(final String entityId) {
         checkNotNull(entityId, "entityId must be given");
-        Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.idEq(Long.valueOf(entityId)))
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.idEq(Long.valueOf(entityId)))
                 .add(Restrictions.eq("deleted", false));
 
-        return (Plugin) criteria.uniqueResult();
+        return (PluginsPlugin) criteria.uniqueResult();
     }
 
     @Override
-    public void savePlugin(final Plugin plugin) {
+    public void savePlugin(final PluginsPlugin plugin) {
         getCurrentSession().save(plugin);
     }
 
     @Override
-    public Plugin getInstalledPlugin(final Plugin plugin) {
-        Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("name", plugin.getName()))
+    public PluginsPlugin getInstalledPlugin(final PluginsPlugin plugin) {
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("name", plugin.getName()))
                 .add(Restrictions.eq("vendor", plugin.getVendor())).add(Restrictions.eq("deleted", false));
-        return (Plugin) criteria.uniqueResult();
+        return (PluginsPlugin) criteria.uniqueResult();
     }
 
     private Session getCurrentSession() {

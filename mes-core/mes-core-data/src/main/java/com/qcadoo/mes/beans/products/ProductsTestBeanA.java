@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.data.beans;
+package com.qcadoo.mes.beans.products;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
-public class TestBeanA {
+public class ProductsTestBeanA {
 
     @Id
     @GeneratedValue
@@ -23,13 +23,13 @@ public class TestBeanA {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private TestBeanB beanB;
+    private ProductsTestBeanB beanB;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private TestBeanA beanA;
+    private ProductsTestBeanA beanA;
 
     @OneToMany(mappedBy = "beanA", fetch = FetchType.LAZY)
-    private List<TestBeanC> beansC;
+    private List<ProductsTestBeanC> beansC;
 
     public Long getId() {
         return id;
@@ -63,27 +63,27 @@ public class TestBeanA {
         this.description = description;
     }
 
-    public TestBeanB getBeanB() {
+    public ProductsTestBeanB getBeanB() {
         return beanB;
     }
 
-    public void setBeanB(final TestBeanB beanB) {
+    public void setBeanB(final ProductsTestBeanB beanB) {
         this.beanB = beanB;
     }
 
-    public List<TestBeanC> getBeansC() {
+    public List<ProductsTestBeanC> getBeansC() {
         return beansC;
     }
 
-    public void setBeansC(final List<TestBeanC> beansC) {
+    public void setBeansC(final List<ProductsTestBeanC> beansC) {
         this.beansC = beansC;
     }
 
-    public TestBeanA getBeanA() {
+    public ProductsTestBeanA getBeanA() {
         return beanA;
     }
 
-    public void setBeanA(TestBeanA beanA) {
+    public void setBeanA(ProductsTestBeanA beanA) {
         this.beanA = beanA;
     }
 

@@ -4,7 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public final class ParentDatabaseObject {
+public final class TestParentDatabaseObject {
 
     private Long id;
 
@@ -12,10 +12,10 @@ public final class ParentDatabaseObject {
 
     private boolean deleted;
 
-    public ParentDatabaseObject() {
+    public TestParentDatabaseObject() {
     }
 
-    public ParentDatabaseObject(final Long id) {
+    public TestParentDatabaseObject(final Long id) {
         this.id = id;
     }
 

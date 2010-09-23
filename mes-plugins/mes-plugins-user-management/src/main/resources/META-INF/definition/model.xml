@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="users">
+	<model name="user">
+		<string name="userName" >
+			<validates_presence />
+			<validates_uniqueness />
+		</string>
+		<belongsTo name="group" model="group" lookupField="name">
+			<validates_presence />
+		</belongsTo>
+		<string name="email" />
+		<string name="firstName" />
+		<string name="lastName" />
+		<text name="description" />
+		<string name="email" />
+		<password name="password">
+			<validates_presence_on_create />
+		</password>
+	</model>
+	<model name="group">
+		<string name="userName" readonly="true">
+			<validates_presence_on_create />
+			<validates_uniqueness />
+		</string>
+		<text name="description" />
+		<string name="role" readonly="true">
+			<validates_presence_on_create />
+		</string>
+	</model>
+	
+</plugin>

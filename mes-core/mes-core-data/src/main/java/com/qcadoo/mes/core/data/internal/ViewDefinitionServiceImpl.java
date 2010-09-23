@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.PluginManagementService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.beans.Plugin;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.model.DataDefinition;
@@ -76,7 +76,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        Plugin plugin = pluginManagementService.getPluginWithStatus(viewDefinition.getPluginIdentifier(), "active");
+        PluginsPlugin plugin = pluginManagementService.getPluginWithStatus(viewDefinition.getPluginIdentifier(), "active");
         if (plugin != null) {
             return viewDefinition;
         }
@@ -87,8 +87,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
-        List<Plugin> activePluginList = pluginManagementService.getPluginsWithStatus("active");
-        for (Plugin activePlugin : activePluginList) {
+        List<PluginsPlugin> activePluginList = pluginManagementService.getPluginsWithStatus("active");
+        for (PluginsPlugin activePlugin : activePluginList) {
             for (ViewDefinition viewDefinition : viewDefinitions.values()) {
                 if (activePlugin.getIdentifier().equals(viewDefinition.getPluginIdentifier())) {
                     viewsList.add(viewDefinition);

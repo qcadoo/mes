@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.beans.products;
+package com.qcadoo.mes.beans.products;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 @Entity
-public final class Product {
+public final class ProductsProduct {
 
     @Id
     @GeneratedValue
@@ -34,7 +34,7 @@ public final class Product {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
-    private List<Substitute> substitutes;
+    private List<ProductsSubstitute> substitutes;
 
     public Long getId() {
         return id;
@@ -108,11 +108,11 @@ public final class Product {
         this.deleted = deleted;
     }
 
-    public List<Substitute> getSubstitutes() {
+    public List<ProductsSubstitute> getSubstitutes() {
         return substitutes;
     }
 
-    public void setSubstitutes(List<Substitute> substitutes) {
+    public void setSubstitutes(List<ProductsSubstitute> substitutes) {
         this.substitutes = substitutes;
     }
 

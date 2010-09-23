@@ -10,7 +10,7 @@ import com.qcadoo.mes.core.data.types.FieldType;
 
 public final class DateTimeType implements FieldType {
 
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 
     @Override
     public boolean isSearchable() {

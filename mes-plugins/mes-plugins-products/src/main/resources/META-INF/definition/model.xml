@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="products">
+	<model name="product">
+		<string name="number">
+			<validates_presence />
+		</string>
+		<text name="name">
+			<validates_presence />
+		</text>
+		<enum name="typeOfMaterial">
+			<value>product</value>
+			<value>intermediate</value>
+			<value>component</value>
+			<validates_presence />
+		</enum>
+		<string name="ean" />
+		<dictionary name="category" dictionary="categories" />
+		<string name="unit" />
+		<hasMany name="substitutes" model="substitute" joinField="product" />
+	</model>
+	<model name="substitute">
+		<string name="number">
+			<validates_presence />
+		</string>
+		<text name="name">
+			<validates_presence />
+		</text>
+		<datetime name="effectiveDateFrom" />
+		<datetime name="effectiveDateTo" />
+		<belongsTo name="product" model="product" lookupField="name" lazy="false">
+			<validates_presence /> 
+		</belongsTo>
+		<hasMany name="components" model="substituteComponent" joinField="substitute" />
+		<priority name="priority" scope="product" />
+		<validates_with bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" message="products.validation.error.datesOrder" />
+	</model>
+	<model name="substituteComponent">
+		<belongsTo name="product" model="product" lookupField="name">
+			<validates_presence /> 
+		</belongsTo>
+		<belongsTo name="substitute" model="substitute" lookupField="name">
+			<validates_presence /> 
+		</belongsTo>
+		<decimal name="quantity">
+			<validates_presence />
+		</decimal>
+	</model>
+	<model name="instruction">
+		<string name="number">
+			<validates_presence />
+		</string>
+		<text name="name">
+			<validates_presence />
+		</text>
+		<belongsTo name="product" model="product" lookupField="name" lazy="false">
+			<validates_presence /> 
+		</belongsTo>
+		<enum name="typeOfMaterial">
+			<value>product</value>
+			<value>intermediate</value>
+			<value>component</value>
+			<validates_presence />
+		</enum>
+		<boolean name="master" />
+		<datetime name="dateFrom" />
+		<datetime name="dateTo" />
+		<text name="description" />
+		<validates_with bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" message="products.validation.error.default" />
+		<validates_with bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" message="products.validation.error.datesOrder" />
+	</model>
+	<model name="order">
+		<string name="number">
+			<validates_presence />
+			<validates_uniqueness />
+		</string>
+		<text name="name">
+			<validates_presence />
+		</text>
+		<date name="dateFrom">
+			<validates_presence />
+		</date>
+		<date name="dateTo">
+			<validates_presence />
+		</date>
+		<enum name="state">
+			<value>pending</value>
+			<value>done</value>
+			<validates_presence />
+		</enum>
+		<enum name="machine">
+			<value>machine 1</value>
+			<value>machine 2</value>
+		</enum>
+		<belongsTo name="product" model="product" lookupField="name" />
+		<belongsTo name="defaultInstruction" model="instruction" lookupField="name" readonly="true" />
+		<belongsTo name="instruction" model="instruction" lookupField="name" />
+		<decimal name="plannedQuantity" />
+		<decimal name="doneQuantity" />
+		<date name="effectiveDateFrom" readonly="true" />
+		<date name="effectiveDateTo" readonly="true" />
+		<text name="startWorker" readonly="true" />
+		<text name="endWorker" readonly="true" />
+		<validates_with bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" message="products.validation.error.datesOrder" />
+		<onSave bean="com.qcadoo.mes.beans.test.CustomEntityService" method="fillOrderDatesAndWorkers" />
+	</model>
+</plugin>

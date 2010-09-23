@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.beans.products;
+package com.qcadoo.mes.beans.products;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,7 +13,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public final class ProductOrder {
+public final class ProductsOrder {
 
     @Id
     @GeneratedValue
@@ -42,16 +42,16 @@ public final class ProductOrder {
     private String machine;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Product product;
+    private ProductsProduct product;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal plannedQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductInstruction defaultInstruction;
+    private ProductsInstruction defaultInstruction;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductInstruction instruction;
+    private ProductsInstruction instruction;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal doneQuantity;
@@ -140,11 +140,11 @@ public final class ProductOrder {
         this.machine = machine;
     }
 
-    public Product getProduct() {
+    public ProductsProduct getProduct() {
         return product;
     }
 
-    public void setProduct(final Product product) {
+    public void setProduct(final ProductsProduct product) {
         this.product = product;
     }
 
@@ -156,19 +156,19 @@ public final class ProductOrder {
         this.plannedQuantity = plannedQuantity;
     }
 
-    public ProductInstruction getDefaultInstruction() {
+    public ProductsInstruction getDefaultInstruction() {
         return defaultInstruction;
     }
 
-    public void setDefaultInstruction(final ProductInstruction defaultInstruction) {
+    public void setDefaultInstruction(final ProductsInstruction defaultInstruction) {
         this.defaultInstruction = defaultInstruction;
     }
 
-    public ProductInstruction getInstruction() {
+    public ProductsInstruction getInstruction() {
         return instruction;
     }
 
-    public void setInstruction(final ProductInstruction instruction) {
+    public void setInstruction(final ProductsInstruction instruction) {
         this.instruction = instruction;
     }
 

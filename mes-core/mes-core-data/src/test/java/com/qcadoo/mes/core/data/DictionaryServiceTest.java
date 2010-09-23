@@ -16,9 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
+import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.beans.Dictionary;
-import com.qcadoo.mes.core.data.beans.DictionaryItem;
 import com.qcadoo.mes.core.data.internal.DictionaryServiceImpl;
 
 public class DictionaryServiceTest {
@@ -36,11 +36,11 @@ public class DictionaryServiceTest {
     @Test
     public void shouldReturnListOfDictionaries() throws Exception {
         // given
-        Dictionary dict1 = new Dictionary();
+        DictionariesDictionary dict1 = new DictionariesDictionary();
         dict1.setName("Dict1");
-        Dictionary dict2 = new Dictionary();
+        DictionariesDictionary dict2 = new DictionariesDictionary();
         dict2.setName("Dict2");
-        Dictionary dict3 = new Dictionary();
+        DictionariesDictionary dict3 = new DictionariesDictionary();
         dict3.setName("Dict3");
 
         given(sessionFactory.getCurrentSession().createQuery("from Dictionary").list()).willReturn(
@@ -57,11 +57,11 @@ public class DictionaryServiceTest {
     @Test
     public void shouldReturnSortedListOfDictionaryValues() throws Exception {
         // given
-        DictionaryItem item1 = new DictionaryItem();
+        DictionariesDictionaryItem item1 = new DictionariesDictionaryItem();
         item1.setName("aaa");
-        DictionaryItem item2 = new DictionaryItem();
+        DictionariesDictionaryItem item2 = new DictionariesDictionaryItem();
         item2.setName("ccc");
-        DictionaryItem item3 = new DictionaryItem();
+        DictionariesDictionaryItem item3 = new DictionariesDictionaryItem();
         item3.setName("bbb");
 
         given(

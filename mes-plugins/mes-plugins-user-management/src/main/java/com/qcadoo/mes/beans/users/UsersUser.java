@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.beans.users;
+package com.qcadoo.mes.beans.users;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public final class Users {
+public final class UsersUser {
 
     @Id
     @GeneratedValue
@@ -17,7 +17,7 @@ public final class Users {
     private String userName;
 
     @ManyToOne
-    private Groups userGroup;
+    private UsersGroup userGroup;
 
     private String email;
 
@@ -96,11 +96,11 @@ public final class Users {
         this.password = password;
     }
 
-    public Groups getUserGroup() {
+    public UsersGroup getUserGroup() {
         return userGroup;
     }
 
-    public void setUserGroup(final Groups userGroup) {
+    public void setUserGroup(final UsersGroup userGroup) {
         this.userGroup = userGroup;
     }
 

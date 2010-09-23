@@ -28,8 +28,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.data.api.PluginManagementService;
-import com.qcadoo.mes.core.data.beans.Plugin;
 
 @Controller
 public class PluginManagementController {
@@ -80,7 +80,7 @@ public class PluginManagementController {
     public ModelAndView getDeinstallPageView(@RequestParam("entityId") final String entityId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("restart");
-        Plugin databaseEntity = pluginManagementService.getPlugin(entityId);
+        PluginsPlugin databaseEntity = pluginManagementService.getPlugin(entityId);
 
         removeResources("js", "js", databaseEntity.getIdentifier());
         removeResources("css", "css", databaseEntity.getIdentifier());
@@ -120,8 +120,8 @@ public class PluginManagementController {
         File file = new File(binPath);
         try {
             Runtime runtime = Runtime.getRuntime();
-            List<Plugin> pluginList = pluginManagementService.getPluginsWithStatus("downloaded");
-            for (Plugin plugin : pluginList) {
+            List<PluginsPlugin> pluginList = pluginManagementService.getPluginsWithStatus("downloaded");
+            for (PluginsPlugin plugin : pluginList) {
                 plugin.setStatus("installed");
                 pluginManagementService.savePlugin(plugin);
             }
@@ -153,7 +153,7 @@ public class PluginManagementController {
     }
 
     private void removePlugin(final String entityId) {
-        Plugin databasePlugin = pluginManagementService.getPlugin(entityId);
+        PluginsPlugin databasePlugin = pluginManagementService.getPlugin(entityId);
 
         databasePlugin.setDeleted(true);
 
@@ -201,7 +201,7 @@ public class PluginManagementController {
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document doc = db.parse(in);
                 doc.getDocumentElement().normalize();
-                Plugin plugin = new Plugin();
+                PluginsPlugin plugin = new PluginsPlugin();
                 for (String property : pluginProperties) {
                     String value = null;
                     Node fstNode = doc.getElementsByTagName(property).item(0);
@@ -225,7 +225,7 @@ public class PluginManagementController {
 
                 }
 
-                Plugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
+                PluginsPlugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
                 if (databasePlugin != null) {
                     pluginFile.delete();
                     return "redirect:install.html?error=2";

@@ -1,11 +1,11 @@
-package com.qcadoo.mes.core.data.beans;
+package com.qcadoo.mes.beans.dictionaries;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public final class Dictionary {
+public final class DictionariesDictionary {
 
     @Id
     @GeneratedValue

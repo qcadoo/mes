@@ -6,7 +6,7 @@ import static org.mockito.BDDMockito.given;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
+import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public final class DataAccessServiceGetTest extends DataAccessTest {
@@ -29,7 +29,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
     @Test
     public void shouldReturnValidEntity() throws Exception {
         // given
-        SimpleDatabaseObject simpleDatabaseObject = new SimpleDatabaseObject();
+        TestSimpleDatabaseObject simpleDatabaseObject = new TestSimpleDatabaseObject();
         simpleDatabaseObject.setId(1L);
         simpleDatabaseObject.setName("Mr T");
         simpleDatabaseObject.setAge(66);
@@ -50,7 +50,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         // given
         fieldDefinitionName.withType(fieldTypeFactory.integerType());
 
-        SimpleDatabaseObject simpleDatabaseObject = new SimpleDatabaseObject();
+        TestSimpleDatabaseObject simpleDatabaseObject = new TestSimpleDatabaseObject();
         simpleDatabaseObject.setId(1L);
         simpleDatabaseObject.setName("Mr T");
         simpleDatabaseObject.setAge(66);
@@ -63,7 +63,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
 
     public void shouldReturnNullIfEntityNotFound() throws Exception {
         // given
-        dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
+        dataDefinition.setFullyQualifiedClassName(TestSimpleDatabaseObject.class.getCanonicalName());
 
         given(criteria.uniqueResult()).willReturn(null);
 

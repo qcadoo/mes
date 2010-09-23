@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.beans.products;
+package com.qcadoo.mes.beans.products;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public final class ProductInstruction {
+public final class ProductsInstruction {
 
     @Id
     @GeneratedValue
@@ -28,7 +28,7 @@ public final class ProductInstruction {
     private Date dateTo;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    private Product product;
+    private ProductsProduct product;
 
     private String typeOfMaterial;
 
@@ -78,11 +78,11 @@ public final class ProductInstruction {
         this.dateTo = dateTo;
     }
 
-    public Product getProduct() {
+    public ProductsProduct getProduct() {
         return product;
     }
 
-    public void setProduct(final Product product) {
+    public void setProduct(final ProductsProduct product) {
         this.product = product;
     }
 

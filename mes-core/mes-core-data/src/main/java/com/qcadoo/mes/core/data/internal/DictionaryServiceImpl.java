@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
+import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.core.data.api.DictionaryService;
-import com.qcadoo.mes.core.data.beans.Dictionary;
-import com.qcadoo.mes.core.data.beans.DictionaryItem;
 
 @Service
 public final class DictionaryServiceImpl implements DictionaryService {
@@ -28,13 +28,13 @@ public final class DictionaryServiceImpl implements DictionaryService {
     @SuppressWarnings("unchecked")
     public List<String> values(final String dictionaryName) {
         checkArgument(StringUtils.hasText(dictionaryName), "dictionary name must be given");
-        List<DictionaryItem> items = (List<DictionaryItem>) sessionFactory.getCurrentSession()
+        List<DictionariesDictionaryItem> items = (List<DictionariesDictionaryItem>) sessionFactory.getCurrentSession()
                 .createQuery("from DictionaryItem where dictionary.name = :dictionaryName order by name")
                 .setString("dictionaryName", dictionaryName).list();
 
         List<String> values = new ArrayList<String>();
 
-        for (DictionaryItem item : items) {
+        for (DictionariesDictionaryItem item : items) {
             values.add(item.getName());
         }
 
@@ -45,12 +45,12 @@ public final class DictionaryServiceImpl implements DictionaryService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public Set<String> dictionaries() {
-        List<Dictionary> dictionaries = (List<Dictionary>) sessionFactory.getCurrentSession().createQuery("from Dictionary")
+        List<DictionariesDictionary> dictionaries = (List<DictionariesDictionary>) sessionFactory.getCurrentSession().createQuery("from Dictionary")
                 .list();
 
         Set<String> dictionariesNames = new HashSet<String>();
 
-        for (Dictionary dictionary : dictionaries) {
+        for (DictionariesDictionary dictionary : dictionaries) {
             dictionariesNames.add(dictionary.getName());
         }
 

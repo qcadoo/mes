@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="dictionaries">
+	<model name="dictionary" deletable="false">
+		<string name="name" >
+			<validates_presence />
+			<validates_uniqueness />
+		</string>
+	</model>
+	<model name="dictionaryItem">
+		<string name="name" >
+			<validates_presence />
+		</string>
+		<text name="description" />
+		<belongsTo name="dictionary" model="dictionary" lookupField="name">
+			<validates_presence />
+		</belongsTo>
+	</model>
+</plugin>

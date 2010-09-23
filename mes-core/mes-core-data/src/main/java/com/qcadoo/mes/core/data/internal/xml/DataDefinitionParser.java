@@ -4,15 +4,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.springframework.util.StringUtils.hasText;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,14 +32,22 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
+import com.qcadoo.mes.core.data.internal.types.DateTimeType;
+import com.qcadoo.mes.core.data.internal.types.DateType;
+import com.qcadoo.mes.core.data.internal.types.DecimalType;
+import com.qcadoo.mes.core.data.internal.types.IntegerType;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.model.HookDefinition;
 import com.qcadoo.mes.core.data.types.FieldType;
 import com.qcadoo.mes.core.data.types.FieldTypeFactory;
+import com.qcadoo.mes.core.data.validation.EntityValidator;
+import com.qcadoo.mes.core.data.validation.FieldValidator;
 import com.qcadoo.mes.core.data.validation.ValidatorFactory;
 
 @Service
 public class DataDefinitionParser {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DataDefinitionParser.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -44,6 +63,23 @@ public class DataDefinitionParser {
 
     @Autowired
     private ValidatorFactory validatorFactory;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @PostConstruct
+    public void init() {
+        LOG.info("Reading data definitions ...");
+
+        try {
+            Resource[] resources = applicationContext.getResources("classpath*:META-INF/definition/*.xml");
+            for (Resource resource : resources) {
+                parse(resource.getInputStream());
+            }
+        } catch (IOException e) {
+            LOG.error("Cannot read data definition", e);
+        }
+    }
 
     public void parse(final InputStream dataDefinitionInputStream) {
         try {
@@ -71,17 +107,19 @@ public class DataDefinitionParser {
 
     private void getModelDefinition(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException {
         String modelName = getStringAttribute(reader, "name");
+
+        LOG.info("Reading model " + modelName + " for plugin " + pluginIdentifier);
+
         DataDefinitionImpl dataDefinition = new DataDefinitionImpl(pluginIdentifier, getStringAttribute(reader, "name"),
                 dataAccessService);
-        dataDefinition.setDeletable(getBooleanAttribute(reader, "deletable"));
+        dataDefinition.setDeletable(getBooleanAttribute(reader, "deletable", true));
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.beans." + pluginIdentifier + "."
-                + StringUtils.capitalize(modelName));
+                + StringUtils.capitalize(pluginIdentifier) + StringUtils.capitalize(modelName));
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagEnded(reader, "model")) {
                 break;
             } else if (isTagStarted(reader, "priority")) {
-                FieldDefinition fd = getPriorityFieldDefinition(reader, dataDefinition);
                 dataDefinition.withPriorityField(getPriorityFieldDefinition(reader, dataDefinition));
             } else if (isTagStarted(reader, "onCreate")) {
                 dataDefinition.withCreateHook(getHookDefinition(reader));
@@ -89,45 +127,72 @@ public class DataDefinitionParser {
                 dataDefinition.withUpdateHook(getHookDefinition(reader));
             } else if (isTagStarted(reader, "onSave")) {
                 dataDefinition.withSaveHook(getHookDefinition(reader));
+            } else if (isTagStarted(reader, "onLoad")) {
+                // TODO
             } else if (isTagStarted(reader, "validates_with")) {
-                dataDefinition.withValidator(validatorFactory.customEntity(getHookDefinition(reader)));
+                dataDefinition.withValidator(getEntityValidatorDefinition(reader));
             } else if (isTagStarted(reader, "integer")) {
-                dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.integerType()));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "string")) {
-                dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.stringType()));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "text")) {
-                dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.textType()));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "float")) {
                 // TODO
             } else if (isTagStarted(reader, "decimal")) {
-                dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.decimalType()));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "datetime")) {
-                dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.dateTimeType()));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "timestamp")) {
                 // TODO
             } else if (isTagStarted(reader, "time")) {
                 // TODO
             } else if (isTagStarted(reader, "date")) {
-                dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.dateType()));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "boolean")) {
-                dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.booleanType()));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "belongsTo")) {
-                dataDefinition.withField(getFieldDefinition(reader, getBelongsToType(reader)));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "hasMany")) {
-                dataDefinition.withField(getFieldDefinition(reader, getHasManyType(reader)));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
+            } else if (isTagStarted(reader, "enum")) {
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
+            } else if (isTagStarted(reader, "dictionary")) {
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
+            } else if (isTagStarted(reader, "password")) {
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             }
         }
 
         dataDefinitionService.save(dataDefinition);
     }
 
-    private FieldType getHasManyType(final XMLStreamReader reader) {
-        return fieldTypeFactory.hasManyType(getStringAttribute(reader, "plugin"), getStringAttribute(reader, "model"),
+    private FieldType getDictionaryType(final XMLStreamReader reader) {
+        String dictionaryName = getStringAttribute(reader, "dictionary");
+        checkState(hasText(dictionaryName), "Dictionary name is required");
+        return fieldTypeFactory.dictionaryType(dictionaryName);
+    }
+
+    private FieldType getEnumType(final XMLStreamReader reader) throws XMLStreamException {
+        Set<String> values = new HashSet<String>();
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagNotStarted(reader, "value")) {
+                break;
+            } else if (isTagStarted(reader, "value")) {
+                values.add(reader.getElementText().trim());
+            }
+        }
+        return fieldTypeFactory.enumType(values.toArray(new String[values.size()]));
+    }
+
+    private FieldType getHasManyType(final XMLStreamReader reader, final String pluginIdentifier) {
+        String plugin = getStringAttribute(reader, "plugin");
+        return fieldTypeFactory.hasManyType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, "model"),
                 getStringAttribute(reader, "joinField"));
     }
 
     private FieldType getBelongsToType(final XMLStreamReader reader) {
-        boolean lazy = getBooleanAttribute(reader, "lazy");
+        boolean lazy = getBooleanAttribute(reader, "lazy", true);
         String pluginIdentifier = getStringAttribute(reader, "plugin");
         String modelName = getStringAttribute(reader, "model");
         String lookupFieldName = getStringAttribute(reader, "lookupField");
@@ -139,40 +204,75 @@ public class DataDefinitionParser {
         }
     }
 
-    private FieldDefinition getFieldDefinition(final XMLStreamReader reader, final FieldType integerType)
+    private FieldDefinition getFieldDefinition(final XMLStreamReader reader, final String pluginIdentifier)
             throws XMLStreamException {
         String fieldType = reader.getLocalName();
         FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(getStringAttribute(reader, "name"));
-        fieldDefinition.withReadOnly(getBooleanAttribute(reader, "readonly"));
-        fieldDefinition.withReadOnlyOnUpdate(getBooleanAttribute(reader, "readonly_on_create"));
+        fieldDefinition.withReadOnly(getBooleanAttribute(reader, "readonly", false));
+        fieldDefinition.withReadOnlyOnUpdate(getBooleanAttribute(reader, "readonly_on_create", false));
         fieldDefinition.withDefaultValue(getStringAttribute(reader, "default"));
+        FieldType type = null;
+
+        if ("integer".equals(fieldType)) {
+            type = fieldTypeFactory.integerType();
+        } else if ("string".equals(fieldType)) {
+            type = fieldTypeFactory.stringType();
+        } else if ("text".equals(fieldType)) {
+            type = fieldTypeFactory.textType();
+        } else if ("decimal".equals(fieldType)) {
+            type = fieldTypeFactory.decimalType();
+        } else if ("datetime".equals(fieldType)) {
+            type = fieldTypeFactory.dateTimeType();
+        } else if ("date".equals(fieldType)) {
+            type = fieldTypeFactory.dateType();
+        } else if ("boolean".equals(fieldType)) {
+            type = fieldTypeFactory.booleanType();
+        } else if ("belongsTo".equals(fieldType)) {
+            type = getBelongsToType(reader);
+        } else if ("hasMany".equals(fieldType)) {
+            type = getHasManyType(reader, pluginIdentifier);
+        } else if ("enum".equals(fieldType)) {
+            type = getEnumType(reader);
+        } else if ("dictionary".equals(fieldType)) {
+            type = getDictionaryType(reader);
+        } else if ("password".equals(fieldType)) {
+            type = fieldTypeFactory.passwordType();
+        }
+
+        fieldDefinition.withType(type);
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagEnded(reader, fieldType)) {
                 break;
             } else if (isTagStarted(reader, "validates_presence")) {
-                fieldDefinition.withValidator(validatorFactory.required());
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.required()));
             } else if (isTagStarted(reader, "validates_presence_on_create")) {
-                fieldDefinition.withValidator(validatorFactory.requiredOnCreate());
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.requiredOnCreate()));
             } else if (isTagStarted(reader, "validates_length")) {
-                fieldDefinition.withValidator(validatorFactory.length(getIntegerAttribute(reader, "min"),
-                        getIntegerAttribute(reader, "is"), getIntegerAttribute(reader, "max")));
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
+                        .length(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
+                                getIntegerAttribute(reader, "max"))));
             } else if (isTagStarted(reader, "validates_precision")) {
-                fieldDefinition.withValidator(validatorFactory.precision(getIntegerAttribute(reader, "min"),
-                        getIntegerAttribute(reader, "is"), getIntegerAttribute(reader, "max")));
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
+                        .precision(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
+                                getIntegerAttribute(reader, "max"))));
             } else if (isTagStarted(reader, "validates_scale")) {
-                fieldDefinition.withValidator(validatorFactory.scale(getIntegerAttribute(reader, "min"),
-                        getIntegerAttribute(reader, "is"), getIntegerAttribute(reader, "max")));
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
+                        .scale(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
+                                getIntegerAttribute(reader, "max"))));
             } else if (isTagStarted(reader, "validates_range")) {
-                fieldDefinition.withValidator(validatorFactory.range(getIntegerAttribute(reader, "from"),
-                        getIntegerAttribute(reader, "to")));
+                Object from = getRangeForType(getStringAttribute(reader, "from"), type);
+                Object to = getRangeForType(getStringAttribute(reader, "to"), type);
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.range(from, to)));
             } else if (isTagStarted(reader, "validates_uniqueness")) {
-                fieldDefinition.withValidator(validatorFactory.unique());
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.unique()));
                 // TODO scope="lastname"
             } else if (isTagStarted(reader, "validates_format")) {
                 // TODO with="d*a"
             } else if (isTagStarted(reader, "validates_with")) {
-                fieldDefinition.withValidator(validatorFactory.custom(getHookDefinition(reader)));
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.custom(getHookDefinition(reader))));
+            } else if (isTagStarted(reader, "validates_with_script")) {
+                // TODO
             } else if (isTagStarted(reader, "validates_exclusion")) {
                 // TODO <exclude>nowak</exclude> <exclude>kowalski</exclude>
             } else if (isTagStarted(reader, "validates_inclusion")) {
@@ -183,18 +283,51 @@ public class DataDefinitionParser {
         return fieldDefinition;
     }
 
+    private Object getRangeForType(final String range, final FieldType type) {
+        try {
+            if (range == null) {
+                return null;
+            } else if (type instanceof DateTimeType) {
+                return new SimpleDateFormat(DateTimeType.DATE_TIME_FORMAT).parse(range);
+            } else if (type instanceof DateType) {
+                return new SimpleDateFormat(DateType.DATE_FORMAT).parse(range);
+            } else if (type instanceof DecimalType) {
+                return new BigDecimal(range);
+            } else if (type instanceof IntegerType) {
+                return Integer.parseInt(range);
+            } else {
+                return range;
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException("Cannot parse data definition", e);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Cannot parse data definition", e);
+        }
+    }
+
+    private EntityValidator getEntityValidatorDefinition(final XMLStreamReader reader) {
+        EntityValidator validator = validatorFactory.customEntity(getHookDefinition(reader));
+        String customMessage = getStringAttribute(reader, "message");
+        if (StringUtils.hasText(customMessage)) {
+            validator.customErrorMessage(customMessage);
+        }
+        return validator;
+    }
+
+    private FieldValidator getValidatorDefinition(final XMLStreamReader reader, final FieldValidator validator) {
+        String customMessage = getStringAttribute(reader, "message");
+        if (StringUtils.hasText(customMessage)) {
+            validator.customErrorMessage(customMessage);
+        }
+        return validator;
+    }
+
     private HookDefinition getHookDefinition(final XMLStreamReader reader) {
         String fullyQualifiedClassName = getStringAttribute(reader, "bean");
-        String script = getStringAttribute(reader, "script");
         String methodName = getStringAttribute(reader, "method");
-        if (script != null) {
-            // TOOD
-            return null;
-        } else {
-            checkState(hasText(fullyQualifiedClassName), "Hook bean name is required");
-            checkState(hasText(methodName), "Hook method name is required");
-            return hookFactory.getHook(fullyQualifiedClassName, methodName);
-        }
+        checkState(hasText(fullyQualifiedClassName), "Hook bean name is required");
+        checkState(hasText(methodName), "Hook method name is required");
+        return hookFactory.getHook(fullyQualifiedClassName, methodName);
     }
 
     private FieldDefinition getPriorityFieldDefinition(final XMLStreamReader reader, final DataDefinitionImpl dataDefinition) {
@@ -205,6 +338,10 @@ public class DataDefinitionParser {
     }
 
     private void getViewDefinition(final XMLStreamReader reader, final String pluginIdentifier) {
+        String viewName = getStringAttribute(reader, "name");
+
+        LOG.info("Reading view " + viewName + " for plugin " + pluginIdentifier);
+
         // TODO Auto-generated method stub
     }
 
@@ -221,12 +358,12 @@ public class DataDefinitionParser {
         }
     }
 
-    private boolean getBooleanAttribute(final XMLStreamReader reader, final String name) {
+    private boolean getBooleanAttribute(final XMLStreamReader reader, final String name, final boolean defaultValue) {
         String stringValue = reader.getAttributeValue(null, name);
         if (stringValue != null) {
             return Boolean.valueOf(stringValue);
         } else {
-            return false;
+            return defaultValue;
         }
     }
 
@@ -236,6 +373,10 @@ public class DataDefinitionParser {
 
     private boolean isTagStarted(final XMLStreamReader reader, final String tagName) {
         return (reader.getEventType() == XMLStreamConstants.START_ELEMENT && tagName.equals(reader.getLocalName()));
+    }
+
+    private boolean isTagNotStarted(final XMLStreamReader reader, final String tagName) {
+        return (reader.getEventType() == XMLStreamConstants.START_ELEMENT && !tagName.equals(reader.getLocalName()));
     }
 
     private boolean isTagEnded(final XMLStreamReader reader, final String tagName) {

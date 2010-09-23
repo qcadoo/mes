@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.beans.products;
+package com.qcadoo.mes.beans.products;
 
 import java.math.BigDecimal;
 
@@ -10,17 +10,17 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public final class SubstituteComponent {
+public final class ProductsSubstituteComponent {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne
-    private Product product;
+    private ProductsProduct product;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Substitute substitute;
+    private ProductsSubstitute substitute;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal quantity;
@@ -35,19 +35,19 @@ public final class SubstituteComponent {
         this.id = id;
     }
 
-    public Product getProduct() {
+    public ProductsProduct getProduct() {
         return product;
     }
 
-    public void setProduct(final Product product) {
+    public void setProduct(final ProductsProduct product) {
         this.product = product;
     }
 
-    public Substitute getSubstitute() {
+    public ProductsSubstitute getSubstitute() {
         return substitute;
     }
 
-    public void setSubstitute(final Substitute substitute) {
+    public void setSubstitute(final ProductsSubstitute substitute) {
         this.substitute = substitute;
     }
 

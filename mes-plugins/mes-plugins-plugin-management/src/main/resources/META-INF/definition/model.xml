@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="plugins">
+	<model name="plugin">
+		<string name="name" readonly="true" >
+			<validates_presence_on_create />
+		</string>
+		<text name="description" readonly="true" />
+		<string name="vendor" readonly="true" >
+			<validates_presence_on_create />
+		</string>
+		<string name="version" readonly="true" >
+			<validates_presence_on_create />
+		</string>
+		<enum name="status">
+			<value>downloaded</value>
+			<value>installed</value>
+			<value>active</value>
+			<validates_presence_on_create />
+		</enum>
+		<boolean name="base" readonly="true">
+			<validates_presence_on_create />
+		</boolean>
+		<string name="identifier" readonly="true" />
+		<string name="packageName" readonly="true" />
+		<string name="fileName" readonly="true" />
+	</model>
+</plugin>

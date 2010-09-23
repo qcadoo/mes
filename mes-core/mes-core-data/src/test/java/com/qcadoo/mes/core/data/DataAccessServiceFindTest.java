@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
+import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.search.SearchResult;
 
@@ -17,7 +17,7 @@ public class DataAccessServiceFindTest extends DataAccessTest {
     @Test
     public void shouldReturnValidEntities() throws Exception {
         // given
-        List<SimpleDatabaseObject> databaseObjects = new ArrayList<SimpleDatabaseObject>();
+        List<TestSimpleDatabaseObject> databaseObjects = new ArrayList<TestSimpleDatabaseObject>();
         databaseObjects.add(createDatabaseObject(1L, "name1", 1));
         databaseObjects.add(createDatabaseObject(2L, "name2", 2));
         databaseObjects.add(createDatabaseObject(3L, "name3", 3));
@@ -40,8 +40,8 @@ public class DataAccessServiceFindTest extends DataAccessTest {
         assertEquals(Long.valueOf(4L), resultSet.getEntities().get(3).getId());
     }
 
-    private SimpleDatabaseObject createDatabaseObject(final Long id, final String name, final int age) {
-        SimpleDatabaseObject simpleDatabaseObject = new SimpleDatabaseObject(id);
+    private TestSimpleDatabaseObject createDatabaseObject(final Long id, final String name, final int age) {
+        TestSimpleDatabaseObject simpleDatabaseObject = new TestSimpleDatabaseObject(id);
         simpleDatabaseObject.setName(name);
         simpleDatabaseObject.setAge(age);
         return simpleDatabaseObject;

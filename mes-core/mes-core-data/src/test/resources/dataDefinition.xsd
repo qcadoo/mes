@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.qcadoo.com" xmlns="http://www.qcadoo.com">
+
+	<xs:element name="plugin">
+	<xs:complexType>
+			<xs:sequence>
+				<xs:element name="model" type="modelType" />
+				<xs:element name="view" type="viewType" />
+			</xs:sequence>
+			<xs:attribute name="name" type="identifierType" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="modelType">
+		<xs:attribute name="name" type="identifierType" use="required" />
+		<xs:attribute name="deletable" type="xs:boolean" />
+	</xs:complexType>
+	
+	<xs:complexType name="viewType">
+		<xs:attribute name="name" type="identifierType" use="required" />
+		<xs:attribute name="forEntity" type="identifierType" use="required" />
+	</xs:complexType>
+
+	<xs:simpleType name="identifierType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-z][a-z0-9]*" />
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

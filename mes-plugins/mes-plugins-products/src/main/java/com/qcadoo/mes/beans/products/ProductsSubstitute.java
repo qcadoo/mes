@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.beans.products;
+package com.qcadoo.mes.beans.products;
 
 import java.util.Date;
 import java.util.List;
@@ -13,14 +13,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public final class Substitute {
+public final class ProductsSubstitute {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Product product;
+    private ProductsProduct product;
 
     private Integer priority;
 
@@ -35,7 +35,7 @@ public final class Substitute {
     private Date effectiveDateTo;
 
     @OneToMany(mappedBy = "substitute", fetch = FetchType.LAZY)
-    private List<SubstituteComponent> components;
+    private List<ProductsSubstituteComponent> components;
 
     private boolean deleted;
 
@@ -95,19 +95,19 @@ public final class Substitute {
         this.deleted = deleted;
     }
 
-    public Product getProduct() {
+    public ProductsProduct getProduct() {
         return product;
     }
 
-    public void setProduct(final Product product) {
+    public void setProduct(final ProductsProduct product) {
         this.product = product;
     }
 
-    public List<SubstituteComponent> getComponents() {
+    public List<ProductsSubstituteComponent> getComponents() {
         return components;
     }
 
-    public void setComponents(List<SubstituteComponent> components) {
+    public void setComponents(List<ProductsSubstituteComponent> components) {
         this.components = components;
     }
 }

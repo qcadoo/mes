@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public final class SimpleDatabaseObject {
+public final class TestSimpleDatabaseObject {
 
     private Long id;
 
@@ -49,12 +49,12 @@ public final class SimpleDatabaseObject {
 
     private boolean deleted;
 
-    private ParentDatabaseObject belongsTo;
+    private TestParentDatabaseObject belongsTo;
 
-    public SimpleDatabaseObject() {
+    public TestSimpleDatabaseObject() {
     }
 
-    public SimpleDatabaseObject(final Long id) {
+    public TestSimpleDatabaseObject(final Long id) {
         this.id = id;
     }
 
@@ -90,11 +90,11 @@ public final class SimpleDatabaseObject {
         this.deleted = deleted;
     }
 
-    public ParentDatabaseObject getBelongsTo() {
+    public TestParentDatabaseObject getBelongsTo() {
         return belongsTo;
     }
 
-    public void setBelongsTo(final ParentDatabaseObject belongsTo) {
+    public void setBelongsTo(final TestParentDatabaseObject belongsTo) {
         this.belongsTo = belongsTo;
     }
 

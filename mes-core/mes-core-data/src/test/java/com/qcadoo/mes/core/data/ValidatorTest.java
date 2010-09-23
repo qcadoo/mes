@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.beans.test.CustomEntityService;
-import com.qcadoo.mes.beans.test.SimpleDatabaseObject;
+import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public class ValidatorTest extends DataAccessTest {
@@ -36,7 +36,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
         assertTrue(entity.getErrors().isEmpty());
         assertTrue(entity.getGlobalErrors().isEmpty());
@@ -54,7 +54,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
         assertEquals(1, entity.getErrors().size());
         assertEquals("commons.validate.field.error.missing", entity.getError("age").getMessage());
@@ -73,7 +73,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
         assertEquals(1, entity.getErrors().size());
         assertEquals("missing age", entity.getError("age").getMessage());
@@ -105,7 +105,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -119,7 +119,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -133,7 +133,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -147,7 +147,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -180,7 +180,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -196,7 +196,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -212,7 +212,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -228,7 +228,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -244,7 +244,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -260,7 +260,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -276,7 +276,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -292,7 +292,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -308,7 +308,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -324,7 +324,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -340,7 +340,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -356,7 +356,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -372,7 +372,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -389,7 +389,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -405,7 +405,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -422,7 +422,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -438,7 +438,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -454,7 +454,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -470,7 +470,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -488,7 +488,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -498,7 +498,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new Entity(1L);
         entity.setField("name", "not existed");
 
-        SimpleDatabaseObject databaseObject = new SimpleDatabaseObject(1L);
+        TestSimpleDatabaseObject databaseObject = new TestSimpleDatabaseObject(1L);
 
         given(criteria.uniqueResult()).willReturn(databaseObject, 0);
 
@@ -508,7 +508,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -526,7 +526,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -543,7 +543,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -560,7 +560,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
         assertEquals(1, entity.getErrors().size());
         assertEquals("commons.validate.field.error.custom", entity.getError("name").getMessage());
@@ -580,7 +580,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
@@ -598,7 +598,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session).save(any(SimpleDatabaseObject.class));
+        verify(session).save(any(TestSimpleDatabaseObject.class));
         assertTrue(entity.isValid());
     }
 
@@ -617,7 +617,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
         assertTrue(entity.getErrors().isEmpty());
         assertEquals(1, entity.getGlobalErrors().size());
@@ -638,7 +638,7 @@ public class ValidatorTest extends DataAccessTest {
         entity = dataDefinition.save(entity);
 
         // then
-        verify(session, never()).save(any(SimpleDatabaseObject.class));
+        verify(session, never()).save(any(TestSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
     }
 
