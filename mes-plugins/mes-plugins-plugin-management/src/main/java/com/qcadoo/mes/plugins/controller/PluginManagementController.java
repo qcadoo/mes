@@ -44,7 +44,7 @@ public class PluginManagementController {
 
     String webappPath;
 
-    private static final String[] pluginProperties = { "identifier", "name", "group", "version", "vendor", "description" };
+    private static final String[] pluginProperties = { "identifier", "name", "packageName", "version", "vendor", "description" };
 
     private static final String path = "/Users/krna/apache-tomcat-6.0.29/webapps/mes-application-0.1-SNAPSHOT/WEB-INF/lib/";
 
@@ -56,7 +56,7 @@ public class PluginManagementController {
         mav.setViewName("install");
 
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
-
+        System.out.println(webappPath);
         return mav;
     }
 
@@ -113,6 +113,7 @@ public class PluginManagementController {
     }
 
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
+    @Transactional
     public void handleRestart() {
         String[] commands = { "bash shutdown.sh", "bash startup.sh" };
 
@@ -213,8 +214,8 @@ public class PluginManagementController {
                         plugin.setIdentifier(value);
                     } else if (property.equals("name")) {
                         plugin.setName(value);
-                    } else if (property.equals("group")) {
-                        plugin.setGroup(value);
+                    } else if (property.equals("packageName")) {
+                        plugin.setPackageName(value);
                     } else if (property.equals("version")) {
                         plugin.setVersion(value);
                     } else if (property.equals("vendor")) {

@@ -36,7 +36,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     public Plugin getPluginWithStatus(final String identifier, final String status) {
         checkNotNull(identifier, "identifier must be given");
         Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("identifier", identifier))
-                .add(Restrictions.eq("status", status)).add(Restrictions.eq("deleted", false));
+                .add(Restrictions.eq("deleted", false));
+        if (status != null) {
+            criteria.add(Restrictions.eq("status", status));
+        }
 
         Plugin databaseEntity = (Plugin) criteria.uniqueResult();
 
@@ -64,7 +67,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Override
     public Plugin getInstalledPlugin(final Plugin plugin) {
         Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("name", plugin.getName()))
-                .add(Restrictions.eq("publisher", plugin.getVendor())).add(Restrictions.eq("deleted", false));
+                .add(Restrictions.eq("vendor", plugin.getVendor())).add(Restrictions.eq("deleted", false));
         return (Plugin) criteria.uniqueResult();
     }
 

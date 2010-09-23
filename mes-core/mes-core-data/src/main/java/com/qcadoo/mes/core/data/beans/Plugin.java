@@ -29,7 +29,7 @@ public final class Plugin {
 
     private String identifier;
 
-    private String group;
+    private String packageName;
 
     private String fileName;
 
@@ -105,20 +105,20 @@ public final class Plugin {
         this.vendor = vendor;
     }
 
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(final String group) {
-        this.group = group;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(final String status) {
         this.status = status;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(final String packageName) {
+        this.packageName = packageName;
     }
 
 }

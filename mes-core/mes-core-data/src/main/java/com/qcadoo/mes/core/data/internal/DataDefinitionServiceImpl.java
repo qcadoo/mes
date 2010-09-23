@@ -381,7 +381,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldName = createFieldDefinition("name", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).readOnly();
         FieldDefinitionImpl fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType()).readOnly();
-        FieldDefinitionImpl fieldPublisher = createFieldDefinition("publisher", fieldTypeFactory.stringType()).withValidator(
+        FieldDefinitionImpl fieldVendor = createFieldDefinition("vendor", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).readOnly();
         FieldDefinitionImpl fieldVersion = createFieldDefinition("version", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).readOnly();
@@ -394,11 +394,11 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldPackageName = createFieldDefinition("packageName", fieldTypeFactory.stringType()).readOnly();
         FieldDefinitionImpl fieldFileName = createFieldDefinition("fileName", fieldTypeFactory.stringType()).readOnly();
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.beans.plugins.Plugin");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Plugin");
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldVersion);
-        dataDefinition.addField(fieldPublisher);
+        dataDefinition.addField(fieldVendor);
         dataDefinition.addField(fieldStatus);
         dataDefinition.addField(fieldBase);
         dataDefinition.addField(fieldIdentifier);

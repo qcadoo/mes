@@ -724,13 +724,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
                 null);
         ColumnDefinition columnVersion = createColumnDefinition("version", gridDataDefinition.getField("version"), null);
-        ColumnDefinition columnPublisher = createColumnDefinition("publisher", gridDataDefinition.getField("publisher"), null);
-        ColumnDefinition columnActive = createColumnDefinition("active", gridDataDefinition.getField("active"), null);
+        ColumnDefinition columnVendor = createColumnDefinition("vendor", gridDataDefinition.getField("vendor"), null);
+        ColumnDefinition columnStatus = createColumnDefinition("status", gridDataDefinition.getField("status"), null);
 
-        grid.addColumn(columnActive);
+        grid.addColumn(columnStatus);
         grid.addColumn(columnName);
         grid.addColumn(columnVersion);
-        grid.addColumn(columnPublisher);
+        grid.addColumn(columnVendor);
         grid.addColumn(columnDescription);
 
         windowDefinition.addComponent(grid);
