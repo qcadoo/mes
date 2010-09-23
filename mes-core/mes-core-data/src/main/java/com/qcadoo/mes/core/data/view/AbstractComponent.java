@@ -1,6 +1,7 @@
 package com.qcadoo.mes.core.data.view;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -41,7 +42,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private final ContainerComponent<?> parentContainer;
 
-    private final Set<String> listeners = new HashSet<String>();
+    private Set<String> listeners = new HashSet<String>();
 
     private DataDefinition dataDefinition;
 
@@ -84,6 +85,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
     @SuppressWarnings("unchecked")
     public final ViewValue<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<?> viewValue, final Set<String> pathsToUpdate) {
+
+        listeners = Collections.unmodifiableSet(listeners);
 
         if (shouldNotBeUpdated(pathsToUpdate)) {
             return (ViewValue<T>) viewValue;
@@ -390,9 +393,25 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     @Override
     public final String toString() {
+        return printComponent(0);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public final String printComponent(int tab) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tab; i++) {
+            sb.append("    ");
+        }
         String dd = dataDefinition != null ? dataDefinition.getName() : "null";
         String sc = sourceComponent != null ? sourceComponent.getPath() : "null";
-        return path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sc + "], [" + listeners + "], " + dd;
+        sb.append(path + ", [" + fieldPath + ", " + sourceFieldPath + ", " + sc + "], [" + listeners + "], " + dd + "\n");
+        if (isContainer()) {
+            AbstractContainerComponent container = (AbstractContainerComponent) this;
+            for (Object co : container.getComponents().values()) {
+                sb.append(((AbstractComponent) co).printComponent(tab + 1));
+            }
+        }
+        return sb.toString();
     }
 
     @Override
