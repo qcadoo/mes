@@ -735,10 +735,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         windowDefinition.addComponent(grid);
 
-        windowDefinition.addComponent(new LinkButton("addButton", windowDefinition, "../upload.html"));
+        windowDefinition.addComponent(new LinkButton("downloadButton", windowDefinition, "../download.html"));
         windowDefinition.addComponent(new LinkButton("removeButton", windowDefinition, "../remove.html",
                 "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButton("installButton", windowDefinition, "../restart.html"));
+        windowDefinition.addComponent(new LinkButton("enableButton", windowDefinition, "../enable.html",
+                "#{mainWindow.pluginsGrid}"));
         windowDefinition.addComponent(new LinkButton("deinstallButton", windowDefinition, "../deinstall.html",
                 "#{mainWindow.pluginsGrid}"));
 
