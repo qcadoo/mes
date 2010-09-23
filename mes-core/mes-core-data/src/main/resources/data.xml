@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module name="people">
+<plugin name="people">
 	<model name="person" deletable="true">
 		<integer name="age">
 			<validates_presence />
@@ -37,8 +37,8 @@
 		<time name="time" />
 		<date name="date" />
 		<boolean name="boolean" />
-		<belongsTo name="parent" entity="person" module="people" />
-		<hasMany name="children" entity="person" module="people" />
+		<belongsTo name="parent" model="person" plugin="people" lookupField="name" lazy="true" />
+		<hasMany name="children" model="person" plugin="people" joinField="child" />
 		
 		<priority name="priority" scope="product" />
 		
@@ -60,4 +60,4 @@
 			<select name="parent" for="parent" />			
 		</form>
 	</view>
-</module>
+</plugin>

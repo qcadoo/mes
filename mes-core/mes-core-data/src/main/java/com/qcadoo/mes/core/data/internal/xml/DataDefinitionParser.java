@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
@@ -29,6 +30,9 @@ import com.qcadoo.mes.core.data.validation.ValidatorFactory;
 
 @Service
 public class DataDefinitionParser {
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private DataAccessService dataAccessService;
@@ -51,7 +55,7 @@ public class DataDefinitionParser {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(dataDefinitionInputStream);
 
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, "module")) {
+            if (isTagStarted(reader, "plugin")) {
                 getPluginDefinition(reader);
             } else if (isTagStarted(reader, "model")) {
                 getModelDefinition(reader);
@@ -64,7 +68,7 @@ public class DataDefinitionParser {
     }
 
     private void getModelDefinition(final XMLStreamReader reader) throws XMLStreamException {
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(getStringAttribute(reader, "name"), dataAccessService);
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("", getStringAttribute(reader, "name"), dataAccessService);
         dataDefinition.setDeletable(getBooleanAttribute(reader, "deletable"));
 
         // dataDefinition.setFullyQualifiedClassName(fullyQualifiedClassName)
@@ -103,13 +107,31 @@ public class DataDefinitionParser {
             } else if (isTagStarted(reader, "boolean")) {
                 dataDefinition.withField(getFieldDefinition(reader, fieldTypeFactory.booleanType()));
             } else if (isTagStarted(reader, "belongsTo")) {
-                // TODO
+                dataDefinition.withField(getFieldDefinition(reader, getBelongsToType(reader)));
             } else if (isTagStarted(reader, "hasMany")) {
-                // TODO
+                dataDefinition.withField(getFieldDefinition(reader, getHasManyType(reader)));
             }
         }
 
-        // TODO add dataDefinition to dataDefinitionServiceImpl
+        dataDefinitionService.save(dataDefinition);
+    }
+
+    private FieldType getHasManyType(final XMLStreamReader reader) {
+        return fieldTypeFactory.hasManyType(getStringAttribute(reader, "plugin"), getStringAttribute(reader, "model"),
+                getStringAttribute(reader, "joinField"));
+    }
+
+    private FieldType getBelongsToType(final XMLStreamReader reader) {
+        boolean lazy = getBooleanAttribute(reader, "lazy");
+        String pluginIdentifier = getStringAttribute(reader, "plugin");
+        String modelName = getStringAttribute(reader, "model");
+        String lookupFieldName = getStringAttribute(reader, "lookupField");
+
+        if (lazy) {
+            return fieldTypeFactory.lazyBelongsToType(pluginIdentifier, modelName, lookupFieldName);
+        } else {
+            return fieldTypeFactory.eagerBelongsToType(pluginIdentifier, modelName, lookupFieldName);
+        }
     }
 
     private FieldDefinition getFieldDefinition(final XMLStreamReader reader, final FieldType integerType)

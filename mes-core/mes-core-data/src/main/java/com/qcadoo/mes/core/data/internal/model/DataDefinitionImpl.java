@@ -12,16 +12,16 @@ import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaImpl;
 import com.qcadoo.mes.core.data.internal.types.PriorityType;
+import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
 import com.qcadoo.mes.core.data.model.HookDefinition;
-import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.SearchCriteria;
 import com.qcadoo.mes.core.data.search.SearchResult;
 import com.qcadoo.mes.core.data.validation.EntityValidator;
 
 /**
- * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points
- * to virtual table ("virtual.tablename"), plugin table ("pluginname.tablename") or core table ("core.tablename").
+ * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points to
+ * virtual table ("virtual.tablename"), plugin table ("pluginname.tablename") or core table ("core.tablename").
  * 
  * The method {@link DataDefinitionImpl#getFullyQualifiedClassName()} returns the full name of the class that is used for mapping
  * table.
@@ -35,6 +35,8 @@ import com.qcadoo.mes.core.data.validation.EntityValidator;
 public final class DataDefinitionImpl implements DataDefinition {
 
     private final DataAccessService dataAccessService;
+
+    private final String pluginIdentifier;
 
     private final String name;
 
@@ -60,7 +62,8 @@ public final class DataDefinitionImpl implements DataDefinition {
 
     private Class<?> classForEntity;
 
-    public DataDefinitionImpl(final String name, final DataAccessService dataAccessService) {
+    public DataDefinitionImpl(final String pluginIdentifier, final String name, final DataAccessService dataAccessService) {
+        this.pluginIdentifier = pluginIdentifier;
         this.name = name;
         this.dataAccessService = dataAccessService;
     }
@@ -104,6 +107,10 @@ public final class DataDefinitionImpl implements DataDefinition {
     @Override
     public String getName() {
         return name;
+    }
+
+    public String getPluginIdentifier() {
+        return pluginIdentifier;
     }
 
     @Override

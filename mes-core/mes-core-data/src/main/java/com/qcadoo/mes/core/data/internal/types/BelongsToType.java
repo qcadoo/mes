@@ -19,10 +19,13 @@ public final class BelongsToType implements LookupedFieldType {
 
     private final boolean eagerFetch;
 
+    private final String pluginIdentifier;
+
     private final String entityName;
 
-    public BelongsToType(final String entityName, final String lookupFieldName, final boolean eagerFetch,
-            final DataDefinitionService dataDefinitionService) {
+    public BelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName,
+            final boolean eagerFetch, final DataDefinitionService dataDefinitionService) {
+        this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;
         this.lookupFieldName = lookupFieldName;
         this.eagerFetch = eagerFetch;
@@ -76,7 +79,7 @@ public final class BelongsToType implements LookupedFieldType {
     }
 
     public DataDefinition getDataDefinition() {
-        return dataDefinitionService.get(entityName);
+        return dataDefinitionService.get(pluginIdentifier, entityName);
     }
 
 }

@@ -157,7 +157,7 @@ public class PluginManagementController {
     }
 
     private void removePlugin(final String entityId) {
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+        DataDefinition dataDefinition = dataDefinitionService.get("plugins", "plugin");
 
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
                 .add(Restrictions.idEq(Long.valueOf(entityId)));
@@ -233,7 +233,7 @@ public class PluginManagementController {
 
                 }
                 genericEntity.setField("deleted", false);
-                DataDefinition dataDefinition = dataDefinitionService.get("plugins.plugin");
+                DataDefinition dataDefinition = dataDefinitionService.get("plugins", "plugin");
                 Criteria criteria = sessionFactory.getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
                         .add(Restrictions.eq("name", genericEntity.getField("name")))
                         .add(Restrictions.eq("publisher", genericEntity.getField("publisher")))

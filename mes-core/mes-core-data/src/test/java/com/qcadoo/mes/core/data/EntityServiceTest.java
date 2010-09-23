@@ -96,7 +96,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrownAnExceptionIfClassForGivenDataDefinitionDoesNotExist() throws Exception {
         // given
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("definition", null);
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("", "definition", null);
         dataDefinition.setFullyQualifiedClassName("java.lang.SomeUselessNotExistingClass");
 
         // when

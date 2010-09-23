@@ -30,7 +30,7 @@ public class EntityDataUtilsGenerateEntityDataTest {
         given(f3.getName()).willReturn("testField3");
         given(f3.getValue("testField3Val")).willReturn("testField3Ok");
 
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(null, null);
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(null, null, null);
         dataDefinition.withField(f1);
         dataDefinition.withField(f2);
         dataDefinition.withField(f3);

@@ -15,7 +15,11 @@ public class HasManyType implements FieldType {
 
     private final DataDefinitionService dataDefinitionService;
 
-    public HasManyType(final String entityName, final String fieldName, final DataDefinitionService dataDefinitionService) {
+    private final String pluginIdentifier;
+
+    public HasManyType(final String pluginIdentifier, final String entityName, final String fieldName,
+            final DataDefinitionService dataDefinitionService) {
+        this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;
         this.fieldName = fieldName;
         this.dataDefinitionService = dataDefinitionService;
@@ -56,7 +60,7 @@ public class HasManyType implements FieldType {
     }
 
     public DataDefinition getDataDefinition() {
-        return dataDefinitionService.get(entityName);
+        return dataDefinitionService.get(pluginIdentifier, entityName);
     }
 
 }

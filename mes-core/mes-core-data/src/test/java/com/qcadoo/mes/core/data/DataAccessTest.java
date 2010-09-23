@@ -110,14 +110,14 @@ public abstract class DataAccessTest {
         parentFieldDefinitionName = new FieldDefinitionImpl("name");
         parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
 
-        parentDataDefinition = new DataDefinitionImpl("parent.entity", dataAccessService);
+        parentDataDefinition = new DataDefinitionImpl("parent", "parent.entity", dataAccessService);
         parentDataDefinition.withField(parentFieldDefinitionName);
         parentDataDefinition.setFullyQualifiedClassName(ParentDatabaseObject.class.getCanonicalName());
 
-        given(dataDefinitionService.get("parent.entity")).willReturn(parentDataDefinition);
+        given(dataDefinitionService.get("parent", "entity")).willReturn(parentDataDefinition);
 
         fieldDefinitionBelongsTo = new FieldDefinitionImpl("belongsTo");
-        fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent.entity", "name"));
+        fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity", "name"));
 
         fieldDefinitionName = new FieldDefinitionImpl("name");
         fieldDefinitionName.withType(fieldTypeFactory.stringType());
@@ -138,7 +138,7 @@ public abstract class DataAccessTest {
         fieldDefinitionBirthDate = new FieldDefinitionImpl("birthDate");
         fieldDefinitionBirthDate.withType(fieldTypeFactory.dateType());
 
-        dataDefinition = new DataDefinitionImpl("simple.entity", dataAccessService);
+        dataDefinition = new DataDefinitionImpl("simple", "simple.entity", dataAccessService);
         dataDefinition.withField(fieldDefinitionName);
         dataDefinition.withField(fieldDefinitionAge);
         dataDefinition.withField(fieldDefinitionMoney);
@@ -147,7 +147,7 @@ public abstract class DataAccessTest {
         dataDefinition.withField(fieldDefinitionBelongsTo);
         dataDefinition.setFullyQualifiedClassName(SimpleDatabaseObject.class.getCanonicalName());
 
-        given(dataDefinitionService.get("simple.entity")).willReturn(dataDefinition);
+        given(dataDefinitionService.get("simple", "entity")).willReturn(dataDefinition);
 
         given(sessionFactory.getCurrentSession()).willReturn(session);
 

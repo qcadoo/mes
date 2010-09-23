@@ -202,7 +202,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnBelongToType() throws Exception {
         // when
-        FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent.entity", "name");
+        FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent", "entity", "name");
 
         // then
         assertThat(fieldType, is(BelongsToType.class));
