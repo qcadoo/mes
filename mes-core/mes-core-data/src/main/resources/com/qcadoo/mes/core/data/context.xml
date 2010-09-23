@@ -81,71 +81,71 @@
 		</security:authentication-provider>
 	</security:authentication-manager>
 
-	<beans:bean id="userDetailsService"
+	<bean id="userDetailsService"
 		class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
-		<beans:property name="dataSource" ref="dataSource" />
-		<beans:property name="usersByUsernameQuery">
-			<beans:value>
+		<property name="dataSource" ref="dataSource" />
+		<property name="usersByUsernameQuery">
+			<value>
 				SELECT USERNAME, PASSWORD, not deleted as enabled FROM UsersUser WHERE
 				USERNAME=?
-            </beans:value>
-		</beans:property>
-		<beans:property name="authoritiesByUsernameQuery">
-			<beans:value>SELECT U.username, G.role as authority FROM UsersUser U JOIN
-				UsersGroup G ON u.usergroup_id = G.id WHERE U.username=?</beans:value>
-		</beans:property>
-	</beans:bean>
+            </value>
+		</property>
+		<property name="authoritiesByUsernameQuery">
+			<value>SELECT U.username, G.role as authority FROM UsersUser U JOIN
+				UsersGroup G ON u.usergroup_id = G.id WHERE U.username=?</value>
+		</property>
+	</bean>
 
-	<beans:bean id="passwordEncoder"
+	<bean id="passwordEncoder"
 		class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
-		<beans:constructor-arg value="256" />
-	</beans:bean>
+		<constructor-arg value="256" />
+	</bean>
 
-	<beans:bean id="methodSecurityExpressionHandler"
+	<bean id="methodSecurityExpressionHandler"
 		class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
-		<beans:property name="roleHierarchy" ref="roleHierarchy" />
-	</beans:bean>
+		<property name="roleHierarchy" ref="roleHierarchy" />
+	</bean>
 
-	<beans:bean id="roleHierarchy"
+	<bean id="roleHierarchy"
 		class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
-		<beans:property name="hierarchy">
-			<beans:value>
+		<property name="hierarchy">
+			<value>
 				ROLE_ADMIN > ROLE_SUPERVISOR
 				ROLE_SUPERVISOR > ROLE_USER
-	        </beans:value>
-		</beans:property>
-	</beans:bean>
+	        </value>
+		</property>
+	</bean>
 
-	<beans:bean id="loginUrlAuthenticationEntryPoint"
+	<bean id="loginUrlAuthenticationEntryPoint"
 		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-		<beans:property name="loginFormUrl" value="/login.html" />
-	</beans:bean>
+		<property name="loginFormUrl" value="/login.html" />
+	</bean>
 
-	<beans:bean id="accessDeniedHandler"
+	<bean id="accessDeniedHandler"
 		class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
-		<beans:property name="errorPage" value="/accessDenied.html" />
-	</beans:bean>
+		<property name="errorPage" value="/accessDenied.html" />
+	</bean>
 
-	<beans:bean id="mySessionExpirationFilter"
+	<bean id="mySessionExpirationFilter"
 		class="com.qcadoo.mes.core.security.SessionExpirationFilter" />
 
-	<beans:bean id="customAuthenticationFilter"
+	<bean id="customAuthenticationFilter"
 		class="com.qcadoo.mes.core.security.CustomAuthenticationFilter">
-		<beans:property name="authenticationManager" ref="authenticationManager" />
-		<beans:property name="authenticationFailureHandler"
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationFailureHandler"
 			ref="failureHandler" />
-		<beans:property name="authenticationSuccessHandler"
+		<property name="authenticationSuccessHandler"
 			ref="successHandler" />
-	</beans:bean>
+	</bean>
 
-	<beans:bean id="successHandler"
+	<bean id="successHandler"
 		class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-		<beans:property name="defaultTargetUrl" value="/login.html" />
-	</beans:bean>
+		<property name="defaultTargetUrl" value="/login.html" />
+	</bean>
 
-	<beans:bean id="failureHandler"
+	<bean id="failureHandler"
 		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
-		<beans:property name="defaultFailureUrl" value="/login.html?login_error=error" />
-	</beans:bean>
+		<property name="defaultFailureUrl" value="/login.html?login_error=error" />
+	</bean>
 
 </beans>
