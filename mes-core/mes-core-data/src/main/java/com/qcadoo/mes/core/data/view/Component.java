@@ -12,7 +12,7 @@ public interface Component<T> extends CastableComponent<T>, ListenableComponent,
 
     String getType();
 
-    ViewValue<T> getValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<?> viewEntity, Set<String> pathsToUpdate);
+    ViewValue<T> getValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<?> viewValue, Set<String> pathsToUpdate);
 
     String getName();
 

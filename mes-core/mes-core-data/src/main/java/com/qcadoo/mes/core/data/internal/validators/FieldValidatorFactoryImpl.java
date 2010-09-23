@@ -12,7 +12,7 @@ import com.qcadoo.mes.core.data.validation.FieldValidatorFactory;
 public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Autowired
-    private HookFactory callbackFactory;
+    private HookFactory hookFactory;
 
     @Override
     public FieldValidator required() {
@@ -46,11 +46,11 @@ public final class FieldValidatorFactoryImpl implements FieldValidatorFactory {
 
     @Override
     public FieldValidator custom(final String beanName, final String validateMethodName) {
-        return new CustomValidator(callbackFactory.getCallback(beanName, validateMethodName));
+        return new CustomValidator(hookFactory.getHook(beanName, validateMethodName));
     }
 
     @Override
     public EntityValidator customEntity(final String beanName, final String validateMethodName) {
-        return new CustomEntityValidator(callbackFactory.getCallback(beanName, validateMethodName));
+        return new CustomEntityValidator(hookFactory.getHook(beanName, validateMethodName));
     }
 }

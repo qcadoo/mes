@@ -154,6 +154,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
+		if (value.entities == null) {
+			return;
+		}
 		if (actionButtons.deleteButton) {
 			actionButtons.deleteButton.attr('disabled', 'true');
 		}

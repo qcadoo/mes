@@ -9,17 +9,16 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.core.data.beans.Entity;
-import com.qcadoo.mes.core.data.model.DataDefinition;
 
 public class HookTest extends DataAccessTest {
 
     @Before
     public void init() {
-        given(applicationContext.getBean("callback")).willReturn(new CustomCallbackMethod());
+        given(applicationContext.getBean(CustomHookMethod.class)).willReturn(new CustomHookMethod());
     }
 
     @Test
-    public void shouldNotCallAnyCallbackIfNotDefined() throws Exception {
+    public void shouldNotCallAnyHookIfNotDefined() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
@@ -34,13 +33,13 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnCreateCallback() throws Exception {
+    public void shouldCallOnCreateHook() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getCallback("callback", "onCreate"));
+        dataDefinition.setCreateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onCreate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -51,7 +50,7 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnUpdateCallback() throws Exception {
+    public void shouldCallOnUpdateHook() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", null);
@@ -63,7 +62,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnUpdate(callbackFactory.getCallback("callback", "onUpdate"));
+        dataDefinition.setUpdateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onUpdate"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -74,14 +73,14 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallAllDefinedCallbacksWhileCreating() throws Exception {
+    public void shouldCallAllDefinedHooksWhileCreating() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getCallback("callback", "onCreate"));
-        dataDefinition.setOnSave(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setCreateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onCreate"));
+        dataDefinition.setSaveHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -92,7 +91,7 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnSaveCallbackWhileUpdating() throws Exception {
+    public void shouldCallOnSaveHookWhileUpdating() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", null);
@@ -104,7 +103,7 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnSave(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setSaveHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -115,7 +114,7 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallAllDefinedCallbacksWhileUpdating() throws Exception {
+    public void shouldCallAllDefinedHooksWhileUpdating() throws Exception {
         // given
         Entity entity = new Entity(1L);
         entity.setField("name", null);
@@ -127,8 +126,8 @@ public class HookTest extends DataAccessTest {
                 sessionFactory.getCurrentSession().createCriteria(SimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
-        dataDefinition.setOnUpdate(callbackFactory.getCallback("callback", "onUpdate"));
-        dataDefinition.setOnSave(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setUpdateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onUpdate"));
+        dataDefinition.setSaveHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -139,13 +138,13 @@ public class HookTest extends DataAccessTest {
     }
 
     @Test
-    public void shouldCallOnSaveCallbackWhileCreating() throws Exception {
+    public void shouldCallOnSaveHookWhileCreating() throws Exception {
         // given
         Entity entity = new Entity();
         entity.setField("name", null);
         entity.setField("age", null);
 
-        dataDefinition.setOnCreate(callbackFactory.getCallback("callback", "onSave"));
+        dataDefinition.setCreateHook(hookFactory.getHook(CustomHookMethod.class.getName(), "onSave"));
 
         // when
         entity = dataDefinition.save(entity);
@@ -153,26 +152,6 @@ public class HookTest extends DataAccessTest {
         // then
         assertEquals(null, entity.getField("name"));
         assertEquals(Integer.valueOf(11), entity.getField("age"));
-    }
-
-    public class CustomCallbackMethod {
-
-        public void onUpdate(final DataDefinition dataDefinition, final Entity entity) {
-            entity.setField("name", "update");
-        }
-
-        public void onSave(final DataDefinition dataDefinition, final Entity entity) {
-            entity.setField("age", 11);
-        }
-
-        public void onCreate(final DataDefinition dataDefinition, final Entity entity) {
-            entity.setField("name", "create");
-        }
-
-        public void onDelete(final DataDefinition dataDefinition, final Entity entity) {
-            entity.setField("name", "delete");
-        }
-
     }
 
 }

@@ -15,7 +15,11 @@
 
 		jQuery(document).ready(function(){
 			$.ajax({
+<<<<<<< HEAD
 				url: "handleRestart.html",
+=======
+				url: "handleRestart",
+>>>>>>> 6470d7732935a7b6d415a1134c7d2c9582231da7
 				type: 'POST',
 				complete: function(XMLHttpRequest, textStatus) {
 				setTimeout("checkStatus();",5000);
@@ -29,7 +33,11 @@
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
+<<<<<<< HEAD
 						window.location = "page/plugins.pluginGridView.html?iframe=true";
+=======
+						window.location = "install.html";
+>>>>>>> 6470d7732935a7b6d415a1134c7d2c9582231da7
 						return;
 					} else {
 						setTimeout("checkStatus();",1000);

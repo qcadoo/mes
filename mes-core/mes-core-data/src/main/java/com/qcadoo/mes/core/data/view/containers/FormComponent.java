@@ -32,8 +32,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public Long castContainerValue(final Entity entity, final Map<String, Entity> selectedEntities, final JSONObject viewObject)
-            throws JSONException {
+    public Long castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) throws JSONException {
         if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
             return viewObject.getLong("value");
         } else {
@@ -63,17 +62,17 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
     @SuppressWarnings("unchecked")
     private ViewValue<Long> lookViewValue(final ViewValue<Object> viewValue) {
-        ViewValue<?> lookupedViewEntity = viewValue;
+        ViewValue<?> lookupedViewValue = viewValue;
         String[] fields = getPath().split("\\.");
 
         for (String field : fields) {
-            lookupedViewEntity = lookupedViewEntity.getComponent(field);
-            if (lookupedViewEntity == null) {
+            lookupedViewValue = lookupedViewValue.getComponent(field);
+            if (lookupedViewValue == null) {
                 return null;
             }
         }
 
-        return (ViewValue<Long>) lookupedViewEntity;
+        return (ViewValue<Long>) lookupedViewValue;
 
     }
 

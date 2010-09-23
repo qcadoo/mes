@@ -18,3 +18,50 @@ QCDSerializator.serializeForm = function(form) {
 	return o;
 
 };
+
+QCDSerializator.equals = function(u, v) {
+	if (u == null && v == null) {
+		return true;
+	}
+	
+	if (u == null || v == null) {
+		return false;
+	}
+	
+    if (typeof(u) != typeof(v)) {
+        return false;
+    }
+
+    var allkeys = {};
+    for (var i in u) {
+        allkeys[i] = 1;
+    }
+    for (var i in v) {
+        allkeys[i] = 1;
+    }
+    for (var i in allkeys) {
+        if (u.hasOwnProperty(i) != v.hasOwnProperty(i)) {
+            if ((u.hasOwnProperty(i) && typeof(u[i]) == 'function') ||
+                (v.hasOwnProperty(i) && typeof(v[i]) == 'function')) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        if (typeof(u[i]) != typeof(v[i])) {
+            return false;
+        }
+        if (typeof(u[i]) == 'object') {
+            if (!QCDSerializator.equals(u[i], v[i])) {
+                return false;
+            }
+        } else {
+            if (u[i] !== v[i]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+};
+

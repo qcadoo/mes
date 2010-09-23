@@ -18,6 +18,7 @@ import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.PluginManagementService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.beans.Plugin;
+import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
@@ -25,6 +26,7 @@ import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.core.data.view.containers.WindowComponent;
 import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
+import com.qcadoo.mes.core.data.view.elements.EntityComboBox;
 import com.qcadoo.mes.core.data.view.elements.GridComponent;
 import com.qcadoo.mes.core.data.view.elements.LinkButton;
 import com.qcadoo.mes.core.data.view.elements.TextInputComponent;
@@ -38,6 +40,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Autowired
     private PluginManagementService pluginManagementService;
+
+    @Autowired
+    private HookFactory hookFactory;
 
     private Map<String, ViewDefinition> viewDefinitions;
 
@@ -136,9 +141,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.form");
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "test");
+        viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "getBeanAName"));
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new TextInputComponent("nameM", formDefinition, null, null));
         formDefinition.addComponent(new TextInputComponent("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInputComponent("nameC", formDefinition, "beanB.beanC.name", null));
         GridComponent beanAForm_beansCGrig = new GridComponent("beansCGrig", formDefinition, null, "beansC");
@@ -271,6 +278,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("priority", formDefinition, "priority", null));
+        formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
+        formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
 
         // FormFieldDefinition fieldNumber = createFieldDefinition("number", substitutesDataDefinition.getField("number"),
         // fieldControlFactory.stringControl());
@@ -306,6 +315,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
+        formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
         formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
 
         // FormFieldDefinition fieldProduct = createFieldDefinition("product",

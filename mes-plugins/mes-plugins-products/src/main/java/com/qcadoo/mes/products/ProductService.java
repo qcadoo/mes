@@ -2,17 +2,44 @@ package com.qcadoo.mes.products;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.internal.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.data.internal.search.restrictions.RestrictionOperator;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.search.Restrictions;
 import com.qcadoo.mes.core.data.search.SearchResult;
+import com.qcadoo.mes.core.data.view.ViewValue;
+import com.qcadoo.mes.core.data.view.elements.grid.ListData;
 
 @Service
 public class ProductService {
+
+    @Autowired
+    private DataAccessService dataAccessService;
+
+    @SuppressWarnings("unchecked")
+    public void getBeanAName(final ViewValue<Object> value) {
+        ViewValue<String> valueNameM = (ViewValue<String>) value.lookupValue("mainWindow.beanAForm.nameM");
+        ViewValue<String> valueNameA = (ViewValue<String>) value.lookupValue("mainWindow.beanAForm.name");
+        ViewValue<String> valueNameB = (ViewValue<String>) value.lookupValue("mainWindow.beanAForm.nameB");
+        ViewValue<ListData> valueNameC = (ViewValue<ListData>) value.lookupValue("mainWindow.beanAForm.beansCGrig");
+        valueNameM
+                .setValue((valueNameA != null ? valueNameA.getValue() : null)
+                        + " - "
+                        + (valueNameB != null ? valueNameB.getValue() : null)
+                        + " - "
+                        + (valueNameC != null && valueNameC.getValue() != null
+                                && valueNameC.getValue().getSelectedEntityId() != null ? valueNameC.getValue()
+                                .getSelectedEntityId() : null));
+        // if (valueNameC.getValue().getSelectedEntityId() != null) {
+        // valueNameA.setValue(valueNameB.getValue());
+        // }
+        // dataAccessService.get(dataDefinition, entityId)
+    }
 
     public boolean checkInstructionDefault(final DataDefinition dataDefinition, final Entity entity) {
         Boolean master = (Boolean) entity.getField("master");

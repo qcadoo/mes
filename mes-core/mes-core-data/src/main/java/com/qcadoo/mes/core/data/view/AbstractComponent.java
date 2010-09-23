@@ -18,6 +18,7 @@ import com.qcadoo.mes.core.data.internal.types.BelongsToType;
 import com.qcadoo.mes.core.data.internal.types.HasManyType;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.model.HookDefinition;
 import com.qcadoo.mes.core.data.validation.ValidationError;
 
 public abstract class AbstractComponent<T> implements Component<T> {
@@ -44,6 +45,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private DataDefinition dataDefinition;
 
+    private HookDefinition hookDefinition;
+
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         this.name = name;
@@ -60,16 +63,16 @@ public abstract class AbstractComponent<T> implements Component<T> {
         this.sourceFieldPath = sourceFieldPath;
     }
 
-    public abstract ViewValue<T> castComponentValue(Entity entity, Map<String, Entity> selectedEntities, JSONObject viewObject)
+    public abstract ViewValue<T> castComponentValue(Map<String, Entity> selectedEntities, JSONObject viewObject)
             throws JSONException;
 
-    public abstract ViewValue<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<T> viewEntity,
+    public abstract ViewValue<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<T> viewValue,
             final Set<String> pathsToUpdate);
 
     @Override
-    public final ViewValue<T> castValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
-        ViewValue<T> value = castComponentValue(entity, selectedEntities, viewObject);
+    public final ViewValue<T> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
+        ViewValue<T> value = castComponentValue(selectedEntities, viewObject);
         if (viewObject != null && value != null) {
             value.setEnabled(viewObject.getBoolean("enabled"));
             value.setVisible(viewObject.getBoolean("visible"));
@@ -80,9 +83,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final ViewValue<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<?> viewEntity, final Set<String> pathsToUpdate) {
+            final ViewValue<?> viewValue, final Set<String> pathsToUpdate) {
+
         if (shouldNotBeUpdated(pathsToUpdate)) {
-            return null;
+            return (ViewValue<T>) viewValue;
         }
 
         Entity selectedEntity = null;
@@ -95,7 +99,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
 
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
+            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
         } else {
             selectedEntity = entity;
 
@@ -105,7 +109,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 selectedEntity = getFieldEntityValue(entity, fieldPath);
             }
 
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewEntity, pathsToUpdate);
+            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
         }
 
         if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
@@ -175,6 +179,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
     @Override
     public final DataDefinition getDataDefinition() {
         return dataDefinition;
+    }
+
+    public HookDefinition getHookDefinition() {
+        return hookDefinition;
     }
 
     @Override

@@ -23,14 +23,15 @@ public final class ValidationService {
 
     public void validateGenericEntity(final DataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
+
         copyReadOnlyAndMissingFields(dataDefinition, genericEntity, existingGenericEntity);
 
         parseAndValidateEntity(dataDefinition, genericEntity);
 
         if (genericEntity.getId() != null) {
-            dataDefinition.callOnUpdate(genericEntity);
+            dataDefinition.callUpdateHook(genericEntity);
         } else {
-            dataDefinition.callOnCreate(genericEntity);
+            dataDefinition.callCreateHook(genericEntity);
         }
     }
 

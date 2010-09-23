@@ -53,7 +53,7 @@ public abstract class DataAccessTest {
 
     protected PriorityService priorityService = null;
 
-    protected HookFactory callbackFactory;
+    protected HookFactory hookFactory;
 
     protected DataAccessService dataAccessService = null;
 
@@ -98,11 +98,11 @@ public abstract class DataAccessTest {
         ReflectionTestUtils.setField(fieldTypeFactory, "dictionaryService", dictionaryService);
         ReflectionTestUtils.setField(fieldTypeFactory, "dataDefinitionService", dataDefinitionService);
 
-        callbackFactory = new HookFactory();
-        ReflectionTestUtils.setField(callbackFactory, "applicationContext", applicationContext);
+        hookFactory = new HookFactory();
+        ReflectionTestUtils.setField(hookFactory, "applicationContext", applicationContext);
 
         fieldValidatorFactory = new FieldValidatorFactoryImpl();
-        ReflectionTestUtils.setField(fieldValidatorFactory, "callbackFactory", callbackFactory);
+        ReflectionTestUtils.setField(fieldValidatorFactory, "hookFactory", hookFactory);
 
         parentFieldDefinitionName = new FieldDefinitionImpl("name");
         parentFieldDefinitionName.withType(fieldTypeFactory.stringType());

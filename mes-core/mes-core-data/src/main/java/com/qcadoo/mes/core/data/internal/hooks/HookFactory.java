@@ -13,8 +13,19 @@ public final class HookFactory {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public HookDefinition getCallback(final String beanName, final String methodName) {
-        return new HookDefinitionImpl(applicationContext.getBean(beanName), methodName);
+    public HookDefinition getHook(final String fullyQualifiedClassName, final String methodName) {
+        Class<?> beanClass;
+        try {
+            beanClass = HookFactory.class.getClassLoader().loadClass(fullyQualifiedClassName);
+            Object bean = applicationContext.getBean(beanClass);
+            if (bean != null) {
+                return new HookDefinitionImpl(bean, methodName);
+            } else {
+                throw new IllegalStateException("Cannot find bean for hook: " + fullyQualifiedClassName);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Cannot find mapping class for hook: " + fullyQualifiedClassName, e);
+        }
     }
 
 }

@@ -41,9 +41,9 @@ public interface DataDefinition {
 
     List<EntityValidator> getValidators();
 
-    void callOnCreate(final Entity entity);
+    void callCreateHook(final Entity entity);
 
-    void callOnUpdate(final Entity entity);
+    void callUpdateHook(final Entity entity);
 
     Class<?> getClassForEntity();
 

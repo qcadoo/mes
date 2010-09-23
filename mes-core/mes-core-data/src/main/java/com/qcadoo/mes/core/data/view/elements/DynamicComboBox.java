@@ -15,6 +15,7 @@ import com.qcadoo.mes.core.data.internal.types.DictionaryType;
 import com.qcadoo.mes.core.data.internal.types.EnumType;
 import com.qcadoo.mes.core.data.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.data.types.FieldType;
+import com.qcadoo.mes.core.data.validation.ValidationError;
 import com.qcadoo.mes.core.data.view.AbstractComponent;
 import com.qcadoo.mes.core.data.view.ContainerComponent;
 import com.qcadoo.mes.core.data.view.ViewValue;
@@ -38,8 +39,8 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     }
 
     @Override
-    public ViewValue<ComboBoxValue> castComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final JSONObject viewObject) throws JSONException {
+    public ViewValue<ComboBoxValue> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         JSONObject valueObject = viewObject.getJSONObject("value");
         String value = null;
         if (!valueObject.isNull("selectedValue")) {
@@ -54,7 +55,7 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
 
     @Override
     public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<ComboBoxValue> viewEntity, final Set<String> pathsToUpdate) {
+            final ViewValue<ComboBoxValue> viewValue, final Set<String> pathsToUpdate) {
         Object value = getFieldValue(entity, getFieldPath());
         String strValue;
         if (value == null) {
@@ -63,7 +64,14 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
             strValue = String.valueOf(value);
         }
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
-        return new ViewValue<ComboBoxValue>(comboValue);
+        ViewValue<ComboBoxValue> newViewValue = new ViewValue<ComboBoxValue>(comboValue);
+
+        ValidationError validationError = getFieldError(entity, getFieldPath());
+        if (validationError != null && validationError.getMessage() != null) {
+            newViewValue.addErrorMessage(validationError.getMessage());
+        }
+
+        return newViewValue;
     }
 
     private List<String> getComboBoxValues() {
