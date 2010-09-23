@@ -22,8 +22,7 @@ public final class Plugin {
 
     private boolean deleted;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean active;
+    private String status;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean base;
@@ -82,14 +81,6 @@ public final class Plugin {
         this.version = version;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(final boolean active) {
-        this.active = active;
-    }
-
     public String getIdentifier() {
         return identifier;
     }
@@ -120,6 +111,14 @@ public final class Plugin {
 
     public void setGroup(final String group) {
         this.group = group;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(final String status) {
+        this.status = status;
     }
 
 }

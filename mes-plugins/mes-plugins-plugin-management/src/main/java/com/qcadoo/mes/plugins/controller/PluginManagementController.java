@@ -3,6 +3,7 @@ package com.qcadoo.mes.plugins.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -118,6 +119,11 @@ public class PluginManagementController {
         File file = new File(binPath);
         try {
             Runtime runtime = Runtime.getRuntime();
+            List<Plugin> pluginList = pluginManagementService.getPluginsWithStatus("downloaded");
+            for (Plugin plugin : pluginList) {
+                plugin.setStatus("installed");
+                pluginManagementService.savePlugin(plugin);
+            }
 
             Process shutdownProcess = runtime.exec(commands[0], null, file);
             shutdownProcess.waitFor();
@@ -125,6 +131,7 @@ public class PluginManagementController {
             Thread.sleep(3000);
             Process startupProcess = runtime.exec(commands[1], null, file);
             System.out.println("Startup exit value: " + startupProcess.exitValue());
+
         } catch (IOException e) {
             // TODO KRNA error
         } catch (InterruptedException e) {
@@ -224,7 +231,7 @@ public class PluginManagementController {
                     return "redirect:install.html?error=2";
                 } else {
                     plugin.setDeleted(false);
-                    plugin.setActive(false);
+                    plugin.setStatus("downloaded");
                     plugin.setBase(false);
                     plugin.setFileName(file.getOriginalFilename());
 

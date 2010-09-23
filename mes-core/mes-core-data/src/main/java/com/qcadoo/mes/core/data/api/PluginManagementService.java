@@ -6,9 +6,9 @@ import com.qcadoo.mes.core.data.beans.Plugin;
 
 public interface PluginManagementService {
 
-    List<Plugin> getActivePlugins();
+    List<Plugin> getPluginsWithStatus(String status);
 
-    Plugin getActivePlugin(String identifier);
+    Plugin getPluginWithStatus(String identifier, String status);
 
     Plugin getPlugin(String entityId);
 

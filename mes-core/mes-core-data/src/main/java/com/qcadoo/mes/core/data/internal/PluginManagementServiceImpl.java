@@ -25,18 +25,18 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementServiceImpl.class);
 
     @Override
-    public List<Plugin> getActivePlugins() {
-        Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("active", true))
+    public List<Plugin> getPluginsWithStatus(final String status) {
+        Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("status", status))
                 .add(Restrictions.eq("deleted", false));
 
         return criteria.list();
     }
 
     @Override
-    public Plugin getActivePlugin(final String identifier) {
+    public Plugin getPluginWithStatus(final String identifier, final String status) {
         checkNotNull(identifier, "identifier must be given");
         Criteria criteria = getCurrentSession().createCriteria(Plugin.class).add(Restrictions.eq("identifier", identifier))
-                .add(Restrictions.eq("active", true)).add(Restrictions.eq("deleted", false));
+                .add(Restrictions.eq("status", status)).add(Restrictions.eq("deleted", false));
 
         Plugin databaseEntity = (Plugin) criteria.uniqueResult();
 

@@ -385,11 +385,12 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
                 fieldValidationFactory.requiredOnCreate()).readOnly();
         FieldDefinitionImpl fieldVersion = createFieldDefinition("version", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).readOnly();
-        FieldDefinitionImpl fieldActive = createFieldDefinition("active", fieldTypeFactory.booleanType()).withValidator(
+        FieldDefinitionImpl fieldStatus = createFieldDefinition("status",
+                fieldTypeFactory.enumType("downloaded", "installed", "active")).withValidator(
                 fieldValidationFactory.requiredOnCreate());
         FieldDefinitionImpl fieldBase = createFieldDefinition("base", fieldTypeFactory.booleanType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).readOnly();
-        FieldDefinitionImpl fieldCodeId = createFieldDefinition("codeId", fieldTypeFactory.stringType()).readOnly();
+        FieldDefinitionImpl fieldIdentifier = createFieldDefinition("identifier", fieldTypeFactory.stringType()).readOnly();
         FieldDefinitionImpl fieldPackageName = createFieldDefinition("packageName", fieldTypeFactory.stringType()).readOnly();
         FieldDefinitionImpl fieldFileName = createFieldDefinition("fileName", fieldTypeFactory.stringType()).readOnly();
 
@@ -398,9 +399,9 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldVersion);
         dataDefinition.addField(fieldPublisher);
-        dataDefinition.addField(fieldActive);
+        dataDefinition.addField(fieldStatus);
         dataDefinition.addField(fieldBase);
-        dataDefinition.addField(fieldCodeId);
+        dataDefinition.addField(fieldIdentifier);
         dataDefinition.addField(fieldPackageName);
         dataDefinition.addField(fieldFileName);
 

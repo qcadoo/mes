@@ -76,7 +76,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        Plugin plugin = pluginManagementService.getActivePlugin(viewDefinition.getPluginIdentifier());
+        Plugin plugin = pluginManagementService.getPluginWithStatus(viewDefinition.getPluginIdentifier(), "active");
         if (plugin != null) {
             return viewDefinition;
         }
@@ -87,7 +87,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
-        List<Plugin> activePluginList = pluginManagementService.getActivePlugins();
+        List<Plugin> activePluginList = pluginManagementService.getPluginsWithStatus("active");
         for (Plugin activePlugin : activePluginList) {
 
             for (ViewDefinition viewDefinition : viewDefinitions.values()) {
@@ -758,20 +758,14 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
 
-        /*
-         * FormFieldDefinition fieldDescription = createFieldDefinition("description",
-         * pluginDataDefinition.getField("description"), fieldControlFactory.textControl()); FormFieldDefinition fieldActive =
-         * createFieldDefinition("active", pluginDataDefinition.getField("active"), fieldControlFactory.yesNoControl());
-         * FormFieldDefinition fieldBase = createFieldDefinition("base", pluginDataDefinition.getField("base"),
-         * fieldControlFactory.yesNoControl());
-         */
-
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("version", formDefinition, "version", null));
         formDefinition.addComponent(new TextInputComponent("publisher", formDefinition, "publisher", null));
+        // TODO KRNA textarea
         formDefinition.addComponent(new TextInputComponent("description", formDefinition, "description", null));
-        formDefinition.addComponent(new DynamicComboBox("active", formDefinition, "active", null));
-        formDefinition.addComponent(new DynamicComboBox("base", formDefinition, "base", null));
+        formDefinition.addComponent(new DynamicComboBox("status", formDefinition, "status", null));
+        // TODO KRNA boolean
+        formDefinition.addComponent(new TextInputComponent("base", formDefinition, "base", null));
         windowDefinition.addComponent(formDefinition);
 
         windowDefinition.initialize();
