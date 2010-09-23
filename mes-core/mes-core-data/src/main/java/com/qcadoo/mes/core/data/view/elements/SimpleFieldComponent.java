@@ -48,8 +48,8 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         String value = getStringValue(entity, selectedEntities);
 
         ViewValue<String> newViewValue = null;
-
-        if (StringUtils.hasText(value)) {
+        // if (StringUtils.hasText(value)) {
+        if (value != null) {
             newViewValue = new ViewValue<String>(convertToViewValue(value.trim()));
         } else {
             newViewValue = new ViewValue<String>();

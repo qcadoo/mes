@@ -20,6 +20,8 @@ public class TestBeanA {
 
     private String name;
 
+    private Boolean active;
+
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -85,6 +87,14 @@ public class TestBeanA {
 
     public void setBeanA(TestBeanA beanA) {
         this.beanA = beanA;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
 }
