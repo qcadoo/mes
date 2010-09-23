@@ -66,8 +66,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
     public abstract ViewValue<T> castComponentValue(Map<String, Entity> selectedEntities, JSONObject viewObject)
             throws JSONException;
 
-    public abstract ViewValue<T> getComponentValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<T> viewValue,
-            final Set<String> pathsToUpdate);
+    public abstract ViewValue<T> getComponentValue(Entity entity, Entity parentEntity, Map<String, Entity> selectedEntities,
+            ViewValue<T> viewValue, final Set<String> pathsToUpdate);
 
     @Override
     public final ViewValue<T> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
@@ -90,7 +90,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
 
         Entity selectedEntity = null;
+        Entity parentEntity = null;
         ViewValue<T> value = null;
+
+        parentEntity = entity;
+        if (parentEntity == null) {
+            parentEntity = selectedEntities.get(getPath());
+        } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
+            parentEntity = getFieldEntityValue(entity, fieldPath);
+        }
 
         if (sourceComponent != null) {
             selectedEntity = selectedEntities.get(sourceComponent.getPath());
@@ -99,18 +107,28 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
 
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
         } else {
-            selectedEntity = entity;
-
-            if (selectedEntity == null) {
-                selectedEntity = selectedEntities.get(getPath());
-            } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
-                selectedEntity = getFieldEntityValue(entity, fieldPath);
-            }
-
-            value = getComponentValue(selectedEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
+            selectedEntity = parentEntity;
         }
+
+        // if (sourceComponent != null) {
+        // selectedEntity = selectedEntities.get(sourceComponent.getPath());
+        //
+        // if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
+        // selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
+        // }
+        //
+        // } else {
+        // selectedEntity = entity;
+        //
+        // if (selectedEntity == null) {
+        // selectedEntity = selectedEntities.get(getPath());
+        // } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
+        // selectedEntity = getFieldEntityValue(entity, fieldPath);
+        // }
+        // }
+
+        value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
 
         if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
             value.setEnabled(false);

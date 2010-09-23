@@ -25,6 +25,9 @@ public class TestBeanA {
     @ManyToOne(fetch = FetchType.LAZY)
     private TestBeanB beanB;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private TestBeanA beanA;
+
     @OneToMany(mappedBy = "beanA", fetch = FetchType.LAZY)
     private List<TestBeanC> beansC;
 
@@ -74,6 +77,14 @@ public class TestBeanA {
 
     public void setBeansC(final List<TestBeanC> beansC) {
         this.beansC = beansC;
+    }
+
+    public TestBeanA getBeanA() {
+        return beanA;
+    }
+
+    public void setBeanA(TestBeanA beanA) {
+        this.beanA = beanA;
     }
 
 }

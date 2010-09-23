@@ -16,7 +16,8 @@ import com.qcadoo.mes.core.data.validation.ValidationError;
  * fields. All fields - database's fields and custom fields - are aggregated into key-value map. The key is the name of the field
  * from its definition - {@link com.qcadoo.mes.core.data.internal.definition.FieldDefinition#getName()}.
  * 
- * Value type must be the same as the type defined in {@link com.qcadoo.mes.core.data.internal.definition.FieldDefinition#getType()}.
+ * Value type must be the same as the type defined in
+ * {@link com.qcadoo.mes.core.data.internal.definition.FieldDefinition#getType()}.
  */
 public final class Entity {
 
@@ -112,7 +113,8 @@ public final class Entity {
 
     @Override
     public String toString() {
-        return "#" + id + ", " + fields.toString();
+        // return "#" + id + ", " + fields.toString();
+        return "Entity #" + id;
     }
 
 }

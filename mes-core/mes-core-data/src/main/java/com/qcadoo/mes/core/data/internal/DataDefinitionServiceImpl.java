@@ -87,11 +87,14 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldDescription = createFieldDefinition("description", fieldTypeFactory.stringType());
         FieldDefinitionImpl fieldBeanB = createFieldDefinition("beanB",
                 fieldTypeFactory.eagerBelongsToType("test.testBeanB", "name"));
+        FieldDefinitionImpl fieldBeanA = createFieldDefinition("beanA",
+                fieldTypeFactory.eagerBelongsToType("test.testBeanA", "name"));
         FieldDefinitionImpl fieldBeansC = createFieldDefinition("beansC", fieldTypeFactory.hasManyType("test.testBeanC", "beanA"));
 
         dataDefinition.addField(fieldName);
         dataDefinition.addField(fieldDescription);
         dataDefinition.addField(fieldBeanB);
+        dataDefinition.addField(fieldBeanA);
         dataDefinition.addField(fieldBeansC);
 
         return dataDefinition;

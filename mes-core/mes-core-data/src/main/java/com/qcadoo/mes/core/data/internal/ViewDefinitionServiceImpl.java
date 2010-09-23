@@ -155,6 +155,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new EntityComboBox("beanB", formDefinition, "beanB", null));
+        formDefinition.addComponent(new EntityComboBox("beanA", formDefinition, "beanA", "#{mainWindow.beanAForm.beanB}.beansA"));
         formDefinition.addComponent(new TextInputComponent("nameM", formDefinition, null, null));
         formDefinition.addComponent(new TextInputComponent("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInputComponent("nameC", formDefinition, "beanB.beanC.name", null));
@@ -291,22 +293,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
         formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
 
-        // FormFieldDefinition fieldNumber = createFieldDefinition("number", substitutesDataDefinition.getField("number"),
-        // fieldControlFactory.stringControl());
-        // FormFieldDefinition fieldName = createFieldDefinition("name", substitutesDataDefinition.getField("name"),
-        // fieldControlFactory.stringControl());
-        // FormFieldDefinition fieldPriority = createFieldDefinition("priority", substitutesDataDefinition.getField("priority"),
-        // fieldControlFactory.displayControl());
-        // FormFieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom",
-        // substitutesDataDefinition.getField("effectiveDateFrom"), fieldControlFactory.dateTimeControl());
-        // FormFieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo",
-        // substitutesDataDefinition.getField("effectiveDateTo"), fieldControlFactory.dateTimeControl());
-        // formDefinition.addField(fieldPriority);
-        // formDefinition.addField(fieldNumber);
-        // formDefinition.addField(fieldName);
-        // formDefinition.addField(fieldEffectiveDateFrom);
-        // formDefinition.addField(fieldEffectiveDateTo);
-
         windowDefinition.addComponent(formDefinition);
 
         windowDefinition.initialize();
@@ -327,13 +313,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.setHeader(false);
         formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
         formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
-
-        // FormFieldDefinition fieldProduct = createFieldDefinition("product",
-        // substitutesComponentDataDefinition.getField("product"), fieldControlFactory.lookupControl());
-        // FormFieldDefinition fieldQuantity = createFieldDefinition("quantity",
-        // substitutesComponentDataDefinition.getField("quantity"), fieldControlFactory.decimalControl());
-        // formDefinition.addField(fieldProduct);
-        // formDefinition.addField(fieldQuantity);
 
         windowDefinition.addComponent(formDefinition);
 

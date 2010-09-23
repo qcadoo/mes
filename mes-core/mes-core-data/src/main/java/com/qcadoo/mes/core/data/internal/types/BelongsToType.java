@@ -79,4 +79,8 @@ public final class BelongsToType implements LookupedFieldType {
         return dataDefinitionService.get(entityName);
     }
 
+    public String getLookupFieldName() {
+        return lookupFieldName;
+    }
+
 }

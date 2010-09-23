@@ -43,8 +43,8 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     }
 
     @Override
-    public final ViewValue<String> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
+    public final ViewValue<String> getComponentValue(final Entity entity, Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
         String value = getStringValue(entity, selectedEntities);
 
         ViewValue<String> newViewValue = null;
