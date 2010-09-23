@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<qcd:plugin name="dictionaries" xmlns:qcd="http://www.qcadoo.com/">
+<qcd:plugin name="products" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="testBeanA">
 		<string name="name" >
 			<validates_presence />

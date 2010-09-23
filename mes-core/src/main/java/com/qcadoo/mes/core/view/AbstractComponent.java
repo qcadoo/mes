@@ -19,7 +19,6 @@ import com.qcadoo.mes.core.internal.types.BelongsToType;
 import com.qcadoo.mes.core.internal.types.HasManyType;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
 import com.qcadoo.mes.core.validation.ValidationError;
 
 public abstract class AbstractComponent<T> implements Component<T> {
@@ -45,8 +44,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
     private Set<String> listeners = new HashSet<String>();
 
     private DataDefinition dataDefinition;
-
-    private HookDefinition hookDefinition;
 
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
@@ -200,10 +197,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
     @Override
     public final DataDefinition getDataDefinition() {
         return dataDefinition;
-    }
-
-    public HookDefinition getHookDefinition() {
-        return hookDefinition;
     }
 
     @Override
@@ -397,7 +390,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
     }
 
     @SuppressWarnings("rawtypes")
-    public final String printComponent(int tab) {
+    public final String printComponent(final int tab) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < tab; i++) {
             sb.append("    ");

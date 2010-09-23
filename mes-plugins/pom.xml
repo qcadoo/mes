@@ -32,17 +32,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-data</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-plugin-registry</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>mes-core-security</artifactId>
+			<artifactId>mes-core</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
