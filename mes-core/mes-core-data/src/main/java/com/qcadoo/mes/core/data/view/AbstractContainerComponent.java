@@ -56,8 +56,8 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
     }
 
     @Override
-    public final ViewValue<T> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<T> viewValue, final Set<String> pathsToUpdate) {
+    public final ViewValue<T> getComponentValue(final Entity entity, Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<T> viewValue, final Set<String> pathsToUpdate) {
 
         ViewValue<T> value = new ViewValue<T>();
 

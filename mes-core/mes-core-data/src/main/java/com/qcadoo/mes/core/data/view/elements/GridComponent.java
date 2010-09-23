@@ -121,8 +121,8 @@ public final class GridComponent extends AbstractComponent<ListData> {
     }
 
     @Override
-    public ViewValue<ListData> getComponentValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate) {
+    public ViewValue<ListData> getComponentValue(final Entity entity, Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate) {
         if (getSourceFieldPath() != null || getFieldPath() != null) {
             if (entity == null) {
                 return new ViewValue<ListData>(new ListData(0, Collections.<Entity> emptyList()));

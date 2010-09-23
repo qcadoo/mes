@@ -119,4 +119,10 @@ public final class Entity {
         return entity;
     }
 
+    @Override
+    public String toString() {
+        // return "#" + id + ", " + fields.toString();
+        return "Entity #" + id;
+    }
+
 }

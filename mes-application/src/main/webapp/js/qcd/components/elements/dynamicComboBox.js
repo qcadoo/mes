@@ -25,13 +25,18 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		var previousSelectedVal = select.val();
 		select.children().remove();
 		select.append("<option value=''></option>");
 		for (var i in value.values) {
 			var val = value.values[i];
 			select.append("<option value='"+val+"'>"+val+"</option>");
 		}
-		select.val(value.selectedValue);
+		if (value.selectedValue != null) {
+			select.val(value.selectedValue);
+		} else {
+			select.val(previousSelectedVal);
+		}
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
