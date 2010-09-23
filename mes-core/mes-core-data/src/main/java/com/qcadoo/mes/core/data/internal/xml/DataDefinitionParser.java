@@ -16,9 +16,12 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.api.PluginManagementService;
+import com.qcadoo.mes.core.data.beans.Plugin;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
@@ -46,6 +49,9 @@ public class DataDefinitionParser {
     @Autowired
     private ValidatorFactory validatorFactory;
 
+    @Autowired
+    PluginManagementService pluginManagementService;
+
     public static void main(final String[] args) throws Exception {
         DataDefinitionParser ddp = new DataDefinitionParser();
         ddp.parse(new FileInputStream(new File("src/main/resources/data.xml")));
@@ -54,24 +60,28 @@ public class DataDefinitionParser {
     public void parse(final InputStream dataDefinitionInputStream) throws XMLStreamException, FactoryConfigurationError {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(dataDefinitionInputStream);
 
+        Plugin plugin = null;
+
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "plugin")) {
-                getPluginDefinition(reader);
+                plugin = getPluginDefinition(reader);
             } else if (isTagStarted(reader, "model")) {
-                getModelDefinition(reader);
+                getModelDefinition(reader, plugin);
             } else if (isTagStarted(reader, "view")) {
-                getViewDefinition(reader);
+                getViewDefinition(reader, plugin);
             }
         }
 
         reader.close();
     }
 
-    private void getModelDefinition(final XMLStreamReader reader) throws XMLStreamException {
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl("", getStringAttribute(reader, "name"), dataAccessService);
+    private void getModelDefinition(final XMLStreamReader reader, final Plugin plugin) throws XMLStreamException {
+        String modelName = getStringAttribute(reader, "name");
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(plugin.getIdentifier(), getStringAttribute(reader, "name"),
+                dataAccessService);
         dataDefinition.setDeletable(getBooleanAttribute(reader, "deletable"));
-
-        // dataDefinition.setFullyQualifiedClassName(fullyQualifiedClassName)
+        dataDefinition.setFullyQualifiedClassName(plugin.getPackageName() + "." + plugin.getIdentifier() + ".beans."
+                + StringUtils.capitalize(modelName));
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagEnded(reader, "model")) {
@@ -193,13 +203,15 @@ public class DataDefinitionParser {
                 .withReadOnly(true);
     }
 
-    private void getViewDefinition(final XMLStreamReader reader) {
+    private void getViewDefinition(final XMLStreamReader reader, final Plugin plugin) {
         // TODO Auto-generated method stub
     }
 
-    private String getPluginDefinition(final XMLStreamReader reader) {
-        return getStringAttribute(reader, "name");
-
+    private Plugin getPluginDefinition(final XMLStreamReader reader) {
+        String pluginIdentifier = getStringAttribute(reader, "name");
+        Plugin plugin = pluginManagementService.getPluginWithStatus(pluginIdentifier, null);
+        checkNotNull(plugin, "Plugin " + pluginIdentifier + " cannot be found");
+        return plugin;
     }
 
     private Integer getIntegerAttribute(final XMLStreamReader reader, final String name) {

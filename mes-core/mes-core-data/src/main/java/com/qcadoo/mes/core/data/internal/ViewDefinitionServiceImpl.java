@@ -1,7 +1,5 @@
 package com.qcadoo.mes.core.data.internal;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,17 +10,14 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.api.PluginManagementService;
 import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.beans.Entity;
+import com.qcadoo.mes.core.data.beans.Plugin;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.model.DataDefinition;
@@ -41,16 +36,13 @@ import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private EntityService entityService;
+    private PluginManagementService pluginManagementService;
 
     @Autowired
     private HookFactory hookFactory;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     private Map<String, ViewDefinition> viewDefinitions;
 
@@ -84,9 +76,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins", "plugin");
-        Entity entity = getActivePlugin(dataDefinition, viewDefinition.getPluginIdentifier());
-        if (entity != null) {
+        Plugin plugin = pluginManagementService.getPluginWithStatus(viewDefinition.getPluginIdentifier(), "active");
+        if (plugin != null) {
             return viewDefinition;
         }
         return new ViewDefinitionImpl("main", null, "");
@@ -96,12 +87,10 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
-        DataDefinition dataDefinition = dataDefinitionService.get("plugins", "plugin");
-        List<?> activePluginList = getActivePlugins(dataDefinition);
-        for (Object activePlugin : activePluginList) {
-            Entity entity = entityService.convertToGenericEntity(dataDefinition, activePlugin);
+        List<Plugin> activePluginList = pluginManagementService.getPluginsWithStatus("active");
+        for (Plugin activePlugin : activePluginList) {
             for (ViewDefinition viewDefinition : viewDefinitions.values()) {
-                if (((String) entity.getField("codeId")).equals(viewDefinition.getPluginIdentifier())) {
+                if (activePlugin.getIdentifier().equals(viewDefinition.getPluginIdentifier())) {
                     viewsList.add(viewDefinition);
                 }
             }
@@ -734,19 +723,22 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
                 null);
         ColumnDefinition columnVersion = createColumnDefinition("version", gridDataDefinition.getField("version"), null);
-        ColumnDefinition columnPublisher = createColumnDefinition("publisher", gridDataDefinition.getField("publisher"), null);
-        ColumnDefinition columnActive = createColumnDefinition("active", gridDataDefinition.getField("active"), null);
+        ColumnDefinition columnVendor = createColumnDefinition("vendor", gridDataDefinition.getField("vendor"), null);
+        ColumnDefinition columnStatus = createColumnDefinition("status", gridDataDefinition.getField("status"), null);
 
-        grid.addColumn(columnActive);
+        grid.addColumn(columnStatus);
         grid.addColumn(columnName);
         grid.addColumn(columnVersion);
-        grid.addColumn(columnPublisher);
+        grid.addColumn(columnVendor);
         grid.addColumn(columnDescription);
 
         windowDefinition.addComponent(grid);
 
         windowDefinition.addComponent(new LinkButton("addButton", windowDefinition, "../upload.html"));
         windowDefinition.addComponent(new LinkButton("removeButton", windowDefinition, "../remove.html",
+                "#{mainWindow.pluginsGrid}"));
+        windowDefinition.addComponent(new LinkButton("installButton", windowDefinition, "../restart.html"));
+        windowDefinition.addComponent(new LinkButton("deinstallButton", windowDefinition, "../deinstall.html",
                 "#{mainWindow.pluginsGrid}"));
 
         windowDefinition.initialize();
@@ -765,20 +757,14 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
 
-        /*
-         * FormFieldDefinition fieldDescription = createFieldDefinition("description",
-         * pluginDataDefinition.getField("description"), fieldControlFactory.textControl()); FormFieldDefinition fieldActive =
-         * createFieldDefinition("active", pluginDataDefinition.getField("active"), fieldControlFactory.yesNoControl());
-         * FormFieldDefinition fieldBase = createFieldDefinition("base", pluginDataDefinition.getField("base"),
-         * fieldControlFactory.yesNoControl());
-         */
-
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("version", formDefinition, "version", null));
         formDefinition.addComponent(new TextInputComponent("publisher", formDefinition, "publisher", null));
+        // TODO KRNA textarea
         formDefinition.addComponent(new TextInputComponent("description", formDefinition, "description", null));
-        formDefinition.addComponent(new DynamicComboBox("active", formDefinition, "active", null));
-        formDefinition.addComponent(new DynamicComboBox("base", formDefinition, "base", null));
+        formDefinition.addComponent(new DynamicComboBox("status", formDefinition, "status", null));
+        // TODO KRNA boolean
+        formDefinition.addComponent(new TextInputComponent("base", formDefinition, "base", null));
         windowDefinition.addComponent(formDefinition);
 
         windowDefinition.initialize();
@@ -807,36 +793,4 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // return field;
     // }
 
-    private List<?> getActivePlugins(final DataDefinition dataDefinition) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity()).add(
-                Restrictions.eq("active", true));
-        if (dataDefinition.isDeletable()) {
-            entityService.addDeletedRestriction(criteria);
-        }
-
-        return criteria.list();
-    }
-
-    private Entity getActivePlugin(final DataDefinition dataDefinition, final String pluginCodeId) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkNotNull(pluginCodeId, "pluginCodeId must be given");
-        Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity())
-                .add(Restrictions.eq("codeId", pluginCodeId)).add(Restrictions.eq("active", true));
-        if (dataDefinition.isDeletable()) {
-            entityService.addDeletedRestriction(criteria);
-        }
-
-        Object databaseEntity = criteria.uniqueResult();
-
-        if (databaseEntity == null) {
-            return null;
-        }
-
-        return entityService.convertToGenericEntity(dataDefinition, databaseEntity);
-    }
-
-    private Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
-    }
 }

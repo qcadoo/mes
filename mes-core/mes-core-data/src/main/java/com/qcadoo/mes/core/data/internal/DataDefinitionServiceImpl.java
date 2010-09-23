@@ -393,27 +393,29 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
                 fieldValidationFactory.requiredOnCreate()).withReadOnly(true);
         FieldDefinitionImpl fieldDescription = createFieldDefinition("description", fieldTypeFactory.textType()).withReadOnly(
                 true);
-        FieldDefinitionImpl fieldPublisher = createFieldDefinition("publisher", fieldTypeFactory.stringType()).withValidator(
+        FieldDefinitionImpl fieldVendor = createFieldDefinition("vendor", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).withReadOnly(true);
         FieldDefinitionImpl fieldVersion = createFieldDefinition("version", fieldTypeFactory.stringType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).withReadOnly(true);
-        FieldDefinitionImpl fieldActive = createFieldDefinition("active", fieldTypeFactory.booleanType()).withValidator(
+        FieldDefinitionImpl fieldStatus = createFieldDefinition("status",
+                fieldTypeFactory.enumType("downloaded", "installed", "active")).withValidator(
                 fieldValidationFactory.requiredOnCreate());
         FieldDefinitionImpl fieldBase = createFieldDefinition("base", fieldTypeFactory.booleanType()).withValidator(
                 fieldValidationFactory.requiredOnCreate()).withReadOnly(true);
-        FieldDefinitionImpl fieldCodeId = createFieldDefinition("codeId", fieldTypeFactory.stringType()).withReadOnly(true);
+        FieldDefinitionImpl fieldIdentifier = createFieldDefinition("identifier", fieldTypeFactory.stringType()).withReadOnly(
+                true);
         FieldDefinitionImpl fieldPackageName = createFieldDefinition("packageName", fieldTypeFactory.stringType()).withReadOnly(
                 true);
         FieldDefinitionImpl fieldFileName = createFieldDefinition("fileName", fieldTypeFactory.stringType()).withReadOnly(true);
 
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.beans.plugins.Plugin");
+        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.core.data.beans.Plugin");
         dataDefinition.withField(fieldName);
         dataDefinition.withField(fieldDescription);
         dataDefinition.withField(fieldVersion);
-        dataDefinition.withField(fieldPublisher);
-        dataDefinition.withField(fieldActive);
+        dataDefinition.withField(fieldVendor);
+        dataDefinition.withField(fieldStatus);
         dataDefinition.withField(fieldBase);
-        dataDefinition.withField(fieldCodeId);
+        dataDefinition.withField(fieldIdentifier);
         dataDefinition.withField(fieldPackageName);
         dataDefinition.withField(fieldFileName);
 

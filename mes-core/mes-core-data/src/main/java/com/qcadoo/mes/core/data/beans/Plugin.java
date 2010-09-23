@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.beans.plugins;
+package com.qcadoo.mes.core.data.beans;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +14,7 @@ public final class Plugin {
 
     private String name;
 
-    private String publisher;
+    private String vendor;
 
     private String version;
 
@@ -22,13 +22,12 @@ public final class Plugin {
 
     private boolean deleted;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean active;
+    private String status;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean base;
 
-    private String codeId;
+    private String identifier;
 
     private String packageName;
 
@@ -74,14 +73,6 @@ public final class Plugin {
         this.name = name;
     }
 
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(final String publisher) {
-        this.publisher = publisher;
-    }
-
     public String getVersion() {
         return version;
     }
@@ -90,28 +81,12 @@ public final class Plugin {
         this.version = version;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setActive(final boolean active) {
-        this.active = active;
-    }
-
-    public String getCodeId() {
-        return codeId;
-    }
-
-    public void setCodeId(final String codeId) {
-        this.codeId = codeId;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(final String packageName) {
-        this.packageName = packageName;
+    public void setIdentifier(final String identifier) {
+        this.identifier = identifier;
     }
 
     public String getFileName() {
@@ -120,6 +95,30 @@ public final class Plugin {
 
     public void setFileName(final String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(final String vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(final String status) {
+        this.status = status;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(final String packageName) {
+        this.packageName = packageName;
     }
 
 }
