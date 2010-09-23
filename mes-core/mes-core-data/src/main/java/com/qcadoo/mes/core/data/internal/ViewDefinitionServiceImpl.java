@@ -113,7 +113,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.grid");
         windowDefinition.setBackButton(false);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "test");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "products");
 
         GridComponent grid = new GridComponent("beansAGrid", windowDefinition, null, null);
         grid.setCorrespondingViewName("test.form");
@@ -140,7 +140,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.form");
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "test");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "products");
         viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "getBeanAName"));
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
