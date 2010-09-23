@@ -10,7 +10,7 @@ String ctx = request.getContextPath();
     </head>
     <body>
         <h1>Pobierz moduł</h1>
-        <form method="post" action="<%=ctx%>/upload.html" enctype="multipart/form-data">
+        <form method="post" action="<%=ctx%>/download.html" enctype="multipart/form-data">
             <input type="file" name="file"/>
             <input type="submit" value="Pobierz"/>
         </form>
