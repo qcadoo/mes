@@ -16,4 +16,6 @@ public interface ViewDefinitionService {
 
     List<ViewDefinition> getAllViews();
 
+    void initViews();
+
 }

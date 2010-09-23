@@ -1,10 +1,10 @@
-package com.qcadoo.mes.beans.test;
+package com.qcadoo.mes.beans.sample;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public final class TestParentDatabaseObject {
+public final class SampleParentDatabaseObject {
 
     private Long id;
 
@@ -12,10 +12,10 @@ public final class TestParentDatabaseObject {
 
     private boolean deleted;
 
-    public TestParentDatabaseObject() {
+    public SampleParentDatabaseObject() {
     }
 
-    public TestParentDatabaseObject(final Long id) {
+    public SampleParentDatabaseObject(final Long id) {
         this.id = id;
     }
 

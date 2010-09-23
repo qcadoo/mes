@@ -45,13 +45,13 @@
 		<beans:property name="dataSource" ref="dataSource" />
 		<beans:property name="usersByUsernameQuery">
 			<beans:value>
-				SELECT USERNAME, PASSWORD, not deleted as enabled FROM Users WHERE
+				SELECT USERNAME, PASSWORD, not deleted as enabled FROM UsersUser WHERE
 				USERNAME=?
             </beans:value>
 		</beans:property>
 		<beans:property name="authoritiesByUsernameQuery">
-			<beans:value>SELECT U.username, G.role as authority FROM Users U JOIN
-				Groups G ON u.usergroup_id = G.id WHERE U.username=?</beans:value>
+			<beans:value>SELECT U.username, G.role as authority FROM UsersUser U JOIN
+				UsersGroup G ON u.usergroup_id = G.id WHERE U.username=?</beans:value>
 		</beans:property>
 	</beans:bean>
 

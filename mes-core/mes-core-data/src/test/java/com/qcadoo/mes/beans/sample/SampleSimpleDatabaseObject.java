@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.test;
+package com.qcadoo.mes.beans.sample;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public final class TestSimpleDatabaseObject {
+public final class SampleSimpleDatabaseObject {
 
     private Long id;
 
@@ -49,12 +49,12 @@ public final class TestSimpleDatabaseObject {
 
     private boolean deleted;
 
-    private TestParentDatabaseObject belongsTo;
+    private SampleParentDatabaseObject belongsTo;
 
-    public TestSimpleDatabaseObject() {
+    public SampleSimpleDatabaseObject() {
     }
 
-    public TestSimpleDatabaseObject(final Long id) {
+    public SampleSimpleDatabaseObject(final Long id) {
         this.id = id;
     }
 
@@ -90,11 +90,11 @@ public final class TestSimpleDatabaseObject {
         this.deleted = deleted;
     }
 
-    public TestParentDatabaseObject getBelongsTo() {
+    public SampleParentDatabaseObject getBelongsTo() {
         return belongsTo;
     }
 
-    public void setBelongsTo(final TestParentDatabaseObject belongsTo) {
+    public void setBelongsTo(final SampleParentDatabaseObject belongsTo) {
         this.belongsTo = belongsTo;
     }
 

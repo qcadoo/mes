@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.test;
+package com.qcadoo.mes.beans.sample;
 
 import com.qcadoo.mes.core.data.beans.Entity;
 import com.qcadoo.mes.core.data.model.DataDefinition;

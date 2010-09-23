@@ -16,8 +16,8 @@ import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.beans.test.TestParentDatabaseObject;
-import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
+import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
@@ -114,7 +114,7 @@ public abstract class DataAccessTest {
 
         parentDataDefinition = new DataDefinitionImpl("parent", "parent.entity", dataAccessService);
         parentDataDefinition.withField(parentFieldDefinitionName);
-        parentDataDefinition.setFullyQualifiedClassName(TestParentDatabaseObject.class.getCanonicalName());
+        parentDataDefinition.setFullyQualifiedClassName(SampleParentDatabaseObject.class.getCanonicalName());
 
         given(dataDefinitionService.get("parent", "entity")).willReturn(parentDataDefinition);
 
@@ -147,7 +147,7 @@ public abstract class DataAccessTest {
         dataDefinition.withField(fieldDefinitionRetired);
         dataDefinition.withField(fieldDefinitionBirthDate);
         dataDefinition.withField(fieldDefinitionBelongsTo);
-        dataDefinition.setFullyQualifiedClassName(TestSimpleDatabaseObject.class.getCanonicalName());
+        dataDefinition.setFullyQualifiedClassName(SampleSimpleDatabaseObject.class.getCanonicalName());
 
         given(dataDefinitionService.get("simple", "entity")).willReturn(dataDefinition);
 

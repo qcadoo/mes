@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public final class DataAccessServiceSaveTest extends DataAccessTest {
@@ -25,7 +25,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", 66);
 
-        TestSimpleDatabaseObject databaseObject = new TestSimpleDatabaseObject();
+        SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject();
         databaseObject.setName("Mr T");
         databaseObject.setAge(66);
 
@@ -44,14 +44,14 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         entity.setField("name", "Mr T");
         entity.setField("age", 66);
 
-        TestSimpleDatabaseObject existingDatabaseObject = new TestSimpleDatabaseObject();
+        SampleSimpleDatabaseObject existingDatabaseObject = new SampleSimpleDatabaseObject();
         existingDatabaseObject.setId(1L);
         existingDatabaseObject.setName("Mr X");
         existingDatabaseObject.setAge(33);
 
         given(criteria.uniqueResult()).willReturn(existingDatabaseObject);
 
-        TestSimpleDatabaseObject databaseObject = new TestSimpleDatabaseObject();
+        SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject();
         databaseObject.setId(1L);
         databaseObject.setName("Mr T");
         databaseObject.setAge(66);

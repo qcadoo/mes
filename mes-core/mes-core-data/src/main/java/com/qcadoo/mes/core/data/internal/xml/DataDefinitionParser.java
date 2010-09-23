@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.api.ViewDefinitionService;
 import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.data.internal.model.FieldDefinitionImpl;
@@ -53,6 +54,9 @@ public class DataDefinitionParser {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private ViewDefinitionService viewDefinitionService;
+
+    @Autowired
     private DataAccessService dataAccessService;
 
     @Autowired
@@ -72,13 +76,15 @@ public class DataDefinitionParser {
         LOG.info("Reading data definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:META-INF/definition/*.xml");
+            Resource[] resources = applicationContext.getResources("classpath*:META-INF/definition/*");
             for (Resource resource : resources) {
                 parse(resource.getInputStream());
             }
         } catch (IOException e) {
             LOG.error("Cannot read data definition", e);
         }
+
+        viewDefinitionService.initViews();
     }
 
     public void parse(final InputStream dataDefinitionInputStream) {
@@ -109,6 +115,7 @@ public class DataDefinitionParser {
         String modelName = getStringAttribute(reader, "name");
 
         LOG.info("Reading model " + modelName + " for plugin " + pluginIdentifier);
+        System.out.println("Reading model " + modelName + " for plugin " + pluginIdentifier);
 
         DataDefinitionImpl dataDefinition = new DataDefinitionImpl(pluginIdentifier, getStringAttribute(reader, "name"),
                 dataAccessService);
@@ -191,16 +198,18 @@ public class DataDefinitionParser {
                 getStringAttribute(reader, "joinField"));
     }
 
-    private FieldType getBelongsToType(final XMLStreamReader reader) {
+    private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {
         boolean lazy = getBooleanAttribute(reader, "lazy", true);
-        String pluginIdentifier = getStringAttribute(reader, "plugin");
+        String plugin = getStringAttribute(reader, "plugin");
         String modelName = getStringAttribute(reader, "model");
         String lookupFieldName = getStringAttribute(reader, "lookupField");
 
+        lazy = false; // TODO
+
         if (lazy) {
-            return fieldTypeFactory.lazyBelongsToType(pluginIdentifier, modelName, lookupFieldName);
+            return fieldTypeFactory.lazyBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName, lookupFieldName);
         } else {
-            return fieldTypeFactory.eagerBelongsToType(pluginIdentifier, modelName, lookupFieldName);
+            return fieldTypeFactory.eagerBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName, lookupFieldName);
         }
     }
 
@@ -228,7 +237,7 @@ public class DataDefinitionParser {
         } else if ("boolean".equals(fieldType)) {
             type = fieldTypeFactory.booleanType();
         } else if ("belongsTo".equals(fieldType)) {
-            type = getBelongsToType(reader);
+            type = getBelongsToType(reader, pluginIdentifier);
         } else if ("hasMany".equals(fieldType)) {
             type = getHasManyType(reader, pluginIdentifier);
         } else if ("enum".equals(fieldType)) {

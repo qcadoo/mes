@@ -23,8 +23,8 @@ import org.junit.matchers.JUnitMatchers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
-import com.qcadoo.mes.beans.test.CustomEntityService;
-import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.CustomEntityService;
+import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.api.DataAccessService;
 import com.qcadoo.mes.core.data.api.DataDefinitionService;
 import com.qcadoo.mes.core.data.api.DictionaryService;
@@ -127,10 +127,10 @@ public class DataDefinitionParserTest {
 
         // then
         assertEquals("simpleDatabaseObject", dataDefinition.getName());
-        assertEquals("com.qcadoo.mes.beans.test.TestSimpleDatabaseObject", dataDefinition.getFullyQualifiedClassName());
-        assertThat(dataDefinition.getInstanceForEntity(), instanceOf(TestSimpleDatabaseObject.class));
-        assertEquals("test", dataDefinition.getPluginIdentifier());
-        assertEquals(TestSimpleDatabaseObject.class, dataDefinition.getClassForEntity());
+        assertEquals("com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject", dataDefinition.getFullyQualifiedClassName());
+        assertThat(dataDefinition.getInstanceForEntity(), instanceOf(SampleSimpleDatabaseObject.class));
+        assertEquals("sample", dataDefinition.getPluginIdentifier());
+        assertEquals(SampleSimpleDatabaseObject.class, dataDefinition.getClassForEntity());
         assertTrue(dataDefinition.isDeletable());
         assertFalse(dataDefinition.isVirtualTable());
         assertFalse(dataDefinition.isCoreTable());
@@ -181,7 +181,7 @@ public class DataDefinitionParserTest {
         assertEquals("person", getField(dataDefinition.getField("children").getType(), "entityName"));
         assertNotNull(dataDefinition.getField("children2"));
         assertEquals("child2", ((HasManyType) (dataDefinition.getField("children2")).getType()).getFieldName());
-        assertEquals("test", getField(dataDefinition.getField("children2").getType(), "pluginIdentifier"));
+        assertEquals("sample", getField(dataDefinition.getField("children2").getType(), "pluginIdentifier"));
         assertEquals("person", getField(dataDefinition.getField("children2").getType(), "entityName"));
         assertThat(dataDefinition.getField("children2").getType(), instanceOf(HasManyType.class));
         assertNotNull(dataDefinition.getField("typeOfMaterial"));
@@ -300,7 +300,7 @@ public class DataDefinitionParserTest {
     private DataDefinition parseAndGetDataDefinition() {
         // when
         dataDefinitionParser.parse(xml);
-        DataDefinition dataDefinition = dataDefinitionService.get("test", "simpleDatabaseObject");
+        DataDefinition dataDefinition = dataDefinitionService.get("sample", "simpleDatabaseObject");
         return dataDefinition;
     }
 

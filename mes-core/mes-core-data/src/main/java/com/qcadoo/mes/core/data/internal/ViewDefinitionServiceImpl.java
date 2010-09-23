@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +45,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private Map<String, ViewDefinition> viewDefinitions;
 
-    @PostConstruct
+    @Override
     public void initViews() {
         viewDefinitions = new HashMap<String, ViewDefinition>();
         viewDefinitions.put("products.productGridView", createProductGridView());
@@ -55,8 +53,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinitions.put("products.substituteDetailsView", createProductSubstituteDetailsView());
         viewDefinitions.put("products.substituteComponentDetailsView", createProductSubstituteComponentDetailsView());
 
-        viewDefinitions.put("test.grid", createTestGridView());
-        viewDefinitions.put("test.form", createTestFormView());
+        viewDefinitions.put("products.grid", createTestGridView());
+        viewDefinitions.put("products.form", createTestFormView());
 
         // viewDefinitions.put("products.orderGridView", createOrderGridView());
         // viewDefinitions.put("products.orderDetailsView", createOrderDetailsView());
@@ -108,15 +106,15 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinitionImpl createTestGridView() {
-        DataDefinition testADD = dataDefinitionService.get("test", "testBeanA");
+        DataDefinition testADD = dataDefinitionService.get("products", "testBeanA");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.grid");
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "products.grid");
         windowDefinition.setBackButton(false);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.grid", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products.grid", windowDefinition, "products");
 
         GridComponent grid = new GridComponent("beansAGrid", windowDefinition, null, null);
-        grid.setCorrespondingViewName("test.form");
+        grid.setCorrespondingViewName("products.form");
         grid.addOptions("paging", "true");
         grid.addOptions("sortable", "true");
         grid.addOptions("filter", "true");
@@ -134,13 +132,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private ViewDefinitionImpl createTestFormView() {
-        DataDefinition testADD = dataDefinitionService.get("test", "testBeanA");
-        DataDefinition testBDD = dataDefinitionService.get("test", "testBeanB");
-        DataDefinition testCDD = dataDefinitionService.get("test", "testBeanC");
+        DataDefinition testADD = dataDefinitionService.get("products", "testBeanA");
+        DataDefinition testBDD = dataDefinitionService.get("products", "testBeanB");
+        DataDefinition testCDD = dataDefinitionService.get("products", "testBeanC");
 
-        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "test.form");
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "products.form");
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test.form", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products.form", windowDefinition, "products");
         viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "getBeanAName"));
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);

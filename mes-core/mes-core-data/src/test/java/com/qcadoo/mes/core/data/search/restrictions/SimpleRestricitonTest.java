@@ -14,7 +14,7 @@ import org.hibernate.impl.CriteriaImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.DataAccessTest;
 import com.qcadoo.mes.core.data.search.HibernateRestriction;
 import com.qcadoo.mes.core.data.search.Restriction;
@@ -22,13 +22,13 @@ import com.qcadoo.mes.core.data.search.Restrictions;
 
 public final class SimpleRestricitonTest extends DataAccessTest {
 
-    private TestSimpleDatabaseObject simpleDatabaseObject = null;
+    private SampleSimpleDatabaseObject simpleDatabaseObject = null;
 
     private Criteria criteria = null;
 
     @Before
     public void init() {
-        simpleDatabaseObject = new TestSimpleDatabaseObject(1L);
+        simpleDatabaseObject = new SampleSimpleDatabaseObject(1L);
         simpleDatabaseObject.setName("Mr T");
         simpleDatabaseObject.setAge(66);
 

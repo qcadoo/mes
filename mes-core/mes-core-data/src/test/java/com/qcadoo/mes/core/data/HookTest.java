@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.beans.test.CustomEntityService;
-import com.qcadoo.mes.beans.test.TestSimpleDatabaseObject;
+import com.qcadoo.mes.beans.sample.CustomEntityService;
+import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.core.data.beans.Entity;
 
 public class HookTest extends DataAccessTest {
@@ -58,10 +58,10 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        TestSimpleDatabaseObject databaseObject = new TestSimpleDatabaseObject(1L);
+        SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
         given(
-                sessionFactory.getCurrentSession().createCriteria(TestSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
+                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
         dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
@@ -99,10 +99,10 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        TestSimpleDatabaseObject databaseObject = new TestSimpleDatabaseObject(1L);
+        SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
         given(
-                sessionFactory.getCurrentSession().createCriteria(TestSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
+                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
         dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
@@ -122,10 +122,10 @@ public class HookTest extends DataAccessTest {
         entity.setField("name", null);
         entity.setField("age", null);
 
-        TestSimpleDatabaseObject databaseObject = new TestSimpleDatabaseObject(1L);
+        SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
         given(
-                sessionFactory.getCurrentSession().createCriteria(TestSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
+                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
                         .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
 
         dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
