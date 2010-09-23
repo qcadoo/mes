@@ -160,7 +160,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
         for (ColumnDefinition column : columns) {
             List<String> messageCodes = new LinkedList<String>();
             messageCodes.add(getViewName() + "." + getPath() + ".column." + column.getName());
-            messageCodes.add(getDataDefinition().getName() + "." + column.getName() + ".label");
+            messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), column.getName()));
             translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
         }
 

@@ -122,10 +122,9 @@ public class EntityComboBox extends AbstractComponent<EntityComboBoxValue> {
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
-        DataDefinition parentDefinition = getParentContainer().getDataDefinition();
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewName() + "." + getPath() + ".label");
-        messageCodes.add(parentDefinition.getName() + "." + getName() + ".label");
+        messageCodes.add(translationService.getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
     }
 
