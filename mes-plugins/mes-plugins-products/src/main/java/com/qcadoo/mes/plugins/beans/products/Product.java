@@ -36,6 +36,10 @@ public final class Product {
     @JoinColumn(name = "id")
     private List<Substitute> substitutes;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private List<ProductInstruction> instructions;
+
     public Long getId() {
         return id;
     }
@@ -114,6 +118,14 @@ public final class Product {
 
     public void setSubstitutes(List<Substitute> substitutes) {
         this.substitutes = substitutes;
+    }
+
+    public List<ProductInstruction> getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(List<ProductInstruction> instructions) {
+        this.instructions = instructions;
     }
 
 }

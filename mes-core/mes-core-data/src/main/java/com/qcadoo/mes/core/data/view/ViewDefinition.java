@@ -16,7 +16,7 @@ public interface ViewDefinition extends CastableComponent<Object> {
     RootComponent getRoot();
 
     ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalViewValue, final Set<String> pathsToUpdate);
+            final ViewValue<Object> globalViewValue, final Set<String> pathsToUpdate, String triggerComponentName);
 
     void cleanSelectedEntities(final Map<String, Entity> selectedEntities, final Set<String> pathsToUpdate);
 

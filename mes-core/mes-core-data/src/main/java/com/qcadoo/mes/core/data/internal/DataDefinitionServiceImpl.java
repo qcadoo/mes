@@ -156,6 +156,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldUnit = createFieldDefinition("unit", fieldTypeFactory.stringType());
         FieldDefinitionImpl fieldSubstitutes = createFieldDefinition("substitutes",
                 fieldTypeFactory.hasManyType("products", "substitute", "product"));
+        FieldDefinitionImpl fieldInstructions = createFieldDefinition("instructions",
+                fieldTypeFactory.hasManyType("products", "instruction", "product"));
 
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.plugins.beans.products.Product");
         dataDefinition.withField(fieldNumber);
@@ -165,6 +167,7 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         dataDefinition.withField(fieldCategory);
         dataDefinition.withField(fieldUnit);
         dataDefinition.withField(fieldSubstitutes);
+        dataDefinition.withField(fieldInstructions);
 
         return dataDefinition;
     }
@@ -327,7 +330,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
         FieldDefinitionImpl fieldDefaultInstruction = createFieldDefinition("defaultInstruction",
                 fieldTypeFactory.eagerBelongsToType("products", "instruction", "name")).withReadOnly(true);
         FieldDefinitionImpl fieldInstruction = createFieldDefinition("instruction",
-                fieldTypeFactory.eagerBelongsToType("products", "instruction", "name"));
+                fieldTypeFactory.eagerBelongsToType("products", "instruction", "name")).withValidator(
+                fieldValidationFactory.required());
         FieldDefinitionImpl fieldPlannedQuantity = createFieldDefinition("plannedQuantity", fieldTypeFactory.decimalType());
         FieldDefinitionImpl fieldDoneQuantity = createFieldDefinition("doneQuantity", fieldTypeFactory.decimalType());
         FieldDefinitionImpl fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom", fieldTypeFactory.dateType())

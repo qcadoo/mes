@@ -67,17 +67,17 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     @Override
     public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalViewValue, final Set<String> pathsToUpdate) {
+            final ViewValue<Object> globalViewValue, final Set<String> pathsToUpdate, String triggerComponentName) {
         ViewValue<Object> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate));
-        callOnViewHook(value);
+        callOnViewHook(value, triggerComponentName);
         return value;
 
     }
 
-    private void callOnViewHook(final ViewValue<Object> value) {
+    private void callOnViewHook(final ViewValue<Object> value, String triggerComponentName) {
         if (viewHook != null) {
-            viewHook.callWithViewValue(value);
+            viewHook.callWithViewValue(value, triggerComponentName);
         }
     }
 

@@ -65,8 +65,8 @@ public final class HookDefinitionImpl implements HookDefinition {
     }
 
     @Override
-    public void callWithViewValue(final ViewValue<Object> value) {
-        call(value);
+    public void callWithViewValue(final ViewValue<Object> value, String triggerComponentName) {
+        call(value, triggerComponentName);
     }
 
 }

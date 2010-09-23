@@ -104,9 +104,9 @@ public class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
         if (arguments.get("entityId") != null) {
             Entity entity = viewDefinition.getRoot().getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, null);
+            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, null, "");
         } else {
-            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, null);
+            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, null, "");
         }
     }
 
@@ -160,7 +160,8 @@ public class CrudController {
 
             viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
 
-            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
+            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate,
+                    componentName);
 
             return newViewValue;
         } catch (JSONException e) {
@@ -196,7 +197,7 @@ public class CrudController {
 
             selectedEntities.put(componentName, entity);
 
-            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate, componentName);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -229,7 +230,7 @@ public class CrudController {
 
             viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
 
-            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate, componentName);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
