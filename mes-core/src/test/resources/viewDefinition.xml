@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:plugin name="sample" xmlns:qcd="http://www.qcadoo.com/">
+	<view name="grid" model="person">
+		<window name="mainWindow">
+			<grid name="beansAGrid" correspondingView="products.form - todo">
+				<column name="name">
+					<field model="person" field="name" />
+				</column>
+				<options>
+					<paging />
+					<sortable />
+					<filter />
+					<multiselect />
+					<height>450</height>
+				</options>
+			</grid>
+			<options>
+				<backButton>false</backButton>
+			</options>
+		</window>
+	</view>
+	<view name="form" model="person">
+		<window name="mainWindow">
+			<form name="beanAForm">
+				<input name="name" field="name" />
+				<checkbox name="active" field="name" />
+				<select name="selectBeanB" field="beanB" context="" />
+				<select name="selectBeanA" field="beanA"
+					context="#{mainWindow.beanAForm.beanB}.beansA" />
+				<input name="beanM" field="nameM" />
+				<input name="beanB" field="beanB.name" />
+				<input name="beanC" field="beanB.beanC.name" />
+				<grid name="beansCGrig" context="beansC">
+					<column name="name">
+						<field field="name" />
+					</column>
+				</grid>
+			</form>
+			<grid name="beansBGrig" context="#{mainWindow.beanAForm.beansCGrig}.beansB">
+				<column name="name">
+					<field field="name" />
+				</column>
+			</grid>
+			<form name="beanCForm" context="#{mainWindow.beansBGrig}.beanC">
+				<input name="name" field="name" />
+				<form name="formA" field="beanA">
+					<input name="name" field="name" />
+				</form>
+				<grid name="beansBGrig" context="beansB">
+					<column name="name">
+						<field field="name" />
+					</column>
+				</grid>
+				<input name="nameB" context="#{mainWindow.beanCForm.beansBGrig}.name" />
+			</form>
+			<form name="beanBForm" context="#{mainWindow.beansBGrig}">
+				<input name="name" field="name" />
+			</form>
+		</window>
+		<onSave bean="com.qcadoo.mes.beans.sample.CustomEntityService"
+			method="onView" />
+	</view>
+	<view name="viewName" forEntity="simpleDatabaseObject">
+		<window name="window">
+			<form name="form" field="" context="">
+
+				<options>
+					<header />
+				</options>
+			</form>
+			<button url="" context="" />
+			<grid name="" field="" context="" correspondingViewName="">
+				<column name="" aggregation="sum" expression="" width="">
+					<field plugin="" model="" field="" />
+				</column>
+				<searchableFields>
+					<field plugin="" model="" field="" />
+				</searchableFields>
+				<orderableFields>
+					<field plugin="" model="" field="" />
+				</orderableFields>
+				<options>
+					<header />
+				</options>
+			</grid>
+			<options>
+				<backButton />
+				<header />
+			</options>
+		</window>
+	</view>
+</qcd:plugin>
