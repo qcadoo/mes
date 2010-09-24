@@ -3,8 +3,10 @@ package com.qcadoo.mes.beans.users;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "users_group")
 public final class UsersGroup {
 
     @Id

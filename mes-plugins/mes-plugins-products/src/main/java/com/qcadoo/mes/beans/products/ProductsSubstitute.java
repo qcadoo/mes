@@ -9,10 +9,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
+@Table(name = "products_substitute")
 public final class ProductsSubstitute {
 
     @Id
@@ -107,7 +109,7 @@ public final class ProductsSubstitute {
         return components;
     }
 
-    public void setComponents(List<ProductsSubstituteComponent> components) {
+    public void setComponents(final List<ProductsSubstituteComponent> components) {
         this.components = components;
     }
 }

@@ -8,8 +8,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "products_substitute_component")
 public final class ProductsSubstituteComponent {
 
     @Id

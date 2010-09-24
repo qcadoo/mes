@@ -8,8 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "plugins_test_bean_a")
 public class ProductsTestBeanA {
 
     @Id
@@ -85,7 +87,7 @@ public class ProductsTestBeanA {
         return beanA;
     }
 
-    public void setBeanA(ProductsTestBeanA beanA) {
+    public void setBeanA(final ProductsTestBeanA beanA) {
         this.beanA = beanA;
     }
 
@@ -93,7 +95,7 @@ public class ProductsTestBeanA {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(final Boolean active) {
         this.active = active;
     }
 

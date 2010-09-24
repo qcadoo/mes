@@ -3,8 +3,10 @@ package com.qcadoo.mes.beans.dictionaries;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "dictionaries_dictionary")
 public final class DictionariesDictionary {
 
     @Id

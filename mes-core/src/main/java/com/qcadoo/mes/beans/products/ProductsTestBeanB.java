@@ -8,8 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "plugins_test_bean_b")
 public class ProductsTestBeanB {
 
     @Id
