@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.api.PluginManagementService;
+import com.qcadoo.mes.core.enums.PluginStatus;
 
 @Service
 public final class PluginManagementServiceImpl implements PluginManagementService {
@@ -25,50 +26,46 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementServiceImpl.class);
 
     @Override
-    public List<PluginsPlugin> getPluginsWithStatus(final String status) {
-        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("status", status))
-                .add(Restrictions.eq("deleted", false));
-
+    public List<PluginsPlugin> getActivePlugins() {
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
+                .add(Restrictions.eq("status", PluginStatus.ACTIVE.getValue())).add(Restrictions.eq("deleted", false));
+        LOG.debug("get plugins with status: " + PluginStatus.ACTIVE.getValue());
         return criteria.list();
     }
 
     @Override
-    public PluginsPlugin getPluginWithStatus(final String identifier, final String status) {
+    public PluginsPlugin getPluginByIdentifierAndStatus(final String identifier, final String status) {
         checkNotNull(identifier, "identifier must be given");
-        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("identifier", identifier))
+        checkNotNull(status, "status must be given");
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
+                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("status", status))
                 .add(Restrictions.eq("deleted", false));
-        if (status != null) {
-            criteria.add(Restrictions.eq("status", status));
-        }
-
-        PluginsPlugin databaseEntity = (PluginsPlugin) criteria.uniqueResult();
-
-        if (databaseEntity == null) {
-            return null;
-        }
-
-        return databaseEntity;
+        LOG.debug("get plugin with identifier: " + identifier + " and status: " + status);
+        return (PluginsPlugin) criteria.uniqueResult();
     }
 
     @Override
-    public PluginsPlugin getPlugin(final String entityId) {
+    public PluginsPlugin getPluginById(final String entityId) {
         checkNotNull(entityId, "entityId must be given");
-        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.idEq(Long.valueOf(entityId)))
-                .add(Restrictions.eq("deleted", false));
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
+                .add(Restrictions.idEq(Long.valueOf(entityId))).add(Restrictions.eq("deleted", false));
+        LOG.debug("get plugin with id: " + entityId);
+        return (PluginsPlugin) criteria.uniqueResult();
+    }
 
+    @Override
+    public PluginsPlugin getPluginByNameAndVendor(final String name, final String vendor) {
+        checkNotNull(vendor, "vendor must be given");
+        checkNotNull(name, "name must be given");
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("name", name))
+                .add(Restrictions.eq("vendor", vendor)).add(Restrictions.eq("deleted", false));
+        LOG.debug("get plugin with name: " + name + " and vendor: " + vendor);
         return (PluginsPlugin) criteria.uniqueResult();
     }
 
     @Override
     public void savePlugin(final PluginsPlugin plugin) {
         getCurrentSession().save(plugin);
-    }
-
-    @Override
-    public PluginsPlugin getInstalledPlugin(final PluginsPlugin plugin) {
-        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("name", plugin.getName()))
-                .add(Restrictions.eq("vendor", plugin.getVendor())).add(Restrictions.eq("deleted", false));
-        return (PluginsPlugin) criteria.uniqueResult();
     }
 
     private Session getCurrentSession() {

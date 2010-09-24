@@ -2,11 +2,8 @@ package com.qcadoo.mes.plugins.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.jar.JarFile;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
@@ -22,24 +19,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.api.PluginManagementService;
+import com.qcadoo.mes.core.enums.PluginStatus;
+import com.qcadoo.mes.plugins.exception.PluginException;
+import com.qcadoo.mes.plugins.util.PluginUtil;
 
 @Controller
 public class PluginManagementController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementController.class);
-
-    @Autowired
-    private PluginManagementService pluginManagementService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     private static final String libPath = "WEB-INF/lib/";
 
@@ -47,9 +38,19 @@ public class PluginManagementController {
 
     private static final String tmpPath = "WEB-INF/tmp/";
 
-    private static final String descriptor = "plugin.xml";
+    @Autowired
+    private PluginManagementService pluginManagementService;
 
-    String webappPath;
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    private String webappPath;
+
+    @PostConstruct
+    public void init() {
+        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
+        LOG.debug(webappPath);
+    }
 
     // TODO KRNA show errors
     @RequestMapping(value = "download", method = RequestMethod.GET)
@@ -62,21 +63,20 @@ public class PluginManagementController {
     @RequestMapping(value = "download", method = RequestMethod.POST)
     @Transactional
     public String handleDownload(@RequestParam("file") final MultipartFile file) {
-        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
         if (!file.isEmpty()) {
             try {
                 // TODO KRNA max upload
-                File pluginFile = transferFile(file);
-                PluginsPlugin plugin = readDescriptor(pluginFile);
-                PluginsPlugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
+                File pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
+                PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
+                PluginsPlugin databasePlugin = pluginManagementService.getPluginByNameAndVendor(plugin.getName(),
+                        plugin.getVendor());
                 if (databasePlugin != null) {
                     pluginFile.delete();
                     LOG.error("Plugin was installed");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true";
                 } else {
                     plugin.setDeleted(false);
-                    // TODO KRNA enum status
-                    plugin.setStatus("downloaded");
+                    plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
                     plugin.setBase(false);
                     plugin.setFileName(file.getOriginalFilename());
 
@@ -103,103 +103,20 @@ public class PluginManagementController {
 
     }
 
-    private File transferFile(final MultipartFile file) throws IllegalStateException, IOException {
-        File pluginFile = null;
-        File tmpDir = new File(webappPath + tmpPath);
-        if (!tmpDir.exists()) {
-            tmpDir.mkdir();
-        }
-        pluginFile = new File(webappPath + tmpPath + file.getOriginalFilename());
-        file.transferTo(pluginFile);
-
-        return pluginFile;
-    }
-
-    private PluginsPlugin readDescriptor(final File file) throws IOException, ParserConfigurationException, SAXException {
-        // TODO KRNA enum
-        String[] pluginProperties = { "identifier", "name", "packageName", "version", "vendor", "description" };
-        PluginsPlugin plugin = new PluginsPlugin();
-        JarFile jarFile = new JarFile(file);
-
-        InputStream in = jarFile.getInputStream(jarFile.getEntry(descriptor));
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        Document doc = db.parse(in);
-
-        doc.getDocumentElement().normalize();
-
-        for (String property : pluginProperties) {
-            String value = null;
-            Node fstNode = doc.getElementsByTagName(property).item(0);
-            if (fstNode.getNodeType() == Node.ELEMENT_NODE && fstNode.getFirstChild() != null) {
-                value = ((Element) fstNode).getFirstChild().getNodeValue();
-            }
-
-            if (property.equals("identifier")) {
-                plugin.setIdentifier(value);
-            } else if (property.equals("name")) {
-                plugin.setName(value);
-            } else if (property.equals("packageName")) {
-                plugin.setPackageName(value);
-            } else if (property.equals("version")) {
-                plugin.setVersion(value);
-            } else if (property.equals("vendor")) {
-                plugin.setVendor(value);
-            } else if (property.equals("description")) {
-                plugin.setDescription(value);
-            }
-
-        }
-
-        return plugin;
-    }
-
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     @Transactional
     public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("remove");
-        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
-        removePlugin(entityId, webappPath + tmpPath);
-
-        return mav;
-    }
-
-    private void removePlugin(final String entityId, final String path) {
-
-        PluginsPlugin databasePlugin = pluginManagementService.getPlugin(entityId);
-
-        databasePlugin.setDeleted(true);
-
-        pluginManagementService.savePlugin(databasePlugin);
-
-        removePluginFile(path + databasePlugin.getFileName());
-    }
-
-    private void removePluginFile(final String fileName) {
-        // A File object to represent the filename
-        File f = new File(fileName);
-        // TODO KRNA error
-        // Make sure the file or directory exists and isn't write protected
-        if (!f.exists())
-            throw new IllegalArgumentException("Delete: no such file or directory: " + fileName);
-        // TODO KRNA error
-        if (!f.canWrite())
-            throw new IllegalArgumentException("Delete: write protected: " + fileName);
-        // TODO KRNA error
-        // If it is a directory, make sure it is empty
-        if (f.isDirectory()) {
-            throw new IllegalArgumentException("Delete: this is a directory: " + fileName);
+        // TODO KRNA check plugin base
+        try {
+            removePlugin(entityId, webappPath + tmpPath);
+        } catch (PluginException e) {
+            LOG.error("Problem with removing plugin file");
+            // TODO KRNA return "redirect:page/plugins.pluginGridView.html?iframe=true";
         }
 
-        // Attempt to delete it
-        boolean success = f.delete();
-        // TODO KRNA error
-        if (!success)
-            throw new IllegalArgumentException("Delete: deletion failed");
-
+        return mav;
     }
 
     @RequestMapping(value = "enablePage", method = RequestMethod.GET)
@@ -212,56 +129,49 @@ public class PluginManagementController {
     @RequestMapping(value = "enable", method = RequestMethod.GET)
     @Transactional
     public String handleEnable(@RequestParam("entityId") final String entityId) {
-        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
-        LOG.debug(webappPath);
-        PluginsPlugin plugin = pluginManagementService.getPlugin(entityId);
+
+        PluginsPlugin plugin = pluginManagementService.getPluginById(entityId);
+        if (plugin.isBase()) {
+            LOG.error("Plugin is base");
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
         String pluginStatus = plugin.getStatus();
-        // TODO KRNA enum status
-        plugin.setStatus("active");
+        plugin.setStatus(PluginStatus.ACTIVE.getValue());
         pluginManagementService.savePlugin(plugin);
-        // TODO KRNA enum status
-        if (pluginStatus.equals("installed")) {
+        if (pluginStatus.equals(PluginStatus.INSTALLED.getValue())) {
             return "redirect:page/plugins.pluginGridView.html?iframe=true";
         } else {
-            boolean success = moveFile(plugin.getFileName());
-            if (!success)
-                // TODO KRNA error
-                throw new IllegalArgumentException("Move: move failed");
+            try {
+                PluginUtil.moveFile(webappPath + tmpPath + plugin.getFileName(), webappPath + libPath);
+            } catch (PluginException e) {
+                LOG.error("Problem with moving plugin file");
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            }
             return "redirect:enablePage.html";
         }
-    }
-
-    private boolean moveFile(final String fileName) {
-        // File (or directory) to be moved
-        File file = new File(webappPath + tmpPath + fileName);
-        // Destination directory
-        File dir = new File(webappPath + libPath);
-        // Move file to new directory
-        return file.renameTo(new File(dir, file.getName()));
     }
 
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
     @ResponseBody
     public String handleRestart() {
-        String[] commands = { "bash shutdown.sh", "bash startup.sh" };
-        // TODO KRNA path LOG.debug(webappPath + binPath);
-        File file = new File("/Users/krna/apache-tomcat-6.0.29/bin/");
+        String[] commandsStop = { "bash cd " + webappPath, "bash cd " + binPath, "bash shutdown.sh" };
+        String[] commandsStart = { "bash cd " + webappPath, "bash cd " + binPath, "bash startup.sh" };
         try {
             Runtime runtime = Runtime.getRuntime();
 
-            Process shutdownProcess = runtime.exec(commands[0], null, file);
+            Process shutdownProcess = runtime.exec(commandsStop);
             // TODO KRNA waiting
             shutdownProcess.waitFor();
             LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
             Thread.sleep(3000);
-            Process startupProcess = runtime.exec(commands[1], null, file);
+            Process startupProcess = runtime.exec(commandsStart);
             LOG.debug("Startup exit value: " + startupProcess.exitValue());
         } catch (IOException e) {
             // TODO KRNA error
-            e.printStackTrace();
+            LOG.error("Problem with restart server");
         } catch (InterruptedException e) {
             // TODO KRNA error
-            e.printStackTrace();
+            LOG.error("Problem with restart server");
         }
         return "ok";
     }
@@ -269,9 +179,12 @@ public class PluginManagementController {
     @RequestMapping(value = "disable", method = RequestMethod.GET)
     @Transactional
     public String getDisablePageView(@RequestParam("entityId") final String entityId) {
-        PluginsPlugin plugin = pluginManagementService.getPlugin(entityId);
-        // TODO KRNA enum status
-        plugin.setStatus("installed");
+        PluginsPlugin plugin = pluginManagementService.getPluginById(entityId);
+        if (plugin.isBase()) {
+            LOG.error("Plugin is base");
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
+        plugin.setStatus(PluginStatus.INSTALLED.getValue());
         pluginManagementService.savePlugin(plugin);
         return "redirect:page/plugins.pluginGridView.html?iframe=true";
     }
@@ -281,37 +194,21 @@ public class PluginManagementController {
     public ModelAndView getDeinstallPageView(@RequestParam("entityId") final String entityId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("enable");
-        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
-        PluginsPlugin databaseEntity = pluginManagementService.getPlugin(entityId);
-        // TODO KRNA check sequence
-        removePlugin(entityId, webappPath + libPath);
+        // TODO KRNA check plugin base
+        PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
+        try {
+            removePlugin(entityId, webappPath + libPath);
+        } catch (PluginException e) {
+            LOG.error("Problem with removing plugin file");
+            // TODO KRNA return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
 
-        removeResources("js", "js", databaseEntity.getIdentifier());
-        removeResources("css", "css", databaseEntity.getIdentifier());
-        removeResources("img", "img", databaseEntity.getIdentifier());
-        removeResources("jsp", "WEB-INF/jsp", databaseEntity.getIdentifier());
+        PluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
+        PluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
+        PluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
+        PluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
 
         return mav;
-    }
-
-    private void removeResources(final String type, final String targetPath, final String identifier) {
-        LOG.info("Removing resources " + type + " ...");
-
-        deleteDirectory(new File(webappPath + "/" + targetPath + "/" + identifier));
-    }
-
-    private boolean deleteDirectory(final File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                } else {
-                    files[i].delete();
-                }
-            }
-        }
-        return (path.delete());
     }
 
     @RequestMapping(value = "update", method = RequestMethod.GET)
@@ -324,14 +221,25 @@ public class PluginManagementController {
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @Transactional
     public String handleUpdate(@RequestParam("file") final MultipartFile file) {
-        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
         if (!file.isEmpty()) {
             try {
                 // TODO KRNA max upload
-                File pluginFile = transferFile(file);
-                PluginsPlugin plugin = readDescriptor(pluginFile);
-                PluginsPlugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
-                if (databasePlugin.getStatus().equals("downloaded")) {
+                File pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
+                PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
+                PluginsPlugin databasePlugin = pluginManagementService.getPluginByNameAndVendor(plugin.getName(),
+                        plugin.getVendor());
+                if (databasePlugin == null) {
+                    pluginFile.delete();
+                    LOG.error("Plugin not found in database");
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                }
+                if (databasePlugin.isBase()) {
+                    pluginFile.delete();
+                    LOG.error("Plugin is base");
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                }
+                if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
+                    pluginFile.delete();
                     LOG.info("Plugin hasn't apropriate status");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true";
                 }
@@ -341,21 +249,18 @@ public class PluginManagementController {
                     return "redirect:page/plugins.pluginGridView.html?iframe=true";
                 } else {
                     plugin.setDeleted(false);
-                    // TODO KRNA enum status
                     plugin.setStatus(databasePlugin.getStatus());
                     plugin.setBase(false);
                     plugin.setFileName(file.getOriginalFilename());
                     databasePlugin.setDeleted(true);
                     pluginManagementService.savePlugin(plugin);
                     pluginManagementService.savePlugin(databasePlugin);
-                    removeResources("js", "js", plugin.getIdentifier());
-                    removeResources("css", "css", plugin.getIdentifier());
-                    removeResources("img", "img", plugin.getIdentifier());
-                    removeResources("jsp", "WEB-INF/jsp", plugin.getIdentifier());
-                    removePluginFile(webappPath + tmpPath + databasePlugin.getFileName());
-                    boolean success = moveFile(plugin.getFileName());
-                    if (!success)
-                        throw new IllegalArgumentException("Move: move failed");
+                    PluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
+                    PluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
+                    PluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
+                    PluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
+                    PluginUtil.removePluginFile(webappPath + tmpPath + databasePlugin.getFileName());
+                    PluginUtil.moveFile(webappPath + tmpPath + plugin.getFileName(), webappPath + libPath);
                     return "redirect:enablePage.html";
                 }
             } catch (IllegalStateException e) {
@@ -370,12 +275,26 @@ public class PluginManagementController {
             } catch (SAXException e) {
                 LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            } catch (PluginException e) {
+                LOG.error("Problem with moving/removing plugin file");
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
             }
         } else {
             LOG.error("Chosen file is empty");
             return "redirect:page/plugins.pluginGridView.html?iframe=true";
         }
 
+    }
+
+    private void removePlugin(final String entityId, final String path) throws PluginException {
+
+        PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
+
+        databasePlugin.setDeleted(true);
+
+        pluginManagementService.savePlugin(databasePlugin);
+
+        PluginUtil.removePluginFile(path + databasePlugin.getFileName());
     }
 
 }
