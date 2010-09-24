@@ -15,13 +15,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
-import com.qcadoo.mes.core.internal.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.internal.types.HasManyType;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.search.Restrictions;
+import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
+import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
@@ -141,7 +141,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
                     "Grid and hasMany relation have different data definitions");
             SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find();
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
-                    getDataDefinition().getField(hasManyType.getFieldName()), entity.getId()));
+                    getDataDefinition().getField(hasManyType.getJoinFieldName()), entity.getId()));
             SearchResult rs = searchCriteriaBuilder.list();
             return new ViewValue<ListData>(generateListData(rs));
         } else {

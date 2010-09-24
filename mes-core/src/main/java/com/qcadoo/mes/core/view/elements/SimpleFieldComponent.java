@@ -11,8 +11,8 @@ import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
-import com.qcadoo.mes.core.validation.ValidationError;
+import com.qcadoo.mes.core.api.TranslationService;
+import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
@@ -86,7 +86,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     }
 
     private String getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {
-        ValidationError value = null;
+        ErrorMessage value = null;
 
         if (getSourceComponent() != null) {
             value = getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());

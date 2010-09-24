@@ -8,9 +8,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
-import com.qcadoo.mes.core.internal.types.HasManyType;
-import com.qcadoo.mes.core.validation.ValidationError;
+import com.qcadoo.mes.core.api.TranslationService;
+import com.qcadoo.mes.core.types.HasManyType;
+import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.view.Component;
 import com.qcadoo.mes.core.view.ContainerComponent;
@@ -53,7 +53,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue) {
         if (entity != null) {
-            for (ValidationError validationError : entity.getGlobalErrors()) {
+            for (ErrorMessage validationError : entity.getGlobalErrors()) {
                 viewValue.addErrorMessage(validationError.getMessage()); // TODO
             }
         }

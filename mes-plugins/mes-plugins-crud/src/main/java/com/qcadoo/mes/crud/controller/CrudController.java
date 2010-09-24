@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
-import com.qcadoo.mes.core.internal.TranslationService;
 import com.qcadoo.mes.core.view.SaveableComponent;
 import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.ViewValue;

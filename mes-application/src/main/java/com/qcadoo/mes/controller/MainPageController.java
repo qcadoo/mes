@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
-import com.qcadoo.mes.core.internal.TranslationServiceImpl;
 
 @Controller
 public final class MainPageController {
@@ -20,7 +20,7 @@ public final class MainPageController {
     private ViewDefinitionService viewDefinitionService;
 
     @Autowired
-    private TranslationServiceImpl translationService;
+    private TranslationService translationService;
 
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {

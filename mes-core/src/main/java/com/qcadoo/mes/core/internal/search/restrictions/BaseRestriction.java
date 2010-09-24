@@ -1,6 +1,5 @@
 package com.qcadoo.mes.core.internal.search.restrictions;
 
-import com.qcadoo.mes.core.search.HibernateRestriction;
 import com.qcadoo.mes.core.search.Restriction;
 
 public abstract class BaseRestriction implements Restriction, HibernateRestriction {

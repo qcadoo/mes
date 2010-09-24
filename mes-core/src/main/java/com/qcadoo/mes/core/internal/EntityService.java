@@ -8,10 +8,12 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.types.BelongsToType;
+import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
+import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
 import com.qcadoo.mes.core.internal.types.PasswordType;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.core.types.BelongsToType;
 
 @Service
 public final class EntityService {
@@ -47,7 +49,7 @@ public final class EntityService {
     public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToType) {
+        } else if (fieldDefinition.getType() instanceof EagerBelongsToType) {
             return getBelongsToField(databaseEntity, fieldDefinition);
         } else {
             return getPrimitiveField(databaseEntity, fieldDefinition);
@@ -69,7 +71,7 @@ public final class EntityService {
         return genericEntity;
     }
 
-    public Object convertToDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+    public Object convertToDatabaseEntity(final InternalDataDefinition dataDefinition, final Entity genericEntity,
             final Object existingDatabaseEntity) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
@@ -84,7 +86,7 @@ public final class EntityService {
         return databaseEntity;
     }
 
-    private Object getDatabaseEntity(final DataDefinition dataDefinition, final Entity genericEntity,
+    private Object getDatabaseEntity(final InternalDataDefinition dataDefinition, final Entity genericEntity,
             final Object existingDatabaseEntity) {
         Object databaseEntity = null;
 
@@ -104,15 +106,11 @@ public final class EntityService {
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
         DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
-        if (belongsToFieldType.isEagerFetch()) {
-            Object value = getField(databaseEntity, fieldDefinition.getName());
-            if (value != null) {
-                return convertToGenericEntity(referencedDataDefinition, value);
-            } else {
-                return null;
-            }
+        Object value = getField(databaseEntity, fieldDefinition.getName());
+        if (value != null) {
+            return convertToGenericEntity(referencedDataDefinition, value);
         } else {
-            throw new IllegalStateException("belongsTo type with lazy loading is not supported yet");
+            return null;
         }
     }
 

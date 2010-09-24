@@ -25,9 +25,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.core.api.DataAccessService;
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
+import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
@@ -184,7 +184,7 @@ public final class DataDefinitionParser {
     }
 
     private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {
-        boolean lazy = false; // TODO masz getBooleanAttribute(reader, "lazy", true);
+        boolean lazy = getBooleanAttribute(reader, "lazy", true);
         String plugin = getStringAttribute(reader, "plugin");
         String modelName = getStringAttribute(reader, "model");
         String lookupFieldName = getStringAttribute(reader, "lookupField");

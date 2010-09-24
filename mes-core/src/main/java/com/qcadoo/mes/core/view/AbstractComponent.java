@@ -14,12 +14,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
-import com.qcadoo.mes.core.internal.types.BelongsToType;
-import com.qcadoo.mes.core.internal.types.HasManyType;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.validation.ValidationError;
+import com.qcadoo.mes.core.types.BelongsToType;
+import com.qcadoo.mes.core.types.HasManyType;
+import com.qcadoo.mes.core.validation.ErrorMessage;
 
 public abstract class AbstractComponent<T> implements Component<T> {
 
@@ -317,7 +317,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return value;
     }
 
-    protected final ValidationError getFieldError(final Entity entity, final String path) {
+    protected final ErrorMessage getFieldError(final Entity entity, final String path) {
         if (entity == null || path == null) {
             return null;
         }

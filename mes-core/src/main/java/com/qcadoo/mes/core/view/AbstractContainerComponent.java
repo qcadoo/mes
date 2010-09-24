@@ -9,7 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
+import com.qcadoo.mes.core.api.TranslationService;
 
 public abstract class AbstractContainerComponent<T> extends AbstractComponent<T> implements ContainerComponent<T> {
 

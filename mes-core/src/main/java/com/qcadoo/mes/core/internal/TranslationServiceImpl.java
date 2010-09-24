@@ -11,8 +11,9 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.validation.ValidationError;
+import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.ViewDefinition;
 
 @Controller
@@ -168,10 +169,10 @@ public final class TranslationServiceImpl implements TranslationService {
     }
 
     public void translateEntity(final Entity entity, final Locale locale) {
-        for (ValidationError error : entity.getGlobalErrors()) {
+        for (ErrorMessage error : entity.getGlobalErrors()) {
             error.setMessage(translate(error.getMessage(), error.getVars(), locale));
         }
-        for (ValidationError error : entity.getErrors().values()) {
+        for (ErrorMessage error : entity.getErrors().values()) {
             error.setMessage(translate(error.getMessage(), error.getVars(), locale));
         }
     }

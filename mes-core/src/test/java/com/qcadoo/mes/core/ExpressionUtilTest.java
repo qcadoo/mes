@@ -10,8 +10,8 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
 import com.qcadoo.mes.core.internal.types.IntegerType;
 import com.qcadoo.mes.core.internal.types.StringType;
-import com.qcadoo.mes.core.internal.utils.ExpressionUtil;
 import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.core.utils.ExpressionUtil;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 
 public class ExpressionUtilTest {

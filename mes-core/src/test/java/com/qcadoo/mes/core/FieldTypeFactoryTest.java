@@ -20,7 +20,7 @@ import org.junit.matchers.JUnitMatchers;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.internal.types.BelongsToType;
+import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
 import com.qcadoo.mes.core.internal.types.BooleanType;
 import com.qcadoo.mes.core.internal.types.DateTimeType;
 import com.qcadoo.mes.core.internal.types.DateType;
@@ -205,7 +205,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent", "entity", "name");
 
         // then
-        assertThat(fieldType, is(BelongsToType.class));
+        assertThat(fieldType, is(EagerBelongsToType.class));
         assertFalse(fieldType.isSearchable());
         assertFalse(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());

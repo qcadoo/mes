@@ -10,10 +10,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.types.EnumeratedFieldType;
 import com.qcadoo.mes.core.types.FieldType;
-import com.qcadoo.mes.core.validation.ValidationError;
+import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
@@ -64,7 +64,7 @@ public final class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
         ViewValue<ComboBoxValue> newViewValue = new ViewValue<ComboBoxValue>(comboValue);
 
-        ValidationError validationError = getFieldError(entity, getFieldPath());
+        ErrorMessage validationError = getFieldError(entity, getFieldPath());
         if (validationError != null && validationError.getMessage() != null) {
             newViewValue.addErrorMessage(validationError.getMessage());
         }

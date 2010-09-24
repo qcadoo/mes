@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
+import com.qcadoo.mes.core.api.TranslationService;
 
 public interface ViewDefinition extends CastableComponent<Object> {
 

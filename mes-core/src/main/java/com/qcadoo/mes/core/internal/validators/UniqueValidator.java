@@ -1,11 +1,11 @@
 package com.qcadoo.mes.core.internal.validators;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.internal.search.restrictions.RestrictionOperator;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.core.search.RestrictionOperator;
 import com.qcadoo.mes.core.search.Restrictions;
+import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.validation.FieldValidator;
 

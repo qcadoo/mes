@@ -7,7 +7,6 @@ import com.qcadoo.mes.core.internal.search.restrictions.BelongsToRestriction;
 import com.qcadoo.mes.core.internal.search.restrictions.IsNotNullRestriction;
 import com.qcadoo.mes.core.internal.search.restrictions.IsNullRestriction;
 import com.qcadoo.mes.core.internal.search.restrictions.LikeRestriction;
-import com.qcadoo.mes.core.internal.search.restrictions.RestrictionOperator;
 import com.qcadoo.mes.core.internal.search.restrictions.SimpleRestriction;
 import com.qcadoo.mes.core.model.FieldDefinition;
 

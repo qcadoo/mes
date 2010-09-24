@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.HookDefinition;
 import com.qcadoo.mes.core.view.RootComponent;
 import com.qcadoo.mes.core.view.ViewDefinition;

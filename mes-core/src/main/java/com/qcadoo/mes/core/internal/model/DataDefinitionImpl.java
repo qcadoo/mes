@@ -7,15 +7,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.mes.core.api.DataAccessService;
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.search.SearchCriteriaImpl;
 import com.qcadoo.mes.core.internal.types.PriorityType;
-import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.model.HookDefinition;
 import com.qcadoo.mes.core.search.SearchCriteria;
+import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.validation.EntityValidator;
 
@@ -32,7 +31,7 @@ import com.qcadoo.mes.core.validation.EntityValidator;
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.owns com.qcadoo.mes.core.data.definition.GridDefinition
  */
-public final class DataDefinitionImpl implements DataDefinition {
+public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private final DataAccessService dataAccessService;
 
@@ -109,6 +108,7 @@ public final class DataDefinitionImpl implements DataDefinition {
         return name;
     }
 
+    @Override
     public String getPluginIdentifier() {
         return pluginIdentifier;
     }
@@ -246,7 +246,7 @@ public final class DataDefinitionImpl implements DataDefinition {
             throw new UnsupportedOperationException("virtual tables are not supported");
         } else {
             try {
-                return DataDefinition.class.getClassLoader().loadClass(getFullyQualifiedClassName());
+                return getClass().getClassLoader().loadClass(getFullyQualifiedClassName());
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
             }

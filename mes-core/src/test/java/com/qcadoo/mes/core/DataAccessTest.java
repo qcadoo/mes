@@ -18,9 +18,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.api.DataAccessService;
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.DictionaryService;
+import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.DataAccessServiceImpl;
 import com.qcadoo.mes.core.internal.EntityService;
 import com.qcadoo.mes.core.internal.PriorityService;

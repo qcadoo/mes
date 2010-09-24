@@ -27,7 +27,7 @@ public final class EntityComboBoxValue {
     @Override
     public String toString() {
         if (selectedValue == null) {
-            return null;
+            return ""; // FIXME masz toString cannot return null
         }
         return selectedValue.toString();
     }

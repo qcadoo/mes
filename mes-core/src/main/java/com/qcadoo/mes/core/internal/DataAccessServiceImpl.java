@@ -21,16 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.core.api.DataAccessService;
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
 import com.qcadoo.mes.core.internal.search.SearchResultImpl;
+import com.qcadoo.mes.core.internal.search.restrictions.HibernateRestriction;
 import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.search.HibernateRestriction;
 import com.qcadoo.mes.core.search.Order;
 import com.qcadoo.mes.core.search.Restriction;
 import com.qcadoo.mes.core.search.SearchCriteria;
 import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.validation.ValidationError;
+import com.qcadoo.mes.core.validation.ErrorMessage;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {
@@ -51,7 +51,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public Entity save(final DataDefinition dataDefinition, final Entity genericEntity) {
+    public Entity save(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(genericEntity, "entity must be given");
 
@@ -92,7 +92,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional(readOnly = true)
-    public Entity get(final DataDefinition dataDefinition, final Long entityId) {
+    public Entity get(final InternalDataDefinition dataDefinition, final Long entityId) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkNotNull(entityId, "entityId must be given");
 
@@ -107,7 +107,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void delete(final DataDefinition dataDefinition, final Long... entityIds) {
+    public void delete(final InternalDataDefinition dataDefinition, final Long... entityIds) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkState(dataDefinition.isDeletable(), "entity must be deletable");
         checkState(entityIds.length > 0, "entityIds must be given");
@@ -157,7 +157,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void moveTo(final DataDefinition dataDefinition, final Long entityId, final int position) {
+    public void moveTo(final InternalDataDefinition dataDefinition, final Long entityId, final int position) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
         checkNotNull(entityId, "entityId must be given");
@@ -174,7 +174,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
-    public void move(final DataDefinition dataDefinition, final Long entityId, final int offset) {
+    public void move(final InternalDataDefinition dataDefinition, final Long entityId, final int offset) {
         checkNotNull(dataDefinition, "dataDefinition must be given");
         checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
         checkNotNull(entityId, "entityId must be given");
@@ -189,7 +189,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         priorityService.move(dataDefinition, databaseEntity, 0, offset);
     }
 
-    private Object getExistingDatabaseEntity(final DataDefinition dataDefinition, final Entity entity) {
+    private Object getExistingDatabaseEntity(final InternalDataDefinition dataDefinition, final Entity entity) {
         Object existingDatabaseEntity = null;
 
         if (entity.getId() != null) {
@@ -200,7 +200,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return existingDatabaseEntity;
     }
 
-    private void deleteEntity(final DataDefinition dataDefinition, final Long entityId) {
+    private void deleteEntity(final InternalDataDefinition dataDefinition, final Long entityId) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
 
         checkNotNull(databaseEntity, "entity %s#%s cannot be found", dataDefinition.getName(), entityId);
@@ -217,9 +217,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     private Criteria getCriteria(final SearchCriteria searchCriteria) {
-        Criteria criteria = getCurrentSession().createCriteria(searchCriteria.getDataDefinition().getClassForEntity());
+        InternalDataDefinition dataDefinition = (InternalDataDefinition) searchCriteria.getDataDefinition();
+        Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
 
-        if (searchCriteria.getDataDefinition().isDeletable()) {
+        if (dataDefinition.isDeletable()) {
             entityService.addDeletedRestriction(criteria);
         }
 
@@ -262,7 +263,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
     }
 
-    private Object getDatabaseEntity(final DataDefinition dataDefinition, final Long entityId, final boolean withDeleted) {
+    private Object getDatabaseEntity(final InternalDataDefinition dataDefinition, final Long entityId, final boolean withDeleted) {
         if (withDeleted || !dataDefinition.isDeletable()) {
             return getCurrentSession().get(dataDefinition.getClassForEntity(), entityId);
         } else {
@@ -285,10 +286,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private void copyValidationErrors(final DataDefinition dataDefinition, final Entity genericEntityToSave,
             final Entity genericEntity) {
-        for (ValidationError error : genericEntity.getGlobalErrors()) {
+        for (ErrorMessage error : genericEntity.getGlobalErrors()) {
             genericEntityToSave.addGlobalError(error.getMessage(), error.getVars());
         }
-        for (Map.Entry<String, ValidationError> error : genericEntity.getErrors().entrySet()) {
+        for (Map.Entry<String, ErrorMessage> error : genericEntity.getErrors().entrySet()) {
             genericEntityToSave.addError(dataDefinition.getField(error.getKey()), error.getValue().getMessage(), error.getValue()
                     .getVars());
         }

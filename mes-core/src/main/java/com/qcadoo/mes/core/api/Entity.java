@@ -9,15 +9,14 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.validation.ValidationError;
+import com.qcadoo.mes.core.validation.ErrorMessage;
 
 /**
  * Object represents data from the database tables - with and without custom fields - and virtual tables - build using only custom
  * fields. All fields - database's fields and custom fields - are aggregated into key-value map. The key is the name of the field
- * from its definition - {@link com.qcadoo.mes.core.data.internal.definition.FieldDefinition#getName()}.
+ * from its definition - {@link com.qcadoo.mes.core.data.definition.FieldDefinition#getName()}.
  * 
- * Value type must be the same as the type defined in
- * {@link com.qcadoo.mes.core.data.internal.definition.FieldDefinition#getType()}.
+ * Value type must be the same as the type defined in {@link com.qcadoo.mes.core.data.definition.FieldDefinition#getType()}.
  */
 public final class Entity {
 
@@ -25,9 +24,9 @@ public final class Entity {
 
     private final Map<String, Object> fields;
 
-    private final List<ValidationError> globalErrors = new ArrayList<ValidationError>();
+    private final List<ErrorMessage> globalErrors = new ArrayList<ErrorMessage>();
 
-    private final Map<String, ValidationError> errors = new HashMap<String, ValidationError>();
+    private final Map<String, ErrorMessage> errors = new HashMap<String, ErrorMessage>();
 
     public Entity(final Long id, final Map<String, Object> fields) {
         this.id = id;
@@ -63,22 +62,22 @@ public final class Entity {
     }
 
     public void addGlobalError(final String message, final String... vars) {
-        globalErrors.add(new ValidationError(message, vars));
+        globalErrors.add(new ErrorMessage(message, vars));
     }
 
     public void addError(final FieldDefinition fieldDefinition, final String message, final String... vars) {
-        errors.put(fieldDefinition.getName(), new ValidationError(message, vars));
+        errors.put(fieldDefinition.getName(), new ErrorMessage(message, vars));
     }
 
-    public List<ValidationError> getGlobalErrors() {
+    public List<ErrorMessage> getGlobalErrors() {
         return globalErrors;
     }
 
-    public Map<String, ValidationError> getErrors() {
+    public Map<String, ErrorMessage> getErrors() {
         return errors;
     }
 
-    public ValidationError getError(final String fieldName) {
+    public ErrorMessage getError(final String fieldName) {
         return errors.get(fieldName);
     }
 

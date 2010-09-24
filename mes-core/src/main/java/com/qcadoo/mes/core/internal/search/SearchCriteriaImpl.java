@@ -10,10 +10,12 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.search.Order;
 import com.qcadoo.mes.core.search.Restriction;
 import com.qcadoo.mes.core.search.SearchCriteria;
+import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.view.elements.GridComponent;
 
@@ -83,7 +85,7 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
 
     @Override
     public SearchResult list() {
-        return dataDefinition.find(this);
+        return ((InternalDataDefinition) dataDefinition).find(this);
     }
 
     @Override

@@ -5,9 +5,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
+import org.mockito.BDDMockito;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
+import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 
 public class EntityDataUtilsGenerateEntityDataTest {
@@ -30,10 +31,10 @@ public class EntityDataUtilsGenerateEntityDataTest {
         given(f3.getName()).willReturn("testField3");
         given(f3.getValue("testField3Val")).willReturn("testField3Ok");
 
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(null, null, null);
-        dataDefinition.withField(f1);
-        dataDefinition.withField(f2);
-        dataDefinition.withField(f3);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        BDDMockito.given(dataDefinition.getField("testField1")).willReturn(f1);
+        BDDMockito.given(dataDefinition.getField("testField2")).willReturn(f2);
+        BDDMockito.given(dataDefinition.getField("testField3")).willReturn(f3);
 
         // when
         Entity stringEntity = EntityDataUtils.generateEntityData(entity, dataDefinition);

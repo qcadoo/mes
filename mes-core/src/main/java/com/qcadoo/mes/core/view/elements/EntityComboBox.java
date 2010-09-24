@@ -13,14 +13,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.TranslationService;
-import com.qcadoo.mes.core.internal.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.internal.types.BelongsToType;
-import com.qcadoo.mes.core.internal.types.HasManyType;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.search.Restrictions;
+import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
+import com.qcadoo.mes.core.types.BelongsToType;
+import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
@@ -85,7 +85,7 @@ public final class EntityComboBox extends AbstractComponent<EntityComboBoxValue>
             if (selectedEntity != null) {
                 SearchCriteriaBuilder searchCriteriaBuilder = hasManyType.getDataDefinition().find();
                 searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(hasManyType
-                        .getDataDefinition().getField(hasManyType.getFieldName()), selectedEntity.getId()));
+                        .getDataDefinition().getField(hasManyType.getJoinFieldName()), selectedEntity.getId()));
                 SearchResult rs = searchCriteriaBuilder.list();
 
                 for (Entity e : rs.getEntities()) {

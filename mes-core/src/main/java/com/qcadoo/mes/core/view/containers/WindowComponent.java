@@ -3,7 +3,7 @@ package com.qcadoo.mes.core.view.containers;
 import java.util.Locale;
 import java.util.Map;
 
-import com.qcadoo.mes.core.internal.TranslationService;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.view.AbstractRootComponent;
 

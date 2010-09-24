@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import com.qcadoo.mes.core.DataAccessTest;
 import com.qcadoo.mes.core.search.Restrictions;
-import com.qcadoo.mes.core.search.SearchCriteria;
 
 public final class SearchCriteriaBuilderTest extends DataAccessTest {
 

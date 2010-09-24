@@ -16,6 +16,7 @@ public interface ViewDefinitionService {
 
     List<ViewDefinition> getAllViews();
 
+    // TODO masz to remove
     void initViews();
 
 }

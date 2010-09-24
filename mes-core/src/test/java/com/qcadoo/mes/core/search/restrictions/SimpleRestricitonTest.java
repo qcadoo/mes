@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.core.DataAccessTest;
-import com.qcadoo.mes.core.search.HibernateRestriction;
+import com.qcadoo.mes.core.internal.search.restrictions.HibernateRestriction;
 import com.qcadoo.mes.core.search.Restriction;
 import com.qcadoo.mes.core.search.Restrictions;
 

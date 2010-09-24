@@ -6,8 +6,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.utils.ExpressionUtil;
 import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.core.utils.ExpressionUtil;
 
 /**
  * Columns defines one column on grid. It can be a one-field column or composite column.
