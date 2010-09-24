@@ -43,13 +43,13 @@ public class PluginManagementController {
 
     private static final String libPath = "WEB-INF/lib/";
 
-    private static final String binPath = "../bin/";
+    // private static final String binPath = "../bin/";
 
     private static final String tmpPath = "/Users/krna/Downloads/tmp/";
 
     private static final String descriptor = "plugin.xml";
 
-    String webappPath;
+    private String webappPath;
 
     @RequestMapping(value = "download", method = RequestMethod.GET)
     public ModelAndView getDownloadPageView() {
@@ -180,12 +180,12 @@ public class PluginManagementController {
         File f = new File(fileName);
 
         // Make sure the file or directory exists and isn't write protected
-        if (!f.exists())
+        if (!f.exists()) {
             throw new IllegalArgumentException("Delete: no such file or directory: " + fileName);
-
-        if (!f.canWrite())
+        }
+        if (!f.canWrite()) {
             throw new IllegalArgumentException("Delete: write protected: " + fileName);
-
+        }
         // If it is a directory, make sure it is empty
         if (f.isDirectory()) {
             throw new IllegalArgumentException("Delete: this is a directory: " + fileName);
@@ -194,9 +194,9 @@ public class PluginManagementController {
         // Attempt to delete it
         boolean success = f.delete();
 
-        if (!success)
+        if (!success) {
             throw new IllegalArgumentException("Delete: deletion failed");
-
+        }
     }
 
     @RequestMapping(value = "enablePage", method = RequestMethod.GET)
@@ -221,8 +221,9 @@ public class PluginManagementController {
             return "redirect:page/plugins.pluginGridView.html?iframe=true";
         } else {
             boolean success = moveFile(plugin.getFileName());
-            if (!success)
+            if (!success) {
                 throw new IllegalArgumentException("Move: move failed");
+            }
             return "redirect:enablePage.html";
         }
     }
@@ -348,8 +349,9 @@ public class PluginManagementController {
                 removeResources("img", "img", plugin.getIdentifier());
                 removeResources("jsp", "WEB-INF/jsp", plugin.getIdentifier());
                 boolean success = moveFile(plugin.getFileName());
-                if (!success)
+                if (!success) {
                     throw new IllegalArgumentException("Move: move failed");
+                }
                 return "redirect:enablePage.html";
             }
         } else {

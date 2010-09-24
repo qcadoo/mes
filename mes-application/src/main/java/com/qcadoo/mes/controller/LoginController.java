@@ -12,39 +12,28 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.core.internal.TranslationService;
 
 @Controller
-public class LoginController {
+public final class LoginController {
 
     @Autowired
     private TranslationService translationService;
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
-    public ModelAndView getLoginPageView(@RequestParam(required = false) String login_error,
-            @RequestParam(required = false) Boolean iframe, @RequestParam(required = false) Boolean logout,
-            @RequestParam(required = false) Boolean timeout, final Locale locale) {
-
-        if (iframe == null) {
-            iframe = false;
-        }
-        if (logout == null) {
-            logout = false;
-        }
-        if (timeout == null) {
-            timeout = false;
-        }
+    public ModelAndView getLoginPageView(@RequestParam(required = false) final String loginError,
+            @RequestParam(required = false, defaultValue = "false") final Boolean iframe,
+            @RequestParam(required = false, defaultValue = "false") final Boolean logout,
+            @RequestParam(required = false, defaultValue = "false") final Boolean timeout, final Locale locale) {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("login");
-
         mav.addObject("translation", translationService.getLoginTranslations(locale));
         mav.addObject("currentLanguage", locale.getLanguage());
-
         mav.addObject("iframe", iframe);
 
         if (logout) {
             mav.addObject("successMessage", "login.message.logout");
         } else if (timeout) {
             mav.addObject("errorMessage", "login.message.timeout");
-        } else if (login_error != null) {
+        } else if (loginError != null) {
             mav.addObject("errorMessage", "login.message.error");
         } else if (iframe) {
             mav.addObject("errorMessage", "login.message.timeout");

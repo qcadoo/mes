@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ViewValue<T> {
+public final class ViewValue<T> {
 
     private Boolean visible;
 

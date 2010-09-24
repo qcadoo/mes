@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.qcadoo.com/plugin" xmlns="http://www.qcadoo.com/plugin">
+
+	<xs:element name="plugin">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="identifier" minOccurs="1" maxOccurs="1">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="[a-z][a-zA-Z0-9]*" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="packageName" minOccurs="1" maxOccurs="1">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="[a-z][a-z0-9]*(.[a-z][a-z0-9]*)*" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="version" minOccurs="1" maxOccurs="1">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="[0-9].[0-9](.[0.9])?" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="name" type="xs:string" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element name="vendor" type="xs:string" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element name="vendorUrl" type="xs:string" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element name="description" type="xs:string"
+					minOccurs="0" maxOccurs="1" />
+				<xs:element name="dependencies" type="xs:string"
+					minOccurs="0" maxOccurs="1" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

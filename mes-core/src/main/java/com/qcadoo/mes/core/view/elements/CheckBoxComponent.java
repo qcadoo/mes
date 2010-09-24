@@ -16,9 +16,11 @@ public final class CheckBoxComponent extends SimpleFieldComponent {
 
     @Override
     public String convertToViewValue(final String value) {
-        if ("true".equals(value))
+        if ("true".equals(value)) {
             return "1";
-        return "0";
+        } else {
+            return "0";
+        }
     }
 
     @Override

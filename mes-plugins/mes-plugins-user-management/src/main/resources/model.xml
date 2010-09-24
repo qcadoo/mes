@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<qcd:plugin name="users" xmlns:qcd="http://www.qcadoo.com/">
+<qcd:models plugin="users" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="user">
 		<string name="userName" >
 			<validatesPresence />
@@ -27,4 +27,4 @@
 			<validatesPresenceOnCreate />
 		</string>
 	</model>
-</qcd:plugin>
+</qcd:models>

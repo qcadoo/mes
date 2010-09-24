@@ -40,6 +40,10 @@ public final class LengthValidator implements FieldValidator {
 
         int length = value.toString().length();
 
+        return validateLength(fieldDefinition, validatedEntity, length);
+    }
+
+    private boolean validateLength(final FieldDefinition fieldDefinition, final Entity validatedEntity, final int length) {
         if (max != null && length > max) {
             validatedEntity.addError(fieldDefinition, errorMessage);
             return false;

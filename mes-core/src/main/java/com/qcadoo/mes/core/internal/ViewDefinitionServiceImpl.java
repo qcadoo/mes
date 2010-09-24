@@ -140,7 +140,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "products.form");
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products.form", windowDefinition, "products");
-        viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "getBeanAName"));
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
@@ -231,7 +230,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("ean", formDefinition, "ean", null));
         formDefinition.addComponent(new DynamicComboBox("category", formDefinition, "category", null));
         formDefinition.addComponent(new TextInputComponent("unit", formDefinition, "unit", null));
-        formDefinition.addComponent(new TextInputComponent("unit2", formDefinition, "unit2", null));
         windowDefinition.addComponent(formDefinition);
 
         GridComponent substituteGridDefinition = new GridComponent("substitutesGrid", windowDefinition, "substitutes", null);
@@ -683,28 +681,28 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
 
-        Component nameField = new TextInputComponent("name", formDefinition, "name", null);
+        Component<?> nameField = new TextInputComponent("name", formDefinition, "name", null);
         nameField.setDefaultEnabled(false);
         formDefinition.addComponent(nameField);
 
-        Component versionField = new TextInputComponent("version", formDefinition, "version", null);
+        Component<?> versionField = new TextInputComponent("version", formDefinition, "version", null);
         versionField.setDefaultEnabled(false);
         formDefinition.addComponent(versionField);
 
-        Component vendorField = new TextInputComponent("vendor", formDefinition, "vendor", null);
+        Component<?> vendorField = new TextInputComponent("vendor", formDefinition, "vendor", null);
         vendorField.setDefaultEnabled(false);
         formDefinition.addComponent(vendorField);
         // TODO KRNA textarea
-        Component descriptionField = new TextInputComponent("description", formDefinition, "description", null);
+        Component<?> descriptionField = new TextInputComponent("description", formDefinition, "description", null);
         descriptionField.setDefaultEnabled(false);
         formDefinition.addComponent(descriptionField);
 
-        Component statusField = new DynamicComboBox("status", formDefinition, "status", null);
+        Component<?> statusField = new DynamicComboBox("status", formDefinition, "status", null);
         statusField.setDefaultEnabled(false);
         formDefinition.addComponent(statusField);
 
         // TODO KRNA boolean
-        Component baseField = new CheckBoxComponent("base", formDefinition, "base", null);
+        Component<?> baseField = new CheckBoxComponent("base", formDefinition, "base", null);
         baseField.setDefaultEnabled(false);
         formDefinition.addComponent(baseField);
 

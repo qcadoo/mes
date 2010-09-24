@@ -100,7 +100,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
         parentEntity = entity;
         if (parentEntity == null) {
             parentEntity = selectedEntities.get(getPath());
-        } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
+        } else if (this instanceof ContainerComponent && fieldPath != null) {
             parentEntity = getFieldEntityValue(entity, fieldPath);
         }
 

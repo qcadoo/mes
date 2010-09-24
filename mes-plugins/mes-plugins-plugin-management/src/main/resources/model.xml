@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<qcd:plugin name="plugins" xmlns:qcd="http://www.qcadoo.com/">
+<qcd:models plugin="plugins" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="plugin">
 		<string name="name" readonly="true" >
 			<validatesPresenceOnCreate />
@@ -21,4 +21,4 @@
 		<string name="packageName" readonly="true" />
 		<string name="fileName" readonly="true" />
 	</model>
-</qcd:plugin>
+</qcd:models>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<qcd:plugin name="products" xmlns:qcd="http://www.qcadoo.com/">
+<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="testBeanA">
 		<string name="name" >
 			<validatesPresence />
@@ -26,4 +26,4 @@
 		<belongsTo name="beanA" model="testBeanA" lookupField="name" />
 		<hasMany name="beansB" model="testBeanB" joinField="beanC" />
 	</model>
-</qcd:plugin>
+</qcd:models>

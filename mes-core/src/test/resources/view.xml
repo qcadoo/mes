@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<qcd:plugin name="sample" xmlns:qcd="http://www.qcadoo.com/">
+<qcd:views plugin="sample" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="grid" model="person">
 		<window name="mainWindow">
 			<grid name="beansAGrid" correspondingView="products.form - todo">
@@ -89,4 +89,4 @@
 			</options>
 		</window>
 	</view>
-</qcd:plugin>
+</qcd:views>

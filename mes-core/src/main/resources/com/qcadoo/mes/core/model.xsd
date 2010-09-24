@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.qcadoo.com/" xmlns="http://www.qcadoo.com/">
+	targetNamespace="http://www.qcadoo.com/model" xmlns="http://www.qcadoo.com/model">
 
-	<xs:element name="plugin">
+	<xs:element name="models">
 		<xs:complexType>
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="model" type="modelType" />
-				<xs:element name="view" type="viewType" />
 			</xs:choice>
-			<xs:attribute name="name" type="identifierType" use="required" />
+			<xs:attribute name="plugin" type="identifierType" use="required" />
 		</xs:complexType>
 	</xs:element>
 
@@ -151,11 +150,6 @@
 	<xs:complexType name="priorityFieldType">
 		<xs:attribute name="name" type="identifierType" use="required" />
 		<xs:attribute name="scope" type="identifierType" use="required" />
-	</xs:complexType>
-
-	<xs:complexType name="viewType">
-		<xs:attribute name="name" type="identifierType" use="required" />
-		<xs:attribute name="forEntity" type="identifierType" use="required" />
 	</xs:complexType>
 
 	<xs:simpleType name="identifierType">

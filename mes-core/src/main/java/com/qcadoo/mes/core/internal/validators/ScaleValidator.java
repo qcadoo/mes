@@ -38,6 +38,10 @@ public final class ScaleValidator implements FieldValidator {
             return true;
         }
 
+        return validateScale(fieldDefinition, value, validatedEntity);
+    }
+
+    private boolean validateScale(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         int scale = ((BigDecimal) value).scale();
 
         if (max != null && scale > max) {

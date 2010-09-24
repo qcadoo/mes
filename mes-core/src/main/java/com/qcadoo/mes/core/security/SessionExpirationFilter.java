@@ -10,20 +10,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.InitializingBean;
+public final class SessionExpirationFilter implements Filter {
 
-public class SessionExpirationFilter implements Filter, InitializingBean {
-
-    public void afterPropertiesSet() throws Exception {
-    }
-
-    public void destroy() {
-    }
-
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    @Override
+    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
+            throws IOException, ServletException {
         if (!(request instanceof HttpServletRequest)) {
             return;
         }
@@ -32,28 +24,35 @@ public class SessionExpirationFilter implements Filter, InitializingBean {
         }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        HttpSession session = httpRequest.getSession(false);
-
-        if (session == null && httpRequest.getRequestedSessionId() != null && !httpRequest.isRequestedSessionIdValid()) {
-
-            if ("true".equals(httpRequest.getParameter("iframe"))) {
-                String targetUrl = httpRequest.getContextPath() + "/login.html?iframe=true";
-                httpResponse.sendRedirect(httpResponse.encodeRedirectURL(targetUrl));
-            } else if ("XMLHttpRequest".equals(httpRequest.getHeader("X-Requested-With"))) {
-                httpResponse.getOutputStream().println("sessionExpired");
-            } else {
-                String targetUrl = httpRequest.getContextPath() + "/login.html";
-                httpResponse.sendRedirect(httpResponse.encodeRedirectURL(targetUrl));
-            }
-            return;
+        if (httpRequest.getSession(false) == null && httpRequest.getRequestedSessionId() != null
+                && !httpRequest.isRequestedSessionIdValid()) {
+            redirectToLoginPage(httpRequest, response);
+        } else {
+            chain.doFilter(request, response);
         }
-
-        chain.doFilter(request, response);
     }
 
-    public void init(FilterConfig arg0) throws ServletException {
+    private void redirectToLoginPage(final HttpServletRequest httpRequest, final ServletResponse response) throws IOException {
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        if ("true".equals(httpRequest.getParameter("iframe"))) {
+            String targetUrl = httpRequest.getContextPath() + "/login.html?iframe=true";
+            httpResponse.sendRedirect(httpResponse.encodeRedirectURL(targetUrl));
+        } else if ("XMLHttpRequest".equals(httpRequest.getHeader("X-Requested-With"))) {
+            httpResponse.getOutputStream().println("sessionExpired");
+        } else {
+            String targetUrl = httpRequest.getContextPath() + "/login.html";
+            httpResponse.sendRedirect(httpResponse.encodeRedirectURL(targetUrl));
+        }
+    }
+
+    @Override
+    public void init(final FilterConfig filterConfig) throws ServletException {
+    }
+
+    @Override
+    public void destroy() {
     }
 
 }
