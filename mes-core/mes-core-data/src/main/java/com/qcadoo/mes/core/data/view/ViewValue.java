@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class ViewValue<T> {
 
-    private boolean visible = true;
+    private Boolean visible;
 
-    private boolean enabled = true;
+    private Boolean enabled;
 
     private final List<String> errorMessages = new ArrayList<String>();
 
@@ -28,19 +28,19 @@ public class ViewValue<T> {
         this.value = value;
     }
 
-    public boolean isVisible() {
+    public Boolean isVisible() {
         return visible;
     }
 
-    public void setVisible(final boolean visible) {
+    public void setVisible(final Boolean visible) {
         this.visible = visible;
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(final boolean enabled) {
+    public void setEnabled(final Boolean enabled) {
         this.enabled = enabled;
     }
 

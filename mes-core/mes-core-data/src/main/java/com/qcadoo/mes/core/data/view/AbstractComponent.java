@@ -48,6 +48,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private HookDefinition hookDefinition;
 
+    private boolean defaultEnabled = true;
+
+    private boolean defaultVisible = true;
+
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         this.name = name;
@@ -132,6 +136,13 @@ public abstract class AbstractComponent<T> implements Component<T> {
         // }
 
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
+
+        if (value.isEnabled() == null) {
+            value.setEnabled(defaultEnabled);
+        }
+        if (value.isVisible() == null) {
+            value.setVisible(defaultVisible);
+        }
 
         if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
             value.setEnabled(false);
@@ -421,6 +432,26 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     public void setViewName(final String viewName) {
         this.viewName = viewName;
+    }
+
+    @Override
+    public boolean isDefaultEnabled() {
+        return defaultEnabled;
+    }
+
+    @Override
+    public void setDefaultEnabled(boolean defaultEnabled) {
+        this.defaultEnabled = defaultEnabled;
+    }
+
+    @Override
+    public boolean isDefaultVisible() {
+        return defaultVisible;
+    }
+
+    @Override
+    public void setDefaultVisible(boolean defaultVisible) {
+        this.defaultVisible = defaultVisible;
     }
 
 }

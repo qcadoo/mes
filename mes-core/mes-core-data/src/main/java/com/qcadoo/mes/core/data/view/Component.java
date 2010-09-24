@@ -28,4 +28,12 @@ public interface Component<T> extends CastableComponent<T>, ListenableComponent,
 
     void updateTranslations(Map<String, String> translationsMap, final TranslationService translationService, final Locale locale);
 
+    public boolean isDefaultEnabled();
+
+    public void setDefaultEnabled(boolean defaultEnabled);
+
+    public boolean isDefaultVisible();
+
+    public void setDefaultVisible(boolean defaultVisible);
+
 }

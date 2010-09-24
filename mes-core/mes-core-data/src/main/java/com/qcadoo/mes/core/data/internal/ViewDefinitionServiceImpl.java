@@ -22,6 +22,7 @@ import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.data.model.DataDefinition;
 import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.view.Component;
 import com.qcadoo.mes.core.data.view.ViewDefinition;
 import com.qcadoo.mes.core.data.view.containers.FormComponent;
 import com.qcadoo.mes.core.data.view.containers.WindowComponent;
@@ -533,7 +534,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("doneQuantity", formDefinition, "doneQuantity", null));
         formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
         formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
-        formDefinition.addComponent(new TextInputComponent("startWorker", formDefinition, "startWorker", null));
+        Component startWorkerField = new TextInputComponent("startWorker", formDefinition, "startWorker", null);
+        startWorkerField.setDefaultEnabled(false);
+        formDefinition.addComponent(startWorkerField);
         formDefinition.addComponent(new TextInputComponent("endWorker", formDefinition, "endWorker", null));
 
         windowDefinition.addComponent(formDefinition);
