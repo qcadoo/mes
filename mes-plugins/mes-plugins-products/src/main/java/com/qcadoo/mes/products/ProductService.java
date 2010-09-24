@@ -77,6 +77,8 @@ public class ProductService {
                 if (selectedInstructinId == null && "mainWindow.detailsForm.product".equals(triggerComponentName)) {
                     instructionValue.getValue().setSelectedValue(defaultInstructionEntity.getId());
                 }
+            } else {
+                defaultInstructionValue.setValue("Koles zacznij okreslac instrukcje");
             }
 
         }

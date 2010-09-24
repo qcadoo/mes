@@ -19,6 +19,6 @@
 	<c:set var="headerLabel" value="${viewName}.${componentFullNameWithDots}.label"/>
 	${translationsMap[headerLabel]}
 	
-	<input type="checkbox" id="${componentFullName}_input" name="fields[${component.name}]" />
+	<input type="checkbox" id="${componentFullName}_input"  name="fields[${component.name}]" />
 	<span id="${componentFullName}_messagesSpan"></span>
 </div>
