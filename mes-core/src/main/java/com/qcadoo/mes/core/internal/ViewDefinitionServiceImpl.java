@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-<<<<<<< HEAD:mes-core/src/main/java/com/qcadoo/mes/core/internal/ViewDefinitionServiceImpl.java
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.PluginManagementService;
@@ -21,6 +20,7 @@ import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.core.view.Component;
 import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.containers.FormComponent;
 import com.qcadoo.mes.core.view.containers.WindowComponent;
@@ -31,27 +31,6 @@ import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.LinkButton;
 import com.qcadoo.mes.core.view.elements.TextInputComponent;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
-=======
-import com.qcadoo.mes.core.data.api.DataDefinitionService;
-import com.qcadoo.mes.core.data.api.PluginManagementService;
-import com.qcadoo.mes.core.data.api.ViewDefinitionService;
-import com.qcadoo.mes.core.data.beans.Plugin;
-import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
-import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
-import com.qcadoo.mes.core.data.model.DataDefinition;
-import com.qcadoo.mes.core.data.model.FieldDefinition;
-import com.qcadoo.mes.core.data.view.Component;
-import com.qcadoo.mes.core.data.view.ViewDefinition;
-import com.qcadoo.mes.core.data.view.containers.FormComponent;
-import com.qcadoo.mes.core.data.view.containers.WindowComponent;
-import com.qcadoo.mes.core.data.view.elements.CheckBoxComponent;
-import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
-import com.qcadoo.mes.core.data.view.elements.EntityComboBox;
-import com.qcadoo.mes.core.data.view.elements.GridComponent;
-import com.qcadoo.mes.core.data.view.elements.LinkButton;
-import com.qcadoo.mes.core.data.view.elements.TextInputComponent;
-import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
->>>>>>> de7e3635942056d17545589d7f8ae966c7f05eb1:mes-core/mes-core-data/src/main/java/com/qcadoo/mes/core/data/internal/ViewDefinitionServiceImpl.java
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
@@ -553,7 +532,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("doneQuantity", formDefinition, "doneQuantity", null));
         formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
         formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
-        Component startWorkerField = new TextInputComponent("startWorker", formDefinition, "startWorker", null);
+        Component<?> startWorkerField = new TextInputComponent("startWorker", formDefinition, "startWorker", null);
         startWorkerField.setDefaultEnabled(false);
         formDefinition.addComponent(startWorkerField);
         formDefinition.addComponent(new TextInputComponent("endWorker", formDefinition, "endWorker", null));
