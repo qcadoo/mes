@@ -16,6 +16,7 @@ import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.PluginManagementService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
+import com.qcadoo.mes.core.enums.PluginStatus;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.model.DataDefinition;
@@ -76,7 +77,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition getViewDefinition(final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        PluginsPlugin plugin = pluginManagementService.getPluginWithStatus(viewDefinition.getPluginIdentifier(), "active");
+        PluginsPlugin plugin = pluginManagementService.getPluginByIdentifierAndStatus(viewDefinition.getPluginIdentifier(),
+                PluginStatus.ACTIVE.getValue());
         if (plugin != null) {
             return viewDefinition;
         }
@@ -87,7 +89,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public List<ViewDefinition> getAllViews() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
-        List<PluginsPlugin> activePluginList = pluginManagementService.getPluginsWithStatus("active");
+        List<PluginsPlugin> activePluginList = pluginManagementService.getActivePlugins();
         for (PluginsPlugin activePlugin : activePluginList) {
             for (ViewDefinition viewDefinition : viewDefinitions.values()) {
                 if (activePlugin.getIdentifier().equals(viewDefinition.getPluginIdentifier())) {

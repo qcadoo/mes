@@ -6,14 +6,14 @@ import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 
 public interface PluginManagementService {
 
-    List<PluginsPlugin> getPluginsWithStatus(String status);
+    List<PluginsPlugin> getActivePlugins();
 
-    PluginsPlugin getPluginWithStatus(String identifier, String status);
+    PluginsPlugin getPluginByIdentifierAndStatus(String identifier, String status);
 
-    PluginsPlugin getPlugin(String entityId);
+    PluginsPlugin getPluginById(String entityId);
+
+    PluginsPlugin getPluginByNameAndVendor(final String name, final String vendor);
 
     void savePlugin(PluginsPlugin plugin);
-
-    PluginsPlugin getInstalledPlugin(PluginsPlugin plugin);
 
 }
