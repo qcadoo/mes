@@ -113,7 +113,6 @@ public final class DataDefinitionParser {
         String modelName = getStringAttribute(reader, "name");
 
         LOG.info("Reading model " + modelName + " for plugin " + pluginIdentifier);
-        System.out.println("Reading model " + modelName + " for plugin " + pluginIdentifier);
 
         DataDefinitionImpl dataDefinition = new DataDefinitionImpl(pluginIdentifier, getStringAttribute(reader, "name"),
                 dataAccessService);
