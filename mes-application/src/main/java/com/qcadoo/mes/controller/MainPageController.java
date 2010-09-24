@@ -2,7 +2,6 @@ package com.qcadoo.mes.controller;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +14,7 @@ import com.qcadoo.mes.core.api.ViewDefinitionService;
 import com.qcadoo.mes.core.internal.TranslationServiceImpl;
 
 @Controller
-public class MainPageController {
+public final class MainPageController {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
@@ -25,18 +24,10 @@ public class MainPageController {
 
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-
-        for (Entry<String, String> entry : arguments.entrySet()) {
-            System.out.println(entry.getKey() + "-" + entry.getValue());
-        }
-
         ModelAndView mav = new ModelAndView();
         mav.setViewName("mainPage");
-
         mav.addObject("viewsList", viewDefinitionService.getAllViews());
-
         mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
-
         return mav;
     }
 }

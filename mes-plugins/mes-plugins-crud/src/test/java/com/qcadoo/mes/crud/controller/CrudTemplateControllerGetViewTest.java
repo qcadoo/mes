@@ -3,16 +3,7 @@ package com.qcadoo.mes.crud.controller;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qcadoo.mes.core.api.ViewDefinitionService;
-import com.qcadoo.mes.core.view.ViewDefinition;
-
 public class CrudTemplateControllerGetViewTest {
-
-    private CrudController controller;
-
-    private ViewDefinitionService vdsMock;
-
-    private ViewDefinition viewDefinition;
 
     @Before
     public void init() {

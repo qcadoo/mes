@@ -7,11 +7,11 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.core.view.elements.grid.ListData;
 
 public final class ListDataUtils {
 
     private ListDataUtils() {
-
     }
 
     public static ListData generateListData(final SearchResult rs, final GridComponent gridDefinition) {

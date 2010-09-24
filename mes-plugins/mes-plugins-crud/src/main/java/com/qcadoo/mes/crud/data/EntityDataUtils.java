@@ -8,7 +8,6 @@ import com.qcadoo.mes.core.model.DataDefinition;
 public final class EntityDataUtils {
 
     private EntityDataUtils() {
-
     }
 
     public static Entity generateEntityData(final Entity entity, final DataDefinition dataDefinition) {

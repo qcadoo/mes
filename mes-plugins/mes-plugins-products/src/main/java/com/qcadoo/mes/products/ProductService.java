@@ -14,37 +14,15 @@ import com.qcadoo.mes.core.search.Restrictions;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.view.ViewValue;
 import com.qcadoo.mes.core.view.elements.comboBox.EntityComboBoxValue;
-import com.qcadoo.mes.core.view.elements.grid.ListData;
 
 @Service
-public class ProductService {
+public final class ProductService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @SuppressWarnings("unchecked")
-    public void getBeanAName(final ViewValue<Object> value, final String triggerComponentName) {
-        ViewValue<String> valueNameM = (ViewValue<String>) value.lookupValue("mainWindow.beanAForm.nameM");
-        ViewValue<String> valueNameA = (ViewValue<String>) value.lookupValue("mainWindow.beanAForm.name");
-        ViewValue<String> valueNameB = (ViewValue<String>) value.lookupValue("mainWindow.beanAForm.nameB");
-        ViewValue<ListData> valueNameC = (ViewValue<ListData>) value.lookupValue("mainWindow.beanAForm.beansCGrig");
-        valueNameM
-                .setValue((valueNameA != null ? valueNameA.getValue() : null)
-                        + " - "
-                        + (valueNameB != null ? valueNameB.getValue() : null)
-                        + " - "
-                        + (valueNameC != null && valueNameC.getValue() != null
-                                && valueNameC.getValue().getSelectedEntityId() != null ? valueNameC.getValue()
-                                .getSelectedEntityId() : null));
-        // if (valueNameC.getValue().getSelectedEntityId() != null) {
-        // valueNameA.setValue(valueNameB.getValue());
-        // }
-        // dataAccessService.get(dataDefinition, entityId)
-    }
-
-    @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Object> value, final String triggerComponentName) {
-
         ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
                 .lookupValue("mainWindow.detailsForm.product");
         ViewValue<String> defaultInstructionValue = (ViewValue<String>) value
@@ -56,33 +34,40 @@ public class ProductService {
         defaultInstructionValue.setValue("");
 
         if (productValue.getValue() != null && productValue.getValue().getSelectedValue() != null) {
-            DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
-
-            SearchCriteriaBuilder searchCriteria = instructionDD
-                    .find()
-                    .withMaxResults(1)
-                    .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
-                    .restrictedWith(
-                            Restrictions.belongsTo(instructionDD.getField("product"), productValue.getValue().getSelectedValue()));
-
-            SearchResult searchResult = searchCriteria.list();
-
-            if (searchResult.getTotalNumberOfEntities() == 1) {
-
-                Entity defaultInstructionEntity = searchResult.getEntities().get(0);
+            Entity defaultInstructionEntity = getDefaultInstruction(productValue);
+            if (defaultInstructionEntity != null) {
                 String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
                 defaultInstructionValue.setValue(defaultInstructionName);
-                Long selectedInstructinId = instructionValue.getValue().getSelectedValue();
-
-                if (selectedInstructinId == null && "mainWindow.detailsForm.product".equals(triggerComponentName)) {
-                    instructionValue.getValue().setSelectedValue(defaultInstructionEntity.getId());
-                }
-            } else {
-                defaultInstructionValue.setValue("Koles zacznij okreslac instrukcje");
+                selectDefaultInstruction(triggerComponentName, instructionValue, defaultInstructionEntity);
             }
-
         }
+    }
 
+    private void selectDefaultInstruction(final String triggerComponentName,
+            final ViewValue<EntityComboBoxValue> instructionValue, final Entity defaultInstructionEntity) {
+        Long selectedInstructinId = instructionValue.getValue().getSelectedValue();
+        if (selectedInstructinId == null && "mainWindow.detailsForm.product".equals(triggerComponentName)) {
+            instructionValue.getValue().setSelectedValue(defaultInstructionEntity.getId());
+        }
+    }
+
+    private Entity getDefaultInstruction(final ViewValue<EntityComboBoxValue> productValue) {
+        DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
+
+        SearchCriteriaBuilder searchCriteria = instructionDD
+                .find()
+                .withMaxResults(1)
+                .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
+                .restrictedWith(
+                        Restrictions.belongsTo(instructionDD.getField("product"), productValue.getValue().getSelectedValue()));
+
+        SearchResult searchResult = searchCriteria.list();
+
+        if (searchResult.getTotalNumberOfEntities() == 1) {
+            return searchResult.getEntities().get(0);
+        } else {
+            return null;
+        }
     }
 
     public boolean checkInstructionDefault(final DataDefinition dataDefinition, final Entity entity) {

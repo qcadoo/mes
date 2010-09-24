@@ -28,14 +28,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
 import com.qcadoo.mes.core.internal.TranslationService;
+import com.qcadoo.mes.core.view.SaveableComponent;
 import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.ViewValue;
-import com.qcadoo.mes.core.view.containers.SaveableComponent;
 import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
 
 @Controller
-public class CrudController {
+public final class CrudController {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;

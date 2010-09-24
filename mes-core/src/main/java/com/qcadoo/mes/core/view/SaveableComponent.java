@@ -1,8 +1,6 @@
-package com.qcadoo.mes.core.view.containers;
+package com.qcadoo.mes.core.view;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.view.Component;
-import com.qcadoo.mes.core.view.ViewValue;
 
 public interface SaveableComponent extends Component<Long> {
 

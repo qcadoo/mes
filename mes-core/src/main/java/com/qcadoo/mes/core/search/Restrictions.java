@@ -25,9 +25,7 @@ public final class Restrictions {
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
         }
-        if (value instanceof String
-                && (((String) value).contains("*") || ((String) value).contains("%") || ((String) value).contains("?") || ((String) value)
-                        .contains("_"))) {
+        if (value instanceof String && ((String) value).matches(".*[\\*%\\?_].*")) {
             String preperadValue = ((String) value).replace('*', '%').replace('?', '_');
             return new LikeRestriction(fieldDefinition.getName(), preperadValue);
         }

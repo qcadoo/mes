@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "plugins_test_bean_b")
-public class ProductsTestBeanB {
+public final class ProductsTestBeanB {
 
     @Id
     @GeneratedValue

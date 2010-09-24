@@ -86,13 +86,13 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="usersByUsernameQuery">
 			<value>
-				SELECT USERNAME, PASSWORD, not deleted as enabled FROM UsersUser WHERE
+				SELECT USERNAME, PASSWORD, not deleted as enabled FROM Users_User WHERE
 				USERNAME=?
             </value>
 		</property>
 		<property name="authoritiesByUsernameQuery">
-			<value>SELECT U.username, G.role as authority FROM UsersUser U JOIN
-				UsersGroup G ON u.usergroup_id = G.id WHERE U.username=?</value>
+			<value>SELECT U.username, G.role as authority FROM Users_User U JOIN
+				Users_Group G ON u.usergroup_id = G.id WHERE U.username=?</value>
 		</property>
 	</bean>
 

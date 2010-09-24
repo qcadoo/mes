@@ -70,7 +70,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         if (!genericEntity.isValid()) {
             copyValidationErrors(dataDefinition, genericEntityToSave, genericEntity);
             if (existingGenericEntity != null) {
-                copyMissingFields(dataDefinition, genericEntityToSave, existingGenericEntity);
+                copyMissingFields(genericEntityToSave, existingGenericEntity);
             }
             return genericEntityToSave;
         }
@@ -275,8 +275,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
     }
 
-    private void copyMissingFields(final DataDefinition dataDefinition, final Entity genericEntityToSave,
-            final Entity existingGenericEntity) {
+    private void copyMissingFields(final Entity genericEntityToSave, final Entity existingGenericEntity) {
         for (Map.Entry<String, Object> field : existingGenericEntity.getFields().entrySet()) {
             if (!genericEntityToSave.getFields().containsKey(field.getKey())) {
                 genericEntityToSave.setField(field.getKey(), field.getValue());

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<qcd:plugin name="dictionaries" xmlns:qcd="http://www.qcadoo.com/">
+<qcd:models plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="dictionary" deletable="false">
 		<string name="name" >
 			<validatesPresence />
@@ -15,4 +15,4 @@
 			<validatesPresence />
 		</belongsTo>
 	</model>
-</qcd:plugin>
+</qcd:models>

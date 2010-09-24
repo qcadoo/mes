@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:models plugin="plugins" xmlns:qcd="http://www.qcadoo.com/model">
+	<model name="plugin">
+		<string name="name" readonly="true" >
+			<validatesPresenceOnCreate />
+		</string>
+		<text name="description" readonly="true" />
+		<string name="vendor" readonly="true" >
+			<validatesPresenceOnCreate />
+		</string>
+		<string name="version" readonly="true" >
+			<validatesPresenceOnCreate />
+		</string>
+		<enum name="status" values="downloaded,installed,active">
+			<validatesPresenceOnCreate />
+		</enum>
+		<boolean name="base" readonly="true">
+			<validatesPresenceOnCreate />
+		</boolean>
+		<string name="identifier" readonly="true" />
+		<string name="packageName" readonly="true" />
+		<string name="fileName" readonly="true" />
+	</model>
+</qcd:models>

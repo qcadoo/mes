@@ -14,13 +14,11 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.validation.ValidationError;
 import com.qcadoo.mes.core.view.ViewDefinition;
-import com.qcadoo.mes.core.view.elements.GridComponent;
-import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 
 @Controller
-public class TranslationServiceImpl implements TranslationService {
+public final class TranslationServiceImpl implements TranslationService {
 
-    private static final String[] commonsMessages = new String[] { "commons.confirm.deleteMessage",
+    private static final String[] COMMONS_MESSAGES = new String[] { "commons.confirm.deleteMessage",
             "commons.loading.gridLoading", "commons.button.go", "commons.button.logout", "commons.form.button.accept",
             "commons.form.button.acceptAndClose", "commons.form.button.cancel", "commons.form.message.save",
             "commons.grid.button.new", "commons.grid.button.delete", "commons.grid.button.sort", "commons.grid.button.sort.asc",
@@ -31,7 +29,7 @@ public class TranslationServiceImpl implements TranslationService {
             "commons.validate.field.error.invalidDateFormat", "commons.validate.field.error.invalidDateTimeFormat",
             "commons.validate.field.error.notMatch", "commons.validate.global.error", "commons.form.field.confirmable.label" };
 
-    private static final String[] loginMessages = new String[] { "login.form.label.language", "login.form.label.login",
+    private static final String[] LOGIN_MESSAGES = new String[] { "login.form.label.language", "login.form.label.login",
             "login.form.label.password", "login.form.button.logIn", "login.message.error", "login.message.logout",
             "login.message.timeout", "login.message.accessDenied.header", "login.message.accessDenied.info" };
 
@@ -83,7 +81,7 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     public Map<String, String> getCommonsTranslations(final Locale locale) {
         Map<String, String> commonsTranslations = new HashMap<String, String>();
-        for (String commonMessage : commonsMessages) {
+        for (String commonMessage : COMMONS_MESSAGES) {
             commonsTranslations.put(commonMessage, translate(commonMessage, locale));
         }
         return commonsTranslations;
@@ -92,32 +90,33 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     public Map<String, String> getLoginTranslations(final Locale locale) {
         Map<String, String> loginTranslations = new HashMap<String, String>();
-        for (String loginMessage : loginMessages) {
+        for (String loginMessage : LOGIN_MESSAGES) {
             loginTranslations.put(loginMessage, translate(loginMessage, locale));
         }
         return loginTranslations;
     }
 
     @Override
-    public String getEntityFieldMessageCode(DataDefinition dataDefinition, String fieldName) {
+    public String getEntityFieldMessageCode(final DataDefinition dataDefinition, final String fieldName) {
         return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName + ".label";
     }
 
-    private void putTranslationToMap(final String messageCode, final Map<String, String> translationsMap, final Locale locale) {
-        translationsMap.put(messageCode, translate(messageCode, locale));
-    }
-
-    private void addGridColumnTranslation(final ViewDefinition viewDefinition, final GridComponent gridDefinition,
-            final ColumnDefinition column, final Map<String, String> translationsMap, final Locale locale) {
-        String messageCode = viewDefinition.getName() + "." + gridDefinition.getName() + ".column." + column.getName();
-        try {
-            translationsMap.put(messageCode, translateWithError(messageCode, locale));
-        } catch (NoSuchMessageException e) {
-            String entityFieldCode = "entity." + gridDefinition.getDataDefinition().getName() + ".field."
-                    + column.getFields().get(0).getName();
-            translationsMap.put(messageCode, translate(entityFieldCode, locale));
-        }
-    }
+    // private void putTranslationToMap(final String messageCode, final Map<String, String> translationsMap, final Locale locale)
+    // {
+    // translationsMap.put(messageCode, translate(messageCode, locale));
+    // }
+    //
+    // private void addGridColumnTranslation(final ViewDefinition viewDefinition, final GridComponent gridDefinition,
+    // final ColumnDefinition column, final Map<String, String> translationsMap, final Locale locale) {
+    // String messageCode = viewDefinition.getName() + "." + gridDefinition.getName() + ".column." + column.getName();
+    // try {
+    // translationsMap.put(messageCode, translateWithError(messageCode, locale));
+    // } catch (NoSuchMessageException e) {
+    // String entityFieldCode = "entity." + gridDefinition.getDataDefinition().getName() + ".field."
+    // + column.getFields().get(0).getName();
+    // translationsMap.put(messageCode, translate(entityFieldCode, locale));
+    // }
+    // }
 
     // private void addDataFieldTranslation(final ViewDefinition viewDefinition, final ComponentDefinition elementDefinition,
     // final DataFieldDefinition field, final Map<String, String> translationsMap, final Locale locale) {

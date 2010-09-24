@@ -8,8 +8,6 @@ import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,25 +21,47 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Autowired
     private SessionFactory sessionFactory;
 
-    private static final Logger LOG = LoggerFactory.getLogger(PluginManagementServiceImpl.class);
-
     @Override
+<<<<<<< HEAD
     public List<PluginsPlugin> getActivePlugins() {
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.eq("status", PluginStatus.ACTIVE.getValue())).add(Restrictions.eq("deleted", false));
         LOG.debug("get plugins with status: " + PluginStatus.ACTIVE.getValue());
+=======
+    @SuppressWarnings("unchecked")
+    public List<PluginsPlugin> getPluginsWithStatus(final String status) {
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("status", status))
+                .add(Restrictions.eq("deleted", false));
+
+>>>>>>> 64573e239e1924a643ee6b0cfbb5b26b4d7aaab5
         return criteria.list();
     }
 
     @Override
     public PluginsPlugin getPluginByIdentifierAndStatus(final String identifier, final String status) {
         checkNotNull(identifier, "identifier must be given");
+<<<<<<< HEAD
         checkNotNull(status, "status must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("status", status))
                 .add(Restrictions.eq("deleted", false));
         LOG.debug("get plugin with identifier: " + identifier + " and status: " + status);
         return (PluginsPlugin) criteria.uniqueResult();
+=======
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
+                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("deleted", false));
+        if (status != null) {
+            criteria.add(Restrictions.eq("status", status));
+        }
+
+        PluginsPlugin databaseEntity = (PluginsPlugin) criteria.uniqueResult();
+
+        if (databaseEntity == null) {
+            return null;
+        }
+
+        return databaseEntity;
+>>>>>>> 64573e239e1924a643ee6b0cfbb5b26b4d7aaab5
     }
 
     @Override
@@ -49,7 +69,11 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         checkNotNull(entityId, "entityId must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.idEq(Long.valueOf(entityId))).add(Restrictions.eq("deleted", false));
+<<<<<<< HEAD
         LOG.debug("get plugin with id: " + entityId);
+=======
+
+>>>>>>> 64573e239e1924a643ee6b0cfbb5b26b4d7aaab5
         return (PluginsPlugin) criteria.uniqueResult();
     }
 
@@ -64,8 +88,16 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+<<<<<<< HEAD
     public void savePlugin(final PluginsPlugin plugin) {
         getCurrentSession().save(plugin);
+=======
+    public PluginsPlugin getInstalledPlugin(final PluginsPlugin plugin) {
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
+                .add(Restrictions.eq("name", plugin.getName())).add(Restrictions.eq("vendor", plugin.getVendor()))
+                .add(Restrictions.eq("deleted", false));
+        return (PluginsPlugin) criteria.uniqueResult();
+>>>>>>> 64573e239e1924a643ee6b0cfbb5b26b4d7aaab5
     }
 
     private Session getCurrentSession() {

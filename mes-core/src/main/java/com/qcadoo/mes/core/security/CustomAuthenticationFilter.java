@@ -11,11 +11,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public final class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult)
-            throws IOException, ServletException {
+    protected void successfulAuthentication(final HttpServletRequest request, final HttpServletResponse response,
+            final Authentication authResult) throws IOException, ServletException {
 
         RedirectResponseWrapper redirectResponseWrapper = new RedirectResponseWrapper(response);
 
@@ -26,8 +26,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(final HttpServletRequest request, final HttpServletResponse response,
+            final AuthenticationException failed) throws IOException, ServletException {
 
         RedirectResponseWrapper redirectResponseWrapper = new RedirectResponseWrapper(response);
 
@@ -37,13 +37,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     }
 
-    private class RedirectResponseWrapper extends HttpServletResponseWrapper {
+    private static final class RedirectResponseWrapper extends HttpServletResponseWrapper {
 
-        public RedirectResponseWrapper(HttpServletResponse httpServletResponse) {
+        public RedirectResponseWrapper(final HttpServletResponse httpServletResponse) {
             super(httpServletResponse);
         }
 
-        public void sendRedirect(String string) throws IOException {
+        @Override
+        public void sendRedirect(final String string) throws IOException {
         }
 
     }

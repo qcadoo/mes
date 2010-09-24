@@ -10,11 +10,11 @@ import org.json.JSONObject;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.TranslationService;
 import com.qcadoo.mes.core.internal.types.HasManyType;
-import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.validation.ValidationError;
 import com.qcadoo.mes.core.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.view.Component;
 import com.qcadoo.mes.core.view.ContainerComponent;
+import com.qcadoo.mes.core.view.SaveableComponent;
 import com.qcadoo.mes.core.view.ViewValue;
 
 public final class FormComponent extends AbstractContainerComponent<Long> implements SaveableComponent {
@@ -43,7 +43,11 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Long> viewValue, final Set<String> pathsToUpdate) {
-        return entity != null ? entity.getId() : null;
+        if (entity != null) {
+            return entity.getId();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -88,27 +92,27 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
                 continue;
             }
 
-            FieldDefinition fieldDefinition = getDataDefinition().getField(fieldPath);
-
-            if (fieldDefinition.getType() instanceof HasManyType) {
+            if (getDataDefinition().getField(fieldPath).getType() instanceof HasManyType) {
                 continue;
             }
 
-            ViewValue<?> componentValue = formValue.getComponent(component.getKey());
-
-            Object value = componentValue.getValue();
-
-            if (value == null) {
-                entity.setField(fieldPath, null);
-                // } else if (fieldDefinition.getType() instanceof BelongsToType) {
-                // entity.setField(fieldPath, String.valueOf(value));
-            } else {
-                entity.setField(fieldPath, value.toString());
-            }
-
+            setEntityField(entity, fieldPath, component.getKey(), formValue);
         }
 
         return entity;
+    }
+
+    private Object setEntityField(final Entity entity, final String fieldPath, final String fieldName,
+            final ViewValue<Long> formValue) {
+        ViewValue<?> componentValue = formValue.getComponent(fieldName);
+        Object value = componentValue.getValue();
+
+        if (value == null) {
+            entity.setField(fieldPath, null);
+        } else {
+            entity.setField(fieldPath, value.toString());
+        }
+        return value;
     }
 
     @Override

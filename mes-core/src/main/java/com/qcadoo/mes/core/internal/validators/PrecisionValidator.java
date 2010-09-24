@@ -38,14 +38,15 @@ public final class PrecisionValidator implements FieldValidator {
             return true;
         }
 
-        int presicion = 0;
-
         if (fieldClass.equals(BigDecimal.class)) {
-            presicion = ((BigDecimal) value).precision() - ((BigDecimal) value).scale();
+            return validatePresicion(fieldDefinition, validatedEntity,
+                    ((BigDecimal) value).precision() - ((BigDecimal) value).scale());
         } else {
-            presicion = value.toString().length();
+            return validatePresicion(fieldDefinition, validatedEntity, value.toString().length());
         }
+    }
 
+    private boolean validatePresicion(final FieldDefinition fieldDefinition, final Entity validatedEntity, final int presicion) {
         if (max != null && presicion > max) {
             validatedEntity.addError(fieldDefinition, errorMessage);
             return false;

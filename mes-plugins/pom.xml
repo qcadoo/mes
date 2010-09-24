@@ -56,7 +56,7 @@
 									<equals arg1="${pom.artifactId}" arg2="mes-plugins" />
 									<else>
 										<echoxml file="${basedir}/target/classes/plugin.xml">
-											<plugin>
+											<qcd:plugin xmlns:qcd="http://www.qcadoo.com/plugin">
 												<identifier>${mes.plugin.identifier}</identifier>
 												<name>${pom.name}</name>
 												<packageName>${pom.groupId}</packageName>
@@ -65,7 +65,7 @@
 												<vendorUrl>${pom.organization.url}</vendorUrl>
 												<description>${pom.description}</description>
 												<dependencies>${mes.plugin.dependencies}</dependencies>
-											</plugin>
+											</qcd:plugin>
 										</echoxml>
 									</else>
 								</if>

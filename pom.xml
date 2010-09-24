@@ -204,10 +204,10 @@
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-             <groupId>commons-fileupload</groupId>
-             <artifactId>commons-fileupload</artifactId>
-             <version>1.2.1</version>
-        </dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -227,6 +227,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -243,11 +244,12 @@
 		</plugins>
 	</build>
 
+
 	<reporting>
 		<plugins>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.5</version>
+				<version>2.7</version>
 				<configuration>
 					<doclet>org.jboss.apiviz.APIviz</doclet>
 					<docletArtifact>

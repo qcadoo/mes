@@ -71,10 +71,10 @@ public final class DataDefinitionParser {
 
     @PostConstruct
     public void init() {
-        LOG.info("Reading data definitions ...");
+        LOG.info("Reading model definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:META-INF/definition/*");
+            Resource[] resources = applicationContext.getResources("classpath*:model.xml");
             for (Resource resource : resources) {
                 parse(resource.getInputStream());
             }
@@ -92,12 +92,10 @@ public final class DataDefinitionParser {
             String pluginIdentifier = null;
 
             while (reader.hasNext() && reader.next() > 0) {
-                if (isTagStarted(reader, "plugin")) {
-                    pluginIdentifier = getPluginDefinition(reader);
+                if (isTagStarted(reader, "models")) {
+                    pluginIdentifier = getPluginIdentifier(reader);
                 } else if (isTagStarted(reader, "model")) {
                     getModelDefinition(reader, pluginIdentifier);
-                } else if (isTagStarted(reader, "view")) {
-                    getViewDefinition(reader, pluginIdentifier);
                 }
             }
 
@@ -131,8 +129,6 @@ public final class DataDefinitionParser {
                 dataDefinition.withUpdateHook(getHookDefinition(reader));
             } else if (isTagStarted(reader, "onSave")) {
                 dataDefinition.withSaveHook(getHookDefinition(reader));
-            } else if (isTagStarted(reader, "onLoad")) {
-                // TODO
             } else if (isTagStarted(reader, "validatesWith")) {
                 dataDefinition.withValidator(getEntityValidatorDefinition(reader));
             } else if (isTagStarted(reader, "integer")) {
@@ -141,16 +137,10 @@ public final class DataDefinitionParser {
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "text")) {
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "float")) {
-                // TODO
             } else if (isTagStarted(reader, "decimal")) {
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "datetime")) {
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "timestamp")) {
-                // TODO
-            } else if (isTagStarted(reader, "time")) {
-                // TODO
             } else if (isTagStarted(reader, "date")) {
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             } else if (isTagStarted(reader, "boolean")) {
@@ -166,6 +156,11 @@ public final class DataDefinitionParser {
             } else if (isTagStarted(reader, "password")) {
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
             }
+
+            // "time"
+            // "timestamp"
+            // "float"
+            // "onLoad"
         }
 
         dataDefinitionService.save(dataDefinition);
@@ -189,12 +184,10 @@ public final class DataDefinitionParser {
     }
 
     private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {
-        boolean lazy = getBooleanAttribute(reader, "lazy", true);
+        boolean lazy = false; // TODO masz getBooleanAttribute(reader, "lazy", true);
         String plugin = getStringAttribute(reader, "plugin");
         String modelName = getStringAttribute(reader, "model");
         String lookupFieldName = getStringAttribute(reader, "lookupField");
-
-        lazy = false; // TODO
 
         if (lazy) {
             return fieldTypeFactory.lazyBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName, lookupFieldName);
@@ -266,17 +259,14 @@ public final class DataDefinitionParser {
             } else if (isTagStarted(reader, "validatesUniqueness")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.unique()));
                 // TODO scope="lastname"
-                // } else if (isTagStarted(reader, "validatesFormat")) {
-                // TODO with="d*a"
             } else if (isTagStarted(reader, "validatesWith")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.custom(getHookDefinition(reader))));
-                // } else if (isTagStarted(reader, "validatesWithScript")) {
-                // TODO
-                // } else if (isTagStarted(reader, "validatesExclusion")) {
-                // TODO <exclude>nowak</exclude> <exclude>kowalski</exclude>
-                // } else if (isTagStarted(reader, "validatesInclusion")) {
-                // TODO <include>szczytowski</include>
             }
+
+            // "validatesWithScript"
+            // "validatesExclusion" <exclude>nowak</exclude> <exclude>kowalski</exclude>
+            // "validatesInclusion" <include>szczytowski</include>
+            // "validatesFormat" with="d*a"
         }
 
         return fieldDefinition;
@@ -336,16 +326,8 @@ public final class DataDefinitionParser {
                 .withReadOnly(true);
     }
 
-    private void getViewDefinition(final XMLStreamReader reader, final String pluginIdentifier) {
-        String viewName = getStringAttribute(reader, "name");
-
-        LOG.info("Reading view " + viewName + " for plugin " + pluginIdentifier);
-
-        // TODO Auto-generated method stub
-    }
-
-    private String getPluginDefinition(final XMLStreamReader reader) {
-        return getStringAttribute(reader, "name");
+    private String getPluginIdentifier(final XMLStreamReader reader) {
+        return getStringAttribute(reader, "plugin");
     }
 
     private Integer getIntegerAttribute(final XMLStreamReader reader, final String name) {

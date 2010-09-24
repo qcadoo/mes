@@ -6,12 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.servlet.ServletContext;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -19,21 +16,18 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
 
-public class PluginResourcesResolver implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
+public final class PluginResourcesResolver implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginResourcesResolver.class);
 
     private ApplicationContext applicationContext;
 
-    private ServletContext servletContext;
-
     private String webappPath;
 
     @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        servletContext = ((WebApplicationContext) applicationContext).getServletContext();
-        webappPath = servletContext.getRealPath("/");
+        this.webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
     }
 
     @Override
@@ -65,9 +59,12 @@ public class PluginResourcesResolver implements ApplicationContextAware, Applica
         }
 
         String path = resource.getURI().toString().split("META-INF/" + type)[1];
-
         File file = new File(webappPath + "/" + targetPath + path);
 
+        copyFile(resource, path, file);
+    }
+
+    private void copyFile(final Resource resource, final String path, final File file) throws IOException {
         if (resource.getInputStream().available() == 0) {
             file.mkdirs();
         } else {
