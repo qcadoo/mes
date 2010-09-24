@@ -49,13 +49,15 @@ public final class EntityComboBox extends AbstractComponent<EntityComboBoxValue>
         JSONObject valueObject = viewObject.getJSONObject("value");
         if (!valueObject.isNull("selectedValue")) {
             EntityComboBoxValue value = new EntityComboBoxValue();
-            Long selectedEntityId = Long.parseLong(valueObject.getString("selectedValue"));
-            value.setSelectedValue(selectedEntityId);
-            Entity selectedEntity = getDataDefinition().get(selectedEntityId);
-            selectedEntities.put(getPath(), selectedEntity);
+            if (!"".equals(valueObject.getString("selectedValue"))) {
+                Long selectedEntityId = Long.parseLong(valueObject.getString("selectedValue"));
+                value.setSelectedValue(selectedEntityId);
+                Entity selectedEntity = getDataDefinition().get(selectedEntityId);
+                selectedEntities.put(getPath(), selectedEntity);
+            }
             return new ViewValue<EntityComboBoxValue>(value);
         }
-        return new ViewValue<EntityComboBoxValue>();
+        return new ViewValue<EntityComboBoxValue>(null);
     }
 
     @Override
@@ -101,15 +103,31 @@ public final class EntityComboBox extends AbstractComponent<EntityComboBoxValue>
 
         if (parentEntity != null && value.getValues() != null) {
             checkState(!getFieldPath().matches("\\."), "EntityComboBox doesn't support sequential path");
-            Entity field = (Entity) parentEntity.getField(getFieldPath());
 
-            if (field != null) {
-                Long entityId = field.getId();
-                value.setSelectedValue(entityId);
-                selectedEntities.put(getPath(), field);
+            if (viewValue == null || viewValue.getValue() == null) {
+                Object field = parentEntity.getField(getFieldPath());
+                if (field != null) {
+                    Entity fieldEntity = null;
+                    if (field instanceof Entity) {
+                        fieldEntity = (Entity) field;
+                    } else {
+                        fieldEntity = belongsToType.getDataDefinition().get(Long.parseLong(field.toString()));
+                    }
+
+                    if (fieldEntity != null) {
+                        Long entityId = fieldEntity.getId();
+                        value.setSelectedValue(entityId);
+                        selectedEntities.put(getPath(), fieldEntity);
+                    }
+                }
+            } else {
+                Long selectedValue = viewValue.getValue().getSelectedValue();
+                value.setSelectedValue(selectedValue);
+                Entity fieldEntity = belongsToType.getDataDefinition().get(selectedValue);
+                selectedEntities.put(getPath(), fieldEntity);
             }
-        }
 
+        }
         return new ViewValue<EntityComboBoxValue>(value);
     }
 

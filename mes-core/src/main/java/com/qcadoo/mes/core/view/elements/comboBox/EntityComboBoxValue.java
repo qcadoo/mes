@@ -26,6 +26,10 @@ public final class EntityComboBoxValue {
 
     @Override
     public String toString() {
+        if (selectedValue == null) {
+            return null;
+        }
         return selectedValue.toString();
     }
+
 }

@@ -45,6 +45,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private DataDefinition dataDefinition;
 
+    private boolean defaultEnabled = true;
+
+    private boolean defaultVisible = true;
+
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         this.name = name;
@@ -129,6 +133,13 @@ public abstract class AbstractComponent<T> implements Component<T> {
         // }
 
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
+
+        if (value.isEnabled() == null) {
+            value.setEnabled(defaultEnabled);
+        }
+        if (value.isVisible() == null) {
+            value.setVisible(defaultVisible);
+        }
 
         if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
             value.setEnabled(false);
@@ -414,6 +425,26 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     public final void setViewName(final String viewName) {
         this.viewName = viewName;
+    }
+
+    @Override
+    public final boolean isDefaultEnabled() {
+        return defaultEnabled;
+    }
+
+    @Override
+    public final void setDefaultEnabled(final boolean defaultEnabled) {
+        this.defaultEnabled = defaultEnabled;
+    }
+
+    @Override
+    public final boolean isDefaultVisible() {
+        return defaultVisible;
+    }
+
+    @Override
+    public final void setDefaultVisible(final boolean defaultVisible) {
+        this.defaultVisible = defaultVisible;
     }
 
 }

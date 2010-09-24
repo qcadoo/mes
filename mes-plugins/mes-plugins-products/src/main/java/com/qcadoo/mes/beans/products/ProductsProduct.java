@@ -120,12 +120,12 @@ public final class ProductsProduct {
         this.substitutes = substitutes;
     }
 
-    public void setInstructions(final List<ProductsInstruction> instructions) {
-        this.instructions = instructions;
-    }
-
     public List<ProductsInstruction> getInstructions() {
         return instructions;
+    }
+
+    public void setInstructions(final List<ProductsInstruction> instructions) {
+        this.instructions = instructions;
     }
 
 }

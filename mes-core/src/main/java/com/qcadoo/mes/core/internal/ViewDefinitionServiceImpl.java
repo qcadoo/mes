@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+<<<<<<< HEAD:mes-core/src/main/java/com/qcadoo/mes/core/internal/ViewDefinitionServiceImpl.java
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.PluginManagementService;
@@ -30,6 +31,27 @@ import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.LinkButton;
 import com.qcadoo.mes.core.view.elements.TextInputComponent;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
+=======
+import com.qcadoo.mes.core.data.api.DataDefinitionService;
+import com.qcadoo.mes.core.data.api.PluginManagementService;
+import com.qcadoo.mes.core.data.api.ViewDefinitionService;
+import com.qcadoo.mes.core.data.beans.Plugin;
+import com.qcadoo.mes.core.data.internal.hooks.HookFactory;
+import com.qcadoo.mes.core.data.internal.view.ViewDefinitionImpl;
+import com.qcadoo.mes.core.data.model.DataDefinition;
+import com.qcadoo.mes.core.data.model.FieldDefinition;
+import com.qcadoo.mes.core.data.view.Component;
+import com.qcadoo.mes.core.data.view.ViewDefinition;
+import com.qcadoo.mes.core.data.view.containers.FormComponent;
+import com.qcadoo.mes.core.data.view.containers.WindowComponent;
+import com.qcadoo.mes.core.data.view.elements.CheckBoxComponent;
+import com.qcadoo.mes.core.data.view.elements.DynamicComboBox;
+import com.qcadoo.mes.core.data.view.elements.EntityComboBox;
+import com.qcadoo.mes.core.data.view.elements.GridComponent;
+import com.qcadoo.mes.core.data.view.elements.LinkButton;
+import com.qcadoo.mes.core.data.view.elements.TextInputComponent;
+import com.qcadoo.mes.core.data.view.elements.grid.ColumnDefinition;
+>>>>>>> de7e3635942056d17545589d7f8ae966c7f05eb1:mes-core/mes-core-data/src/main/java/com/qcadoo/mes/core/data/internal/ViewDefinitionServiceImpl.java
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
@@ -56,10 +78,10 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinitions.put("products.grid", createTestGridView());
         viewDefinitions.put("products.form", createTestFormView());
 
-        // viewDefinitions.put("products.orderGridView", createOrderGridView());
-        // viewDefinitions.put("products.orderDetailsView", createOrderDetailsView());
-        // viewDefinitions.put("products.instructionGridView", createInstructionGridView());
-        // viewDefinitions.put("products.instructionDetailsView", createInstructionDetailsView());
+        viewDefinitions.put("products.orderGridView", createOrderGridView());
+        viewDefinitions.put("products.orderDetailsView", createOrderDetailsView());
+        viewDefinitions.put("products.instructionGridView", createInstructionGridView());
+        viewDefinitions.put("products.instructionDetailsView", createInstructionDetailsView());
         // viewDefinitions.put("users.groupGridView", createUserGroupGridView());
         // viewDefinitions.put("users.groupDetailsView", createUserGroupDetailsView());
         // viewDefinitions.put("users.userGridView", createUserGridView());
@@ -437,170 +459,110 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     // viewDefinition.setElements(elements);
     // return viewDefinition;
     // }
-    //
-    // private ViewDefinition createInstructionGridView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("products.instructionGridView", "products");
-    // viewDefinition.setHeader("products.instructionGridView.header");
-    //
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    //
-    // DataDefinition gridDataDefinition = dataDefinitionService.get("products.instruction");
-    // GridDefinition gridDefinition = new GridDefinition("instructions", gridDataDefinition);
-    // gridDefinition.setCorrespondingViewName("products.instructionDetailsView");
-    // Map<String, String> gridOptions = new HashMap<String, String>();
-    // gridOptions.put("paging", "true");
-    // gridOptions.put("sortable", "true");
-    // gridOptions.put("filter", "true");
-    // gridOptions.put("multiselect", "true");
-    // gridOptions.put("height", "450");
-    // gridDefinition.setOptions(gridOptions);
-    // ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
-    // ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
-    // ColumnDefinition columnProductName = createColumnDefinition("product", gridDataDefinition.getField("product"),
-    // "#product['name']");
-    //
-    // gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnProductName }));
-    // elements.add(gridDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    // return viewDefinition;
-    //
-    // }
-    //
-    // private ViewDefinition createOrderGridView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("products.orderGridView", "products");
-    // viewDefinition.setHeader("products.orderGridView.header");
-    //
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    //
-    // DataDefinition gridDataDefinition = dataDefinitionService.get("products.order");
-    // GridDefinition gridDefinition = new GridDefinition("orders", gridDataDefinition);
-    // gridDefinition.setCorrespondingViewName("products.orderDetailsView");
-    // Map<String, String> gridOptions = new HashMap<String, String>();
-    // gridOptions.put("paging", "true");
-    // gridOptions.put("sortable", "true");
-    // gridOptions.put("filter", "true");
-    // gridOptions.put("multiselect", "true");
-    // gridOptions.put("height", "450");
-    // gridDefinition.setOptions(gridOptions);
-    // ColumnDefinition columnNumber = createColumnDefinition("number", gridDataDefinition.getField("number"), null);
-    // ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
-    // ColumnDefinition columnState = createColumnDefinition("state", gridDataDefinition.getField("state"), null);
-    //
-    // gridDefinition.setColumns(Arrays.asList(new ColumnDefinition[] { columnNumber, columnName, columnState }));
-    // elements.add(gridDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    // return viewDefinition;
-    // }
-    //
-    // private ViewDefinition createOrderDetailsView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("products.orderDetailsView", "products");
-    // viewDefinition.setHeader("products.orderDetailsView.header");
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    //
-    // DataDefinition orderDataDefinition = dataDefinitionService.get("products.order");
-    // FormDefinition formDefinition = new FormDefinition("orderDetailsForm", orderDataDefinition);
-    // formDefinition.setParent("entityId");
-    // formDefinition.setCorrespondingViewName("products.orderGridView");
-    //
-    // FormFieldDefinition fieldNumber = createFieldDefinition("number", orderDataDefinition.getField("number"),
-    // fieldControlFactory.stringControl());
-    // FormFieldDefinition fieldName = createFieldDefinition("name", orderDataDefinition.getField("name"),
-    // fieldControlFactory.textControl());
-    // FormFieldDefinition fieldDateFrom = createFieldDefinition("dateFrom", orderDataDefinition.getField("dateFrom"),
-    // fieldControlFactory.dateControl());
-    // FormFieldDefinition fieldDateTo = createFieldDefinition("dateTo", orderDataDefinition.getField("dateTo"),
-    // fieldControlFactory.dateControl());
-    // FormFieldDefinition fieldState = createFieldDefinition("state", orderDataDefinition.getField("state"),
-    // fieldControlFactory.selectControl());
-    // FormFieldDefinition fieldMachine = createFieldDefinition("machine", orderDataDefinition.getField("machine"),
-    // fieldControlFactory.editableSelectControl());
-    // FormFieldDefinition fieldProduct = createFieldDefinition("product", orderDataDefinition.getField("product"),
-    // fieldControlFactory.lookupControl());
-    // FormFieldDefinition fieldDefaultInstruction = createFieldDefinition("defaultInstruction",
-    // orderDataDefinition.getField("defaultInstruction"), fieldControlFactory.displayControl());
-    // FormFieldDefinition fieldInstruction = createFieldDefinition("instruction", orderDataDefinition.getField("instruction"),
-    // fieldControlFactory.selectControl());
-    // FormFieldDefinition fieldPlannedQuantity = createFieldDefinition("plannedQuantity",
-    // orderDataDefinition.getField("plannedQuantity"), fieldControlFactory.decimalControl());
-    // FormFieldDefinition fieldDoneQuantity = createFieldDefinition("doneQuantity",
-    // orderDataDefinition.getField("doneQuantity"), fieldControlFactory.decimalControl());
-    // FormFieldDefinition fieldEffectiveDateFrom = createFieldDefinition("effectiveDateFrom",
-    // orderDataDefinition.getField("effectiveDateFrom"), fieldControlFactory.displayControl());
-    // FormFieldDefinition fieldEffectiveDateTo = createFieldDefinition("effectiveDateTo",
-    // orderDataDefinition.getField("effectiveDateTo"), fieldControlFactory.displayControl());
-    // FormFieldDefinition fieldStartWorker = createFieldDefinition("startWorker", orderDataDefinition.getField("startWorker"),
-    // fieldControlFactory.displayControl());
-    // FormFieldDefinition fieldEndWorker = createFieldDefinition("endWorker", orderDataDefinition.getField("endWorker"),
-    // fieldControlFactory.displayControl());
-    //
-    // formDefinition.addField(fieldNumber);
-    // formDefinition.addField(fieldName);
-    // formDefinition.addField(fieldDateFrom);
-    // formDefinition.addField(fieldDateTo);
-    // formDefinition.addField(fieldState);
-    // formDefinition.addField(fieldMachine);
-    // formDefinition.addField(fieldProduct);
-    // formDefinition.addField(fieldDefaultInstruction);
-    // formDefinition.addField(fieldInstruction);
-    // formDefinition.addField(fieldPlannedQuantity);
-    // formDefinition.addField(fieldDoneQuantity);
-    // formDefinition.addField(fieldEffectiveDateFrom);
-    // formDefinition.addField(fieldEffectiveDateTo);
-    // formDefinition.addField(fieldStartWorker);
-    // formDefinition.addField(fieldEndWorker);
-    //
-    // elements.add(formDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    //
-    // return viewDefinition;
-    // }
-    //
-    // private ViewDefinition createInstructionDetailsView() {
-    // ViewDefinition viewDefinition = new ViewDefinition("products.instructionDetailsView", "products");
-    // viewDefinition.setHeader("products.instructionDetailsView.header");
-    // List<ComponentDefinition> elements = new LinkedList<ComponentDefinition>();
-    //
-    // DataDefinition orderDataDefinition = dataDefinitionService.get("products.instruction");
-    // FormDefinition formDefinition = new FormDefinition("instructionDetailsForm", orderDataDefinition);
-    // formDefinition.setParent("entityId");
-    // formDefinition.setCorrespondingViewName("products.instructionGridView");
-    //
-    // FormFieldDefinition fieldMaster = createFieldDefinition("master", orderDataDefinition.getField("master"),
-    // fieldControlFactory.yesNoControl());
-    // FormFieldDefinition fieldNumber = createFieldDefinition("number", orderDataDefinition.getField("number"),
-    // fieldControlFactory.stringControl());
-    // FormFieldDefinition fieldName = createFieldDefinition("name", orderDataDefinition.getField("name"),
-    // fieldControlFactory.textControl());
-    // FormFieldDefinition fieldProduct = createFieldDefinition("product", orderDataDefinition.getField("product"),
-    // fieldControlFactory.lookupControl());
-    // FormFieldDefinition fieldTypeOfMaterial = createFieldDefinition("typeOfMaterial",
-    // orderDataDefinition.getField("typeOfMaterial"), fieldControlFactory.selectControl());
-    // FormFieldDefinition fieldDateFrom = createFieldDefinition("dateFrom", orderDataDefinition.getField("dateFrom"),
-    // fieldControlFactory.dateTimeControl());
-    // FormFieldDefinition fieldDateTo = createFieldDefinition("dateTo", orderDataDefinition.getField("dateTo"),
-    // fieldControlFactory.dateTimeControl());
-    // FormFieldDefinition fieldDescription = createFieldDefinition("description", orderDataDefinition.getField("description"),
-    // fieldControlFactory.textControl());
-    //
-    // formDefinition.addField(fieldMaster);
-    // formDefinition.addField(fieldNumber);
-    // formDefinition.addField(fieldName);
-    // formDefinition.addField(fieldProduct);
-    // formDefinition.addField(fieldTypeOfMaterial);
-    // formDefinition.addField(fieldDateFrom);
-    // formDefinition.addField(fieldDateTo);
-    // formDefinition.addField(fieldDescription);
-    //
-    // elements.add(formDefinition);
-    //
-    // viewDefinition.setElements(elements);
-    //
-    // return viewDefinition;
-    // }
-    //
+
+    private ViewDefinition createInstructionGridView() {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "instruction");
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.instructionGridView");
+        windowDefinition.setBackButton(false);
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.instructionGridView", windowDefinition, "products");
+        GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
+        grid.setHeader(false);
+        grid.setCorrespondingViewName("products.instructionDetailsView");
+        grid.addOptions("paging", "true");
+        grid.addOptions("sortable", "true");
+        grid.addOptions("filter", "true");
+        grid.addOptions("multiselect", "true");
+        grid.addOptions("height", "450");
+        ColumnDefinition columnNumber = createColumnDefinition("number", dataDefinition.getField("number"), null);
+        ColumnDefinition columnName = createColumnDefinition("name", dataDefinition.getField("name"), null);
+        ColumnDefinition columnProductName = createColumnDefinition("product", dataDefinition.getField("product"),
+                "#product['name']");
+        grid.addColumn(columnNumber);
+        grid.addColumn(columnName);
+        grid.addColumn(columnProductName);
+        windowDefinition.addComponent(grid);
+        windowDefinition.initialize();
+        return viewDefinition;
+    }
+
+    private ViewDefinition createInstructionDetailsView() {
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products", "instruction");
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition,
+                "products.instructionDetailsView");
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.instructionDetailsView", windowDefinition, "products");
+        FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
+        formDefinition.setHeader(false);
+        formDefinition.addComponent(new CheckBoxComponent("master", formDefinition, "master", null));
+        formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
+        formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
+        formDefinition.addComponent(new DynamicComboBox("typeOfMaterial", formDefinition, "typeOfMaterial", null));
+        formDefinition.addComponent(new TextInputComponent("dateFrom", formDefinition, "dateFrom", null));
+        formDefinition.addComponent(new TextInputComponent("dateTo", formDefinition, "dateTo", null));
+        formDefinition.addComponent(new TextInputComponent("description", formDefinition, "description", null));
+        windowDefinition.addComponent(formDefinition);
+        windowDefinition.initialize();
+        return viewDefinition;
+    }
+
+    private ViewDefinition createOrderGridView() {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.orderGridView");
+        windowDefinition.setBackButton(false);
+        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.orderGridView", windowDefinition, "products");
+        GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
+        grid.setHeader(false);
+        grid.setCorrespondingViewName("products.orderDetailsView");
+        grid.addOptions("paging", "true");
+        grid.addOptions("sortable", "true");
+        grid.addOptions("filter", "true");
+        grid.addOptions("multiselect", "true");
+        grid.addOptions("height", "450");
+        ColumnDefinition columnNumber = createColumnDefinition("number", dataDefinition.getField("number"), null);
+        ColumnDefinition columnName = createColumnDefinition("name", dataDefinition.getField("name"), null);
+        ColumnDefinition columnState = createColumnDefinition("state", dataDefinition.getField("state"), null);
+        grid.addColumn(columnNumber);
+        grid.addColumn(columnName);
+        grid.addColumn(columnState);
+        windowDefinition.addComponent(grid);
+        windowDefinition.initialize();
+        return viewDefinition;
+    }
+
+    private ViewDefinition createOrderDetailsView() {
+        DataDefinition substituteDataDefinition = dataDefinitionService.get("products", "order");
+        WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition,
+                "products.orderDetailsView");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products.orderDetailsView", windowDefinition, "products");
+        viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "afterOrderDetailsLoad"));
+        FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
+        formDefinition.setHeader(false);
+        formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
+        formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
+        formDefinition.addComponent(new TextInputComponent("dateFrom", formDefinition, "dateFrom", null));
+        formDefinition.addComponent(new TextInputComponent("dateTo", formDefinition, "dateTo", null));
+        formDefinition.addComponent(new DynamicComboBox("state", formDefinition, "state", null));
+        formDefinition.addComponent(new DynamicComboBox("machine", formDefinition, "machine", null));
+        formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
+
+        formDefinition.addComponent(new TextInputComponent("defaultInstruction", formDefinition, "defaultInstruction", null));
+        formDefinition.addComponent(new EntityComboBox("instruction", formDefinition, "instruction",
+                "#{mainWindow.detailsForm.product}.instructions"));
+
+        formDefinition.addComponent(new TextInputComponent("plannedQuantity", formDefinition, "plannedQuantity", null));
+        formDefinition.addComponent(new TextInputComponent("doneQuantity", formDefinition, "doneQuantity", null));
+        formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
+        formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
+        Component startWorkerField = new TextInputComponent("startWorker", formDefinition, "startWorker", null);
+        startWorkerField.setDefaultEnabled(false);
+        formDefinition.addComponent(startWorkerField);
+        formDefinition.addComponent(new TextInputComponent("endWorker", formDefinition, "endWorker", null));
+
+        windowDefinition.addComponent(formDefinition);
+        windowDefinition.initialize();
+        return viewDefinition;
+    }
+
     // private ViewDefinition createDictionaryGridView() {
     // ViewDefinition viewDefinition = new ViewDefinition("core.dictionaryGridView", "dictionaries");
     // viewDefinition.setHeader("core.dictionaryGridView.header");
@@ -718,7 +680,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 "#{mainWindow.pluginsGrid}"));
         windowDefinition.addComponent(new LinkButton("enableButton", windowDefinition, "../enable.html",
                 "#{mainWindow.pluginsGrid}"));
+        windowDefinition.addComponent(new LinkButton("disableButton", windowDefinition, "../disable.html",
+                "#{mainWindow.pluginsGrid}"));
         windowDefinition.addComponent(new LinkButton("deinstallButton", windowDefinition, "../deinstall.html",
+                "#{mainWindow.pluginsGrid}"));
+        windowDefinition.addComponent(new LinkButton("updateButton", windowDefinition, "../update.html",
                 "#{mainWindow.pluginsGrid}"));
 
         windowDefinition.initialize();
@@ -739,7 +705,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("version", formDefinition, "version", null));
-        formDefinition.addComponent(new TextInputComponent("publisher", formDefinition, "publisher", null));
+        formDefinition.addComponent(new TextInputComponent("vendor", formDefinition, "vendor", null));
         // TODO KRNA textarea
         formDefinition.addComponent(new TextInputComponent("description", formDefinition, "description", null));
         formDefinition.addComponent(new DynamicComboBox("status", formDefinition, "status", null));
