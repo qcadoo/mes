@@ -126,9 +126,9 @@ QCD.PageController = function(_viewName) {
 	
 	this.onSessionExpired = function() {
 		var serializationObject = new Object();
-		for (var i in pageElements) {
-			serializationObject[i] = pageElements[i].serialize();
-		}
+		//for (var i in pageElements) {
+			//serializationObject[i] = pageElements[i].serialize();
+		//}
 		window.parent.onSessionExpired(serializationObject);
 	}
 	

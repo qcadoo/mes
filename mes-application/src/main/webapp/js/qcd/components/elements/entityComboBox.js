@@ -32,7 +32,7 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 		}
 		var value = {
 			selectedValue: selectedVal
-		}
+		};
 		return value;
 	}
 	
@@ -48,6 +48,8 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 		}
 		if (value.selectedValue != null) {
 			select.val(value.selectedValue);
+		} else if (value.emptySelected) {
+			select.val('');
 		} else {
 			select.val(previousSelectedVal);
 		}
