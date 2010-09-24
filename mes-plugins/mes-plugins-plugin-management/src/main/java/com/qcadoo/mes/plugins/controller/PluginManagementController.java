@@ -45,12 +45,13 @@ public class PluginManagementController {
 
     private static final String binPath = "../bin/";
 
-    private static final String tmpPath = "/Users/krna/Downloads/tmp/";
+    private static final String tmpPath = "WEB-INF/tmp/";
 
     private static final String descriptor = "plugin.xml";
 
     String webappPath;
 
+    // TODO KRNA show errors
     @RequestMapping(value = "download", method = RequestMethod.GET)
     public ModelAndView getDownloadPageView() {
         ModelAndView mav = new ModelAndView();
@@ -61,95 +62,97 @@ public class PluginManagementController {
     @RequestMapping(value = "download", method = RequestMethod.POST)
     @Transactional
     public String handleDownload(@RequestParam("file") final MultipartFile file) {
-
+        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
         if (!file.isEmpty()) {
-            // TODO KRNA max upload
-            File pluginFile = transferFile(file);
-            PluginsPlugin plugin = readDescriptor(pluginFile);
-            PluginsPlugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
-            if (databasePlugin != null) {
-                pluginFile.delete();
-                // TODO KRNA plugin exist
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
-            } else {
-                plugin.setDeleted(false);
-                // TODO KRNA enum status
-                plugin.setStatus("downloaded");
-                plugin.setBase(false);
-                plugin.setFileName(file.getOriginalFilename());
+            try {
+                // TODO KRNA max upload
+                File pluginFile = transferFile(file);
+                PluginsPlugin plugin = readDescriptor(pluginFile);
+                PluginsPlugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
+                if (databasePlugin != null) {
+                    pluginFile.delete();
+                    LOG.error("Plugin was installed");
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                } else {
+                    plugin.setDeleted(false);
+                    // TODO KRNA enum status
+                    plugin.setStatus("downloaded");
+                    plugin.setBase(false);
+                    plugin.setFileName(file.getOriginalFilename());
 
-                pluginManagementService.savePlugin(plugin);
+                    pluginManagementService.savePlugin(plugin);
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                }
+            } catch (IllegalStateException e) {
+                LOG.error("Problem with installing file");
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            } catch (IOException e) {
+                LOG.error("Problem with installing file");
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            } catch (ParserConfigurationException e) {
+                LOG.error("Problem with parsing descriptor");
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            } catch (SAXException e) {
+                LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true";
             }
         } else {
-            // TODO KRNA error
+            LOG.error("Chosen file is empty");
             return "redirect:page/plugins.pluginGridView.html?iframe=true";
         }
 
     }
 
-    private File transferFile(final MultipartFile file) {
+    private File transferFile(final MultipartFile file) throws IllegalStateException, IOException {
         File pluginFile = null;
-        try {
-            pluginFile = new File(tmpPath + file.getOriginalFilename());
-            file.transferTo(pluginFile);
-        } catch (IllegalStateException e) {
-            // TODO KRNA error
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO KRNA error
-            e.printStackTrace();
+        File tmpDir = new File(webappPath + tmpPath);
+        if (!tmpDir.exists()) {
+            tmpDir.mkdir();
         }
+        pluginFile = new File(webappPath + tmpPath + file.getOriginalFilename());
+        file.transferTo(pluginFile);
+
         return pluginFile;
     }
 
-    private PluginsPlugin readDescriptor(final File file) {
+    private PluginsPlugin readDescriptor(final File file) throws IOException, ParserConfigurationException, SAXException {
+        // TODO KRNA enum
         String[] pluginProperties = { "identifier", "name", "packageName", "version", "vendor", "description" };
         PluginsPlugin plugin = new PluginsPlugin();
-        try {
-            JarFile jarFile = new JarFile(file);
+        JarFile jarFile = new JarFile(file);
 
-            InputStream in = jarFile.getInputStream(jarFile.getEntry(descriptor));
+        InputStream in = jarFile.getInputStream(jarFile.getEntry(descriptor));
 
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
 
-            Document doc = db.parse(in);
+        Document doc = db.parse(in);
 
-            doc.getDocumentElement().normalize();
+        doc.getDocumentElement().normalize();
 
-            for (String property : pluginProperties) {
-                String value = null;
-                Node fstNode = doc.getElementsByTagName(property).item(0);
-                if (fstNode.getNodeType() == Node.ELEMENT_NODE && fstNode.getFirstChild() != null) {
-                    value = ((Element) fstNode).getFirstChild().getNodeValue();
-                }
-
-                if (property.equals("identifier")) {
-                    plugin.setIdentifier(value);
-                } else if (property.equals("name")) {
-                    plugin.setName(value);
-                } else if (property.equals("packageName")) {
-                    plugin.setPackageName(value);
-                } else if (property.equals("version")) {
-                    plugin.setVersion(value);
-                } else if (property.equals("vendor")) {
-                    plugin.setVendor(value);
-                } else if (property.equals("description")) {
-                    plugin.setDescription(value);
-                }
-
+        for (String property : pluginProperties) {
+            String value = null;
+            Node fstNode = doc.getElementsByTagName(property).item(0);
+            if (fstNode.getNodeType() == Node.ELEMENT_NODE && fstNode.getFirstChild() != null) {
+                value = ((Element) fstNode).getFirstChild().getNodeValue();
             }
-        } catch (IOException e) {
-            // TODO KRNA error
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            // TODO KRNA error
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO KRNA error
-            e.printStackTrace();
+
+            if (property.equals("identifier")) {
+                plugin.setIdentifier(value);
+            } else if (property.equals("name")) {
+                plugin.setName(value);
+            } else if (property.equals("packageName")) {
+                plugin.setPackageName(value);
+            } else if (property.equals("version")) {
+                plugin.setVersion(value);
+            } else if (property.equals("vendor")) {
+                plugin.setVendor(value);
+            } else if (property.equals("description")) {
+                plugin.setDescription(value);
+            }
+
         }
+
         return plugin;
     }
 
@@ -158,8 +161,8 @@ public class PluginManagementController {
     public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("remove");
-
-        removePlugin(entityId, tmpPath);
+        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
+        removePlugin(entityId, webappPath + tmpPath);
 
         return mav;
     }
@@ -178,14 +181,14 @@ public class PluginManagementController {
     private void removePluginFile(final String fileName) {
         // A File object to represent the filename
         File f = new File(fileName);
-
+        // TODO KRNA error
         // Make sure the file or directory exists and isn't write protected
         if (!f.exists())
             throw new IllegalArgumentException("Delete: no such file or directory: " + fileName);
-
+        // TODO KRNA error
         if (!f.canWrite())
             throw new IllegalArgumentException("Delete: write protected: " + fileName);
-
+        // TODO KRNA error
         // If it is a directory, make sure it is empty
         if (f.isDirectory()) {
             throw new IllegalArgumentException("Delete: this is a directory: " + fileName);
@@ -193,7 +196,7 @@ public class PluginManagementController {
 
         // Attempt to delete it
         boolean success = f.delete();
-
+        // TODO KRNA error
         if (!success)
             throw new IllegalArgumentException("Delete: deletion failed");
 
@@ -222,6 +225,7 @@ public class PluginManagementController {
         } else {
             boolean success = moveFile(plugin.getFileName());
             if (!success)
+                // TODO KRNA error
                 throw new IllegalArgumentException("Move: move failed");
             return "redirect:enablePage.html";
         }
@@ -229,7 +233,7 @@ public class PluginManagementController {
 
     private boolean moveFile(final String fileName) {
         // File (or directory) to be moved
-        File file = new File(tmpPath + fileName);
+        File file = new File(webappPath + tmpPath + fileName);
         // Destination directory
         File dir = new File(webappPath + libPath);
         // Move file to new directory
@@ -322,38 +326,53 @@ public class PluginManagementController {
     public String handleUpdate(@RequestParam("file") final MultipartFile file) {
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
         if (!file.isEmpty()) {
-            // TODO KRNA max upload
-            File pluginFile = transferFile(file);
-            PluginsPlugin plugin = readDescriptor(pluginFile);
-            PluginsPlugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
-            if (databasePlugin.getStatus().equals("downloaded")) {
-                // TODO KRNA plugin has bad status
+            try {
+                // TODO KRNA max upload
+                File pluginFile = transferFile(file);
+                PluginsPlugin plugin = readDescriptor(pluginFile);
+                PluginsPlugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
+                if (databasePlugin.getStatus().equals("downloaded")) {
+                    LOG.info("Plugin hasn't apropriate status");
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                }
+                if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
+                    pluginFile.delete();
+                    LOG.info("Plugin has actual version");
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                } else {
+                    plugin.setDeleted(false);
+                    // TODO KRNA enum status
+                    plugin.setStatus(databasePlugin.getStatus());
+                    plugin.setBase(false);
+                    plugin.setFileName(file.getOriginalFilename());
+                    databasePlugin.setDeleted(true);
+                    pluginManagementService.savePlugin(plugin);
+                    pluginManagementService.savePlugin(databasePlugin);
+                    removeResources("js", "js", plugin.getIdentifier());
+                    removeResources("css", "css", plugin.getIdentifier());
+                    removeResources("img", "img", plugin.getIdentifier());
+                    removeResources("jsp", "WEB-INF/jsp", plugin.getIdentifier());
+                    removePluginFile(webappPath + tmpPath + databasePlugin.getFileName());
+                    boolean success = moveFile(plugin.getFileName());
+                    if (!success)
+                        throw new IllegalArgumentException("Move: move failed");
+                    return "redirect:enablePage.html";
+                }
+            } catch (IllegalStateException e) {
+                LOG.error("Problem with installing file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true";
-            }
-            if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
-                pluginFile.delete();
-                // TODO KRNA plugin has good version
+            } catch (IOException e) {
+                LOG.error("Problem with installing file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true";
-            } else {
-                plugin.setDeleted(false);
-                // TODO KRNA enum status
-                plugin.setStatus(databasePlugin.getStatus());
-                plugin.setBase(false);
-                plugin.setFileName(file.getOriginalFilename());
-                databasePlugin.setDeleted(true);
-                pluginManagementService.savePlugin(plugin);
-                pluginManagementService.savePlugin(databasePlugin);
-                removeResources("js", "js", plugin.getIdentifier());
-                removeResources("css", "css", plugin.getIdentifier());
-                removeResources("img", "img", plugin.getIdentifier());
-                removeResources("jsp", "WEB-INF/jsp", plugin.getIdentifier());
-                boolean success = moveFile(plugin.getFileName());
-                if (!success)
-                    throw new IllegalArgumentException("Move: move failed");
-                return "redirect:enablePage.html";
+            } catch (ParserConfigurationException e) {
+                LOG.error("Problem with parsing descriptor");
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            } catch (SAXException e) {
+                LOG.error("Problem with parsing descriptor");
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
             }
         } else {
-            // TODO KRNA error
+            LOG.error("Chosen file is empty");
             return "redirect:page/plugins.pluginGridView.html?iframe=true";
         }
 
