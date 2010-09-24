@@ -21,7 +21,7 @@ import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
 import com.qcadoo.mes.core.view.elements.comboBox.ComboBoxValue;
 
-public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
+public final class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
 
     public DynamicComboBox(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
@@ -54,7 +54,7 @@ public class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     }
 
     @Override
-    public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, Entity parentEntity,
+    public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<ComboBoxValue> viewValue, final Set<String> pathsToUpdate) {
         Object value = getFieldValue(entity, getFieldPath());
         String strValue;

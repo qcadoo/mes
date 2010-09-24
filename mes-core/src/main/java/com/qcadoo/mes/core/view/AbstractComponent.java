@@ -259,7 +259,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 }
             }
         } catch (JSONException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
         return jsonOptions.toString();
     }
@@ -408,11 +408,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
     }
 
     @Override
-    public String getViewName() {
+    public final String getViewName() {
         return viewName;
     }
 
-    public void setViewName(final String viewName) {
+    public final void setViewName(final String viewName) {
         this.viewName = viewName;
     }
 

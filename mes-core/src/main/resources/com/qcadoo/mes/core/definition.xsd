@@ -30,7 +30,7 @@
 			</xs:choice>
 			<xs:element name="priority" type="priorityFieldType"
 				minOccurs="0" maxOccurs="1" />
-			<xs:element name="validates_with" type="validatesWithType"
+			<xs:element name="validatesWith" type="validatesWithType"
 				minOccurs="0" maxOccurs="unbounded" />
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="onSave" type="hookType" />
@@ -86,19 +86,19 @@
 
 	<xs:complexType name="fieldType">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="validates_with" type="validatesWithType" />
-			<xs:element name="validates_presence" type="validatesType" />
-			<xs:element name="validates_presence_on_create" type="validatesType" />
-			<xs:element name="validates_uniqueness" type="validatesType" />
-			<xs:element name="validates_length" type="validatesLengthType" />
-			<xs:element name="validates_precision" type="validatesLengthType" />
-			<xs:element name="validates_scale" type="validatesLengthType" />
-			<xs:element name="validates_range" type="validatesRangeType" />
+			<xs:element name="validatesWith" type="validatesWithType" />
+			<xs:element name="validatesPresence" type="validatesType" />
+			<xs:element name="validatesPresenceOnCreate" type="validatesType" />
+			<xs:element name="validatesUniqueness" type="validatesType" />
+			<xs:element name="validatesLength" type="validatesLengthType" />
+			<xs:element name="validatesPrecision" type="validatesLengthType" />
+			<xs:element name="validatesScale" type="validatesLengthType" />
+			<xs:element name="validatesRange" type="validatesRangeType" />
 		</xs:choice>
 		<xs:attribute name="name" type="identifierType" use="required" />
 		<xs:attribute name="default" type="xs:string" />
 		<xs:attribute name="readonly" type="xs:boolean" default="false" />
-		<xs:attribute name="readonly_on_create" type="xs:boolean"
+		<xs:attribute name="readonlyOnCreate" type="xs:boolean"
 			default="false" />
 	</xs:complexType>
 

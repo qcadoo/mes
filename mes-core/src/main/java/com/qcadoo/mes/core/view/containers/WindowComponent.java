@@ -7,13 +7,13 @@ import com.qcadoo.mes.core.internal.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.view.AbstractRootComponent;
 
-public class WindowComponent extends AbstractRootComponent {
+public final class WindowComponent extends AbstractRootComponent {
 
     private boolean backButton = true;
 
     private boolean header = true;
 
-    public WindowComponent(final String name, final DataDefinition dataDefinition, String viewName) {
+    public WindowComponent(final String name, final DataDefinition dataDefinition, final String viewName) {
         super(name, dataDefinition, viewName);
     }
 
@@ -41,7 +41,7 @@ public class WindowComponent extends AbstractRootComponent {
         return backButton;
     }
 
-    public void setBackButton(boolean backButton) {
+    public void setBackButton(final boolean backButton) {
         this.backButton = backButton;
     }
 
@@ -49,7 +49,7 @@ public class WindowComponent extends AbstractRootComponent {
         return header;
     }
 
-    public void setHeader(boolean header) {
+    public void setHeader(final boolean header) {
         this.header = header;
     }
 }

@@ -2,8 +2,8 @@
 <qcd:plugin name="products" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="testBeanA">
 		<string name="name" >
-			<validates_presence />
-			<validates_length max="5" />
+			<validatesPresence />
+			<validatesLength max="5" />
 		</string>
 		<string name="description" />		
 		<belongsTo name="beanB" model="testBeanB" lookupField="name" />
@@ -12,7 +12,7 @@
 	</model>
 	<model name="testBeanB">
 		<string name="name" >
-			<validates_presence />
+			<validatesPresence />
 		</string>
 		<string name="description" />		
 		<belongsTo name="beanC" model="testBeanC" lookupField="name" />
@@ -20,7 +20,7 @@
 	</model>
 	<model name="testBeanC">
 		<string name="name" >
-			<validates_presence />
+			<validatesPresence />
 		</string>
 		<string name="description" />		
 		<belongsTo name="beanA" model="testBeanA" lookupField="name" />

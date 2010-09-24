@@ -5,7 +5,7 @@ import java.util.Map;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.model.DataDefinition;
 
-public class EntityDataUtils {
+public final class EntityDataUtils {
 
     private EntityDataUtils() {
 

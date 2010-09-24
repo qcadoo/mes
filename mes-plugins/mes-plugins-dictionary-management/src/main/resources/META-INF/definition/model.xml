@@ -2,17 +2,17 @@
 <qcd:plugin name="dictionaries" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="dictionary" deletable="false">
 		<string name="name" >
-			<validates_presence />
-			<validates_uniqueness />
+			<validatesPresence />
+			<validatesUniqueness />
 		</string>
 	</model>
 	<model name="dictionaryItem">
 		<string name="name" >
-			<validates_presence />
+			<validatesPresence />
 		</string>
 		<text name="description" />
 		<belongsTo name="dictionary" model="dictionary" lookupField="name">
-			<validates_presence />
+			<validatesPresence />
 		</belongsTo>
 	</model>
 </qcd:plugin>

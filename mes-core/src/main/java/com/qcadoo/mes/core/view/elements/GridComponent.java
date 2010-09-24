@@ -61,35 +61,35 @@ public final class GridComponent extends AbstractComponent<ListData> {
         return "grid";
     }
 
-    public final Set<FieldDefinition> getSearchableFields() {
+    public Set<FieldDefinition> getSearchableFields() {
         return searchableFields;
     }
 
-    public final void addSearchableField(final FieldDefinition searchableField) {
+    public void addSearchableField(final FieldDefinition searchableField) {
         this.searchableFields.add(searchableField);
     }
 
-    public final Set<FieldDefinition> getOrderableFields() {
+    public Set<FieldDefinition> getOrderableFields() {
         return orderableFields;
     }
 
-    public final void addOrderableField(final FieldDefinition orderableField) {
+    public void addOrderableField(final FieldDefinition orderableField) {
         this.orderableFields.add(orderableField);
     }
 
-    public final List<ColumnDefinition> getColumns() {
+    public List<ColumnDefinition> getColumns() {
         return columns;
     }
 
-    public final void addColumn(final ColumnDefinition column) {
+    public void addColumn(final ColumnDefinition column) {
         this.columns.add(column);
     }
 
-    public final String getCorrespondingViewName() {
+    public String getCorrespondingViewName() {
         return correspondingViewName;
     }
 
-    public final void setCorrespondingViewName(final String correspondingViewName) {
+    public void setCorrespondingViewName(final String correspondingViewName) {
         this.correspondingViewName = correspondingViewName;
     }
 
@@ -121,7 +121,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
     }
 
     @Override
-    public ViewValue<ListData> getComponentValue(final Entity entity, Entity parentEntity,
+    public ViewValue<ListData> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate) {
         if (getSourceFieldPath() != null || getFieldPath() != null) {
             if (entity == null) {

@@ -164,7 +164,7 @@ public class CrudController {
 
             return newViewValue;
         } catch (JSONException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
@@ -198,7 +198,7 @@ public class CrudController {
 
             return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
         } catch (JSONException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
@@ -231,7 +231,7 @@ public class CrudController {
 
             return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate);
         } catch (JSONException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 

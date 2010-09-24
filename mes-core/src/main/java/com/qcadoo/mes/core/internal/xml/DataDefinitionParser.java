@@ -44,7 +44,7 @@ import com.qcadoo.mes.core.validation.FieldValidator;
 import com.qcadoo.mes.core.validation.ValidatorFactory;
 
 @Service
-public class DataDefinitionParser {
+public final class DataDefinitionParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataDefinitionParser.class);
 
@@ -103,9 +103,9 @@ public class DataDefinitionParser {
 
             reader.close();
         } catch (XMLStreamException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new IllegalStateException(e.getMessage(), e);
         } catch (FactoryConfigurationError e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
@@ -134,7 +134,7 @@ public class DataDefinitionParser {
                 dataDefinition.withSaveHook(getHookDefinition(reader));
             } else if (isTagStarted(reader, "onLoad")) {
                 // TODO
-            } else if (isTagStarted(reader, "validates_with")) {
+            } else if (isTagStarted(reader, "validatesWith")) {
                 dataDefinition.withValidator(getEntityValidatorDefinition(reader));
             } else if (isTagStarted(reader, "integer")) {
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
@@ -209,7 +209,7 @@ public class DataDefinitionParser {
         String fieldType = reader.getLocalName();
         FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(getStringAttribute(reader, "name"));
         fieldDefinition.withReadOnly(getBooleanAttribute(reader, "readonly", false));
-        fieldDefinition.withReadOnlyOnUpdate(getBooleanAttribute(reader, "readonly_on_create", false));
+        fieldDefinition.withReadOnlyOnUpdate(getBooleanAttribute(reader, "readonlyOnCreate", false));
         fieldDefinition.withDefaultValue(getStringAttribute(reader, "default"));
         FieldType type = null;
 
@@ -244,38 +244,38 @@ public class DataDefinitionParser {
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagEnded(reader, fieldType)) {
                 break;
-            } else if (isTagStarted(reader, "validates_presence")) {
+            } else if (isTagStarted(reader, "validatesPresence")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.required()));
-            } else if (isTagStarted(reader, "validates_presence_on_create")) {
+            } else if (isTagStarted(reader, "validatesPresenceOnCreate")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.requiredOnCreate()));
-            } else if (isTagStarted(reader, "validates_length")) {
+            } else if (isTagStarted(reader, "validatesLength")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
                         .length(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
                                 getIntegerAttribute(reader, "max"))));
-            } else if (isTagStarted(reader, "validates_precision")) {
+            } else if (isTagStarted(reader, "validatesPrecision")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
                         .precision(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
                                 getIntegerAttribute(reader, "max"))));
-            } else if (isTagStarted(reader, "validates_scale")) {
+            } else if (isTagStarted(reader, "validatesScale")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
                         .scale(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
                                 getIntegerAttribute(reader, "max"))));
-            } else if (isTagStarted(reader, "validates_range")) {
+            } else if (isTagStarted(reader, "validatesRange")) {
                 Object from = getRangeForType(getStringAttribute(reader, "from"), type);
                 Object to = getRangeForType(getStringAttribute(reader, "to"), type);
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.range(from, to)));
-            } else if (isTagStarted(reader, "validates_uniqueness")) {
+            } else if (isTagStarted(reader, "validatesUniqueness")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.unique()));
                 // TODO scope="lastname"
-            } else if (isTagStarted(reader, "validates_format")) {
+                // } else if (isTagStarted(reader, "validatesFormat")) {
                 // TODO with="d*a"
-            } else if (isTagStarted(reader, "validates_with")) {
+            } else if (isTagStarted(reader, "validatesWith")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.custom(getHookDefinition(reader))));
-            } else if (isTagStarted(reader, "validates_with_script")) {
+                // } else if (isTagStarted(reader, "validatesWithScript")) {
                 // TODO
-            } else if (isTagStarted(reader, "validates_exclusion")) {
+                // } else if (isTagStarted(reader, "validatesExclusion")) {
                 // TODO <exclude>nowak</exclude> <exclude>kowalski</exclude>
-            } else if (isTagStarted(reader, "validates_inclusion")) {
+                // } else if (isTagStarted(reader, "validatesInclusion")) {
                 // TODO <include>szczytowski</include>
             }
         }
@@ -299,9 +299,9 @@ public class DataDefinitionParser {
                 return range;
             }
         } catch (ParseException e) {
-            throw new RuntimeException("Cannot parse data definition", e);
+            throw new IllegalStateException("Cannot parse data definition", e);
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Cannot parse data definition", e);
+            throw new IllegalStateException("Cannot parse data definition", e);
         }
     }
 
@@ -373,10 +373,6 @@ public class DataDefinitionParser {
 
     private boolean isTagStarted(final XMLStreamReader reader, final String tagName) {
         return (reader.getEventType() == XMLStreamConstants.START_ELEMENT && tagName.equals(reader.getLocalName()));
-    }
-
-    private boolean isTagNotStarted(final XMLStreamReader reader, final String tagName) {
-        return (reader.getEventType() == XMLStreamConstants.START_ELEMENT && !tagName.equals(reader.getLocalName()));
     }
 
     private boolean isTagEnded(final XMLStreamReader reader, final String tagName) {

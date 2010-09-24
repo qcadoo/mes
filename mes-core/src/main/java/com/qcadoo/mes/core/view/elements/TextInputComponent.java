@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.view.elements;
 
 import com.qcadoo.mes.core.view.ContainerComponent;
 
-public class TextInputComponent extends SimpleFieldComponent {
+public final class TextInputComponent extends SimpleFieldComponent {
 
     public TextInputComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
             final String dataSource) {

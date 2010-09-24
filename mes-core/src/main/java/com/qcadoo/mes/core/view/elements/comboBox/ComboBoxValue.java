@@ -2,13 +2,13 @@ package com.qcadoo.mes.core.view.elements.comboBox;
 
 import java.util.List;
 
-public class ComboBoxValue {
+public final class ComboBoxValue {
 
     private String selectedValue;
 
     private List<String> values;
 
-    public ComboBoxValue(List<String> values, String selectedValue) {
+    public ComboBoxValue(final List<String> values, final String selectedValue) {
         super();
         this.values = values;
         this.selectedValue = selectedValue;
@@ -18,7 +18,7 @@ public class ComboBoxValue {
         return selectedValue;
     }
 
-    public void setSelectedValue(String selectedValue) {
+    public void setSelectedValue(final String selectedValue) {
         this.selectedValue = selectedValue;
     }
 
@@ -26,7 +26,7 @@ public class ComboBoxValue {
         return values;
     }
 
-    public void setValues(List<String> values) {
+    public void setValues(final List<String> values) {
         this.values = values;
     }
 

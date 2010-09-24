@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.qcadoo.mes.core.api.Entity;
 
-public class ListData {
+public final class ListData {
 
     private Integer totalNumberOfEntities;
 

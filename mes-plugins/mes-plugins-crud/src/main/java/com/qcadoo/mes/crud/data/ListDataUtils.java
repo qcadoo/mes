@@ -8,13 +8,13 @@ import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 
-public class ListDataUtils {
+public final class ListDataUtils {
 
     private ListDataUtils() {
 
     }
 
-    public static ListData generateListData(SearchResult rs, GridComponent gridDefinition) {
+    public static ListData generateListData(final SearchResult rs, final GridComponent gridDefinition) {
         List<Entity> entities = rs.getEntities();
         List<Entity> gridEntities = new LinkedList<Entity>();
 

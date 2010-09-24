@@ -11,7 +11,7 @@ import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
 
-public class LinkButton extends AbstractComponent<String> {
+public final class LinkButton extends AbstractComponent<String> {
 
     private String pageUrl;
 
@@ -42,7 +42,7 @@ public class LinkButton extends AbstractComponent<String> {
     }
 
     @Override
-    public ViewValue<String> getComponentValue(final Entity entity, Entity parentEntity,
+    public ViewValue<String> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
         if (entity != null) {
             return new ViewValue<String>(pageUrl + "?entityId=" + entity.getId());

@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.view.elements.comboBox;
 
 import java.util.Map;
 
-public class EntityComboBoxValue {
+public final class EntityComboBoxValue {
 
     private Long selectedValue;
 
@@ -12,7 +12,7 @@ public class EntityComboBoxValue {
         return selectedValue;
     }
 
-    public void setSelectedValue(Long selectedValue) {
+    public void setSelectedValue(final Long selectedValue) {
         this.selectedValue = selectedValue;
     }
 
@@ -20,7 +20,7 @@ public class EntityComboBoxValue {
         return values;
     }
 
-    public void setValues(Map<Long, String> values) {
+    public void setValues(final Map<Long, String> values) {
         this.values = values;
     }
 

@@ -37,12 +37,12 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     }
 
     @Override
-    public Component<?> lookupComponent(final String path) {
+    public final Component<?> lookupComponent(final String path) {
         return componentRegistry.get(path);
     }
 
     @Override
-    public Set<String> lookupListeners(final String path) {
+    public final Set<String> lookupListeners(final String path) {
         Set<String> paths = new HashSet<String>();
         getListenersForPath(path, paths);
         return paths;

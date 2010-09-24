@@ -2,23 +2,23 @@
 <qcd:plugin name="sample" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="simpleDatabaseObject">
 		<integer name="age">
-			<validates_presence message="Error Message" />
-			<validates_presence_on_create />
-			<validates_uniqueness />
-			<validates_with bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="validateField" />
-			<validates_length min="1" max="3" is="2" />
-			<validates_length is="2" />
-			<validates_length max="20"/>		
-			<validates_precision min="2" max="4" is="2" />
-			<validates_precision is="2" />
-			<validates_scale min="2" max="4" is="2" />
-			<validates_scale is="2" />
-			<validates_range from="18" />
+			<validatesPresence message="Error Message" />
+			<validatesPresenceOnCreate />
+			<validatesUniqueness />
+			<validatesWith bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="validateField" />
+			<validatesLength min="1" max="3" is="2" />
+			<validatesLength is="2" />
+			<validatesLength max="20"/>		
+			<validatesPrecision min="2" max="4" is="2" />
+			<validatesPrecision is="2" />
+			<validatesScale min="2" max="4" is="2" />
+			<validatesScale is="2" />
+			<validatesRange from="18" />
 		</integer>
 		<string name="firstname" default="ala">
-			<validates_range from="daap" to="dzzp" />	 
+			<validatesRange from="daap" to="dzzp" />	 
 		</string>
-		<string name="lastname" default="ala" readonly="true" readonly_on_create="true">
+		<string name="lastname" default="ala" readonly="true" readonlyOnCreate="true">
 		</string>
 		<text name="desc" />
 		<decimal name="money" />
@@ -29,14 +29,14 @@
 		<hasMany name="children" model="person" plugin="people" joinField="child" />
 		<hasMany name="children2" model="person" joinField="child2" />
 		<enum name="typeOfMaterial" values="product,intermediate,component">
-			<validates_presence />
+			<validatesPresence />
 		</enum>
 		<dictionary name="category" dictionary="categories" />
 		<password name="password" />
 		
 		<priority name="priority" scope="parent" />
 		
-		<validates_with bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="validateEntity" message="Error Message" />
+		<validatesWith bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="validateEntity" message="Error Message" />
 			
 		<onSave bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onSave" />
 		<onUpdate bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onUpdate" />

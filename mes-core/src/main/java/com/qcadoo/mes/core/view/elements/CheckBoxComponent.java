@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.view.elements;
 
 import com.qcadoo.mes.core.view.ContainerComponent;
 
-public class CheckBoxComponent extends SimpleFieldComponent {
+public final class CheckBoxComponent extends SimpleFieldComponent {
 
     public CheckBoxComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
             final String dataSource) {

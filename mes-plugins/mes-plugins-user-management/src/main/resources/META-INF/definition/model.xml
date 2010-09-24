@@ -2,11 +2,11 @@
 <qcd:plugin name="users" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="user">
 		<string name="userName" >
-			<validates_presence />
+			<validatesPresence />
 			<validates_uniqueness />
 		</string>
 		<belongsTo name="group" model="group" lookupField="name">
-			<validates_presence />
+			<validatesPresence />
 		</belongsTo>
 		<string name="email" />
 		<string name="firstName" />
@@ -14,17 +14,17 @@
 		<text name="description" />
 		<string name="email" />
 		<password name="password">
-			<validates_presence_on_create />
+			<validatesPresenceOnCreate />
 		</password>
 	</model>
 	<model name="group">
 		<string name="userName" readonly="true">
-			<validates_presence_on_create />
-			<validates_uniqueness />
+			<validatesPresenceOnCreate />
+			<validatesUniqueness />
 		</string>
 		<text name="description" />
 		<string name="role" readonly="true">
-			<validates_presence_on_create />
+			<validatesPresenceOnCreate />
 		</string>
 	</model>
 </qcd:plugin>

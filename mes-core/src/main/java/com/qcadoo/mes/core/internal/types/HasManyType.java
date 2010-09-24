@@ -7,7 +7,7 @@ import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.types.FieldType;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
 
-public class HasManyType implements FieldType {
+public final class HasManyType implements FieldType {
 
     private final String entityName;
 

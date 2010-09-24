@@ -24,7 +24,7 @@ import com.qcadoo.mes.core.model.FieldDefinition;
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.has com.qcadoo.mes.core.data.definition.ColumnAggregationMode
  */
-public class ColumnDefinition {
+public final class ColumnDefinition {
 
     private String name;
 

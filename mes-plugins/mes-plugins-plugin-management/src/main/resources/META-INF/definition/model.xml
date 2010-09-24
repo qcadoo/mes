@@ -2,20 +2,20 @@
 <qcd:plugin name="plugins" xmlns:qcd="http://www.qcadoo.com/">
 	<model name="plugin">
 		<string name="name" readonly="true" >
-			<validates_presence_on_create />
+			<validatesPresenceOnCreate />
 		</string>
 		<text name="description" readonly="true" />
 		<string name="vendor" readonly="true" >
-			<validates_presence_on_create />
+			<validatesPresenceOnCreate />
 		</string>
 		<string name="version" readonly="true" >
-			<validates_presence_on_create />
+			<validatesPresenceOnCreate />
 		</string>
 		<enum name="status" values="downloaded,installed,active">
-			<validates_presence_on_create />
+			<validatesPresenceOnCreate />
 		</enum>
 		<boolean name="base" readonly="true">
-			<validates_presence_on_create />
+			<validatesPresenceOnCreate />
 		</boolean>
 		<string name="identifier" readonly="true" />
 		<string name="packageName" readonly="true" />
