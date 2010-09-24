@@ -686,7 +686,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("version", formDefinition, "version", null));
-        formDefinition.addComponent(new TextInputComponent("publisher", formDefinition, "publisher", null));
+        formDefinition.addComponent(new TextInputComponent("vendor", formDefinition, "vendor", null));
         // TODO KRNA textarea
         formDefinition.addComponent(new TextInputComponent("description", formDefinition, "description", null));
         formDefinition.addComponent(new DynamicComboBox("status", formDefinition, "status", null));
