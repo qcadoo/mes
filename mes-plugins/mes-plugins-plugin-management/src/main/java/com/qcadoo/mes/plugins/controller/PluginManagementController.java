@@ -158,7 +158,7 @@ public class PluginManagementController {
     public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("remove");
-
+        // TODO KRNA check plugin base
         removePlugin(entityId, tmpPath);
 
         return mav;
@@ -209,9 +209,13 @@ public class PluginManagementController {
     @RequestMapping(value = "enable", method = RequestMethod.GET)
     @Transactional
     public String handleEnable(@RequestParam("entityId") final String entityId) {
+        Plugin plugin = pluginManagementService.getPlugin(entityId);
+        if (plugin.isBase()) {
+            // TODO KRNA plugin base
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
         LOG.debug(webappPath);
-        Plugin plugin = pluginManagementService.getPlugin(entityId);
         String pluginStatus = plugin.getStatus();
         // TODO KRNA enum status
         plugin.setStatus("active");
@@ -266,6 +270,10 @@ public class PluginManagementController {
     @Transactional
     public String getDisablePageView(@RequestParam("entityId") final String entityId) {
         Plugin plugin = pluginManagementService.getPlugin(entityId);
+        if (plugin.isBase()) {
+            // TODO KRNA plugin base
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
         // TODO KRNA enum status
         plugin.setStatus("installed");
         pluginManagementService.savePlugin(plugin);
@@ -277,6 +285,7 @@ public class PluginManagementController {
     public ModelAndView getDeinstallPageView(@RequestParam("entityId") final String entityId) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("enable");
+        // TODO KRNA check plugin base
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
         Plugin databaseEntity = pluginManagementService.getPlugin(entityId);
         // TODO KRNA check sequence
@@ -326,6 +335,14 @@ public class PluginManagementController {
             File pluginFile = transferFile(file);
             Plugin plugin = readDescriptor(pluginFile);
             Plugin databasePlugin = pluginManagementService.getInstalledPlugin(plugin);
+            if (databasePlugin == null) {
+                // TODO KRNA plugin null
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            }
+            if (databasePlugin.isBase()) {
+                // TODO KRNA plugin base
+                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            }
             if (databasePlugin.getStatus().equals("downloaded")) {
                 // TODO KRNA plugin has bad status
                 return "redirect:page/plugins.pluginGridView.html?iframe=true";

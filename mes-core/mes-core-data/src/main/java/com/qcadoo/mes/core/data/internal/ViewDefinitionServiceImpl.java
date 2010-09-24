@@ -684,14 +684,31 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
 
-        formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
-        formDefinition.addComponent(new TextInputComponent("version", formDefinition, "version", null));
-        formDefinition.addComponent(new TextInputComponent("vendor", formDefinition, "vendor", null));
+        Component nameField = new TextInputComponent("name", formDefinition, "name", null);
+        nameField.setDefaultEnabled(false);
+        formDefinition.addComponent(nameField);
+
+        Component versionField = new TextInputComponent("version", formDefinition, "version", null);
+        versionField.setDefaultEnabled(false);
+        formDefinition.addComponent(versionField);
+
+        Component vendorField = new TextInputComponent("vendor", formDefinition, "vendor", null);
+        vendorField.setDefaultEnabled(false);
+        formDefinition.addComponent(vendorField);
         // TODO KRNA textarea
-        formDefinition.addComponent(new TextInputComponent("description", formDefinition, "description", null));
-        formDefinition.addComponent(new DynamicComboBox("status", formDefinition, "status", null));
+        Component descriptionField = new TextInputComponent("description", formDefinition, "description", null);
+        descriptionField.setDefaultEnabled(false);
+        formDefinition.addComponent(descriptionField);
+
+        Component statusField = new DynamicComboBox("status", formDefinition, "status", null);
+        statusField.setDefaultEnabled(false);
+        formDefinition.addComponent(statusField);
+
         // TODO KRNA boolean
-        formDefinition.addComponent(new TextInputComponent("base", formDefinition, "base", null));
+        Component baseField = new CheckBoxComponent("base", formDefinition, "base", null);
+        baseField.setDefaultEnabled(false);
+        formDefinition.addComponent(baseField);
+
         windowDefinition.addComponent(formDefinition);
 
         windowDefinition.initialize();
