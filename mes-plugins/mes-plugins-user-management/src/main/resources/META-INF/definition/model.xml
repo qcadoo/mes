@@ -3,7 +3,7 @@
 	<model name="user">
 		<string name="userName" >
 			<validatesPresence />
-			<validates_uniqueness />
+			<validatesUniqueness />
 		</string>
 		<belongsTo name="group" model="group" lookupField="name">
 			<validatesPresence />

@@ -231,6 +231,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("ean", formDefinition, "ean", null));
         formDefinition.addComponent(new DynamicComboBox("category", formDefinition, "category", null));
         formDefinition.addComponent(new TextInputComponent("unit", formDefinition, "unit", null));
+        formDefinition.addComponent(new TextInputComponent("unit2", formDefinition, "unit2", null));
         windowDefinition.addComponent(formDefinition);
 
         GridComponent substituteGridDefinition = new GridComponent("substitutesGrid", windowDefinition, "substitutes", null);
