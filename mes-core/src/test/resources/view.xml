@@ -57,7 +57,7 @@
 				<input name="name" field="name" />
 			</form>
 		</window>
-		<onSave bean="com.qcadoo.mes.beans.sample.CustomEntityService"
+		<onView bean="com.qcadoo.mes.beans.sample.CustomEntityService"
 			method="onView" />
 	</view>
 	<view name="viewName" forEntity="simpleDatabaseObject">

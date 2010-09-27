@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import javax.annotation.PostConstruct;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -27,7 +26,6 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
-import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
@@ -35,6 +33,8 @@ import com.qcadoo.mes.core.internal.types.DateTimeType;
 import com.qcadoo.mes.core.internal.types.DateType;
 import com.qcadoo.mes.core.internal.types.DecimalType;
 import com.qcadoo.mes.core.internal.types.IntegerType;
+import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
+import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.model.HookDefinition;
 import com.qcadoo.mes.core.types.FieldType;
@@ -44,18 +44,15 @@ import com.qcadoo.mes.core.validation.FieldValidator;
 import com.qcadoo.mes.core.validation.ValidatorFactory;
 
 @Service
-public final class DataDefinitionParser {
+public final class ViewDefinitionParser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataDefinitionParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ViewDefinitionParser.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
-
-    @Autowired
-    private DataAccessService dataAccessService;
 
     @Autowired
     private FieldTypeFactory fieldTypeFactory;
@@ -69,17 +66,17 @@ public final class DataDefinitionParser {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @PostConstruct
+    // @PostConstruct
     public void init() {
-        LOG.info("Reading model definitions ...");
+        LOG.info("Reading view definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:model.xml");
+            Resource[] resources = applicationContext.getResources("classpath*:view.xml");
             for (Resource resource : resources) {
                 parse(resource.getInputStream());
             }
         } catch (IOException e) {
-            LOG.error("Cannot read data definition", e);
+            LOG.error("Cannot read view definition", e);
         }
 
         viewDefinitionService.initViews();
@@ -92,10 +89,10 @@ public final class DataDefinitionParser {
             String pluginIdentifier = null;
 
             while (reader.hasNext() && reader.next() > 0) {
-                if (isTagStarted(reader, "models")) {
+                if (isTagStarted(reader, "views")) {
                     pluginIdentifier = getPluginIdentifier(reader);
-                } else if (isTagStarted(reader, "model")) {
-                    getModelDefinition(reader, pluginIdentifier);
+                } else if (isTagStarted(reader, "view")) {
+                    getViewDefinition(reader, pluginIdentifier);
                 }
             }
 
@@ -107,62 +104,24 @@ public final class DataDefinitionParser {
         }
     }
 
-    private void getModelDefinition(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException {
-        String modelName = getStringAttribute(reader, "name");
+    private void getViewDefinition(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException {
+        String viewName = getStringAttribute(reader, "name");
 
-        LOG.info("Reading model " + modelName + " for plugin " + pluginIdentifier);
+        LOG.info("Reading view " + viewName + " for plugin " + pluginIdentifier);
 
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(pluginIdentifier, modelName, dataAccessService);
-        dataDefinition.setDeletable(getBooleanAttribute(reader, "deletable", true));
-        dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.beans." + pluginIdentifier + "."
-                + StringUtils.capitalize(pluginIdentifier) + StringUtils.capitalize(modelName));
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(pluginIdentifier, viewName);
+
+        DataDefinition dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "forEntity"));
 
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagEnded(reader, "model")) {
-                break;
-            } else if (isTagStarted(reader, "priority")) {
-                dataDefinition.withPriorityField(getPriorityFieldDefinition(reader, dataDefinition));
-            } else if (isTagStarted(reader, "onCreate")) {
-                dataDefinition.withCreateHook(getHookDefinition(reader));
-            } else if (isTagStarted(reader, "onUpdate")) {
-                dataDefinition.withUpdateHook(getHookDefinition(reader));
-            } else if (isTagStarted(reader, "onSave")) {
-                dataDefinition.withSaveHook(getHookDefinition(reader));
-            } else if (isTagStarted(reader, "validatesWith")) {
-                dataDefinition.withValidator(getEntityValidatorDefinition(reader));
-            } else if (isTagStarted(reader, "integer")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "string")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "text")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "decimal")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "datetime")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "date")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "boolean")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "belongsTo")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "hasMany")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "enum")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "dictionary")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
-            } else if (isTagStarted(reader, "password")) {
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier));
+            if (isTagStarted(reader, "window")) {
+                // viewDefinition.setRoot(getComponent(reader, dataDefinition));
+            } else if (isTagStarted(reader, "onView")) {
+                viewDefinition.setViewHook(getHookDefinition(reader));
             }
-
-            // "time"
-            // "timestamp"
-            // "float"
-            // "onLoad"
         }
 
-        dataDefinitionService.save(dataDefinition);
+        viewDefinitionService.save(viewDefinition);
     }
 
     private FieldType getDictionaryType(final XMLStreamReader reader) {

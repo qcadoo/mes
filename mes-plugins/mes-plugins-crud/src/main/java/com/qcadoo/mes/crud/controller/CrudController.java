@@ -51,7 +51,7 @@ public final class CrudController {
 
         Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
 
-        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
         mav.addObject("viewDefinition", viewDefinition);
         // translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
@@ -101,7 +101,7 @@ public final class CrudController {
     @RequestMapping(value = "page/{viewName}/data", method = RequestMethod.GET)
     @ResponseBody
     public Object getData(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
-        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
         if (arguments.get("entityId") != null) {
             Entity entity = viewDefinition.getRoot().getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
             return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, null, "");
@@ -145,7 +145,7 @@ public final class CrudController {
     @ResponseBody
     public Object getDataUpdate(@PathVariable("viewName") final String viewName,
             @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") final StringBuilder body) {
-        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
@@ -173,7 +173,7 @@ public final class CrudController {
     @ResponseBody
     public Object performSave(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
             @ModelAttribute("jsonBody") final StringBuilder body) {
-        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
@@ -208,7 +208,7 @@ public final class CrudController {
     @ResponseBody
     public Object performDelete(@PathVariable("viewName") final String viewName,
             @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") final StringBuilder body) {
-        ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // plugin name
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());

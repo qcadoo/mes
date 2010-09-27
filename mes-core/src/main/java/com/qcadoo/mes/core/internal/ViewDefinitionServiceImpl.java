@@ -75,19 +75,19 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Override
     @Transactional(readOnly = true)
-    public ViewDefinition getViewDefinition(final String viewName) {
+    public ViewDefinition get(final String pluginIdentifier, final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        PluginsPlugin plugin = pluginManagementService.getPluginByIdentifierAndStatus(viewDefinition.getPluginIdentifier(),
+        PluginsPlugin plugin = pluginManagementService.getPluginByIdentifierAndStatus(pluginIdentifier,
                 PluginStatus.ACTIVE.getValue());
         if (plugin != null) {
             return viewDefinition;
         }
-        return new ViewDefinitionImpl("main", null, "");
+        return new ViewDefinitionImpl(null, "main");
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ViewDefinition> getAllViews() {
+    public List<ViewDefinition> list() {
         List<ViewDefinition> viewsList = new ArrayList<ViewDefinition>();
         List<PluginsPlugin> activePluginList = pluginManagementService.getActivePlugins();
         for (PluginsPlugin activePlugin : activePluginList) {
@@ -114,7 +114,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "products.grid");
         windowDefinition.setBackButton(false);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products.grid", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.grid");
+        viewDefinition.setRoot(windowDefinition);
 
         GridComponent grid = new GridComponent("beansAGrid", windowDefinition, null, null);
         grid.setCorrespondingViewName("products.form");
@@ -141,7 +142,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "products.form");
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products.form", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.form");
+        viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("beanAForm", windowDefinition, null, null);
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
@@ -188,7 +190,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productGridView");
         windowDefinition.setBackButton(false);
 
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productGridView", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.productGridView");
+        viewDefinition.setRoot(windowDefinition);
 
         GridComponent grid = new GridComponent("productsGrid", windowDefinition, null, null);
         grid.setHeader(false);
@@ -221,7 +224,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productDetailsView");
 
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.productDetailsView", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.productDetailsView");
+        viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("productDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
@@ -274,7 +278,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition,
                 "products.substituteDetailsView");
 
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteDetailsView", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.substituteDetailsView");
+        viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("substitutesDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
@@ -297,8 +302,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", substitutesComponentDataDefinition,
                 "products.substituteComponentDetailsView");
 
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.substituteComponentDetailsView", windowDefinition,
-                "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.substituteComponentDetailsView");
+        viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
@@ -444,7 +449,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "instruction");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.instructionGridView");
         windowDefinition.setBackButton(false);
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.instructionGridView", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.instructionGridView");
+        viewDefinition.setRoot(windowDefinition);
         GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
         grid.setHeader(false);
         grid.setCorrespondingViewName("products.instructionDetailsView");
@@ -469,7 +475,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products", "instruction");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition,
                 "products.instructionDetailsView");
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.instructionDetailsView", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.instructionDetailsView");
+        viewDefinition.setRoot(windowDefinition);
         FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
         formDefinition.addComponent(new CheckBoxComponent("master", formDefinition, "master", null));
@@ -489,7 +496,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.orderGridView");
         windowDefinition.setBackButton(false);
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("products.orderGridView", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.orderGridView");
+        viewDefinition.setRoot(windowDefinition);
         GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
         grid.setHeader(false);
         grid.setCorrespondingViewName("products.orderDetailsView");
@@ -513,7 +521,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition substituteDataDefinition = dataDefinitionService.get("products", "order");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", substituteDataDefinition,
                 "products.orderDetailsView");
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products.orderDetailsView", windowDefinition, "products");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.orderDetailsView");
+        viewDefinition.setRoot(windowDefinition);
         viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "afterOrderDetailsLoad"));
         FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
@@ -627,7 +636,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         WindowComponent windowDefinition = new WindowComponent("mainWindow", gridDataDefinition, "plugins.pluginGridView");
         windowDefinition.setBackButton(false);
 
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("plugins.pluginGridView", windowDefinition, "plugins");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("plugins", "plugins.pluginGridView");
+        viewDefinition.setRoot(windowDefinition);
 
         GridComponent grid = new GridComponent("pluginsGrid", windowDefinition, null, null);
         grid.setHeader(false);
@@ -678,7 +688,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", pluginDataDefinition, "plugins.pluginDetailsView");
 
-        ViewDefinition viewDefinition = new ViewDefinitionImpl("plugins.pluginDetailsView", windowDefinition, "plugins");
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("plugins", "plugins.pluginDetailsView");
+        viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
         formDefinition.setHeader(false);
@@ -715,12 +726,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return viewDefinition;
     }
 
-    /**
-     * @param name
-     * @param field
-     * @param expression
-     * @return
-     */
     private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field, final String expression) {
         ColumnDefinition columnDefinition = new ColumnDefinition(name);
         columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
@@ -728,12 +733,16 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         return columnDefinition;
     }
 
-    // private FormFieldDefinition createFieldDefinition(final String name, final DataFieldDefinition dataField,
-    // final FieldControl control) {
-    // FormFieldDefinition field = new FormFieldDefinition(name);
-    // field.setControl(control);
-    // field.setDataField(dataField);
-    // return field;
-    // }
+    @Override
+    public void save(final ViewDefinition viewDefinition) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void delete(final String pluginIdentifier, final String viewName) {
+        // TODO Auto-generated method stub
+
+    }
 
 }
