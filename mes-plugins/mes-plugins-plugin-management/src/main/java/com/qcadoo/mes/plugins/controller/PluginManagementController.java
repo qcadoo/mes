@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.xml.sax.SAXException;
@@ -49,6 +51,7 @@ public class PluginManagementController {
     @PostConstruct
     public void init() {
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
+        webappPath = webappPath + "/";
         LOG.debug(webappPath);
     }
 
@@ -58,6 +61,11 @@ public class PluginManagementController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("download");
         return mav;
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ModelAndView handleMaxUploadSizeExceededException(final MaxUploadSizeExceededException ex) {
+        return new ModelAndView("downloadError");
     }
 
     @RequestMapping(value = "download", method = RequestMethod.POST)
@@ -91,7 +99,7 @@ public class PluginManagementController {
                 return "redirect:page/plugins.pluginGridView.html?iframe=true";
             } catch (ParserConfigurationException e) {
                 LOG.error("Problem with parsing descriptor");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message='Problem z parsowaniem deskryptora'";
             } catch (SAXException e) {
                 LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true";
