@@ -703,7 +703,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         statusField.setDefaultEnabled(false);
         formDefinition.addComponent(statusField);
 
-        // TODO KRNA boolean
         Component<?> baseField = new CheckBoxComponent("base", formDefinition, "base", null);
         baseField.setDefaultEnabled(false);
         formDefinition.addComponent(baseField);
