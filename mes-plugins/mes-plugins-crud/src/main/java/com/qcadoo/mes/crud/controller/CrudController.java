@@ -95,6 +95,15 @@ public final class CrudController {
 
         mav.addObject("translationsMap", translationsMap);
 
+        if (arguments.get("message") != null) {
+            mav.addObject("message", arguments.get("message"));
+            if (arguments.get("messageType") != null) {
+                mav.addObject("messageType", arguments.get("messageType"));
+            } else {
+                mav.addObject("messageType", "info");
+            }
+        }
+
         return mav;
     }
 
