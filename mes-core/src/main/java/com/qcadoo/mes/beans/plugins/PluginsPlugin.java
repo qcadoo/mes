@@ -29,6 +29,7 @@ public final class PluginsPlugin {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean base;
 
+    @Column(unique = true)
     private String identifier;
 
     private String packageName;

@@ -12,13 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.xml.sax.SAXException;
@@ -35,8 +33,6 @@ public class PluginManagementController {
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementController.class);
 
     private static final String libPath = "WEB-INF/lib/";
-
-    private static final String binPath = "../bin/";
 
     private static final String tmpPath = "WEB-INF/tmp/";
 
@@ -55,7 +51,7 @@ public class PluginManagementController {
         LOG.debug(webappPath);
     }
 
-    // TODO KRNA show errors
+    // TODO KRNA finally delete i transakcje
     @RequestMapping(value = "download", method = RequestMethod.GET)
     public ModelAndView getDownloadPageView() {
         ModelAndView mav = new ModelAndView();
@@ -63,9 +59,11 @@ public class PluginManagementController {
         return mav;
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ModelAndView handleMaxUploadSizeExceededException(final MaxUploadSizeExceededException ex) {
-        return new ModelAndView("downloadError");
+    @RequestMapping(value = "downloadError", method = RequestMethod.GET)
+    public ModelAndView getDownloadErrorPageView() {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("downloadError");
+        return mav;
     }
 
     @RequestMapping(value = "download", method = RequestMethod.POST)
@@ -73,7 +71,6 @@ public class PluginManagementController {
     public String handleDownload(@RequestParam("file") final MultipartFile file) {
         if (!file.isEmpty()) {
             try {
-                // TODO KRNA max upload
                 File pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
                 PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
                 PluginsPlugin databasePlugin = pluginManagementService.getPluginByNameAndVendor(plugin.getName(),
@@ -81,7 +78,7 @@ public class PluginManagementController {
                 if (databasePlugin != null) {
                     pluginFile.delete();
                     LOG.error("Plugin was installed");
-                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest zainstalowany";
                 } else {
                     plugin.setDeleted(false);
                     plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
@@ -93,20 +90,20 @@ public class PluginManagementController {
                 }
             } catch (IllegalStateException e) {
                 LOG.error("Problem with installing file");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (IOException e) {
                 LOG.error("Problem with installing file");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (ParserConfigurationException e) {
                 LOG.error("Problem with parsing descriptor");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true&message='Problem z parsowaniem deskryptora'";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } catch (SAXException e) {
                 LOG.error("Problem with parsing descriptor");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             }
         } else {
             LOG.error("Chosen file is empty");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plik jest pusty";
         }
 
     }
@@ -124,13 +121,13 @@ public class PluginManagementController {
         PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
         if (databasePlugin.isBase()) {
             LOG.error("Plugin is base");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest bazowy";
         }
         try {
             removePlugin(entityId, webappPath + tmpPath);
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad usuwania pliku";
         }
 
         return "redirect:removePage.html";
@@ -150,7 +147,7 @@ public class PluginManagementController {
         PluginsPlugin plugin = pluginManagementService.getPluginById(entityId);
         if (plugin.isBase()) {
             LOG.error("Plugin is base");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest bazowy";
         }
         String pluginStatus = plugin.getStatus();
         plugin.setStatus(PluginStatus.ACTIVE.getValue());
@@ -162,7 +159,7 @@ public class PluginManagementController {
                 PluginUtil.moveFile(webappPath + tmpPath + plugin.getFileName(), webappPath + libPath);
             } catch (PluginException e) {
                 LOG.error("Problem with moving plugin file");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad przenoszenia pliku";
             }
             return "redirect:enablePage.html";
         }
@@ -171,24 +168,11 @@ public class PluginManagementController {
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
     @ResponseBody
     public String handleRestart() {
-        String[] commandsStop = { "bash cd " + webappPath, "bash cd " + binPath, "bash shutdown.sh" };
-        String[] commandsStart = { "bash cd " + webappPath, "bash cd " + binPath, "bash startup.sh" };
         try {
-            Runtime runtime = Runtime.getRuntime();
-
-            Process shutdownProcess = runtime.exec(commandsStop);
-            // TODO KRNA waiting
-            shutdownProcess.waitFor();
-            LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
-            Thread.sleep(3000);
-            Process startupProcess = runtime.exec(commandsStart);
-            LOG.debug("Startup exit value: " + startupProcess.exitValue());
-        } catch (IOException e) {
-            // TODO KRNA error
+            PluginUtil.restartServer(webappPath);
+        } catch (PluginException e) {
             LOG.error("Problem with restart server");
-        } catch (InterruptedException e) {
-            // TODO KRNA error
-            LOG.error("Problem with restart server");
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad restartu serwera";
         }
         return "ok";
     }
@@ -199,7 +183,7 @@ public class PluginManagementController {
         PluginsPlugin plugin = pluginManagementService.getPluginById(entityId);
         if (plugin.isBase()) {
             LOG.error("Plugin is base");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest bazowy";
         }
         plugin.setStatus(PluginStatus.INSTALLED.getValue());
         pluginManagementService.savePlugin(plugin);
@@ -219,13 +203,13 @@ public class PluginManagementController {
         PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
         if (databasePlugin.isBase()) {
             LOG.error("Plugin is base");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest bazowy";
         }
         try {
             removePlugin(entityId, webappPath + libPath);
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad usuwania pliku";
         }
 
         PluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
@@ -248,7 +232,6 @@ public class PluginManagementController {
     public String handleUpdate(@RequestParam("file") final MultipartFile file) {
         if (!file.isEmpty()) {
             try {
-                // TODO KRNA max upload
                 File pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
                 PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
                 PluginsPlugin databasePlugin = pluginManagementService.getPluginByNameAndVendor(plugin.getName(),
@@ -256,22 +239,22 @@ public class PluginManagementController {
                 if (databasePlugin == null) {
                     pluginFile.delete();
                     LOG.error("Plugin not found in database");
-                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Brak pluginu";
                 }
                 if (databasePlugin.isBase()) {
                     pluginFile.delete();
                     LOG.error("Plugin is base");
-                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest bazowy";
                 }
                 if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
                     pluginFile.delete();
                     LOG.info("Plugin hasn't apropriate status");
-                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Niepoprawny status do aktualizacji";
                 }
                 if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
                     pluginFile.delete();
                     LOG.info("Plugin has actual version");
-                    return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                    return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest aktualny";
                 } else {
                     plugin.setDeleted(false);
                     plugin.setStatus(databasePlugin.getStatus());
@@ -290,23 +273,23 @@ public class PluginManagementController {
                 }
             } catch (IllegalStateException e) {
                 LOG.error("Problem with installing file");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (IOException e) {
                 LOG.error("Problem with installing file");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (ParserConfigurationException e) {
                 LOG.error("Problem with parsing descriptor");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } catch (SAXException e) {
                 LOG.error("Problem with parsing descriptor");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } catch (PluginException e) {
                 LOG.error("Problem with moving/removing plugin file");
-                return "redirect:page/plugins.pluginGridView.html?iframe=true";
+                return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad usuwania/przenoszenia pliku";
             }
         } else {
             LOG.error("Chosen file is empty");
-            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plik jest pusty";
         }
 
     }

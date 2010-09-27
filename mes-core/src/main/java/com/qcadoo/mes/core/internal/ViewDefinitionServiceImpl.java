@@ -667,18 +667,23 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         windowDefinition.addComponent(grid);
 
-        windowDefinition.addComponent(new LinkButtonComponent("downloadButton", windowDefinition, "../download.html"));
-        windowDefinition.addComponent(new LinkButtonComponent("removeButton", windowDefinition, "../remove.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("enableButton", windowDefinition, "../enable.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("disableButton", windowDefinition, "../disable.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("deinstallButton", windowDefinition, "../deinstall.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("updateButton", windowDefinition, "../update.html",
-                "#{mainWindow.pluginsGrid}"));
+        LinkButtonComponent downloadButton = new LinkButtonComponent("downloadButton", windowDefinition, null);
+        downloadButton.setPageUrl("../download.html");
+        windowDefinition.addComponent(downloadButton);
 
+        LinkButtonComponent removeButton = new LinkButtonComponent("removeButton", windowDefinition, null,
+                "#{mainWindow.pluginsGrid}");
+        removeButton.setPageUrl("../remove.html");
+        windowDefinition.addComponent(removeButton);
+
+        /*
+         * windowDefinition.addComponent(new LinkButton("enableButton", windowDefinition, null, "#{mainWindow.pluginsGrid}")
+         * .setPageUrl("../enable.html")); windowDefinition.addComponent(new LinkButton("disableButton", windowDefinition, null,
+         * "#{mainWindow.pluginsGrid}") .setPageUrl("../disable.html")); windowDefinition.addComponent(new
+         * LinkButton("deinstallButton", windowDefinition, null, "#{mainWindow.pluginsGrid}") .setPageUrl("../deinstall.html"));
+         * windowDefinition.addComponent(new LinkButton("updateButton", windowDefinition, null, "#{mainWindow.pluginsGrid}")
+         * .setPageUrl("../update.html"));
+         */
         windowDefinition.initialize();
 
         return viewDefinition;

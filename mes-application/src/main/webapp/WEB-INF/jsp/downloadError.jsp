@@ -4,6 +4,6 @@
 <html>
     <body>
         <h1>Przekroczono wielkość pliku</h1>
-		<input type="button" value="Wróć" name="return" onclick="location.href='download'"/>
+		<input type="button" value="Wróć" name="return" onclick="location.href='download.html'"/>
     </body>
 </html>
