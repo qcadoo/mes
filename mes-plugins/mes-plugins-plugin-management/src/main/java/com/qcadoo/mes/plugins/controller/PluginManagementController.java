@@ -103,20 +103,29 @@ public class PluginManagementController {
 
     }
 
-    @RequestMapping(value = "remove", method = RequestMethod.GET)
-    @Transactional
-    public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId) {
+    @RequestMapping(value = "removePage", method = RequestMethod.GET)
+    public ModelAndView getRemovePageView() {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("remove");
-        // TODO KRNA check plugin base
+        return mav;
+    }
+
+    @RequestMapping(value = "remove", method = RequestMethod.GET)
+    @Transactional
+    public String getRemovePageView(@RequestParam("entityId") final String entityId) {
+        PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
+        if (databasePlugin.isBase()) {
+            LOG.error("Plugin is base");
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
         try {
             removePlugin(entityId, webappPath + tmpPath);
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file");
-            // TODO KRNA return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
         }
 
-        return mav;
+        return "redirect:removePage.html";
     }
 
     @RequestMapping(value = "enablePage", method = RequestMethod.GET)
@@ -189,18 +198,26 @@ public class PluginManagementController {
         return "redirect:page/plugins.pluginGridView.html?iframe=true";
     }
 
-    @RequestMapping(value = "deinstall", method = RequestMethod.GET)
-    @Transactional
-    public ModelAndView getDeinstallPageView(@RequestParam("entityId") final String entityId) {
+    @RequestMapping(value = "deinstallPage", method = RequestMethod.GET)
+    public ModelAndView getDeinstallPageView() {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("enable");
-        // TODO KRNA check plugin base
+        return mav;
+    }
+
+    @RequestMapping(value = "deinstall", method = RequestMethod.GET)
+    @Transactional
+    public String handleDeinstall(@RequestParam("entityId") final String entityId) {
         PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
+        if (databasePlugin.isBase()) {
+            LOG.error("Plugin is base");
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
+        }
         try {
             removePlugin(entityId, webappPath + libPath);
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file");
-            // TODO KRNA return "redirect:page/plugins.pluginGridView.html?iframe=true";
+            return "redirect:page/plugins.pluginGridView.html?iframe=true";
         }
 
         PluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
@@ -208,7 +225,7 @@ public class PluginManagementController {
         PluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
         PluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
 
-        return mav;
+        return "redirect:deinstallPage.html";
     }
 
     @RequestMapping(value = "update", method = RequestMethod.GET)

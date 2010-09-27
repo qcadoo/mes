@@ -69,6 +69,11 @@
 <body>
 
 	<div id="content">
+	
+		<div>
+			${message}
+		</div>
+	
 		<tiles:insertTemplate template="components/component.jsp">
 			<tiles:putAttribute name="component" value="${viewDefinition.root}" />
 			<tiles:putAttribute name="viewName" value="${viewDefinition.name}" />
