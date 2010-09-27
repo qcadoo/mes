@@ -115,23 +115,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
             selectedEntity = parentEntity;
         }
 
-        // if (sourceComponent != null) {
-        // selectedEntity = selectedEntities.get(sourceComponent.getPath());
-        //
-        // if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
-        // selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
-        // }
-        //
-        // } else {
-        // selectedEntity = entity;
-        //
-        // if (selectedEntity == null) {
-        // selectedEntity = selectedEntities.get(getPath());
-        // } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
-        // selectedEntity = getFieldEntityValue(entity, fieldPath);
-        // }
-        // }
-
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
 
         if (value.isEnabled() == null) {
@@ -233,19 +216,24 @@ public abstract class AbstractComponent<T> implements Component<T> {
         this.dataDefinition = dataDefinition;
     }
 
-    public final void addOptions(final String name, final String value) {
+    public final void addOption(final String name, final String value) {
         this.options.put(name, value);
+        addComponentOption(name, value);
+    }
+
+    public void addComponentOption(final String name, final String value) {
+        // can be implemented;
     }
 
     public final Map<String, Object> getOptions() {
         Map<String, Object> viewOptions = new HashMap<String, Object>(options);
         viewOptions.put("name", name);
         viewOptions.put("listeners", listeners);
-        addComponentOptions(viewOptions);
+        getComponentOptions(viewOptions);
         return viewOptions;
     }
 
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
+    public void getComponentOptions(final Map<String, Object> viewOptions) {
         // can be implemented
     }
 
@@ -432,7 +420,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return defaultEnabled;
     }
 
-    @Override
     public final void setDefaultEnabled(final boolean defaultEnabled) {
         this.defaultEnabled = defaultEnabled;
     }
@@ -442,7 +429,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return defaultVisible;
     }
 
-    @Override
     public final void setDefaultVisible(final boolean defaultVisible) {
         this.defaultVisible = defaultVisible;
     }

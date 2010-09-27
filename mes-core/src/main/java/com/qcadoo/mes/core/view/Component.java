@@ -26,14 +26,10 @@ public interface Component<T> extends CastableComponent<T>, ListenableComponent,
 
     DataDefinition getDataDefinition();
 
-    void updateTranslations(Map<String, String> translationsMap, TranslationService translationService, Locale locale);
-
     boolean isDefaultEnabled();
-
-    void setDefaultEnabled(boolean defaultEnabled);
 
     boolean isDefaultVisible();
 
-    void setDefaultVisible(boolean defaultVisible);
+    void updateTranslations(Map<String, String> translationsMap, TranslationService translationService, Locale locale);
 
 }

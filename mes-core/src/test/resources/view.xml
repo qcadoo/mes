@@ -69,7 +69,7 @@
 				</options>
 			</form>
 			<button url="" context="" />
-			<grid name="" field="" context="" correspondingViewName="">
+			<grid name="" field="" context="">
 				<column name="" aggregation="sum" expression="" width="">
 					<field plugin="" model="" field="" />
 				</column>
@@ -81,6 +81,7 @@
 				</orderableFields>
 				<options>
 					<header />
+					<correspondingViewName />
 				</options>
 			</grid>
 			<options>

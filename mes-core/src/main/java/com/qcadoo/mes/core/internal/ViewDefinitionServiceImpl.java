@@ -21,6 +21,7 @@ import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.Component;
 import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.containers.FormComponent;
@@ -29,7 +30,7 @@ import com.qcadoo.mes.core.view.elements.CheckBoxComponent;
 import com.qcadoo.mes.core.view.elements.DynamicComboBox;
 import com.qcadoo.mes.core.view.elements.EntityComboBox;
 import com.qcadoo.mes.core.view.elements.GridComponent;
-import com.qcadoo.mes.core.view.elements.LinkButton;
+import com.qcadoo.mes.core.view.elements.LinkButtonComponent;
 import com.qcadoo.mes.core.view.elements.TextInputComponent;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 
@@ -77,7 +78,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public ViewDefinition get(final String pluginIdentifier, final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(viewName);
-        PluginsPlugin plugin = pluginManagementService.getPluginByIdentifierAndStatus(pluginIdentifier,
+        // TODO use parameter
+        PluginsPlugin plugin = pluginManagementService.getPluginByIdentifierAndStatus(viewDefinition.getPluginIdentifier(),
                 PluginStatus.ACTIVE.getValue());
         if (plugin != null) {
             return viewDefinition;
@@ -112,18 +114,18 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition testADD = dataDefinitionService.get("products", "testBeanA");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "products.grid");
-        windowDefinition.setBackButton(false);
+        windowDefinition.addOption("backButton", "false");
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.grid");
         viewDefinition.setRoot(windowDefinition);
 
         GridComponent grid = new GridComponent("beansAGrid", windowDefinition, null, null);
         grid.setCorrespondingViewName("products.form");
-        grid.addOptions("paging", "true");
-        grid.addOptions("sortable", "true");
-        grid.addOptions("filter", "true");
-        grid.addOptions("multiselect", "true");
-        grid.addOptions("height", "450");
+        grid.addOption("paging", "true");
+        grid.addOption("sortable", "true");
+        grid.addOption("filter", "true");
+        grid.addOption("multiselect", "true");
+        grid.addOption("height", "450");
         ColumnDefinition columnName = createColumnDefinition("name", testADD.getField("name"), null);
 
         grid.addColumn(columnName);
@@ -188,7 +190,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition productDataDefinition = dataDefinitionService.get("products", "product");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productGridView");
-        windowDefinition.setBackButton(false);
+        windowDefinition.addOption("backButton", "false");
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.productGridView");
         viewDefinition.setRoot(windowDefinition);
@@ -196,11 +198,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         GridComponent grid = new GridComponent("productsGrid", windowDefinition, null, null);
         grid.setHeader(false);
         grid.setCorrespondingViewName("products.productDetailsView");
-        grid.addOptions("paging", "true");
-        grid.addOptions("sortable", "true");
-        grid.addOptions("filter", "true");
-        grid.addOptions("multiselect", "true");
-        grid.addOptions("height", "450");
+        grid.addOption("paging", "true");
+        grid.addOption("sortable", "true");
+        grid.addOption("filter", "true");
+        grid.addOption("multiselect", "true");
+        grid.addOption("height", "450");
         ColumnDefinition columnNumber = createColumnDefinition("number", productDataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", productDataDefinition.getField("name"), null);
         ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", productDataDefinition.getField("typeOfMaterial"),
@@ -228,7 +230,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("productDetailsForm", windowDefinition, null, null);
-        formDefinition.setHeader(false);
+        windowDefinition.addOption("header", "false");
 
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
@@ -243,11 +245,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         substituteGridDefinition.addColumn(createColumnDefinition("name", substituteDataDefinition.getField("name"), null));
         substituteGridDefinition
                 .addColumn(createColumnDefinition("priority", substituteDataDefinition.getField("priority"), null));
-        substituteGridDefinition.addOptions("paging", "false");
-        substituteGridDefinition.addOptions("sortable", "false");
-        substituteGridDefinition.addOptions("filter", "false");
-        substituteGridDefinition.addOptions("multiselect", "false");
-        substituteGridDefinition.addOptions("height", "150");
+        substituteGridDefinition.addOption("paging", "false");
+        substituteGridDefinition.addOption("sortable", "false");
+        substituteGridDefinition.addOption("filter", "false");
+        substituteGridDefinition.addOption("multiselect", "false");
+        substituteGridDefinition.addOption("height", "150");
         substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
         windowDefinition.addComponent(substituteGridDefinition);
 
@@ -259,11 +261,11 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 substituteComponentDataDefinition.getField("product"), "#product['name']"));
         substituteComponentGridDefinition.addColumn(createColumnDefinition("quantity",
                 substituteComponentDataDefinition.getField("quantity"), null));
-        substituteComponentGridDefinition.addOptions("paging", "false");
-        substituteComponentGridDefinition.addOptions("sortable", "false");
-        substituteComponentGridDefinition.addOptions("filter", "false");
-        substituteComponentGridDefinition.addOptions("multiselect", "false");
-        substituteComponentGridDefinition.addOptions("height", "150");
+        substituteComponentGridDefinition.addOption("paging", "false");
+        substituteComponentGridDefinition.addOption("sortable", "false");
+        substituteComponentGridDefinition.addOption("filter", "false");
+        substituteComponentGridDefinition.addOption("multiselect", "false");
+        substituteComponentGridDefinition.addOption("height", "150");
         substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
         windowDefinition.addComponent(substituteComponentGridDefinition);
 
@@ -282,7 +284,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("substitutesDetailsForm", windowDefinition, null, null);
-        formDefinition.setHeader(false);
+        windowDefinition.addOption("header", "false");
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("priority", formDefinition, "priority", null));
@@ -306,7 +308,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
-        formDefinition.setHeader(false);
+        windowDefinition.addOption("header", "false");
         formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
         formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
 
@@ -448,17 +450,17 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createInstructionGridView() {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "instruction");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.instructionGridView");
-        windowDefinition.setBackButton(false);
+        windowDefinition.addOption("backButton", "false");
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.instructionGridView");
         viewDefinition.setRoot(windowDefinition);
         GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
         grid.setHeader(false);
         grid.setCorrespondingViewName("products.instructionDetailsView");
-        grid.addOptions("paging", "true");
-        grid.addOptions("sortable", "true");
-        grid.addOptions("filter", "true");
-        grid.addOptions("multiselect", "true");
-        grid.addOptions("height", "450");
+        grid.addOption("paging", "true");
+        grid.addOption("sortable", "true");
+        grid.addOption("filter", "true");
+        grid.addOption("multiselect", "true");
+        grid.addOption("height", "450");
         ColumnDefinition columnNumber = createColumnDefinition("number", dataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", dataDefinition.getField("name"), null);
         ColumnDefinition columnProductName = createColumnDefinition("product", dataDefinition.getField("product"),
@@ -478,7 +480,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.instructionDetailsView");
         viewDefinition.setRoot(windowDefinition);
         FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
-        formDefinition.setHeader(false);
+        windowDefinition.addOption("header", "false");
         formDefinition.addComponent(new CheckBoxComponent("master", formDefinition, "master", null));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
@@ -495,17 +497,17 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createOrderGridView() {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.orderGridView");
-        windowDefinition.setBackButton(false);
+        windowDefinition.addOption("backButton", "false");
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.orderGridView");
         viewDefinition.setRoot(windowDefinition);
         GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
         grid.setHeader(false);
         grid.setCorrespondingViewName("products.orderDetailsView");
-        grid.addOptions("paging", "true");
-        grid.addOptions("sortable", "true");
-        grid.addOptions("filter", "true");
-        grid.addOptions("multiselect", "true");
-        grid.addOptions("height", "450");
+        grid.addOption("paging", "true");
+        grid.addOption("sortable", "true");
+        grid.addOption("filter", "true");
+        grid.addOption("multiselect", "true");
+        grid.addOption("height", "450");
         ColumnDefinition columnNumber = createColumnDefinition("number", dataDefinition.getField("number"), null);
         ColumnDefinition columnName = createColumnDefinition("name", dataDefinition.getField("name"), null);
         ColumnDefinition columnState = createColumnDefinition("state", dataDefinition.getField("state"), null);
@@ -525,7 +527,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
         viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "afterOrderDetailsLoad"));
         FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
-        formDefinition.setHeader(false);
+        windowDefinition.addOption("header", "false");
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("dateFrom", formDefinition, "dateFrom", null));
@@ -543,7 +545,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("effectiveDateFrom", formDefinition, "effectiveDateFrom", null));
         formDefinition.addComponent(new TextInputComponent("effectiveDateTo", formDefinition, "effectiveDateTo", null));
         Component<?> startWorkerField = new TextInputComponent("startWorker", formDefinition, "startWorker", null);
-        startWorkerField.setDefaultEnabled(false);
+        ((AbstractComponent<?>) startWorkerField).setDefaultEnabled(false);
         formDefinition.addComponent(startWorkerField);
         formDefinition.addComponent(new TextInputComponent("endWorker", formDefinition, "endWorker", null));
 
@@ -634,7 +636,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition gridDataDefinition = dataDefinitionService.get("plugins", "plugin");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", gridDataDefinition, "plugins.pluginGridView");
-        windowDefinition.setBackButton(false);
+        windowDefinition.addOption("backButton", "false");
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("plugins", "plugins.pluginGridView");
         viewDefinition.setRoot(windowDefinition);
@@ -642,13 +644,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         GridComponent grid = new GridComponent("pluginsGrid", windowDefinition, null, null);
         grid.setHeader(false);
         grid.setCorrespondingViewName("plugins.pluginDetailsView");
-        grid.addOptions("paging", "true");
-        grid.addOptions("sortable", "true");
-        grid.addOptions("filter", "true");
-        grid.addOptions("multiselect", "false");
-        grid.addOptions("height", "450");
-        grid.addOptions("canDelete", "false");
-        grid.addOptions("canNew", "false");
+        grid.addOption("paging", "true");
+        grid.addOption("sortable", "true");
+        grid.addOption("filter", "true");
+        grid.addOption("multiselect", "false");
+        grid.addOption("height", "450");
+        grid.addOption("canDelete", "false");
+        grid.addOption("canNew", "false");
 
         ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
         ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
@@ -665,16 +667,16 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         windowDefinition.addComponent(grid);
 
-        windowDefinition.addComponent(new LinkButton("downloadButton", windowDefinition, "../download.html"));
-        windowDefinition.addComponent(new LinkButton("removeButton", windowDefinition, "../remove.html",
+        windowDefinition.addComponent(new LinkButtonComponent("downloadButton", windowDefinition, "../download.html"));
+        windowDefinition.addComponent(new LinkButtonComponent("removeButton", windowDefinition, "../remove.html",
                 "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButton("enableButton", windowDefinition, "../enable.html",
+        windowDefinition.addComponent(new LinkButtonComponent("enableButton", windowDefinition, "../enable.html",
                 "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButton("disableButton", windowDefinition, "../disable.html",
+        windowDefinition.addComponent(new LinkButtonComponent("disableButton", windowDefinition, "../disable.html",
                 "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButton("deinstallButton", windowDefinition, "../deinstall.html",
+        windowDefinition.addComponent(new LinkButtonComponent("deinstallButton", windowDefinition, "../deinstall.html",
                 "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButton("updateButton", windowDefinition, "../update.html",
+        windowDefinition.addComponent(new LinkButtonComponent("updateButton", windowDefinition, "../update.html",
                 "#{mainWindow.pluginsGrid}"));
 
         windowDefinition.initialize();
@@ -692,30 +694,30 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
-        formDefinition.setHeader(false);
+        windowDefinition.addOption("header", "false");
 
         Component<?> nameField = new TextInputComponent("name", formDefinition, "name", null);
-        nameField.setDefaultEnabled(false);
+        ((AbstractComponent<?>) nameField).setDefaultEnabled(false);
         formDefinition.addComponent(nameField);
 
         Component<?> versionField = new TextInputComponent("version", formDefinition, "version", null);
-        versionField.setDefaultEnabled(false);
+        ((AbstractComponent<?>) versionField).setDefaultEnabled(false);
         formDefinition.addComponent(versionField);
 
         Component<?> vendorField = new TextInputComponent("vendor", formDefinition, "vendor", null);
-        vendorField.setDefaultEnabled(false);
+        ((AbstractComponent<?>) vendorField).setDefaultEnabled(false);
         formDefinition.addComponent(vendorField);
         // TODO KRNA textarea
         Component<?> descriptionField = new TextInputComponent("description", formDefinition, "description", null);
-        descriptionField.setDefaultEnabled(false);
+        ((AbstractComponent<?>) descriptionField).setDefaultEnabled(false);
         formDefinition.addComponent(descriptionField);
 
         Component<?> statusField = new DynamicComboBox("status", formDefinition, "status", null);
-        statusField.setDefaultEnabled(false);
+        ((AbstractComponent<?>) statusField).setDefaultEnabled(false);
         formDefinition.addComponent(statusField);
 
         Component<?> baseField = new CheckBoxComponent("base", formDefinition, "base", null);
-        baseField.setDefaultEnabled(false);
+        ((AbstractComponent<?>) baseField).setDefaultEnabled(false);
         formDefinition.addComponent(baseField);
 
         windowDefinition.addComponent(formDefinition);

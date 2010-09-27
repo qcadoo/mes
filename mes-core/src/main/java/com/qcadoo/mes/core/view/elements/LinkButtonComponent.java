@@ -11,17 +11,16 @@ import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
 
-public final class LinkButton extends AbstractComponent<String> {
+public final class LinkButtonComponent extends AbstractComponent<String> {
 
     private String pageUrl;
 
-    public LinkButton(final String name, final ContainerComponent<?> parentContainer, final String pageUrl,
+    public LinkButtonComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, null, sourceFieldPath);
-        this.pageUrl = pageUrl;
     }
 
-    public LinkButton(final String name, final ContainerComponent<?> parentContainer, final String pageUrl) {
+    public LinkButtonComponent(final String name, final ContainerComponent<?> parentContainer, final String pageUrl) {
         this(name, parentContainer, pageUrl, null);
     }
 
@@ -31,7 +30,14 @@ public final class LinkButton extends AbstractComponent<String> {
     }
 
     @Override
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
+    public void addComponentOption(final String name, final String value) {
+        if ("url".equals(name)) {
+            pageUrl = value;
+        }
+    }
+
+    @Override
+    public void getComponentOptions(final Map<String, Object> viewOptions) {
         viewOptions.put("pageUrl", pageUrl);
     }
 

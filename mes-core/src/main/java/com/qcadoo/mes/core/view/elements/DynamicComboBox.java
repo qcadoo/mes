@@ -32,7 +32,7 @@ public final class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     }
 
     @Override
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
+    public void getComponentOptions(final Map<String, Object> viewOptions) {
 
     }
 

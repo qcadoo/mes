@@ -94,7 +94,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
     }
 
     @Override
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
+    public void getComponentOptions(final Map<String, Object> viewOptions) {
         viewOptions.put("correspondingViewName", correspondingViewName);
         viewOptions.put("columns", getColumnsForOptions());
         viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));

@@ -1,14 +1,10 @@
 package com.qcadoo.mes.core.internal.xml;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.springframework.util.StringUtils.hasText;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -22,26 +18,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
-import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
-import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.internal.types.DateTimeType;
-import com.qcadoo.mes.core.internal.types.DateType;
-import com.qcadoo.mes.core.internal.types.DecimalType;
-import com.qcadoo.mes.core.internal.types.IntegerType;
 import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.types.FieldType;
 import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.validation.EntityValidator;
-import com.qcadoo.mes.core.validation.FieldValidator;
 import com.qcadoo.mes.core.validation.ValidatorFactory;
+import com.qcadoo.mes.core.view.AbstractComponent;
+import com.qcadoo.mes.core.view.Component;
+import com.qcadoo.mes.core.view.ContainerComponent;
+import com.qcadoo.mes.core.view.RootComponent;
+import com.qcadoo.mes.core.view.containers.FormComponent;
+import com.qcadoo.mes.core.view.containers.WindowComponent;
+import com.qcadoo.mes.core.view.elements.CheckBoxComponent;
+import com.qcadoo.mes.core.view.elements.DynamicComboBox;
+import com.qcadoo.mes.core.view.elements.EntityComboBox;
+import com.qcadoo.mes.core.view.elements.GridComponent;
+import com.qcadoo.mes.core.view.elements.LinkButtonComponent;
+import com.qcadoo.mes.core.view.elements.TextInputComponent;
 
 @Service
 public final class ViewDefinitionParser {
@@ -115,7 +112,7 @@ public final class ViewDefinitionParser {
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "window")) {
-                // viewDefinition.setRoot(getComponent(reader, dataDefinition));
+                viewDefinition.setRoot(getRootComponentDefinition(reader, viewName, dataDefinition));
             } else if (isTagStarted(reader, "onView")) {
                 viewDefinition.setViewHook(getHookDefinition(reader));
             }
@@ -124,148 +121,96 @@ public final class ViewDefinitionParser {
         viewDefinitionService.save(viewDefinition);
     }
 
-    private FieldType getDictionaryType(final XMLStreamReader reader) {
-        String dictionaryName = getStringAttribute(reader, "dictionary");
-        checkState(hasText(dictionaryName), "Dictionary name is required");
-        return fieldTypeFactory.dictionaryType(dictionaryName);
-    }
+    private RootComponent getRootComponentDefinition(final XMLStreamReader reader, final String viewName,
+            final DataDefinition dataDefinition) throws XMLStreamException {
+        String componentType = reader.getLocalName();
+        String componentName = getStringAttribute(reader, "name");
 
-    private FieldType getEnumType(final XMLStreamReader reader) throws XMLStreamException {
-        String values = getStringAttribute(reader, "values");
-        return fieldTypeFactory.enumType(values.split(","));
-    }
+        RootComponent component = null;
 
-    private FieldType getHasManyType(final XMLStreamReader reader, final String pluginIdentifier) {
-        String plugin = getStringAttribute(reader, "plugin");
-        return fieldTypeFactory.hasManyType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, "model"),
-                getStringAttribute(reader, "joinField"));
-    }
-
-    private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {
-        boolean lazy = getBooleanAttribute(reader, "lazy", true);
-        String plugin = getStringAttribute(reader, "plugin");
-        String modelName = getStringAttribute(reader, "model");
-        String lookupFieldName = getStringAttribute(reader, "lookupField");
-        if (lazy) {
-            return fieldTypeFactory.lazyBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName, lookupFieldName);
+        if ("window".equals(componentType)) {
+            component = new WindowComponent(componentName, dataDefinition, viewName);
         } else {
-            return fieldTypeFactory.eagerBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName, lookupFieldName);
+            throw new IllegalStateException("Unsupported component: " + componentType);
         }
+
+        addChildComponents(reader, component);
+
+        addComponentOptions(reader, component);
+
+        return component;
     }
 
-    private FieldDefinition getFieldDefinition(final XMLStreamReader reader, final String pluginIdentifier)
+    private Component<?> getComponentDefinition(final XMLStreamReader reader, final ContainerComponent<?> parentComponent)
             throws XMLStreamException {
-        String fieldType = reader.getLocalName();
-        FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(getStringAttribute(reader, "name"));
-        fieldDefinition.withReadOnly(getBooleanAttribute(reader, "readonly", false));
-        fieldDefinition.withReadOnlyOnUpdate(getBooleanAttribute(reader, "readonlyOnCreate", false));
-        fieldDefinition.withDefaultValue(getStringAttribute(reader, "default"));
-        FieldType type = null;
+        String componentType = reader.getLocalName();
+        String componentName = getStringAttribute(reader, "name");
+        String fieldName = getStringAttribute(reader, "field");
+        String dataSource = getStringAttribute(reader, "dataSource");
 
-        if ("integer".equals(fieldType)) {
-            type = fieldTypeFactory.integerType();
-        } else if ("string".equals(fieldType)) {
-            type = fieldTypeFactory.stringType();
-        } else if ("text".equals(fieldType)) {
-            type = fieldTypeFactory.textType();
-        } else if ("decimal".equals(fieldType)) {
-            type = fieldTypeFactory.decimalType();
-        } else if ("datetime".equals(fieldType)) {
-            type = fieldTypeFactory.dateTimeType();
-        } else if ("date".equals(fieldType)) {
-            type = fieldTypeFactory.dateType();
-        } else if ("boolean".equals(fieldType)) {
-            type = fieldTypeFactory.booleanType();
-        } else if ("belongsTo".equals(fieldType)) {
-            type = getBelongsToType(reader, pluginIdentifier);
-        } else if ("hasMany".equals(fieldType)) {
-            type = getHasManyType(reader, pluginIdentifier);
-        } else if ("enum".equals(fieldType)) {
-            type = getEnumType(reader);
-        } else if ("dictionary".equals(fieldType)) {
-            type = getDictionaryType(reader);
-        } else if ("password".equals(fieldType)) {
-            type = fieldTypeFactory.passwordType();
+        Component<?> component = null;
+
+        if ("input".equals(componentType)) {
+            component = new TextInputComponent(componentName, parentComponent, fieldName, dataSource);
+        } else if ("grid".equals(componentType)) {
+            component = new GridComponent(componentName, parentComponent, fieldName, dataSource);
+        } else if ("form".equals(componentType)) {
+            component = new FormComponent(componentName, parentComponent, fieldName, dataSource);
+        } else if ("checkbox".equals(componentType)) {
+            component = new CheckBoxComponent(componentName, parentComponent, fieldName, dataSource);
+        } else if ("select".equals(componentType)) {
+            component = new DynamicComboBox(componentName, parentComponent, fieldName, dataSource);
+        } else if ("lookup".equals(componentType)) {
+            component = new EntityComboBox(componentName, parentComponent, fieldName, dataSource);
+        } else if ("button".equals(componentType)) {
+            component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource);
+        } else {
+            throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        fieldDefinition.withType(type);
+        if (component instanceof ContainerComponent<?>) {
+            addChildComponents(reader, (ContainerComponent<?>) component);
+        }
+
+        addComponentOptions(reader, component);
+
+        return component;
+    }
+
+    private void addComponentOptions(final XMLStreamReader reader, final Component<?> component) throws XMLStreamException {
+        ((AbstractComponent<?>) component).setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
+        ((AbstractComponent<?>) component).setDefaultVisible(getBooleanAttribute(reader, "visible", true));
 
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagEnded(reader, fieldType)) {
+            if (isTagEnded(reader, "options")) {
                 break;
-            } else if (isTagStarted(reader, "validatesPresence")) {
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.required()));
-            } else if (isTagStarted(reader, "validatesPresenceOnCreate")) {
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.requiredOnCreate()));
-            } else if (isTagStarted(reader, "validatesLength")) {
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
-                        .length(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
-                                getIntegerAttribute(reader, "max"))));
-            } else if (isTagStarted(reader, "validatesPrecision")) {
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
-                        .precision(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
-                                getIntegerAttribute(reader, "max"))));
-            } else if (isTagStarted(reader, "validatesScale")) {
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory
-                        .scale(getIntegerAttribute(reader, "min"), getIntegerAttribute(reader, "is"),
-                                getIntegerAttribute(reader, "max"))));
-            } else if (isTagStarted(reader, "validatesRange")) {
-                Object from = getRangeForType(getStringAttribute(reader, "from"), type);
-                Object to = getRangeForType(getStringAttribute(reader, "to"), type);
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.range(from, to)));
-            } else if (isTagStarted(reader, "validatesUniqueness")) {
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.unique()));
-            } else if (isTagStarted(reader, "validatesWith")) {
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.custom(getHookDefinition(reader))));
+                // } else if (isTagStarted(reader, "validatesPresence")) {
+                // fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.required()));
             }
-
-            // validatesUniqueness scope="lastname"
-            // validatesWithScript
-            // validatesExclusion <exclude>nowak</exclude> <exclude>kowalski</exclude>
-            // validatesInclusion <include>szczytowski</include>
-            // validatesFormat with="d*a"
         }
-
-        return fieldDefinition;
     }
 
-    private Object getRangeForType(final String range, final FieldType type) {
-        try {
-            if (range == null) {
-                return null;
-            } else if (type instanceof DateTimeType) {
-                return new SimpleDateFormat(DateTimeType.DATE_TIME_FORMAT).parse(range);
-            } else if (type instanceof DateType) {
-                return new SimpleDateFormat(DateType.DATE_FORMAT).parse(range);
-            } else if (type instanceof DecimalType) {
-                return new BigDecimal(range);
-            } else if (type instanceof IntegerType) {
-                return Integer.parseInt(range);
-            } else {
-                return range;
+    private void addChildComponents(final XMLStreamReader reader, final ContainerComponent<?> component)
+            throws XMLStreamException {
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagStarted(reader, "options")) {
+                break;
+            } else if (isTagStarted(reader, "input")) {
+                component.addComponent(getComponentDefinition(reader, component));
+            } else if (isTagStarted(reader, "grid")) {
+                component.addComponent(getComponentDefinition(reader, component));
+            } else if (isTagStarted(reader, "form")) {
+                component.addComponent(getComponentDefinition(reader, component));
+            } else if (isTagStarted(reader, "checkbox")) {
+                component.addComponent(getComponentDefinition(reader, component));
+            } else if (isTagStarted(reader, "select")) {
+                component.addComponent(getComponentDefinition(reader, component));
+            } else if (isTagStarted(reader, "lookup")) {
+                component.addComponent(getComponentDefinition(reader, component));
+            } else if (isTagStarted(reader, "button")) {
+                component.addComponent(getComponentDefinition(reader, component));
             }
-        } catch (ParseException e) {
-            throw new IllegalStateException("Cannot parse data definition", e);
-        } catch (NumberFormatException e) {
-            throw new IllegalStateException("Cannot parse data definition", e);
         }
-    }
-
-    private EntityValidator getEntityValidatorDefinition(final XMLStreamReader reader) {
-        EntityValidator validator = validatorFactory.customEntity(getHookDefinition(reader));
-        String customMessage = getStringAttribute(reader, "message");
-        if (StringUtils.hasText(customMessage)) {
-            validator.customErrorMessage(customMessage);
-        }
-        return validator;
-    }
-
-    private FieldValidator getValidatorDefinition(final XMLStreamReader reader, final FieldValidator validator) {
-        String customMessage = getStringAttribute(reader, "message");
-        if (StringUtils.hasText(customMessage)) {
-            validator.customErrorMessage(customMessage);
-        }
-        return validator;
     }
 
     private HookDefinition getHookDefinition(final XMLStreamReader reader) {
@@ -276,24 +221,8 @@ public final class ViewDefinitionParser {
         return hookFactory.getHook(fullyQualifiedClassName, methodName);
     }
 
-    private FieldDefinition getPriorityFieldDefinition(final XMLStreamReader reader, final DataDefinitionImpl dataDefinition) {
-        FieldDefinition scopedField = dataDefinition.getField(getStringAttribute(reader, "scope"));
-        checkNotNull(scopedField, "Scoped field for priority is required");
-        return new FieldDefinitionImpl(getStringAttribute(reader, "name")).withType(fieldTypeFactory.priorityType(scopedField))
-                .withReadOnly(true);
-    }
-
     private String getPluginIdentifier(final XMLStreamReader reader) {
         return getStringAttribute(reader, "plugin");
-    }
-
-    private Integer getIntegerAttribute(final XMLStreamReader reader, final String name) {
-        String stringValue = reader.getAttributeValue(null, name);
-        if (stringValue != null) {
-            return Integer.valueOf(stringValue);
-        } else {
-            return null;
-        }
     }
 
     private boolean getBooleanAttribute(final XMLStreamReader reader, final String name, final boolean defaultValue) {

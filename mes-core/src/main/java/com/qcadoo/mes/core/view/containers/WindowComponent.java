@@ -23,9 +23,18 @@ public final class WindowComponent extends AbstractRootComponent {
     }
 
     @Override
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
+    public void getComponentOptions(final Map<String, Object> viewOptions) {
         viewOptions.put("backButton", backButton);
         viewOptions.put("header", header);
+    }
+
+    @Override
+    public void addComponentOption(final String name, final String value) {
+        if ("header".equals(name)) {
+            header = Boolean.parseBoolean(value);
+        } else if ("backButton".equals(name)) {
+            backButton = Boolean.parseBoolean(value);
+        }
     }
 
     @Override
@@ -41,15 +50,8 @@ public final class WindowComponent extends AbstractRootComponent {
         return backButton;
     }
 
-    public void setBackButton(final boolean backButton) {
-        this.backButton = backButton;
-    }
-
     public boolean isHeader() {
         return header;
     }
 
-    public void setHeader(final boolean header) {
-        this.header = header;
-    }
 }

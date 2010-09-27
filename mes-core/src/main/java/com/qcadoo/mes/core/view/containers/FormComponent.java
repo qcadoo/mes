@@ -32,6 +32,13 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
+    public void addComponentOption(final String name, final String value) {
+        if ("header".equals(name)) {
+            header = Boolean.parseBoolean(value);
+        }
+    }
+
+    @Override
     public Long castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) throws JSONException {
         if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
             return viewObject.getLong("value");
@@ -60,7 +67,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
+    public void getComponentOptions(final Map<String, Object> viewOptions) {
         viewOptions.put("header", header);
     }
 
@@ -126,10 +133,6 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
     public boolean isHeader() {
         return header;
-    }
-
-    public void setHeader(final boolean header) {
-        this.header = header;
     }
 
 }

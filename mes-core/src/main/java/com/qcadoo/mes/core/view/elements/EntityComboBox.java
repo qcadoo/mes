@@ -39,7 +39,7 @@ public final class EntityComboBox extends AbstractComponent<EntityComboBoxValue>
     }
 
     @Override
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
+    public void getComponentOptions(final Map<String, Object> viewOptions) {
 
     }
 
