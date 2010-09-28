@@ -9,14 +9,14 @@
 				<option type="column" name="vendor" fields="vendor" />
 				<option type="column" name="status" fields="status" />
 				<option type="header" value="false" />
-				<option type="correspondingView" value="plugins.pluginDetailsView" />
+				<option type="correspondingView" value="plugins/pluginDetailsView" />
 				<option type="paginable" value="true" />
 				<option type="searchable" value="name,vendor,status" />
 				<option type="orderable" value="name" />
 				<option type="multiselect" value="false" />
 				<option type="height" value="450" />
-				<option type="canDelete" value="false" />
-				<option type="canNew" value="false" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
 			</component>
 			<component type="button" name="downloadButton" source="#{mainWindow.pluginsGrid}">
 				<option type="url" value="../download.html" />
@@ -48,8 +48,8 @@
 				<component type="input" name="description" field="description" enabled="false" />
 				<component type="select" name="status" field="status" enabled="false" />
 				<component type="checkbox" name="base" field="base" enabled="false" />
+				<option type="header" value="false" />
 			</component>
-			<option type="header" value="false" />
 		</component>
 	</view>
 </qcd:views>

@@ -11,7 +11,7 @@
 				<component type="grid" name="beansBGrig"
 					source="#{mainWindow.beanBForm.selectBeanA}.beansB">
 					<option type="column" name="name" fields="name" />
-					<option type="correspondingView" value="products.form" />
+					<option type="correspondingView" value="products/form" />
 				</component>
 				<component type="form" name="beanAForm" field="beanA">
 					<component type="input" name="name" field="name" />
@@ -26,9 +26,11 @@
 				<option type="searchable" value="name,beanA" />
 				<option type="orderable" value="name" />
 				<option type="paginable" value="true" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
 				<option type="multiselect" value="true" />
 				<option type="height" value="450" />
-				<option type="correspondingView" value="products.form" />
+				<option type="correspondingView" value="products/form" />
 			</component>
 			<component type="button" name="link">
 				<option type="url" value="download.html" />
@@ -37,5 +39,8 @@
 		</component>
 		<onView bean="com.qcadoo.mes.beans.sample.CustomEntityService"
 			method="onView" />
+	</view>
+	<view name="simpleView2" model="beanA">
+		<component type="window" name="mainWindow" />
 	</view>
 </qcd:views>

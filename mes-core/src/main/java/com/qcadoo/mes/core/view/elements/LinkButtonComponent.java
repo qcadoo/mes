@@ -31,9 +31,9 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
     @Override
     public void initializeComponent() {
         for (ComponentOption option : getRawOptions()) {
-            if ("url".equals(option.getName())) {
+            if ("url".equals(option.getType())) {
                 url = option.getValue();
-                addOption("pageUrl", url);
+                addOption("url", url);
             }
         }
 
@@ -55,11 +55,4 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
         return new ViewValue<String>(url);
     }
 
-    public String getPageUrl() {
-        return url;
-    }
-
-    public void setPageUrl(final String pageUrl) {
-        this.url = pageUrl;
-    }
 }

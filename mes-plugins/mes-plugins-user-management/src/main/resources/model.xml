@@ -5,7 +5,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
-		<belongsTo name="group" model="group" lookupField="name">
+		<belongsTo name="userGroup" model="group" lookupField="name">
 			<validatesPresence />
 		</belongsTo>
 		<string name="email" />
@@ -18,7 +18,7 @@
 		</password>
 	</model>
 	<model name="group">
-		<string name="userName" readonly="true">
+		<string name="name" readonly="true">
 			<validatesPresenceOnCreate />
 			<validatesUniqueness />
 		</string>

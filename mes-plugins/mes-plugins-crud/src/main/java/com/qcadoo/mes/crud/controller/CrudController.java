@@ -43,15 +43,16 @@ public final class CrudController {
     @Autowired
     private TranslationService translationService;
 
-    @RequestMapping(value = "page/{viewName}", method = RequestMethod.GET)
-    public ModelAndView getView(@PathVariable("viewName") final String viewName,
-            @RequestParam final Map<String, String> arguments, final Locale locale) {
+    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}", method = RequestMethod.GET)
+    public ModelAndView getView(@PathVariable("pluginIdentifier") final String pluginIdentifier,
+            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
+            final Locale locale) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("crudView");
 
         Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
 
-        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
         mav.addObject("viewDefinition", viewDefinition);
         // translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 
@@ -107,10 +108,11 @@ public final class CrudController {
         return mav;
     }
 
-    @RequestMapping(value = "page/{viewName}/data", method = RequestMethod.GET)
+    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/data", method = RequestMethod.GET)
     @ResponseBody
-    public Object getData(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
-        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
+    public Object getData(@PathVariable("pluginIdentifier") final String pluginIdentifier,
+            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
         if (arguments.get("entityId") != null) {
             Entity entity = viewDefinition.getRoot().getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
             return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, null, "");
@@ -150,11 +152,12 @@ public final class CrudController {
         ((StringBuilder) binder.getTarget()).append(body);
     }
 
-    @RequestMapping(value = "page/{viewName}/dataUpdate", method = RequestMethod.POST)
+    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/dataUpdate", method = RequestMethod.POST)
     @ResponseBody
-    public Object getDataUpdate(@PathVariable("viewName") final String viewName,
-            @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") final StringBuilder body) {
-        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
+    public Object getDataUpdate(@PathVariable("pluginIdentifier") final String pluginIdentifier,
+            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute("jsonBody") final StringBuilder body) {
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
@@ -178,11 +181,12 @@ public final class CrudController {
         }
     }
 
-    @RequestMapping(value = "page/{viewName}/save", method = RequestMethod.POST)
+    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/save", method = RequestMethod.POST)
     @ResponseBody
-    public Object performSave(@PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
+    public Object performSave(@PathVariable("pluginIdentifier") final String pluginIdentifier,
+            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
             @ModelAttribute("jsonBody") final StringBuilder body) {
-        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // TODO plugin name
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
@@ -213,11 +217,12 @@ public final class CrudController {
     }
 
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "page/{viewName}/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Object performDelete(@PathVariable("viewName") final String viewName,
-            @RequestParam final Map<String, String> arguments, @ModelAttribute("jsonBody") final StringBuilder body) {
-        ViewDefinition viewDefinition = viewDefinitionService.get("", viewName); // plugin name
+    public Object performDelete(@PathVariable("pluginIdentifier") final String pluginIdentifier,
+            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute("jsonBody") final StringBuilder body) {
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         try {
             JSONObject jsonBody = new JSONObject(body.toString());
@@ -333,19 +338,19 @@ public final class CrudController {
     // return null;
     // }
 
-    @RequestMapping(value = "page/{viewName}/{elementName}/entity", method = RequestMethod.GET)
-    @ResponseBody
-    public Entity getEntityData(@PathVariable("viewName") final String viewName,
-            @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
+    // @RequestMapping(value = "page/{viewName}/{elementName}/entity", method = RequestMethod.GET)
+    // @ResponseBody
+    // public Entity getEntityData(@PathVariable("viewName") final String viewName,
+    // @PathVariable("elementName") final String elementName, @RequestParam final Map<String, String> arguments) {
 
-        // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
-        // ComponentDefinition element = viewDefinition.getElementByName(elementName);
-        //
-        // Entity entity = dataAccessService.get(element.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
-        //
-        // return EntityDataUtils.generateEntityData(entity, element.getDataDefinition());
-        return null;
-    }
+    // ViewDefinition viewDefinition = viewDefinitionService.getViewDefinition(viewName);
+    // ComponentDefinition element = viewDefinition.getElementByName(elementName);
+    //
+    // Entity entity = dataAccessService.get(element.getDataDefinition(), Long.parseLong(arguments.get("entityId")));
+    //
+    // return EntityDataUtils.generateEntityData(entity, element.getDataDefinition());
+    // return null;
+    // }
 
     // @RequestMapping(value = "page/{viewName}/{elementName}/save", method = RequestMethod.POST)
     // @ResponseBody

@@ -4,12 +4,12 @@ import java.util.Map;
 
 public class ComponentOption {
 
-    private final String name;
+    private final String type;
 
     private final Map<String, String> attributes;
 
-    public ComponentOption(final String name, final Map<String, String> attributes) {
-        this.name = name;
+    public ComponentOption(final String type, final Map<String, String> attributes) {
+        this.type = type;
         this.attributes = attributes;
     }
 
@@ -17,8 +17,8 @@ public class ComponentOption {
         return attributes.get(name);
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
     public String getValue() {

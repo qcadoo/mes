@@ -35,7 +35,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		var colModel = new Array();
 		
 		for (var i in options.columns) {
-			var nameToTranslate = mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+options.columns[i];
+			var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+options.columns[i];
 			colNames.push(mainController.getTranslation(nameToTranslate));
 			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: false});
 		}
@@ -71,8 +71,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		}
 //		gridParameters.events = parameters.events;
 //		gridParameters.parent = parameters.parent;
-		gridParameters.canNew = options.canNew == "false" ? false : true;
-		gridParameters.canDelete = options.canDelete == "false" ? false : true;
+		gridParameters.canNew = options.canNew;
+		gridParameters.canDelete = options.canDelete;
 		if (options.height) { gridParameters.height = parseInt(options.height); }
 
 		gridParameters.correspondingViewName = options.correspondingViewName;

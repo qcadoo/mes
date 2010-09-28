@@ -33,6 +33,7 @@ import com.qcadoo.mes.core.view.Component;
 import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.RootComponent;
+import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.containers.FormComponent;
 import com.qcadoo.mes.core.view.containers.WindowComponent;
 import com.qcadoo.mes.core.view.elements.CheckBoxComponent;
@@ -105,9 +106,11 @@ public final class ViewDefinitionParser {
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "component")) {
-                viewDefinition.setRoot(getRootComponentDefinition(reader, viewName, dataDefinition));
+                viewDefinition.setRoot(getRootComponentDefinition(reader, viewDefinition, dataDefinition));
             } else if (isTagStarted(reader, "onView")) {
                 viewDefinition.setViewHook(getHookDefinition(reader));
+            } else if (isTagEnded(reader, "view")) {
+                break;
             }
         }
 
@@ -116,7 +119,7 @@ public final class ViewDefinitionParser {
         viewDefinitionService.save(viewDefinition);
     }
 
-    private RootComponent getRootComponentDefinition(final XMLStreamReader reader, final String viewName,
+    private RootComponent getRootComponentDefinition(final XMLStreamReader reader, final ViewDefinition viewDefinition,
             final DataDefinition dataDefinition) throws XMLStreamException {
         String componentType = getStringAttribute(reader, "type");
         String componentName = getStringAttribute(reader, "name");
@@ -124,7 +127,7 @@ public final class ViewDefinitionParser {
         RootComponent component = null;
 
         if ("window".equals(componentType)) {
-            component = new WindowComponent(componentName, dataDefinition, viewName);
+            component = new WindowComponent(componentName, dataDefinition, viewDefinition);
         } else {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }

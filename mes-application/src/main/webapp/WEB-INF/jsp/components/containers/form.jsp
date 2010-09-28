@@ -10,6 +10,7 @@
 <tiles:useAttribute name="componentFullName"/>
 <tiles:useAttribute name="componentFullNameWithDots"/>
 <tiles:useAttribute name="viewName" ignore="true"/>
+<tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
 <div class="component component_container component_container_form" id="${componentFullName}" style="border: solid black 1px; margin: 10px; padding: 10px; width: 500px;">
 	<div class=element_options style="display: none">
@@ -17,8 +18,8 @@
 	</div>
 	
 	<div style="font-weight: bold; margin-bottom: 10px;">
-		<c:if test="${component.header}">
-			<c:set var="headerLabel" value="${viewName}.${componentFullNameWithDots}.header"/>
+		<c:if test="${component.options['header']}">
+			<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
 			${translationsMap[headerLabel]}
 		</c:if>
 	</div>
@@ -30,6 +31,7 @@
 				<tiles:putAttribute name="parentComponentFullName" value="${componentFullName}" />
 				<tiles:putAttribute name="parentComponentFullNameWithDots" value="${componentFullNameWithDots}" />
 				<tiles:putAttribute name="viewName" value="${viewName}" />
+				<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 			</tiles:insertTemplate>
 		</c:forEach>
 	</div>

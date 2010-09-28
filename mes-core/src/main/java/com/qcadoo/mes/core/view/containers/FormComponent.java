@@ -35,7 +35,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     public void initializeComponent() {
         for (ComponentOption option : getRawOptions()) {
-            if ("header".equals(option.getName())) {
+            if ("header".equals(option.getType())) {
                 header = Boolean.parseBoolean(option.getValue());
             }
         }
@@ -126,13 +126,10 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         if (header) {
-            String messageCode = getViewName() + "." + getPath() + ".header";
+            String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".header";
             translationsMap.put(messageCode, translationService.translate(messageCode, locale));
         }
-    }
-
-    public boolean isHeader() {
-        return header;
     }
 
 }

@@ -49,13 +49,17 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
     private final List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 
-    private String correspondingViewName;
+    private String correspondingView;
 
     private boolean header = true;
 
     private boolean multiselect = false;
 
     private boolean paginable = false;
+
+    private boolean deletable = true;
+
+    private boolean creatable = true;
 
     public GridComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
@@ -67,44 +71,36 @@ public final class GridComponent extends AbstractComponent<ListData> {
         return "grid";
     }
 
-    public Set<FieldDefinition> getSearchableFields() {
-        return searchableFields;
-    }
-
-    public Set<FieldDefinition> getOrderableFields() {
-        return orderableFields;
-    }
-
     public List<ColumnDefinition> getColumns() {
         return columns;
-    }
-
-    public String getCorrespondingViewName() {
-        return correspondingViewName;
     }
 
     @Override
     public void initializeComponent() {
         for (ComponentOption option : getRawOptions()) {
-            if ("header".equals(option.getName())) {
+            if ("header".equals(option.getType())) {
                 header = Boolean.parseBoolean(option.getValue());
-            } else if ("correspondingView".equals(option.getName())) {
-                correspondingViewName = option.getValue();
-            } else if ("paginable".equals(option.getName())) {
+            } else if ("correspondingView".equals(option.getType())) {
+                correspondingView = option.getValue();
+            } else if ("paginable".equals(option.getType())) {
                 paginable = Boolean.parseBoolean(option.getValue());
-            } else if ("multiselect".equals(option.getName())) {
+            } else if ("multiselect".equals(option.getType())) {
                 multiselect = Boolean.parseBoolean(option.getValue());
-            } else if ("height".equals(option.getName())) {
+            } else if ("creatable".equals(option.getType())) {
+                creatable = Boolean.parseBoolean(option.getValue());
+            } else if ("deletable".equals(option.getType())) {
+                deletable = Boolean.parseBoolean(option.getValue());
+            } else if ("height".equals(option.getType())) {
                 addOption("height", Integer.parseInt(option.getValue()));
-            } else if ("searchable".equals(option.getName())) {
+            } else if ("searchable".equals(option.getType())) {
                 for (FieldDefinition field : getFields(option.getValue())) {
                     searchableFields.add(field);
                 }
-            } else if ("orderable".equals(option.getName())) {
+            } else if ("orderable".equals(option.getType())) {
                 for (FieldDefinition field : getFields(option.getValue())) {
                     orderableFields.add(field);
                 }
-            } else if ("column".equals(option.getName())) {
+            } else if ("column".equals(option.getType())) {
                 ColumnDefinition columnDefinition = new ColumnDefinition(option.getAtrributeValue("name"));
                 for (FieldDefinition field : getFields(option.getAtrributeValue("fields"))) {
                     columnDefinition.addField(field);
@@ -124,13 +120,16 @@ public final class GridComponent extends AbstractComponent<ListData> {
         }
 
         addOption("multiselect", multiselect);
-        addOption("correspondingView", correspondingViewName);
+        addOption("correspondingViewName", correspondingView);
         addOption("paginable", paginable);
         addOption("header", header);
         addOption("columns", getColumnsForOptions());
         addOption("fields", getFieldsForOptions(getDataDefinition().getFields()));
         addOption("sortable", !orderableFields.isEmpty());
         addOption("filter", !searchableFields.isEmpty());
+        addOption("canDelete", deletable);
+        addOption("canNew", creatable);
+
     }
 
     private Set<FieldDefinition> getFields(final String fields) {
@@ -195,12 +194,14 @@ public final class GridComponent extends AbstractComponent<ListData> {
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         if (header) {
-            String messageCode = getViewName() + "." + getPath() + ".header";
+            String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".header";
             translationsMap.put(messageCode, translationService.translate(messageCode, locale));
         }
         for (ColumnDefinition column : columns) {
             List<String> messageCodes = new LinkedList<String>();
-            messageCodes.add(getViewName() + "." + getPath() + ".column." + column.getName());
+            messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                    + ".column." + column.getName());
             messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), column.getName()));
             translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
         }
@@ -243,10 +244,6 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
         int totalNumberOfEntities = rs.getTotalNumberOfEntities();
         return new ListData(totalNumberOfEntities, gridEntities);
-    }
-
-    public boolean isHeader() {
-        return header;
     }
 
 }

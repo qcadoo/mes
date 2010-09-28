@@ -16,8 +16,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,11 +27,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.core.api.DataDefinitionService;
+import com.qcadoo.mes.core.api.PluginManagementService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
+import com.qcadoo.mes.core.internal.ViewDefinitionServiceImpl;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.types.StringType;
 import com.qcadoo.mes.core.internal.xml.ViewDefinitionParser;
@@ -68,6 +70,8 @@ public class ViewDefinitionParserTest {
 
     private ApplicationContext applicationContext;
 
+    private PluginManagementService pluginManagementService;
+
     private InputStream xml;
 
     private DataDefinition dataDefinitionA;
@@ -79,31 +83,10 @@ public class ViewDefinitionParserTest {
         applicationContext = mock(ApplicationContext.class);
         dataDefinitionService = mock(DataDefinitionService.class);
 
-        viewDefinitionService = new ViewDefinitionService() {
+        pluginManagementService = mock(PluginManagementService.class);
 
-            private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
-
-            @Override
-            public List<ViewDefinition> list() {
-                return new ArrayList<ViewDefinition>(viewDefinitions.values());
-            }
-
-            @Override
-            public void save(final ViewDefinition viewDefinition) {
-                viewDefinitions.put(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName(), viewDefinition);
-            }
-
-            @Override
-            public ViewDefinition get(final String pluginIdentifier, final String viewName) {
-                return viewDefinitions.get(pluginIdentifier + "." + viewName);
-            }
-
-            @Override
-            public void delete(final String pluginIdentifier, final String viewName) {
-                viewDefinitions.remove(pluginIdentifier + "." + viewName);
-            }
-
-        };
+        viewDefinitionService = new ViewDefinitionServiceImpl();
+        setField(viewDefinitionService, "pluginManagementService", pluginManagementService);
 
         hookFactory = new HookFactory();
         setField(hookFactory, "applicationContext", applicationContext);
@@ -115,6 +98,11 @@ public class ViewDefinitionParserTest {
 
         xml = new FileInputStream(new File("src/test/resources/view.xml"));
 
+        PluginsPlugin plugin = new PluginsPlugin();
+        plugin.setIdentifier("sample");
+
+        given(pluginManagementService.getPluginByIdentifierAndStatus("sample", "active")).willReturn(plugin);
+        given(pluginManagementService.getActivePlugins()).willReturn(Lists.newArrayList(plugin));
         given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
 
         dataDefinitionA = mock(DataDefinition.class);
@@ -148,6 +136,7 @@ public class ViewDefinitionParserTest {
     public void shouldParseXml() {
         // given
         ViewDefinition viewDefinition = parseAndGetViewDefinition();
+        assertEquals(2, viewDefinitionService.list().size());
 
         // then
         assertNotNull(viewDefinition);
@@ -182,19 +171,17 @@ public class ViewDefinitionParserTest {
                 "textInput", "beanB", "name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
 
         Component<?> selectBeanA = root.lookupComponent("mainWindow.beanBForm.selectBeanA");
-        checkComponent(selectBeanA, EntityComboBox.class,
-                "mainWindow.beanBForm.selectBeanA", "entityComboBox", "beanA", "beanA", null, null,
-                Sets.newHashSet("mainWindow.beanBForm.beansBGrig", "mainWindow.beansBGrig"), 0,
+        checkComponent(selectBeanA, EntityComboBox.class, "mainWindow.beanBForm.selectBeanA", "entityComboBox", "beanA", "beanA",
+                null, null, Sets.newHashSet("mainWindow.beanBForm.beansBGrig", "mainWindow.beansBGrig"), 0,
                 Maps.<String, Object> newHashMap());
 
         assertTrue(selectBeanA.isDefaultEnabled());
         assertTrue(selectBeanA.isDefaultVisible());
-        
+
         Component<?> active = root.lookupComponent("mainWindow.beanBForm.active");
-        checkComponent(active, CheckBoxComponent.class,
-                "mainWindow.beanBForm.active", "checkBox", "beanB", "name", null, null, Sets.<String> newHashSet(), 0,
-                Maps.<String, Object> newHashMap());
-        
+        checkComponent(active, CheckBoxComponent.class, "mainWindow.beanBForm.active", "checkBox", "beanB", "name", null, null,
+                Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
+
         assertFalse(active.isDefaultEnabled());
         assertFalse(active.isDefaultVisible());
 
@@ -220,15 +207,17 @@ public class ViewDefinitionParserTest {
 
         assertThat((List<String>) grid.getOptions().get("columns"), hasItems("name"));
         assertThat((List<String>) grid.getOptions().get("fields"), hasItems("name", "beanA"));
-        assertEquals("products.form", grid.getOptions().get("correspondingView"));
+        assertEquals("products/form", grid.getOptions().get("correspondingViewName"));
         assertTrue((Boolean) grid.getOptions().get("header"));
         assertFalse((Boolean) grid.getOptions().get("sortable"));
         assertFalse((Boolean) grid.getOptions().get("filter"));
         assertFalse((Boolean) grid.getOptions().get("multiselect"));
         assertFalse((Boolean) grid.getOptions().get("paginable"));
         assertFalse(grid.getOptions().containsKey("height"));
-        assertTrue(grid.getOrderableFields().isEmpty());
-        assertTrue(grid.getSearchableFields().isEmpty());
+        assertTrue((Boolean) grid.getOptions().get("canDelete"));
+        assertTrue((Boolean) grid.getOptions().get("canNew"));
+        assertTrue(((Set<FieldDefinition>) getField(grid, "orderableFields")).isEmpty());
+        assertTrue(((Set<FieldDefinition>) getField(grid, "searchableFields")).isEmpty());
         assertEquals("name", grid.getColumns().get(0).getName());
         assertEquals(ColumnAggregationMode.NONE, grid.getColumns().get(0).getAggregationMode());
         assertNull(grid.getColumns().get(0).getExpression());
@@ -242,17 +231,20 @@ public class ViewDefinitionParserTest {
 
         assertThat((List<String>) grid2.getOptions().get("columns"), hasItems("multicolumn"));
         assertThat((List<String>) grid2.getOptions().get("fields"), hasItems("name", "beanA"));
-        assertEquals("products.form", grid2.getOptions().get("correspondingView"));
+        assertEquals("products/form", grid2.getOptions().get("correspondingViewName"));
         assertTrue((Boolean) grid2.getOptions().get("header"));
         assertTrue((Boolean) grid2.getOptions().get("sortable"));
         assertTrue((Boolean) grid2.getOptions().get("filter"));
         assertTrue((Boolean) grid2.getOptions().get("multiselect"));
         assertTrue((Boolean) grid2.getOptions().get("paginable"));
+        assertFalse((Boolean) grid2.getOptions().get("canDelete"));
+        assertFalse((Boolean) grid2.getOptions().get("canNew"));
         assertEquals(Integer.valueOf(450), grid2.getOptions().get("height"));
-        assertEquals(1, grid2.getOrderableFields().size());
-        assertThat(grid2.getOrderableFields(), hasItems(dataDefinitionB.getField("name")));
-        assertEquals(2, grid2.getSearchableFields().size());
-        assertThat(grid2.getSearchableFields(), hasItems(dataDefinitionB.getField("name"), dataDefinitionB.getField("beanA")));
+        assertEquals(1, ((Set<FieldDefinition>) getField(grid2, "orderableFields")).size());
+        assertThat(((Set<FieldDefinition>) getField(grid2, "orderableFields")), hasItems(dataDefinitionB.getField("name")));
+        assertEquals(2, ((Set<FieldDefinition>) getField(grid2, "searchableFields")).size());
+        assertThat(((Set<FieldDefinition>) getField(grid2, "searchableFields")),
+                hasItems(dataDefinitionB.getField("name"), dataDefinitionB.getField("beanA")));
         assertEquals("multicolumn", grid2.getColumns().get(0).getName());
         assertEquals(ColumnAggregationMode.SUM, grid2.getColumns().get(0).getAggregationMode());
         assertEquals("2 + 2", grid2.getColumns().get(0).getExpression());
@@ -263,7 +255,7 @@ public class ViewDefinitionParserTest {
 
         checkComponent(root.lookupComponent("mainWindow.link"), LinkButtonComponent.class, "mainWindow.link", "linkButton",
                 "beanB", null, null, null, Sets.<String> newHashSet(), 0,
-                ImmutableMap.<String, Object> of("pageUrl", "download.html"));
+                ImmutableMap.<String, Object> of("url", "download.html"));
     }
 
     private void checkComponent(final Component<?> component2, final Class<?> clazz, final String path, final String type,
@@ -289,7 +281,7 @@ public class ViewDefinitionParserTest {
 
         assertEquals(model, component.getDataDefinition().getName());
         assertEquals(type, component.getType());
-        assertEquals("simpleView", component.getViewName());
+        assertEquals("simpleView", component.getViewDefinition().getName());
 
         if (component instanceof ContainerComponent) {
             assertEquals(children, ((ContainerComponent<?>) component).getComponents().size());

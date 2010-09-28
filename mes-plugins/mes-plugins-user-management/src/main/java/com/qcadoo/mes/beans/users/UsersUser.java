@@ -2,6 +2,7 @@ package com.qcadoo.mes.beans.users;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -18,7 +19,7 @@ public final class UsersUser {
     @Column(nullable = false)
     private String userName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private UsersGroup userGroup;
 
     private String email;

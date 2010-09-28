@@ -23,7 +23,7 @@ public interface Component<T> {
 
     String getPath();
 
-    String getViewName();
+    ViewDefinition getViewDefinition();
 
     String getFieldPath();
 

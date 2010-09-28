@@ -9,27 +9,27 @@
 <head>
 
 		
-	<link rel="stylesheet" href="../css/jquery-ui-1.8.4.custom.css" type="text/css" />
-	<link rel="stylesheet" href="../css/ui.jqgrid.css" type="text/css" />
-	<link rel="stylesheet" href="../css/qcd.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/jquery-ui-1.8.4.custom.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/ui.jqgrid.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/qcd.css" type="text/css" />
 
-	<script type="text/javascript" src="../js/lib/json_sans_eval.js"></script>
-	<script type="text/javascript" src="../js/lib/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="../js/lib/jquery.blockUI.js"></script>
-	<script type="text/javascript" src="../js/lib/jquery.jqGrid.min.js"></script>
-	<script type="text/javascript" src="../js/lib/encoder.js"></script>
-	<script type="text/javascript" src="../js/qcd/elements/qcdGrid.js"></script>
-	<script type="text/javascript" src="../js/lib/jquery.ba-serializeobject.min.js"></script>
+	<script type="text/javascript" src="../../js/lib/json_sans_eval.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery.blockUI.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery.jqGrid.min.js"></script>
+	<script type="text/javascript" src="../../js/lib/encoder.js"></script>
+	<script type="text/javascript" src="../../js/qcd/elements/qcdGrid.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery.ba-serializeobject.min.js"></script>
 	
-	<script type="text/javascript" src="../js/qcd/utils/logger.js"></script>
-	<script type="text/javascript" src="../js/qcd/utils/serializator.js"></script>
-	<script type="text/javascript" src="../js/qcd/core/pageController.js"></script>
-	<script type="text/javascript" src="../js/qcd/core/pageConstructor.js"></script>
-	<script type="text/javascript" src="../js/qcd/elements/qcdForm.js"></script>
+	<script type="text/javascript" src="../../js/qcd/utils/logger.js"></script>
+	<script type="text/javascript" src="../../js/qcd/utils/serializator.js"></script>
+	<script type="text/javascript" src="../../js/qcd/core/pageController.js"></script>
+	<script type="text/javascript" src="../../js/qcd/core/pageConstructor.js"></script>
+	<script type="text/javascript" src="../../js/qcd/elements/qcdForm.js"></script>
 	
 	<script type="text/javascript">
 
-		var viewName = "${viewDefinition.name}";
+		var viewName = "${viewDefinition.pluginIdentifier}/${viewDefinition.name}";
 		var entityId = "${entityId}";
 		var contextEntityId = "${contextEntityId}";
 

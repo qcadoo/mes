@@ -5,14 +5,25 @@
 			<component type="grid" name="groups">
 				<option type="column" name="name" fields="name" />
 				<option type="column" name="role" fields="role" />
-				<option type="header" value="true" />
+				<option type="header" value="false" />
 				<option type="orderable" value="name,role" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="false" />
 				<option type="height" value="450" />
-				<option type="correspondingView" value="users.groupDetailsView" />
-				<option type="canDelete" value="false" />
-				<option type="canNew" value="false" />
+				<option type="correspondingView" value="users/groupDetailsView" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
+			</component>
+			<option type="backButton" value="false" />
+		</component>
+	</view>
+	<view name="groupDetailsView" model="group">
+		<component type="window" name="mainWindow">
+			<component type="form" name="groupDetailsForm">
+				<component type="input" name="name" field="name" />
+				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="input" name="role" field="role" enabled="false" />
+				<option type="header" value="false" />
 			</component>
 		</component>
 	</view>
@@ -25,22 +36,14 @@
 				<option type="column" name="lastName" fields="lastName" />
 				<option type="column" name="userGroup" fields="userGroup"
 					expression="#userGroup['name']" />
-				<option type="header" value="true" />
+				<option type="header" value="false" />
 				<option type="orderable" value="userName,email,firstName,lastName,userGroup" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="true" />
 				<option type="height" value="450" />
-				<option type="correspondingView" value="users.userDetailsView" />
+				<option type="correspondingView" value="users/userDetailsView" />
 			</component>
-		</component>
-	</view>
-	<view name="groupDetailsView" model="group">
-		<component type="window" name="mainWindow">
-			<component type="form" name="groupDetailsForm">
-				<component type="input" name="name" field="name" />
-				<component type="input" name="description" field="description" /> <!-- type:description -->
-				<component type="input" name="role" field="role" />
-			</component>
+			<option type="backButton" value="false" />
 		</component>
 	</view>
 	<view name="userDetailsView" model="user">
@@ -53,6 +56,7 @@
 				<component type="input" name="lastName" field="lastName" />
 				<component type="input" name="description" field="description" /> <!-- type:description -->
 				<component type="input" name="password" field="password" /> <!-- type:password -->
+				<option type="header" value="false" />
 			</component>
 		</component>
 	</view>

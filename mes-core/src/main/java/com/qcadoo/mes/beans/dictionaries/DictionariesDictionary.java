@@ -1,8 +1,12 @@
 package com.qcadoo.mes.beans.dictionaries;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -29,6 +33,17 @@ public final class DictionariesDictionary {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    @OneToMany(mappedBy = "dictionary", fetch = FetchType.LAZY)
+    private List<DictionariesDictionaryItem> dictionaryItems;
+
+    public List<DictionariesDictionaryItem> getDictionaryItems() {
+        return dictionaryItems;
+    }
+
+    public void setDictionaryItems(final List<DictionariesDictionaryItem> dictionaryItems) {
+        this.dictionaryItems = dictionaryItems;
     }
 
 }
