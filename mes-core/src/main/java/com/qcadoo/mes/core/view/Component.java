@@ -4,11 +4,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 
-public interface Component<T> extends CastableComponent<T>, ListenableComponent, InitializableComponent {
+public interface Component<T> {
 
     String getType();
 
@@ -31,5 +34,13 @@ public interface Component<T> extends CastableComponent<T>, ListenableComponent,
     boolean isDefaultVisible();
 
     void updateTranslations(Map<String, String> translationsMap, TranslationService translationService, Locale locale);
+
+    boolean initializeComponent(Map<String, Component<?>> componentRegistry);
+
+    boolean isInitialized();
+
+    ViewValue<T> castValue(Map<String, Entity> selectedEntities, JSONObject viewObject) throws JSONException;
+
+    Set<String> getListeners();
 
 }

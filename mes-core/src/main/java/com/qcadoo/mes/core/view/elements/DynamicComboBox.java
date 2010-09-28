@@ -32,11 +32,6 @@ public final class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
     }
 
     @Override
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-
-    }
-
-    @Override
     public ViewValue<ComboBoxValue> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
         JSONObject valueObject = viewObject.getJSONObject("value");

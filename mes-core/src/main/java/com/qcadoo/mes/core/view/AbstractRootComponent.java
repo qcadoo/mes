@@ -8,11 +8,15 @@ import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.model.DataDefinition;
 
 public abstract class AbstractRootComponent extends AbstractContainerComponent<Object> implements RootComponent {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractRootComponent.class);
 
     private final Map<String, Component<?>> componentRegistry = new LinkedHashMap<String, Component<?>>();
 
@@ -67,7 +71,9 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     private void initializeComponents(final int previousNotInitialized) {
         int notInitialized = 0;
 
-        for (InitializableComponent component : componentRegistry.values()) {
+        initializeComponent();
+
+        for (Component<?> component : componentRegistry.values()) {
             if (component.isInitialized()) {
                 continue;
             }
@@ -78,10 +84,11 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
 
         if (notInitialized > 0) {
             if (previousNotInitialized == notInitialized) {
-                for (InitializableComponent component : componentRegistry.values()) {
+                for (Component<?> component : componentRegistry.values()) {
                     if (component.isInitialized()) {
                         continue;
                     }
+                    LOG.info("Component not initialized: " + component);
                 }
                 throw new IllegalStateException("Cyclic dependency in view definition or misspelled referenced component name");
             } else {

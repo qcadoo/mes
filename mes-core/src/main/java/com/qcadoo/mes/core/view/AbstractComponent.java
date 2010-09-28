@@ -1,9 +1,11 @@
 package com.qcadoo.mes.core.view;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,7 +39,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private boolean initialized;
 
-    private final Map<String, String> options = new HashMap<String, String>();
+    private final List<ComponentOption> rawOptions = new ArrayList<ComponentOption>();
+
+    private final Map<String, Object> options = new HashMap<String, Object>();
 
     private final ContainerComponent<?> parentContainer;
 
@@ -144,7 +148,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
             sourceFieldPath = source[1];
             dataDefinition = sourceComponent.getDataDefinition();
-            sourceComponent.registerListener(path);
+            ((AbstractComponent<?>) sourceComponent).registerListener(path);
         } else if (parentContainer != null) {
 
             if (!parentContainer.isInitialized()) {
@@ -163,9 +167,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
             dataDefinition = getDataDefinitionBasedOnFieldPath(dataDefinition, fieldPath);
         }
 
+        initializeComponent();
+
         this.initialized = true;
 
         return true;
+    }
+
+    public void initializeComponent() {
+        // can be implemented
     }
 
     @Override
@@ -193,7 +203,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return dataDefinition;
     }
 
-    @Override
     public final void registerListener(final String path) {
         listeners.add(path);
     }
@@ -216,25 +225,22 @@ public abstract class AbstractComponent<T> implements Component<T> {
         this.dataDefinition = dataDefinition;
     }
 
-    public final void addOption(final String name, final String value) {
-        this.options.put(name, value);
-        addComponentOption(name, value);
+    public final void addRawOption(final ComponentOption option) {
+        rawOptions.add(option);
     }
 
-    public void addComponentOption(final String name, final String value) {
-        // can be implemented;
+    protected List<ComponentOption> getRawOptions() {
+        return rawOptions;
+    }
+
+    protected final void addOption(final String name, final Object value) {
+        options.put(name, value);
     }
 
     public final Map<String, Object> getOptions() {
-        Map<String, Object> viewOptions = new HashMap<String, Object>(options);
-        viewOptions.put("name", name);
-        viewOptions.put("listeners", listeners);
-        getComponentOptions(viewOptions);
-        return viewOptions;
-    }
-
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-        // can be implemented
+        options.put("name", name);
+        options.put("listeners", listeners);
+        return options;
     }
 
     public final String getOptionsAsJson() {

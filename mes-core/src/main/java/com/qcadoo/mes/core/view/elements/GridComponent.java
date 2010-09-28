@@ -23,8 +23,10 @@ import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.AbstractComponent;
+import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
+import com.qcadoo.mes.core.view.elements.grid.ColumnAggregationMode;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
 
@@ -51,6 +53,10 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
     private boolean header = true;
 
+    private boolean multiselect = false;
+
+    private boolean paginable = false;
+
     public GridComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
         super(name, parentContainer, fieldPath, sourceFieldPath);
@@ -65,39 +71,74 @@ public final class GridComponent extends AbstractComponent<ListData> {
         return searchableFields;
     }
 
-    public void addSearchableField(final FieldDefinition searchableField) {
-        this.searchableFields.add(searchableField);
-    }
-
     public Set<FieldDefinition> getOrderableFields() {
         return orderableFields;
-    }
-
-    public void addOrderableField(final FieldDefinition orderableField) {
-        this.orderableFields.add(orderableField);
     }
 
     public List<ColumnDefinition> getColumns() {
         return columns;
     }
 
-    public void addColumn(final ColumnDefinition column) {
-        this.columns.add(column);
-    }
-
     public String getCorrespondingViewName() {
         return correspondingViewName;
     }
 
-    public void setCorrespondingViewName(final String correspondingViewName) {
-        this.correspondingViewName = correspondingViewName;
+    @Override
+    public void initializeComponent() {
+        for (ComponentOption option : getRawOptions()) {
+            if ("header".equals(option.getName())) {
+                header = Boolean.parseBoolean(option.getValue());
+            } else if ("correspondingView".equals(option.getName())) {
+                correspondingViewName = option.getValue();
+            } else if ("paginable".equals(option.getName())) {
+                paginable = Boolean.parseBoolean(option.getValue());
+            } else if ("multiselect".equals(option.getName())) {
+                multiselect = Boolean.parseBoolean(option.getValue());
+            } else if ("height".equals(option.getName())) {
+                addOption("height", Integer.parseInt(option.getValue()));
+            } else if ("searchable".equals(option.getName())) {
+                for (FieldDefinition field : getFields(option.getValue())) {
+                    searchableFields.add(field);
+                }
+            } else if ("orderable".equals(option.getName())) {
+                for (FieldDefinition field : getFields(option.getValue())) {
+                    orderableFields.add(field);
+                }
+            } else if ("column".equals(option.getName())) {
+                ColumnDefinition columnDefinition = new ColumnDefinition(option.getAtrributeValue("name"));
+                for (FieldDefinition field : getFields(option.getAtrributeValue("fields"))) {
+                    columnDefinition.addField(field);
+                }
+                columnDefinition.setExpression(option.getAtrributeValue("expression"));
+                String width = option.getAtrributeValue("width");
+                if (width != null) {
+                    columnDefinition.setWidth(Integer.valueOf(width));
+                }
+                if ("sum".equals(option.getAtrributeValue("aggregation"))) {
+                    columnDefinition.setAggregationMode(ColumnAggregationMode.SUM);
+                } else {
+                    columnDefinition.setAggregationMode(ColumnAggregationMode.NONE);
+                }
+                columns.add(columnDefinition);
+            }
+        }
+
+        addOption("multiselect", multiselect);
+        addOption("correspondingView", correspondingViewName);
+        addOption("paginable", paginable);
+        addOption("header", header);
+        addOption("columns", getColumnsForOptions());
+        addOption("fields", getFieldsForOptions(getDataDefinition().getFields()));
+        addOption("sortable", !orderableFields.isEmpty());
+        addOption("filter", !searchableFields.isEmpty());
     }
 
-    @Override
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-        viewOptions.put("correspondingViewName", correspondingViewName);
-        viewOptions.put("columns", getColumnsForOptions());
-        viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
+    private Set<FieldDefinition> getFields(final String fields) {
+        Set<FieldDefinition> set = new HashSet<FieldDefinition>();
+        for (String field : fields.split("\\s*,\\s*")) {
+            set.add(getDataDefinition().getField(field));
+        }
+        return set;
     }
 
     @Override
@@ -206,10 +247,6 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
     public boolean isHeader() {
         return header;
-    }
-
-    public void setHeader(final boolean header) {
-        this.header = header;
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.view.AbstractRootComponent;
+import com.qcadoo.mes.core.view.ComponentOption;
 
 public final class WindowComponent extends AbstractRootComponent {
 
@@ -23,18 +24,17 @@ public final class WindowComponent extends AbstractRootComponent {
     }
 
     @Override
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-        viewOptions.put("backButton", backButton);
-        viewOptions.put("header", header);
-    }
-
-    @Override
-    public void addComponentOption(final String name, final String value) {
-        if ("header".equals(name)) {
-            header = Boolean.parseBoolean(value);
-        } else if ("backButton".equals(name)) {
-            backButton = Boolean.parseBoolean(value);
+    public void initializeComponent() {
+        for (ComponentOption option : getRawOptions()) {
+            if ("header".equals(option.getName())) {
+                header = Boolean.parseBoolean(option.getValue());
+            } else if ("backButton".equals(option.getName())) {
+                backButton = Boolean.parseBoolean(option.getValue());
+            }
         }
+
+        addOption("backButton", backButton);
+        addOption("header", header);
     }
 
     @Override

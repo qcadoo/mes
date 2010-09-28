@@ -1,10 +1,8 @@
 package com.qcadoo.mes.core.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.PluginManagementService;
@@ -20,9 +19,9 @@ import com.qcadoo.mes.core.enums.PluginStatus;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.Component;
+import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.containers.FormComponent;
 import com.qcadoo.mes.core.view.containers.WindowComponent;
@@ -32,7 +31,6 @@ import com.qcadoo.mes.core.view.elements.EntityComboBox;
 import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.LinkButtonComponent;
 import com.qcadoo.mes.core.view.elements.TextInputComponent;
-import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
@@ -47,32 +45,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private HookFactory hookFactory;
 
     private Map<String, ViewDefinition> viewDefinitions;
-
-    @Override
-    public void initViews() {
-        viewDefinitions = new HashMap<String, ViewDefinition>();
-        viewDefinitions.put("products.productGridView", createProductGridView());
-        viewDefinitions.put("products.productDetailsView", createProductDetailsView());
-        viewDefinitions.put("products.substituteDetailsView", createProductSubstituteDetailsView());
-        viewDefinitions.put("products.substituteComponentDetailsView", createProductSubstituteComponentDetailsView());
-
-        viewDefinitions.put("products.grid", createTestGridView());
-        viewDefinitions.put("products.form", createTestFormView());
-
-        viewDefinitions.put("products.orderGridView", createOrderGridView());
-        viewDefinitions.put("products.orderDetailsView", createOrderDetailsView());
-        viewDefinitions.put("products.instructionGridView", createInstructionGridView());
-        viewDefinitions.put("products.instructionDetailsView", createInstructionDetailsView());
-        // viewDefinitions.put("users.groupGridView", createUserGroupGridView());
-        // viewDefinitions.put("users.groupDetailsView", createUserGroupDetailsView());
-        // viewDefinitions.put("users.userGridView", createUserGridView());
-        // viewDefinitions.put("users.userDetailsView", createUserDetailsView());
-        // viewDefinitions.put("core.dictionaryGridView", createDictionaryGridView());
-        // viewDefinitions.put("core.dictionaryDetailsView", createDictionaryDetailsView());
-        // viewDefinitions.put("core.dictionaryItemDetailsView", createDictionaryItemDetailsView());
-        viewDefinitions.put("plugins.pluginGridView", createPluginGridView());
-        viewDefinitions.put("plugins.pluginDetailsView", createPluginDetailsView());
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -114,21 +86,19 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition testADD = dataDefinitionService.get("products", "testBeanA");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", testADD, "products.grid");
-        windowDefinition.addOption("backButton", "false");
+        windowDefinition.addRawOption(new ComponentOption("backButton", ImmutableMap.of("value", "false")));
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.grid");
         viewDefinition.setRoot(windowDefinition);
 
         GridComponent grid = new GridComponent("beansAGrid", windowDefinition, null, null);
-        grid.setCorrespondingViewName("products.form");
-        grid.addOption("paging", "true");
-        grid.addOption("sortable", "true");
-        grid.addOption("filter", "true");
-        grid.addOption("multiselect", "true");
-        grid.addOption("height", "450");
-        ColumnDefinition columnName = createColumnDefinition("name", testADD.getField("name"), null);
-
-        grid.addColumn(columnName);
+        grid.addRawOption(new ComponentOption("correspondingView", ImmutableMap.of("value", "products.form")));
+        grid.addRawOption(new ComponentOption("paging", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("sortable", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("filter", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("multiselect", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("height", ImmutableMap.of("value", "450")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
 
         windowDefinition.addComponent(grid);
 
@@ -155,14 +125,17 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formDefinition.addComponent(new TextInputComponent("nameM", formDefinition, null, null));
         formDefinition.addComponent(new TextInputComponent("nameB", formDefinition, "beanB.name", null));
         formDefinition.addComponent(new TextInputComponent("nameC", formDefinition, "beanB.beanC.name", null));
+
         GridComponent beanAForm_beansCGrig = new GridComponent("beansCGrig", formDefinition, null, "beansC");
-        beanAForm_beansCGrig.addColumn(createColumnDefinition("name", testCDD.getField("name"), null));
+        beanAForm_beansCGrig.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
+
         formDefinition.addComponent(beanAForm_beansCGrig);
         windowDefinition.addComponent(formDefinition);
 
         GridComponent beansBGrig = new GridComponent("beansBGrig", windowDefinition, null,
                 "#{mainWindow.beanAForm.beansCGrig}.beansB");
-        beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
+        beansBGrig.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
+
         windowDefinition.addComponent(beansBGrig);
 
         FormComponent formCDefinition = new FormComponent("beanCForm", windowDefinition, null, "#{mainWindow.beansBGrig}.beanC");
@@ -171,7 +144,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         formCDefinition_formA.addComponent(new TextInputComponent("name", formCDefinition_formA, "name", null));
         formCDefinition.addComponent(formCDefinition_formA);
         GridComponent beanCForm_beansBGrig = new GridComponent("beansBGrig", formCDefinition, null, "beansB");
-        beanCForm_beansBGrig.addColumn(createColumnDefinition("name", testBDD.getField("name"), null));
+        beanCForm_beansBGrig.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
         formCDefinition.addComponent(beanCForm_beansBGrig);
         formCDefinition.addComponent(new TextInputComponent("nameB", formCDefinition, null,
                 "#{mainWindow.beanCForm.beansBGrig}.name"));
@@ -190,28 +163,23 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition productDataDefinition = dataDefinitionService.get("products", "product");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", productDataDefinition, "products.productGridView");
-        windowDefinition.addOption("backButton", "false");
+        windowDefinition.addRawOption(new ComponentOption("backButton", ImmutableMap.of("value", "false")));
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.productGridView");
         viewDefinition.setRoot(windowDefinition);
 
         GridComponent grid = new GridComponent("productsGrid", windowDefinition, null, null);
-        grid.setHeader(false);
-        grid.setCorrespondingViewName("products.productDetailsView");
-        grid.addOption("paging", "true");
-        grid.addOption("sortable", "true");
-        grid.addOption("filter", "true");
-        grid.addOption("multiselect", "true");
-        grid.addOption("height", "450");
-        ColumnDefinition columnNumber = createColumnDefinition("number", productDataDefinition.getField("number"), null);
-        ColumnDefinition columnName = createColumnDefinition("name", productDataDefinition.getField("name"), null);
-        ColumnDefinition columnType = createColumnDefinition("typeOfMaterial", productDataDefinition.getField("typeOfMaterial"),
-                null);
-        ColumnDefinition columnEan = createColumnDefinition("ean", productDataDefinition.getField("ean"), null);
-        grid.addColumn(columnNumber);
-        grid.addColumn(columnName);
-        grid.addColumn(columnType);
-        grid.addColumn(columnEan);
+        grid.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
+        grid.addRawOption(new ComponentOption("correspondingView", ImmutableMap.of("value", "products.productDetailsView")));
+        grid.addRawOption(new ComponentOption("paging", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("sortable", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("filter", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("multiselect", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("height", ImmutableMap.of("value", "450")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "number", "value", "number")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "typeOfMaterial", "value", "typeOfMaterial")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "ean", "value", "ean")));
         windowDefinition.addComponent(grid);
 
         windowDefinition.initialize();
@@ -230,7 +198,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("productDetailsForm", windowDefinition, null, null);
-        windowDefinition.addOption("header", "false");
+        windowDefinition.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
 
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
@@ -241,32 +209,35 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         windowDefinition.addComponent(formDefinition);
 
         GridComponent substituteGridDefinition = new GridComponent("substitutesGrid", windowDefinition, "substitutes", null);
-        substituteGridDefinition.addColumn(createColumnDefinition("number", substituteDataDefinition.getField("number"), null));
-        substituteGridDefinition.addColumn(createColumnDefinition("name", substituteDataDefinition.getField("name"), null));
         substituteGridDefinition
-                .addColumn(createColumnDefinition("priority", substituteDataDefinition.getField("priority"), null));
-        substituteGridDefinition.addOption("paging", "false");
-        substituteGridDefinition.addOption("sortable", "false");
-        substituteGridDefinition.addOption("filter", "false");
-        substituteGridDefinition.addOption("multiselect", "false");
-        substituteGridDefinition.addOption("height", "150");
-        substituteGridDefinition.setCorrespondingViewName("products.substituteDetailsView");
+                .addRawOption(new ComponentOption("column", ImmutableMap.of("name", "number", "value", "number")));
+        substituteGridDefinition.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
+        substituteGridDefinition.addRawOption(new ComponentOption("column", ImmutableMap.of("priority", "number", "value",
+                "priority")));
+        substituteGridDefinition.addRawOption(new ComponentOption("paging", ImmutableMap.of("value", "false")));
+        substituteGridDefinition.addRawOption(new ComponentOption("sortable", ImmutableMap.of("value", "false")));
+        substituteGridDefinition.addRawOption(new ComponentOption("filter", ImmutableMap.of("value", "false")));
+        substituteGridDefinition.addRawOption(new ComponentOption("multiselect", ImmutableMap.of("value", "false")));
+        substituteGridDefinition.addRawOption(new ComponentOption("height", ImmutableMap.of("value", "150")));
+        substituteGridDefinition.addRawOption(new ComponentOption("correspondingView", ImmutableMap.of("value",
+                "products.substituteDetailsView")));
         windowDefinition.addComponent(substituteGridDefinition);
 
         GridComponent substituteComponentGridDefinition = new GridComponent("substitutesComponentGrid", windowDefinition, null,
                 "#{mainWindow.substitutesGrid}.components");
-        substituteComponentGridDefinition.addColumn(createColumnDefinition("number",
-                substituteComponentDataDefinition.getField("product"), "#product['number']"));
-        substituteComponentGridDefinition.addColumn(createColumnDefinition("name",
-                substituteComponentDataDefinition.getField("product"), "#product['name']"));
-        substituteComponentGridDefinition.addColumn(createColumnDefinition("quantity",
-                substituteComponentDataDefinition.getField("quantity"), null));
-        substituteComponentGridDefinition.addOption("paging", "false");
-        substituteComponentGridDefinition.addOption("sortable", "false");
-        substituteComponentGridDefinition.addOption("filter", "false");
-        substituteComponentGridDefinition.addOption("multiselect", "false");
-        substituteComponentGridDefinition.addOption("height", "150");
-        substituteComponentGridDefinition.setCorrespondingViewName("products.substituteComponentDetailsView");
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "number", "value",
+                "product", "expression", "#product['number']")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value",
+                "product", "expression", "#product['name']")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "quantity", "value",
+                "quantity")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("paging", ImmutableMap.of("value", "false")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("sortable", ImmutableMap.of("value", "false")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("filter", ImmutableMap.of("value", "false")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("multiselect", ImmutableMap.of("value", "false")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("height", ImmutableMap.of("value", "150")));
+        substituteComponentGridDefinition.addRawOption(new ComponentOption("correspondingView", ImmutableMap.of("value",
+                "products.substituteComponentDetailsView")));
         windowDefinition.addComponent(substituteComponentGridDefinition);
 
         windowDefinition.initialize();
@@ -284,7 +255,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("substitutesDetailsForm", windowDefinition, null, null);
-        windowDefinition.addOption("header", "false");
+        windowDefinition.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("priority", formDefinition, "priority", null));
@@ -308,7 +279,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("substitutesComponentDetailsForm", windowDefinition, null, null);
-        windowDefinition.addOption("header", "false");
+        windowDefinition.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
         formDefinition.addComponent(new EntityComboBox("product", formDefinition, "product", null));
         formDefinition.addComponent(new TextInputComponent("quantity", formDefinition, "quantity", null));
 
@@ -450,24 +421,21 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createInstructionGridView() {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "instruction");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.instructionGridView");
-        windowDefinition.addOption("backButton", "false");
+        windowDefinition.addRawOption(new ComponentOption("backButton", ImmutableMap.of("value", "false")));
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.instructionGridView");
         viewDefinition.setRoot(windowDefinition);
         GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
-        grid.setHeader(false);
-        grid.setCorrespondingViewName("products.instructionDetailsView");
-        grid.addOption("paging", "true");
-        grid.addOption("sortable", "true");
-        grid.addOption("filter", "true");
-        grid.addOption("multiselect", "true");
-        grid.addOption("height", "450");
-        ColumnDefinition columnNumber = createColumnDefinition("number", dataDefinition.getField("number"), null);
-        ColumnDefinition columnName = createColumnDefinition("name", dataDefinition.getField("name"), null);
-        ColumnDefinition columnProductName = createColumnDefinition("product", dataDefinition.getField("product"),
-                "#product['name']");
-        grid.addColumn(columnNumber);
-        grid.addColumn(columnName);
-        grid.addColumn(columnProductName);
+        grid.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
+        grid.addRawOption(new ComponentOption("correspondingView", ImmutableMap.of("value", "products.instructionDetailsView")));
+        grid.addRawOption(new ComponentOption("paging", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("sortable", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("filter", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("multiselect", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("height", ImmutableMap.of("value", "450")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "number", "value", "number")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "product", "value", "product", "expression",
+                "#product['name']")));
         windowDefinition.addComponent(grid);
         windowDefinition.initialize();
         return viewDefinition;
@@ -480,7 +448,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.instructionDetailsView");
         viewDefinition.setRoot(windowDefinition);
         FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
-        windowDefinition.addOption("header", "false");
+        windowDefinition.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
         formDefinition.addComponent(new CheckBoxComponent("master", formDefinition, "master", null));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
@@ -497,23 +465,20 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private ViewDefinition createOrderGridView() {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
         WindowComponent windowDefinition = new WindowComponent("mainWindow", dataDefinition, "products.orderGridView");
-        windowDefinition.addOption("backButton", "false");
+        windowDefinition.addRawOption(new ComponentOption("backButton", ImmutableMap.of("value", "false")));
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("products", "products.orderGridView");
         viewDefinition.setRoot(windowDefinition);
         GridComponent grid = new GridComponent("instructionsGrid", windowDefinition, null, null);
-        grid.setHeader(false);
-        grid.setCorrespondingViewName("products.orderDetailsView");
-        grid.addOption("paging", "true");
-        grid.addOption("sortable", "true");
-        grid.addOption("filter", "true");
-        grid.addOption("multiselect", "true");
-        grid.addOption("height", "450");
-        ColumnDefinition columnNumber = createColumnDefinition("number", dataDefinition.getField("number"), null);
-        ColumnDefinition columnName = createColumnDefinition("name", dataDefinition.getField("name"), null);
-        ColumnDefinition columnState = createColumnDefinition("state", dataDefinition.getField("state"), null);
-        grid.addColumn(columnNumber);
-        grid.addColumn(columnName);
-        grid.addColumn(columnState);
+        grid.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
+        grid.addRawOption(new ComponentOption("correspondingView", ImmutableMap.of("value", "products.orderDetailsView")));
+        grid.addRawOption(new ComponentOption("paging", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("sortable", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("filter", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("multiselect", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("height", ImmutableMap.of("value", "450")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "number", "value", "number")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "state", "value", "state")));
         windowDefinition.addComponent(grid);
         windowDefinition.initialize();
         return viewDefinition;
@@ -527,7 +492,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
         viewDefinition.setViewHook(hookFactory.getHook("com.qcadoo.mes.products.ProductService", "afterOrderDetailsLoad"));
         FormComponent formDefinition = new FormComponent("detailsForm", windowDefinition, null, null);
-        windowDefinition.addOption("header", "false");
+        windowDefinition.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
         formDefinition.addComponent(new TextInputComponent("number", formDefinition, "number", null));
         formDefinition.addComponent(new TextInputComponent("name", formDefinition, "name", null));
         formDefinition.addComponent(new TextInputComponent("dateFrom", formDefinition, "dateFrom", null));
@@ -636,48 +601,49 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         DataDefinition gridDataDefinition = dataDefinitionService.get("plugins", "plugin");
 
         WindowComponent windowDefinition = new WindowComponent("mainWindow", gridDataDefinition, "plugins.pluginGridView");
-        windowDefinition.addOption("backButton", "false");
+        windowDefinition.addRawOption(new ComponentOption("backButton", ImmutableMap.of("value", "false")));
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("plugins", "plugins.pluginGridView");
         viewDefinition.setRoot(windowDefinition);
 
         GridComponent grid = new GridComponent("pluginsGrid", windowDefinition, null, null);
-        grid.setHeader(false);
-        grid.setCorrespondingViewName("plugins.pluginDetailsView");
-        grid.addOption("paging", "true");
-        grid.addOption("sortable", "true");
-        grid.addOption("filter", "true");
-        grid.addOption("multiselect", "false");
-        grid.addOption("height", "450");
-        grid.addOption("canDelete", "false");
-        grid.addOption("canNew", "false");
-
-        ColumnDefinition columnName = createColumnDefinition("name", gridDataDefinition.getField("name"), null);
-        ColumnDefinition columnDescription = createColumnDefinition("description", gridDataDefinition.getField("description"),
-                null);
-        ColumnDefinition columnVersion = createColumnDefinition("version", gridDataDefinition.getField("version"), null);
-        ColumnDefinition columnVendor = createColumnDefinition("vendor", gridDataDefinition.getField("vendor"), null);
-        ColumnDefinition columnStatus = createColumnDefinition("status", gridDataDefinition.getField("status"), null);
-
-        grid.addColumn(columnStatus);
-        grid.addColumn(columnName);
-        grid.addColumn(columnVersion);
-        grid.addColumn(columnVendor);
-        grid.addColumn(columnDescription);
+        grid.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
+        grid.addRawOption(new ComponentOption("correspondingView", ImmutableMap.of("value", "plugins.pluginDetailsView")));
+        grid.addRawOption(new ComponentOption("paging", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("sortable", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("filter", ImmutableMap.of("value", "true")));
+        grid.addRawOption(new ComponentOption("multiselect", ImmutableMap.of("value", "false")));
+        grid.addRawOption(new ComponentOption("height", ImmutableMap.of("value", "450")));
+        grid.addRawOption(new ComponentOption("canDelete", ImmutableMap.of("value", "false")));
+        grid.addRawOption(new ComponentOption("canNew", ImmutableMap.of("value", "false")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "name", "value", "name")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "description", "value", "description")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "version", "value", "version")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "vendor", "value", "vendor")));
+        grid.addRawOption(new ComponentOption("column", ImmutableMap.of("name", "status", "value", "status")));
 
         windowDefinition.addComponent(grid);
 
-        windowDefinition.addComponent(new LinkButtonComponent("downloadButton", windowDefinition, "../download.html"));
-        windowDefinition.addComponent(new LinkButtonComponent("removeButton", windowDefinition, "../remove.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("enableButton", windowDefinition, "../enable.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("disableButton", windowDefinition, "../disable.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("deinstallButton", windowDefinition, "../deinstall.html",
-                "#{mainWindow.pluginsGrid}"));
-        windowDefinition.addComponent(new LinkButtonComponent("updateButton", windowDefinition, "../update.html",
-                "#{mainWindow.pluginsGrid}"));
+        LinkButtonComponent link1 = new LinkButtonComponent("downloadButton", windowDefinition, null, "#{mainWindow.pluginsGrid}");
+        link1.addRawOption(new ComponentOption("url", ImmutableMap.of("value", "../download.html")));
+        LinkButtonComponent link2 = new LinkButtonComponent("removeButton", windowDefinition, null, "#{mainWindow.pluginsGrid}");
+        link1.addRawOption(new ComponentOption("url", ImmutableMap.of("value", "../remove.html")));
+        LinkButtonComponent link3 = new LinkButtonComponent("enableButton", windowDefinition, null, "#{mainWindow.pluginsGrid}");
+        link1.addRawOption(new ComponentOption("url", ImmutableMap.of("value", "../enable.html")));
+        LinkButtonComponent link4 = new LinkButtonComponent("disableButton", windowDefinition, null, "#{mainWindow.pluginsGrid}");
+        link1.addRawOption(new ComponentOption("url", ImmutableMap.of("value", "../disable.html")));
+        LinkButtonComponent link5 = new LinkButtonComponent("deinstallButton", windowDefinition, null,
+                "#{mainWindow.pluginsGrid}");
+        link1.addRawOption(new ComponentOption("url", ImmutableMap.of("value", "../deinstall.html")));
+        LinkButtonComponent link6 = new LinkButtonComponent("updateButton", windowDefinition, null, "#{mainWindow.pluginsGrid}");
+        link1.addRawOption(new ComponentOption("url", ImmutableMap.of("value", "../update.html")));
+
+        windowDefinition.addComponent(link1);
+        windowDefinition.addComponent(link2);
+        windowDefinition.addComponent(link3);
+        windowDefinition.addComponent(link4);
+        windowDefinition.addComponent(link5);
+        windowDefinition.addComponent(link6);
 
         windowDefinition.initialize();
 
@@ -694,7 +660,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         viewDefinition.setRoot(windowDefinition);
 
         FormComponent formDefinition = new FormComponent("pluginDetailsForm", windowDefinition, null, null);
-        windowDefinition.addOption("header", "false");
+        windowDefinition.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
 
         Component<?> nameField = new TextInputComponent("name", formDefinition, "name", null);
         ((AbstractComponent<?>) nameField).setDefaultEnabled(false);
@@ -725,13 +691,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         windowDefinition.initialize();
 
         return viewDefinition;
-    }
-
-    private ColumnDefinition createColumnDefinition(final String name, final FieldDefinition field, final String expression) {
-        ColumnDefinition columnDefinition = new ColumnDefinition(name);
-        columnDefinition.setFields(Arrays.asList(new FieldDefinition[] { field }));
-        columnDefinition.setExpression(expression);
-        return columnDefinition;
     }
 
     @Override

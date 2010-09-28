@@ -39,11 +39,6 @@ public final class EntityComboBox extends AbstractComponent<EntityComboBoxValue>
     }
 
     @Override
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-
-    }
-
-    @Override
     public ViewValue<EntityComboBoxValue> castComponentValue(final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         JSONObject valueObject = viewObject.getJSONObject("value");
