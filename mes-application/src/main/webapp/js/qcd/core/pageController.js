@@ -1,9 +1,10 @@
 var QCD = QCD || {};
 
-QCD.PageController = function(_viewName) {
+QCD.PageController = function(_viewName, _pluginIdentifier) {
 	
 	var pageComponents;
 	var viewName = _viewName;
+	var pluginIdentifier = _pluginIdentifier;
 	
 	function constructor(_this) {
 		QCDConnector.windowName = viewName;
@@ -26,6 +27,10 @@ QCD.PageController = function(_viewName) {
 	
 	this.getViewName = function() {
 		return viewName;
+	}
+	
+	this.getPluginIdentifier = function() {
+		return pluginIdentifier;
 	}
 	
 	this.getUpdate = function(componentName, value, listeners) {

@@ -10,9 +10,6 @@ public interface ViewDefinitionService {
 
     List<ViewDefinition> list();
 
-    // TODO masz to remove
-    void initViews();
-
     void save(ViewDefinition viewDefinition);
 
     // TODO change expression

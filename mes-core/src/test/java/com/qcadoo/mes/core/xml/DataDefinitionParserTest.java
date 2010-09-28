@@ -31,16 +31,16 @@ import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.DataDefinitionServiceImpl;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
-import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
 import com.qcadoo.mes.core.internal.types.BooleanType;
 import com.qcadoo.mes.core.internal.types.DateTimeType;
 import com.qcadoo.mes.core.internal.types.DateType;
 import com.qcadoo.mes.core.internal.types.DecimalType;
 import com.qcadoo.mes.core.internal.types.DictionaryType;
+import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
 import com.qcadoo.mes.core.internal.types.EnumType;
 import com.qcadoo.mes.core.internal.types.FieldTypeFactoryImpl;
-import com.qcadoo.mes.core.internal.types.LazyHasManyType;
 import com.qcadoo.mes.core.internal.types.IntegerType;
+import com.qcadoo.mes.core.internal.types.LazyHasManyType;
 import com.qcadoo.mes.core.internal.types.PasswordType;
 import com.qcadoo.mes.core.internal.types.PriorityType;
 import com.qcadoo.mes.core.internal.types.StringType;
@@ -300,10 +300,8 @@ public class DataDefinitionParserTest {
     }
 
     private DataDefinition parseAndGetDataDefinition() {
-        // when
         dataDefinitionParser.parse(xml);
-        DataDefinition dataDefinition = dataDefinitionService.get("sample", "simpleDatabaseObject");
-        return dataDefinition;
+        return dataDefinitionService.get("sample", "simpleDatabaseObject");
     }
 
 }

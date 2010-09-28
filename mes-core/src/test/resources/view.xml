@@ -1,93 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <qcd:views plugin="sample" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="grid" model="person">
-		<window name="mainWindow">
-			<grid name="beansAGrid" correspondingView="products.form - todo">
-				<column name="name">
-					<field model="person" field="name" />
-				</column>
-				<options>
-					<paging />
-					<sortable />
-					<filter />
-					<multiselect />
-					<height>450</height>
-				</options>
-			</grid>
-			<options>
-				<backButton>false</backButton>
-			</options>
-		</window>
-	</view>
-	<view name="form" model="person">
-		<window name="mainWindow">
-			<form name="beanAForm">
-				<input name="name" field="name" />
-				<checkbox name="active" field="name" />
-				<select name="selectBeanB" field="beanB" context="" />
-				<select name="selectBeanA" field="beanA"
-					context="#{mainWindow.beanAForm.beanB}.beansA" />
-				<input name="beanM" field="nameM" />
-				<input name="beanB" field="beanB.name" />
-				<input name="beanC" field="beanB.beanC.name" />
-				<grid name="beansCGrig" context="beansC">
-					<column name="name">
-						<field field="name" />
-					</column>
-				</grid>
-			</form>
-			<grid name="beansBGrig" context="#{mainWindow.beanAForm.beansCGrig}.beansB">
-				<column name="name">
-					<field field="name" />
-				</column>
-			</grid>
-			<form name="beanCForm" context="#{mainWindow.beansBGrig}.beanC">
-				<input name="name" field="name" />
-				<form name="formA" field="beanA">
-					<input name="name" field="name" />
-				</form>
-				<grid name="beansBGrig" context="beansB">
-					<column name="name">
-						<field field="name" />
-					</column>
-				</grid>
-				<input name="nameB" context="#{mainWindow.beanCForm.beansBGrig}.name" />
-			</form>
-			<form name="beanBForm" context="#{mainWindow.beansBGrig}">
-				<input name="name" field="name" />
-			</form>
-		</window>
+	<view name="simpleView" model="beanB">
+		<component type="window" name="mainWindow">
+			<component type="form" name="beanBForm">
+				<component type="input" name="name" field="name" />
+				<component type="checkbox" name="active" field="name" enabled="false" visible="false" />
+				<component type="lookup" name="selectBeanA" field="beanA" />
+				<component type="input" name="beanM" field="name" />
+				<component type="input" name="beanB" field="beanA.name" />
+				<component type="grid" name="beansBGrig"
+					source="#{mainWindow.beanBForm.selectBeanA}.beansB">
+					<option type="column" name="name" fields="name" />
+					<option type="correspondingView" value="products/form" />
+				</component>
+				<component type="form" name="beanAForm" field="beanA">
+					<component type="input" name="name" field="name" />
+				</component>
+				<option type="header" value="false" />
+			</component>
+			<component type="grid" name="beansBGrig"
+				source="#{mainWindow.beanBForm.selectBeanA}.beansB">
+				<option type="column" name="multicolumn" aggregation="sum"
+					expression="2 + 2" width="20" fields="name,beanA" />
+				<option type="header" value="true" />
+				<option type="searchable" value="name,beanA" />
+				<option type="orderable" value="name" />
+				<option type="paginable" value="true" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
+				<option type="multiselect" value="true" />
+				<option type="height" value="450" />
+				<option type="correspondingView" value="products/form" />
+			</component>
+			<component type="button" name="link">
+				<option type="url" value="download.html" />
+			</component>
+			<option type="backButton" value="false" />
+		</component>
 		<onView bean="com.qcadoo.mes.beans.sample.CustomEntityService"
 			method="onView" />
 	</view>
-	<view name="viewName" forEntity="simpleDatabaseObject">
-		<window name="window">
-			<form name="form" field="" context="">
-
-				<options>
-					<header />
-				</options>
-			</form>
-			<button url="" context="" />
-			<grid name="" field="" context="">
-				<column name="" aggregation="sum" expression="" width="">
-					<field plugin="" model="" field="" />
-				</column>
-				<searchableFields>
-					<field plugin="" model="" field="" />
-				</searchableFields>
-				<orderableFields>
-					<field plugin="" model="" field="" />
-				</orderableFields>
-				<options>
-					<header />
-					<correspondingViewName />
-				</options>
-			</grid>
-			<options>
-				<backButton />
-				<header />
-			</options>
-		</window>
+	<view name="simpleView2" model="beanA">
+		<component type="window" name="mainWindow" />
 	</view>
 </qcd:views>

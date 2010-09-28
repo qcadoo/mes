@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="productGridView" model="product">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="productsGrid">
+				<option type="column" name="number" fields="number" />
+				<option type="column" name="name" fields="name" />
+				<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
+				<option type="column" name="ean" fields="ean" />
+				<option type="header" value="false" />
+				<option type="correspondingView" value="products/productDetailsView" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,number,typeOfMaterial,ean" />
+				<option type="orderable" value="name,number,typeOfMaterial,ean" />
+				<option type="multiselect" value="true" />
+				<option type="height" value="450" />
+			</component>
+			<option type="backButton" value="false" />
+		</component>
+	</view>
+	<view name="productDetailsView" model="product">
+		<component type="window" name="mainWindow">
+			<component type="form" name="productDetailsForm">
+				<component type="input" name="name" field="name" />
+				<component type="input" name="number" field="number" />
+				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
+				<component type="input" name="ean" field="ean" />
+				<component type="select" name="category" field="category" />
+				<component type="input" name="unit" field="unit" />
+				<option type="header" value="false" />
+			</component>
+			<component type="grid" name="substitutesGrid" source="substitutes">
+				<option type="column" name="number" fields="number" />
+				<option type="column" name="name" fields="name" />
+				<option type="column" name="priority" fields="priority" />
+				<option type="correspondingView" value="products/substituteDetailsView" />
+				<option type="paginable" value="false" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="150" />
+			</component>
+			<component type="grid" name="substitutesComponentGrid" source="#{mainWindow.substitutesGrid}.components">
+				<option type="column" name="number" fields="product" expression="#product['number']" />
+				<option type="column" name="name" fields="product" expression="#product['name']" />
+				<option type="column" name="quantity" fields="quantity" />
+				<option type="correspondingView" value="products/substituteComponentDetailsView" />
+				<option type="paginable" value="false" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="150" />
+			</component>
+		</component>
+	</view>
+		<view name="substituteDetailsView" model="substitute">
+		<component type="window" name="mainWindow">
+			<component type="form" name="substitutesDetailsForm">
+				<component type="input" name="number" field="number" />
+				<component type="input" name="name" field="name" />
+				<component type="input" name="priority" field="priority"
+					enabled="false" />
+				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom" />
+				<component type="input" name="effectiveDateTo" field="effectiveDateTo" />
+				<option type="header" value="false" />
+			</component>
+		</component>
+	</view>
+	<view name="substituteComponentDetailsView" model="substituteComponent">
+		<component type="window" name="mainWindow">
+			<component type="form" name="instructionDetailsView">
+				<component type="lookup" name="product" field="product" />
+				<component type="input" name="quantity" field="quantity" />
+				<option type="header" value="false" />
+			</component>
+		</component>
+	</view>
+	<view name="instructionGridView" model="instruction">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="instructionsGrid">
+				<option type="column" name="number" fields="number" />
+				<option type="column" name="name" fields="name" />
+				<option type="column" name="product" fields="product"
+					expression="#product['name']" />
+				<option type="header" value="false" />
+				<option type="correspondingView" value="products/instructionDetailsView" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,number,product" />
+				<option type="orderable" value="name,number" />
+				<option type="multiselect" value="true" />
+				<option type="height" value="450" />
+			</component>
+			<option type="backButton" value="false" />
+		</component>
+	</view>
+	<view name="instructionDetailsView" model="instruction">
+		<component type="window" name="mainWindow">
+			<component type="form" name="instructionDetailsForm">
+				<component type="checkbox" name="master" field="master" />
+				<component type="input" name="number" field="number" />
+				<component type="input" name="name" field="name" />
+				<component type="lookup" name="product" field="product" />
+				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
+				<component type="input" name="dateFrom" field="dateFrom" />
+				<component type="input" name="dateTo" field="dateTo" />
+				<component type="input" name="description" field="description" />
+				<option type="header" value="false" />
+			</component>
+		</component>
+	</view>
+	<view name="orderGridView" model="order">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="ordersGrid">
+				<option type="column" name="number" fields="number" />
+				<option type="column" name="name" fields="name" />
+				<option type="column" name="state" fields="state" />
+				<option type="header" value="false" />
+				<option type="correspondingView" value="products/orderDetailsView" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,number,state" />
+				<option type="orderable" value="name,number" />
+				<option type="multiselect" value="true" />
+				<option type="height" value="450" />
+			</component>
+			<option type="backButton" value="false" />
+		</component>
+	</view>
+	<view name="orderDetailsView" model="order">
+		<component type="window" name="mainWindow">
+			<component type="form" name="orderDetailsForm">
+				<component type="input" name="number" field="number" />
+				<component type="input" name="name" field="name" />
+				<component type="input" name="dateFrom" field="dateFrom" />
+				<component type="input" name="dateTo" field="dateTo" />
+				<component type="select" name="state" field="state" />
+				<component type="select" name="machine" field="machine" />
+				<component type="lookup" name="product" field="product" />
+				<component type="input" name="defaultInstruction" field="defaultInstruction" enabled="false" />
+				<component type="lookup" name="instruction" field="instruction" source="#{mainWindow.orderDetailsForm.product}.instructions" />
+				<component type="input" name="plannedQuantity" field="plannedQuantity" />
+				<component type="input" name="doneQuantity" field="doneQuantity" />
+				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom" enabled="false" />
+				<component type="input" name="effectiveDateTo" field="effectiveDateTo" enabled="false" />
+				<component type="input" name="startWorker" field="startWorker" enabled="false" />
+				<component type="input" name="endWorker" field="endWorker" enabled="false" />
+				<option type="header" value="false" />
+			</component>
+		</component>
+		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad"/>
+	</view>
+</qcd:views>

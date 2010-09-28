@@ -5,6 +5,8 @@ import static org.springframework.util.StringUtils.hasText;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -25,12 +27,13 @@ import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.validation.ValidatorFactory;
 import com.qcadoo.mes.core.view.AbstractComponent;
+import com.qcadoo.mes.core.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.view.Component;
+import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.RootComponent;
+import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.containers.FormComponent;
 import com.qcadoo.mes.core.view.containers.WindowComponent;
 import com.qcadoo.mes.core.view.elements.CheckBoxComponent;
@@ -52,18 +55,11 @@ public final class ViewDefinitionParser {
     private ViewDefinitionService viewDefinitionService;
 
     @Autowired
-    private FieldTypeFactory fieldTypeFactory;
-
-    @Autowired
     private HookFactory hookFactory;
-
-    @Autowired
-    private ValidatorFactory validatorFactory;
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    // @PostConstruct
     public void init() {
         LOG.info("Reading view definitions ...");
 
@@ -75,8 +71,6 @@ public final class ViewDefinitionParser {
         } catch (IOException e) {
             LOG.error("Cannot read view definition", e);
         }
-
-        viewDefinitionService.initViews();
     }
 
     public void parse(final InputStream dataDefinitionInputStream) {
@@ -108,45 +102,47 @@ public final class ViewDefinitionParser {
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(pluginIdentifier, viewName);
 
-        DataDefinition dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "forEntity"));
+        DataDefinition dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
 
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, "window")) {
-                viewDefinition.setRoot(getRootComponentDefinition(reader, viewName, dataDefinition));
+            if (isTagStarted(reader, "component")) {
+                viewDefinition.setRoot(getRootComponentDefinition(reader, viewDefinition, dataDefinition));
             } else if (isTagStarted(reader, "onView")) {
                 viewDefinition.setViewHook(getHookDefinition(reader));
+            } else if (isTagEnded(reader, "view")) {
+                break;
             }
         }
+
+        viewDefinition.getRoot().initialize();
 
         viewDefinitionService.save(viewDefinition);
     }
 
-    private RootComponent getRootComponentDefinition(final XMLStreamReader reader, final String viewName,
+    private RootComponent getRootComponentDefinition(final XMLStreamReader reader, final ViewDefinition viewDefinition,
             final DataDefinition dataDefinition) throws XMLStreamException {
-        String componentType = reader.getLocalName();
+        String componentType = getStringAttribute(reader, "type");
         String componentName = getStringAttribute(reader, "name");
 
         RootComponent component = null;
 
         if ("window".equals(componentType)) {
-            component = new WindowComponent(componentName, dataDefinition, viewName);
+            component = new WindowComponent(componentName, dataDefinition, viewDefinition);
         } else {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        addChildComponents(reader, component);
-
-        addComponentOptions(reader, component);
+        addChildrenComponentsAndOptions(reader, componentType, (AbstractComponent<?>) component);
 
         return component;
     }
 
     private Component<?> getComponentDefinition(final XMLStreamReader reader, final ContainerComponent<?> parentComponent)
             throws XMLStreamException {
-        String componentType = reader.getLocalName();
+        String componentType = getStringAttribute(reader, "type");
         String componentName = getStringAttribute(reader, "name");
         String fieldName = getStringAttribute(reader, "field");
-        String dataSource = getStringAttribute(reader, "dataSource");
+        String dataSource = getStringAttribute(reader, "source");
 
         Component<?> component = null;
 
@@ -168,49 +164,37 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        if (component instanceof ContainerComponent<?>) {
-            addChildComponents(reader, (ContainerComponent<?>) component);
-        }
-
-        addComponentOptions(reader, component);
+        addChildrenComponentsAndOptions(reader, componentType, (AbstractComponent<?>) component);
 
         return component;
     }
 
-    private void addComponentOptions(final XMLStreamReader reader, final Component<?> component) throws XMLStreamException {
-        ((AbstractComponent<?>) component).setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
-        ((AbstractComponent<?>) component).setDefaultVisible(getBooleanAttribute(reader, "visible", true));
+    private void addChildrenComponentsAndOptions(final XMLStreamReader reader, final String tagName,
+            final AbstractComponent<?> component) throws XMLStreamException {
+        component.setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
+        component.setDefaultVisible(getBooleanAttribute(reader, "visible", true));
 
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagEnded(reader, "options")) {
+            if (isTagStarted(reader, "option")) {
+                component.addRawOption(getOption(reader));
+            } else if (isTagStarted(reader, "component")) {
+                if (component instanceof AbstractContainerComponent) {
+                    ((AbstractContainerComponent<?>) component).addComponent(getComponentDefinition(reader,
+                            (AbstractContainerComponent<?>) component));
+                }
+            } else if (isTagEnded(reader, "component")) {
                 break;
-                // } else if (isTagStarted(reader, "validatesPresence")) {
-                // fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.required()));
             }
         }
     }
 
-    private void addChildComponents(final XMLStreamReader reader, final ContainerComponent<?> component)
-            throws XMLStreamException {
-        while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, "options")) {
-                break;
-            } else if (isTagStarted(reader, "input")) {
-                component.addComponent(getComponentDefinition(reader, component));
-            } else if (isTagStarted(reader, "grid")) {
-                component.addComponent(getComponentDefinition(reader, component));
-            } else if (isTagStarted(reader, "form")) {
-                component.addComponent(getComponentDefinition(reader, component));
-            } else if (isTagStarted(reader, "checkbox")) {
-                component.addComponent(getComponentDefinition(reader, component));
-            } else if (isTagStarted(reader, "select")) {
-                component.addComponent(getComponentDefinition(reader, component));
-            } else if (isTagStarted(reader, "lookup")) {
-                component.addComponent(getComponentDefinition(reader, component));
-            } else if (isTagStarted(reader, "button")) {
-                component.addComponent(getComponentDefinition(reader, component));
-            }
+    private ComponentOption getOption(final XMLStreamReader reader) throws XMLStreamException {
+        Map<String, String> attributes = new HashMap<String, String>();
+        for (int i = 0; i < reader.getAttributeCount(); i++) {
+            attributes.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
         }
+
+        return new ComponentOption(getStringAttribute(reader, "type"), attributes);
     }
 
     private HookDefinition getHookDefinition(final XMLStreamReader reader) {

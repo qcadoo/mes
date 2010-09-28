@@ -1,5 +1,6 @@
 package com.qcadoo.mes.core.view.elements.grid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -26,9 +27,9 @@ import com.qcadoo.mes.core.utils.ExpressionUtil;
  */
 public final class ColumnDefinition {
 
-    private String name;
+    private final String name;
 
-    private List<FieldDefinition> fields;
+    private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
 
     private ColumnAggregationMode aggregationMode;
 
@@ -44,16 +45,12 @@ public final class ColumnDefinition {
         return name;
     }
 
-    public void setName(final String name) {
-        this.name = name;
-    }
-
     public List<FieldDefinition> getFields() {
         return fields;
     }
 
-    public void setFields(final List<FieldDefinition> fields) {
-        this.fields = fields;
+    public void addField(final FieldDefinition field) {
+        this.fields.add(field);
     }
 
     public ColumnAggregationMode getAggregationMode() {

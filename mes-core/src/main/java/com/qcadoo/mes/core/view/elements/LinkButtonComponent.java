@@ -1,5 +1,7 @@
 package com.qcadoo.mes.core.view.elements;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -8,20 +10,17 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.view.AbstractComponent;
+import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
 
 public final class LinkButtonComponent extends AbstractComponent<String> {
 
-    private String pageUrl;
+    private String url;
 
     public LinkButtonComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
-        super(name, parentContainer, null, sourceFieldPath);
-    }
-
-    public LinkButtonComponent(final String name, final ContainerComponent<?> parentContainer, final String pageUrl) {
-        this(name, parentContainer, pageUrl, null);
+        super(name, parentContainer, fieldPath, sourceFieldPath);
     }
 
     @Override
@@ -30,15 +29,15 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
     }
 
     @Override
-    public void addComponentOption(final String name, final String value) {
-        if ("url".equals(name)) {
-            pageUrl = value;
+    public void initializeComponent() {
+        for (ComponentOption option : getRawOptions()) {
+            if ("url".equals(option.getType())) {
+                url = option.getValue();
+                addOption("url", url);
+            }
         }
-    }
 
-    @Override
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-        viewOptions.put("pageUrl", pageUrl);
+        checkNotNull(url, "Url must be given");
     }
 
     @Override
@@ -51,16 +50,9 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
     public ViewValue<String> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
         if (entity != null) {
-            return new ViewValue<String>(pageUrl + "?entityId=" + entity.getId());
+            return new ViewValue<String>(url + "?entityId=" + entity.getId());
         }
-        return new ViewValue<String>(pageUrl);
+        return new ViewValue<String>(url);
     }
 
-    public String getPageUrl() {
-        return pageUrl;
-    }
-
-    public void setPageUrl(final String pageUrl) {
-        this.pageUrl = pageUrl;
-    }
 }

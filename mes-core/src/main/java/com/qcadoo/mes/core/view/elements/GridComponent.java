@@ -23,8 +23,10 @@ import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.AbstractComponent;
+import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
+import com.qcadoo.mes.core.view.elements.grid.ColumnAggregationMode;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
 
@@ -47,9 +49,17 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
     private final List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 
-    private String correspondingViewName;
+    private String correspondingView;
 
     private boolean header = true;
+
+    private boolean multiselect = false;
+
+    private boolean paginable = false;
+
+    private boolean deletable = true;
+
+    private boolean creatable = true;
 
     public GridComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath) {
@@ -61,43 +71,73 @@ public final class GridComponent extends AbstractComponent<ListData> {
         return "grid";
     }
 
-    public Set<FieldDefinition> getSearchableFields() {
-        return searchableFields;
-    }
-
-    public void addSearchableField(final FieldDefinition searchableField) {
-        this.searchableFields.add(searchableField);
-    }
-
-    public Set<FieldDefinition> getOrderableFields() {
-        return orderableFields;
-    }
-
-    public void addOrderableField(final FieldDefinition orderableField) {
-        this.orderableFields.add(orderableField);
-    }
-
     public List<ColumnDefinition> getColumns() {
         return columns;
     }
 
-    public void addColumn(final ColumnDefinition column) {
-        this.columns.add(column);
-    }
-
-    public String getCorrespondingViewName() {
-        return correspondingViewName;
-    }
-
-    public void setCorrespondingViewName(final String correspondingViewName) {
-        this.correspondingViewName = correspondingViewName;
-    }
-
     @Override
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-        viewOptions.put("correspondingViewName", correspondingViewName);
-        viewOptions.put("columns", getColumnsForOptions());
-        viewOptions.put("fields", getFieldsForOptions(getDataDefinition().getFields()));
+    public void initializeComponent() {
+        for (ComponentOption option : getRawOptions()) {
+            if ("header".equals(option.getType())) {
+                header = Boolean.parseBoolean(option.getValue());
+            } else if ("correspondingView".equals(option.getType())) {
+                correspondingView = option.getValue();
+            } else if ("paginable".equals(option.getType())) {
+                paginable = Boolean.parseBoolean(option.getValue());
+            } else if ("multiselect".equals(option.getType())) {
+                multiselect = Boolean.parseBoolean(option.getValue());
+            } else if ("creatable".equals(option.getType())) {
+                creatable = Boolean.parseBoolean(option.getValue());
+            } else if ("deletable".equals(option.getType())) {
+                deletable = Boolean.parseBoolean(option.getValue());
+            } else if ("height".equals(option.getType())) {
+                addOption("height", Integer.parseInt(option.getValue()));
+            } else if ("searchable".equals(option.getType())) {
+                for (FieldDefinition field : getFields(option.getValue())) {
+                    searchableFields.add(field);
+                }
+            } else if ("orderable".equals(option.getType())) {
+                for (FieldDefinition field : getFields(option.getValue())) {
+                    orderableFields.add(field);
+                }
+            } else if ("column".equals(option.getType())) {
+                ColumnDefinition columnDefinition = new ColumnDefinition(option.getAtrributeValue("name"));
+                for (FieldDefinition field : getFields(option.getAtrributeValue("fields"))) {
+                    columnDefinition.addField(field);
+                }
+                columnDefinition.setExpression(option.getAtrributeValue("expression"));
+                String width = option.getAtrributeValue("width");
+                if (width != null) {
+                    columnDefinition.setWidth(Integer.valueOf(width));
+                }
+                if ("sum".equals(option.getAtrributeValue("aggregation"))) {
+                    columnDefinition.setAggregationMode(ColumnAggregationMode.SUM);
+                } else {
+                    columnDefinition.setAggregationMode(ColumnAggregationMode.NONE);
+                }
+                columns.add(columnDefinition);
+            }
+        }
+
+        addOption("multiselect", multiselect);
+        addOption("correspondingViewName", correspondingView);
+        addOption("paginable", paginable);
+        addOption("header", header);
+        addOption("columns", getColumnsForOptions());
+        addOption("fields", getFieldsForOptions(getDataDefinition().getFields()));
+        addOption("sortable", !orderableFields.isEmpty());
+        addOption("filter", !searchableFields.isEmpty());
+        addOption("canDelete", deletable);
+        addOption("canNew", creatable);
+
+    }
+
+    private Set<FieldDefinition> getFields(final String fields) {
+        Set<FieldDefinition> set = new HashSet<FieldDefinition>();
+        for (String field : fields.split("\\s*,\\s*")) {
+            set.add(getDataDefinition().getField(field));
+        }
+        return set;
     }
 
     @Override
@@ -154,12 +194,14 @@ public final class GridComponent extends AbstractComponent<ListData> {
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         if (header) {
-            String messageCode = getViewName() + "." + getPath() + ".header";
+            String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".header";
             translationsMap.put(messageCode, translationService.translate(messageCode, locale));
         }
         for (ColumnDefinition column : columns) {
             List<String> messageCodes = new LinkedList<String>();
-            messageCodes.add(getViewName() + "." + getPath() + ".column." + column.getName());
+            messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                    + ".column." + column.getName());
             messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), column.getName()));
             translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
         }
@@ -202,14 +244,6 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
         int totalNumberOfEntities = rs.getTotalNumberOfEntities();
         return new ListData(totalNumberOfEntities, gridEntities);
-    }
-
-    public boolean isHeader() {
-        return header;
-    }
-
-    public void setHeader(final boolean header) {
-        this.header = header;
     }
 
 }

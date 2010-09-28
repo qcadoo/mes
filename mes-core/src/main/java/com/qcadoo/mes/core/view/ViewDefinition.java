@@ -4,10 +4,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
 
-public interface ViewDefinition extends CastableComponent<Object> {
+public interface ViewDefinition {
 
     String getName();
 
@@ -22,4 +25,6 @@ public interface ViewDefinition extends CastableComponent<Object> {
 
     void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale);
+
+    ViewValue<Object> castValue(Map<String, Entity> selectedEntities, JSONObject viewObject) throws JSONException;
 }

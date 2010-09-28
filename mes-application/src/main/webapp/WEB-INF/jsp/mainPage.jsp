@@ -48,15 +48,15 @@
 		<tr id="headerRow">
 			<td id="headerDiv">
 				<div id="leftPanel">
-					<img id="logoImage" src="css/images/logo_small.png"></img>
-					<img id="loadingIndicator" src="css/images/loading.gif"></img>
+					<img id="logoImage" src="css/images/logo_small.png" />
+					<img id="loadingIndicator" src="css/images/loading.gif" />
 				</div>
 				<div id="rightPanel">
 					<!--<button onclick="windowController.goBack()">back</button>-->
 					<div id="navigationDiv">
 						<select id="viewsSelect">
 							<c:forEach items="${viewsList}" var="view">
-								<option>${view.name }</option>
+								<option>${view.pluginIdentifier}/${view.name}</option>
 							</c:forEach>
 						</select>
 						<button onclick="windowController.goToSelectedPage()">${commonTranslations["commons.button.go"] }</button>

@@ -10,13 +10,14 @@
 <tiles:useAttribute name="componentFullName"/>
 <tiles:useAttribute name="componentFullNameWithDots"/>
 <tiles:useAttribute name="viewName" ignore="true"/>
+<tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
 <div class="component component_element component_element_dynamicComboBox" id="${componentFullName}">
 	<div class="element_options" style="display: none">
 		${component.optionsAsJson}
 	</div>
 	
-	<c:set var="headerLabel" value="${viewName}.${componentFullNameWithDots}.label"/>
+	<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
 	${translationsMap[headerLabel]}
 	
 	<select id="${componentFullName}_select">

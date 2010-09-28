@@ -13,6 +13,7 @@ import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.view.Component;
+import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.SaveableComponent;
 import com.qcadoo.mes.core.view.ViewValue;
@@ -32,10 +33,14 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public void addComponentOption(final String name, final String value) {
-        if ("header".equals(name)) {
-            header = Boolean.parseBoolean(value);
+    public void initializeComponent() {
+        for (ComponentOption option : getRawOptions()) {
+            if ("header".equals(option.getType())) {
+                header = Boolean.parseBoolean(option.getValue());
+            }
         }
+
+        addOption("header", header);
     }
 
     @Override
@@ -64,11 +69,6 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
                 viewValue.addErrorMessage(validationError.getMessage()); // TODO
             }
         }
-    }
-
-    @Override
-    public void getComponentOptions(final Map<String, Object> viewOptions) {
-        viewOptions.put("header", header);
     }
 
     @SuppressWarnings("unchecked")
@@ -126,13 +126,10 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
             final Locale locale) {
         if (header) {
-            String messageCode = getViewName() + "." + getPath() + ".header";
+            String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".header";
             translationsMap.put(messageCode, translationService.translate(messageCode, locale));
         }
-    }
-
-    public boolean isHeader() {
-        return header;
     }
 
 }

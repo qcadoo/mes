@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
-import com.qcadoo.mes.core.api.ViewDefinitionService;
 import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
@@ -52,9 +51,6 @@ public final class DataDefinitionParser {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ViewDefinitionService viewDefinitionService;
-
-    @Autowired
     private DataAccessService dataAccessService;
 
     @Autowired
@@ -69,6 +65,9 @@ public final class DataDefinitionParser {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private ViewDefinitionParser viewDefinitionParser;
+
     @PostConstruct
     public void init() {
         LOG.info("Reading model definitions ...");
@@ -82,7 +81,7 @@ public final class DataDefinitionParser {
             LOG.error("Cannot read data definition", e);
         }
 
-        viewDefinitionService.initViews();
+        viewDefinitionParser.init();
     }
 
     public void parse(final InputStream dataDefinitionInputStream) {
