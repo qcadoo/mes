@@ -28,7 +28,7 @@ import com.qcadoo.mes.plugins.exception.PluginException;
 import com.qcadoo.mes.plugins.util.PluginUtil;
 
 @Controller
-public class PluginManagementController {
+public final class PluginManagementController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementController.class);
 
@@ -113,7 +113,7 @@ public class PluginManagementController {
                 LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } finally {
-                if (deleteFile == true && pluginFile != null && pluginFile.exists()) {
+                if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     pluginFile.delete();
                     LOG.debug("Plugin file delete");
                 }
@@ -308,7 +308,7 @@ public class PluginManagementController {
                 LOG.error("Problem with moving/removing plugin file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad usuwania/przenoszenia pliku";
             } finally {
-                if (deleteFile == true && pluginFile != null && pluginFile.exists()) {
+                if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     pluginFile.delete();
                     LOG.debug("Plugin file delete");
                 }
@@ -321,7 +321,6 @@ public class PluginManagementController {
     }
 
     private void removePlugin(final String entityId, final String path) throws PluginException {
-
         PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
 
         databasePlugin.setDeleted(true);

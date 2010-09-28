@@ -36,8 +36,7 @@ public final class PluginUtil {
     private PluginUtil() {
     }
 
-    public static File transferFileToTmp(final MultipartFile file, final String tmpPath) throws IllegalStateException,
-            IOException {
+    public static File transferFileToTmp(final MultipartFile file, final String tmpPath) throws IOException {
         LOG.debug("Transfering file: " + file.getOriginalFilename() + " to tmp");
         File tmpDir = new File(tmpPath);
         if (!tmpDir.exists()) {
@@ -55,12 +54,12 @@ public final class PluginUtil {
         File f = new File(fileName);
 
         // Make sure the file or directory exists and isn't write protected
-        if (!f.exists())
+        if (!f.exists()) {
             throw new PluginException("Delete: no such file or directory: " + fileName);
-
-        if (!f.canWrite())
+        }
+        if (!f.canWrite()) {
             throw new PluginException("Delete: write protected: " + fileName);
-
+        }
         // If it is a directory, make sure it is empty
         if (f.isDirectory()) {
             throw new PluginException("Delete: this is a directory: " + fileName);
@@ -68,9 +67,9 @@ public final class PluginUtil {
 
         // Attempt to delete it
         boolean success = f.delete();
-        if (!success)
+        if (!success) {
             throw new PluginException("Delete: deletion failed");
-
+        }
     }
 
     public static void movePluginFile(final String filePath, final String dirPath) throws PluginException {
@@ -81,8 +80,9 @@ public final class PluginUtil {
         File dir = new File(dirPath);
         // Move file to new directory
         boolean success = file.renameTo(new File(dir, file.getName()));
-        if (!success)
+        if (!success) {
             throw new PluginException("Move: move failed");
+        }
     }
 
     public static PluginsPlugin readDescriptor(final File file) throws IOException, ParserConfigurationException, SAXException {
@@ -124,7 +124,6 @@ public final class PluginUtil {
                     break;
                 case DESCRIPTION:
                     plugin.setDescription(value);
-                    break;
             }
 
         }
