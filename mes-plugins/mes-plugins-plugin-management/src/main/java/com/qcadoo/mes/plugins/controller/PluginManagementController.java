@@ -46,8 +46,9 @@ public class PluginManagementController {
 
     @PostConstruct
     public void init() {
+        // TOMCAT
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
-        webappPath = webappPath + "/";
+        // JETTY webappPath = webappPath + "/";
         LOG.debug(webappPath);
     }
 
@@ -70,19 +71,20 @@ public class PluginManagementController {
     public String handleDownload(@RequestParam("file") final MultipartFile file) {
         if (!file.isEmpty()) {
             File pluginFile = null;
+            boolean deleteFile = false;
             try {
                 pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
                 PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
                 PluginsPlugin pluginWithIdentifier = pluginManagementService.getPluginByIdentifier(plugin.getIdentifier());
                 if (pluginWithIdentifier != null) {
-                    pluginFile.delete();
+                    deleteFile = true;
                     LOG.error("Plugin with identifier existed");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Istnieje plugin z podanym identyfikatorem";
                 }
                 PluginsPlugin databasePlugin = pluginManagementService.getPluginByNameAndVendor(plugin.getName(),
                         plugin.getVendor());
                 if (databasePlugin != null) {
-                    pluginFile.delete();
+                    deleteFile = true;
                     LOG.error("Plugin was installed");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest zainstalowany";
                 } else {
@@ -95,19 +97,23 @@ public class PluginManagementController {
                     return "redirect:page/plugins.pluginGridView.html?iframe=true";
                 }
             } catch (IllegalStateException e) {
+                deleteFile = true;
                 LOG.error("Problem with installing file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (IOException e) {
+                deleteFile = true;
                 LOG.error("Problem with installing file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (ParserConfigurationException e) {
+                deleteFile = true;
                 LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } catch (SAXException e) {
+                deleteFile = true;
                 LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } finally {
-                if (pluginFile != null && pluginFile.exists()) {
+                if (deleteFile == true && pluginFile != null && pluginFile.exists()) {
                     pluginFile.delete();
                     LOG.debug("Plugin file delete");
                 }
@@ -127,6 +133,7 @@ public class PluginManagementController {
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.GET)
+    @Transactional
     public String getRemovePageView(@RequestParam("entityId") final String entityId) {
         PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
         if (databasePlugin.isBase()) {
@@ -181,10 +188,12 @@ public class PluginManagementController {
     public String handleRestart() {
         try {
             PluginUtil.restartServer(webappPath);
+
         } catch (PluginException e) {
             LOG.error("Problem with restart server");
             return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad restartu serwera";
         }
+
         return "ok";
     }
 
@@ -209,6 +218,7 @@ public class PluginManagementController {
     }
 
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
+    @Transactional
     public String handleDeinstall(@RequestParam("entityId") final String entityId) {
         PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
         if (databasePlugin.isBase()) {
@@ -238,29 +248,31 @@ public class PluginManagementController {
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
+    @Transactional
     public String handleUpdate(@RequestParam("file") final MultipartFile file) {
         if (!file.isEmpty()) {
             File pluginFile = null;
+            boolean deleteFile = false;
             try {
                 pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
                 PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
                 PluginsPlugin databasePlugin = pluginManagementService.getPluginByNameAndVendor(plugin.getName(),
                         plugin.getVendor());
                 if (databasePlugin == null) {
-                    pluginFile.delete();
+                    deleteFile = true;
                     LOG.error("Plugin not found in database");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Brak pluginu";
                 } else if (databasePlugin.isBase()) {
-                    pluginFile.delete();
+                    deleteFile = true;
                     LOG.error("Plugin is base");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest bazowy";
                 } else if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
-                    pluginFile.delete();
-                    LOG.info("Plugin hasn't apropriate status");
+                    deleteFile = true;
+                    LOG.error("Plugin hasn't apropriate status");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Niepoprawny status do aktualizacji";
                 } else if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
-                    pluginFile.delete();
-                    LOG.info("Plugin has actual version");
+                    deleteFile = true;
+                    LOG.error("Plugin has actual version");
                     return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Plugin jest aktualny";
                 } else {
                     plugin.setDeleted(false);
@@ -276,22 +288,27 @@ public class PluginManagementController {
                     return "redirect:enablePage.html";
                 }
             } catch (IllegalStateException e) {
+                deleteFile = true;
                 LOG.error("Problem with installing file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (IOException e) {
+                deleteFile = true;
                 LOG.error("Problem with installing file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad instalacji pliku";
             } catch (ParserConfigurationException e) {
+                deleteFile = true;
                 LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } catch (SAXException e) {
+                deleteFile = true;
                 LOG.error("Problem with parsing descriptor");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad odczytu deskryptora";
             } catch (PluginException e) {
+                deleteFile = true;
                 LOG.error("Problem with moving/removing plugin file");
                 return "redirect:page/plugins.pluginGridView.html?iframe=true&message=Blad usuwania/przenoszenia pliku";
             } finally {
-                if (pluginFile != null && pluginFile.exists()) {
+                if (deleteFile == true && pluginFile != null && pluginFile.exists()) {
                     pluginFile.delete();
                     LOG.debug("Plugin file delete");
                 }
@@ -303,7 +320,6 @@ public class PluginManagementController {
 
     }
 
-    @Transactional
     private void removePlugin(final String entityId, final String path) throws PluginException {
 
         PluginsPlugin databasePlugin = pluginManagementService.getPluginById(entityId);
@@ -315,11 +331,13 @@ public class PluginManagementController {
         PluginUtil.removePluginFile(path + databasePlugin.getFileName());
     }
 
-    @Transactional
     private void movePlugin(final PluginsPlugin plugin, final PluginsPlugin databasePlugin) throws PluginException {
         pluginManagementService.savePlugin(databasePlugin);
+
         pluginManagementService.savePlugin(plugin);
-        PluginUtil.removePluginFile(webappPath + tmpPath + databasePlugin.getFileName());
+
+        PluginUtil.removePluginFile(webappPath + libPath + databasePlugin.getFileName());
+
         PluginUtil.movePluginFile(webappPath + tmpPath + plugin.getFileName(), webappPath + libPath);
     }
 
