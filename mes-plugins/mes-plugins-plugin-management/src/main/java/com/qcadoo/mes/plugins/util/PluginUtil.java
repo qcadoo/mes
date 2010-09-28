@@ -23,7 +23,11 @@ import com.qcadoo.mes.plugins.exception.PluginException;
 
 public final class PluginUtil {
 
-    private static final String binPath = "../bin/";
+    private static final String binPath = "bin/";
+
+    private static final String webappsRegex = "webapps/\\S*/";
+
+    private static final int restartInterval = 1000;
 
     private static final String descriptor = "plugin.xml";
 
@@ -129,25 +133,27 @@ public final class PluginUtil {
     }
 
     public static void restartServer(final String webappPath) throws PluginException {
-        String[] commandsStop = { "bash cd " + webappPath, "bash cd " + binPath, "bash shutdown.sh" };
-        String[] commandsStart = { "bash cd " + webappPath, "bash cd " + binPath, "bash startup.sh" };
+        String[] commandsStop = { "./shutdown.sh" };
+        String[] commandsStart = { "./startup.sh" };
+        String commandPath = webappPath.replaceAll(webappsRegex, binPath);
+        LOG.debug("Command path: " + commandPath);
         try {
+            File dir = new File(commandPath);
             Runtime runtime = Runtime.getRuntime();
 
-            Process shutdownProcess = runtime.exec(commandsStop);
-            // TODO KRNA waiting
+            Process shutdownProcess = runtime.exec(commandsStop, null, dir);
             shutdownProcess.waitFor();
             LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
-            Thread.sleep(3000);
-            Process startupProcess = runtime.exec(commandsStart);
-            // TODO KRNA unix exception
+
+            Thread.sleep(restartInterval);
+
+            Process startupProcess = runtime.exec(commandsStart, null, dir);
+            startupProcess.waitFor();
             LOG.debug("Startup exit value: " + startupProcess.exitValue());
 
         } catch (IOException e) {
-            // TODO KRNA error
             throw new PluginException("Restart failed");
         } catch (InterruptedException e) {
-            // TODO KRNA error
             throw new PluginException("Restart failed");
         }
 
