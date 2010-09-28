@@ -69,7 +69,7 @@ public final class PluginUtil {
 
     }
 
-    public static void moveFile(final String filePath, final String dirPath) throws PluginException {
+    public static void movePluginFile(final String filePath, final String dirPath) throws PluginException {
         LOG.debug("Moving file: " + filePath + " to: " + dirPath);
         // File (or directory) to be moved
         File file = new File(filePath);

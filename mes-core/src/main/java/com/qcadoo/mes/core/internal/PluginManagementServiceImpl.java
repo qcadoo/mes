@@ -46,6 +46,15 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    public PluginsPlugin getPluginByIdentifier(final String identifier) {
+        checkNotNull(identifier, "identifier must be given");
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
+                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("deleted", false));
+        LOG.debug("get plugin with identifier: " + identifier);
+        return (PluginsPlugin) criteria.uniqueResult();
+    }
+
+    @Override
     public PluginsPlugin getPluginById(final String entityId) {
         checkNotNull(entityId, "entityId must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
