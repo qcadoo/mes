@@ -667,23 +667,32 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         windowDefinition.addComponent(grid);
 
-        LinkButtonComponent downloadButton = new LinkButtonComponent("downloadButton", windowDefinition, null);
+        LinkButtonComponent downloadButton = new LinkButtonComponent("Pobierz", windowDefinition, null);
         downloadButton.setPageUrl("../download.html");
         windowDefinition.addComponent(downloadButton);
 
-        LinkButtonComponent removeButton = new LinkButtonComponent("removeButton", windowDefinition, null,
-                "#{mainWindow.pluginsGrid}");
+        LinkButtonComponent removeButton = new LinkButtonComponent("Skasuj", windowDefinition, null, "#{mainWindow.pluginsGrid}");
         removeButton.setPageUrl("../remove.html");
         windowDefinition.addComponent(removeButton);
+        LinkButtonComponent enableButton = new LinkButtonComponent("Aktywuj", windowDefinition, null, "#{mainWindow.pluginsGrid}");
+        enableButton.setPageUrl("../enable.html");
+        windowDefinition.addComponent(enableButton);
 
-        /*
-         * windowDefinition.addComponent(new LinkButton("enableButton", windowDefinition, null, "#{mainWindow.pluginsGrid}")
-         * .setPageUrl("../enable.html")); windowDefinition.addComponent(new LinkButton("disableButton", windowDefinition, null,
-         * "#{mainWindow.pluginsGrid}") .setPageUrl("../disable.html")); windowDefinition.addComponent(new
-         * LinkButton("deinstallButton", windowDefinition, null, "#{mainWindow.pluginsGrid}") .setPageUrl("../deinstall.html"));
-         * windowDefinition.addComponent(new LinkButton("updateButton", windowDefinition, null, "#{mainWindow.pluginsGrid}")
-         * .setPageUrl("../update.html"));
-         */
+        LinkButtonComponent disableButton = new LinkButtonComponent("Deaktywuj", windowDefinition, null,
+                "#{mainWindow.pluginsGrid}");
+        disableButton.setPageUrl("../disable.html");
+        windowDefinition.addComponent(disableButton);
+
+        LinkButtonComponent deinstallButton = new LinkButtonComponent("Odinstaluj", windowDefinition, null,
+                "#{mainWindow.pluginsGrid}");
+        deinstallButton.setPageUrl("../deinstall.html");
+        windowDefinition.addComponent(deinstallButton);
+
+        LinkButtonComponent updateButton = new LinkButtonComponent("Aktualizuj", windowDefinition, null,
+                "#{mainWindow.pluginsGrid}");
+        updateButton.setPageUrl("../update.html");
+        windowDefinition.addComponent(updateButton);
+
         windowDefinition.initialize();
 
         return viewDefinition;
