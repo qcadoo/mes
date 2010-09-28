@@ -43,7 +43,7 @@
 </head>
 <body>
 
-	System is restarting...
+	System jest restartowany...
 
 </body>
 </html>
