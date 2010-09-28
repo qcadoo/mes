@@ -8,6 +8,8 @@ public interface PluginManagementService {
 
     List<PluginsPlugin> getActivePlugins();
 
+    PluginsPlugin getPluginByIdentifier(final String identifier);
+
     PluginsPlugin getPluginByIdentifierAndStatus(String identifier, String status);
 
     PluginsPlugin getPluginById(String entityId);

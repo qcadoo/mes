@@ -1,0 +1,5 @@
+"id";"deleted";"description";"name";"publisher";"version";"active";"base";"codeid";"packagename";"filename"
+"1";"f";"";"Produkty";"Qcadoo";"0.12";"t";"f";"products";"com.qcadoo";""
+"3";"f";"";"Pluginy";"Qcadoo";"0.2";"t";"t";"plugins";"com.qcadoo";""
+"4";"f";"";"Słowniki";"Qcadoo";"3.1";"t";"f";"dictionaries";"com.qcadoo";""
+"5";"f";"Plugin służący do obsługi formatek stworzonych zgodnie z RAD.";"CRUD";"Qcadoo";"2.2";"t";"t";"crud";"com.qcadoo";""

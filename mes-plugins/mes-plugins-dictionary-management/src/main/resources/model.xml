@@ -5,6 +5,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
+		<hasMany name="dictionaryItems" model="dictionaryItem" joinField="dictionary" />
 	</model>
 	<model name="dictionaryItem">
 		<string name="name" >

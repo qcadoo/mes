@@ -23,6 +23,8 @@ import com.qcadoo.mes.plugins.exception.PluginException;
 
 public final class PluginUtil {
 
+    private static final String binPath = "../bin/";
+
     private static final String descriptor = "plugin.xml";
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginUtil.class);
@@ -67,7 +69,7 @@ public final class PluginUtil {
 
     }
 
-    public static void moveFile(final String filePath, final String dirPath) throws PluginException {
+    public static void movePluginFile(final String filePath, final String dirPath) throws PluginException {
         LOG.debug("Moving file: " + filePath + " to: " + dirPath);
         // File (or directory) to be moved
         File file = new File(filePath);
@@ -124,6 +126,31 @@ public final class PluginUtil {
         }
 
         return plugin;
+    }
+
+    public static void restartServer(final String webappPath) throws PluginException {
+        String[] commandsStop = { "bash cd " + webappPath, "bash cd " + binPath, "bash shutdown.sh" };
+        String[] commandsStart = { "bash cd " + webappPath, "bash cd " + binPath, "bash startup.sh" };
+        try {
+            Runtime runtime = Runtime.getRuntime();
+
+            Process shutdownProcess = runtime.exec(commandsStop);
+            // TODO KRNA waiting
+            shutdownProcess.waitFor();
+            LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
+            Thread.sleep(3000);
+            Process startupProcess = runtime.exec(commandsStart);
+            // TODO KRNA unix exception
+            LOG.debug("Startup exit value: " + startupProcess.exitValue());
+
+        } catch (IOException e) {
+            // TODO KRNA error
+            throw new PluginException("Restart failed");
+        } catch (InterruptedException e) {
+            // TODO KRNA error
+            throw new PluginException("Restart failed");
+        }
+
     }
 
     public static void removeResources(final String type, final String targetPath) {

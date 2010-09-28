@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <body>
-        <h1>Usunięto moduł</h1>
-		<input type="button" value="Wróć" name="return" onclick="location.href='page/plugins.pluginGridView.html?iframe=true'"/>
+        <h1>Przekroczono wielkość pliku</h1>
+		<input type="button" value="Wróć" name="return" onclick="location.href='download.html'"/>
     </body>
 </html>

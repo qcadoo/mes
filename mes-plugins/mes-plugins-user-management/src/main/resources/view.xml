@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:views plugin="users" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="groupGridView" model="group">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="groups">
+				<option type="column" name="name" fields="name" />
+				<option type="column" name="role" fields="role" />
+				<option type="header" value="true" />
+				<option type="orderable" value="name,role" />
+				<option type="paginable" value="true" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="450" />
+				<option type="correspondingView" value="users.groupDetailsView" />
+				<option type="canDelete" value="false" />
+				<option type="canNew" value="false" />
+			</component>
+		</component>
+	</view>
+	<view name="userGridView" model="user">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="users">
+				<option type="column" name="login" fields="userName" />
+				<option type="column" name="email" fields="email" />
+				<option type="column" name="firstName" fields="firstName" />
+				<option type="column" name="lastName" fields="lastName" />
+				<option type="column" name="userGroup" fields="userGroup"
+					expression="#userGroup['name']" />
+				<option type="header" value="true" />
+				<option type="orderable" value="userName,email,firstName,lastName,userGroup" />
+				<option type="paginable" value="true" />
+				<option type="multiselect" value="true" />
+				<option type="height" value="450" />
+				<option type="correspondingView" value="users.userDetailsView" />
+			</component>
+		</component>
+	</view>
+	<view name="groupDetailsView" model="group">
+		<component type="window" name="mainWindow">
+			<component type="form" name="groupDetailsForm">
+				<component type="input" name="name" field="name" />
+				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="input" name="role" field="role" />
+			</component>
+		</component>
+	</view>
+	<view name="userDetailsView" model="user">
+		<component type="window" name="mainWindow">
+			<component type="form" name="userDetailsForm">
+				<component type="input" name="userName" field="userName" />
+				<component type="lookup" name="userGroup" field="userGroup" />
+				<component type="input" name="email" field="email" />
+				<component type="input" name="firstName" field="firstName" />
+				<component type="input" name="lastName" field="lastName" />
+				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="input" name="password" field="password" /> <!-- type:password -->
+			</component>
+		</component>
+	</view>
+</qcd:views>

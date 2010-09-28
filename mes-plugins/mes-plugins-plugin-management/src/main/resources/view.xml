@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:views plugin="plugins" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="pluginGridView" model="plugin">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="pluginsGrid">
+				<option type="column" name="name" fields="name" />
+				<option type="column" name="description" fields="description" />
+				<option type="column" name="version" fields="version" />
+				<option type="column" name="vendor" fields="vendor" />
+				<option type="column" name="status" fields="status" />
+				<option type="header" value="false" />
+				<option type="correspondingView" value="plugins.pluginDetailsView" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,vendor,status" />
+				<option type="orderable" value="name" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="450" />
+				<option type="canDelete" value="false" />
+				<option type="canNew" value="false" />
+			</component>
+			<component type="button" name="downloadButton" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../download.html" />
+			</component>
+			<component type="button" name="removeButton" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../remove.html" />
+			</component>
+			<component type="button" name="enableButton" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../enable.html" />
+			</component>
+			<component type="button" name="disableButton" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../disable.html" />
+			</component>
+			<component type="button" name="deinstallButton" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../deinstall.html" />
+			</component>
+			<component type="button" name="updateButton" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../update.html" />
+			</component>
+			<option type="backButton" value="false" />
+		</component>
+	</view>
+	<view name="pluginDetailsView" model="plugin">
+		<component type="window" name="mainWindow">
+			<component type="form" name="pluginDetailsForm">
+				<component type="input" name="name" field="name" enabled="false" />
+				<component type="input" name="version" field="version" enabled="false" />
+				<component type="input" name="vendor" field="vendor" enabled="false" />
+				<component type="input" name="description" field="description" enabled="false" />
+				<component type="select" name="status" field="status" enabled="false" />
+				<component type="checkbox" name="base" field="base" enabled="false" />
+			</component>
+			<option type="header" value="false" />
+		</component>
+	</view>
+</qcd:views>

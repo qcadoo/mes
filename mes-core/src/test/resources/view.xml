@@ -4,7 +4,7 @@
 		<component type="window" name="mainWindow">
 			<component type="form" name="beanBForm">
 				<component type="input" name="name" field="name" />
-				<component type="checkbox" name="active" field="name" />
+				<component type="checkbox" name="active" field="name" enabled="false" visible="false" />
 				<component type="lookup" name="selectBeanA" field="beanA" />
 				<component type="input" name="beanM" field="name" />
 				<component type="input" name="beanB" field="beanA.name" />

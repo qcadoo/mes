@@ -78,5 +78,14 @@
 		class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 		<property name="defaultLocale" value="pl" />
 	</bean>
+	
+	<bean id="exceptionResolver"  
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">  
+    	<property name="exceptionMappings">  
+ 			<props>  
+    			<prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">downloadError</prop>  
+			</props>  
+  		</property>  
+ 	</bean>  
 
 </beans>
