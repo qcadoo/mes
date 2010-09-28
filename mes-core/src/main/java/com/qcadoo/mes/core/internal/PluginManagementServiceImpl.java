@@ -77,6 +77,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     public void savePlugin(final PluginsPlugin plugin) {
+        checkNotNull(plugin, "plugin must be given");
         getCurrentSession().save(plugin);
     }
 
