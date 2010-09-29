@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.enums.RestrictionOperator;
 import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.search.RestrictionOperator;
 import com.qcadoo.mes.core.search.Restrictions;
 import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;

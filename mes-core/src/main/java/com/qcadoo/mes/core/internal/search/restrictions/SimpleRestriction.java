@@ -7,7 +7,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-import com.qcadoo.mes.core.search.RestrictionOperator;
+import com.qcadoo.mes.core.enums.RestrictionOperator;
 
 public final class SimpleRestriction extends BaseRestriction {
 

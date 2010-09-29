@@ -53,7 +53,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         // TOMCAT
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
         // JETTY webappPath = webappPath + "/";
-        LOG.debug(webappPath);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(webappPath);
+        }
     }
 
     @Override
@@ -103,7 +105,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     pluginFile.delete();
-                    LOG.debug("Plugin file delete");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Plugin file delete");
+                    }
                 }
             }
         } else {
@@ -261,7 +265,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     pluginFile.delete();
-                    LOG.debug("Plugin file delete");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Plugin file delete");
+                    }
                 }
             }
         } else {
@@ -275,7 +281,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     public List<PluginsPlugin> getActivePlugins() {
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.eq("status", PluginStatus.ACTIVE.getValue())).add(Restrictions.eq("deleted", false));
-        LOG.debug("get plugins with status: " + PluginStatus.ACTIVE.getValue());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("get plugins with status: " + PluginStatus.ACTIVE.getValue());
+        }
         return criteria.list();
     }
 
@@ -286,7 +294,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("status", status))
                 .add(Restrictions.eq("deleted", false));
-        LOG.debug("get plugin with identifier: " + identifier + " and status: " + status);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("get plugin with identifier: " + identifier + " and status: " + status);
+        }
         return (PluginsPlugin) criteria.uniqueResult();
     }
 
@@ -295,7 +305,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         checkNotNull(identifier, "identifier must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("deleted", false));
-        LOG.debug("get plugin with identifier: " + identifier);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("get plugin with identifier: " + identifier);
+        }
         return (PluginsPlugin) criteria.uniqueResult();
     }
 
@@ -304,8 +316,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         checkNotNull(entityId, "entityId must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.idEq(Long.valueOf(entityId))).add(Restrictions.eq("deleted", false));
-
-        LOG.debug("get plugin with id: " + entityId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("get plugin with id: " + entityId);
+        }
 
         return (PluginsPlugin) criteria.uniqueResult();
     }
@@ -316,7 +329,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         checkNotNull(name, "name must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("name", name))
                 .add(Restrictions.eq("vendor", vendor)).add(Restrictions.eq("deleted", false));
-        LOG.debug("get plugin with name: " + name + " and vendor: " + vendor);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("get plugin with name: " + name + " and vendor: " + vendor);
+        }
         return (PluginsPlugin) criteria.uniqueResult();
     }
 

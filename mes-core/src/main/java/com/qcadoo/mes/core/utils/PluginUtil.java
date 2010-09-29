@@ -37,7 +37,9 @@ public final class PluginUtil {
     }
 
     public static File transferFileToTmp(final MultipartFile file, final String tmpPath) throws IOException {
-        LOG.debug("Transfering file: " + file.getOriginalFilename() + " to tmp");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Transfering file: " + file.getOriginalFilename() + " to tmp");
+        }
         File tmpDir = new File(tmpPath);
         if (!tmpDir.exists()) {
             tmpDir.mkdir();
@@ -49,7 +51,9 @@ public final class PluginUtil {
     }
 
     public static void removePluginFile(final String fileName) throws PluginException {
-        LOG.debug("Removing file: " + fileName);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Removing file: " + fileName);
+        }
         // A File object to represent the filename
         File f = new File(fileName);
 
@@ -73,7 +77,9 @@ public final class PluginUtil {
     }
 
     public static void movePluginFile(final String filePath, final String dirPath) throws PluginException {
-        LOG.debug("Moving file: " + filePath + " to: " + dirPath);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Moving file: " + filePath + " to: " + dirPath);
+        }
         // File (or directory) to be moved
         File file = new File(filePath);
         // Destination directory
@@ -138,20 +144,26 @@ public final class PluginUtil {
         String[] commandsStop = { "./shutdown.sh" };
         String[] commandsStart = { "./startup.sh" };
         String commandPath = webappPath.replaceAll(webappsRegex, binPath);
-        LOG.debug("Command path: " + commandPath);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Command path: " + commandPath);
+        }
         try {
             File dir = new File(commandPath);
             Runtime runtime = Runtime.getRuntime();
 
             Process shutdownProcess = runtime.exec(commandsStop, null, dir);
             shutdownProcess.waitFor();
-            LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
+            }
 
             Thread.sleep(restartInterval);
 
             Process startupProcess = runtime.exec(commandsStart, null, dir);
             startupProcess.waitFor();
-            LOG.debug("Startup exit value: " + startupProcess.exitValue());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Startup exit value: " + startupProcess.exitValue());
+            }
 
         } catch (IOException e) {
             throw new PluginException("Restart failed");
@@ -168,7 +180,9 @@ public final class PluginUtil {
     }
 
     private static boolean deleteDirectory(final File path) {
-        LOG.debug("Recursive removing directory: " + path);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Recursive removing directory: " + path);
+        }
         if (path.exists()) {
             File[] files = path.listFiles();
             for (int i = 0; i < files.length; i++) {
