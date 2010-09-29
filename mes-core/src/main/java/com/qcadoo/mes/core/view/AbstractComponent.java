@@ -1,9 +1,11 @@
 package com.qcadoo.mes.core.view;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,7 +31,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private final String fieldPath;
 
-    private String viewName;
+    private ViewDefinition viewDefinition;
 
     private String sourceFieldPath;
 
@@ -37,7 +39,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private boolean initialized;
 
-    private final Map<String, String> options = new HashMap<String, String>();
+    private final List<ComponentOption> rawOptions = new ArrayList<ComponentOption>();
+
+    private final Map<String, Object> options = new HashMap<String, Object>();
 
     private final ContainerComponent<?> parentContainer;
 
@@ -57,7 +61,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
         if (parentContainer != null) {
             this.path = parentContainer.getPath() + "." + name;
-            this.viewName = parentContainer.getViewName();
+            this.viewDefinition = parentContainer.getViewDefinition();
         } else {
             this.path = name;
         }
@@ -115,23 +119,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
             selectedEntity = parentEntity;
         }
 
-        // if (sourceComponent != null) {
-        // selectedEntity = selectedEntities.get(sourceComponent.getPath());
-        //
-        // if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
-        // selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
-        // }
-        //
-        // } else {
-        // selectedEntity = entity;
-        //
-        // if (selectedEntity == null) {
-        // selectedEntity = selectedEntities.get(getPath());
-        // } else if (this instanceof ContainerComponent && entity != null && fieldPath != null) {
-        // selectedEntity = getFieldEntityValue(entity, fieldPath);
-        // }
-        // }
-
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
 
         if (value.isEnabled() == null) {
@@ -161,7 +148,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
             sourceFieldPath = source[1];
             dataDefinition = sourceComponent.getDataDefinition();
-            sourceComponent.registerListener(path);
+            ((AbstractComponent<?>) sourceComponent).registerListener(path);
         } else if (parentContainer != null) {
 
             if (!parentContainer.isInitialized()) {
@@ -180,9 +167,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
             dataDefinition = getDataDefinitionBasedOnFieldPath(dataDefinition, fieldPath);
         }
 
+        initializeComponent();
+
         this.initialized = true;
 
         return true;
+    }
+
+    public void initializeComponent() {
+        // can be implemented
     }
 
     @Override
@@ -210,7 +203,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return dataDefinition;
     }
 
-    @Override
     public final void registerListener(final String path) {
         listeners.add(path);
     }
@@ -233,20 +225,22 @@ public abstract class AbstractComponent<T> implements Component<T> {
         this.dataDefinition = dataDefinition;
     }
 
-    public final void addOptions(final String name, final String value) {
-        this.options.put(name, value);
+    public final void addRawOption(final ComponentOption option) {
+        rawOptions.add(option);
+    }
+
+    protected List<ComponentOption> getRawOptions() {
+        return rawOptions;
+    }
+
+    protected final void addOption(final String name, final Object value) {
+        options.put(name, value);
     }
 
     public final Map<String, Object> getOptions() {
-        Map<String, Object> viewOptions = new HashMap<String, Object>(options);
-        viewOptions.put("name", name);
-        viewOptions.put("listeners", listeners);
-        addComponentOptions(viewOptions);
-        return viewOptions;
-    }
-
-    public void addComponentOptions(final Map<String, Object> viewOptions) {
-        // can be implemented
+        options.put("name", name);
+        options.put("listeners", listeners);
+        return options;
     }
 
     public final String getOptionsAsJson() {
@@ -419,12 +413,12 @@ public abstract class AbstractComponent<T> implements Component<T> {
     }
 
     @Override
-    public final String getViewName() {
-        return viewName;
+    public final ViewDefinition getViewDefinition() {
+        return viewDefinition;
     }
 
-    public final void setViewName(final String viewName) {
-        this.viewName = viewName;
+    public final void setViewDefinition(final ViewDefinition viewDefinition) {
+        this.viewDefinition = viewDefinition;
     }
 
     @Override
@@ -432,7 +426,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return defaultEnabled;
     }
 
-    @Override
     public final void setDefaultEnabled(final boolean defaultEnabled) {
         this.defaultEnabled = defaultEnabled;
     }
@@ -442,7 +435,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return defaultVisible;
     }
 
-    @Override
     public final void setDefaultVisible(final boolean defaultVisible) {
         this.defaultVisible = defaultVisible;
     }

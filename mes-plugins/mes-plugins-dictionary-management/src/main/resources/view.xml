@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:views plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="dictionaryGridView" model="dictionary">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="dictionaries">
+				<option type="column" name="name" fields="name" />
+				<option type="header" value="false" />
+				<option type="searchable" value="name" />
+				<option type="orderable" value="name" />
+				<option type="paginable" value="true" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="450" />
+				<option type="correspondingView" value="dictionaries/dictionaryDetailsView" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
+			</component>
+			<option type="backButton" value="false" />
+		</component>
+	</view>
+	<view name="dictionaryDetailsView" model="dictionary">
+		<component type="window" name="mainWindow">
+			<component type="grid" name="dictionaries" source="dictionaryItems">
+				<option type="column" name="name" fields="name" />
+				<option type="column" name="description" fields="description" />
+				<option type="header" value="false" />
+				<option type="paginable" value="false" />
+				<option type="multiselect" value="true" />
+				<option type="height" value="250" />
+				<option type="correspondingView" value="dictionaries/dictionaryItemDetailsView" />
+				<option type="deletable" value="true" />
+				<option type="creatable" value="true" />
+			</component>
+		</component>
+	</view>
+	<view name="dictionaryItemDetailsView" model="dictionaryItem">
+		<component type="window" name="mainWindow">
+			<component type="form" name="dictionaryItemDetailsForm">
+				<component type="input" name="name" field="name" />
+				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<option type="header" value="false" />
+			</component>
+		</component>
+	</view>
+</qcd:views>

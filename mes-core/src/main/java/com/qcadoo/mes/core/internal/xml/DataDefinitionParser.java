@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
-import com.qcadoo.mes.core.api.ViewDefinitionService;
 import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
@@ -52,9 +51,6 @@ public final class DataDefinitionParser {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ViewDefinitionService viewDefinitionService;
-
-    @Autowired
     private DataAccessService dataAccessService;
 
     @Autowired
@@ -69,6 +65,9 @@ public final class DataDefinitionParser {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private ViewDefinitionParser viewDefinitionParser;
+
     @PostConstruct
     public void init() {
         LOG.info("Reading model definitions ...");
@@ -82,7 +81,7 @@ public final class DataDefinitionParser {
             LOG.error("Cannot read data definition", e);
         }
 
-        viewDefinitionService.initViews();
+        viewDefinitionParser.init();
     }
 
     public void parse(final InputStream dataDefinitionInputStream) {
@@ -112,8 +111,7 @@ public final class DataDefinitionParser {
 
         LOG.info("Reading model " + modelName + " for plugin " + pluginIdentifier);
 
-        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(pluginIdentifier, getStringAttribute(reader, "name"),
-                dataAccessService);
+        DataDefinitionImpl dataDefinition = new DataDefinitionImpl(pluginIdentifier, modelName, dataAccessService);
         dataDefinition.setDeletable(getBooleanAttribute(reader, "deletable", true));
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.beans." + pluginIdentifier + "."
                 + StringUtils.capitalize(pluginIdentifier) + StringUtils.capitalize(modelName));
@@ -188,7 +186,6 @@ public final class DataDefinitionParser {
         String plugin = getStringAttribute(reader, "plugin");
         String modelName = getStringAttribute(reader, "model");
         String lookupFieldName = getStringAttribute(reader, "lookupField");
-
         if (lazy) {
             return fieldTypeFactory.lazyBelongsToType(plugin != null ? plugin : pluginIdentifier, modelName, lookupFieldName);
         } else {
@@ -258,15 +255,15 @@ public final class DataDefinitionParser {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.range(from, to)));
             } else if (isTagStarted(reader, "validatesUniqueness")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.unique()));
-                // TODO scope="lastname"
             } else if (isTagStarted(reader, "validatesWith")) {
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.custom(getHookDefinition(reader))));
             }
 
-            // "validatesWithScript"
-            // "validatesExclusion" <exclude>nowak</exclude> <exclude>kowalski</exclude>
-            // "validatesInclusion" <include>szczytowski</include>
-            // "validatesFormat" with="d*a"
+            // validatesUniqueness scope="lastname"
+            // validatesWithScript
+            // validatesExclusion <exclude>nowak</exclude> <exclude>kowalski</exclude>
+            // validatesInclusion <include>szczytowski</include>
+            // validatesFormat with="d*a"
         }
 
         return fieldDefinition;

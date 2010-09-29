@@ -29,7 +29,7 @@
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
-						window.location = "page/plugins.pluginGridView.html?iframe=true";
+						window.location = "page/plugins/pluginGridView.html?iframe=true";
 						return;
 					} else {
 						setTimeout("checkStatus();",1000);
@@ -43,7 +43,7 @@
 </head>
 <body>
 
-	System is restarting...
+	System jest restartowany...
 
 </body>
 </html>

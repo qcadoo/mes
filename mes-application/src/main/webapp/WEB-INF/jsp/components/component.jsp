@@ -10,6 +10,7 @@
 <tiles:useAttribute name="parentComponentFullName" ignore="true"/>
 <tiles:useAttribute name="parentComponentFullNameWithDots" ignore="true"/>
 <tiles:useAttribute name="viewName" ignore="true"/>
+<tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
 	<c:choose>
 		<c:when test='${parentComponentFullName == null}'>
@@ -55,6 +56,7 @@
 		<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
 		<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
 		<tiles:putAttribute name="viewName" value="${viewName}" />
+		<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	</tiles:insertTemplate>
 	
 	

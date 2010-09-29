@@ -8,15 +8,16 @@ import com.qcadoo.mes.core.view.ViewDefinition;
 
 public interface ViewDefinitionService {
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or ((#viewName != 'products.orderGridView') and (#viewName != 'products.orderDetailsView')"
+    List<ViewDefinition> list();
+
+    void save(ViewDefinition viewDefinition);
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or ((#pluginIdentifier == 'products') and (#viewName != 'orderGridView') and (#viewName != 'orderDetailsView')"
             + " or hasRole('ROLE_SUPERVISOR')) and ((#viewName != 'users.userGridView') and (#viewName != 'users.userDetailsView')"
             + " and (#viewName != 'users.groupGridView') and (#viewName != 'users.groupDetailsView')"
             + " and (#viewName != 'plugins.pluginGridView') and (#viewName != 'plugins.pluginDetailsView'))")
-    ViewDefinition getViewDefinition(String viewName);
+    ViewDefinition get(String pluginIdentifier, String viewName);
 
-    List<ViewDefinition> getAllViews();
-
-    // TODO masz to remove
-    void initViews();
+    void delete(String pluginIdentifier, String viewName);
 
 }

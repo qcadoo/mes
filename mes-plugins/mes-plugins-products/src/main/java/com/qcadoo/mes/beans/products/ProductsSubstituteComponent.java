@@ -18,7 +18,7 @@ public final class ProductsSubstituteComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ProductsProduct product;
 
     @ManyToOne(fetch = FetchType.LAZY)

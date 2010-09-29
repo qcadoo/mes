@@ -14,7 +14,6 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.validation.ErrorMessage;
-import com.qcadoo.mes.core.view.ViewDefinition;
 
 @Controller
 public final class TranslationServiceImpl implements TranslationService {
@@ -141,32 +140,32 @@ public final class TranslationServiceImpl implements TranslationService {
     // }
     // }
 
-    public void updateTranslationsForViewDefinition(final ViewDefinition viewDefinition,
-            final Map<String, String> translationsMap, final Locale locale) {
-        // if (viewDefinition.getHeader() != null) {
-        // putTranslationToMap(viewDefinition.getHeader(), translationsMap, locale);
-        // }
-        // for (ComponentDefinition viewElement : viewDefinition.getElements()) {
-        // if (viewElement.getHeader() != null) {
-        // putTranslationToMap(viewElement.getHeader(), translationsMap, locale);
-        // }
-        // if (viewElement.getType() == ComponentDefinition.TYPE_CONTAINER_FORM) {
-        // FormDefinition formDefinition = (FormDefinition) viewElement;
-        // for (FormFieldDefinition formField : formDefinition.getFields()) {
-        // addFormFieldTranslation(viewDefinition, formDefinition, formField, translationsMap, locale);
-        // }
-        //
-        // } else if (viewElement.getType() == ComponentDefinition.TYPE_CONTAINER_GRID) {
-        // GridDefinition gridDefinition = (GridDefinition) viewElement;
-        // for (ColumnDefinition column : gridDefinition.getColumns()) {
-        // addGridColumnTranslation(viewDefinition, gridDefinition, column, translationsMap, locale);
-        // }
-        // for (Entry<String, DataFieldDefinition> field : viewElement.getDataDefinition().getFields().entrySet()) {
-        // addDataFieldTranslation(viewDefinition, gridDefinition, field.getValue(), translationsMap, locale);
-        // }
-        // }
-        // }
-    }
+    // public void updateTranslationsForViewDefinition(final ViewDefinition viewDefinition,
+    // final Map<String, String> translationsMap, final Locale locale) {
+    // if (viewDefinition.getHeader() != null) {
+    // putTranslationToMap(viewDefinition.getHeader(), translationsMap, locale);
+    // }
+    // for (ComponentDefinition viewElement : viewDefinition.getElements()) {
+    // if (viewElement.getHeader() != null) {
+    // putTranslationToMap(viewElement.getHeader(), translationsMap, locale);
+    // }
+    // if (viewElement.getType() == ComponentDefinition.TYPE_CONTAINER_FORM) {
+    // FormDefinition formDefinition = (FormDefinition) viewElement;
+    // for (FormFieldDefinition formField : formDefinition.getFields()) {
+    // addFormFieldTranslation(viewDefinition, formDefinition, formField, translationsMap, locale);
+    // }
+    //
+    // } else if (viewElement.getType() == ComponentDefinition.TYPE_CONTAINER_GRID) {
+    // GridDefinition gridDefinition = (GridDefinition) viewElement;
+    // for (ColumnDefinition column : gridDefinition.getColumns()) {
+    // addGridColumnTranslation(viewDefinition, gridDefinition, column, translationsMap, locale);
+    // }
+    // for (Entry<String, DataFieldDefinition> field : viewElement.getDataDefinition().getFields().entrySet()) {
+    // addDataFieldTranslation(viewDefinition, gridDefinition, field.getValue(), translationsMap, locale);
+    // }
+    // }
+    // }
+    // }
 
     public void translateEntity(final Entity entity, final Locale locale) {
         for (ErrorMessage error : entity.getGlobalErrors()) {

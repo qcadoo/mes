@@ -10,11 +10,15 @@
 <tiles:useAttribute name="componentFullName"/>
 <tiles:useAttribute name="componentFullNameWithDots"/>
 <tiles:useAttribute name="viewName" ignore="true"/>
+<tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
 <div class="component component_element component_element_linkButton" id="${componentFullName}">
 	<div class="element_options" style="display: none">
 		${component.optionsAsJson}
 	</div>
 	
-	<button id="${componentFullName}_button" onClick="window.location='${component.pageUrl}'">${component.name}</button>
+	<c:set var="buttonLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
+	
+	
+	<button id="${componentFullName}_button" onClick="window.location='${component.options['url']}'">${translationsMap[buttonLabel]}</button>
 </div>

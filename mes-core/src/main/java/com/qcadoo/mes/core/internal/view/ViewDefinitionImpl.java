@@ -16,23 +16,26 @@ import com.qcadoo.mes.core.view.ViewValue;
 
 public final class ViewDefinitionImpl implements ViewDefinition {
 
-    private final RootComponent root;
-
     private final String pluginIdentifier;
 
     private final String name;
 
     private HookDefinition viewHook;
 
-    public ViewDefinitionImpl(final String name, final RootComponent root, final String pluginIdentifier) {
+    private RootComponent root;
+
+    public ViewDefinitionImpl(final String pluginIdentifier, final String name) {
         this.name = name;
-        this.root = root;
         this.pluginIdentifier = pluginIdentifier;
     }
 
     @Override
     public String getPluginIdentifier() {
         return pluginIdentifier;
+    }
+
+    public void setRoot(final RootComponent root) {
+        this.root = root;
     }
 
     @Override

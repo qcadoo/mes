@@ -5,7 +5,6 @@ import static junit.framework.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
 import com.qcadoo.mes.core.internal.types.IntegerType;
@@ -25,7 +24,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("name").withType(new StringType());
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
-        columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
+        columnDefinition.addField(fieldDefinition);
 
         // when
         String value = ExpressionUtil.getValue(entity, columnDefinition);
@@ -47,7 +46,9 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl("sex").withType(new StringType());
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
-        columnDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex));
+        columnDefinition.addField(fieldDefinitionName);
+        columnDefinition.addField(fieldDefinitionAge);
+        columnDefinition.addField(fieldDefinitionSex);
 
         // when
         String value = ExpressionUtil.getValue(entity, columnDefinition);
@@ -65,7 +66,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("name");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
-        columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
+        columnDefinition.addField(fieldDefinition);
         columnDefinition.setExpression("#name.toUpperCase()");
 
         // when
@@ -84,7 +85,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("name");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
-        columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
+        columnDefinition.addField(fieldDefinition);
         columnDefinition.setExpression("#name");
 
         // when
@@ -107,7 +108,9 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl("sex");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
-        columnDefinition.setFields(Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex));
+        columnDefinition.addField(fieldDefinitionName);
+        columnDefinition.addField(fieldDefinitionAge);
+        columnDefinition.addField(fieldDefinitionSex);
         columnDefinition.setExpression("#name + \" -> (\" + (#age+1) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")");
 
         // when
@@ -129,7 +132,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("product");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
-        columnDefinition.setFields(Lists.newArrayList(fieldDefinition));
+        columnDefinition.addField(fieldDefinition);
         columnDefinition.setExpression("#product['name']");
 
         // when

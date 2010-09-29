@@ -26,7 +26,7 @@ public final class MainPageController {
     public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("mainPage");
-        mav.addObject("viewsList", viewDefinitionService.getAllViews());
+        mav.addObject("viewsList", viewDefinitionService.list());
         mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
         return mav;
     }

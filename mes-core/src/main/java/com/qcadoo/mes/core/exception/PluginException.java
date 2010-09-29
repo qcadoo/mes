@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.exception;
+package com.qcadoo.mes.core.exception;
 
 public class PluginException extends Exception {
 

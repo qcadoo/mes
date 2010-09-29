@@ -1,6 +1,7 @@
 package com.qcadoo.mes.beans.dictionaries;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -20,7 +21,7 @@ public final class DictionariesDictionaryItem {
 
     private boolean deleted;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private DictionariesDictionary dictionary;
 
     public Long getId() {

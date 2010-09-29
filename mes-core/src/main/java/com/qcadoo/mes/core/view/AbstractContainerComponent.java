@@ -33,7 +33,6 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
         return components;
     }
 
-    @Override
     public final void addComponent(final Component<?> component) {
         components.put(component.getName(), component);
     }
@@ -56,7 +55,7 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
     }
 
     @Override
-    public final ViewValue<T> getComponentValue(final Entity entity, Entity parentEntity,
+    public final ViewValue<T> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<T> viewValue, final Set<String> pathsToUpdate) {
 
         ViewValue<T> value = new ViewValue<T>();

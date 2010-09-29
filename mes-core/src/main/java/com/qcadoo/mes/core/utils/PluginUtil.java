@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.util;
+package com.qcadoo.mes.core.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +18,16 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
-import com.qcadoo.mes.plugins.enums.PluginDescriptorProperties;
-import com.qcadoo.mes.plugins.exception.PluginException;
+import com.qcadoo.mes.core.enums.PluginDescriptorProperties;
+import com.qcadoo.mes.core.exception.PluginException;
 
 public final class PluginUtil {
+
+    private static final String binPath = "bin/";
+
+    private static final String webappsRegex = "webapps/\\S*/";
+
+    private static final int restartInterval = 1000;
 
     private static final String descriptor = "plugin.xml";
 
@@ -30,8 +36,7 @@ public final class PluginUtil {
     private PluginUtil() {
     }
 
-    public static File transferFileToTmp(final MultipartFile file, final String tmpPath) throws IllegalStateException,
-            IOException {
+    public static File transferFileToTmp(final MultipartFile file, final String tmpPath) throws IOException {
         LOG.debug("Transfering file: " + file.getOriginalFilename() + " to tmp");
         File tmpDir = new File(tmpPath);
         if (!tmpDir.exists()) {
@@ -49,12 +54,12 @@ public final class PluginUtil {
         File f = new File(fileName);
 
         // Make sure the file or directory exists and isn't write protected
-        if (!f.exists())
+        if (!f.exists()) {
             throw new PluginException("Delete: no such file or directory: " + fileName);
-
-        if (!f.canWrite())
+        }
+        if (!f.canWrite()) {
             throw new PluginException("Delete: write protected: " + fileName);
-
+        }
         // If it is a directory, make sure it is empty
         if (f.isDirectory()) {
             throw new PluginException("Delete: this is a directory: " + fileName);
@@ -62,12 +67,12 @@ public final class PluginUtil {
 
         // Attempt to delete it
         boolean success = f.delete();
-        if (!success)
+        if (!success) {
             throw new PluginException("Delete: deletion failed");
-
+        }
     }
 
-    public static void moveFile(final String filePath, final String dirPath) throws PluginException {
+    public static void movePluginFile(final String filePath, final String dirPath) throws PluginException {
         LOG.debug("Moving file: " + filePath + " to: " + dirPath);
         // File (or directory) to be moved
         File file = new File(filePath);
@@ -75,8 +80,9 @@ public final class PluginUtil {
         File dir = new File(dirPath);
         // Move file to new directory
         boolean success = file.renameTo(new File(dir, file.getName()));
-        if (!success)
+        if (!success) {
             throw new PluginException("Move: move failed");
+        }
     }
 
     public static PluginsPlugin readDescriptor(final File file) throws IOException, ParserConfigurationException, SAXException {
@@ -119,11 +125,40 @@ public final class PluginUtil {
                 case DESCRIPTION:
                     plugin.setDescription(value);
                     break;
+                default:
+                    throw new IllegalArgumentException("Unknown element node");
             }
 
         }
 
         return plugin;
+    }
+
+    public static void restartServer(final String webappPath) throws PluginException {
+        String[] commandsStop = { "./shutdown.sh" };
+        String[] commandsStart = { "./startup.sh" };
+        String commandPath = webappPath.replaceAll(webappsRegex, binPath);
+        LOG.debug("Command path: " + commandPath);
+        try {
+            File dir = new File(commandPath);
+            Runtime runtime = Runtime.getRuntime();
+
+            Process shutdownProcess = runtime.exec(commandsStop, null, dir);
+            shutdownProcess.waitFor();
+            LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
+
+            Thread.sleep(restartInterval);
+
+            Process startupProcess = runtime.exec(commandsStart, null, dir);
+            startupProcess.waitFor();
+            LOG.debug("Startup exit value: " + startupProcess.exitValue());
+
+        } catch (IOException e) {
+            throw new PluginException("Restart failed");
+        } catch (InterruptedException e) {
+            throw new PluginException("Restart failed");
+        }
+
     }
 
     public static void removeResources(final String type, final String targetPath) {
