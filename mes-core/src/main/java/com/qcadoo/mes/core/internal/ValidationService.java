@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
-import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
+import com.qcadoo.mes.core.internal.types.BelongsToEntityType;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.types.BelongsToType;
@@ -53,7 +53,7 @@ public final class ValidationService {
         }
     }
 
-    private void parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity) {
+    private void parseAndValidateEntity(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             Object validateFieldValue = parseAndValidateField(dataDefinition, fieldDefinitionEntry.getValue(),
                     genericEntity.getField(fieldDefinitionEntry.getKey()), genericEntity);
@@ -122,7 +122,7 @@ public final class ValidationService {
             BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
             InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) belongsToFieldType.getDataDefinition();
             Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
-            Object referencedEntity = sessionFactory.getCurrentSession().get(referencedClass, referencedEntityId);
+            Object referencedEntity = sessionFactory.getCurrentSession().load(referencedClass, referencedEntityId);
             return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validatedEntity);
         } else {
             return null;
@@ -133,7 +133,7 @@ public final class ValidationService {
             final Object value, final Entity validatedEntity) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof EagerBelongsToType) {
+        } else if (fieldDefinition.getType() instanceof BelongsToEntityType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         } else {
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);

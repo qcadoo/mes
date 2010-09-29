@@ -4,3 +4,4 @@
 target
 bin
 mes.log*
+mes-application/src/main/java/HibernateTest.java

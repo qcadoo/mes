@@ -11,7 +11,7 @@ import com.qcadoo.mes.core.search.Order;
 import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.types.BelongsToType;
 
-public final class EagerBelongsToType implements BelongsToType {
+public final class BelongsToEntityType implements BelongsToType {
 
     private final DataDefinitionService dataDefinitionService;
 
@@ -21,12 +21,15 @@ public final class EagerBelongsToType implements BelongsToType {
 
     private final String entityName;
 
-    public EagerBelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName,
-            final DataDefinitionService dataDefinitionService) {
+    private final boolean lazyLoading;
+
+    public BelongsToEntityType(final String pluginIdentifier, final String entityName, final String lookupFieldName,
+            final DataDefinitionService dataDefinitionService, final boolean lazyLoading) {
         this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;
         this.lookupFieldName = lookupFieldName;
         this.dataDefinitionService = dataDefinitionService;
+        this.lazyLoading = lazyLoading;
     }
 
     @Override
@@ -79,6 +82,11 @@ public final class EagerBelongsToType implements BelongsToType {
     @Override
     public String getLookupFieldName() {
         return lookupFieldName;
+    }
+
+    @Override
+    public boolean isLazyLoading() {
+        return lazyLoading;
     }
 
 }

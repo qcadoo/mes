@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.view;
 
 import java.util.Map;
 
-public class ComponentOption {
+public final class ComponentOption {
 
     private final String type;
 

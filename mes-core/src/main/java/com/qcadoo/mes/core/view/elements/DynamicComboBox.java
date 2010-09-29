@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.types.EnumeratedType;
 import com.qcadoo.mes.core.types.FieldType;
 import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractComponent;
@@ -71,7 +71,7 @@ public final class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
         FieldType def = getDataDefinition().getField(getName()).getType();
         // TODO mina
         // if (!(def instanceof DictionaryType || def instanceof EnumType)) {}
-        EnumeratedFieldType fieldDefinition = (EnumeratedFieldType) def;
+        EnumeratedType fieldDefinition = (EnumeratedType) def;
         return fieldDefinition.values();
     }
 

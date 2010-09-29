@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
+import com.qcadoo.mes.core.internal.DefaultEntity;
 import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractContainerComponent;
@@ -90,7 +91,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     public Entity getSaveableEntity(final ViewValue<Object> viewValue) {
         ViewValue<Long> formValue = lookViewValue(viewValue);
-        Entity entity = new Entity(formValue.getValue());
+        Entity entity = new DefaultEntity(formValue.getValue());
 
         for (Map.Entry<String, Component<?>> component : getComponents().entrySet()) {
             String fieldPath = component.getValue().getFieldPath();

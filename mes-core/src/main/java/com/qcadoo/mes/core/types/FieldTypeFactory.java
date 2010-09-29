@@ -22,13 +22,13 @@ public interface FieldTypeFactory {
 
     FieldType priorityType(final FieldDefinition scopeFieldDefinition);
 
-    EnumeratedFieldType enumType(final String... values);
+    EnumeratedType enumType(final String... values);
 
-    EnumeratedFieldType dictionaryType(final String dictionaryName);
+    EnumeratedType dictionaryType(final String dictionaryName);
 
-    LookupedFieldType lazyBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
+    LookupedType lazyBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
 
-    LookupedFieldType eagerBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
+    LookupedType eagerBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
 
     FieldType hasManyType(String pluginIdentifier, final String entityName, final String fieldName);
 

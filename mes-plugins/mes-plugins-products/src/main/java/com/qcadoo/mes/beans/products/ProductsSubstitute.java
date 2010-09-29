@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "products_substitute")
-public final class ProductsSubstitute {
+public class ProductsSubstitute {
 
     @Id
     @GeneratedValue

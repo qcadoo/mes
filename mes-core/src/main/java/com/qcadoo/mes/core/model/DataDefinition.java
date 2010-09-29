@@ -29,10 +29,10 @@ public interface DataDefinition {
 
     FieldDefinition getField(final String fieldName);
 
+    FieldDefinition getPriorityField();
+
     List<EntityValidator> getValidators();
 
     boolean isPrioritizable();
-
-    FieldDefinition getPriorityField();
 
 }

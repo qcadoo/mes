@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.DefaultEntity;
 import com.qcadoo.mes.core.internal.TranslationServiceImpl;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
 
@@ -19,7 +20,7 @@ public class TranslationServiceTest {
     @Test
     public void shouldTranslateValidationResult() {
         // given
-        Entity entity = new Entity((long) 21);
+        Entity entity = new DefaultEntity((long) 21);
 
         entity.addGlobalError("globalMsg1", new String[] { "aa" });
         entity.addGlobalError("globalMsg2", new String[] {});

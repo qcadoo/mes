@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.types.EnumeratedType;
 
-public final class EnumType implements EnumeratedFieldType {
+public final class EnumType implements EnumeratedType {
 
     private final List<String> values;
 

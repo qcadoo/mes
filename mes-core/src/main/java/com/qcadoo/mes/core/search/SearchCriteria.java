@@ -3,7 +3,6 @@ package com.qcadoo.mes.core.search;
 import java.util.Set;
 
 import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.view.elements.GridComponent;
 
 /**
  * Object represents the criteria for listing entities. Together with definition -
@@ -26,7 +25,5 @@ public interface SearchCriteria {
     Set<Restriction> getRestrictions();
 
     DataDefinition getDataDefinition();
-
-    GridComponent getGridDefinition();
 
 }

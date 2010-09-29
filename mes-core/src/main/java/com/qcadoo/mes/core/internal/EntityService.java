@@ -5,13 +5,13 @@ import java.util.Map.Entry;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
-import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
+import com.qcadoo.mes.core.internal.types.BelongsToEntityType;
 import com.qcadoo.mes.core.internal.types.PasswordType;
-import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.types.BelongsToType;
 
@@ -49,15 +49,15 @@ public final class EntityService {
     public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof EagerBelongsToType) {
+        } else if (fieldDefinition.getType() instanceof BelongsToEntityType) {
             return getBelongsToField(databaseEntity, fieldDefinition);
         } else {
             return getPrimitiveField(databaseEntity, fieldDefinition);
         }
     }
 
-    public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
-        Entity genericEntity = new Entity(getId(databaseEntity));
+    public Entity convertToGenericEntity(final InternalDataDefinition dataDefinition, final Object databaseEntity) {
+        Entity genericEntity = new DefaultEntity(getId(databaseEntity));
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
@@ -105,12 +105,24 @@ public final class EntityService {
 
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-        DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
+        InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) belongsToFieldType.getDataDefinition();
+
         Object value = getField(databaseEntity, fieldDefinition.getName());
-        if (value != null) {
-            return convertToGenericEntity(referencedDataDefinition, value);
-        } else {
+
+        if (value == null) {
             return null;
+        }
+
+        if (belongsToFieldType.isLazyLoading()) {
+            Long id = (Long) ((HibernateProxy) value).getHibernateLazyInitializer().getIdentifier();
+
+            if (id == null) {
+                return null;
+            }
+
+            return new ProxyEntity(referencedDataDefinition, id);
+        } else {
+            return convertToGenericEntity(referencedDataDefinition, value);
         }
     }
 

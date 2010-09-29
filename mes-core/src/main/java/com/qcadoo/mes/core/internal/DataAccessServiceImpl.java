@@ -126,7 +126,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     public SearchResult find(final SearchCriteria searchCriteria) {
         checkArgument(searchCriteria != null, "searchCriteria must be given");
 
-        DataDefinition dataDefinition = searchCriteria.getDataDefinition();
+        InternalDataDefinition dataDefinition = (InternalDataDefinition) searchCriteria.getDataDefinition();
 
         int totalNumberOfEntities = getTotalNumberOfEntities(getCriteria(searchCriteria));
 
@@ -235,7 +235,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return Integer.valueOf(criteria.setProjection(Projections.rowCount()).uniqueResult().toString());
     }
 
-    private SearchResultImpl getResultSet(final SearchCriteria searchCriteria, final DataDefinition dataDefinition,
+    private SearchResultImpl getResultSet(final SearchCriteria searchCriteria, final InternalDataDefinition dataDefinition,
             final int totalNumberOfEntities, final List<?> results) {
         List<Entity> genericResults = new ArrayList<Entity>();
 

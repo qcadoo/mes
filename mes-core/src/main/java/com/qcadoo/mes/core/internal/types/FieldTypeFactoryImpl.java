@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.DictionaryService;
 import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.types.EnumeratedType;
 import com.qcadoo.mes.core.types.FieldType;
 import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.types.LookupedFieldType;
+import com.qcadoo.mes.core.types.LookupedType;
 
 @Service
 public final class FieldTypeFactoryImpl implements FieldTypeFactory {
@@ -80,30 +80,27 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     }
 
     @Override
-    public EnumeratedFieldType enumType(final String... values) {
+    public EnumeratedType enumType(final String... values) {
         // TODO masz don't create new fieltType every time, use some cache
         return new EnumType(values);
     }
 
     @Override
-    public EnumeratedFieldType dictionaryType(final String dictionaryName) {
+    public EnumeratedType dictionaryType(final String dictionaryName) {
         // TODO masz don't create new fieltType every time, use some cache
         return new DictionaryType(dictionaryName, dictionaryService);
     }
 
     @Override
-    public LookupedFieldType lazyBelongsToType(final String pluginIdentifier, final String entityName,
-            final String lookupFieldName) {
+    public LookupedType lazyBelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        // TODO masz implement lazy belongsTo
-        return new EagerBelongsToType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService);
+        return new BelongsToEntityType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService, true);
     }
 
     @Override
-    public LookupedFieldType eagerBelongsToType(final String pluginIdentifier, final String entityName,
-            final String lookupFieldName) {
+    public LookupedType eagerBelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName) {
         // TODO masz don't create new fieltType every time, use some cache
-        return new EagerBelongsToType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService);
+        return new BelongsToEntityType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService, false);
     }
 
     @Override
@@ -113,6 +110,6 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Override
     public FieldType hasManyType(final String pluginIdentifier, final String entityName, final String fieldName) {
-        return new LazyHasManyType(pluginIdentifier, entityName, fieldName, dataDefinitionService);
+        return new HasManyEntitiesType(pluginIdentifier, entityName, fieldName, dataDefinitionService);
     }
 }

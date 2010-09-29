@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.mockito.BDDMockito;
 
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.DefaultEntity;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 
@@ -16,7 +17,7 @@ public class EntityDataUtilsGenerateEntityDataTest {
     @Test
     public void shouldReturnValidEntity() {
         // given
-        Entity entity = new Entity((long) 44);
+        Entity entity = new DefaultEntity((long) 44);
         entity.setField("testField1", "testField1Val");
         entity.setField("testField2", "testField2Val");
         entity.setField("testField3", "testField3Val");
