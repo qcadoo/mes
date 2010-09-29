@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.core.api.PluginManagementService;
@@ -27,6 +28,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
     public List<PluginsPlugin> getActivePlugins() {
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.eq("status", PluginStatus.ACTIVE.getValue())).add(Restrictions.eq("deleted", false));
@@ -35,6 +37,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PluginsPlugin getPluginByIdentifierAndStatus(final String identifier, final String status) {
         checkNotNull(identifier, "identifier must be given");
         checkNotNull(status, "status must be given");
@@ -46,6 +49,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PluginsPlugin getPluginByIdentifier(final String identifier) {
         checkNotNull(identifier, "identifier must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
@@ -55,6 +59,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PluginsPlugin getPluginById(final String entityId) {
         checkNotNull(entityId, "entityId must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
@@ -66,6 +71,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PluginsPlugin getPluginByNameAndVendor(final String name, final String vendor) {
         checkNotNull(vendor, "vendor must be given");
         checkNotNull(name, "name must be given");
@@ -76,6 +82,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional
     public void savePlugin(final PluginsPlugin plugin) {
         checkNotNull(plugin, "plugin must be given");
         getCurrentSession().save(plugin);
