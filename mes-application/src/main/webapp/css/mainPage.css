@@ -4,7 +4,7 @@ html, body {
   padding: 0;
 }
 
-#mainTable {
+#mainStructuralTable {
 	width: 100%;
 	height: 100%;
 	margin: 0;
@@ -14,11 +14,14 @@ html, body {
 	cellSpacing: 0;
 }
 
-#mainTable #headerRow {
-	height: 20px;
+#mainStructuralTable #mainHeaderRow {
 }
 
-#mainTable #contentRow {
+#mainStructuralTable #mainHeaderRow #mainHeaderCell {
+	
+}
+
+#mainStructuralTable #mainContentRow {
 	height: 100%;
 }
 
@@ -35,11 +38,7 @@ html, body {
 }
 
 #headerDiv {
-	border-bottom: solid black 1px;
-	background: #CCCCCC;
-	padding: 2px;
-	padding-right: 10px;
-	height: 20px;
+	
 }
 
 #leftPanel {

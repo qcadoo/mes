@@ -1,0 +1,64 @@
+#firstLevelMenu {
+	background: #24a800;
+	padding-bottom: 0px;
+}
+
+#firstLevelMenu .firstLevelButtonWrapper {
+	display: inline-block;
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 0px;
+}
+
+#firstLevelMenu .firstLevelButtonWrapper .firstLevelButton {
+	border-top: solid black 1px;
+	border-left: solid black 1px;
+	border-right: solid black 1px;
+	color: white;
+	padding: 3px;
+}
+
+#firstLevelMenu .firstLevelButtonWrapper .firstLevelButton.hover {
+	color: red;
+	cursor: pointer;
+}
+
+#firstLevelMenu .firstLevelButtonWrapper .firstLevelButton.active,
+#firstLevelMenu .firstLevelButtonWrapper .firstLevelButton.active.previousActive {
+	background: #b9f47d;
+	color: black;
+}
+#firstLevelMenu .firstLevelButtonWrapper .firstLevelButton.previousActive {
+	border-color: red;
+}
+
+#secondLevelMenu {
+	background: #b9f47d;
+}
+
+#secondLevelMenu .secondLevelButtonWrapper {
+	display: inline-block;
+	margin-left: 10px;
+	margin-top: 5px;
+	margin-bottom: 0px;
+}
+
+#secondLevelMenu .secondLevelButtonWrapper .secondLevelButton {
+	border-top: solid black 1px;
+	border-left: solid black 1px;
+	border-right: solid black 1px;
+	padding: 1px;
+}
+
+#secondLevelMenu .secondLevelButtonWrapper .secondLevelButton.hover {
+	color: red;
+	cursor: pointer;
+}
+#secondLevelMenu .secondLevelButtonWrapper .secondLevelButton.active,
+#secondLevelMenu .secondLevelButtonWrapper .secondLevelButton.active.previousActive {
+	background: #f1f1f1;
+}
+#secondLevelMenu .secondLevelButtonWrapper .secondLevelButton.previousActive {
+	//background: #eaffd5;
+	border-color: red;
+}
