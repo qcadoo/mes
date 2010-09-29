@@ -229,7 +229,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
         rawOptions.add(option);
     }
 
-    protected List<ComponentOption> getRawOptions() {
+    protected final List<ComponentOption> getRawOptions() {
         return rawOptions;
     }
 

@@ -53,7 +53,7 @@ public final class ValidationService {
         }
     }
 
-    private void parseAndValidateEntity(final DataDefinition dataDefinition, final Entity genericEntity) {
+    private void parseAndValidateEntity(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             Object validateFieldValue = parseAndValidateField(dataDefinition, fieldDefinitionEntry.getValue(),
                     genericEntity.getField(fieldDefinitionEntry.getKey()), genericEntity);

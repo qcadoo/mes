@@ -1,12 +1,9 @@
 package com.qcadoo.mes.core.search;
 
-import com.qcadoo.mes.core.view.elements.GridComponent;
 
 public interface SearchCriteriaBuilder {
 
     SearchResult list();
-
-    SearchCriteriaBuilder forGrid(GridComponent gridDefinition);
 
     SearchCriteriaBuilder restrictedWith(Restriction restriction);
 

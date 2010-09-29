@@ -120,7 +120,6 @@ public final class Entity {
 
     @Override
     public String toString() {
-        // return "#" + id + ", " + fields.toString();
         return "Entity #" + id;
     }
 

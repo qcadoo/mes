@@ -17,7 +17,6 @@ import com.qcadoo.mes.core.search.Restriction;
 import com.qcadoo.mes.core.search.SearchCriteria;
 import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.view.elements.GridComponent;
 
 public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaBuilder {
 
@@ -35,12 +34,10 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
 
     private final DataDefinition dataDefinition;
 
-    private GridComponent gridDefinition;
-
     public SearchCriteriaImpl(final DataDefinition dataDefinition) {
         checkNotNull(dataDefinition);
         this.dataDefinition = dataDefinition;
-        if (dataDefinition.isPrioritizable()) {
+        if (dataDefinition.getPriorityField() != null) {
             order = Order.asc(dataDefinition.getPriorityField().getName());
         } else {
             order = Order.asc();
@@ -50,11 +47,6 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     @Override
     public DataDefinition getDataDefinition() {
         return dataDefinition;
-    }
-
-    @Override
-    public GridComponent getGridDefinition() {
-        return gridDefinition;
     }
 
     @Override
@@ -75,12 +67,6 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     @Override
     public Set<Restriction> getRestrictions() {
         return restrictions;
-    }
-
-    @Override
-    public SearchCriteriaBuilder forGrid(final GridComponent gridDefinition) {
-        this.gridDefinition = gridDefinition;
-        return this;
     }
 
     @Override

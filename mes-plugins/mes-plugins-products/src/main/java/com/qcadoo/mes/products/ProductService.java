@@ -24,11 +24,11 @@ public final class ProductService {
     @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Object> value, final String triggerComponentName) {
         ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
-                .lookupValue("mainWindow.detailsForm.product");
+                .lookupValue("mainWindow.orderDetailsForm.product");
         ViewValue<String> defaultInstructionValue = (ViewValue<String>) value
-                .lookupValue("mainWindow.detailsForm.defaultInstruction");
+                .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
         ViewValue<EntityComboBoxValue> instructionValue = (ViewValue<EntityComboBoxValue>) value
-                .lookupValue("mainWindow.detailsForm.instruction");
+                .lookupValue("mainWindow.orderDetailsForm.instruction");
 
         defaultInstructionValue.setEnabled(false);
         defaultInstructionValue.setValue("");
@@ -46,7 +46,7 @@ public final class ProductService {
     private void selectDefaultInstruction(final String triggerComponentName,
             final ViewValue<EntityComboBoxValue> instructionValue, final Entity defaultInstructionEntity) {
         Long selectedInstructinId = instructionValue.getValue().getSelectedValue();
-        if (selectedInstructinId == null && "mainWindow.detailsForm.product".equals(triggerComponentName)) {
+        if (selectedInstructinId == null && "mainWindow.orderDsetailsForm.product".equals(triggerComponentName)) {
             instructionValue.getValue().setSelectedValue(defaultInstructionEntity.getId());
         }
     }

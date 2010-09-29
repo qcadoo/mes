@@ -11,7 +11,6 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
 import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
 import com.qcadoo.mes.core.internal.types.PasswordType;
-import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.types.BelongsToType;
 
@@ -56,7 +55,7 @@ public final class EntityService {
         }
     }
 
-    public Entity convertToGenericEntity(final DataDefinition dataDefinition, final Object databaseEntity) {
+    public Entity convertToGenericEntity(final InternalDataDefinition dataDefinition, final Object databaseEntity) {
         Entity genericEntity = new Entity(getId(databaseEntity));
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
@@ -105,7 +104,7 @@ public final class EntityService {
 
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-        DataDefinition referencedDataDefinition = belongsToFieldType.getDataDefinition();
+        InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) belongsToFieldType.getDataDefinition();
         Object value = getField(databaseEntity, fieldDefinition.getName());
         if (value != null) {
             return convertToGenericEntity(referencedDataDefinition, value);

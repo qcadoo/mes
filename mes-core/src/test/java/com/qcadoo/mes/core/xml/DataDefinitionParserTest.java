@@ -145,9 +145,9 @@ public class DataDefinitionParserTest {
         DataDefinition dataDefinition = parseAndGetDataDefinition();
 
         // then
-        assertEquals(1, dataDefinition.getValidators().size());
+        assertEquals(1, ((InternalDataDefinition) dataDefinition).getValidators().size());
 
-        EntityValidator validator = dataDefinition.getValidators().get(0);
+        EntityValidator validator = ((InternalDataDefinition) dataDefinition).getValidators().get(0);
 
         assertThat(validator, instanceOf(CustomEntityValidator.class));
 
@@ -276,7 +276,7 @@ public class DataDefinitionParserTest {
         assertNotNull(dataDefinition.getPriorityField());
         assertEquals("priority", dataDefinition.getPriorityField().getName());
         assertEquals("parent", ((PriorityType) dataDefinition.getPriorityField().getType()).getScopeFieldDefinition().getName());
-        assertTrue(dataDefinition.isPrioritizable());
+        assertTrue(((InternalDataDefinition) dataDefinition).isPrioritizable());
     }
 
     @Test
