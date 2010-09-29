@@ -36,11 +36,11 @@ import com.qcadoo.mes.core.internal.types.DateTimeType;
 import com.qcadoo.mes.core.internal.types.DateType;
 import com.qcadoo.mes.core.internal.types.DecimalType;
 import com.qcadoo.mes.core.internal.types.DictionaryType;
-import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
+import com.qcadoo.mes.core.internal.types.BelongsToEntityType;
 import com.qcadoo.mes.core.internal.types.EnumType;
 import com.qcadoo.mes.core.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.internal.types.IntegerType;
-import com.qcadoo.mes.core.internal.types.LazyHasManyType;
+import com.qcadoo.mes.core.internal.types.HasManyEntitiesType;
 import com.qcadoo.mes.core.internal.types.PasswordType;
 import com.qcadoo.mes.core.internal.types.PriorityType;
 import com.qcadoo.mes.core.internal.types.StringType;
@@ -175,9 +175,9 @@ public class DataDefinitionParserTest {
         assertNotNull(dataDefinition.getField("boolean"));
         assertThat(dataDefinition.getField("boolean").getType(), instanceOf(BooleanType.class));
         assertNotNull(dataDefinition.getField("parent"));
-        assertThat(dataDefinition.getField("parent").getType(), instanceOf(EagerBelongsToType.class));
+        assertThat(dataDefinition.getField("parent").getType(), instanceOf(BelongsToEntityType.class));
         assertNotNull(dataDefinition.getField("children"));
-        assertThat(dataDefinition.getField("children").getType(), instanceOf(LazyHasManyType.class));
+        assertThat(dataDefinition.getField("children").getType(), instanceOf(HasManyEntitiesType.class));
         assertEquals("child", ((HasManyType) (dataDefinition.getField("children")).getType()).getJoinFieldName());
         assertEquals("people", getField(dataDefinition.getField("children").getType(), "pluginIdentifier"));
         assertEquals("person", getField(dataDefinition.getField("children").getType(), "entityName"));
@@ -185,7 +185,7 @@ public class DataDefinitionParserTest {
         assertEquals("child2", ((HasManyType) (dataDefinition.getField("children2")).getType()).getJoinFieldName());
         assertEquals("sample", getField(dataDefinition.getField("children2").getType(), "pluginIdentifier"));
         assertEquals("person", getField(dataDefinition.getField("children2").getType(), "entityName"));
-        assertThat(dataDefinition.getField("children2").getType(), instanceOf(LazyHasManyType.class));
+        assertThat(dataDefinition.getField("children2").getType(), instanceOf(HasManyEntitiesType.class));
         assertNotNull(dataDefinition.getField("typeOfMaterial"));
         assertThat(dataDefinition.getField("typeOfMaterial").getType(), instanceOf(EnumType.class));
         assertThat(((EnumType) dataDefinition.getField("typeOfMaterial").getType()).values(),

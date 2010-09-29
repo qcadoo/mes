@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.DefaultEntity;
 
 public class HookTest extends DataAccessTest {
 
@@ -22,7 +23,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldNotCallAnyHookIfNotDefined() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -37,7 +38,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnCreateHook() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -54,15 +55,16 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnUpdateHook() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
         given(
-                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
-                        .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
+                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class)
+                        .add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(
+                databaseObject);
 
         dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
 
@@ -77,7 +79,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallAllDefinedHooksWhileCreating() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -95,15 +97,16 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnSaveHookWhileUpdating() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
         given(
-                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
-                        .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
+                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class)
+                        .add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(
+                databaseObject);
 
         dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
 
@@ -118,15 +121,16 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallAllDefinedHooksWhileUpdating() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
         given(
-                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class).add(Mockito.any(Criterion.class))
-                        .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(databaseObject);
+                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class)
+                        .add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(
+                databaseObject);
 
         dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
         dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
@@ -142,7 +146,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnSaveHookWhileCreating() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", null);
         entity.setField("age", null);
 

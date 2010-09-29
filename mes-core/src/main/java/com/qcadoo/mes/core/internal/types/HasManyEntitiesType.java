@@ -7,7 +7,7 @@ import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
 
-public final class LazyHasManyType implements HasManyType {
+public final class HasManyEntitiesType implements HasManyType {
 
     private final String entityName;
 
@@ -17,7 +17,7 @@ public final class LazyHasManyType implements HasManyType {
 
     private final String pluginIdentifier;
 
-    public LazyHasManyType(final String pluginIdentifier, final String entityName, final String joinFieldName,
+    public HasManyEntitiesType(final String pluginIdentifier, final String entityName, final String joinFieldName,
             final DataDefinitionService dataDefinitionService) {
         this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;

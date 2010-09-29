@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "dictionaries_dictionary")
-public final class DictionariesDictionary {
+public class DictionariesDictionary {
 
     @Id
     @GeneratedValue

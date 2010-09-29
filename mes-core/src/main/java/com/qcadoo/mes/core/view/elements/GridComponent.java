@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
+import com.qcadoo.mes.core.internal.DefaultEntity;
 import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.search.Restrictions;
@@ -235,7 +236,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
         List<Entity> gridEntities = new LinkedList<Entity>();
 
         for (Entity entity : entities) {
-            Entity gridEntity = new Entity(entity.getId());
+            Entity gridEntity = new DefaultEntity(entity.getId());
             for (ColumnDefinition column : columns) {
                 gridEntity.setField(column.getName(), column.getValue(entity));
             }

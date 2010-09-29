@@ -19,13 +19,14 @@ import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.internal.DefaultEntity;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
 import com.qcadoo.mes.core.internal.types.BooleanType;
 import com.qcadoo.mes.core.internal.types.DateTimeType;
 import com.qcadoo.mes.core.internal.types.DateType;
 import com.qcadoo.mes.core.internal.types.DecimalType;
 import com.qcadoo.mes.core.internal.types.DictionaryType;
+import com.qcadoo.mes.core.internal.types.BelongsToEntityType;
 import com.qcadoo.mes.core.internal.types.EnumType;
 import com.qcadoo.mes.core.internal.types.IntegerType;
 import com.qcadoo.mes.core.internal.types.PasswordType;
@@ -33,7 +34,7 @@ import com.qcadoo.mes.core.internal.types.PriorityType;
 import com.qcadoo.mes.core.internal.types.StringType;
 import com.qcadoo.mes.core.internal.types.TextType;
 import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.EnumeratedFieldType;
+import com.qcadoo.mes.core.types.EnumeratedType;
 import com.qcadoo.mes.core.types.FieldType;
 
 public class FieldTypeFactoryTest extends DataAccessTest {
@@ -44,13 +45,13 @@ public class FieldTypeFactoryTest extends DataAccessTest {
 
     @Before
     public void init() {
-        entity = new Entity();
+        entity = new DefaultEntity();
     }
 
     @Test
     public void shouldReturnEnumType() throws Exception {
         // when
-        EnumeratedFieldType fieldType = fieldTypeFactory.enumType("val1", "val2", "val3");
+        EnumeratedType fieldType = fieldTypeFactory.enumType("val1", "val2", "val3");
 
         // then
         assertThat(fieldType, is(EnumType.class));
@@ -72,7 +73,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         given(dictionaryService.values("dict")).willReturn(newArrayList("val1", "val2", "val3"));
 
         // when
-        EnumeratedFieldType fieldType = fieldTypeFactory.dictionaryType("dict");
+        EnumeratedType fieldType = fieldTypeFactory.dictionaryType("dict");
 
         // then
         assertThat(fieldType, is(DictionaryType.class));
@@ -205,12 +206,12 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         FieldType fieldType = fieldTypeFactory.eagerBelongsToType("parent", "entity", "name");
 
         // then
-        assertThat(fieldType, is(EagerBelongsToType.class));
+        assertThat(fieldType, is(BelongsToEntityType.class));
         assertFalse(fieldType.isSearchable());
         assertFalse(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Object.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, new Entity(), entity));
+        assertNotNull(fieldType.toObject(fieldDefinition, new DefaultEntity(), entity));
     }
 
     @Test

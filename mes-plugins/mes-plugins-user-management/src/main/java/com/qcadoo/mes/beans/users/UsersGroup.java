@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "users_group")
-public final class UsersGroup {
+public class UsersGroup {
 
     @Id
     @GeneratedValue

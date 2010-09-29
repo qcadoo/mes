@@ -19,7 +19,7 @@ public final class ListDataUtils {
         List<Entity> gridEntities = new LinkedList<Entity>();
 
         for (Entity entity : entities) {
-            Entity gridEntity = new Entity(entity.getId());
+            Entity gridEntity = entity.copy();
             for (ColumnDefinition column : gridDefinition.getColumns()) {
                 gridEntity.setField(column.getName(), column.getValue(entity));
             }

@@ -11,7 +11,7 @@ public final class EntityDataUtils {
     }
 
     public static Entity generateEntityData(final Entity entity, final DataDefinition dataDefinition) {
-        Entity stringEntity = new Entity(entity.getId());
+        Entity stringEntity = entity.copy();
         for (Map.Entry<String, Object> entry : entity.getFields().entrySet()) {
             stringEntity.setField(entry.getKey(), dataDefinition.getField(entry.getKey()).getValue(entry.getValue()));
         }
