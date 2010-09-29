@@ -44,7 +44,7 @@ public final class SimpleRestriction extends BaseRestriction {
             case NE:
                 return Restrictions.ne(getFieldName(), getValue());
             default:
-                return null;
+                throw new IllegalArgumentException("Unknown restriction operator");
         }
     }
 
