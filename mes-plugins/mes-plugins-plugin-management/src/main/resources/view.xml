@@ -18,23 +18,23 @@
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 			</component>
-			<component type="button" name="downloadButton" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../../download.html" />
+			<component type="button" name="download">
+				<option type="url" value="../download.html" />
 			</component>
-			<component type="button" name="removeButton" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../../remove.html" />
+			<component type="button" name="remove" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../remove.html" />
 			</component>
-			<component type="button" name="enableButton" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../../enable.html" />
+			<component type="button" name="enable" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../enable.html" />
 			</component>
-			<component type="button" name="disableButton" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../../disable.html" />
+			<component type="button" name="disable" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../disable.html" />
 			</component>
-			<component type="button" name="deinstallButton" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../../deinstall.html" />
+			<component type="button" name="deinstall" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../deinstall.html" />
 			</component>
-			<component type="button" name="updateButton" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../../update.html" />
+			<component type="button" name="update" source="#{mainWindow.pluginsGrid}">
+				<option type="url" value="../update.html" />
 			</component>
 			<option type="backButton" value="false" />
 		</component>

@@ -4,6 +4,6 @@
 <html>
     <body>
         <h1>Usunięto moduł</h1>
-		<input type="button" value="Wróć" name="return" onclick="location.href='page/plugins.pluginGridView.html?iframe=true'"/>
+		<input type="button" value="Wróć" name="return" onclick="location.href='page/plugins/pluginGridView.html?iframe=true'"/>
     </body>
 </html>

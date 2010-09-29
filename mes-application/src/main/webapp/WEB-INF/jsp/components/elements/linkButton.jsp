@@ -17,5 +17,8 @@
 		${component.optionsAsJson}
 	</div>
 	
-	<button id="${componentFullName}_button" onClick="window.location='${component.options['url']}'">${component.name}</button>
+	<c:set var="buttonLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
+	
+	
+	<button id="${componentFullName}_button" onClick="window.location='${component.options['url']}'">${translationsMap[buttonLabel]}</button>
 </div>

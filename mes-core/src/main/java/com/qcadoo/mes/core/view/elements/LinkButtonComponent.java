@@ -2,6 +2,7 @@ package com.qcadoo.mes.core.view.elements;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
@@ -53,6 +55,14 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
             return new ViewValue<String>(url + "?entityId=" + entity.getId());
         }
         return new ViewValue<String>(url);
+    }
+
+    @Override
+    public final void addComponentTranslations(final Map<String, String> translationsMap,
+            final TranslationService translationService, final Locale locale) {
+        String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                + ".label";
+        translationsMap.put(messageCode, translationService.translate(messageCode, locale));
     }
 
 }
