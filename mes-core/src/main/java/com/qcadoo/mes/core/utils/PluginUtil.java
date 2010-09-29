@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.util;
+package com.qcadoo.mes.core.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +18,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
-import com.qcadoo.mes.plugins.enums.PluginDescriptorProperties;
-import com.qcadoo.mes.plugins.exception.PluginException;
+import com.qcadoo.mes.core.enums.PluginDescriptorProperties;
+import com.qcadoo.mes.core.exception.PluginException;
 
 public final class PluginUtil {
 
@@ -124,6 +124,9 @@ public final class PluginUtil {
                     break;
                 case DESCRIPTION:
                     plugin.setDescription(value);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown element node");
             }
 
         }

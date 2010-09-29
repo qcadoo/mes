@@ -1,4 +1,4 @@
-package com.qcadoo.mes.plugins.enums;
+package com.qcadoo.mes.core.enums;
 
 public enum PluginDescriptorProperties {
     IDENTIFIER("identifier"), NAME("name"), PACKAGE_NAME("packageName"), VERSION("version"), VENDOR("vendor"), DESCRIPTION(
