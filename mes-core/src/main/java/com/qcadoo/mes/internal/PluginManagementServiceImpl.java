@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
@@ -297,17 +296,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             LOG.error("Chosen file is empty");
             return pluginView + "&message=Plik jest pusty";
         }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<PluginsPlugin> getActivePlugins() {
-        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
-                .add(Restrictions.eq("status", PluginStatus.ACTIVE.getValue())).add(Restrictions.eq(FIELD_DELETED, false));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("get plugins with status: " + PluginStatus.ACTIVE.getValue());
-        }
-        return criteria.list();
     }
 
     @Override

@@ -1,14 +1,10 @@
 package com.qcadoo.mes.api;
 
-import java.util.List;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 
 public interface PluginManagementService {
-
-    List<PluginsPlugin> getActivePlugins();
 
     PluginsPlugin getByIdentifier(final String identifier);
 
