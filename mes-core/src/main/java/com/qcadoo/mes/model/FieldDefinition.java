@@ -1,9 +1,9 @@
-package com.qcadoo.mes.core.model;
+package com.qcadoo.mes.model;
 
 import java.util.List;
 
-import com.qcadoo.mes.core.types.FieldType;
-import com.qcadoo.mes.core.validation.FieldValidator;
+import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.validation.FieldValidator;
 
 public interface FieldDefinition {
 

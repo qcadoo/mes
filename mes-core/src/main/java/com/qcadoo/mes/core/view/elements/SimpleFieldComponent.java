@@ -12,10 +12,10 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
@@ -100,7 +100,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         if (value == null) {
             return null;
         } else {
-            return value.getMessage(); // TODO
+            return value.getMessage(); // TODO masz i18n
         }
     }
 

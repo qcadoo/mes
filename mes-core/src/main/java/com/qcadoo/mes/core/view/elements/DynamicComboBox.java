@@ -11,13 +11,13 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.types.EnumeratedType;
-import com.qcadoo.mes.core.types.FieldType;
-import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.ViewValue;
 import com.qcadoo.mes.core.view.elements.comboBox.ComboBoxValue;
+import com.qcadoo.mes.model.types.EnumeratedType;
+import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 public final class DynamicComboBox extends AbstractComponent<ComboBoxValue> {
 

@@ -12,8 +12,8 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 
 public final class ExpressionUtil {
 

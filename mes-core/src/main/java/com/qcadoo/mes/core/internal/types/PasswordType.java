@@ -3,8 +3,8 @@ package com.qcadoo.mes.core.internal.types;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.FieldType;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.FieldType;
 
 public final class PasswordType implements FieldType {
 

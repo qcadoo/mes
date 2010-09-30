@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.search.SearchResult;
 import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
+import com.qcadoo.mes.model.search.SearchResult;
 
 public final class ListDataUtils {
 

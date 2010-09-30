@@ -1,7 +1,7 @@
-package com.qcadoo.mes.core.validation;
+package com.qcadoo.mes.model.validation;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
+import com.qcadoo.mes.model.DataDefinition;
 
 /**
  * Validator takes value of the entity and returns true in case of no errors.

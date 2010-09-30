@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.validation.ErrorMessage;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
-public class ProxyEntity implements Entity {
+public final class ProxyEntity implements Entity {
 
     private final DataDefinition dataDefinition;
 

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.search;
+package com.qcadoo.mes.model.search;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -9,7 +9,7 @@ import com.qcadoo.mes.core.internal.search.restrictions.IsNotNullRestriction;
 import com.qcadoo.mes.core.internal.search.restrictions.IsNullRestriction;
 import com.qcadoo.mes.core.internal.search.restrictions.LikeRestriction;
 import com.qcadoo.mes.core.internal.search.restrictions.SimpleRestriction;
-import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 
 /**
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction

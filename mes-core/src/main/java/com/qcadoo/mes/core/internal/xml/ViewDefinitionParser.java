@@ -25,8 +25,6 @@ import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.ViewDefinitionService;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.view.ViewDefinitionImpl;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.view.Component;
@@ -42,6 +40,8 @@ import com.qcadoo.mes.core.view.elements.EntityComboBox;
 import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.LinkButtonComponent;
 import com.qcadoo.mes.core.view.elements.TextInputComponent;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.HookDefinition;
 
 @Service
 public final class ViewDefinitionParser {
@@ -132,7 +132,7 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        addChildrenComponentsAndOptions(reader, componentType, (AbstractComponent<?>) component);
+        addChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
 
         return component;
     }
@@ -164,13 +164,13 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        addChildrenComponentsAndOptions(reader, componentType, (AbstractComponent<?>) component);
+        addChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
 
         return component;
     }
 
-    private void addChildrenComponentsAndOptions(final XMLStreamReader reader, final String tagName,
-            final AbstractComponent<?> component) throws XMLStreamException {
+    private void addChildrenComponentsAndOptions(final XMLStreamReader reader, final AbstractComponent<?> component)
+            throws XMLStreamException {
         component.setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
         component.setDefaultVisible(getBooleanAttribute(reader, "visible", true));
 

@@ -33,9 +33,9 @@ import com.qcadoo.mes.core.internal.types.PasswordType;
 import com.qcadoo.mes.core.internal.types.PriorityType;
 import com.qcadoo.mes.core.internal.types.StringType;
 import com.qcadoo.mes.core.internal.types.TextType;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.EnumeratedType;
-import com.qcadoo.mes.core.types.FieldType;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.EnumeratedType;
+import com.qcadoo.mes.model.types.FieldType;
 
 public class FieldTypeFactoryTest extends DataAccessTest {
 

@@ -9,8 +9,8 @@ import org.mockito.BDDMockito;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.DefaultEntity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 
 public class EntityDataUtilsGenerateEntityDataTest {
 

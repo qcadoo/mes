@@ -10,7 +10,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
-import com.qcadoo.mes.core.model.DataDefinition;
+import com.qcadoo.mes.model.DataDefinition;
 
 @Service
 public final class DataDefinitionServiceImpl implements DataDefinitionService {

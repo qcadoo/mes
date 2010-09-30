@@ -1,11 +1,11 @@
-package com.qcadoo.mes.core.model;
+package com.qcadoo.mes.model;
 
 import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.validation.EntityValidator;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.model.validation.EntityValidator;
 
 public interface DataDefinition {
 

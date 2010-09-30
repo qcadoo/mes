@@ -3,8 +3,8 @@ package com.qcadoo.mes.core.api;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.validation.ErrorMessage;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 /**
  * Object represents data from the database tables - with and without custom fields - and virtual tables - build using only custom

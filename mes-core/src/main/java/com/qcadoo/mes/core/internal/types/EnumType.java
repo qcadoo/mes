@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.EnumeratedType;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.EnumeratedType;
 
 public final class EnumType implements EnumeratedType {
 

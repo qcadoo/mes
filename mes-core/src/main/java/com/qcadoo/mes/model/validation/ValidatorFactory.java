@@ -1,6 +1,6 @@
-package com.qcadoo.mes.core.validation;
+package com.qcadoo.mes.model.validation;
 
-import com.qcadoo.mes.core.model.HookDefinition;
+import com.qcadoo.mes.model.HookDefinition;
 
 /**
  * @apiviz.uses com.qcadoo.mes.core.data.definition.FieldValidator

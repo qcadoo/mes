@@ -11,12 +11,12 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.DataAccessService;
 import com.qcadoo.mes.core.internal.search.SearchCriteriaImpl;
 import com.qcadoo.mes.core.internal.types.PriorityType;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.search.SearchCriteria;
-import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.validation.EntityValidator;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.search.SearchCriteria;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.validation.EntityValidator;
 
 /**
  * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points to

@@ -1,9 +1,9 @@
 package com.qcadoo.mes.core.internal.validators;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.validation.EntityValidator;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.validation.EntityValidator;
 
 public final class CustomEntityValidator implements EntityValidator {
 

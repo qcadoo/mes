@@ -1,15 +1,15 @@
-package com.qcadoo.mes.core.search;
+package com.qcadoo.mes.model.search;
 
 import java.util.Set;
 
-import com.qcadoo.mes.core.model.DataDefinition;
+import com.qcadoo.mes.model.DataDefinition;
 
 /**
  * Object represents the criteria for listing entities. Together with definition -
- * {@link com.qcadoo.mes.core.model.DataDefinition} - and grip - optionally
+ * {@link com.qcadoo.mes.model.DataDefinition} - and grip - optionally
  * {@link com.qcadoo.mes.core.view.elements.GridComponent} - it is used for building SQL query.
  * 
- * Order can be build only using orderable fields - {@link com.qcadoo.mes.core.types.FieldType#isOrderable()}.
+ * Order can be build only using orderable fields - {@link com.qcadoo.mes.model.types.FieldType#isOrderable()}.
  * 
  * @apiviz.owns com.qcadoo.mes.core.data.search.Restriction
  * @apiviz.has com.qcadoo.mes.core.data.search.Order

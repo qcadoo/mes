@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.types;
+package com.qcadoo.mes.model.types;
 
 import java.util.Map;
 

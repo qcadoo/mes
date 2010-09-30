@@ -10,14 +10,14 @@ import org.json.JSONObject;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.internal.DefaultEntity;
-import com.qcadoo.mes.core.types.HasManyType;
-import com.qcadoo.mes.core.validation.ErrorMessage;
 import com.qcadoo.mes.core.view.AbstractContainerComponent;
 import com.qcadoo.mes.core.view.Component;
 import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
 import com.qcadoo.mes.core.view.SaveableComponent;
 import com.qcadoo.mes.core.view.ViewValue;
+import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 public final class FormComponent extends AbstractContainerComponent<Long> implements SaveableComponent {
 
@@ -67,7 +67,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue) {
         if (entity != null) {
             for (ErrorMessage validationError : entity.getGlobalErrors()) {
-                viewValue.addErrorMessage(validationError.getMessage()); // TODO
+                viewValue.addErrorMessage(validationError.getMessage()); // TODO masz i18n
             }
         }
     }

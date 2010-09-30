@@ -9,9 +9,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.qcadoo.mes.core.internal.validators.RequiredOnCreateValidator;
 import com.qcadoo.mes.core.internal.validators.RequiredValidator;
 import com.qcadoo.mes.core.internal.validators.UniqueValidator;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.FieldType;
-import com.qcadoo.mes.core.validation.FieldValidator;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.validation.FieldValidator;
 
 /**
  * Field defines database field or custom field (according to {@link FieldDefinition#isCustomField()}).

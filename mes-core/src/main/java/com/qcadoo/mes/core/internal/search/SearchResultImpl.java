@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.search.SearchCriteria;
-import com.qcadoo.mes.core.search.SearchResult;
+import com.qcadoo.mes.model.search.SearchCriteria;
+import com.qcadoo.mes.model.search.SearchResult;
 
 public final class SearchResultImpl implements SearchResult {
 

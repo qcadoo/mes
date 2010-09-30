@@ -1,6 +1,6 @@
-package com.qcadoo.mes.core.types;
+package com.qcadoo.mes.model.types;
 
-import com.qcadoo.mes.core.model.DataDefinition;
+import com.qcadoo.mes.model.DataDefinition;
 
 public interface BelongsToType extends LookupedType {
 

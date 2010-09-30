@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.core.model.HookDefinition;
+import com.qcadoo.mes.model.HookDefinition;
 
 @Service
 public final class HookFactory {

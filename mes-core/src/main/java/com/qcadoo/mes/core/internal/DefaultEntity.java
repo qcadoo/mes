@@ -9,8 +9,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.validation.ErrorMessage;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 public final class DefaultEntity implements Entity {
 

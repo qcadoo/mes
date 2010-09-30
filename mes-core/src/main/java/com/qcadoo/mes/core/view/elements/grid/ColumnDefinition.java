@@ -7,13 +7,13 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.FieldDefinition;
 import com.qcadoo.mes.core.utils.ExpressionUtil;
+import com.qcadoo.mes.model.FieldDefinition;
 
 /**
  * Columns defines one column on grid. It can be a one-field column or composite column.
  * 
- * Expression is JavaScript command used for formatting the column's cell value. TODO masz
+ * Expression is JavaScript command used for formatting the column's cell value.
  * 
  * Aggregation is displayed under the column. It aggregate all values for given column, from all pages. Aggregation is available
  * only for column which one-field column field column with aggregable type - FieldType#isAggregable().

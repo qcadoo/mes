@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.model.DataDefinition;
+import com.qcadoo.mes.model.DataDefinition;
 
 public interface Component<T> {
 

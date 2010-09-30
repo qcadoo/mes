@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.search;
+package com.qcadoo.mes.model.search;
 
 import java.util.List;
 import java.util.Map;

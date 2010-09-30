@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.FieldType;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.FieldType;
 
 public final class DateTimeType implements FieldType {
 

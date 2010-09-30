@@ -1,10 +1,10 @@
 package com.qcadoo.mes.core.internal.validators;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.validation.FieldValidator;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.validation.FieldValidator;
 
 public final class CustomValidator implements FieldValidator {
 

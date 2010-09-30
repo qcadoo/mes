@@ -55,13 +55,13 @@ import com.qcadoo.mes.core.internal.validators.ScaleValidator;
 import com.qcadoo.mes.core.internal.validators.UniqueValidator;
 import com.qcadoo.mes.core.internal.validators.ValidatorFactoryImpl;
 import com.qcadoo.mes.core.internal.xml.DataDefinitionParser;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.types.HasManyType;
-import com.qcadoo.mes.core.validation.EntityValidator;
-import com.qcadoo.mes.core.validation.FieldValidator;
-import com.qcadoo.mes.core.validation.ValidatorFactory;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.validation.EntityValidator;
+import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validation.ValidatorFactory;
 
 public class DataDefinitionParserTest {
 

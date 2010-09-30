@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
 import com.qcadoo.mes.core.internal.types.PriorityType;
-import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 
 @Service
 public final class PriorityService {

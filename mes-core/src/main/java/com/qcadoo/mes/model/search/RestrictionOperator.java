@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.search;
+package com.qcadoo.mes.model.search;
 
 public enum RestrictionOperator {
 

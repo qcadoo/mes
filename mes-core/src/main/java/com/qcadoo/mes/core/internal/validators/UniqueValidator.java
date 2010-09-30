@@ -1,13 +1,13 @@
 package com.qcadoo.mes.core.internal.validators;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.search.RestrictionOperator;
-import com.qcadoo.mes.core.search.Restrictions;
-import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.validation.FieldValidator;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.RestrictionOperator;
+import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.validation.FieldValidator;
 
 public final class UniqueValidator implements FieldValidator {
 

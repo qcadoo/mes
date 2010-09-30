@@ -11,11 +11,11 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
 import com.qcadoo.mes.core.internal.types.BelongsToEntityType;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.BelongsToType;
-import com.qcadoo.mes.core.validation.EntityValidator;
-import com.qcadoo.mes.core.validation.FieldValidator;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.validation.EntityValidator;
+import com.qcadoo.mes.model.validation.FieldValidator;
 
 @Service
 public final class ValidationService {

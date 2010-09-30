@@ -2,10 +2,10 @@ package com.qcadoo.mes.core.internal.types;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.HasManyType;
 
 public final class HasManyEntitiesType implements HasManyType {
 

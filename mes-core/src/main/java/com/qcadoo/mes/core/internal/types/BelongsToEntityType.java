@@ -5,11 +5,11 @@ import java.util.Map;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.search.Order;
-import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.types.BelongsToType;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.Order;
+import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.BelongsToType;
 
 public final class BelongsToEntityType implements BelongsToType {
 

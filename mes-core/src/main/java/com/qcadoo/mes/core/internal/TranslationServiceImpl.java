@@ -12,8 +12,8 @@ import org.springframework.stereotype.Controller;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.validation.ErrorMessage;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 @Controller
 public final class TranslationServiceImpl implements TranslationService {

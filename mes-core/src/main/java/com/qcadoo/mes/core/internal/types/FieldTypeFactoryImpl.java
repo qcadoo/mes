@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.core.api.DataDefinitionService;
 import com.qcadoo.mes.core.api.DictionaryService;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.EnumeratedType;
-import com.qcadoo.mes.core.types.FieldType;
-import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.types.LookupedType;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.EnumeratedType;
+import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.types.LookupedType;
 
 @Service
 public final class FieldTypeFactoryImpl implements FieldTypeFactory {

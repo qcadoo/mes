@@ -17,12 +17,6 @@ import org.json.JSONObject;
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
 import com.qcadoo.mes.core.internal.DefaultEntity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.search.Restrictions;
-import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ContainerComponent;
@@ -30,6 +24,12 @@ import com.qcadoo.mes.core.view.ViewValue;
 import com.qcadoo.mes.core.view.elements.grid.ColumnAggregationMode;
 import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
 import com.qcadoo.mes.core.view.elements.grid.ListData;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.HasManyType;
 
 /**
  * Grid defines structure used for listing entities. It contains the list of field that can be used for restrictions and the list

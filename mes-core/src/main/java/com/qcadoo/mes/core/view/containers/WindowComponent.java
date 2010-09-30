@@ -4,10 +4,10 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.model.DataDefinition;
 import com.qcadoo.mes.core.view.AbstractRootComponent;
 import com.qcadoo.mes.core.view.ComponentOption;
 import com.qcadoo.mes.core.view.ViewDefinition;
+import com.qcadoo.mes.model.DataDefinition;
 
 public final class WindowComponent extends AbstractRootComponent {
 

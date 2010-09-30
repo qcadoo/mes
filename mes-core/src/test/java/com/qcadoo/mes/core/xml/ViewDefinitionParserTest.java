@@ -39,11 +39,6 @@ import com.qcadoo.mes.core.internal.ViewDefinitionServiceImpl;
 import com.qcadoo.mes.core.internal.hooks.HookFactory;
 import com.qcadoo.mes.core.internal.types.StringType;
 import com.qcadoo.mes.core.internal.xml.ViewDefinitionParser;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.types.BelongsToType;
-import com.qcadoo.mes.core.types.HasManyType;
 import com.qcadoo.mes.core.view.AbstractComponent;
 import com.qcadoo.mes.core.view.Component;
 import com.qcadoo.mes.core.view.ContainerComponent;
@@ -57,6 +52,11 @@ import com.qcadoo.mes.core.view.elements.GridComponent;
 import com.qcadoo.mes.core.view.elements.LinkButtonComponent;
 import com.qcadoo.mes.core.view.elements.TextInputComponent;
 import com.qcadoo.mes.core.view.elements.grid.ColumnAggregationMode;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.HasManyType;
 
 public class ViewDefinitionParserTest {
 

@@ -2,8 +2,8 @@ package com.qcadoo.mes.core.internal;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
-import com.qcadoo.mes.core.search.SearchCriteria;
-import com.qcadoo.mes.core.search.SearchResult;
+import com.qcadoo.mes.model.search.SearchCriteria;
+import com.qcadoo.mes.model.search.SearchResult;
 
 /**
  * @apiviz.uses com.qcadoo.mes.core.data.beans.Entity

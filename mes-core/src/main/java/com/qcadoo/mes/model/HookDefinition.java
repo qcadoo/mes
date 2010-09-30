@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.model;
+package com.qcadoo.mes.model;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.view.ViewValue;

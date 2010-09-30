@@ -17,11 +17,11 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.BelongsToType;
-import com.qcadoo.mes.core.types.HasManyType;
-import com.qcadoo.mes.core.validation.ErrorMessage;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 public abstract class AbstractComponent<T> implements Component<T> {
 

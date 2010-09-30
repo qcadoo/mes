@@ -2,7 +2,7 @@ package com.qcadoo.mes.core.api;
 
 import java.util.List;
 
-import com.qcadoo.mes.core.model.DataDefinition;
+import com.qcadoo.mes.model.DataDefinition;
 
 /**
  * @apiviz.uses com.qcadoo.mes.core.data.definition.DataDefinition

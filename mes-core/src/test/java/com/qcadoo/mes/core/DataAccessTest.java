@@ -30,8 +30,8 @@ import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
 import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
 import com.qcadoo.mes.core.internal.types.FieldTypeFactoryImpl;
 import com.qcadoo.mes.core.internal.validators.ValidatorFactoryImpl;
-import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.validation.ValidatorFactory;
+import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.validation.ValidatorFactory;
 
 public abstract class DataAccessTest {
 

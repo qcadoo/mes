@@ -9,10 +9,10 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.model.HookDefinition;
 import com.qcadoo.mes.core.view.RootComponent;
 import com.qcadoo.mes.core.view.ViewDefinition;
 import com.qcadoo.mes.core.view.ViewValue;
+import com.qcadoo.mes.model.HookDefinition;
 
 public final class ViewDefinitionImpl implements ViewDefinition {
 

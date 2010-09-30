@@ -1,9 +1,9 @@
 package com.qcadoo.mes.core.internal.model;
 
 import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.search.SearchCriteria;
-import com.qcadoo.mes.core.search.SearchResult;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.SearchCriteria;
+import com.qcadoo.mes.model.search.SearchResult;
 
 public interface InternalDataDefinition extends DataDefinition {
 

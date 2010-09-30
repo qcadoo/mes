@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.search;
+package com.qcadoo.mes.model.search;
 
 /**
  * Restriction represents the part of WHERE clause in SQL query.

@@ -34,13 +34,13 @@ import com.qcadoo.mes.core.internal.types.DateTimeType;
 import com.qcadoo.mes.core.internal.types.DateType;
 import com.qcadoo.mes.core.internal.types.DecimalType;
 import com.qcadoo.mes.core.internal.types.IntegerType;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.types.FieldType;
-import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.validation.EntityValidator;
-import com.qcadoo.mes.core.validation.FieldValidator;
-import com.qcadoo.mes.core.validation.ValidatorFactory;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.validation.EntityValidator;
+import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validation.ValidatorFactory;
 
 @Service
 public final class DataDefinitionParser {

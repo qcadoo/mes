@@ -25,12 +25,12 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
 import com.qcadoo.mes.core.internal.search.SearchResultImpl;
 import com.qcadoo.mes.core.internal.search.restrictions.HibernateRestriction;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.search.Order;
-import com.qcadoo.mes.core.search.Restriction;
-import com.qcadoo.mes.core.search.SearchCriteria;
-import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.validation.ErrorMessage;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Order;
+import com.qcadoo.mes.model.search.Restriction;
+import com.qcadoo.mes.model.search.SearchCriteria;
+import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.validation.ErrorMessage;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {

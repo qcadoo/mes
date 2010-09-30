@@ -1,6 +1,6 @@
-package com.qcadoo.mes.core.types;
+package com.qcadoo.mes.model.types;
 
-import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 
 public interface FieldTypeFactory {
 

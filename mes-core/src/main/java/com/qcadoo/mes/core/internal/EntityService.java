@@ -12,8 +12,8 @@ import com.qcadoo.mes.core.api.Entity;
 import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
 import com.qcadoo.mes.core.internal.types.BelongsToEntityType;
 import com.qcadoo.mes.core.internal.types.PasswordType;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.types.BelongsToType;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
 
 @Service
 public final class EntityService {
