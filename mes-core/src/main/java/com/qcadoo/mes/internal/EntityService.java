@@ -7,6 +7,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
@@ -18,6 +20,8 @@ import com.qcadoo.mes.model.types.internal.PasswordType;
 
 @Service
 public final class EntityService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EntityService.class);
 
     public static final String FIELD_ID = "id";
 
@@ -130,7 +134,15 @@ public final class EntityService {
         }
 
         if (belongsToFieldType.isLazyLoading()) {
-            Long id = (Long) ((HibernateProxy) value).getHibernateLazyInitializer().getIdentifier();
+            Long id = null;
+
+            if (value instanceof HibernateProxy) {
+                id = (Long) ((HibernateProxy) value).getHibernateLazyInitializer().getIdentifier();
+            } else {
+                LOG.warn("Laziness of " + databaseEntity.getClass().getCanonicalName() + "#" + fieldDefinition.getName()
+                        + " in model.xml and hibernate bean is different.");
+                id = getId(getField(databaseEntity, fieldDefinition.getName()));
+            }
 
             if (id == null) {
                 return null;
