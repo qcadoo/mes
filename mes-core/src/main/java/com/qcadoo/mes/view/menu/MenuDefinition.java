@@ -1,4 +1,4 @@
-package com.qcadoo.mes.model.menu;
+package com.qcadoo.mes.view.menu;
 
 import java.util.LinkedList;
 import java.util.List;
