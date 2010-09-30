@@ -56,7 +56,7 @@
 }
 #secondLevelMenu .secondLevelButtonWrapper .secondLevelButton.active,
 #secondLevelMenu .secondLevelButtonWrapper .secondLevelButton.active.previousActive {
-	background: #f1f1f1;
+	background: white;
 }
 #secondLevelMenu .secondLevelButtonWrapper .secondLevelButton.previousActive {
 	//background: #eaffd5;

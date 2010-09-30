@@ -40,8 +40,8 @@ public final class MainPageController {
         return mav;
     }
 
-    @RequestMapping(value = "testPage", method = RequestMethod.GET)
-    public ModelAndView getTestView(@RequestParam final Map<String, String> arguments, final Locale locale) {
+    @RequestMapping(value = "homePage", method = RequestMethod.GET)
+    public ModelAndView getHomePageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("testPage");
         return mav;

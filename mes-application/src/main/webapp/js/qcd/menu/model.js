@@ -13,6 +13,7 @@ QCD.menu.MenuModel = function(menuItems) {
 		this.itemsMap[button.name] = button;
 		if (! this.selectedItem) {
 			this.selectedItem = button;
+			button.selectedItem = button.items[0]; 
 		}
 	}
 }
@@ -31,12 +32,6 @@ QCD.menu.FirstButton = function(menuItem) {
 		var secondButton = new QCD.menu.SecondButton(menuItem.items[i], this);
 		this.itemsMap[secondButton.name] = secondButton;
 		this.items.push(secondButton);
-		if (! this.selectedItem) {
-			this.selectedItem = secondButton;
-		}
-	}
-	if (this.items.length == 0) {
-		this.ribbon = new QCD.menu.RibbonModel(this.name, menuItem.ribbonItems);
 	}
 }
 
@@ -44,12 +39,8 @@ QCD.menu.SecondButton = function(menuItem, firstButton) {
 	this.name = firstButton.name+"_"+menuItem.name;
 	this.label = menuItem.label;
 	
+	this.page = menuItem.page;
+	
 	this.element = null;
 	
-	this.ribbon = new QCD.menu.RibbonModel(this.name, menuItem.ribbonItems);
-}
-
-QCD.menu.RibbonModel = function(parentName, ribbonItems) {
-	this.name = parentName+"_ribbon";
-	this.items = ribbonItems;
 }

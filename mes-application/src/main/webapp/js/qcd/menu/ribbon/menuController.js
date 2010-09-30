@@ -1,9 +1,9 @@
 var QCD = QCD || {};
 QCD.menu = QCD.menu || {};
 
-QCD.menu.MenuController = function(menuStructure, _windowController) {
+QCD.menu.MenuController = function(menuStructure, windowController) {
 	
-	var windowController = _windowController;
+	var model = null;
 	
 	var firstLevelElement = $("#firstLevelMenu");
 	var secondLevelElement = $("#secondLevelMenu");
@@ -16,8 +16,12 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	currentActive.first = null;
 	currentActive.second = null;
 	
+	
+	var ribbon = new QCD.menu.Ribbon(this, windowController);
+	
 	function constructor(menuStructure) {
 		model = new QCD.menu.MenuModel(menuStructure.menuItems);
+		
 		for (var i in model.items) {
 			var item = model.items[i];
 			var firstLevelButton = $("<div>").html(item.label).addClass("firstLevelButton").attr("id", "firstLevelButton_"+item.name);
@@ -42,8 +46,6 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		previousActive.second = model.selectedItem.selectedItem;
 		
 		updateState();
-		
-		changePage(model.selectedItem.selectedItem.page);
 	}
 	
 	function onTopItemOver(itemElement) {
@@ -73,13 +75,17 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		
 		updateState();
 	}
-	
+
 	function onBottomItemClick(itemElement) {
 		var buttonName = itemElement.attr("id").substring(18);
 		var selectedItem = model.selectedItem.itemsMap[buttonName];
 		
 		model.selectedItem.selectedItem = selectedItem;
 		
+		updateState();
+	}
+	
+	this.ribbonSelected = function() {
 		previousActive.first.element.removeClass("previousActive");
 		if (previousActive.second) {
 			previousActive.second.element.removeClass("previousActive");
@@ -90,10 +96,6 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		if (previousActive.second) {
 			previousActive.second.element.addClass("previousActive");
 		}
-		
-		updateState();
-		
-		changePage(model.selectedItem.selectedItem.page);
 	}
 	
 	this.restoreState = function() {
@@ -116,7 +118,7 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 				updateSecondLevel();
 			} else {
 				secondLevelElement.hide();
-				//ribbon.setRibbon(model.selectedItem.ribbon);
+				ribbon.setRibbon(model.selectedItem.ribbon);
 			}
 			
 		} else {
@@ -127,9 +129,9 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 				currentActive.second = model.selectedItem.selectedItem;
 				if (currentActive.second) {
 					currentActive.second.element.addClass("active");
-					//ribbon.setRibbon(model.selectedItem.selectedItem.ribbon);
+					ribbon.setRibbon(model.selectedItem.selectedItem.ribbon);
 				} else {
-					//ribbon.setRibbon(model.selectedItem.ribbon);
+					ribbon.setRibbon(model.selectedItem.ribbon);
 				}
 			}
 		}
@@ -159,28 +161,19 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 				});
 				
 				if (previousActive.second && previousActive.second.name == secondLevelItem.name) {
-					//secondLevelItem.element.addClass("previousActive");
-					secondLevelItem.element.addClass("active");
+					secondLevelItem.element.addClass("previousActive");
 				}
 				
 			}
 			secondLevelElement.show();
-			//if (model.selectedItem.selectedItem) {
-			//	model.selectedItem.selectedItem.element.addClass("active");	
-			//}
-			
-			//currentActive.second = model.selectedItem.selectedItem;
-			//ribbon.setRibbon(model.selectedItem.selectedItem.ribbon);
+			model.selectedItem.selectedItem.element.addClass("active");
+			currentActive.second = model.selectedItem.selectedItem;
+			ribbon.setRibbon(model.selectedItem.selectedItem.ribbon);
 		} else {
 			secondLevelElement.hide();
-			//ribbon.setRibbon(model.selectedItem.ribbon);
+			ribbon.setRibbon(model.selectedItem.ribbon);
 		}
 	} 
-	
-	function changePage(page) {
-		QCD.info(page);
-		windowController.onMenuClicked(page);
-	}
 	
 	constructor(menuStructure);
 }
