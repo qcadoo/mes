@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.view.menu.MenuDefinition;
 
 public interface ViewDefinitionService {
 
@@ -17,5 +18,7 @@ public interface ViewDefinitionService {
     ViewDefinition get(String pluginIdentifier, String viewName);
 
     void delete(String pluginIdentifier, String viewName);
+
+    MenuDefinition getMenu();
 
 }

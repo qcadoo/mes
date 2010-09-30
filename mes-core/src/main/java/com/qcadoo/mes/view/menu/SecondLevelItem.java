@@ -1,21 +1,17 @@
-package com.qcadoo.mes.model.menu;
+package com.qcadoo.mes.view.menu;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SecondLevelItem {
+public abstract class SecondLevelItem {
 
     private final String name;
 
     private final String label;
 
-    private final String page;
-
-    public SecondLevelItem(String name, String label, String page) {
-        super();
+    public SecondLevelItem(String name, String label) {
         this.name = name;
         this.label = label;
-        this.page = page;
     }
 
     public String getName() {
@@ -26,15 +22,14 @@ public class SecondLevelItem {
         return label;
     }
 
-    public String getPage() {
-        return page;
-    }
+    public abstract String getPage();
 
     public JSONObject getAsJson() throws JSONException {
         JSONObject itemObject = new JSONObject();
-        itemObject.put("name", name);
-        itemObject.put("label", label);
-        itemObject.put("page", page);
+        itemObject.put("name", getName());
+        itemObject.put("label", getLabel());
+        itemObject.put("page", getPage());
         return itemObject;
     }
+
 }
