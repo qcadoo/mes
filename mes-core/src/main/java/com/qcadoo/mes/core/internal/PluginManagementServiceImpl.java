@@ -123,6 +123,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         if (databasePlugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
+        } else if (!databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
+            LOG.error("Plugin hasn't apropriate status");
+            return pluginView + "&message=Niepoprawny status do usuwania";
         }
         try {
             databasePlugin.setDeleted(true);
@@ -145,6 +148,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         if (plugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
+        } else if (plugin.getStatus().equals(PluginStatus.ACTIVE.getValue())) {
+            LOG.error("Plugin hasn't apropriate status");
+            return pluginView + "&message=Niepoprawny status do włączania";
         }
         String pluginStatus = plugin.getStatus();
         plugin.setStatus(PluginStatus.ACTIVE.getValue());
@@ -182,6 +188,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         if (plugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
+        } else if (!plugin.getStatus().equals(PluginStatus.ACTIVE.getValue())) {
+            LOG.error("Plugin hasn't apropriate status");
+            return pluginView + "&message=Niepoprawny status do wyłączania";
         }
         plugin.setStatus(PluginStatus.INSTALLED.getValue());
         savePlugin(plugin);
@@ -195,6 +204,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         if (databasePlugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
+        } else if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
+            LOG.error("Plugin hasn't apropriate status");
+            return pluginView + "&message=Niepoprawny status do odinstalowania";
         }
         try {
             databasePlugin.setDeleted(true);
