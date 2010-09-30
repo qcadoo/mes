@@ -178,7 +178,6 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	} 
 	
 	function changePage(page) {
-		QCD.info(page);
 		windowController.onMenuClicked(page);
 	}
 	

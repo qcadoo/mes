@@ -20,68 +20,7 @@
 	
 	<script type="text/javascript">
 
-	var menuStructure = {
-			menuItems: [
-				{
-					name: "home",
-					label: "home",
-					items: [
-						{
-							name: "home",
-							label: "home",
-							page: "homePage.html"
-						}
-					]
-				},
-				{
-					name: "products",
-					label: "Zarządzanie Produktami",
-					items: [
-						{
-							name: "products",
-							label: "Produkty",
-							page: "page/products/productGridView.html"
-						},
-						{
-							name: "instructions",
-							label: "Instrukcje materiałowe",
-							page: "page/products/instructionGridView.html"
-						},
-						{
-							name: "productionOrders",
-							label: "Zlecenia produkcyjne",
-							page: "page/products/orderGridView.html"
-						}
-					]
-				},
-				{
-					name: "administration",
-					label: "Administracja",
-					items: [
-						{
-							name: "dictionaries",
-							label: "Słowniki",
-							page: "page/dictionaries/dictionaryGridView.html"
-						},
-						{
-							name: "users",
-							label: "Użytkownicy",
-							page: "page/users/userGridView.html"
-						},
-						{
-							name: "groups",
-							label: "Grupy",
-							page: "page/users/groupGridView.html"
-						},
-						{
-							name: "plugins",
-							label: "Pluginy",
-							page: "page/plugins/pluginGridView.html"
-						}
-					]
-				}
-			]
-		};
+		var menuStructure = ${menuStructure}
 
 		var windowController;
 		
