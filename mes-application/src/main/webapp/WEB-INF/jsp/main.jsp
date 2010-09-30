@@ -21,7 +21,7 @@
 	
 	<script type="text/javascript"><!--
 
-		/*var menuStructure = {
+		var menuStructure = {
 			menuItems: [
 				{
 					name: "home",
@@ -129,8 +129,8 @@
 					]
 				}
 			]
-		};*/
-
+		};
+/*
 		var menuStructure = {
 				menuItems: [
 					{
@@ -254,7 +254,7 @@
 						]
 					}
 				]
-			};
+			};*/
 
 		var windowController;
 		
