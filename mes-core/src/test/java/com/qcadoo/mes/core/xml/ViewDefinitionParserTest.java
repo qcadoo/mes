@@ -101,7 +101,7 @@ public class ViewDefinitionParserTest {
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setIdentifier("sample");
 
-        given(pluginManagementService.getPluginByIdentifierAndStatus("sample", "active")).willReturn(plugin);
+        given(pluginManagementService.getByIdentifierAndStatus("sample", "active")).willReturn(plugin);
         given(pluginManagementService.getActivePlugins()).willReturn(Lists.newArrayList(plugin));
         given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
 
@@ -171,8 +171,8 @@ public class ViewDefinitionParserTest {
                 "textInput", "beanB", "name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
 
         Component<?> selectBeanA = root.lookupComponent("mainWindow.beanBForm.selectBeanA");
-        checkComponent(selectBeanA, EntityComboBoxComponent.class, "mainWindow.beanBForm.selectBeanA", "entityComboBox", "beanA", "beanA",
-                null, null, Sets.newHashSet("mainWindow.beanBForm.beansBGrig", "mainWindow.beansBGrig"), 0,
+        checkComponent(selectBeanA, EntityComboBoxComponent.class, "mainWindow.beanBForm.selectBeanA", "entityComboBox", "beanA",
+                "beanA", null, null, Sets.newHashSet("mainWindow.beanBForm.beansBGrig", "mainWindow.beansBGrig"), 0,
                 Maps.<String, Object> newHashMap());
 
         assertTrue(selectBeanA.isDefaultEnabled());

@@ -10,15 +10,15 @@ public interface PluginManagementService {
 
     List<PluginsPlugin> getActivePlugins();
 
-    PluginsPlugin getPluginByIdentifier(final String identifier);
+    PluginsPlugin getByIdentifier(final String identifier);
 
-    PluginsPlugin getPluginByIdentifierAndStatus(String identifier, String status);
+    PluginsPlugin getByIdentifierAndStatus(String identifier, String status);
 
-    PluginsPlugin getPluginById(String entityId);
+    PluginsPlugin getByEntityId(String entityId);
 
-    PluginsPlugin getPluginByNameAndVendor(final String name, final String vendor);
+    PluginsPlugin getByNameAndVendor(final String name, final String vendor);
 
-    void savePlugin(PluginsPlugin plugin);
+    void save(PluginsPlugin plugin);
 
     String downloadPlugin(final MultipartFile file);
 

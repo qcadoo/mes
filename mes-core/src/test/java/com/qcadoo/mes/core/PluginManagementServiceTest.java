@@ -72,7 +72,7 @@ public final class PluginManagementServiceTest {
                         .add(any(Criterion.class)).add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
-        PluginsPlugin databasePlugin = pluginManagementService.getPluginByIdentifierAndStatus("plugins", "active");
+        PluginsPlugin databasePlugin = pluginManagementService.getByIdentifierAndStatus("plugins", "active");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
@@ -93,7 +93,7 @@ public final class PluginManagementServiceTest {
                         .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
-        PluginsPlugin databasePlugin = pluginManagementService.getPluginByIdentifier("plugins");
+        PluginsPlugin databasePlugin = pluginManagementService.getByIdentifier("plugins");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
@@ -114,7 +114,7 @@ public final class PluginManagementServiceTest {
                         .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
-        PluginsPlugin databasePlugin = pluginManagementService.getPluginById("1");
+        PluginsPlugin databasePlugin = pluginManagementService.getByEntityId("1");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
@@ -135,7 +135,7 @@ public final class PluginManagementServiceTest {
                         .add(any(Criterion.class)).add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
-        PluginsPlugin databasePlugin = pluginManagementService.getPluginByNameAndVendor("name", "vendor");
+        PluginsPlugin databasePlugin = pluginManagementService.getByNameAndVendor("name", "vendor");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
@@ -152,7 +152,7 @@ public final class PluginManagementServiceTest {
         plugin.setStatus("active");
 
         // when
-        pluginManagementService.savePlugin(plugin);
+        pluginManagementService.save(plugin);
 
         // then
         verify(sessionFactory.getCurrentSession()).save(plugin);
@@ -177,7 +177,7 @@ public final class PluginManagementServiceTest {
         plugin.setStatus("active");
 
         // when
-        pluginManagementService.savePlugin(plugin);
+        pluginManagementService.save(plugin);
 
         // then
         verify(sessionFactory.getCurrentSession()).save(plugin);
@@ -186,42 +186,42 @@ public final class PluginManagementServiceTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginIdentifierIsNullAndStatusIsValid() {
         // when
-        pluginManagementService.getPluginByIdentifierAndStatus(null, "active");
+        pluginManagementService.getByIdentifierAndStatus(null, "active");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginStatusIsNull() {
         // when
-        pluginManagementService.getPluginByIdentifierAndStatus("plugins", null);
+        pluginManagementService.getByIdentifierAndStatus("plugins", null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginIdentifierIsNull() {
         // when
-        pluginManagementService.getPluginByIdentifier(null);
+        pluginManagementService.getByIdentifier(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginIdIsNull() {
         // when
-        pluginManagementService.getPluginById(null);
+        pluginManagementService.getByEntityId(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginNameIsNull() {
         // when
-        pluginManagementService.getPluginByNameAndVendor(null, "vendor");
+        pluginManagementService.getByNameAndVendor(null, "vendor");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginVendorIsNull() {
         // when
-        pluginManagementService.getPluginByNameAndVendor("name", null);
+        pluginManagementService.getByNameAndVendor("name", null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginIsNull() {
         // when
-        pluginManagementService.savePlugin(null);
+        pluginManagementService.save(null);
     }
 }

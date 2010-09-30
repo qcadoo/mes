@@ -42,7 +42,11 @@ public final class PluginUtil {
         }
         File tmpDir = new File(tmpPath);
         if (!tmpDir.exists()) {
-            tmpDir.mkdir();
+            boolean success = tmpDir.mkdir();
+            if (!success) {
+                LOG.error("Problem with creating tmp directory");
+                throw new IOException("error with creating directory");
+            }
         }
         File pluginFile = new File(tmpPath + file.getOriginalFilename());
         file.transferTo(pluginFile);
@@ -166,9 +170,9 @@ public final class PluginUtil {
             }
 
         } catch (IOException e) {
-            throw new PluginException("Restart failed");
+            throw new PluginException("Restart failed" + e.getMessage());
         } catch (InterruptedException e) {
-            throw new PluginException("Restart failed");
+            throw new PluginException("Restart failed" + e.getMessage());
         }
 
     }
@@ -189,7 +193,10 @@ public final class PluginUtil {
                 if (files[i].isDirectory()) {
                     deleteDirectory(files[i]);
                 } else {
-                    files[i].delete();
+                    boolean success = files[i].delete();
+                    if (!success) {
+                        LOG.error("Problem with removing file");
+                    }
                 }
             }
         }
