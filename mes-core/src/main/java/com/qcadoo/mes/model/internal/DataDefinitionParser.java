@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import javax.annotation.PostConstruct;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -67,8 +66,7 @@ public final class DataDefinitionParser {
     @Autowired
     private ViewDefinitionParser viewDefinitionParser;
 
-    @PostConstruct
-    public void init() {
+    public void parse() {
         LOG.info("Reading model definitions ...");
 
         try {
@@ -80,7 +78,7 @@ public final class DataDefinitionParser {
             LOG.error("Cannot read data definition", e);
         }
 
-        viewDefinitionParser.init();
+        viewDefinitionParser.parse();
     }
 
     public void parse(final InputStream dataDefinitionInputStream) {

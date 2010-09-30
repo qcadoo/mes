@@ -59,7 +59,7 @@ public final class ViewDefinitionParser {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public void init() {
+    public void parse() {
         LOG.info("Reading view definitions ...");
 
         try {
