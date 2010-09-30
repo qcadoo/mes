@@ -1,0 +1,16 @@
+#topLevelMenu {
+	height: 40px;
+	line-height: 30px;
+	padding-left: 20px;
+	background: #f1f1f1;
+}
+
+#logoImage {
+	margin-top: 5px;
+}
+
+#topRightPanel {
+	 float: right;
+	 padding-top: 10px;
+	 margin-right: 20px;
+}

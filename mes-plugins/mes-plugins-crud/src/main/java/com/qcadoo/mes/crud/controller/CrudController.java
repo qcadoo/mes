@@ -53,6 +53,8 @@ public final class CrudController {
         Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
 
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
+        System.out.println("AAAAAAAAAAAA");
+        System.out.println(viewDefinition);
         mav.addObject("viewDefinition", viewDefinition);
         // translationService.updateTranslationsForViewDefinition(viewDefinition, translationsMap, locale);
 

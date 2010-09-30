@@ -122,6 +122,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //		for (var i in pageElements) {
 //			serializationObject[i] = pageElements[i].serialize();
 //		}
+		QCD.info(window.parent.goToPage);
 		window.parent.goToPage(url, serializationObject);
 	}
 	

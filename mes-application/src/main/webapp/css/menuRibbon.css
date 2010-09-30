@@ -1,0 +1,146 @@
+#ribbonLevelMenu {
+	height: 60px;
+	border-bottom: solid black 1px;
+	background: #f1f1f1;
+}
+
+#ribbonLevelMenu .ribbonGroup {
+	display: inline-block;
+	height: 50px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding-right: 5px;
+	border-right: solid black 1px;
+}
+
+#ribbonLevelMenu .ribbonBigElement {
+	margin-left: 5px;
+	margin-top: 5px;
+	height: 40px;
+	vertical-align: top;
+	display: inline-block;
+}
+
+#ribbonLevelMenu .ribbonBigElement.ribbonBigButton {
+	border: solid black 1px;
+	padding: 0px 5px 0px 5px;
+	line-height: 40px;
+	cursor: pointer;	
+}
+#ribbonLevelMenu .ribbonBigElement.ribbonBigButton:hover {
+	background: #ccc;
+}
+
+#ribbonLevelMenu .ribbonBigElement.bigButtonDropdown {
+	position: relative;
+}
+#ribbonLevelMenu .ribbonBigElement.bigButtonDropdown .bigButtonDropdownMainButton {
+	display: block;
+	height: 30px;
+	border: solid black 1px;
+	padding: 0px 5px 0px 5px;
+	line-height: 30px;
+	cursor: pointer;	
+}
+#ribbonLevelMenu .ribbonBigElement.bigButtonDropdown .bigButtonDropdownMainButton:hover {
+	background: #ccc;
+}
+#ribbonLevelMenu .ribbonBigElement.bigButtonDropdown .bigButtonDropdownBottomButton {
+	height: 10px;
+	display: block;
+	cursor: pointer;
+	text-align: center;
+}
+#ribbonLevelMenu .ribbonBigElement.bigButtonDropdown .bigButtonDropdownBottomButton:hover {
+	background: #ccc;
+	border-left: solid black 1px;
+	border-right: solid black 1px;
+	border-bottom: solid black 1px;
+}
+#ribbonLevelMenu .ribbonBigElement.bigButtonDropdown .bigButtonDropdownMenu {
+	left: 0px;
+    top: 31px;
+}
+
+
+#ribbonLevelMenu .ribbonSmallElement {
+	display: block;
+	height: 20px;
+	vertical-align: top;
+}
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallTopElement {
+	margin-bottom: 2px;
+}
+
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButton {
+	height: 18px;
+	border: solid black 1px;
+	padding: 0px 5px 0px 5px;
+	line-height: 18px;
+	cursor: pointer;
+	text-align: center;
+	vertical-align: top;
+}
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButton:hover {
+	background: #ccc;
+}
+
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButtonDropdown {
+	height: 18px;
+	cursor: pointer;
+	position: relative;
+	margin-bottom: 4px;
+	width: 100%;
+}
+
+.ribbonSmallButtonDropdownWrapper {
+	height: 18px;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: solid black 1px;
+}
+
+.ribbonSmallButtonDropdownWrapperRow {
+	margin: 0;
+	padding: 0;
+}
+
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButtonDropdown .smallButtonDropdownMainButton {
+	padding: 0px 5px 0px 5px;
+	line-height: 18px;
+	text-align: center;
+	vertical-align: top;
+}
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButtonDropdown .smallButtonDropdownMainButton:hover {
+	background: #ccc;
+}
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButtonDropdown .smallButtonDropdownBottomButton {
+	border-left: solid black 1px;
+	width: 18px;
+}
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButtonDropdown .smallButtonDropdownBottomButton:hover {
+	background: #cccccc;
+}
+#ribbonLevelMenu .ribbonSmallElement.ribbonSmallButtonDropdown .smallButtonDropdownMenu {
+	right: 0px;
+    top: 19px;
+}
+
+#ribbonLevelMenu .dropdownMenu {
+	display: none;	
+	list-style: none; 
+	position: absolute; /*--Important - Keeps subnav from affecting main navigation flow--*/  
+    background: #f1f1f1;  
+    margin: 0;
+    padding: 0px;
+    border: solid black 1px;
+    z-index: 10;
+}
+#ribbonLevelMenu .dropdownMenu li {  
+     padding: 5px 10px 5px 10px;
+     cursor: pointer;
+}
+#ribbonLevelMenu .dropdownMenu li:hover {  
+     background: #cccccc;
+}

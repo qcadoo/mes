@@ -45,6 +45,7 @@ public final class CustomAuthenticationFilter extends UsernamePasswordAuthentica
 
         @Override
         public void sendRedirect(final String string) throws IOException {
+            // this method should be empty to prevent setting redirect by parent
         }
 
     }

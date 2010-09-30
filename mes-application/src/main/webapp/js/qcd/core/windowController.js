@@ -62,6 +62,12 @@ QCD.WindowController = function() {
 		performGoToPage("login.html");
 	}
 	
+	this.onMenuClicked = function(pageName) {
+		currentPage = pageName;
+		statesStack = new Array();
+		performGoToPage(currentPage);
+	}
+	
 	function performGoToPage(url) {
 		loadingIndicator.show();
 		

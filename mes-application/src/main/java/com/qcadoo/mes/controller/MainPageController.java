@@ -22,12 +22,28 @@ public final class MainPageController {
     @Autowired
     private TranslationService translationService;
 
-    @RequestMapping(value = "main", method = RequestMethod.GET)
+    @RequestMapping(value = "mainPage", method = RequestMethod.GET)
     public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("mainPage");
         mav.addObject("viewsList", viewDefinitionService.list());
         mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
+        return mav;
+    }
+
+    @RequestMapping(value = "main", method = RequestMethod.GET)
+    public ModelAndView getMainView(@RequestParam final Map<String, String> arguments, final Locale locale) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("main");
+        mav.addObject("viewsList", viewDefinitionService.list());
+        mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
+        return mav;
+    }
+
+    @RequestMapping(value = "homePage", method = RequestMethod.GET)
+    public ModelAndView getHomePageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("testPage");
         return mav;
     }
 }
