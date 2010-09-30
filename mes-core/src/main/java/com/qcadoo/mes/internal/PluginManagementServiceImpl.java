@@ -40,6 +40,8 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     private static final String pluginView = "redirect:page/plugins/pluginGridView.html?iframe=true";
 
+    public static final String FIELD_DELETED = "deleted";
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -52,7 +54,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     public void init() {
         // TOMCAT
         webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
-        // JETTY webappPath = webappPath + "/";
+        if (!webappPath.endsWith("/")) {
+            // JETTY
+            webappPath = webappPath + "/";
+        }
         if (LOG.isDebugEnabled()) {
             LOG.debug(webappPath);
         }
@@ -67,13 +72,13 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             try {
                 pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
                 PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
-                PluginsPlugin pluginWithIdentifier = getPluginByIdentifier(plugin.getIdentifier());
+                PluginsPlugin pluginWithIdentifier = getByIdentifier(plugin.getIdentifier());
                 if (pluginWithIdentifier != null) {
                     deleteFile = true;
                     LOG.error("Plugin with identifier existed");
                     return pluginView + "&message=Istnieje plugin z podanym identyfikatorem";
                 }
-                PluginsPlugin databasePlugin = getPluginByNameAndVendor(plugin.getName(), plugin.getVendor());
+                PluginsPlugin databasePlugin = getByNameAndVendor(plugin.getName(), plugin.getVendor());
                 if (databasePlugin != null) {
                     deleteFile = true;
                     LOG.error("Plugin was installed");
@@ -83,7 +88,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                     plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
                     plugin.setBase(false);
                     plugin.setFileName(file.getOriginalFilename());
-                    savePlugin(plugin);
+                    save(plugin);
                     return pluginView;
                 }
             } catch (IllegalStateException e) {
@@ -104,7 +109,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 return pluginView + "&message=Blad odczytu deskryptora";
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
-                    pluginFile.delete();
+                    boolean success = pluginFile.delete();
+                    if (!success) {
+                        LOG.error("Problem with removing plugin file");
+                    }
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Plugin file delete");
                     }
@@ -119,7 +127,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Override
     @Transactional
     public String removePlugin(final String entityId) {
-        PluginsPlugin databasePlugin = getPluginById(entityId);
+        PluginsPlugin databasePlugin = getByEntityId(entityId);
         if (databasePlugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
@@ -130,7 +138,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         try {
             databasePlugin.setDeleted(true);
 
-            savePlugin(databasePlugin);
+            save(databasePlugin);
 
             PluginUtil.removePluginFile(webappPath + tmpPath + databasePlugin.getFileName());
         } catch (PluginException e) {
@@ -144,7 +152,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Override
     @Transactional
     public String enablePlugin(final String entityId) {
-        PluginsPlugin plugin = getPluginById(entityId);
+        PluginsPlugin plugin = getByEntityId(entityId);
         if (plugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
@@ -154,7 +162,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         }
         String pluginStatus = plugin.getStatus();
         plugin.setStatus(PluginStatus.ACTIVE.getValue());
-        savePlugin(plugin);
+        save(plugin);
         if (pluginStatus.equals(PluginStatus.INSTALLED.getValue())) {
             return pluginView;
         } else {
@@ -162,7 +170,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 PluginUtil.movePluginFile(webappPath + tmpPath + plugin.getFileName(), webappPath + libPath);
             } catch (PluginException e) {
                 plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
-                savePlugin(plugin);
+                save(plugin);
                 LOG.error("Problem with moving plugin file");
                 return pluginView + "&message=Blad przenoszenia pliku";
             }
@@ -184,7 +192,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Override
     @Transactional
     public String disablePlugin(final String entityId) {
-        PluginsPlugin plugin = getPluginById(entityId);
+        PluginsPlugin plugin = getByEntityId(entityId);
         if (plugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
@@ -193,14 +201,14 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             return pluginView + "&message=Niepoprawny status do wyłączania";
         }
         plugin.setStatus(PluginStatus.INSTALLED.getValue());
-        savePlugin(plugin);
+        save(plugin);
         return pluginView;
     }
 
     @Override
     @Transactional
     public String deinstallPlugin(final String entityId) {
-        PluginsPlugin databasePlugin = getPluginById(entityId);
+        PluginsPlugin databasePlugin = getByEntityId(entityId);
         if (databasePlugin.isBase()) {
             LOG.error("Plugin is base");
             return pluginView + "&message=Plugin jest bazowy";
@@ -210,7 +218,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         }
         try {
             databasePlugin.setDeleted(true);
-            savePlugin(databasePlugin);
+            save(databasePlugin);
             PluginUtil.removePluginFile(webappPath + libPath + databasePlugin.getFileName());
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file");
@@ -232,7 +240,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             try {
                 pluginFile = PluginUtil.transferFileToTmp(file, webappPath + tmpPath);
                 PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
-                PluginsPlugin databasePlugin = getPluginByNameAndVendor(plugin.getName(), plugin.getVendor());
+                PluginsPlugin databasePlugin = getByNameAndVendor(plugin.getName(), plugin.getVendor());
                 if (databasePlugin == null) {
                     deleteFile = true;
                     LOG.error("Plugin not found in database");
@@ -276,7 +284,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 return pluginView + "&message=Blad usuwania/przenoszenia pliku";
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
-                    pluginFile.delete();
+                    boolean success = pluginFile.delete();
+                    if (!success) {
+                        LOG.error("Problem with removing plugin file");
+                    }
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Plugin file delete");
                     }
@@ -292,7 +303,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @SuppressWarnings("unchecked")
     public List<PluginsPlugin> getActivePlugins() {
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
-                .add(Restrictions.eq("status", PluginStatus.ACTIVE.getValue())).add(Restrictions.eq("deleted", false));
+                .add(Restrictions.eq("status", PluginStatus.ACTIVE.getValue())).add(Restrictions.eq(FIELD_DELETED, false));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugins with status: " + PluginStatus.ACTIVE.getValue());
         }
@@ -300,12 +311,12 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
-    public PluginsPlugin getPluginByIdentifierAndStatus(final String identifier, final String status) {
+    public PluginsPlugin getByIdentifierAndStatus(final String identifier, final String status) {
         checkNotNull(identifier, "identifier must be given");
         checkNotNull(status, "status must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
                 .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("status", status))
-                .add(Restrictions.eq("deleted", false));
+                .add(Restrictions.eq(FIELD_DELETED, false));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with identifier: " + identifier + " and status: " + status);
         }
@@ -313,10 +324,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
-    public PluginsPlugin getPluginByIdentifier(final String identifier) {
+    public PluginsPlugin getByIdentifier(final String identifier) {
         checkNotNull(identifier, "identifier must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
-                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("deleted", false));
+                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq(FIELD_DELETED, false));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with identifier: " + identifier);
         }
@@ -324,10 +335,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
-    public PluginsPlugin getPluginById(final String entityId) {
+    public PluginsPlugin getByEntityId(final String entityId) {
         checkNotNull(entityId, "entityId must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
-                .add(Restrictions.idEq(Long.valueOf(entityId))).add(Restrictions.eq("deleted", false));
+                .add(Restrictions.idEq(Long.valueOf(entityId))).add(Restrictions.eq(FIELD_DELETED, false));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with id: " + entityId);
         }
@@ -336,11 +347,11 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
-    public PluginsPlugin getPluginByNameAndVendor(final String name, final String vendor) {
+    public PluginsPlugin getByNameAndVendor(final String name, final String vendor) {
         checkNotNull(vendor, "vendor must be given");
         checkNotNull(name, "name must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("name", name))
-                .add(Restrictions.eq("vendor", vendor)).add(Restrictions.eq("deleted", false));
+                .add(Restrictions.eq("vendor", vendor)).add(Restrictions.eq(FIELD_DELETED, false));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with name: " + name + " and vendor: " + vendor);
         }
@@ -348,7 +359,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
-    public void savePlugin(final PluginsPlugin plugin) {
+    public void save(final PluginsPlugin plugin) {
         checkNotNull(plugin, "plugin must be given");
         getCurrentSession().save(plugin);
     }
@@ -358,9 +369,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         plugin.setStatus(databasePlugin.getStatus());
         plugin.setBase(false);
         databasePlugin.setDeleted(true);
-        savePlugin(databasePlugin);
+        save(databasePlugin);
 
-        savePlugin(plugin);
+        save(plugin);
 
         PluginUtil.removePluginFile(webappPath + libPath + databasePlugin.getFileName());
 

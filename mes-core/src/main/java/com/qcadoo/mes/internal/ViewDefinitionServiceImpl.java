@@ -34,8 +34,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private boolean belongsToActivePlugin(final ViewDefinition viewDefinition) {
-        PluginsPlugin plugin = pluginManagementService.getPluginByIdentifierAndStatus(viewDefinition.getPluginIdentifier(),
-                "active");
+        PluginsPlugin plugin = pluginManagementService.getByIdentifierAndStatus(viewDefinition.getPluginIdentifier(), "active");
         return (plugin != null);
     }
 
