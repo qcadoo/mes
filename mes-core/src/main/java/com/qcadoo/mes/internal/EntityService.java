@@ -1,5 +1,6 @@
 package com.qcadoo.mes.internal;
 
+import java.util.Collections;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -12,7 +13,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.PasswordType;
 
 @Service
@@ -49,8 +50,10 @@ public final class EntityService {
     public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         if (fieldDefinition.isCustomField()) {
             throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToEntityType) {
+        } else if (fieldDefinition.getType() instanceof BelongsToType) {
             return getBelongsToField(databaseEntity, fieldDefinition);
+        } else if (fieldDefinition.getType() instanceof HasManyType) {
+            return getHasManyField(databaseEntity, fieldDefinition);
         } else {
             return getPrimitiveField(databaseEntity, fieldDefinition);
         }
@@ -101,6 +104,19 @@ public final class EntityService {
 
     private Object getPrimitiveField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         return getField(databaseEntity, fieldDefinition.getName());
+    }
+
+    private Object getHasManyField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
+        Long parentId = getId(databaseEntity);
+
+        if (parentId == null) {
+            return Collections.<Entity> emptyList();
+        }
+
+        HasManyType hasManyFieldType = (HasManyType) fieldDefinition.getType();
+        InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
+
+        return new EntityList(referencedDataDefinition, hasManyFieldType.getJoinFieldName(), parentId);
     }
 
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {

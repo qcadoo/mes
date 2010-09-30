@@ -135,4 +135,28 @@ public final class ProxyEntity implements Entity {
         return entity.copy();
     }
 
+    @Override
+    public String getStringField(final String fieldName) {
+        if (entity == null) {
+            loadEntity();
+        }
+        return entity.getStringField(fieldName);
+    }
+
+    @Override
+    public Entity getBelongsToField(final String fieldName) {
+        if (entity == null) {
+            loadEntity();
+        }
+        return entity.getBelongsToField(fieldName);
+    }
+
+    @Override
+    public EntityList getHasManyField(final String fieldName) {
+        if (entity == null) {
+            loadEntity();
+        }
+        return entity.getHasManyField(fieldName);
+    }
+
 }

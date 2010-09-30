@@ -1,16 +1,22 @@
 package com.qcadoo.mes.beans.sample;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 
-public final class SampleParentDatabaseObject {
+public class SampleParentDatabaseObject implements HibernateProxy {
 
     private Long id;
 
     private String name;
 
     private boolean deleted;
+
+    private List<SampleSimpleDatabaseObject> entities;
 
     public SampleParentDatabaseObject() {
     }
@@ -56,6 +62,24 @@ public final class SampleParentDatabaseObject {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public List<SampleSimpleDatabaseObject> getEntities() {
+        return entities;
+    }
+
+    public void setEntities(final List<SampleSimpleDatabaseObject> entities) {
+        this.entities = entities;
+    }
+
+    @Override
+    public Object writeReplace() {
+        return null;
+    }
+
+    @Override
+    public LazyInitializer getHibernateLazyInitializer() {
+        return null;
     }
 
 }

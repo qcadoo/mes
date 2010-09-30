@@ -3,6 +3,7 @@ package com.qcadoo.mes.api;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.validation.ErrorMessage;
 
@@ -20,6 +21,12 @@ public interface Entity {
     Long getId();
 
     Object getField(String fieldName);
+
+    String getStringField(String fieldName);
+
+    Entity getBelongsToField(String fieldName);
+
+    EntityList getHasManyField(String fieldName);
 
     void setField(String fieldName, Object fieldValue);
 

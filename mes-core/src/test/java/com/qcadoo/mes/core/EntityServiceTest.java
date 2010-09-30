@@ -5,18 +5,37 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.util.Assert.isInstanceOf;
 
-import org.junit.Test;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 
+import org.junit.Test;
+import org.junit.matchers.JUnitMatchers;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
+
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.internal.EntityList;
+import com.qcadoo.mes.internal.ProxyEntity;
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.DataDefinitionImpl;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
+import com.qcadoo.mes.model.search.Restrictions;
 
 public class EntityServiceTest extends DataAccessTest {
 
@@ -228,10 +247,14 @@ public class EntityServiceTest extends DataAccessTest {
         SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
+        SampleParentDatabaseObject lazyParentDatabaseEntity = mock(SampleParentDatabaseObject.class, RETURNS_DEEP_STUBS);
+        given(lazyParentDatabaseEntity.getHibernateLazyInitializer().getIdentifier()).willReturn(77L);
+
         SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject(2L);
         databaseEntity.setAge(12);
         databaseEntity.setName("Mr T");
         databaseEntity.setBelongsTo(parentDatabaseEntity);
+        databaseEntity.setLazyBelongsTo(lazyParentDatabaseEntity);
 
         // when
         Entity genericEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
@@ -241,8 +264,35 @@ public class EntityServiceTest extends DataAccessTest {
         assertEquals(Long.valueOf(2), genericEntity.getId());
         assertEquals(12, genericEntity.getField("age"));
         assertEquals("Mr T", genericEntity.getField("name"));
-        isInstanceOf(Entity.class, genericEntity.getField("belongsTo"));
+        isInstanceOf(DefaultEntity.class, genericEntity.getField("belongsTo"));
         assertEquals("Mr X", ((Entity) genericEntity.getField("belongsTo")).getField("name"));
+        isInstanceOf(ProxyEntity.class, genericEntity.getField("lazyBelongsTo"));
+        assertEquals(Long.valueOf(77), ((Entity) genericEntity.getField("lazyBelongsTo")).getId());
+    }
+
+    @Test
+    public void shouldConvertDatabaseEntityIntoGenericOneWithHasMany() throws Exception {
+        // given
+        SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
+        parentDatabaseEntity.setName("Mr X");
+
+        // when
+        Entity genericEntity = entityService.convertToGenericEntity(parentDataDefinition, parentDatabaseEntity);
+
+        // then
+        assertNotNull(genericEntity);
+        assertEquals(Long.valueOf(1), genericEntity.getId());
+
+        EntityList hasManyField = genericEntity.getHasManyField("entities");
+
+        Field field = ReflectionUtils.findField(EntityList.class, "entities");
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, hasManyField, Collections.emptyList());
+
+        assertThat(hasManyField, instanceOf(EntityList.class));
+        assertEquals(dataDefinition, ReflectionTestUtils.getField(hasManyField, "dataDefinition"));
+        assertEquals(Long.valueOf(1), ReflectionTestUtils.getField(hasManyField, "parentId"));
+        assertEquals(fieldDefinitionBelongsTo, ReflectionTestUtils.getField(hasManyField, "joinFieldDefinition"));
     }
 
     @Test
@@ -301,6 +351,62 @@ public class EntityServiceTest extends DataAccessTest {
         assertEquals("Mr T", ((SampleSimpleDatabaseObject) databaseEntity).getName());
         assertNotNull(((SampleSimpleDatabaseObject) databaseEntity).getBelongsTo());
         assertEquals("Mr X", ((SampleSimpleDatabaseObject) databaseEntity).getBelongsTo().getName());
+    }
+
+    @Test
+    public void shouldLazyLoadEntityUsingProxy() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        DefaultEntity entity = new DefaultEntity(5L);
+        entity.setField("test", "testValue");
+
+        given(dataDefinition.get(5L)).willReturn(entity);
+
+        ProxyEntity proxyEntity = new ProxyEntity(dataDefinition, 5L);
+
+        // when
+        String value = (String) proxyEntity.getField("test");
+
+        // then
+        assertEquals("testValue", value);
+    }
+
+    @Test
+    public void shouldLazyLoadEntitiesUsingProxy() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+
+        Entity entity1 = new DefaultEntity(1L);
+        Entity entity2 = new DefaultEntity(2L);
+
+        given(fieldDefinition.getName()).willReturn("joinField");
+        given(dataDefinition.getField("joinField")).willReturn(fieldDefinition);
+        given(dataDefinition.find().restrictedWith(Restrictions.belongsTo(fieldDefinition, 5L)).list().getEntities()).willReturn(
+                Lists.newArrayList(entity1, entity2));
+
+        List<Entity> entityList = new EntityList(dataDefinition, "joinField", 5L);
+
+        // then
+        assertNotNull(entityList);
+        assertEquals(2, entityList.size());
+        assertThat(entityList, JUnitMatchers.hasItems(entity1, entity2));
+    }
+
+    @Test
+    public void shouldReturnProxyIdWithoutHittingDatabase() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+
+        ProxyEntity proxyEntity = new ProxyEntity(dataDefinition, 5L);
+
+        // when
+        Long id = proxyEntity.getId();
+
+        // then
+        assertEquals(Long.valueOf(5), id);
+        verify(dataDefinition, never()).get(anyLong());
     }
 
 }

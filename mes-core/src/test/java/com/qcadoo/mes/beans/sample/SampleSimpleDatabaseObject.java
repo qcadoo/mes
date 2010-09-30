@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public final class SampleSimpleDatabaseObject {
+public class SampleSimpleDatabaseObject {
 
     private Long id;
 
@@ -23,33 +23,11 @@ public final class SampleSimpleDatabaseObject {
 
     private Date birthDate;
 
-    public BigDecimal getMoney() {
-        return money;
-    }
-
-    public void setMoney(final BigDecimal money) {
-        this.money = money;
-    }
-
-    public Boolean getRetired() {
-        return retired;
-    }
-
-    public void setRetired(final Boolean retired) {
-        this.retired = retired;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(final Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
     private boolean deleted;
 
     private SampleParentDatabaseObject belongsTo;
+
+    private SampleParentDatabaseObject lazyBelongsTo;
 
     public SampleSimpleDatabaseObject() {
     }
@@ -98,12 +76,44 @@ public final class SampleSimpleDatabaseObject {
         this.belongsTo = belongsTo;
     }
 
+    public SampleParentDatabaseObject getLazyBelongsTo() {
+        return lazyBelongsTo;
+    }
+
+    public void setLazyBelongsTo(final SampleParentDatabaseObject lazyBelongsTo) {
+        this.lazyBelongsTo = lazyBelongsTo;
+    }
+
     public Integer getPriority() {
         return priority;
     }
 
     public void setPriority(final Integer priority) {
         this.priority = priority;
+    }
+
+    public BigDecimal getMoney() {
+        return money;
+    }
+
+    public void setMoney(final BigDecimal money) {
+        this.money = money;
+    }
+
+    public Boolean getRetired() {
+        return retired;
+    }
+
+    public void setRetired(final Boolean retired) {
+        this.retired = retired;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(final Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     @Override

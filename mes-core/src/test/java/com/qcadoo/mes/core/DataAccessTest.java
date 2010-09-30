@@ -71,6 +71,8 @@ public abstract class DataAccessTest {
 
     protected FieldDefinitionImpl fieldDefinitionBelongsTo = null;
 
+    protected FieldDefinitionImpl fieldDefinitionLazyBelongsTo = null;
+
     protected FieldDefinitionImpl fieldDefinitionAge = null;
 
     protected FieldDefinitionImpl fieldDefinitionMoney = null;
@@ -82,6 +84,8 @@ public abstract class DataAccessTest {
     protected FieldDefinitionImpl fieldDefinitionName = null;
 
     protected FieldDefinitionImpl parentFieldDefinitionName = null;
+
+    protected FieldDefinitionImpl parentFieldDefinitionHasMany = null;
 
     @Before
     public void superInit() {
@@ -109,17 +113,27 @@ public abstract class DataAccessTest {
 
         fieldValidatorFactory = new ValidatorFactoryImpl();
 
+        parentDataDefinition = new DataDefinitionImpl("parent", "parent.entity", dataAccessService);
+        given(dataDefinitionService.get("parent", "entity")).willReturn(parentDataDefinition);
+
+        dataDefinition = new DataDefinitionImpl("simple", "simple.entity", dataAccessService);
+        given(dataDefinitionService.get("simple", "entity")).willReturn(dataDefinition);
+
         parentFieldDefinitionName = new FieldDefinitionImpl("name");
         parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
 
-        parentDataDefinition = new DataDefinitionImpl("parent", "parent.entity", dataAccessService);
-        parentDataDefinition.withField(parentFieldDefinitionName);
-        parentDataDefinition.setFullyQualifiedClassName(SampleParentDatabaseObject.class.getCanonicalName());
+        parentFieldDefinitionHasMany = new FieldDefinitionImpl("entities");
+        parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo"));
 
-        given(dataDefinitionService.get("parent", "entity")).willReturn(parentDataDefinition);
+        parentDataDefinition.withField(parentFieldDefinitionName);
+        parentDataDefinition.withField(parentFieldDefinitionHasMany);
+        parentDataDefinition.setFullyQualifiedClassName(SampleParentDatabaseObject.class.getCanonicalName());
 
         fieldDefinitionBelongsTo = new FieldDefinitionImpl("belongsTo");
         fieldDefinitionBelongsTo.withType(fieldTypeFactory.eagerBelongsToType("parent", "entity", "name"));
+
+        fieldDefinitionLazyBelongsTo = new FieldDefinitionImpl("lazyBelongsTo");
+        fieldDefinitionLazyBelongsTo.withType(fieldTypeFactory.lazyBelongsToType("parent", "entity", "name"));
 
         fieldDefinitionName = new FieldDefinitionImpl("name");
         fieldDefinitionName.withType(fieldTypeFactory.stringType());
@@ -140,16 +154,14 @@ public abstract class DataAccessTest {
         fieldDefinitionBirthDate = new FieldDefinitionImpl("birthDate");
         fieldDefinitionBirthDate.withType(fieldTypeFactory.dateType());
 
-        dataDefinition = new DataDefinitionImpl("simple", "simple.entity", dataAccessService);
         dataDefinition.withField(fieldDefinitionName);
         dataDefinition.withField(fieldDefinitionAge);
         dataDefinition.withField(fieldDefinitionMoney);
         dataDefinition.withField(fieldDefinitionRetired);
         dataDefinition.withField(fieldDefinitionBirthDate);
         dataDefinition.withField(fieldDefinitionBelongsTo);
+        dataDefinition.withField(fieldDefinitionLazyBelongsTo);
         dataDefinition.setFullyQualifiedClassName(SampleSimpleDatabaseObject.class.getCanonicalName());
-
-        given(dataDefinitionService.get("simple", "entity")).willReturn(dataDefinition);
 
         given(sessionFactory.getCurrentSession()).willReturn(session);
 

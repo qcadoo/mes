@@ -46,11 +46,6 @@ public final class DefaultEntity implements Entity {
     }
 
     @Override
-    public Object getField(final String fieldName) {
-        return fields.get(fieldName);
-    }
-
-    @Override
     public void setField(final String fieldName, final Object fieldValue) {
         fields.put(fieldName, fieldValue);
     }
@@ -132,6 +127,26 @@ public final class DefaultEntity implements Entity {
     @Override
     public String toString() {
         return "Entity #" + id;
+    }
+
+    @Override
+    public Object getField(final String fieldName) {
+        return fields.get(fieldName);
+    }
+
+    @Override
+    public String getStringField(final String fieldName) {
+        return (String) getField(fieldName);
+    }
+
+    @Override
+    public EntityList getHasManyField(final String fieldName) {
+        return (EntityList) getField(fieldName);
+    }
+
+    @Override
+    public Entity getBelongsToField(final String fieldName) {
+        return (Entity) getField(fieldName);
     }
 
 }
