@@ -1,6 +1,6 @@
 package com.qcadoo.mes.model.types;
 
-import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 
 public interface FieldType {

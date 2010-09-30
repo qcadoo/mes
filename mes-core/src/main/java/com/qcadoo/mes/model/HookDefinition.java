@@ -1,7 +1,7 @@
 package com.qcadoo.mes.model;
 
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.view.ViewValue;
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.view.ViewValue;
 
 public interface HookDefinition {
 

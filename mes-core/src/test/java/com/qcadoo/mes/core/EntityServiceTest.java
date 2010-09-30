@@ -10,13 +10,13 @@ import static org.springframework.util.Assert.isInstanceOf;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.DefaultEntity;
-import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
-import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.internal.DataDefinitionImpl;
+import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 
 public class EntityServiceTest extends DataAccessTest {
 

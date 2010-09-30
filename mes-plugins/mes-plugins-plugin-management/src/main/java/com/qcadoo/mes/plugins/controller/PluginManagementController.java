@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.core.api.PluginManagementService;
+import com.qcadoo.mes.api.PluginManagementService;
 
 @Controller
 public final class PluginManagementController {
@@ -33,8 +33,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "download", method = RequestMethod.POST)
     public String handleDownload(@RequestParam("file") final MultipartFile file) {
-        String status = pluginManagementService.downloadPlugin(file);
-        return status;
+        return pluginManagementService.downloadPlugin(file);
     }
 
     @RequestMapping(value = "removePage", method = RequestMethod.GET)
@@ -46,8 +45,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     public String getRemovePageView(@RequestParam("entityId") final String entityId) {
-        String status = pluginManagementService.removePlugin(entityId);
-        return status;
+        return pluginManagementService.removePlugin(entityId);
     }
 
     @RequestMapping(value = "enablePage", method = RequestMethod.GET)
@@ -59,21 +57,18 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "enable", method = RequestMethod.GET)
     public String handleEnable(@RequestParam("entityId") final String entityId) {
-        String status = pluginManagementService.enablePlugin(entityId);
-        return status;
+        return pluginManagementService.enablePlugin(entityId);
     }
 
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
     @ResponseBody
     public String handleRestart() {
-        String status = pluginManagementService.restartServer();
-        return status;
+        return pluginManagementService.restartServer();
     }
 
     @RequestMapping(value = "disable", method = RequestMethod.GET)
     public String getDisablePageView(@RequestParam("entityId") final String entityId) {
-        String status = pluginManagementService.disablePlugin(entityId);
-        return status;
+        return pluginManagementService.disablePlugin(entityId);
     }
 
     @RequestMapping(value = "deinstallPage", method = RequestMethod.GET)
@@ -85,8 +80,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
     public String handleDeinstall(@RequestParam("entityId") final String entityId) {
-        String status = pluginManagementService.deinstallPlugin(entityId);
-        return status;
+        return pluginManagementService.deinstallPlugin(entityId);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.GET)
@@ -98,7 +92,6 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public String handleUpdate(@RequestParam("file") final MultipartFile file) {
-        String status = pluginManagementService.updatePlugin(file);
-        return status;
+        return pluginManagementService.updatePlugin(file);
     }
 }

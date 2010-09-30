@@ -7,8 +7,8 @@ import static org.mockito.Mockito.mock;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.DefaultEntity;
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 

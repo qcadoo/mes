@@ -2,14 +2,15 @@ package com.qcadoo.mes.model.search;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.DefaultEntity;
-import com.qcadoo.mes.core.internal.search.restrictions.BelongsToRestriction;
-import com.qcadoo.mes.core.internal.search.restrictions.IsNotNullRestriction;
-import com.qcadoo.mes.core.internal.search.restrictions.IsNullRestriction;
-import com.qcadoo.mes.core.internal.search.restrictions.LikeRestriction;
-import com.qcadoo.mes.core.internal.search.restrictions.SimpleRestriction;
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.enums.RestrictionOperator;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.restrictions.internal.BelongsToRestriction;
+import com.qcadoo.mes.model.search.restrictions.internal.IsNotNullRestriction;
+import com.qcadoo.mes.model.search.restrictions.internal.IsNullRestriction;
+import com.qcadoo.mes.model.search.restrictions.internal.LikeRestriction;
+import com.qcadoo.mes.model.search.restrictions.internal.SimpleRestriction;
 
 /**
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction

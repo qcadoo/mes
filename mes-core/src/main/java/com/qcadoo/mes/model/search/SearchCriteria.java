@@ -7,7 +7,7 @@ import com.qcadoo.mes.model.DataDefinition;
 /**
  * Object represents the criteria for listing entities. Together with definition -
  * {@link com.qcadoo.mes.model.DataDefinition} - and grip - optionally
- * {@link com.qcadoo.mes.core.view.elements.GridComponent} - it is used for building SQL query.
+ * {@link com.qcadoo.mes.view.components.GridComponent} - it is used for building SQL query.
  * 
  * Order can be build only using orderable fields - {@link com.qcadoo.mes.model.types.FieldType#isOrderable()}.
  * 

@@ -18,24 +18,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.DefaultEntity;
-import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.internal.types.BooleanType;
-import com.qcadoo.mes.core.internal.types.DateTimeType;
-import com.qcadoo.mes.core.internal.types.DateType;
-import com.qcadoo.mes.core.internal.types.DecimalType;
-import com.qcadoo.mes.core.internal.types.DictionaryType;
-import com.qcadoo.mes.core.internal.types.BelongsToEntityType;
-import com.qcadoo.mes.core.internal.types.EnumType;
-import com.qcadoo.mes.core.internal.types.IntegerType;
-import com.qcadoo.mes.core.internal.types.PasswordType;
-import com.qcadoo.mes.core.internal.types.PriorityType;
-import com.qcadoo.mes.core.internal.types.StringType;
-import com.qcadoo.mes.core.internal.types.TextType;
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
+import com.qcadoo.mes.model.types.internal.BooleanType;
+import com.qcadoo.mes.model.types.internal.DateTimeType;
+import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.mes.model.types.internal.DecimalType;
+import com.qcadoo.mes.model.types.internal.DictionaryType;
+import com.qcadoo.mes.model.types.internal.EnumType;
+import com.qcadoo.mes.model.types.internal.IntegerType;
+import com.qcadoo.mes.model.types.internal.PasswordType;
+import com.qcadoo.mes.model.types.internal.PriorityType;
+import com.qcadoo.mes.model.types.internal.StringType;
+import com.qcadoo.mes.model.types.internal.TextType;
 
 public class FieldTypeFactoryTest extends DataAccessTest {
 

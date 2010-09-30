@@ -1,6 +1,6 @@
 package com.qcadoo.mes.beans.sample;
 
-import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 
 public class CustomEntityService {

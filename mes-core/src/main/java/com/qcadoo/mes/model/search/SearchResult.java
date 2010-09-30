@@ -3,7 +3,7 @@ package com.qcadoo.mes.model.search;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.api.Entity;
 
 /**
  * ResultSet contains list of entities, counted aggregations, total number of entities and the criteria used for produce this

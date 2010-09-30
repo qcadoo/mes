@@ -25,14 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.api.ViewDefinitionService;
-import com.qcadoo.mes.core.view.SaveableComponent;
-import com.qcadoo.mes.core.view.ViewDefinition;
-import com.qcadoo.mes.core.view.ViewValue;
-import com.qcadoo.mes.core.view.elements.GridComponent;
-import com.qcadoo.mes.core.view.elements.grid.ListData;
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.view.SaveableComponent;
+import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.components.GridComponent;
+import com.qcadoo.mes.view.components.grid.ListData;
 
 @Controller
 public final class CrudController {

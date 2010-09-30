@@ -14,10 +14,10 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.DefaultEntity;
+import com.qcadoo.mes.internal.DefaultEntity;
 
 public class ValidatorTest extends DataAccessTest {
 

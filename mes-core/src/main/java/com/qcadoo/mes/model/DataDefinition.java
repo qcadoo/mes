@@ -3,7 +3,7 @@ package com.qcadoo.mes.model;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.validation.EntityValidator;
 

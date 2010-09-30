@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.core.api.TranslationService;
-import com.qcadoo.mes.core.api.ViewDefinitionService;
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.api.ViewDefinitionService;
 
 @Controller
 public final class MainPageController {
