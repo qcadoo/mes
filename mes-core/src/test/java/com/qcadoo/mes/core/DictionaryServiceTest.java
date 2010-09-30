@@ -19,10 +19,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.api.DictionaryService;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
-import com.qcadoo.mes.core.api.DictionaryService;
-import com.qcadoo.mes.core.internal.DictionaryServiceImpl;
+import com.qcadoo.mes.internal.DictionaryServiceImpl;
 
 public class DictionaryServiceTest {
 

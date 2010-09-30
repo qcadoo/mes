@@ -14,9 +14,10 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.internal.DefaultEntity;
 
 public class ValidatorTest extends DataAccessTest {
 
@@ -28,7 +29,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfAllFieldAreNotRequired() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -45,7 +46,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorMessage() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("age", "");
 
         fieldDefinitionAge.withValidator(fieldValidatorFactory.required());
@@ -64,7 +65,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasCustomErrorMessage() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("age", "");
 
         fieldDefinitionAge.withValidator(fieldValidatorFactory.required().customErrorMessage("missing age"));
@@ -98,7 +99,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorIfIntegerTypeIsWrong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("age", "21w");
 
         // when
@@ -112,7 +113,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorIfBigDecimalTypeIsWrong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", "221.2w");
 
         // when
@@ -126,7 +127,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorIfDateTypeIsWrong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", "2010-01-a");
 
         // when
@@ -140,7 +141,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorIfBooleanTypeIsWrong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", "a");
 
         // when
@@ -169,7 +170,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfRequiredFieldsAreNotSet() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "");
         entity.setField("age", null);
 
@@ -187,7 +188,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfStringValueIsTooLong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "qwerty");
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.length(null, null, 5));
@@ -203,7 +204,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfStringValueIsOutsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "ddd");
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
@@ -219,7 +220,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfStringValueIsInsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "bbb");
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
@@ -235,7 +236,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfIntegerValueIsOutsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("age", "11");
 
         fieldDefinitionAge.withValidator(fieldValidatorFactory.range(null, 10));
@@ -251,7 +252,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfIntegerValueIsInsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("age", 5);
 
         fieldDefinitionAge.withValidator(fieldValidatorFactory.range(4, null));
@@ -267,7 +268,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfBigDecimalValueIsOutsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", "31.22");
 
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(40, 50));
@@ -283,7 +284,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfBigDecimalValueIsInsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", "31.22");
 
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(30, 40));
@@ -299,7 +300,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfDateValueIsOutsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("birthDate", "2010-01-01");
 
         fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(new Date(), new Date()));
@@ -315,7 +316,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfDateValueIsInsideTheRange() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("birthDate", "2010-01-01");
 
         fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(null, new Date()));
@@ -331,7 +332,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoCheckRangeOfBoolean() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("retired", "false");
 
         fieldDefinitionRetired.withValidator(fieldValidatorFactory.range(true, true));
@@ -347,7 +348,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfIntegerValueIsTooLong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("age", 123456);
 
         fieldDefinitionAge.withValidator(fieldValidatorFactory.length(null, null, 5));
@@ -363,7 +364,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfBigDecimalValueIsTooLong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", new BigDecimal("123.456"));
 
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.length(null, null, 5));
@@ -379,7 +380,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfBigDecimalPresicionAndScaleAreTooLong() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", new BigDecimal("123.456"));
 
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.scale(null, null, 2)).withValidator(
@@ -396,7 +397,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfBigDecimalValueLenghtIsOk() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", new BigDecimal("123.4"));
 
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.length(null, null, 5));
@@ -412,7 +413,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfBigDecimalValuePresicionAndScaleIsOk() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("money", new BigDecimal("123.4"));
 
         fieldDefinitionMoney.withValidator(fieldValidatorFactory.precision(null, null, 4)).withValidator(
@@ -429,7 +430,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoCheckLenghtOfBoolean() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("retired", false);
 
         fieldDefinitionRetired.withValidator(fieldValidatorFactory.length(null, null, 0));
@@ -445,7 +446,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoCheckLenghtOfDate() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("birthDate", "2010-01-01");
 
         fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.length(null, null, 0));
@@ -461,7 +462,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfStringValueLenghtIsOk() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "qwert");
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.length(null, null, 5));
@@ -477,7 +478,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfFieldIsNotDuplicated() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "not existed");
 
         given(criteria.uniqueResult()).willReturn(0);
@@ -495,7 +496,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorsIfUpdatedFieldIsNotDuplicated() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", "not existed");
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
@@ -515,7 +516,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasErrorsIfFieldIsDuplicated() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "existed");
 
         given(criteria.uniqueResult()).willReturn(1);
@@ -533,7 +534,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorIfCustomValidatorReturnsTrue() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "qwerty");
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomEntityService.class.getName(),
@@ -550,7 +551,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHaveErrorIfCustomValidatorReturnsFalse() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "qwert");
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomEntityService.class.getName(),
@@ -570,7 +571,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHaveErrorIfCustomValidationMethodDoesNotExists() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "qwerty");
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.custom(hookFactory.getHook(CustomEntityService.class.getName(),
@@ -587,7 +588,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHasNoErrorIfCustomEntityValidatorReturnsTrue() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 
@@ -606,7 +607,7 @@ public class ValidatorTest extends DataAccessTest {
     public void shouldHaveErrorIfCustomEntityValidatorReturnsFalse() throws Exception {
         // given
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "Mr");
         entity.setField("age", "18");
 
@@ -627,7 +628,7 @@ public class ValidatorTest extends DataAccessTest {
     @Test
     public void shouldHaveErrorIfCustomEntityValidationMethodDoesNotExists() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "Mr T");
         entity.setField("age", "18");
 

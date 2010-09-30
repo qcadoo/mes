@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "products_product")
-public final class ProductsProduct {
+public class ProductsProduct {
 
     @Id
     @GeneratedValue

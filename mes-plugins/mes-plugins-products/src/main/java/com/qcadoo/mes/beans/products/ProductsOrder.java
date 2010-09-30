@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "products_order")
-public final class ProductsOrder {
+public class ProductsOrder {
 
     @Id
     @GeneratedValue

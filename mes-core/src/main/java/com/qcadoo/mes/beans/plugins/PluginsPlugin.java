@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "plugins_plugin")
-public final class PluginsPlugin {
+public class PluginsPlugin {
 
     @Id
     @GeneratedValue

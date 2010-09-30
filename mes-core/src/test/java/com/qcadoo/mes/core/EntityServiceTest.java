@@ -10,12 +10,13 @@ import static org.springframework.util.Assert.isInstanceOf;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleParentDatabaseObject;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.model.DataDefinitionImpl;
-import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.model.FieldDefinition;
+import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.internal.DataDefinitionImpl;
+import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 
 public class EntityServiceTest extends DataAccessTest {
 
@@ -247,7 +248,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldConvertGenericEntityIntoDatabaseOne() throws Exception {
         // given
-        Entity genericEntity = new Entity(2L);
+        Entity genericEntity = new DefaultEntity(2L);
         genericEntity.setField("name", "Mr T");
         genericEntity.setField("age", 12);
         genericEntity.setField("belongsTo", 1L);
@@ -255,7 +256,7 @@ public class EntityServiceTest extends DataAccessTest {
         SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        given(session.get(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.load(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
         validationService.validateGenericEntity(dataDefinition, genericEntity, null);
 
@@ -275,7 +276,7 @@ public class EntityServiceTest extends DataAccessTest {
     @Test
     public void shouldConvertGenericEntityIntoDatabaseOneUsingExistingEntity() throws Exception {
         // given
-        Entity genericEntity = new Entity(2L);
+        Entity genericEntity = new DefaultEntity(2L);
         genericEntity.setField("name", "Mr T");
         genericEntity.setField("age", 12);
         genericEntity.setField("belongsTo", 1L);
@@ -285,9 +286,9 @@ public class EntityServiceTest extends DataAccessTest {
         SampleParentDatabaseObject parentDatabaseEntity = new SampleParentDatabaseObject(1L);
         parentDatabaseEntity.setName("Mr X");
 
-        given(session.get(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
+        given(session.load(SampleParentDatabaseObject.class, 1L)).willReturn(parentDatabaseEntity);
 
-        validationService.validateGenericEntity(dataDefinition, genericEntity, new Entity(2L));
+        validationService.validateGenericEntity(dataDefinition, genericEntity, new DefaultEntity(2L));
 
         // when
         Object databaseEntity = entityService.convertToDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);

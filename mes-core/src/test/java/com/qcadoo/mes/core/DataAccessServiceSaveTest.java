@@ -7,21 +7,22 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.api.Entity;
+import com.qcadoo.mes.internal.DefaultEntity;
 
 public final class DataAccessServiceSaveTest extends DataAccessTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfEntityWithGivenIdNotExist() throws Exception {
         // then
-        dataDefinition.save(new Entity(1L));
+        dataDefinition.save(new DefaultEntity(1L));
     }
 
     @Test
     public void shouldSaveNewEntity() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "Mr T");
         entity.setField("age", 66);
 
@@ -40,7 +41,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldSaveExistingEntity() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", "Mr T");
         entity.setField("age", 66);
 
@@ -67,7 +68,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldFailIfFieldTypeIsNotValid() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "Mr T");
         entity.setField("age", "r");
 
@@ -81,7 +82,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
     @Test
     public void shouldConvertTypeFromInteger() throws Exception {
         // given
-        Entity entity = new Entity();
+        Entity entity = new DefaultEntity();
         entity.setField("name", "Mr T");
         entity.setField("age", "66");
 

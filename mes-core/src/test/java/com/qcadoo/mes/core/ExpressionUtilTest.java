@@ -5,20 +5,21 @@ import static junit.framework.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.internal.model.FieldDefinitionImpl;
-import com.qcadoo.mes.core.internal.types.IntegerType;
-import com.qcadoo.mes.core.internal.types.StringType;
-import com.qcadoo.mes.core.model.FieldDefinition;
-import com.qcadoo.mes.core.utils.ExpressionUtil;
-import com.qcadoo.mes.core.view.elements.grid.ColumnDefinition;
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
+import com.qcadoo.mes.model.types.internal.IntegerType;
+import com.qcadoo.mes.model.types.internal.StringType;
+import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 
 public class ExpressionUtilTest {
 
     @Test
     public void shouldReturnStringRepresentationOfOneFieldWithoutExpression() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", "Mr T");
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("name").withType(new StringType());
@@ -36,7 +37,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldReturnJoinedStringRepresentationsOfMultipleFieldWithoutExpression() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", "Mr T");
         entity.setField("age", 33);
         entity.setField("sex", "F");
@@ -60,7 +61,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheSingleFieldColumn() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", "Mr T");
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("name");
@@ -79,7 +80,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfEmptyField() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", null);
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("name");
@@ -98,7 +99,7 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheMultiFieldColumn() throws Exception {
         // given
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("name", "Mr T");
         entity.setField("age", 33);
         entity.setField("sex", "F");
@@ -123,10 +124,10 @@ public class ExpressionUtilTest {
     @Test
     public void shouldGenerateValueOfTheBelongsToColumn() throws Exception {
         // given
-        Entity product = new Entity(1L);
+        Entity product = new DefaultEntity(1L);
         product.setField("name", "P1");
 
-        Entity entity = new Entity(1L);
+        Entity entity = new DefaultEntity(1L);
         entity.setField("product", product);
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl("product");

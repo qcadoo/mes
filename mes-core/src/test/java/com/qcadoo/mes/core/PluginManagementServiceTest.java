@@ -18,9 +18,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
-import com.qcadoo.mes.core.api.PluginManagementService;
-import com.qcadoo.mes.core.internal.PluginManagementServiceImpl;
+import com.qcadoo.mes.internal.PluginManagementServiceImpl;
 
 public final class PluginManagementServiceTest {
 

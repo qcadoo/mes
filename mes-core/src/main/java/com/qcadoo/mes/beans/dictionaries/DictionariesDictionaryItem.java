@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "dictionaries_dictionary_item")
-public final class DictionariesDictionaryItem {
+public class DictionariesDictionaryItem {
 
     @Id
     @GeneratedValue
@@ -21,7 +21,7 @@ public final class DictionariesDictionaryItem {
 
     private boolean deleted;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private DictionariesDictionary dictionary;
 
     public Long getId() {

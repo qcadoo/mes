@@ -5,15 +5,15 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.core.api.DataDefinitionService;
-import com.qcadoo.mes.core.api.Entity;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.search.RestrictionOperator;
-import com.qcadoo.mes.core.search.Restrictions;
-import com.qcadoo.mes.core.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.core.search.SearchResult;
-import com.qcadoo.mes.core.view.ViewValue;
-import com.qcadoo.mes.core.view.elements.comboBox.EntityComboBoxValue;
+import com.qcadoo.mes.api.DataDefinitionService;
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.enums.RestrictionOperator;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.components.combobox.EntityComboBoxValue;
 
 @Service
 public final class ProductService {
@@ -24,11 +24,11 @@ public final class ProductService {
     @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Object> value, final String triggerComponentName) {
         ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
-                .lookupValue("mainWindow.detailsForm.product");
+                .lookupValue("mainWindow.orderDetailsForm.product");
         ViewValue<String> defaultInstructionValue = (ViewValue<String>) value
-                .lookupValue("mainWindow.detailsForm.defaultInstruction");
+                .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
         ViewValue<EntityComboBoxValue> instructionValue = (ViewValue<EntityComboBoxValue>) value
-                .lookupValue("mainWindow.detailsForm.instruction");
+                .lookupValue("mainWindow.orderDetailsForm.instruction");
 
         defaultInstructionValue.setEnabled(false);
         defaultInstructionValue.setValue("");
@@ -46,7 +46,7 @@ public final class ProductService {
     private void selectDefaultInstruction(final String triggerComponentName,
             final ViewValue<EntityComboBoxValue> instructionValue, final Entity defaultInstructionEntity) {
         Long selectedInstructinId = instructionValue.getValue().getSelectedValue();
-        if (selectedInstructinId == null && "mainWindow.detailsForm.product".equals(triggerComponentName)) {
+        if (selectedInstructinId == null && "mainWindow.orderDsetailsForm.product".equals(triggerComponentName)) {
             instructionValue.getValue().setSelectedValue(defaultInstructionEntity.getId());
         }
     }

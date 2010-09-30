@@ -23,45 +23,45 @@ import org.junit.matchers.JUnitMatchers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
+import com.qcadoo.mes.api.DataDefinitionService;
+import com.qcadoo.mes.api.DictionaryService;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.api.DataDefinitionService;
-import com.qcadoo.mes.core.api.DictionaryService;
-import com.qcadoo.mes.core.internal.DataAccessService;
-import com.qcadoo.mes.core.internal.DataDefinitionServiceImpl;
-import com.qcadoo.mes.core.internal.hooks.HookFactory;
-import com.qcadoo.mes.core.internal.model.InternalDataDefinition;
-import com.qcadoo.mes.core.internal.types.BooleanType;
-import com.qcadoo.mes.core.internal.types.DateTimeType;
-import com.qcadoo.mes.core.internal.types.DateType;
-import com.qcadoo.mes.core.internal.types.DecimalType;
-import com.qcadoo.mes.core.internal.types.DictionaryType;
-import com.qcadoo.mes.core.internal.types.EagerBelongsToType;
-import com.qcadoo.mes.core.internal.types.EnumType;
-import com.qcadoo.mes.core.internal.types.FieldTypeFactoryImpl;
-import com.qcadoo.mes.core.internal.types.IntegerType;
-import com.qcadoo.mes.core.internal.types.LazyHasManyType;
-import com.qcadoo.mes.core.internal.types.PasswordType;
-import com.qcadoo.mes.core.internal.types.PriorityType;
-import com.qcadoo.mes.core.internal.types.StringType;
-import com.qcadoo.mes.core.internal.validators.CustomEntityValidator;
-import com.qcadoo.mes.core.internal.validators.CustomValidator;
-import com.qcadoo.mes.core.internal.validators.LengthValidator;
-import com.qcadoo.mes.core.internal.validators.PrecisionValidator;
-import com.qcadoo.mes.core.internal.validators.RangeValidator;
-import com.qcadoo.mes.core.internal.validators.RequiredOnCreateValidator;
-import com.qcadoo.mes.core.internal.validators.RequiredValidator;
-import com.qcadoo.mes.core.internal.validators.ScaleValidator;
-import com.qcadoo.mes.core.internal.validators.UniqueValidator;
-import com.qcadoo.mes.core.internal.validators.ValidatorFactoryImpl;
-import com.qcadoo.mes.core.internal.xml.DataDefinitionParser;
-import com.qcadoo.mes.core.model.DataDefinition;
-import com.qcadoo.mes.core.model.HookDefinition;
-import com.qcadoo.mes.core.types.FieldTypeFactory;
-import com.qcadoo.mes.core.types.HasManyType;
-import com.qcadoo.mes.core.validation.EntityValidator;
-import com.qcadoo.mes.core.validation.FieldValidator;
-import com.qcadoo.mes.core.validation.ValidatorFactory;
+import com.qcadoo.mes.internal.DataAccessService;
+import com.qcadoo.mes.internal.DataDefinitionServiceImpl;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.hooks.internal.HookFactory;
+import com.qcadoo.mes.model.internal.DataDefinitionParser;
+import com.qcadoo.mes.model.internal.InternalDataDefinition;
+import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
+import com.qcadoo.mes.model.types.internal.BooleanType;
+import com.qcadoo.mes.model.types.internal.DateTimeType;
+import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.mes.model.types.internal.DecimalType;
+import com.qcadoo.mes.model.types.internal.DictionaryType;
+import com.qcadoo.mes.model.types.internal.EnumType;
+import com.qcadoo.mes.model.types.internal.FieldTypeFactoryImpl;
+import com.qcadoo.mes.model.types.internal.HasManyEntitiesType;
+import com.qcadoo.mes.model.types.internal.IntegerType;
+import com.qcadoo.mes.model.types.internal.PasswordType;
+import com.qcadoo.mes.model.types.internal.PriorityType;
+import com.qcadoo.mes.model.types.internal.StringType;
+import com.qcadoo.mes.model.validation.EntityValidator;
+import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validation.ValidatorFactory;
+import com.qcadoo.mes.model.validators.internal.CustomEntityValidator;
+import com.qcadoo.mes.model.validators.internal.CustomValidator;
+import com.qcadoo.mes.model.validators.internal.LengthValidator;
+import com.qcadoo.mes.model.validators.internal.PrecisionValidator;
+import com.qcadoo.mes.model.validators.internal.RangeValidator;
+import com.qcadoo.mes.model.validators.internal.RequiredOnCreateValidator;
+import com.qcadoo.mes.model.validators.internal.RequiredValidator;
+import com.qcadoo.mes.model.validators.internal.ScaleValidator;
+import com.qcadoo.mes.model.validators.internal.UniqueValidator;
+import com.qcadoo.mes.model.validators.internal.ValidatorFactoryImpl;
 
 public class DataDefinitionParserTest {
 
@@ -145,9 +145,9 @@ public class DataDefinitionParserTest {
         DataDefinition dataDefinition = parseAndGetDataDefinition();
 
         // then
-        assertEquals(1, dataDefinition.getValidators().size());
+        assertEquals(1, ((InternalDataDefinition) dataDefinition).getValidators().size());
 
-        EntityValidator validator = dataDefinition.getValidators().get(0);
+        EntityValidator validator = ((InternalDataDefinition) dataDefinition).getValidators().get(0);
 
         assertThat(validator, instanceOf(CustomEntityValidator.class));
 
@@ -175,9 +175,9 @@ public class DataDefinitionParserTest {
         assertNotNull(dataDefinition.getField("boolean"));
         assertThat(dataDefinition.getField("boolean").getType(), instanceOf(BooleanType.class));
         assertNotNull(dataDefinition.getField("parent"));
-        assertThat(dataDefinition.getField("parent").getType(), instanceOf(EagerBelongsToType.class));
+        assertThat(dataDefinition.getField("parent").getType(), instanceOf(BelongsToEntityType.class));
         assertNotNull(dataDefinition.getField("children"));
-        assertThat(dataDefinition.getField("children").getType(), instanceOf(LazyHasManyType.class));
+        assertThat(dataDefinition.getField("children").getType(), instanceOf(HasManyEntitiesType.class));
         assertEquals("child", ((HasManyType) (dataDefinition.getField("children")).getType()).getJoinFieldName());
         assertEquals("people", getField(dataDefinition.getField("children").getType(), "pluginIdentifier"));
         assertEquals("person", getField(dataDefinition.getField("children").getType(), "entityName"));
@@ -185,7 +185,7 @@ public class DataDefinitionParserTest {
         assertEquals("child2", ((HasManyType) (dataDefinition.getField("children2")).getType()).getJoinFieldName());
         assertEquals("sample", getField(dataDefinition.getField("children2").getType(), "pluginIdentifier"));
         assertEquals("person", getField(dataDefinition.getField("children2").getType(), "entityName"));
-        assertThat(dataDefinition.getField("children2").getType(), instanceOf(LazyHasManyType.class));
+        assertThat(dataDefinition.getField("children2").getType(), instanceOf(HasManyEntitiesType.class));
         assertNotNull(dataDefinition.getField("typeOfMaterial"));
         assertThat(dataDefinition.getField("typeOfMaterial").getType(), instanceOf(EnumType.class));
         assertThat(((EnumType) dataDefinition.getField("typeOfMaterial").getType()).values(),
@@ -276,7 +276,7 @@ public class DataDefinitionParserTest {
         assertNotNull(dataDefinition.getPriorityField());
         assertEquals("priority", dataDefinition.getPriorityField().getName());
         assertEquals("parent", ((PriorityType) dataDefinition.getPriorityField().getType()).getScopeFieldDefinition().getName());
-        assertTrue(dataDefinition.isPrioritizable());
+        assertTrue(((InternalDataDefinition) dataDefinition).isPrioritizable());
     }
 
     @Test
