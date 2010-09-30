@@ -14,6 +14,7 @@ public class Application {
     @Autowired
     private DataDefinitionParser dataDefinitionParser;
 
+    @Autowired
     private ViewDefinitionParser viewDefinitionParser;
 
     @PostConstruct
