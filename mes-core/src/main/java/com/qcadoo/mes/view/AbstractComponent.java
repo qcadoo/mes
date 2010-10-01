@@ -22,6 +22,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validation.ErrorMessage;
+import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 
 public abstract class AbstractComponent<T> implements Component<T> {
 
@@ -48,6 +49,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
     private Set<String> listeners = new HashSet<String>();
 
     private DataDefinition dataDefinition;
+
+    private Ribbon ribbon;
 
     private boolean defaultEnabled = true;
 
@@ -240,7 +243,14 @@ public abstract class AbstractComponent<T> implements Component<T> {
     public final Map<String, Object> getOptions() {
         options.put("name", name);
         options.put("listeners", listeners);
+        if (ribbon != null) {
+            options.put("ribbon", getRibbonForOptions(ribbon));
+        }
         return options;
+    }
+
+    private final List<Map<String, ?>> getRibbonForOptions(final Ribbon ribbon) {
+        return null;
     }
 
     public final String getOptionsAsJson() {

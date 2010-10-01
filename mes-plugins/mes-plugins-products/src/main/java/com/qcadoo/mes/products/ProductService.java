@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.SecurityService;
+import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.enums.RestrictionOperator;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -20,6 +22,9 @@ public final class ProductService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private SecurityService securityService;
 
     @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Object> value, final String triggerComponentName) {
@@ -111,15 +116,20 @@ public final class ProductService {
         return compareDates(dateFrom, dateTo);
     }
 
+    private String getFullNameOfLoggedUser() {
+        UsersUser user = securityService.getCurrentUser();
+        return user.getFirstName() + " " + user.getLastName();
+    }
+
     public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
         if (("pending".equals(entity.getField("state")) || "done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
-            entity.setField("startWorker", "Jan Kowalski"); // TODO masz - fill field with current user
+            entity.setField("startWorker", getFullNameOfLoggedUser());
         }
         if ("done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
-            entity.setField("endWorker", "Jan Nowak"); // TODO masz - fill field with current user
+            entity.setField("endWorker", getFullNameOfLoggedUser());
 
         }
 
