@@ -2,7 +2,7 @@ package com.qcadoo.mes.view.menu.ribbon;
 
 import java.util.List;
 
-public class Ribbon {
+public final class Ribbon {
 
     private String name;
 

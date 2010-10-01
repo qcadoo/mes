@@ -2,7 +2,7 @@ package com.qcadoo.mes.view.menu.ribbon;
 
 import java.util.List;
 
-public class RibbonComboItem extends RibbonItem {
+public final class RibbonComboItem extends RibbonItem {
 
     private List<RibbonActionItem> items;
 
