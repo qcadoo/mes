@@ -69,7 +69,7 @@
 
 	<div id="content">
 	
-		<div>
+		<div style="color: red">
 			${message}
 		</div>
 	

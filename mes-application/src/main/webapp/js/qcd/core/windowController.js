@@ -70,17 +70,17 @@ QCD.WindowController = function() {
 	
 	function performGoToPage(url) {
 		loadingIndicator.show();
-		
-		if (url.indexOf("?") == -1) {
-			url += "?iframe=true";
-		} else {
-			if (url.charAt(url.length - 1) == '?') {
-				url += "iframe=true";
+		if (url.search("://") <= 0) {
+			if (url.indexOf("?") == -1) {
+				url += "?iframe=true";
 			} else {
-				url += "&iframe=true";
+				if (url.charAt(url.length - 1) == '?') {
+					url += "iframe=true";
+				} else {
+					url += "&iframe=true";
+				}
 			}
 		}
-		
 		iframe.attr('src', url);
 	}
 	

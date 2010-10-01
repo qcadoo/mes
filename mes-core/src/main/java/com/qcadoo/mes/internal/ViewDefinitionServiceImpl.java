@@ -67,6 +67,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         FirstLevelItem homeItem = new FirstLevelItem("home", "start");
         homeItem.addItem(new UrlSecondLevelItem("home", "start", "homePage.html"));
+        homeItem.addItem(new UrlSecondLevelItem("google", "google", "http://www.google.pl"));
         menuDef.addItem(homeItem);
 
         if (belongsToActivePlugin("products")) {
