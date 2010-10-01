@@ -1,5 +1,6 @@
 package com.qcadoo.mes.view.menu.ribbon;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -10,7 +11,7 @@ public final class Ribbon {
 
     private String name;
 
-    private List<RibbonGroup> groups;
+    private final List<RibbonGroup> groups = new LinkedList<RibbonGroup>();
 
     public String getName() {
         return name;
@@ -24,8 +25,8 @@ public final class Ribbon {
         return groups;
     }
 
-    public void setGroups(final List<RibbonGroup> groups) {
-        this.groups = groups;
+    public void addGroup(final RibbonGroup group) {
+        groups.add(group);
     }
 
     public String getAsJson() {
