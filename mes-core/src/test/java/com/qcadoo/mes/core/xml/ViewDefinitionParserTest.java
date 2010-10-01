@@ -27,7 +27,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -102,7 +101,6 @@ public class ViewDefinitionParserTest {
         plugin.setIdentifier("sample");
 
         given(pluginManagementService.getByIdentifierAndStatus("sample", "active")).willReturn(plugin);
-        given(pluginManagementService.getActivePlugins()).willReturn(Lists.newArrayList(plugin));
         given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
 
         dataDefinitionA = mock(DataDefinition.class);

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
+import com.qcadoo.mes.enums.PluginStatus;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.FirstLevelItem;
 import com.qcadoo.mes.view.menu.MenuDefinition;
@@ -38,7 +39,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
-        PluginsPlugin plugin = pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, "active");
+        PluginsPlugin plugin = pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue());
         return (plugin != null);
     }
 

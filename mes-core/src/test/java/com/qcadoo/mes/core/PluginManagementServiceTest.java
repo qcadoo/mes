@@ -1,16 +1,11 @@
 package com.qcadoo.mes.core;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-
-import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -32,31 +27,6 @@ public final class PluginManagementServiceTest {
     public void init() {
         pluginManagementService = new PluginManagementServiceImpl();
         ReflectionTestUtils.setField(pluginManagementService, "sessionFactory", sessionFactory);
-    }
-
-    @Test
-    public void shouldReturnListOfPlugins() {
-        // given
-        PluginsPlugin pluginsPlugin1 = new PluginsPlugin();
-        pluginsPlugin1.setName("plugin1");
-        PluginsPlugin pluginsPlugin2 = new PluginsPlugin();
-        pluginsPlugin2.setName("plugin2");
-        PluginsPlugin pluginsPlugin3 = new PluginsPlugin();
-        pluginsPlugin3.setName("plugin3");
-
-        given(
-                sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
-                        .add(any(Criterion.class)).list()).willReturn(
-                newArrayList(pluginsPlugin1, pluginsPlugin2, pluginsPlugin3));
-
-        // when
-        List<PluginsPlugin> plugins = pluginManagementService.getActivePlugins();
-
-        // then
-        assertThat(plugins.size(), equalTo(3));
-        assertThat(plugins.get(0).getName(), equalTo("plugin1"));
-        assertThat(plugins.get(1).getName(), equalTo("plugin2"));
-        assertThat(plugins.get(2).getName(), equalTo("plugin3"));
     }
 
     @Test
