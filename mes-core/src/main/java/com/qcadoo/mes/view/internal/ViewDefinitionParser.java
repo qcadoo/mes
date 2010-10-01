@@ -41,6 +41,11 @@ import com.qcadoo.mes.view.components.LinkButtonComponent;
 import com.qcadoo.mes.view.components.TextInputComponent;
 import com.qcadoo.mes.view.containers.FormComponent;
 import com.qcadoo.mes.view.containers.WindowComponent;
+import com.qcadoo.mes.view.menu.ribbon.Ribbon;
+import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
+import com.qcadoo.mes.view.menu.ribbon.RibbonItem;
 
 @Service
 public final class ViewDefinitionParser {
@@ -131,7 +136,7 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        addChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
+        addMenuAndChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
 
         return component;
     }
@@ -163,18 +168,20 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        addChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
+        addMenuAndChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
 
         return component;
     }
 
-    private void addChildrenComponentsAndOptions(final XMLStreamReader reader, final AbstractComponent<?> component)
+    private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final AbstractComponent<?> component)
             throws XMLStreamException {
         component.setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
         component.setDefaultVisible(getBooleanAttribute(reader, "visible", true));
 
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, "option")) {
+            if (isTagStarted(reader, "ribbon")) {
+                component.setRibbon(getRibbon(reader));
+            } else if (isTagStarted(reader, "option")) {
                 component.addRawOption(getOption(reader));
             } else if (isTagStarted(reader, "component")) {
                 if (component instanceof AbstractContainerComponent) {
@@ -185,6 +192,57 @@ public final class ViewDefinitionParser {
                 break;
             }
         }
+    }
+
+    private Ribbon getRibbon(final XMLStreamReader reader) throws XMLStreamException {
+        Ribbon ribbon = new Ribbon();
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagStarted(reader, "ribbon")) {
+                break;
+            } else if (isTagStarted(reader, "group")) {
+                ribbon.addGroup(getGroup(reader));
+            }
+        }
+        return ribbon;
+    }
+
+    private RibbonGroup getGroup(final XMLStreamReader reader) throws XMLStreamException {
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName(getStringAttribute(reader, "name"));
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagStarted(reader, "group")) {
+                break;
+            } else {
+                ribbonGroup.addItems(getRibbonItem(reader));
+            }
+        }
+        return ribbonGroup;
+    }
+
+    private RibbonItem getRibbonItem(final XMLStreamReader reader) {
+        String stringType = reader.getLocalName();
+        boolean combo = ("bigButtons".equals(stringType) || "smallButtons".equals(stringType));
+        RibbonItem.Type type = RibbonItem.Type.BIG_BUTTON;
+
+        RibbonItem item = null;
+
+        if (combo) {
+            item = new RibbonComboItem();
+        } else {
+            item = new RibbonActionItem();
+        }
+
+        item.setIcon(getStringAttribute(reader, "icon"));
+        item.setName(getStringAttribute(reader, "name"));
+        item.setType(type);
+
+        if (combo) {
+            // ((RibbonComboItem)item)
+        } else {
+            ((RibbonActionItem) item).setAction(getStringAttribute(reader, "action"));
+        }
+
+        return item;
     }
 
     private ComponentOption getOption(final XMLStreamReader reader) throws XMLStreamException {

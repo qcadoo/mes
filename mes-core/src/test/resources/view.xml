@@ -2,6 +2,19 @@
 <qcd:views plugin="sample" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="simpleView" model="beanB">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="first">
+					<bigButton name="test" action="#{mainWindow.beanBForm}.save,#{mainWindow}.back" />
+					<smallButton name="test2" icon="icon2" action="xxx" />
+				</group>
+				<group name="second">
+					<bigButton name="test2" />
+					<bigButtons name="combo1">
+						<bigButton name="test1" action="yyy1" />
+						<bigButton name="test2" action="yyy2" />
+					</bigButtons>
+				</group>
+			</ribbon>
 			<component type="form" name="beanBForm">
 				<component type="input" name="name" field="name" />
 				<component type="checkbox" name="active" field="name" enabled="false" visible="false" />

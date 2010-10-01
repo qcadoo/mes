@@ -243,14 +243,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
     public final Map<String, Object> getOptions() {
         options.put("name", name);
         options.put("listeners", listeners);
-        if (ribbon != null) {
-            options.put("ribbon", getRibbonForOptions(ribbon));
-        }
         return options;
-    }
-
-    private final List<Map<String, ?>> getRibbonForOptions(final Ribbon ribbon) {
-        return null;
     }
 
     public final String getOptionsAsJson() {
@@ -450,6 +443,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     public final void setDefaultVisible(final boolean defaultVisible) {
         this.defaultVisible = defaultVisible;
+    }
+
+    public void setRibbon(final Ribbon ribbon) {
+        this.ribbon = ribbon;
     }
 
 }
