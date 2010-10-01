@@ -1,6 +1,6 @@
 package com.qcadoo.mes.view.menu.ribbon;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -11,7 +11,7 @@ public final class Ribbon {
 
     private String name;
 
-    private final List<RibbonGroup> groups = new ArrayList<RibbonGroup>();
+    private final List<RibbonGroup> groups = new LinkedList<RibbonGroup>();
 
     public String getName() {
         return name;

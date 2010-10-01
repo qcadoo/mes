@@ -1,6 +1,6 @@
 package com.qcadoo.mes.view.menu.ribbon;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -11,7 +11,7 @@ public final class RibbonGroup {
 
     private String name;
 
-    private final List<RibbonItem> items = new ArrayList<RibbonItem>();
+    private final List<RibbonItem> items = new LinkedList<RibbonItem>();;
 
     public String getName() {
         return name;
@@ -25,8 +25,8 @@ public final class RibbonGroup {
         return items;
     }
 
-    public void addItems(final RibbonItem item) {
-        this.items.add(item);
+    public void addItem(final RibbonItem item) {
+        items.add(item);
     }
 
     public JSONObject getAsJson() throws JSONException {

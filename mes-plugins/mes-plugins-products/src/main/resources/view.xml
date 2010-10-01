@@ -2,6 +2,20 @@
 <qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="productGridView" model="product">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="firstGroup">
+					<bigButton name="test"
+						action="#{mainWindow.beanBForm}.save,#{mainWindow}.back" />
+					<smallButton name="test2" icon="icon2" action="xxx" />
+				</group>
+				<group name="secondGroup">
+					<bigButton name="test2" />
+					<bigButtons name="combo1">
+						<bigButton name="test1" action="yyy1" />
+						<bigButton name="test2" icon="icon2" action="yyy2" />
+					</bigButtons>
+				</group>
+			</ribbon>
 			<component type="grid" name="productsGrid">
 				<option type="column" name="number" fields="number" />
 				<option type="column" name="name" fields="name" />
@@ -38,9 +52,12 @@
 				<option type="multiselect" value="false" />
 				<option type="height" value="150" />
 			</component>
-			<component type="grid" name="substitutesComponentGrid" source="#{mainWindow.substitutesGrid}.components">
-				<option type="column" name="number" fields="product" expression="#product['number']" />
-				<option type="column" name="name" fields="product" expression="#product['name']" />
+			<component type="grid" name="substitutesComponentGrid"
+				source="#{mainWindow.substitutesGrid}.components">
+				<option type="column" name="number" fields="product"
+					expression="#product['number']" />
+				<option type="column" name="name" fields="product"
+					expression="#product['name']" />
 				<option type="column" name="quantity" fields="quantity" />
 				<option type="correspondingView" value="products/substituteComponentDetailsView" />
 				<option type="paginable" value="false" />
@@ -49,7 +66,7 @@
 			</component>
 		</component>
 	</view>
-		<view name="substituteDetailsView" model="substitute">
+	<view name="substituteDetailsView" model="substitute">
 		<component type="window" name="mainWindow">
 			<component type="form" name="substitutesDetailsForm">
 				<component type="input" name="number" field="number" />
@@ -131,17 +148,23 @@
 				<component type="select" name="state" field="state" />
 				<component type="select" name="machine" field="machine" />
 				<component type="lookup" name="product" field="product" />
-				<component type="input" name="defaultInstruction" field="defaultInstruction" enabled="false" />
-				<component type="lookup" name="instruction" field="instruction" source="#{mainWindow.orderDetailsForm.product}.instructions" />
+				<component type="input" name="defaultInstruction" field="defaultInstruction"
+					enabled="false" />
+				<component type="lookup" name="instruction" field="instruction"
+					source="#{mainWindow.orderDetailsForm.product}.instructions" />
 				<component type="input" name="plannedQuantity" field="plannedQuantity" />
 				<component type="input" name="doneQuantity" field="doneQuantity" />
-				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom" enabled="false" />
-				<component type="input" name="effectiveDateTo" field="effectiveDateTo" enabled="false" />
-				<component type="input" name="startWorker" field="startWorker" enabled="false" />
-				<component type="input" name="endWorker" field="endWorker" enabled="false" />
+				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom"
+					enabled="false" />
+				<component type="input" name="effectiveDateTo" field="effectiveDateTo"
+					enabled="false" />
+				<component type="input" name="startWorker" field="startWorker"
+					enabled="false" />
+				<component type="input" name="endWorker" field="endWorker"
+					enabled="false" />
 				<option type="header" value="false" />
 			</component>
 		</component>
-		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad"/>
+		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
 	</view>
 </qcd:views>

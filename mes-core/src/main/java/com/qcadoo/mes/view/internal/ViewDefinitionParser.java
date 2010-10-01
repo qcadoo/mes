@@ -197,32 +197,38 @@ public final class ViewDefinitionParser {
     private Ribbon getRibbon(final XMLStreamReader reader) throws XMLStreamException {
         Ribbon ribbon = new Ribbon();
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, "ribbon")) {
+            if (isTagEnded(reader, "ribbon")) {
                 break;
             } else if (isTagStarted(reader, "group")) {
-                ribbon.addGroup(getGroup(reader));
+                ribbon.addGroup(getRibbonGroup(reader));
             }
         }
         return ribbon;
     }
 
-    private RibbonGroup getGroup(final XMLStreamReader reader) throws XMLStreamException {
+    private RibbonGroup getRibbonGroup(final XMLStreamReader reader) throws XMLStreamException {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName(getStringAttribute(reader, "name"));
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, "group")) {
+            if (isTagEnded(reader, "group")) {
                 break;
-            } else {
-                ribbonGroup.addItems(getRibbonItem(reader));
+            } else if (isTagStarted(reader)) {
+                ribbonGroup.addItem(getRibbonItem(reader));
             }
         }
         return ribbonGroup;
     }
 
-    private RibbonItem getRibbonItem(final XMLStreamReader reader) {
+    private RibbonItem getRibbonItem(final XMLStreamReader reader) throws XMLStreamException {
         String stringType = reader.getLocalName();
         boolean combo = ("bigButtons".equals(stringType) || "smallButtons".equals(stringType));
-        RibbonItem.Type type = RibbonItem.Type.BIG_BUTTON;
+        RibbonItem.Type type = null;
+
+        if ("bigButtons".equals(stringType) || "bigButton".equals(stringType)) {
+            type = RibbonItem.Type.BIG_BUTTON;
+        } else if ("smallButtons".equals(stringType) || "smallButton".equals(stringType)) {
+            type = RibbonItem.Type.SMALL_BUTTON;
+        }
 
         RibbonItem item = null;
 
@@ -237,7 +243,13 @@ public final class ViewDefinitionParser {
         item.setType(type);
 
         if (combo) {
-            // ((RibbonComboItem)item)
+            while (reader.hasNext() && reader.next() > 0) {
+                if (isTagEnded(reader, stringType)) {
+                    break;
+                } else if (isTagStarted(reader)) {
+                    ((RibbonComboItem) item).addItem((RibbonActionItem) getRibbonItem(reader));
+                }
+            }
         } else {
             ((RibbonActionItem) item).setAction(getStringAttribute(reader, "action"));
         }
@@ -280,7 +292,11 @@ public final class ViewDefinitionParser {
     }
 
     private boolean isTagStarted(final XMLStreamReader reader, final String tagName) {
-        return (reader.getEventType() == XMLStreamConstants.START_ELEMENT && tagName.equals(reader.getLocalName()));
+        return (isTagStarted(reader) && tagName.equals(reader.getLocalName()));
+    }
+
+    private boolean isTagStarted(final XMLStreamReader reader) {
+        return (reader.getEventType() == XMLStreamConstants.START_ELEMENT);
     }
 
     private boolean isTagEnded(final XMLStreamReader reader, final String tagName) {

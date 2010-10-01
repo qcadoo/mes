@@ -10,9 +10,12 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	var elementName = element.attr('id');
 	
 	function constructor(_this) {
-		var childrenElement = $("#"+elementName+" .windowComponents");
-		_this.constructChildren(childrenElement.children());
-		$("#"+elementName+"_backButton").click(performBack);
+//		var childrenElement = $("#"+elementName+" .windowComponents");
+//		_this.constructChildren(childrenElement.children());
+//		$("#"+elementName+"_backButton").click(performBack);
+		if (_this.options.ribbon) {
+			QCD.info("window has ribbon")
+		}
 	}
 	
 	function performBack() {
