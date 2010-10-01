@@ -17,26 +17,34 @@
 		${component.optionsAsJson}
 	</div>
 	
-	<div style="font-weight: bold; margin-bottom: 10px;">
-		<c:if test="${component.options['backButton']}"><button id="${componentFullName}_backButton">back</button></c:if>
-		<c:if test="${component.options['header']}">
-			<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
-			${translationsMap[headerLabel]}
-		</c:if>
-	</div>
+	<table class="windowContainer">
+		<tr><td>
+			<div id="${componentFullName}_windowContainerRibbon">
+			</div>
+		</td></tr>
+		<tr><td>
+			<div style="font-weight: bold; margin-bottom: 10px;">
+				<c:if test="${component.options['backButton']}"><button id="${componentFullName}_backButton">back</button></c:if>
+				<c:if test="${component.options['header']}">
+					<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
+					${translationsMap[headerLabel]}
+				</c:if>
+			</div>
+			
+			<div class="windowComponents">
+				<c:forEach items="${component.components}" var="componentEntry">
+					<tiles:insertTemplate template="../component.jsp">
+						<tiles:putAttribute name="component" value="${componentEntry.value}" />
+						<tiles:putAttribute name="parentComponentFullName" value="${componentFullName}" />
+						<tiles:putAttribute name="parentComponentFullNameWithDots" value="${componentFullNameWithDots}" />
+						<tiles:putAttribute name="viewName" value="${viewName}" />
+						<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
+					</tiles:insertTemplate>
+				</c:forEach>
+			</div>
+		</td></tr>
+	</table>
 	
-	<div class="windowComponents">
-		<c:forEach items="${component.components}" var="componentEntry">
-			<tiles:insertTemplate template="../component.jsp">
-				<tiles:putAttribute name="component" value="${componentEntry.value}" />
-				<tiles:putAttribute name="parentComponentFullName" value="${componentFullName}" />
-				<tiles:putAttribute name="parentComponentFullNameWithDots" value="${componentFullNameWithDots}" />
-				<tiles:putAttribute name="viewName" value="${viewName}" />
-				<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
-			</tiles:insertTemplate>
-		</c:forEach>
-	
-	</div>
 </div>
 
 

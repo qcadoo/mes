@@ -246,21 +246,13 @@ public abstract class AbstractComponent<T> implements Component<T> {
     public final Map<String, Object> getOptions() {
         options.put("name", name);
         options.put("listeners", listeners);
-        if (ribbon != null) {
-            options.put("ribbon", getRibbonForOptions(ribbon));
-        }
         return options;
-    }
-
-    private final List<Map<String, ?>> getRibbonForOptions(final Ribbon ribbon) {
-        return null;
     }
 
     public final String getOptionsAsJson() {
 
         ribbon = new Ribbon();
         ribbon.setName("testRibbon1");
-
         RibbonGroup g1 = new RibbonGroup();
         ribbon.addGroup(g1);
         g1.setName("group1");
@@ -268,7 +260,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         b1.setName("b1");
         b1.setType(RibbonItem.Type.BIG_BUTTON);
         g1.addItem(b1);
-
         RibbonGroup g2 = new RibbonGroup();
         g2.setName("group2");
         ribbon.addGroup(g2);
@@ -298,7 +289,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
-        System.out.println("XXXX:" + name + " - " + jsonOptions.toString());
         return jsonOptions.toString();
     }
 

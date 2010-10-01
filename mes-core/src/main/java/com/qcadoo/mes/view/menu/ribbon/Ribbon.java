@@ -29,7 +29,7 @@ public final class Ribbon {
         groups.add(group);
     }
 
-    public String getAsJson() {
+    public JSONObject getAsJson() {
         JSONObject ribbonJson = new JSONObject();
         try {
             ribbonJson.put("name", name);
@@ -41,6 +41,6 @@ public final class Ribbon {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return ribbonJson.toString();
+        return ribbonJson;
     }
 }

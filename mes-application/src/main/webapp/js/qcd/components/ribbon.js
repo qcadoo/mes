@@ -3,15 +3,19 @@ QCD.components = QCD.components || {};
 
 QCD.components.Ribbon = function(_model) {
 	
-	var model = _model;;
+	var ribbonModel = _model;;
 	
 	this.constructElement = function() {
 		var element = $("<div>").addClass("ribbonMenu");
 		
-		if (ribbonModel.items) {
-			for (var groupIter in ribbonModel.items) {
-				var groupModel = ribbonModel.items[groupIter];
+		QCD.info(ribbonModel);
+		
+		if (ribbonModel.groups) {
+			for (var groupIter in ribbonModel.groups) {
+				var groupModel = ribbonModel.groups[groupIter];
 				var groupElement = $("<div>").addClass("ribbonGroup");
+				
+				QCD.info(groupModel);
 				
 				var smallElementsGroupElement = null;
 				for (var itemsIter in groupModel.items) {
@@ -20,15 +24,20 @@ QCD.components.Ribbon = function(_model) {
 					var itemElement = null;
 					var isSmall = false;
 					
-					if (itemModel.type == "bigButton") {
-						itemElement = createBigButton(itemModel);
-					} else if (itemModel.type == "bigButtonDropdown") {
-						itemElement = createBigButtonWithDropdown(itemModel);
-					} else if (itemModel.type == "smallButton") {
-						var itemElement = createSmallButton(itemModel);
-						isSmall = true;
-					} else if (itemModel.type == "smallButtonDropdown") {
-						var itemElement = createSmallButtonWithDropdown(itemModel);
+					QCD.info(itemModel);
+					
+					if (itemModel.type == "BIG_BUTTON") {
+						if (itemModel.items) {
+							itemElement = createBigButtonWithDropdown(itemModel);
+						} else {
+							itemElement = createBigButton(itemModel);
+						}
+					} else if (itemModel.type == "SMALL_BUTTON") {
+						if (itemModel.items) {
+							itemElement = createSmallButtonWithDropdown(itemModel);
+						} else {
+							itemElement = createSmallButton(itemModel);
+						}
 						isSmall = true;
 					}
 					
@@ -52,6 +61,8 @@ QCD.components.Ribbon = function(_model) {
 				element.append(groupElement);
 			}
 		}
+		
+		return element;
 	}
 	
 	function createBigButton(itemModel) {
