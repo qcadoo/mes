@@ -229,6 +229,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			rowDblClicked(id);
         }
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
+		//grid.setGridWidth(900);
+		//grid.setGridWidth($(window).width());
+//		$(window).bind('resize', function() {
+//		    grid.setGridWidth(element.width());
+//		    //grid.setGridHeight(element.height());
+//		}).trigger('resize');
+
 	}
 	
 	constructor(this);

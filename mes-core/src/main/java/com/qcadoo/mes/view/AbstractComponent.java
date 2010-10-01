@@ -273,6 +273,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
                     jsonOptions.put(option.getKey(), option.getValue());
                 }
             }
+            if (ribbon != null) {
+                jsonOptions.put("ribbon", ribbon.getAsJson());
+            }
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

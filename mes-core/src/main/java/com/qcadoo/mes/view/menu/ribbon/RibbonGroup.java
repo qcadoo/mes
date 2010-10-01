@@ -2,6 +2,10 @@ package com.qcadoo.mes.view.menu.ribbon;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public final class RibbonGroup {
 
     private String name;
@@ -22,6 +26,17 @@ public final class RibbonGroup {
 
     public void setItems(final List<RibbonItem> items) {
         this.items = items;
+    }
+
+    public JSONObject getAsJson() throws JSONException {
+        JSONObject groupObject = new JSONObject();
+        groupObject.put("name", name);
+        JSONArray itemsArray = new JSONArray();
+        for (RibbonItem item : items) {
+            itemsArray.put(item.getAsJson());
+        }
+        groupObject.put("items", itemsArray);
+        return groupObject;
     }
 
 }

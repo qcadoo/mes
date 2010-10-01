@@ -7,19 +7,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FirstLevelItem {
+public class MenulItemsGroup {
 
     private final String name;
 
     private final String label;
 
-    private final List<SecondLevelItem> items;
+    private final List<MenuItem> items;
 
-    public FirstLevelItem(String name, String label) {
+    public MenulItemsGroup(String name, String label) {
         super();
         this.name = name;
         this.label = label;
-        items = new LinkedList<SecondLevelItem>();
+        items = new LinkedList<MenuItem>();
     }
 
     public String getName() {
@@ -30,11 +30,11 @@ public class FirstLevelItem {
         return label;
     }
 
-    public List<SecondLevelItem> getItems() {
+    public List<MenuItem> getItems() {
         return items;
     }
 
-    public void addItem(SecondLevelItem item) {
+    public void addItem(MenuItem item) {
         items.add(item);
     }
 
@@ -43,7 +43,7 @@ public class FirstLevelItem {
         itemObject.put("name", name);
         itemObject.put("label", label);
         JSONArray itemsArray = new JSONArray();
-        for (SecondLevelItem item : items) {
+        for (MenuItem item : items) {
             itemsArray.put(item.getAsJson());
         }
         itemObject.put("items", itemsArray);

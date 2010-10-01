@@ -1,17 +1,23 @@
 package com.qcadoo.mes.view.menu.ribbon;
 
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public final class RibbonActionItem extends RibbonItem {
 
-    private List<String> clickAction;
+    private String clickAction;
 
-    public List<String> getAction() {
+    public String getAction() {
         return clickAction;
     }
 
-    public void setAction(final List<String> clickAction) {
+    public void setAction(final String clickAction) {
         this.clickAction = clickAction;
     }
 
+    public JSONObject getAsJson() throws JSONException {
+        JSONObject itemObject = super.getAsJson();
+        itemObject.put("clickAction", clickAction);
+        return itemObject;
+    }
 }

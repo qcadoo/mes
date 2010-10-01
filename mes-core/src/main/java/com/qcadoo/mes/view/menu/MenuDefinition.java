@@ -9,24 +9,24 @@ import org.json.JSONObject;
 
 public class MenuDefinition {
 
-    private final List<FirstLevelItem> items;
+    private final List<MenulItemsGroup> items;
 
     public MenuDefinition() {
-        items = new LinkedList<FirstLevelItem>();
+        items = new LinkedList<MenulItemsGroup>();
     }
 
-    public List<FirstLevelItem> getItems() {
+    public List<MenulItemsGroup> getItems() {
         return items;
     }
 
-    public void addItem(FirstLevelItem item) {
+    public void addItem(MenulItemsGroup item) {
         items.add(item);
     }
 
     public String getAsJson() {
         try {
             JSONArray menuItems = new JSONArray();
-            for (FirstLevelItem item : items) {
+            for (MenulItemsGroup item : items) {
                 menuItems.put(item.getAsJson());
             }
             JSONObject menuStructure = new JSONObject();

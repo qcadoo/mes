@@ -35,6 +35,7 @@
 	<script type="text/javascript" src="../../js/qcd/components/elements/entityComboBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/checkBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/linkButton.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/ribbon.js"></script>
 	
 	<script type="text/javascript">
 

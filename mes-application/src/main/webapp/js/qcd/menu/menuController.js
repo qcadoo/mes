@@ -18,6 +18,7 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	
 	function constructor(menuStructure) {
 		model = new QCD.menu.MenuModel(menuStructure.menuItems);
+		QCD.info(model);
 		for (var i in model.items) {
 			var item = model.items[i];
 			var firstLevelButton = $("<div>").html(item.label).addClass("firstLevelButton").attr("id", "firstLevelButton_"+item.name);

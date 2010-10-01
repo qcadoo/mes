@@ -1,5 +1,8 @@
 package com.qcadoo.mes.view.menu.ribbon;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public abstract class RibbonItem {
 
     public static enum Type {
@@ -34,6 +37,14 @@ public abstract class RibbonItem {
 
     public final void setIcon(final String icon) {
         this.icon = icon;
+    }
+
+    public JSONObject getAsJson() throws JSONException {
+        JSONObject itemObject = new JSONObject();
+        itemObject.put("name", name);
+        itemObject.put("type", type);
+        itemObject.put("icon", icon);
+        return itemObject;
     }
 
 }

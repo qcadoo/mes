@@ -14,10 +14,11 @@ import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.enums.PluginStatus;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.menu.FirstLevelItem;
 import com.qcadoo.mes.view.menu.MenuDefinition;
-import com.qcadoo.mes.view.menu.secondLevel.UrlSecondLevelItem;
-import com.qcadoo.mes.view.menu.secondLevel.ViewDefinitionSecondLevelItem;
+import com.qcadoo.mes.view.menu.MenuItem;
+import com.qcadoo.mes.view.menu.MenulItemsGroup;
+import com.qcadoo.mes.view.menu.items.UrlMenuItem;
+import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
@@ -26,6 +27,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     private PluginManagementService pluginManagementService;
 
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
+
+    private MenuDefinition baseMenuDefinition;
 
     @Override
     @Transactional(readOnly = true)
@@ -39,6 +42,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     }
 
     private boolean belongsToActivePlugin(final String pluginIdentifier) {
+        if (pluginIdentifier == null) {
+            return true;
+        }
         PluginsPlugin plugin = pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue());
         return (plugin != null);
     }
@@ -64,36 +70,43 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Override
     @Transactional(readOnly = true)
     public MenuDefinition getMenu() {
+
+        baseMenuDefinition = new MenuDefinition();
+
+        MenulItemsGroup homeItem = new MenulItemsGroup("home", "start");
+        homeItem.addItem(new UrlMenuItem("home", "start", null, "homePage.html"));
+        homeItem.addItem(new UrlMenuItem("google", "google", null, "http://www.google.pl"));
+        baseMenuDefinition.addItem(homeItem);
+
+        MenulItemsGroup productsItem = new MenulItemsGroup("products", "Zarządzanie Produktami");
+        productsItem.addItem(new ViewDefinitionMenuItemItem("products", "Produkty", "products", "productGridView"));
+        productsItem.addItem(new ViewDefinitionMenuItemItem("instructions", "Instrukcje materiałowe", "products",
+                "instructionGridView"));
+        productsItem.addItem(new ViewDefinitionMenuItemItem("productionOrders", "Zlecenia produkcyjne", "products",
+                "orderGridView"));
+        baseMenuDefinition.addItem(productsItem);
+
+        MenulItemsGroup administrationItem = new MenulItemsGroup("administration", "Administracja");
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("dictionaries", "Słowniki", "dictionaries",
+                "dictionaryGridView"));
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("users", "Użytkownicy", "users", "userGridView"));
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("groups", "Grupy", "users", "groupGridView"));
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("plugins", "Pluginy", "plugins", "pluginGridView"));
+        baseMenuDefinition.addItem(administrationItem);
+
         MenuDefinition menuDef = new MenuDefinition();
-
-        FirstLevelItem homeItem = new FirstLevelItem("home", "start");
-        homeItem.addItem(new UrlSecondLevelItem("home", "start", "homePage.html"));
-        homeItem.addItem(new UrlSecondLevelItem("google", "google", "http://www.google.pl"));
-        menuDef.addItem(homeItem);
-
-        if (belongsToActivePlugin("products")) {
-            FirstLevelItem productsItem = new FirstLevelItem("products", "Zarządzanie Produktami");
-            productsItem.addItem(new ViewDefinitionSecondLevelItem("products", "Produkty", "products", "productGridView"));
-            productsItem.addItem(new ViewDefinitionSecondLevelItem("instructions", "Instrukcje materiałowe", "products",
-                    "instructionGridView"));
-            productsItem.addItem(new ViewDefinitionSecondLevelItem("productionOrders", "Zlecenia produkcyjne", "products",
-                    "orderGridView"));
-            menuDef.addItem(productsItem);
+        for (MenulItemsGroup baseGroup : baseMenuDefinition.getItems()) {
+            MenulItemsGroup itemGroup = new MenulItemsGroup(baseGroup.getName(), baseGroup.getLabel());
+            for (MenuItem baseItem : baseGroup.getItems()) {
+                if (!belongsToActivePlugin(baseItem.getPluginIdentifier())) {
+                    continue;
+                }
+                itemGroup.addItem(baseItem);
+            }
+            if (itemGroup.getItems().size() > 0) {
+                menuDef.addItem(itemGroup);
+            }
         }
-
-        FirstLevelItem administrationItem = new FirstLevelItem("administration", "Administracja");
-        if (belongsToActivePlugin("dictionaries")) {
-            administrationItem.addItem(new ViewDefinitionSecondLevelItem("dictionaries", "Słowniki", "dictionaries",
-                    "dictionaryGridView"));
-        }
-        if (belongsToActivePlugin("users")) {
-            administrationItem.addItem(new ViewDefinitionSecondLevelItem("users", "Użytkownicy", "users", "userGridView"));
-            administrationItem.addItem(new ViewDefinitionSecondLevelItem("groups", "Grupy", "users", "groupGridView"));
-        }
-        if (belongsToActivePlugin("plugins")) {
-            administrationItem.addItem(new ViewDefinitionSecondLevelItem("plugins", "Pluginy", "plugins", "pluginGridView"));
-        }
-        menuDef.addItem(administrationItem);
 
         return menuDef;
     }
