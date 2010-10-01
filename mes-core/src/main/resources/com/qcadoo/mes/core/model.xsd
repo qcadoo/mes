@@ -39,6 +39,8 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="identifierType" use="required" />
 		<xs:attribute name="deletable" type="xs:boolean" />
+		<xs:attribute name="creatable" type="xs:boolean" />
+		<xs:attribute name="updatable" type="xs:boolean" />
 	</xs:complexType>
 
 	<xs:complexType name="validatesWithType">
@@ -120,6 +122,14 @@
 				<xs:attribute name="plugin" type="identifierType" />
 				<xs:attribute name="joinField" type="identifierType"
 					use="required" />
+				<xs:attribute name="cascade" default="nullify">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="delete" />
+							<xs:enumeration value="nullify" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

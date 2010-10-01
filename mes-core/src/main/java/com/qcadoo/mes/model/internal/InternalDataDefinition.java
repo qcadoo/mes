@@ -27,4 +27,8 @@ public interface InternalDataDefinition extends DataDefinition {
 
     boolean isDeletable();
 
+    boolean isCreatable();
+
+    boolean isUpdatable();
+
 }

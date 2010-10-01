@@ -30,6 +30,6 @@ public interface FieldTypeFactory {
 
     LookupedType eagerBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
 
-    FieldType hasManyType(String pluginIdentifier, final String entityName, final String fieldName);
+    FieldType hasManyType(String pluginIdentifier, final String entityName, final String fieldName, HasManyType.Cascade cascade);
 
 }

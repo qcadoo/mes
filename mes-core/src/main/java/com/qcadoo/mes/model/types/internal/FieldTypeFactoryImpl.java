@@ -10,6 +10,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.LookupedType;
 
 @Service
@@ -109,7 +110,8 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     }
 
     @Override
-    public FieldType hasManyType(final String pluginIdentifier, final String entityName, final String fieldName) {
-        return new HasManyEntitiesType(pluginIdentifier, entityName, fieldName, dataDefinitionService);
+    public FieldType hasManyType(final String pluginIdentifier, final String entityName, final String fieldName,
+            final HasManyType.Cascade cascade) {
+        return new HasManyEntitiesType(pluginIdentifier, entityName, fieldName, cascade, dataDefinitionService);
     }
 }

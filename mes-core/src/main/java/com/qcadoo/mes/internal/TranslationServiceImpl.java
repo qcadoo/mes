@@ -37,20 +37,15 @@ public final class TranslationServiceImpl implements TranslationService {
     private MessageSource messageSource;
 
     @Override
-    public String translate(final String messageCode, final Locale locale) {
-        return messageSource.getMessage(messageCode, null, "TO TRANSLATE: " + messageCode, locale);
-    }
-
-    @Override
-    public String translate(final String messageCode, final Object[] args, final Locale locale) {
+    public String translate(final String messageCode, final Locale locale, final Object... args) {
         return messageSource.getMessage(messageCode, args, "TO TRANSLATE: " + messageCode, locale);
     }
 
     @Override
-    public String translate(final List<String> messageCodes, final Locale locale) {
+    public String translate(final List<String> messageCodes, final Locale locale, final Object... args) {
         for (String messageCode : messageCodes) {
             try {
-                return translateWithError(messageCode, locale);
+                return translateWithError(messageCode, locale, args);
             } catch (NoSuchMessageException e) {
 
             }
@@ -58,23 +53,7 @@ public final class TranslationServiceImpl implements TranslationService {
         return "TO TRANSLATE: " + messageCodes;
     }
 
-    @Override
-    public String translate(final List<String> messageCodes, final Object[] args, final Locale locale) {
-        for (String messageCode : messageCodes) {
-            try {
-                return translateWithError(messageCode, args, locale);
-            } catch (NoSuchMessageException e) {
-
-            }
-        }
-        return "TO TRANSLATE: " + messageCodes;
-    }
-
-    private String translateWithError(final String messageCode, final Locale locale) {
-        return messageSource.getMessage(messageCode, null, locale);
-    }
-
-    private String translateWithError(final String messageCode, final Object[] args, final Locale locale) {
+    private String translateWithError(final String messageCode, final Locale locale, final Object[] args) {
         return messageSource.getMessage(messageCode, args, locale);
     }
 
@@ -103,10 +82,10 @@ public final class TranslationServiceImpl implements TranslationService {
 
     public void translateEntity(final Entity entity, final Locale locale) {
         for (ErrorMessage error : entity.getGlobalErrors()) {
-            error.setMessage(translate(error.getMessage(), error.getVars(), locale));
+            error.setMessage(translate(error.getMessage(), locale, error.getVars()));
         }
         for (ErrorMessage error : entity.getErrors().values()) {
-            error.setMessage(translate(error.getMessage(), error.getVars(), locale));
+            error.setMessage(translate(error.getMessage(), locale, error.getVars()));
         }
     }
 }
