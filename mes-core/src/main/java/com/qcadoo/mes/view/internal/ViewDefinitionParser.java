@@ -41,6 +41,11 @@ import com.qcadoo.mes.view.components.LinkButtonComponent;
 import com.qcadoo.mes.view.components.TextInputComponent;
 import com.qcadoo.mes.view.containers.FormComponent;
 import com.qcadoo.mes.view.containers.WindowComponent;
+import com.qcadoo.mes.view.menu.ribbon.Ribbon;
+import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
+import com.qcadoo.mes.view.menu.ribbon.RibbonItem;
 
 @Service
 public final class ViewDefinitionParser {
@@ -131,7 +136,7 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        addChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
+        addMenuAndChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
 
         return component;
     }
@@ -163,18 +168,20 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
 
-        addChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
+        addMenuAndChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
 
         return component;
     }
 
-    private void addChildrenComponentsAndOptions(final XMLStreamReader reader, final AbstractComponent<?> component)
+    private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final AbstractComponent<?> component)
             throws XMLStreamException {
         component.setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
         component.setDefaultVisible(getBooleanAttribute(reader, "visible", true));
 
         while (reader.hasNext() && reader.next() > 0) {
-            if (isTagStarted(reader, "option")) {
+            if (isTagStarted(reader, "ribbon")) {
+                component.setRibbon(getRibbon(reader));
+            } else if (isTagStarted(reader, "option")) {
                 component.addRawOption(getOption(reader));
             } else if (isTagStarted(reader, "component")) {
                 if (component instanceof AbstractContainerComponent) {
@@ -185,6 +192,69 @@ public final class ViewDefinitionParser {
                 break;
             }
         }
+    }
+
+    private Ribbon getRibbon(final XMLStreamReader reader) throws XMLStreamException {
+        Ribbon ribbon = new Ribbon();
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagEnded(reader, "ribbon")) {
+                break;
+            } else if (isTagStarted(reader, "group")) {
+                ribbon.addGroup(getRibbonGroup(reader));
+            }
+        }
+        return ribbon;
+    }
+
+    private RibbonGroup getRibbonGroup(final XMLStreamReader reader) throws XMLStreamException {
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName(getStringAttribute(reader, "name"));
+        while (reader.hasNext() && reader.next() > 0) {
+            if (isTagEnded(reader, "group")) {
+                break;
+            } else if (isTagStarted(reader)) {
+                ribbonGroup.addItem(getRibbonItem(reader));
+            }
+        }
+        return ribbonGroup;
+    }
+
+    private RibbonItem getRibbonItem(final XMLStreamReader reader) throws XMLStreamException {
+        String stringType = reader.getLocalName();
+        boolean combo = ("bigButtons".equals(stringType) || "smallButtons".equals(stringType));
+        RibbonItem.Type type = null;
+
+        if ("bigButtons".equals(stringType) || "bigButton".equals(stringType)) {
+            type = RibbonItem.Type.BIG_BUTTON;
+        } else if ("smallButtons".equals(stringType) || "smallButton".equals(stringType)) {
+            type = RibbonItem.Type.SMALL_BUTTON;
+        }
+
+        RibbonItem item = null;
+
+        if (combo) {
+            item = new RibbonComboItem();
+        } else {
+            item = new RibbonActionItem();
+        }
+
+        item.setIcon(getStringAttribute(reader, "icon"));
+        item.setName(getStringAttribute(reader, "name"));
+        item.setType(type);
+
+        if (combo) {
+            while (reader.hasNext() && reader.next() > 0) {
+                if (isTagEnded(reader, stringType)) {
+                    break;
+                } else if (isTagStarted(reader)) {
+                    ((RibbonComboItem) item).addItem((RibbonActionItem) getRibbonItem(reader));
+                }
+            }
+        } else {
+            ((RibbonActionItem) item).setAction(getStringAttribute(reader, "action"));
+        }
+
+        return item;
     }
 
     private ComponentOption getOption(final XMLStreamReader reader) throws XMLStreamException {
@@ -222,7 +292,11 @@ public final class ViewDefinitionParser {
     }
 
     private boolean isTagStarted(final XMLStreamReader reader, final String tagName) {
-        return (reader.getEventType() == XMLStreamConstants.START_ELEMENT && tagName.equals(reader.getLocalName()));
+        return (isTagStarted(reader) && tagName.equals(reader.getLocalName()));
+    }
+
+    private boolean isTagStarted(final XMLStreamReader reader) {
+        return (reader.getEventType() == XMLStreamConstants.START_ELEMENT);
     }
 
     private boolean isTagEnded(final XMLStreamReader reader, final String tagName) {

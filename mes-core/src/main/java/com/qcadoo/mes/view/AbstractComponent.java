@@ -462,4 +462,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
         this.defaultVisible = defaultVisible;
     }
 
+    public void setRibbon(final Ribbon ribbon) {
+        this.ribbon = ribbon;
+    }
+
 }

@@ -26,7 +26,7 @@ public final class Ribbon {
     }
 
     public void addGroup(final RibbonGroup group) {
-        groups.add(group);
+        this.groups.add(group);
     }
 
     public JSONObject getAsJson() {
