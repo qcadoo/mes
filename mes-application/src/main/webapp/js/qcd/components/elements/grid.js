@@ -17,10 +17,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	QCD.info(this.elementName);
 	
 	var gridParameters;
-	
 	var grid;
-	
+	var contextFieldName;
+	var contextId;
 	var actionButtons = new Object();
+
 	actionButtons.newButton = null;
 	actionButtons.deleteButton = null;
 	
@@ -124,24 +125,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function rowDblClicked(rowId) {
-		redirectToCorrespondingPage(rowId);
+		redirectToCorrespondingPage(rowId ? "entityId="+rowId : null);
 	}
 	
-	function redirectToCorrespondingPage(rowId) {
+	function redirectToCorrespondingPage(params) {
 		if (gridParameters.correspondingViewName && gridParameters.correspondingViewName != '') {
 			var url = gridParameters.correspondingViewName + ".html";
-//			if (parentId || rowId) {
-//				url += "?";
-//				if (parentId) {
-//					url += "contextEntityId="+parentId;
-//				}
-				if (rowId) {
-//					if (parentId) {
-//						url += "&";
-//					}
-					url += "?entityId="+rowId;
-				}
-//			}
+			if (params) {
+				url += "?"+params;
+			}
 			mainController.goToPage(url);
 		}
 	}
@@ -153,6 +145,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		contextFieldName = value.contextFieldName; 
+		contextId = value.contextId; 
 		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
 		if (value.entities == null) {
 			return;
@@ -193,7 +187,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function newClicked() {
-		redirectToCorrespondingPage(null);
+		redirectToCorrespondingPage(contextId ? "contextFieldName="+contextFieldName+"&contextEntityId="+contextId : null);
 	}
 	
 	function deleteClicked() {

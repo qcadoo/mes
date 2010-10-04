@@ -1,10 +1,12 @@
 var QCD = QCD || {};
 
-QCD.PageController = function(_viewName, _pluginIdentifier) {
+QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _contextEntityId) {
 	
 	var pageComponents;
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
+	var contextFieldName = _contextFieldName; 
+	var contextEntityId = _contextEntityId;
 	
 	function constructor(_this) {
 		QCDConnector.windowName = viewName;
@@ -32,7 +34,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	this.getPluginIdentifier = function() {
 		return pluginIdentifier;
 	}
-	
+		
 	this.getUpdate = function(componentName, value, listeners) {
 		QCD.info("getUpdate "+componentName+"->"+value);
 		if (listeners) {
@@ -63,6 +65,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		QCD.info("save " +componentName);
 		var parameters = {
 			componentName: componentName,
+			contextFieldName: contextFieldName,
+			contextEntityId: contextEntityId,
 			data: getValueData()
 		};
 		QCD.info(parameters);

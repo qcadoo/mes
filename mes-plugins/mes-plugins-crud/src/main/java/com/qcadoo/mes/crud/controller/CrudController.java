@@ -93,6 +93,7 @@ public final class CrudController {
 
         mav.addObject("entityId", arguments.get("entityId"));
         mav.addObject("contextEntityId", arguments.get("contextEntityId"));
+        mav.addObject("contextFieldName", arguments.get("contextFieldName"));
 
         mav.addObject("translationsMap", translationsMap);
 
@@ -203,6 +204,11 @@ public final class CrudController {
             SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentName);
 
             Entity entity = saveableComponent.getSaveableEntity(viewValue);
+
+            if (saveableComponent.isRelatedToMainEntity() && !jsonBody.isNull("contextFieldName")
+                    && !jsonBody.isNull("contextEntityId")) {
+                entity.setField(jsonBody.getString("contextFieldName"), jsonBody.getLong("contextEntityId"));
+            }
 
             entity = saveableComponent.getDataDefinition().save(entity);
 
