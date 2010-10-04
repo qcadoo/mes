@@ -34,6 +34,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	this.getPluginIdentifier = function() {
 		return pluginIdentifier;
 	}
+	
+	this.performCancel = function(actionsPerformer) {
+		QCD.error("to implement: QCD.PageController.performCancel()");
+	}
 		
 	this.getUpdate = function(componentName, value, listeners) {
 		QCD.info("getUpdate "+componentName+"->"+value);

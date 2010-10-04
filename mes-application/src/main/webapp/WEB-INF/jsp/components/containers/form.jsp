@@ -36,7 +36,5 @@
 		</c:forEach>
 	</div>
 	
-	<button id="${componentFullName}_saveButton" style="margin-top: 5px;">${translationsMap["commons.form.button.accept"] }</button>
-	
 </div>
 

@@ -45,5 +45,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		actionsPerformer.performNext();
 	}
 	
+	this.performCancel = function(actionsPerformer) {
+		mainController.performCancel(actionsPerformer);
+	}
+	
 	constructor(this);
 }
