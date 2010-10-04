@@ -13,7 +13,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
-import com.qcadoo.mes.model.validation.ErrorMessage;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;

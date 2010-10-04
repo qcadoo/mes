@@ -9,7 +9,6 @@ import com.qcadoo.mes.api.DictionaryService;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
-import com.qcadoo.mes.model.types.FieldTypeFactory;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.LookupedType;
 

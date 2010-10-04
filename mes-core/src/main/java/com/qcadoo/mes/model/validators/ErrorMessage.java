@@ -1,4 +1,4 @@
-package com.qcadoo.mes.model.validation;
+package com.qcadoo.mes.model.validators;
 
 public final class ErrorMessage {
 

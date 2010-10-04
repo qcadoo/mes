@@ -21,7 +21,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.validation.ErrorMessage;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 
 public abstract class AbstractComponent<T> implements Component<T> {

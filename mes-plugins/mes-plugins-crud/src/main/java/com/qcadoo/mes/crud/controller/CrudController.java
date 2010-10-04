@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -205,9 +206,12 @@ public final class CrudController {
 
             Entity entity = saveableComponent.getSaveableEntity(viewValue);
 
-            if (saveableComponent.isRelatedToMainEntity() && !jsonBody.isNull("contextFieldName")
-                    && !jsonBody.isNull("contextEntityId")) {
-                entity.setField(jsonBody.getString("contextFieldName"), jsonBody.getLong("contextEntityId"));
+            String contextFieldName = jsonBody.getString("contextFieldName");
+            String contextEntityId = jsonBody.getString("contextEntityId");
+
+            if (saveableComponent.isRelatedToMainEntity() && StringUtils.hasText(contextFieldName)
+                    && StringUtils.hasText(contextEntityId)) {
+                entity.setField(contextFieldName, Long.parseLong(contextEntityId));
             }
 
             entity = saveableComponent.getDataDefinition().save(entity);

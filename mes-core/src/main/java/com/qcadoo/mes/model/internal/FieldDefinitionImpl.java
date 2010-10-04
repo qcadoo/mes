@@ -8,7 +8,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
-import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validators.FieldValidator;
 import com.qcadoo.mes.model.validators.internal.RequiredOnCreateValidator;
 import com.qcadoo.mes.model.validators.internal.RequiredValidator;
 import com.qcadoo.mes.model.validators.internal.UniqueValidator;

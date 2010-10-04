@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.validation.EntityValidator;
+import com.qcadoo.mes.model.validators.EntityValidator;
 
 public interface DataDefinition {
 

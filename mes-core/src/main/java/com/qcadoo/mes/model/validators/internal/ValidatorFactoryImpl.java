@@ -3,9 +3,8 @@ package com.qcadoo.mes.model.validators.internal;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.model.HookDefinition;
-import com.qcadoo.mes.model.validation.EntityValidator;
-import com.qcadoo.mes.model.validation.FieldValidator;
-import com.qcadoo.mes.model.validation.ValidatorFactory;
+import com.qcadoo.mes.model.validators.EntityValidator;
+import com.qcadoo.mes.model.validators.FieldValidator;
 
 @Service
 public final class ValidatorFactoryImpl implements ValidatorFactory {
