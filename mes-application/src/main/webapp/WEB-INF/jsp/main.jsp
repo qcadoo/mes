@@ -75,7 +75,7 @@
 		</tr>
 		<tr id="mainContentRow">
 			<td class="noMargin">
-				<iframe id="mainPageIframe" src="testPage.html">
+				<iframe id="mainPageIframe" src="testPage.html" >
 				</iframe>
 			</td>
 		</tr>

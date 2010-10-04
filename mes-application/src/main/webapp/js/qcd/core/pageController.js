@@ -10,7 +10,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		QCDConnector.windowName = viewName;
 		QCDConnector.mainController = _this;
 		
-		var contentElement = $("#content");
+		var contentElement = $("body");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
 		QCD.debug(pageComponents);
 	}

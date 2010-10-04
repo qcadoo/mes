@@ -11,7 +11,9 @@
 	<link rel="stylesheet" href="../../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/qcd.css" type="text/css" />
-	<link rel="stylesheet" href="css/menuRibbon.css" type="text/css" />
+	<!--<link rel="stylesheet" href="/mes-application/css/menuRibbon.css" type="text/css" />-->
+	<link rel="stylesheet" href="../../css/menuRibbon.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/components/window.css" type="text/css" />
 	
 	<script type="text/javascript" src="../../js/lib/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../../js/lib/json2.js"></script>
@@ -69,18 +71,16 @@
 </head>
 <body>
 
-	<div id="content">
 	
-		<div style="color: red">
+		<!--<div style="color: red">
 			${message}
-		</div>
+		</div>-->
 	
 		<tiles:insertTemplate template="components/component.jsp">
 			<tiles:putAttribute name="component" value="${viewDefinition.root}" />
 			<tiles:putAttribute name="viewName" value="${viewDefinition.name}" />
 			<tiles:putAttribute name="pluginIdentifier" value="${viewDefinition.pluginIdentifier}" />
 		</tiles:insertTemplate>
-	</div>	
 	
 </body>
 </html>

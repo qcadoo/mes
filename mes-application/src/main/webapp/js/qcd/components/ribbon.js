@@ -77,7 +77,7 @@ QCD.components.Ribbon = function(_model) {
 		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		itemElement.append(itemElementButton);
 		var itemElementDropdownButton = $("<div>").addClass("bigButtonDropdownBottomButton");
-			var arrow = $("<img src='css/images/downArrow.png'>");
+			var arrow = $("<img src='../../css/images/downArrow.png'>");
 			addDropdownAction(itemElementDropdownButton);
 			itemElementDropdownButton.append(arrow);
 		itemElement.append(itemElementDropdownButton);
@@ -106,7 +106,7 @@ QCD.components.Ribbon = function(_model) {
 			itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 			wrapperRow.append(itemElementButton);
 			var itemElementDropdownButton = $("<td>").addClass("smallButtonDropdownBottomButton");
-				itemElementDropdownButton.append($("<img src='css/images/downArrow2.png'>"));
+				itemElementDropdownButton.append($("<img src='../../css/images/downArrow2.png'>"));
 				addDropdownAction(itemElementDropdownButton);
 				wrapperRow.append(itemElementDropdownButton);
 			

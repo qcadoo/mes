@@ -12,7 +12,7 @@
 <tiles:useAttribute name="viewName" ignore="true"/>
 <tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
-<div class="component component_element component_element_grid" id="${componentFullName}" style="margin: 10px;">
+<div class="component component_element component_element_grid" id="${componentFullName}">
 	<div class=element_options style="display: none">
 		${component.optionsAsJson}
 	</div>
@@ -23,7 +23,8 @@
 			${translationsMap[headerLabel]}
 		</c:if>
 	</div>
-	
-	<table class="element_table" id="${componentFullName}_grid">
-	</table>
+	<div>
+		<table class="element_table" id="${componentFullName}_grid">
+		</table>
+	</div>
 </div>

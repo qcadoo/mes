@@ -230,10 +230,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
         }
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		//grid.setGridWidth(900);
-		//grid.setGridWidth($(window).width());
+		//QCD.info(element);
+		//grid.setGridWidth(grid.parent().width());
 //		$(window).bind('resize', function() {
-//		    grid.setGridWidth(element.width());
-//		    //grid.setGridHeight(element.height());
+//		    grid.setGridWidth(grid.parent().width());
+//		    grid.setGridHeight(element.height());
 //		}).trigger('resize');
 
 	}

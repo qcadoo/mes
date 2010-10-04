@@ -7,6 +7,10 @@
 					<bigButton name="test"
 						action="#{mainWindow.beanBForm}.save,#{mainWindow}.back" />
 					<smallButton name="test2" icon="icon2" action="xxx" />
+					<smallButtons name="test combo 1" icon="icon2" action="xxx">
+						<smallButton name="test1" action="yyy1" />
+						<smallButton name="test2" action="yyy1" />
+					</smallButtons>
 				</group>
 				<group name="secondGroup">
 					<bigButton name="test2" />
