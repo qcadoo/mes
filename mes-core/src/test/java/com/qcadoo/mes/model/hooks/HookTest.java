@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core;
+package com.qcadoo.mes.model.hooks;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
+import com.qcadoo.mes.internal.DataAccessTest;
 import com.qcadoo.mes.internal.DefaultEntity;
 
 public class HookTest extends DataAccessTest {

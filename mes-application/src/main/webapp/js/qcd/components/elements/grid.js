@@ -145,8 +145,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-		contextFieldName = value.contextFieldName; 
-		contextId = value.contextId; 
+		if(value.contextFieldName || value.contextId) {
+			contextFieldName = value.contextFieldName;
+			contextId = value.contextId; 
+		}
 		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
 		if (value.entities == null) {
 			return;

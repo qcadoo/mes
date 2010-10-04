@@ -46,6 +46,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private final ContainerComponent<?> parentContainer;
 
+    private final TranslationService translationService;
+
     private Set<String> listeners = new HashSet<String>();
 
     private DataDefinition dataDefinition;
@@ -57,10 +59,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
     private boolean defaultVisible = true;
 
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
-            final String sourceFieldPath) {
+            final String sourceFieldPath, final TranslationService translationService) {
         this.name = name;
         this.parentContainer = parentContainer;
         this.fieldPath = fieldPath;
+        this.translationService = translationService;
 
         if (parentContainer != null) {
             this.path = parentContainer.getPath() + "." + name;
@@ -276,17 +279,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
     }
 
     @Override
-    public final void updateTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
-            final Locale locale) {
-        addComponentTranslations(translationsMap, translationService, locale);
+    public final void updateTranslations(final Map<String, String> translationsMap, final Locale locale) {
+        addComponentTranslations(translationsMap, locale);
         if (this.isContainer()) {
             AbstractContainerComponent<?> container = (AbstractContainerComponent<?>) this;
-            container.updateComponentsTranslations(translationsMap, translationService, locale);
+            container.updateComponentsTranslations(translationsMap, locale);
         }
     }
 
-    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
-            final Locale locale) {
+    public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         // can be implemented
     }
 
@@ -450,8 +451,12 @@ public abstract class AbstractComponent<T> implements Component<T> {
         this.defaultVisible = defaultVisible;
     }
 
-    public void setRibbon(final Ribbon ribbon) {
+    public final void setRibbon(final Ribbon ribbon) {
         this.ribbon = ribbon;
+    }
+
+    protected final TranslationService getTranslationService() {
+        return translationService;
     }
 
 }

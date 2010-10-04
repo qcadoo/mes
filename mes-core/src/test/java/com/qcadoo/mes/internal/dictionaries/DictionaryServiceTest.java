@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core;
+package com.qcadoo.mes.internal.dictionaries;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;

@@ -24,8 +24,8 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     private boolean header = true;
 
     public FormComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
-            final String sourceFieldPath) {
-        super(name, parentContainer, fieldPath, sourceFieldPath);
+            final String sourceFieldPath, final TranslationService translationService) {
+        super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
     }
 
     @Override
@@ -124,12 +124,11 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
-            final Locale locale) {
+    public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         if (header) {
             String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
                     + getPath() + ".header";
-            translationsMap.put(messageCode, translationService.translate(messageCode, locale));
+            translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
         }
     }
 

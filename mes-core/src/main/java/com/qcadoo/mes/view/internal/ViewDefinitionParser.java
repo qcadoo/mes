@@ -22,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
@@ -56,6 +57,9 @@ public final class ViewDefinitionParser {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Autowired
     private HookFactory hookFactory;
@@ -106,10 +110,11 @@ public final class ViewDefinitionParser {
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(pluginIdentifier, viewName);
 
         DataDefinition dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
+        RootComponent root = null;
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "component")) {
-                viewDefinition.setRoot(getRootComponentDefinition(reader, viewDefinition, dataDefinition));
+                root = getRootComponentDefinition(reader, viewDefinition, dataDefinition);
             } else if (isTagStarted(reader, "onView")) {
                 viewDefinition.setViewHook(getHookDefinition(reader));
             } else if (isTagEnded(reader, "view")) {
@@ -117,7 +122,8 @@ public final class ViewDefinitionParser {
             }
         }
 
-        viewDefinition.getRoot().initialize();
+        viewDefinition.setRoot(root);
+        root.initialize();
 
         viewDefinitionService.save(viewDefinition);
     }
@@ -130,7 +136,7 @@ public final class ViewDefinitionParser {
         RootComponent component = null;
 
         if ("window".equals(componentType)) {
-            component = new WindowComponent(componentName, dataDefinition, viewDefinition);
+            component = new WindowComponent(componentName, dataDefinition, viewDefinition, translationService);
         } else {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
@@ -150,19 +156,19 @@ public final class ViewDefinitionParser {
         Component<?> component = null;
 
         if ("input".equals(componentType)) {
-            component = new TextInputComponent(componentName, parentComponent, fieldName, dataSource);
+            component = new TextInputComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("grid".equals(componentType)) {
-            component = new GridComponent(componentName, parentComponent, fieldName, dataSource);
+            component = new GridComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("form".equals(componentType)) {
-            component = new FormComponent(componentName, parentComponent, fieldName, dataSource);
+            component = new FormComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("checkbox".equals(componentType)) {
-            component = new CheckBoxComponent(componentName, parentComponent, fieldName, dataSource);
+            component = new CheckBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("select".equals(componentType)) {
-            component = new DynamicComboBoxComponent(componentName, parentComponent, fieldName, dataSource);
+            component = new DynamicComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("lookup".equals(componentType)) {
-            component = new EntityComboBoxComponent(componentName, parentComponent, fieldName, dataSource);
+            component = new EntityComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("button".equals(componentType)) {
-            component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource);
+            component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
@@ -246,7 +252,7 @@ public final class ViewDefinitionParser {
             while (reader.hasNext() && reader.next() > 0) {
                 if (isTagEnded(reader, stringType)) {
                     break;
-                } else if (isTagStarted(reader)) {
+                } else if (isTagStarted(reader) && item instanceof RibbonComboItem) {
                     ((RibbonComboItem) item).addItem(getRibbonItem(reader));
                 }
             }

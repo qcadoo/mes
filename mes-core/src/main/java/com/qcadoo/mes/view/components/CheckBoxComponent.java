@@ -1,12 +1,13 @@
 package com.qcadoo.mes.view.components;
 
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ContainerComponent;
 
 public final class CheckBoxComponent extends SimpleFieldComponent {
 
     public CheckBoxComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
-            final String dataSource) {
-        super(name, parent, fieldName, dataSource);
+            final String dataSource, final TranslationService translationService) {
+        super(name, parent, fieldName, dataSource, translationService);
     }
 
     @Override

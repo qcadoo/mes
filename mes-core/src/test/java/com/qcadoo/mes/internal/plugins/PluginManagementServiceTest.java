@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core;
+package com.qcadoo.mes.internal.plugins;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;

@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -61,7 +60,7 @@ public final class CrudController {
 
         // CrudControllerUtils.generateJsonViewElementOptions(viewDefinition, viewElementsOptionsJson, null);
 
-        viewDefinition.addComponentTranslations(translationsMap, translationService, locale);
+        viewDefinition.updateTranslations(translationsMap, locale);
 
         // for (CastableComponent component : viewDefinition.getRoot().getComponents().values()) {
         // viewElementsOptionsJson.put(component.getName(), CrudControllerUtils.generateJsonViewElementOptions(component));
@@ -116,10 +115,10 @@ public final class CrudController {
             @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
         if (arguments.get("entityId") != null) {
-            Entity entity = viewDefinition.getRoot().getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, null, "");
+            Entity entity = viewDefinition.getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
+            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, "");
         } else {
-            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, null, "");
+            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, "");
         }
     }
 
@@ -168,14 +167,9 @@ public final class CrudController {
 
             Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
-
             ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
-
-            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate,
-                    componentName);
+            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, componentName);
 
             return newViewValue;
         } catch (JSONException e) {
@@ -197,12 +191,9 @@ public final class CrudController {
 
             Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
-            pathsToUpdate.add(componentName);
-
             ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.getRoot().lookupComponent(componentName);
+            SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.lookupComponent(componentName);
 
             Entity entity = saveableComponent.getSaveableEntity(viewValue);
 
@@ -216,11 +207,9 @@ public final class CrudController {
 
             entity = saveableComponent.getDataDefinition().save(entity);
 
-            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
-
             selectedEntities.put(componentName, entity);
 
-            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate, componentName);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -241,20 +230,17 @@ public final class CrudController {
 
             Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            Set<String> pathsToUpdate = viewDefinition.getRoot().lookupListeners(componentName);
-            pathsToUpdate.add(componentName);
-
             ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            GridComponent gridComponent = (GridComponent) viewDefinition.getRoot().lookupComponent(componentName);
+            GridComponent gridComponent = (GridComponent) viewDefinition.lookupComponent(componentName);
 
             ViewValue<ListData> gridValue = (ViewValue<ListData>) viewValue.lookupValue(componentName);
 
             gridComponent.getDataDefinition().delete(gridValue.getValue().getSelectedEntityId());
 
-            viewDefinition.cleanSelectedEntities(selectedEntities, pathsToUpdate);
+            selectedEntities.put(componentName, null);
 
-            return viewDefinition.getValue(null, selectedEntities, viewValue, pathsToUpdate, componentName);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

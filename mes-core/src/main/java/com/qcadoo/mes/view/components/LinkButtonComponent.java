@@ -21,8 +21,8 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
     private String url;
 
     public LinkButtonComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
-            final String sourceFieldPath) {
-        super(name, parentContainer, fieldPath, sourceFieldPath);
+            final String sourceFieldPath, final TranslationService translationService) {
+        super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
     }
 
     @Override
@@ -58,11 +58,10 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
     }
 
     @Override
-    public final void addComponentTranslations(final Map<String, String> translationsMap,
-            final TranslationService translationService, final Locale locale) {
+    public final void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                 + ".label";
-        translationsMap.put(messageCode, translationService.translate(messageCode, locale));
+        translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
     }
 
 }

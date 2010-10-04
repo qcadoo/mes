@@ -22,8 +22,8 @@ import com.qcadoo.mes.view.components.combobox.ComboBoxValue;
 public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxValue> {
 
     public DynamicComboBoxComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
-            final String sourceFieldPath) {
-        super(name, parentContainer, fieldPath, sourceFieldPath);
+            final String sourceFieldPath, final TranslationService translationService) {
+        super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
     }
 
     @Override
@@ -76,12 +76,11 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
     }
 
     @Override
-    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
-            final Locale locale) {
+    public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                 + ".label");
-        messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), getName()));
-        translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
+        messageCodes.add(getTranslationService().getEntityFieldMessageCode(getDataDefinition(), getName()));
+        translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
     }
 }

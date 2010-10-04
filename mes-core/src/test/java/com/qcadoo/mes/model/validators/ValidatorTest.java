@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core;
+package com.qcadoo.mes.model.validators;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
+import com.qcadoo.mes.internal.DataAccessTest;
 import com.qcadoo.mes.internal.DefaultEntity;
 
 public class ValidatorTest extends DataAccessTest {

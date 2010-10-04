@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.xml;
+package com.qcadoo.mes.view.xml;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -59,7 +59,6 @@ import com.qcadoo.mes.view.internal.ViewDefinitionParser;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
-import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 
 public class ViewDefinitionParserTest {
 
@@ -152,14 +151,14 @@ public class ViewDefinitionParserTest {
         // then
         assertEquals("simpleView", viewDefinition.getName());
         assertEquals("sample", viewDefinition.getPluginIdentifier());
-        assertThat(viewDefinition.getRoot(), instanceOf(WindowComponent.class));
+        assertThat(getField(viewDefinition, "root"), instanceOf(WindowComponent.class));
     }
 
     @Test
     public void shouldHasRibbon() throws Exception {
         // given
         ViewDefinition viewDefinition = parseAndGetViewDefinition();
-        Ribbon ribbon = (Ribbon) getField(viewDefinition.getRoot(), "ribbon");
+        Ribbon ribbon = (Ribbon) getField(getField(viewDefinition, "root"), "ribbon");
 
         // then
         assertNotNull(ribbon);
@@ -172,17 +171,16 @@ public class ViewDefinitionParserTest {
         assertEquals("test", ribbon.getGroups().get(0).getItems().get(0).getName());
         assertNull(ribbon.getGroups().get(0).getItems().get(0).getIcon());
         assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(0).getItems().get(0).getType());
-        assertEquals("#{mainWindow.beanBForm}.save,#{mainWindow}.back", ((RibbonActionItem) ribbon.getGroups().get(0).getItems()
-                .get(0)).getAction());
+        assertEquals("#{mainWindow.beanBForm}.save,#{mainWindow}.back", (ribbon.getGroups().get(0).getItems().get(0)).getAction());
         assertEquals("test2", ribbon.getGroups().get(0).getItems().get(1).getName());
         assertEquals("icon2", ribbon.getGroups().get(0).getItems().get(1).getIcon());
         assertEquals(RibbonActionItem.Type.SMALL_BUTTON, ribbon.getGroups().get(0).getItems().get(1).getType());
-        assertEquals("xxx", ((RibbonActionItem) ribbon.getGroups().get(0).getItems().get(1)).getAction());
+        assertEquals("xxx", (ribbon.getGroups().get(0).getItems().get(1)).getAction());
 
         assertEquals("test2", ribbon.getGroups().get(1).getItems().get(0).getName());
         assertNull(ribbon.getGroups().get(1).getItems().get(0).getIcon());
         assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(1).getItems().get(0).getType());
-        assertNull(((RibbonActionItem) ribbon.getGroups().get(1).getItems().get(0)).getAction());
+        assertNull((ribbon.getGroups().get(1).getItems().get(0)).getAction());
 
         assertEquals("combo1", ribbon.getGroups().get(1).getItems().get(1).getName());
         assertNull(ribbon.getGroups().get(1).getItems().get(1).getIcon());
@@ -207,7 +205,7 @@ public class ViewDefinitionParserTest {
     public void shouldSetFields() {
         // given
         ViewDefinition viewDefinition = parseAndGetViewDefinition();
-        RootComponent root = viewDefinition.getRoot();
+        RootComponent root = (RootComponent) getField(viewDefinition, "root");
 
         // then
         checkComponent(root, WindowComponent.class, "mainWindow", "window", "beanB", null, null, null,

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core;
+package com.qcadoo.mes.model.types;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static junit.framework.Assert.assertNotNull;
@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.internal.DataAccessTest;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;

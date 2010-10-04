@@ -24,8 +24,8 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
     public abstract void addContainerMessages(final Entity entity, final ViewValue<T> viewValue);
 
     public AbstractContainerComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
-            final String sourceFieldPath) {
-        super(name, parentContainer, fieldPath, sourceFieldPath);
+            final String sourceFieldPath, final TranslationService translationService) {
+        super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
     }
 
     @Override
@@ -82,10 +82,9 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
         }
     }
 
-    public final void updateComponentsTranslations(final Map<String, String> translationsMap,
-            final TranslationService translationService, final Locale locale) {
+    public final void updateComponentsTranslations(final Map<String, String> translationsMap, final Locale locale) {
         for (Component<?> component : components.values()) {
-            component.updateTranslations(translationsMap, translationService, locale);
+            component.updateTranslations(translationsMap, locale);
         }
     }
 
