@@ -45,7 +45,7 @@ public final class PluginUtil {
             boolean success = tmpDir.mkdir();
             if (!success) {
                 LOG.error("Problem with creating tmp directory");
-                throw new IOException("error with creating directory");
+                throw new IOException("Error with creating directory");
             }
         }
         File pluginFile = new File(tmpPath + file.getOriginalFilename());
@@ -170,9 +170,9 @@ public final class PluginUtil {
             }
 
         } catch (IOException e) {
-            throw new PluginException("Restart failed" + e.getMessage());
+            throw new PluginException("Restart failed - " + e.getMessage());
         } catch (InterruptedException e) {
-            throw new PluginException("Restart failed" + e.getMessage());
+            throw new PluginException("Restart failed - " + e.getMessage());
         }
 
     }
