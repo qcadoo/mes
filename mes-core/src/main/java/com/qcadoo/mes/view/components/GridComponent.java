@@ -184,10 +184,10 @@ public final class GridComponent extends AbstractComponent<ListData> {
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
                     getDataDefinition().getField(hasManyType.getJoinFieldName()), entity.getId()));
             SearchResult rs = searchCriteriaBuilder.list();
-            return new ViewValue<ListData>(generateListData(rs));
+            return new ViewValue<ListData>(generateListData(rs, hasManyType.getJoinFieldName(), entity.getId()));
         } else {
             SearchResult rs = getDataDefinition().find().list();
-            return new ViewValue<ListData>(generateListData(rs));
+            return new ViewValue<ListData>(generateListData(rs, null, null));
         }
     }
 
@@ -231,7 +231,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
         }
     }
 
-    private ListData generateListData(final SearchResult rs) {
+    private ListData generateListData(final SearchResult rs, final String contextFieldName, final Long contextId) {
         List<Entity> entities = rs.getEntities();
         List<Entity> gridEntities = new LinkedList<Entity>();
 
@@ -244,7 +244,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
         }
 
         int totalNumberOfEntities = rs.getTotalNumberOfEntities();
-        return new ListData(totalNumberOfEntities, gridEntities);
+        return new ListData(totalNumberOfEntities, gridEntities, contextFieldName, contextId);
     }
 
 }

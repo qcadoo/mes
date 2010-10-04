@@ -23,6 +23,8 @@ import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validation.ErrorMessage;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
+import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 
 public abstract class AbstractComponent<T> implements Component<T> {
 
@@ -247,6 +249,19 @@ public abstract class AbstractComponent<T> implements Component<T> {
     }
 
     public final String getOptionsAsJson() {
+        ribbon = new Ribbon();
+        ribbon.setName("testRibbon1");
+        RibbonGroup g1 = new RibbonGroup();
+        ribbon.addGroup(g1);
+        g1.setName("group1");
+        RibbonActionItem b1 = new RibbonActionItem();
+        b1.setName("b1");
+        b1.setType(RibbonActionItem.Type.BIG_BUTTON);
+        g1.addItem(b1);
+        RibbonGroup g2 = new RibbonGroup();
+        g2.setName("group2");
+        ribbon.addGroup(g2);
+
         JSONObject jsonOptions = new JSONObject();
         try {
             for (Entry<String, Object> option : getOptions().entrySet()) {
