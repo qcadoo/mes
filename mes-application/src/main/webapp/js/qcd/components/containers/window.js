@@ -15,7 +15,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 //		$("#"+elementName+"_backButton").click(performBack);
 		if (_this.options.ribbon) {
 			
-			var ribbon = new QCD.components.Ribbon(_this.options.ribbon);
+			var ribbon = new QCD.components.Ribbon(_this.options.ribbon, mainController);
 			
 			var ribbonElement = ribbon.constructElement();
 			
@@ -26,9 +26,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		}
 	}
 	
-	function performBack() {
-		mainController.goBack();
-	}
+//	function performBack() {
+//		mainController.goBack();
+//	}
 	
 	this.getComponentValue = function() {
 		return null;
@@ -38,6 +38,11 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	this.setComponentEnabled = function(isEnabled) {
 		
+	}
+	
+	this.performBack = function(actionsPerformer) {
+		mainController.goBack();
+		actionsPerformer.performNext();
 	}
 	
 	constructor(this);

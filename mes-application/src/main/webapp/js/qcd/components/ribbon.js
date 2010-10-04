@@ -1,21 +1,22 @@
 var QCD = QCD || {};
 QCD.components = QCD.components || {};
 
-QCD.components.Ribbon = function(_model) {
+QCD.components.Ribbon = function(_model, _mainController) {
 	
-	var ribbonModel = _model;;
+	var ribbonModel = _model;
+	var mainController = _mainController;
 	
 	this.constructElement = function() {
 		var element = $("<div>").addClass("ribbonMenu");
 		
-		QCD.info(ribbonModel);
+		//QCD.info(ribbonModel);
 		
 		if (ribbonModel.groups) {
 			for (var groupIter in ribbonModel.groups) {
 				var groupModel = ribbonModel.groups[groupIter];
 				var groupElement = $("<div>").addClass("ribbonGroup");
 				
-				QCD.info(groupModel);
+				//QCD.info(groupModel);
 				
 				var smallElementsGroupElement = null;
 				for (var itemsIter in groupModel.items) {
@@ -24,7 +25,7 @@ QCD.components.Ribbon = function(_model) {
 					var itemElement = null;
 					var isSmall = false;
 					
-					QCD.info(itemModel);
+					//QCD.info(itemModel);
 					
 					if (itemModel.type == "BIG_BUTTON") {
 						if (itemModel.items) {
@@ -154,14 +155,7 @@ QCD.components.Ribbon = function(_model) {
 		var name = e.data.itemName;
 		QCD.info("clicked "+name+": "+action);
 		
-		if (action) {
-			action = action.trim().toLowerCase();
-			if ("gotoview:" == action.substring(0,9)) {
-				var viewName = action.substring(9);
-				QCD.info("GOTO: "+viewName);
-			}
-			
-		}
+		mainController.performRibbonAction(action);
 	}
 
 	

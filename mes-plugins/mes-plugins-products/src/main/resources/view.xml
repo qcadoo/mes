@@ -3,21 +3,9 @@
 	<view name="productGridView" model="product">
 		<component type="window" name="mainWindow">
 			<ribbon>
-				<group name="firstGroup">
-					<bigButton name="test"
-						action="#{mainWindow.beanBForm}.save,#{mainWindow}.back" />
-					<smallButton name="test2" icon="icon2" action="xxx" />
-					<smallButtons name="test combo 1" icon="icon2" action="xxx">
-						<smallButton name="test1" action="yyy1" />
-						<smallButton name="test2" action="yyy1" />
-					</smallButtons>
-				</group>
-				<group name="secondGroup">
-					<bigButton name="test2" />
-					<bigButtons name="combo1">
-						<bigButton name="test1" action="yyy1" />
-						<bigButton name="test2" icon="icon2" action="yyy2" />
-					</bigButtons>
+				<group name="actions">
+					<bigButton name="new" action="#{mainWindow.productsGrid}.performNew;" />
+					<smallButton name="delete" icon="icon2" action="#{mainWindow.productsGrid}.performDelete;" />
 				</group>
 			</ribbon>
 			<component type="grid" name="productsGrid">
@@ -38,6 +26,21 @@
 	</view>
 	<view name="productDetailsView" model="product">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" action="#{mainWindow.productDetailsForm}.performSave;"/>
+					<bigButtons name="saveBack" action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack">
+						<bigButton name="saveNew" action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performNew;" />
+					</bigButtons>
+					<smallButton name="cancel" action="#{mainWindow}.performCancel;" />
+					<smallButtons name="delete" icon="icon2" action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performBack">
+						<smallButton name="deleteNew" action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performNew;" />
+					</smallButtons>
+				</group>
+			</ribbon>
 			<component type="form" name="productDetailsForm">
 				<component type="input" name="name" field="name" />
 				<component type="input" name="number" field="number" />

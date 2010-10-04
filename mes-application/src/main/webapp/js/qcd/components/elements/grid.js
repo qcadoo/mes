@@ -239,5 +239,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 
 	}
 	
+	this.performNew = function(actionsPerformer) {
+		redirectToCorrespondingPage(null);
+		actionsPerformer.performNext();
+	}
+	
+	this.performDelete = function(actionsPerformer) {
+		QCD.error("to implement: QCD.components.elements.Grid.performDelete()");
+	}
+	
 	constructor(this);
 }
