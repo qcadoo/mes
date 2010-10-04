@@ -14,11 +14,11 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	}
 	
 	this.getHeaderElement = function() {
-		
+		return $("<div>").html("HEADER");
 	}
 	
 	this.getFooterElement = function() {
-		
+		return $("<div>").html("FOOTER");
 	}
 	
 	this.getPagingParameters = function() {
