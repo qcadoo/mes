@@ -17,11 +17,14 @@ public final class HasManyEntitiesType implements HasManyType {
 
     private final String pluginIdentifier;
 
+    private final Cascade cascade;
+
     public HasManyEntitiesType(final String pluginIdentifier, final String entityName, final String joinFieldName,
-            final DataDefinitionService dataDefinitionService) {
+            final Cascade cascade, final DataDefinitionService dataDefinitionService) {
         this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;
         this.joinFieldName = joinFieldName;
+        this.cascade = cascade;
         this.dataDefinitionService = dataDefinitionService;
     }
 
@@ -58,6 +61,11 @@ public final class HasManyEntitiesType implements HasManyType {
     @Override
     public String getJoinFieldName() {
         return joinFieldName;
+    }
+
+    @Override
+    public Cascade getCascade() {
+        return cascade;
     }
 
     @Override

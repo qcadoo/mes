@@ -29,6 +29,7 @@ import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.model.internal.DataDefinitionImpl;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.FieldTypeFactoryImpl;
 import com.qcadoo.mes.model.validation.ValidatorFactory;
 import com.qcadoo.mes.model.validators.internal.ValidatorFactoryImpl;
@@ -123,7 +124,8 @@ public abstract class DataAccessTest {
         parentFieldDefinitionName.withType(fieldTypeFactory.stringType());
 
         parentFieldDefinitionHasMany = new FieldDefinitionImpl("entities");
-        parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo"));
+        parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
+                HasManyType.Cascade.DELETE));
 
         parentDataDefinition.withField(parentFieldDefinitionName);
         parentDataDefinition.withField(parentFieldDefinitionHasMany);

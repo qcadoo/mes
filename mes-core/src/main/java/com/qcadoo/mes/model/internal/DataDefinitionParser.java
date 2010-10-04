@@ -31,6 +31,7 @@ import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.FieldTypeFactory;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.model.types.internal.DecimalType;
@@ -110,6 +111,8 @@ public final class DataDefinitionParser {
 
         DataDefinitionImpl dataDefinition = new DataDefinitionImpl(pluginIdentifier, modelName, dataAccessService);
         dataDefinition.setDeletable(getBooleanAttribute(reader, "deletable", true));
+        dataDefinition.setCreatable(getBooleanAttribute(reader, "creatable", true));
+        dataDefinition.setUpdatable(getBooleanAttribute(reader, "updatable", true));
         dataDefinition.setFullyQualifiedClassName("com.qcadoo.mes.beans." + pluginIdentifier + "."
                 + StringUtils.capitalize(pluginIdentifier) + StringUtils.capitalize(modelName));
 
@@ -174,8 +177,10 @@ public final class DataDefinitionParser {
 
     private FieldType getHasManyType(final XMLStreamReader reader, final String pluginIdentifier) {
         String plugin = getStringAttribute(reader, "plugin");
+        HasManyType.Cascade cascade = "delete".equals(getStringAttribute(reader, "cascade")) ? HasManyType.Cascade.DELETE
+                : HasManyType.Cascade.NULLIFY;
         return fieldTypeFactory.hasManyType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, "model"),
-                getStringAttribute(reader, "joinField"));
+                getStringAttribute(reader, "joinField"), cascade);
     }
 
     private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {

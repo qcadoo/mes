@@ -41,7 +41,7 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private String fullyQualifiedClassName;
 
-    // private String discriminator;
+    private String discriminator;
 
     private final Map<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
 
@@ -55,9 +55,11 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private HookDefinition saveHook;
 
-    // TODO masz onGet, onDelete, onFind?
-
     private boolean deletable = true;
+
+    private boolean creatable = true;
+
+    private boolean updatable = true;
 
     private Class<?> classForEntity;
 
@@ -239,6 +241,24 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     public void setDeletable(final boolean deletable) {
         this.deletable = deletable;
+    }
+
+    @Override
+    public boolean isUpdatable() {
+        return updatable;
+    }
+
+    @Override
+    public boolean isCreatable() {
+        return creatable;
+    }
+
+    public void setCreatable(final boolean creatable) {
+        this.creatable = creatable;
+    }
+
+    public void setUpdatable(final boolean updatable) {
+        this.updatable = updatable;
     }
 
     private Class<?> loadClassForEntity() {

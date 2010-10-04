@@ -134,6 +134,8 @@ public class DataDefinitionParserTest {
         assertEquals("sample", dataDefinition.getPluginIdentifier());
         assertEquals(SampleSimpleDatabaseObject.class, dataDefinition.getClassForEntity());
         assertTrue(dataDefinition.isDeletable());
+        assertFalse(dataDefinition.isCreatable());
+        assertTrue(dataDefinition.isUpdatable());
         assertFalse(dataDefinition.isVirtualTable());
         assertFalse(dataDefinition.isCoreTable());
         assertTrue(dataDefinition.isPluginTable());
@@ -181,10 +183,12 @@ public class DataDefinitionParserTest {
         assertEquals("child", ((HasManyType) (dataDefinition.getField("children")).getType()).getJoinFieldName());
         assertEquals("people", getField(dataDefinition.getField("children").getType(), "pluginIdentifier"));
         assertEquals("person", getField(dataDefinition.getField("children").getType(), "entityName"));
+        assertEquals(HasManyType.Cascade.NULLIFY, getField(dataDefinition.getField("children").getType(), "cascade"));
         assertNotNull(dataDefinition.getField("children2"));
         assertEquals("child2", ((HasManyType) (dataDefinition.getField("children2")).getType()).getJoinFieldName());
         assertEquals("sample", getField(dataDefinition.getField("children2").getType(), "pluginIdentifier"));
         assertEquals("person", getField(dataDefinition.getField("children2").getType(), "entityName"));
+        assertEquals(HasManyType.Cascade.DELETE, getField(dataDefinition.getField("children2").getType(), "cascade"));
         assertThat(dataDefinition.getField("children2").getType(), instanceOf(HasManyEntitiesType.class));
         assertNotNull(dataDefinition.getField("typeOfMaterial"));
         assertThat(dataDefinition.getField("typeOfMaterial").getType(), instanceOf(EnumType.class));
