@@ -201,23 +201,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function constructor(_this) {
 		parseOptions(_this.options, _this);
 		
-		var header = new QCD.components.elements.grid.GridHeader(_this)
+		var headerController = new QCD.components.elements.grid.GridHeader(_this)
 		
-		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
-			if (gridParameters.canNew) {
-				actionButtons.newButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.new"));
-				actionButtons.newButton.click(newClicked);
-				actionButtons.newButton.attr("disabled", true);
-				topButtonsDiv.append(actionButtons.newButton);
-			}
-			if (gridParameters.canDelete) {
-				actionButtons.deleteButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.delete"));
-				actionButtons.deleteButton.click(deleteClicked);
-				actionButtons.deleteButton.attr("disabled", true);
-				topButtonsDiv.append(actionButtons.deleteButton);
-			}
-		//element.append(topButtonsDiv);
-		element.append(header.getHeaderElement());
+		QCD.info(element);
+		element.prepend(headerController.getHeaderElement());
+		element.append(headerController.getFooterElement());
 		
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
