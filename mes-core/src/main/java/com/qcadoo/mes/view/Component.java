@@ -43,4 +43,6 @@ public interface Component<T> {
 
     Set<String> getListeners();
 
+    boolean isRelatedToMainEntity();
+
 }
