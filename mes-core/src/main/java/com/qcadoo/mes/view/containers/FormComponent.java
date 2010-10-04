@@ -11,7 +11,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.model.validation.ErrorMessage;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.AbstractContainerComponent;
 import com.qcadoo.mes.view.Component;
 import com.qcadoo.mes.view.ComponentOption;

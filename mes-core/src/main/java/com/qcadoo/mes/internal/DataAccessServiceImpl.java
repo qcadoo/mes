@@ -30,7 +30,7 @@ import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
 import com.qcadoo.mes.model.search.restrictions.internal.HibernateRestriction;
-import com.qcadoo.mes.model.validation.ErrorMessage;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 
 @Service
 public final class DataAccessServiceImpl implements DataAccessService {

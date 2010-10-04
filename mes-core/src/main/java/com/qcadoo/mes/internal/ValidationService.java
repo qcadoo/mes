@@ -14,8 +14,8 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
-import com.qcadoo.mes.model.validation.EntityValidator;
-import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validators.EntityValidator;
+import com.qcadoo.mes.model.validators.FieldValidator;
 
 @Service
 public final class ValidationService {

@@ -28,10 +28,10 @@ import com.qcadoo.mes.internal.ValidationService;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.model.internal.DataDefinitionImpl;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
-import com.qcadoo.mes.model.types.FieldTypeFactory;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
 import com.qcadoo.mes.model.types.internal.FieldTypeFactoryImpl;
-import com.qcadoo.mes.model.validation.ValidatorFactory;
+import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
 import com.qcadoo.mes.model.validators.internal.ValidatorFactoryImpl;
 
 public abstract class DataAccessTest {

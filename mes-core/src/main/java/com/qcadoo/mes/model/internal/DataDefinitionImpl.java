@@ -16,7 +16,7 @@ import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchCriteriaImpl;
 import com.qcadoo.mes.model.types.internal.PriorityType;
-import com.qcadoo.mes.model.validation.EntityValidator;
+import com.qcadoo.mes.model.validators.EntityValidator;
 
 /**
  * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points to

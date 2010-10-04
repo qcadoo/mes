@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class ScaleValidator implements FieldValidator {
 

@@ -7,7 +7,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class UniqueValidator implements FieldValidator {
 

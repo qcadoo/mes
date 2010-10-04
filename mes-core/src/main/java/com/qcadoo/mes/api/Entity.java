@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.validation.ErrorMessage;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 
 /**
  * Object represents data from the database tables - with and without custom fields - and virtual tables - build using only custom

@@ -30,15 +30,15 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.model.types.FieldType;
-import com.qcadoo.mes.model.types.FieldTypeFactory;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.model.types.internal.DecimalType;
+import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
 import com.qcadoo.mes.model.types.internal.IntegerType;
-import com.qcadoo.mes.model.validation.EntityValidator;
-import com.qcadoo.mes.model.validation.FieldValidator;
-import com.qcadoo.mes.model.validation.ValidatorFactory;
+import com.qcadoo.mes.model.validators.EntityValidator;
+import com.qcadoo.mes.model.validators.FieldValidator;
+import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
 import com.qcadoo.mes.view.internal.ViewDefinitionParser;
 
 @Service

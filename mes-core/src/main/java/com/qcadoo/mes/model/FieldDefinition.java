@@ -3,7 +3,7 @@ package com.qcadoo.mes.model;
 import java.util.List;
 
 import com.qcadoo.mes.model.types.FieldType;
-import com.qcadoo.mes.model.validation.FieldValidator;
+import com.qcadoo.mes.model.validators.FieldValidator;
 
 public interface FieldDefinition {
 

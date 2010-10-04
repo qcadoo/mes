@@ -1,4 +1,4 @@
-package com.qcadoo.mes.model.validation;
+package com.qcadoo.mes.model.validators;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
