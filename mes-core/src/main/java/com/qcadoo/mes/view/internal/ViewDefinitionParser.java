@@ -45,7 +45,6 @@ import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
-import com.qcadoo.mes.view.menu.ribbon.RibbonItem;
 
 @Service
 public final class ViewDefinitionParser {
@@ -219,18 +218,18 @@ public final class ViewDefinitionParser {
         return ribbonGroup;
     }
 
-    private RibbonItem getRibbonItem(final XMLStreamReader reader) throws XMLStreamException {
+    private RibbonActionItem getRibbonItem(final XMLStreamReader reader) throws XMLStreamException {
         String stringType = reader.getLocalName();
         boolean combo = ("bigButtons".equals(stringType) || "smallButtons".equals(stringType));
-        RibbonItem.Type type = null;
+        RibbonActionItem.Type type = null;
 
         if ("bigButtons".equals(stringType) || "bigButton".equals(stringType)) {
-            type = RibbonItem.Type.BIG_BUTTON;
+            type = RibbonActionItem.Type.BIG_BUTTON;
         } else if ("smallButtons".equals(stringType) || "smallButton".equals(stringType)) {
-            type = RibbonItem.Type.SMALL_BUTTON;
+            type = RibbonActionItem.Type.SMALL_BUTTON;
         }
 
-        RibbonItem item = null;
+        RibbonActionItem item = null;
 
         if (combo) {
             item = new RibbonComboItem();
@@ -240,6 +239,7 @@ public final class ViewDefinitionParser {
 
         item.setIcon(getStringAttribute(reader, "icon"));
         item.setName(getStringAttribute(reader, "name"));
+        item.setAction(getStringAttribute(reader, "action"));
         item.setType(type);
 
         if (combo) {
@@ -247,11 +247,11 @@ public final class ViewDefinitionParser {
                 if (isTagEnded(reader, stringType)) {
                     break;
                 } else if (isTagStarted(reader)) {
-                    ((RibbonComboItem) item).addItem((RibbonActionItem) getRibbonItem(reader));
+                    ((RibbonComboItem) item).addItem(getRibbonItem(reader));
                 }
             }
         } else {
-            ((RibbonActionItem) item).setAction(getStringAttribute(reader, "action"));
+            (item).setAction(getStringAttribute(reader, "action"));
         }
 
         return item;

@@ -9,7 +9,7 @@
 				</group>
 				<group name="second">
 					<bigButton name="test2" />
-					<bigButtons name="combo1">
+					<bigButtons name="combo1" action="yyy3">
 						<bigButton name="test1" action="yyy1" />
 						<bigButton name="test2" icon="icon2" action="yyy2" />
 					</bigButtons>

@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public final class RibbonComboItem extends RibbonItem {
+public final class RibbonComboItem extends RibbonActionItem {
 
     private final List<RibbonActionItem> items = new LinkedList<RibbonActionItem>();
 

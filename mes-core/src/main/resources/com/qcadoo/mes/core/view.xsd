@@ -43,6 +43,7 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="identifierType" use="required" />
 		<xs:attribute name="icon" type="xs:string" />
+		<xs:attribute name="action" type="xs:string" />
 	</xs:complexType>
 	
 	<xs:complexType name="ribbonActionType">
