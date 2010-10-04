@@ -59,7 +59,7 @@ import com.qcadoo.mes.view.internal.ViewDefinitionParser;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
-import com.qcadoo.mes.view.menu.ribbon.RibbonItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 
 public class ViewDefinitionParserTest {
 
@@ -171,32 +171,33 @@ public class ViewDefinitionParserTest {
 
         assertEquals("test", ribbon.getGroups().get(0).getItems().get(0).getName());
         assertNull(ribbon.getGroups().get(0).getItems().get(0).getIcon());
-        assertEquals(RibbonItem.Type.BIG_BUTTON, ribbon.getGroups().get(0).getItems().get(0).getType());
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(0).getItems().get(0).getType());
         assertEquals("#{mainWindow.beanBForm}.save,#{mainWindow}.back", ((RibbonActionItem) ribbon.getGroups().get(0).getItems()
                 .get(0)).getAction());
         assertEquals("test2", ribbon.getGroups().get(0).getItems().get(1).getName());
         assertEquals("icon2", ribbon.getGroups().get(0).getItems().get(1).getIcon());
-        assertEquals(RibbonItem.Type.SMALL_BUTTON, ribbon.getGroups().get(0).getItems().get(1).getType());
+        assertEquals(RibbonActionItem.Type.SMALL_BUTTON, ribbon.getGroups().get(0).getItems().get(1).getType());
         assertEquals("xxx", ((RibbonActionItem) ribbon.getGroups().get(0).getItems().get(1)).getAction());
 
         assertEquals("test2", ribbon.getGroups().get(1).getItems().get(0).getName());
         assertNull(ribbon.getGroups().get(1).getItems().get(0).getIcon());
-        assertEquals(RibbonItem.Type.BIG_BUTTON, ribbon.getGroups().get(1).getItems().get(0).getType());
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(1).getItems().get(0).getType());
         assertNull(((RibbonActionItem) ribbon.getGroups().get(1).getItems().get(0)).getAction());
 
         assertEquals("combo1", ribbon.getGroups().get(1).getItems().get(1).getName());
         assertNull(ribbon.getGroups().get(1).getItems().get(1).getIcon());
-        assertEquals(RibbonItem.Type.BIG_BUTTON, ribbon.getGroups().get(1).getItems().get(1).getType());
+        assertEquals("yyy3", ribbon.getGroups().get(1).getItems().get(1).getAction());
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(1).getItems().get(1).getType());
 
         List<RibbonActionItem> items = ((RibbonComboItem) ribbon.getGroups().get(1).getItems().get(1)).getItems();
 
         assertEquals("test1", items.get(0).getName());
-        assertEquals(RibbonItem.Type.BIG_BUTTON, items.get(0).getType());
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON, items.get(0).getType());
         assertEquals("yyy1", items.get(0).getAction());
         assertNull(items.get(0).getIcon());
 
         assertEquals("test2", items.get(1).getName());
-        assertEquals(RibbonItem.Type.BIG_BUTTON, items.get(1).getType());
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON, items.get(1).getType());
         assertEquals("yyy2", items.get(1).getAction());
         assertEquals("icon2", items.get(1).getIcon());
     }

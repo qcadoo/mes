@@ -12,12 +12,27 @@ public final class ListData {
 
     private List<Entity> entities;
 
+    private final String contextFieldName;
+
+    private final Long contextId;
+
     public ListData() {
+        this.contextFieldName = null;
+        this.contextId = null;
     }
 
     public ListData(final int totalNumberOfEntities, final List<Entity> entities) {
         this.totalNumberOfEntities = totalNumberOfEntities;
         this.entities = entities;
+        this.contextFieldName = null;
+        this.contextId = null;
+    }
+
+    public ListData(final int totalNumberOfEntities, final List<Entity> entities, final String contextFieldName, final Long contextId) {
+        this.totalNumberOfEntities = totalNumberOfEntities;
+        this.entities = entities;
+        this.contextFieldName = contextFieldName;
+        this.contextId = contextId;
     }
 
     public Integer getTotalNumberOfEntities() {
@@ -42,6 +57,14 @@ public final class ListData {
 
     public void setSelectedEntityId(final Long selectedEntityId) {
         this.selectedEntityId = selectedEntityId;
+    }
+
+    public String getContextFieldName() {
+        return contextFieldName;
+    }
+
+    public Long getContextId() {
+        return contextId;
     }
 
 }

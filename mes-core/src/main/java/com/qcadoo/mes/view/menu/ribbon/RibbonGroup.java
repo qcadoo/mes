@@ -11,7 +11,7 @@ public final class RibbonGroup {
 
     private String name;
 
-    private final List<RibbonItem> items = new LinkedList<RibbonItem>();;
+    private final List<RibbonActionItem> items = new LinkedList<RibbonActionItem>();;
 
     public String getName() {
         return name;
@@ -21,11 +21,11 @@ public final class RibbonGroup {
         this.name = name;
     }
 
-    public List<RibbonItem> getItems() {
+    public List<RibbonActionItem> getItems() {
         return items;
     }
 
-    public void addItem(final RibbonItem item) {
+    public void addItem(final RibbonActionItem item) {
         items.add(item);
     }
 
@@ -33,7 +33,7 @@ public final class RibbonGroup {
         JSONObject groupObject = new JSONObject();
         groupObject.put("name", name);
         JSONArray itemsArray = new JSONArray();
-        for (RibbonItem item : items) {
+        for (RibbonActionItem item : items) {
             itemsArray.put(item.getAsJson());
         }
         groupObject.put("items", itemsArray);
