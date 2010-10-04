@@ -34,6 +34,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	this.getPluginIdentifier = function() {
 		return pluginIdentifier;
 	}
+	
+	this.performCancel = function(actionsPerformer) {
+		QCD.error("to implement: QCD.PageController.performCancel()");
+	}
 		
 	this.getUpdate = function(componentName, value, listeners) {
 		QCD.info("getUpdate "+componentName+"->"+value);
@@ -61,7 +65,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		});
 	}
 	
-	this.performSave = function(componentName) {
+	this.performSave = function(componentName, actionsPerformer) {
 		QCD.info("save " +componentName);
 		var parameters = {
 			componentName: componentName,
@@ -75,6 +79,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		QCDConnector.sendPost("save", parametersJson, function(response) {
 			QCD.info(response);
 			setValueData(response);
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
 		});
 	}
 	
@@ -89,6 +96,63 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 			QCD.info(response);
 			setValueData(response);
 		});
+	}
+	
+	this.performRibbonAction = function(ribbonAction) {
+		var actionParts = ribbonAction.split(";");
+		var actions = new Array();
+		for (var actionIter in actionParts) {
+			var action = actionParts[actionIter].trim();
+			if (action) {
+				var elementBegin = action.search("{");
+				var elementEnd = action.search("}");
+				if (elementBegin<0 || elementEnd<0 || elementEnd<elementBegin) {
+					QCD.error("action parse error in: "+action);
+					return;
+				}
+				var elementPath = action.substring(elementBegin+1, elementEnd);
+				
+				var elementPathElements = elementPath.split(".");
+				var component = pageComponents[elementPathElements[0]];
+				var componentPath = elementPath.substring(elementPathElements[0].length+1);
+				if (componentPath) {
+					component = component.getComponent(componentPath);
+				}
+				
+				var elementAction = action.substring(elementEnd+1);
+				if (elementAction[0] != ".") {
+					QCD.error("action parse error in: "+action);
+					return;
+				}
+				elementAction = elementAction.substring(1);
+				
+				QCD.info(component);
+				var actionObject = {
+					component: component,
+					action: elementAction
+				}
+				//var func = component[elementAction]
+				
+				actions.push(actionObject);
+			}
+		}
+		var actionsPerformer = {
+			actions: actions,
+			actionIter: 0,
+			performNext: function() {
+				var actionObject = this.actions[this.actionIter];
+				if (actionObject) {
+					var func = actionObject.component[actionObject.action];
+					if (!func) {
+						QCD.error("no function in "+actionObject.component.elementName+": "+actionObject.action);
+						return;
+					}
+					this.actionIter++;
+					func.call(actionObject.component, this);
+				}
+			}
+		}
+		actionsPerformer.performNext();
 	}
 	
 	function getValueData() {

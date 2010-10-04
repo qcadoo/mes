@@ -26,16 +26,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 //	function performCancel() {
 //		mainController.goBack();
 //	}
-	
-	function performSave() {
-		mainController.performSave(elementName);
+	this.performSave = function(actionsPerformer) {
+		mainController.performSave(elementName, actionsPerformer);
 	}
 	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementPath+"_formComponents");
 		_this.constructChildren(childrenElement.children());
 		//mainWindow-beanAForm_saveButton
-		buttons.saveButton.click(performSave);
+		//buttons.saveButton.click(performSave);
 	}
 	
 	this.getComponentValue = function() {

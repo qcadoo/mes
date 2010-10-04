@@ -203,20 +203,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function constructor(_this) {
 		parseOptions(_this.options, _this);
 		
-		var topButtonsDiv = $("<div>").addClass('qcdGrid_top');
-			if (gridParameters.canNew) {
-				actionButtons.newButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.new"));
-				actionButtons.newButton.click(newClicked);
-				actionButtons.newButton.attr("disabled", true);
-				topButtonsDiv.append(actionButtons.newButton);
-			}
-			if (gridParameters.canDelete) {
-				actionButtons.deleteButton =  $("<button>").html(mainController.getTranslation("commons.grid.button.delete"));
-				actionButtons.deleteButton.click(deleteClicked);
-				actionButtons.deleteButton.attr("disabled", true);
-				topButtonsDiv.append(actionButtons.deleteButton);
-			}
-		element.append(topButtonsDiv);
+		var headerController = new QCD.components.elements.grid.GridHeader(_this)
+		
+		QCD.info(element);
+		element.prepend(headerController.getHeaderElement());
+		element.append(headerController.getFooterElement());
 		
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
@@ -233,6 +224,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		    grid.setGridHeight(element.height());
 //		}).trigger('resize');
 
+	}
+	
+	this.performNew = function(actionsPerformer) {
+		redirectToCorrespondingPage(null);
+		actionsPerformer.performNext();
+	}
+	
+	this.performDelete = function(actionsPerformer) {
+		QCD.error("to implement: QCD.components.elements.Grid.performDelete()");
 	}
 	
 	constructor(this);

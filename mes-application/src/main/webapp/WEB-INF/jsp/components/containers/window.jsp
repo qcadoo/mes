@@ -24,7 +24,6 @@
 		</div>
 		<div class="windowContainerContentBody">
 				<div style="font-weight: bold; margin-bottom: 10px;">
-					<c:if test="${component.options['backButton']}"><button id="${componentFullName}_backButton">back</button></c:if>
 					<c:if test="${component.options['header']}">
 						<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
 						${translationsMap[headerLabel]}
