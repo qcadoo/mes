@@ -116,9 +116,9 @@ public final class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
         if (arguments.get("entityId") != null) {
             Entity entity = viewDefinition.getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, "");
+            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, "", false);
         } else {
-            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, "");
+            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, "", false);
         }
     }
 
@@ -169,7 +169,7 @@ public final class CrudController {
 
             ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, componentName);
+            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, componentName, false);
 
             return newViewValue;
         } catch (JSONException e) {
@@ -209,7 +209,7 @@ public final class CrudController {
 
             selectedEntities.put(componentName, entity);
 
-            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -240,7 +240,7 @@ public final class CrudController {
 
             selectedEntities.put(componentName, null);
 
-            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName);
+            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

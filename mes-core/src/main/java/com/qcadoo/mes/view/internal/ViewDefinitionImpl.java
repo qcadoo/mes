@@ -66,10 +66,13 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     @Override
     public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalViewValue, final String triggerComponentName) {
+            final ViewValue<Object> globalViewValue, final String triggerComponentName, final boolean saveOrDelete) {
         Set<String> pathsToUpdate = new HashSet<String>();
         if (triggerComponentName != null) {
             pathsToUpdate = root.lookupListeners(triggerComponentName);
+            if (saveOrDelete) {
+                pathsToUpdate.add(triggerComponentName);
+            }
             cleanSelectedEntities(selectedEntities, pathsToUpdate);
         }
         ViewValue<Object> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,

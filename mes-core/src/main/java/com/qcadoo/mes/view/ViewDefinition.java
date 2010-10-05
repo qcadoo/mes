@@ -22,7 +22,7 @@ public interface ViewDefinition {
     ViewValue<Object> castValue(Map<String, Entity> selectedEntities, JSONObject jsonObject) throws JSONException;
 
     ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalJsonValue, String triggerComponentName);
+            final ViewValue<Object> globalJsonValue, String triggerComponentName, boolean saveOrDelete);
 
     void updateTranslations(final Map<String, String> translations, final Locale locale);
 

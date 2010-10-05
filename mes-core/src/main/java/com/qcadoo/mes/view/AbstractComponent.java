@@ -127,6 +127,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
 
+        if (value == null) {
+            return null;
+        }
+
         if (value.isEnabled() == null) {
             value.setEnabled(defaultEnabled);
         }

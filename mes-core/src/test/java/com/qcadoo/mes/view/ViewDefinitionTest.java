@@ -1,6 +1,7 @@
 package com.qcadoo.mes.view;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 import org.junit.Test;
+import org.junit.matchers.JUnitMatchers;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.api.Entity;
@@ -90,9 +92,12 @@ public class ViewDefinitionTest {
         viewDefinition.setRoot(root);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName);
+        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, true);
 
         // then
+        assertEquals(2, pathsToUpdate.size());
+        assertEquals(triggerComponentName, pathsToUpdate.iterator().next());
+        assertThat(pathsToUpdate, JUnitMatchers.hasItems(triggerComponentName, "removeIt"));
         assertEquals(1, selectedEntities.size());
         assertEquals(new DefaultEntity(3L), selectedEntities.get("keepIt"));
         assertEquals("test", value.getComponent("rootName").getValue());
@@ -118,9 +123,10 @@ public class ViewDefinitionTest {
         viewDefinition.setViewHook(hookDefinition);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName);
+        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, false);
 
         // then
+        assertEquals(0, pathsToUpdate.size());
         verify(hookDefinition).callWithViewValue(value, triggerComponentName);
     }
 
@@ -143,7 +149,7 @@ public class ViewDefinitionTest {
         viewDefinition.setViewHook(hookDefinition);
 
         // when
-        viewDefinition.getValue(entity, selectedEntities, globalViewValue, null);
+        viewDefinition.getValue(entity, selectedEntities, globalViewValue, null, false);
 
         // then
         verify(root, never()).lookupListeners(Mockito.anyString());

@@ -82,9 +82,9 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
         }
     }
 
-    public final void updateComponentsTranslations(final Map<String, String> translationsMap, final Locale locale) {
+    protected final void updateComponentsTranslations(final Map<String, String> translations, final Locale locale) {
         for (Component<?> component : components.values()) {
-            component.updateTranslations(translationsMap, locale);
+            component.updateTranslations(translations, locale);
         }
     }
 
