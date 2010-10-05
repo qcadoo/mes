@@ -167,36 +167,35 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
         if (value != null) {
 
-            if (!viewObject.isNull("paging")) {
-                if (!viewObject.getJSONObject("paging").isNull("first")) {
-                    listData.setFirstResult(viewObject.getJSONObject("paging").getInt("first"));
+            if (!value.isNull("paging")) {
+                if (!value.getJSONObject("paging").isNull("first")) {
+                    listData.setFirstResult(value.getJSONObject("paging").getInt("first"));
                 }
-                if (!viewObject.getJSONObject("paging").isNull("max")) {
-                    listData.setMaxResults(viewObject.getJSONObject("paging").getInt("max"));
+                if (!value.getJSONObject("paging").isNull("max")) {
+                    listData.setMaxResults(value.getJSONObject("paging").getInt("max"));
                 }
             }
 
-            if (!viewObject.isNull("sort")) {
-                if (!viewObject.getJSONObject("sort").isNull("column")) {
-                    listData.setOrderColumn(viewObject.getJSONObject("sort").getString("column"));
+            if (!value.isNull("sort")) {
+                if (!value.getJSONObject("sort").isNull("column")) {
+                    listData.setOrderColumn(value.getJSONObject("sort").getString("column"));
                 }
-                if (!viewObject.getJSONObject("sort").isNull("asc")
-                        && "asc".equals(viewObject.getJSONObject("sort").getString("order"))) {
+                if (!value.getJSONObject("sort").isNull("asc") && "asc".equals(value.getJSONObject("sort").getString("order"))) {
                     listData.setOrderAsc(true);
                 } else {
                     listData.setOrderAsc(false);
                 }
             }
 
-            if (!viewObject.isNull("filter")) {
-                JSONArray filters = viewObject.getJSONArray("filter");
+            if (!value.isNull("filter")) {
+                JSONArray filters = value.getJSONArray("filter");
                 for (int i = 0; i < filters.length(); i++) {
                     listData.addFilter(((JSONObject) filters.get(i)).getString("column"),
                             ((JSONObject) filters.get(i)).getString("value"));
                 }
             }
 
-            if (!viewObject.isNull("selectedEntityId")) {
+            if (!value.isNull("selectedEntityId")) {
                 String selectedEntityId = value.getString("selectedEntityId");
 
                 if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
@@ -280,6 +279,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         }
         for (Map<String, String> filter : listData.getFilters()) {
             FieldDefinition field = getFieldByColumnName(filter.get("column"));
+
             if (field != null && field.getType().isSearchable()) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, filter.get("value")));
             }

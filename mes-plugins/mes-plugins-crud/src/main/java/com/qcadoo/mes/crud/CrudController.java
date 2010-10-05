@@ -126,21 +126,17 @@ public final class CrudController {
             @ModelAttribute("jsonBody") final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
-        try {
-            JSONObject jsonBody = new JSONObject(body.toString());
-            String componentName = jsonBody.getString("componentName").replaceAll("-", ".");
-            JSONObject jsonValues = jsonBody.getJSONObject("data");
+        JSONObject jsonBody = getJsonBody(body);
+        String componentName = getComponentName(jsonBody);
+        JSONObject jsonValues = getJsonObject(jsonBody);
 
-            Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, componentName, false);
+        ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, componentName, false);
 
-            return newViewValue;
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
+        return newViewValue;
     }
 
     @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/save", method = RequestMethod.POST)
@@ -150,35 +146,31 @@ public final class CrudController {
             @ModelAttribute("jsonBody") final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
-        try {
-            JSONObject jsonBody = new JSONObject(body.toString());
-            String componentName = jsonBody.getString("componentName").replaceAll("-", ".");
-            JSONObject jsonValues = jsonBody.getJSONObject("data");
+        JSONObject jsonBody = getJsonBody(body);
+        String componentName = getComponentName(jsonBody);
+        JSONObject jsonValues = getJsonObject(jsonBody);
 
-            Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.lookupComponent(componentName);
+        SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.lookupComponent(componentName);
 
-            Entity entity = saveableComponent.getSaveableEntity(viewValue);
+        Entity entity = saveableComponent.getSaveableEntity(viewValue);
 
-            String contextFieldName = jsonBody.getString("contextFieldName");
-            String contextEntityId = jsonBody.getString("contextEntityId");
+        String contextFieldName = getJsonString(jsonBody, "contextFieldName");
+        String contextEntityId = getJsonString(jsonBody, "contextEntityId");
 
-            if (saveableComponent.isRelatedToMainEntity() && StringUtils.hasText(contextFieldName)
-                    && StringUtils.hasText(contextEntityId)) {
-                entity.setField(contextFieldName, Long.parseLong(contextEntityId));
-            }
-
-            entity = saveableComponent.getDataDefinition().save(entity);
-
-            selectedEntities.put(componentName, entity);
-
-            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+        if (saveableComponent.isRelatedToMainEntity() && StringUtils.hasText(contextFieldName)
+                && StringUtils.hasText(contextEntityId)) {
+            entity.setField(contextFieldName, Long.parseLong(contextEntityId));
         }
+
+        entity = saveableComponent.getDataDefinition().save(entity);
+
+        selectedEntities.put(componentName, entity);
+
+        return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
     }
 
     @SuppressWarnings("unchecked")
@@ -189,28 +181,24 @@ public final class CrudController {
             @ModelAttribute("jsonBody") final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
-        try {
-            JSONObject jsonBody = new JSONObject(body.toString());
-            String componentName = jsonBody.getString("componentName").replaceAll("-", ".");
-            JSONObject jsonValues = jsonBody.getJSONObject("data");
+        JSONObject jsonBody = getJsonBody(body);
+        String componentName = getComponentName(jsonBody);
+        JSONObject jsonValues = getJsonObject(jsonBody);
 
-            Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            SelectableComponent selectableComponent = (SelectableComponent) viewDefinition.lookupComponent(componentName);
+        SelectableComponent selectableComponent = (SelectableComponent) viewDefinition.lookupComponent(componentName);
 
-            Long id = selectableComponent.getSelectedEntityId(viewValue);
+        Long id = selectableComponent.getSelectedEntityId(viewValue);
 
-            if (id != null) {
-                ((Component<?>) selectableComponent).getDataDefinition().delete(id);
-                selectedEntities.remove(componentName);
-            }
-
-            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+        if (id != null) {
+            ((Component<?>) selectableComponent).getDataDefinition().delete(id);
+            selectedEntities.remove(componentName);
         }
+
+        return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
     }
 
     @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/move", method = RequestMethod.POST)
@@ -220,27 +208,51 @@ public final class CrudController {
             @ModelAttribute("jsonBody") final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
-        try {
-            JSONObject jsonBody = new JSONObject(body.toString());
-            String componentName = jsonBody.getString("componentName").replaceAll("-", ".");
-            JSONObject jsonValues = jsonBody.getJSONObject("data");
-            Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        JSONObject jsonBody = getJsonBody(body);
+        String componentName = getComponentName(jsonBody);
+        JSONObject jsonValues = getJsonObject(jsonBody);
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-            ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
 
-            if (StringUtils.hasText(arguments.get("offset"))) {
-                int offset = Integer.valueOf(arguments.get("offset"));
+        if (StringUtils.hasText(arguments.get("offset"))) {
+            int offset = Integer.valueOf(arguments.get("offset"));
 
-                SelectableComponent selectableComponent = (SelectableComponent) viewDefinition.lookupComponent(componentName);
+            SelectableComponent selectableComponent = (SelectableComponent) viewDefinition.lookupComponent(componentName);
 
-                Long id = selectableComponent.getSelectedEntityId(viewValue);
+            Long id = selectableComponent.getSelectedEntityId(viewValue);
 
-                if (id != null) {
-                    ((Component<?>) selectableComponent).getDataDefinition().move(id, offset);
-                }
+            if (id != null) {
+                ((Component<?>) selectableComponent).getDataDefinition().move(id, offset);
             }
+        }
 
-            return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
+        return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
+    }
+
+    private String getComponentName(final JSONObject json) {
+        return getJsonString(json, "componentName").replaceAll("-", ".");
+    }
+
+    private String getJsonString(final JSONObject json, final String name) {
+        try {
+            return json.getString(name);
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    private JSONObject getJsonObject(final JSONObject json) {
+        try {
+            return json.getJSONObject("data");
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    private JSONObject getJsonBody(final StringBuilder body) {
+        try {
+            return new JSONObject(body.toString());
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

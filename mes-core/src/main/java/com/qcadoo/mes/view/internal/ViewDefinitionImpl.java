@@ -50,10 +50,13 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public ViewValue<Object> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
-            throws JSONException {
-        return wrapIntoViewValue(root.castValue(selectedEntities, viewObject != null ? viewObject.getJSONObject(root.getName())
-                : null));
+    public ViewValue<Object> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) {
+        try {
+            return wrapIntoViewValue(root.castValue(selectedEntities,
+                    viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
     private void cleanSelectedEntities(final Map<String, Entity> selectedEntities, final Set<String> pathsToUpdate) {

@@ -3,7 +3,6 @@ package com.qcadoo.mes.view;
 import java.util.Locale;
 import java.util.Map;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
@@ -19,7 +18,7 @@ public interface ViewDefinition {
 
     Component<?> lookupComponent(String path);
 
-    ViewValue<Object> castValue(Map<String, Entity> selectedEntities, JSONObject jsonObject) throws JSONException;
+    ViewValue<Object> castValue(Map<String, Entity> selectedEntities, JSONObject jsonObject);
 
     ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Object> globalJsonValue, String triggerComponentName, boolean saveOrDelete);

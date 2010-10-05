@@ -373,18 +373,7 @@ public class CrudControllerTest {
         oldViewValue.addComponent("trigger", new ViewValue(12L));
 
         ViewValue<Object> newViewValue = new ViewValue<Object>("test");
-
-        given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willAnswer(new Answer<ViewValue<Object>>() {
-
-            @Override
-            public ViewValue<Object> answer(final InvocationOnMock invocation) throws Throwable {
-                Map<String, Entity> selectedEntities = (Map<String, Entity>) invocation.getArguments()[0];
-                selectedEntities.put("trigger", new DefaultEntity(11L));
-                return oldViewValue;
-            }
-
-        });
-
+        given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
         given(viewDefinition.lookupComponent("trigger")).willReturn((Component) component);
         given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true)).willReturn(
                 newViewValue);
@@ -395,7 +384,7 @@ public class CrudControllerTest {
 
         // then
         assertEquals(newViewValue, viewValue);
-        verify(((Component) component).getDataDefinition()).delete(12L);
+        verify(((Component) component).getDataDefinition()).move(12L, 1);
         verify(entity, never()).setField(anyString(), anyLong());
     }
 
