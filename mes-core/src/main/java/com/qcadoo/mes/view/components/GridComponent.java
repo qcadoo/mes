@@ -180,7 +180,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 if (!value.getJSONObject("sort").isNull("column")) {
                     listData.setOrderColumn(value.getJSONObject("sort").getString("column"));
                 }
-                if (!value.getJSONObject("sort").isNull("asc") && "asc".equals(value.getJSONObject("sort").getString("order"))) {
+                if (!value.getJSONObject("sort").isNull("order") && "asc".equals(value.getJSONObject("sort").getString("order"))) {
                     listData.setOrderAsc(true);
                 } else {
                     listData.setOrderAsc(false);
