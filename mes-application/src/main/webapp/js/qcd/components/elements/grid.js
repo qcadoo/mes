@@ -177,10 +177,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
-	function newClicked() {
-		redirectToCorrespondingPage(contextId ? "contextFieldName="+contextFieldName+"&contextEntityId="+contextId : null);
-	}
-	
 	function deleteClicked() {
 		var selectedId = grid.getGridParam('selrow');
 		if (selectedId) {
@@ -272,6 +268,22 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
+	this.onNewButtonClicked = function() {
+		performNew()
+	}
+	
+	this.onDeleteButtonClicked = function() {
+		 performDelete()
+	}
+	
+	this.onUpButtonClicked = function() {
+		QCD.error("to implement: QCD.components.elements.Grid.onUpButtonClicked()");
+	}
+	
+	this.onDownButtonClicked = function() {
+		QCD.error("to implement: QCD.components.elements.Grid.onDownButtonClicked()");
+	}
+	
 	function updateFullScreenSize() {
 		if (! gridParameters.height) {
 			grid.setGridHeight(element.height() - 110);
@@ -290,12 +302,17 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.performNew = function(actionsPerformer) {
 		redirectToCorrespondingPage(null);
-		actionsPerformer.performNext();
+		if (actionsPerformer) {
+			actionsPerformer.performNext();
+		}
 	}
+	performNew = this.performNew;
+	
 	
 	this.performDelete = function(actionsPerformer) {
 		QCD.error("to implement: QCD.components.elements.Grid.performDelete()");
 	}
+	performDelete = this.performDelete;
 	
 	constructor(this);
 }

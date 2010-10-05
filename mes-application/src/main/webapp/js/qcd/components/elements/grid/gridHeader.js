@@ -110,9 +110,12 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	
 	this.getHeaderElement = function() {
 		var headerElement = $("<div>").addClass('grid_header');
-		var filterButton = $("<button>").html("filtr").click(filterClicked);
 		headerElement.append($("<span>").html("GRID"));
-		headerElement.append(filterButton);
+		headerElement.append($("<button>").html("filtr").click(gridController.onFilterButtonClicked));
+		headerElement.append($("<button>").html("new").click(gridController.onNewButtonClicked));
+		headerElement.append($("<button>").html("delete").click(gridController.onDeleteButtonClicked));
+		headerElement.append($("<button>").html("up").click(gridController.onUpButtonClicked));
+		headerElement.append($("<button>").html("down").click(gridController.onDownButtonClicked));
 		headerElement.append(header.getHeaderElement(pagingVars, true));
 		return headerElement;
 	}
