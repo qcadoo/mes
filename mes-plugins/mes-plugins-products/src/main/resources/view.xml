@@ -19,7 +19,7 @@
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
 				<option type="orderable" value="name,number,typeOfMaterial,ean" />
 				<option type="multiselect" value="true" />
-				<option type="height" value="450" />
+				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
 		</component>
@@ -49,6 +49,7 @@
 				<component type="select" name="category" field="category" />
 				<component type="input" name="unit" field="unit" />
 				<option type="header" value="false" />
+				<option type="height" value="300" />
 			</component>
 			<component type="grid" name="substitutesGrid" source="substitutes">
 				<option type="column" name="number" fields="number" />
@@ -57,7 +58,8 @@
 				<option type="correspondingView" value="products/substituteDetailsView" />
 				<option type="paginable" value="false" />
 				<option type="multiselect" value="false" />
-				<option type="height" value="150" />
+				<option type="height" value="200" />
+				<option type="width" value="500" />
 			</component>
 			<component type="grid" name="substitutesComponentGrid"
 				source="#{mainWindow.substitutesGrid}.components">

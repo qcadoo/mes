@@ -17,14 +17,26 @@
 		${component.optionsAsJson}
 	</div>
 	
-	<div style="font-weight: bold; margin-bottom: 10px;">
-		<c:if test="${component.options['header']}">
+	<table style="height: 100%; width: 100%;">
+	<c:if test="${component.options['header']}">
+		<tr><td>
+		<div style="font-weight: bold; margin-bottom: 10px;">
 			<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
 			${translationsMap[headerLabel]}
-		</c:if>
-	</div>
-	<div>
-		<table class="element_table" id="${componentFullName}_grid">
-		</table>
-	</div>
+		</div>
+		</td></tr>
+	</c:if>
+	
+	<tr><td id="${componentFullName}_gridHeader">
+	</td></tr>
+	
+	<tr style="height: 100%; width: 100%;" id="${componentFullName}_gridCell"><td>
+			<table class="element_table" id="${componentFullName}_grid" style="height: 100%">
+			</table>
+	</td></tr>
+	
+	<tr><td id="${componentFullName}_gridFooter">
+	</td></tr>
+	
+	</table>
 </div>
