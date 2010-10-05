@@ -21,6 +21,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var contextFieldName;
 	var contextId;
 	
+	var componentEnabled = false;
+	
 	var searchEnabled = false;
 	
 	var currentState = {
@@ -150,6 +152,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
+		componentEnabled = isEnabled;
 //		if (actionButtons.newButton) {
 //			if (isEnabled) {
 //				actionButtons.newButton.removeAttr('disabled');
@@ -280,7 +283,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function onCurrentStateChange() {
 		//QCD.info(currentState);
-		mainController.getUpdate(elementPath, currentState, gridParameters.listeners);
+		if (componentEnabled) {
+			mainController.getUpdate(elementPath, currentState, gridParameters.listeners);
+		}
 	}
 	
 	this.performNew = function(actionsPerformer) {

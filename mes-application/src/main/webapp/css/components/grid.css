@@ -1,0 +1,16 @@
+.grid_header {
+	background: #ccc;
+	height: 30px;
+	line-height: 30px;
+}
+
+.grid_paging {
+	float: right;
+	margin-right: 10px;
+}
+
+.grid_footer {
+	background: #ccc;
+	height: 30px;
+	line-height: 30px;
+}

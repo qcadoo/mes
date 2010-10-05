@@ -17,9 +17,10 @@ import com.qcadoo.mes.view.Component;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.SaveableComponent;
+import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
 
-public final class FormComponent extends AbstractContainerComponent<Long> implements SaveableComponent {
+public final class FormComponent extends AbstractContainerComponent<Long> implements SaveableComponent, SelectableComponent {
 
     private boolean header = true;
 
@@ -72,25 +73,10 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private ViewValue<Long> lookViewValue(final ViewValue<Object> viewValue) {
-        ViewValue<?> lookupedViewValue = viewValue;
-        String[] fields = getPath().split("\\.");
-
-        for (String field : fields) {
-            lookupedViewValue = lookupedViewValue.getComponent(field);
-            if (lookupedViewValue == null) {
-                return null;
-            }
-        }
-
-        return (ViewValue<Long>) lookupedViewValue;
-
-    }
-
     @Override
+    @SuppressWarnings("unchecked")
     public Entity getSaveableEntity(final ViewValue<Object> viewValue) {
-        ViewValue<Long> formValue = lookViewValue(viewValue);
+        ViewValue<Long> formValue = (ViewValue<Long>) lookupViewValue(viewValue);
         Entity entity = new DefaultEntity(formValue.getValue());
 
         for (Map.Entry<String, Component<?>> component : getComponents().entrySet()) {
@@ -130,6 +116,13 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
                     + getPath() + ".header";
             translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Long getSelectedEntityId(final ViewValue<Object> viewValue) {
+        ViewValue<Long> formValue = (ViewValue<Long>) lookupViewValue(viewValue);
+        return formValue.getValue();
     }
 
 }

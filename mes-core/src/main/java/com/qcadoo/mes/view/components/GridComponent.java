@@ -3,14 +3,17 @@ package com.qcadoo.mes.view.components;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +22,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -26,6 +30,7 @@ import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
+import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.components.grid.ColumnAggregationMode;
 import com.qcadoo.mes.view.components.grid.ColumnDefinition;
@@ -42,13 +47,13 @@ import com.qcadoo.mes.view.components.grid.ListData;
  * @apiviz.uses com.qcadoo.mes.core.data.search.Order
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
  */
-public final class GridComponent extends AbstractComponent<ListData> {
+public final class GridComponent extends AbstractComponent<ListData> implements SelectableComponent {
 
     private final Set<FieldDefinition> searchableFields = new HashSet<FieldDefinition>();
 
-    private final Set<FieldDefinition> orderableFields = new HashSet<FieldDefinition>();
+    private final Set<ColumnDefinition> orderableColumns = new HashSet<ColumnDefinition>();
 
-    private final List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+    private final Map<String, ColumnDefinition> columns = new LinkedHashMap<String, ColumnDefinition>();
 
     private String correspondingView;
 
@@ -72,8 +77,8 @@ public final class GridComponent extends AbstractComponent<ListData> {
         return "grid";
     }
 
-    public List<ColumnDefinition> getColumns() {
-        return columns;
+    public Collection<ColumnDefinition> getColumns() {
+        return columns.values();
     }
 
     @Override
@@ -102,8 +107,8 @@ public final class GridComponent extends AbstractComponent<ListData> {
                     searchableFields.add(field);
                 }
             } else if ("orderable".equals(option.getType())) {
-                for (FieldDefinition field : getFields(option.getValue())) {
-                    orderableFields.add(field);
+                for (ColumnDefinition column : getColumns(option.getValue())) {
+                    orderableColumns.add(column);
                 }
             } else if ("column".equals(option.getType())) {
                 ColumnDefinition columnDefinition = new ColumnDefinition(option.getAtrributeValue("name"));
@@ -120,7 +125,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
                 } else {
                     columnDefinition.setAggregationMode(ColumnAggregationMode.NONE);
                 }
-                columns.add(columnDefinition);
+                columns.put(columnDefinition.getName(), columnDefinition);
             }
         }
 
@@ -130,11 +135,19 @@ public final class GridComponent extends AbstractComponent<ListData> {
         addOption("header", header);
         addOption("columns", getColumnsForOptions());
         addOption("fields", getFieldsForOptions(getDataDefinition().getFields()));
-        addOption("sortable", !orderableFields.isEmpty());
+        addOption("sortable", !orderableColumns.isEmpty());
         addOption("filter", !searchableFields.isEmpty());
         addOption("canDelete", deletable);
         addOption("canNew", creatable);
 
+    }
+
+    private Set<ColumnDefinition> getColumns(final String columns) {
+        Set<ColumnDefinition> set = new HashSet<ColumnDefinition>();
+        for (String column : columns.split("\\s*,\\s*")) {
+            set.add(this.columns.get(column));
+        }
+        return set;
     }
 
     private Set<FieldDefinition> getFields(final String fields) {
@@ -148,9 +161,38 @@ public final class GridComponent extends AbstractComponent<ListData> {
     @Override
     public ViewValue<ListData> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
+        ListData listData = new ListData();
+
         JSONObject value = viewObject.getJSONObject("value");
 
-        ListData listData = new ListData();
+        if (!viewObject.isNull("paging")) {
+            if (!viewObject.getJSONObject("paging").isNull("first")) {
+                listData.setFirstResult(viewObject.getJSONObject("paging").getInt("first"));
+            }
+            if (!viewObject.getJSONObject("paging").isNull("max")) {
+                listData.setMaxResults(viewObject.getJSONObject("paging").getInt("max"));
+            }
+        }
+
+        if (!viewObject.isNull("sort")) {
+            if (!viewObject.getJSONObject("sort").isNull("column")) {
+                listData.setOrderColumn(viewObject.getJSONObject("sort").getString("column"));
+            }
+            if (!viewObject.getJSONObject("sort").isNull("asc")
+                    && "asc".equals(viewObject.getJSONObject("sort").getString("order"))) {
+                listData.setOrderAsc(true);
+            } else {
+                listData.setOrderAsc(false);
+            }
+        }
+
+        if (!viewObject.isNull("filter")) {
+            JSONArray filters = viewObject.getJSONArray("filter");
+            for (int i = 0; i < filters.length(); i++) {
+                listData.addFilter(((JSONObject) filters.get(i)).getString("column"),
+                        ((JSONObject) filters.get(i)).getString("value"));
+            }
+        }
 
         if (value != null) {
             String selectedEntityId = value.getString("selectedEntityId");
@@ -168,6 +210,10 @@ public final class GridComponent extends AbstractComponent<ListData> {
     @Override
     public ViewValue<ListData> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate) {
+        String joinFieldName = null;
+        Long belongsToEntityId = null;
+        SearchCriteriaBuilder searchCriteriaBuilder = null;
+
         if (getSourceFieldPath() != null || getFieldPath() != null) {
             if (entity == null) {
                 return new ViewValue<ListData>(new ListData(0, Collections.<Entity> emptyList()));
@@ -184,14 +230,77 @@ public final class GridComponent extends AbstractComponent<ListData> {
             }
             checkState(hasManyType.getDataDefinition().getName().equals(getDataDefinition().getName()),
                     "Grid and hasMany relation have different data definitions");
-            SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find();
+            searchCriteriaBuilder = getDataDefinition().find();
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
                     getDataDefinition().getField(hasManyType.getJoinFieldName()), entity.getId()));
-            SearchResult rs = searchCriteriaBuilder.list();
-            return new ViewValue<ListData>(generateListData(rs, hasManyType.getJoinFieldName(), entity.getId()));
+            joinFieldName = hasManyType.getJoinFieldName();
+            belongsToEntityId = entity.getId();
         } else {
-            SearchResult rs = getDataDefinition().find().list();
-            return new ViewValue<ListData>(generateListData(rs, null, null));
+            searchCriteriaBuilder = getDataDefinition().find();
+        }
+
+        if (viewValue != null) {
+            addRestrictionsOrderAndPaging(searchCriteriaBuilder, viewValue.getValue());
+
+        }
+
+        ListData listData = generateListData(searchCriteriaBuilder.list(), joinFieldName, belongsToEntityId);
+
+        if (viewValue != null) {
+            copyRestrictionsOrderAndPaging(listData, viewValue.getValue());
+        }
+
+        return new ViewValue<ListData>(listData);
+    }
+
+    private void addRestrictionsOrderAndPaging(final SearchCriteriaBuilder searchCriteriaBuilder, final ListData listData) {
+        if (listData.getFirstResult() != null) {
+            searchCriteriaBuilder.withFirstResult(listData.getFirstResult());
+        }
+        if (listData.getMaxResults() != null) {
+            searchCriteriaBuilder.withMaxResults(listData.getMaxResults());
+        }
+        if (listData.getOrderColumn() != null) {
+            FieldDefinition field = getFieldByColumnName(listData.getOrderColumn());
+
+            if (field != null && field.getType().isOrderable()) {
+                Order order = null;
+
+                if (listData.isOrderAsc()) {
+                    order = Order.asc(field.getName());
+                } else {
+                    order = Order.desc(field.getName());
+                }
+
+                searchCriteriaBuilder.orderBy(order);
+            }
+        }
+        for (Map<String, String> filter : listData.getFilters()) {
+            FieldDefinition field = getFieldByColumnName(filter.get("column"));
+            if (field != null && field.getType().isSearchable()) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, filter.get("value")));
+            }
+        }
+
+    }
+
+    private FieldDefinition getFieldByColumnName(final String column) {
+        List<FieldDefinition> fields = columns.get(column).getFields();
+
+        if (fields.size() != 1) {
+            return null;
+        } else {
+            return fields.get(0);
+        }
+    }
+
+    private void copyRestrictionsOrderAndPaging(final ListData listData, final ListData oldListData) {
+        listData.setFirstResult(oldListData.getFirstResult());
+        listData.setMaxResults(oldListData.getMaxResults());
+        listData.setOrderColumn(oldListData.getOrderColumn());
+        listData.setOrderAsc(oldListData.isOrderAsc());
+        for (Map<String, String> filter : oldListData.getFilters()) {
+            listData.addFilter(filter.get("column"), filter.get("value"));
         }
     }
 
@@ -202,7 +311,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
                     + getPath() + ".header";
             translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
         }
-        for (ColumnDefinition column : columns) {
+        for (ColumnDefinition column : columns.values()) {
             List<String> messageCodes = new LinkedList<String>();
             messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                     + ".column." + column.getName());
@@ -217,11 +326,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
     }
 
     private List<String> getColumnsForOptions() {
-        List<String> columnsForOptions = new ArrayList<String>();
-        for (ColumnDefinition column : columns) {
-            columnsForOptions.add(column.getName());
-        }
-        return columnsForOptions;
+        return new ArrayList<String>(columns.keySet());
     }
 
     private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {
@@ -240,7 +345,7 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
         for (Entity entity : entities) {
             Entity gridEntity = new DefaultEntity(entity.getId());
-            for (ColumnDefinition column : columns) {
+            for (ColumnDefinition column : columns.values()) {
                 gridEntity.setField(column.getName(), column.getValue(entity));
             }
             gridEntities.add(gridEntity);
@@ -248,6 +353,13 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
         int totalNumberOfEntities = rs.getTotalNumberOfEntities();
         return new ListData(totalNumberOfEntities, gridEntities, contextFieldName, contextId);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Long getSelectedEntityId(final ViewValue<Object> viewValue) {
+        ViewValue<ListData> value = (ViewValue<ListData>) lookupViewValue(viewValue);
+        return value.getValue().getSelectedEntityId();
     }
 
 }
