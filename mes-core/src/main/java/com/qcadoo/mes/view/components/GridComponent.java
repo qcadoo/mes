@@ -279,9 +279,13 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         }
         for (Map<String, String> filter : listData.getFilters()) {
             FieldDefinition field = getFieldByColumnName(filter.get("column"));
+            String value = filter.get("value");
 
             if (field != null && field.getType().isSearchable()) {
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, filter.get("value")));
+                if (field.getType().getType().equals(String.class)) {
+                    value += "*";
+                }
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value));
             }
         }
 
