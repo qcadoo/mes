@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core;
+package com.qcadoo.mes.internal;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;

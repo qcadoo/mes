@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 
 public interface Component<T> {
@@ -33,7 +32,7 @@ public interface Component<T> {
 
     boolean isDefaultVisible();
 
-    void updateTranslations(Map<String, String> translationsMap, TranslationService translationService, Locale locale);
+    void updateTranslations(Map<String, String> translationsMap, Locale locale);
 
     boolean initializeComponent(Map<String, Component<?>> componentRegistry);
 

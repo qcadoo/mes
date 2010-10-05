@@ -20,8 +20,8 @@ import com.qcadoo.mes.view.ViewValue;
 public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
     public SimpleFieldComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
-            final String sourceFieldPath) {
-        super(name, parentContainer, fieldPath, sourceFieldPath);
+            final String sourceFieldPath, final TranslationService translationService) {
+        super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
     }
 
     public abstract String convertToViewValue(final String value);
@@ -59,13 +59,12 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     }
 
     @Override
-    public final void addComponentTranslations(final Map<String, String> translationsMap,
-            final TranslationService translationService, final Locale locale) {
+    public final void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                 + ".label");
-        messageCodes.add(translationService.getEntityFieldMessageCode(getDataDefinition(), getName()));
-        translationsMap.put(messageCodes.get(0), translationService.translate(messageCodes, locale));
+        messageCodes.add(getTranslationService().getEntityFieldMessageCode(getDataDefinition(), getName()));
+        translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
     }
 
     private String getStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {

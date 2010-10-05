@@ -1,4 +1,4 @@
-package com.qcadoo.mes.core.search.restrictions;
+package com.qcadoo.mes.model.search;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.core.DataAccessTest;
+import com.qcadoo.mes.internal.DataAccessTest;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.restrictions.internal.HibernateRestriction;

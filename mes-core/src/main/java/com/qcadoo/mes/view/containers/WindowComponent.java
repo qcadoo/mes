@@ -15,8 +15,9 @@ public final class WindowComponent extends AbstractRootComponent {
 
     private boolean header = true;
 
-    public WindowComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition) {
-        super(name, dataDefinition, viewDefinition);
+    public WindowComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition,
+            final TranslationService translationService) {
+        super(name, dataDefinition, viewDefinition, translationService);
     }
 
     @Override
@@ -39,12 +40,11 @@ public final class WindowComponent extends AbstractRootComponent {
     }
 
     @Override
-    public void addComponentTranslations(final Map<String, String> translationsMap, final TranslationService translationService,
-            final Locale locale) {
+    public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         if (header) {
             String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
                     + getPath() + ".header";
-            translationsMap.put(messageCode, translationService.translate(messageCode, locale));
+            translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
         }
     }
 

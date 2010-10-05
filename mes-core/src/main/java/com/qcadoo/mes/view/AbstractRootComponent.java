@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 
 public abstract class AbstractRootComponent extends AbstractContainerComponent<Object> implements RootComponent {
@@ -20,8 +21,9 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
 
     private final Map<String, Component<?>> componentRegistry = new LinkedHashMap<String, Component<?>>();
 
-    public AbstractRootComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition) {
-        super(name, null, null, null);
+    public AbstractRootComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition,
+            final TranslationService translationService) {
+        super(name, null, null, null, translationService);
         setViewDefinition(viewDefinition);
         setDataDefinition(dataDefinition);
     }
