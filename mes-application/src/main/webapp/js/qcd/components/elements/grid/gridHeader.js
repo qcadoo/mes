@@ -58,7 +58,10 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		}
 		header.getPagingElements().allPagesNoSpan.html(pagesNo);
 		footer.getPagingElements().allPagesNoSpan.html(pagesNo);
-		var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
+		var currPage = Math.ceil(pagingVars.first / pagingVars.max);
+		if (pagingVars.first % pagingVars.max == 0) {
+			currPage += 1;
+		}
 		header.getPagingElements().pageNo.val(currPage);
 		footer.getPagingElements().pageNo.val(currPage);
 		header.getPagingElements().recordsNoSelect.val(pagingVars.max);
@@ -84,7 +87,11 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	}
 
 	this.paging_last = function() {
-		pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.totalNumberOfEntities % pagingVars.max;
+		if (pagingVars.totalNumberOfEntities % pagingVars.max > 0) {
+			pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.totalNumberOfEntities % pagingVars.max;
+		} else {
+			pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.max;
+		}
 		paging_refresh();
 	}
 
@@ -110,9 +117,12 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	
 	this.getHeaderElement = function() {
 		var headerElement = $("<div>").addClass('grid_header');
-		var filterButton = $("<button>").html("filtr").click(filterClicked);
 		headerElement.append($("<span>").html("GRID"));
-		headerElement.append(filterButton);
+		headerElement.append($("<button>").html("filtr").click(gridController.onFilterButtonClicked));
+		headerElement.append($("<button>").html("new").click(gridController.onNewButtonClicked));
+		headerElement.append($("<button>").html("delete").click(gridController.onDeleteButtonClicked));
+		headerElement.append($("<button>").html("up").click(gridController.onUpButtonClicked));
+		headerElement.append($("<button>").html("down").click(gridController.onDownButtonClicked));
 		headerElement.append(header.getHeaderElement(pagingVars, true));
 		return headerElement;
 	}
