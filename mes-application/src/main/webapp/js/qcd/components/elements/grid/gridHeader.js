@@ -42,11 +42,20 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	}
 	
 	this.getHeaderElement = function() {
-		return $("<div>").addClass('grid_header').append(header.getHeaderElement(pagingVars));
+		var headerElement = $("<div>").addClass('grid_header');
+		var filterButton = $("<button>").html("filtr").click(filterClicked);
+		headerElement.append($("<span>").html("GRID"));
+		headerElement.append(filterButton);
+		headerElement.append(header.getHeaderElement(pagingVars));
+		return headerElement;
 	}
 	
 	this.getFooterElement = function() {
 		return $("<div>").addClass('grid_footer').append(footer.getHeaderElement(pagingVars));
+	}
+	
+	function filterClicked() {
+		gridController.onFilterButtonClicked();
 	}
 
 	constructor();
