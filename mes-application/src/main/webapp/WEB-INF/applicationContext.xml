@@ -8,8 +8,7 @@
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<bean class="com.qcadoo.mes.PluginResourcesResolver">
-	</bean>
+	<bean class="com.qcadoo.mes.PluginResourcesResolver" />
 
 	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"
@@ -23,8 +22,6 @@
 	    <property name="maxUploadSize" value="500000"/>
 	</bean>
 
-	<!-- Maps incoming requests to the appropriate controller based on the annotations 
-		on the controller methods. -->
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<property name="interceptors">
