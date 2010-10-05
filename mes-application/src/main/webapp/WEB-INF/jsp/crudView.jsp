@@ -20,6 +20,7 @@
 	<script type="text/javascript" src="../../js/lib/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery.blockUI.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery.jqGrid.min.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery.jqGrid.min.js"></script>
 	<script type="text/javascript" src="../../js/lib/encoder.js"></script>
 	
 	<script type="text/javascript" src="../../js/qcd/utils/logger.js"></script>

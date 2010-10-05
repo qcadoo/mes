@@ -27,6 +27,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var defaultOptions = {
 		paging: true,
+		fullScreen: false
 	};
 	
 	function parseOptions(options) {
@@ -40,7 +41,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			colNames.push(mainController.getTranslation(nameToTranslate));
 			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: false});
 		}
-		
+		QCD.info(options.width);
 		gridParameters.element = elementPath+"_grid";
 //		gridParameters.viewName = viewName,
 //		gridParameters.viewElementName = gridName;
@@ -74,7 +75,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		gridParameters.parent = parameters.parent;
 		gridParameters.canNew = options.canNew;
 		gridParameters.canDelete = options.canDelete;
+		gridParameters.fullScreen = options.fullScreen;
 		if (options.height) { gridParameters.height = parseInt(options.height); }
+		if (options.width) { gridParameters.width = parseInt(options.width); }
 
 		gridParameters.correspondingViewName = options.correspondingViewName;
 //		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
@@ -159,6 +162,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var entity = value.entities[entityNo];
 			grid.jqGrid('addRowData', entity.id, entity.fields);
 		}
+		if (gridParameters.fullScreen) {
+			updateFullScreenSize();
+		}
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -202,10 +208,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		parseOptions(_this.options, _this);
 		
 		var headerController = new QCD.components.elements.grid.GridHeader(_this)
-		
-		QCD.info(element);
-		element.prepend(headerController.getHeaderElement());
-		element.append(headerController.getFooterElement());
+		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
+		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
 		
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
@@ -213,15 +217,54 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.ondblClickRow = function(id){
 			rowDblClicked(id);
         }
+		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
-		//grid.setGridWidth(900);
-		//QCD.info(element);
-		//grid.setGridWidth(grid.parent().width());
-//		$(window).bind('resize', function() {
-//		    grid.setGridWidth(grid.parent().width());
-//		    grid.setGridHeight(element.height());
-//		}).trigger('resize');
+		
+		if (gridParameters.fullScreen) {
+			if (! gridParameters.height) {
+				element.height("100%");
+			}
+			
+			//QCD.info($("#"+gridParameters.element+"Cell").height());
+			$(window).bind('resize', function() {
+				updateFullScreenSize();
+			});
+			updateFullScreenSize();
+		} else {
+			QCD.info(gridParameters.width);
+			grid.setGridWidth(gridParameters.width, true);
+			grid.setGridHeight(gridParameters.height);
+		}
+		
+		QCD.info(grid.jqGrid('filterToolbar',{}));
+		grid[0].toggleToolbar();
+		//$(".ui-search-toolbar")[0].hide();
+		//$(".ui-search-toolbar")[0].show();
+		
+		
+		//updateSize();
+		//grid.setGridWidth($("#"+gridParameters.element+"Cell").width()- 130);
+		//$("#gbox_mainWindow-productsGrid_grid").width(700);
+		//$("#gview_mainWindow-productsGrid_grid").width(600);
+		//grid.setGridParam({scrollOffset: 40});
+		
+		
+		
+		//$("#gview_mainWindow-productsGrid_grid").width(600);
+		//$("#gbox_mainWindow-productsGrid_grid").width(700);
+		
+		// TODO mina grid resize
+		
 
+	}
+	
+	function updateFullScreenSize() {
+		if (! gridParameters.width) {
+			grid.setGridWidth(element.width()-10, true);
+		}
+		if (! gridParameters.height) {
+			grid.setGridHeight(element.height() - 130);
+		}
 	}
 	
 	this.performNew = function(actionsPerformer) {

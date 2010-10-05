@@ -23,9 +23,14 @@
 
 .windowContainer .windowContainerContentBody {
 	position: absolute;
-	top: 60px;
+	top: 61px;
 	bottom: 0;
 	left: 0;
 	right: 0;
+	
+}
+
+.windowContainer .windowComponents {
+	height: 100%;
 	overflow: auto;
 }
