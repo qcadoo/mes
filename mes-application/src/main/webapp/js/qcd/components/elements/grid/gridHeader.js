@@ -58,7 +58,10 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		}
 		header.getPagingElements().allPagesNoSpan.html(pagesNo);
 		footer.getPagingElements().allPagesNoSpan.html(pagesNo);
-		var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
+		var currPage = Math.ceil(pagingVars.first / pagingVars.max);
+		if (pagingVars.first % pagingVars.max == 0) {
+			currPage += 1;
+		}
 		header.getPagingElements().pageNo.val(currPage);
 		footer.getPagingElements().pageNo.val(currPage);
 		header.getPagingElements().recordsNoSelect.val(pagingVars.max);
@@ -89,18 +92,15 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		} else {
 			pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.max;
 		}
-		QCD.info(pagingVars.first);
 		paging_refresh();
 	}
 
 	this.paging_onRecordsNoSelectChangeHeader = function() {
-		//pagingVars.first = 0;
 		pagingVars.max = parseInt(header.getPagingElements().recordsNoSelect.val());
 		paging_refresh();
 	}
 	
 	this.paging_onRecordsNoSelectChangeFooter = function() {
-		//pagingVars.first = 0;
 		pagingVars.max = parseInt(footer.getPagingElements().recordsNoSelect.val());
 		paging_refresh();
 	}
