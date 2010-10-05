@@ -310,7 +310,7 @@ public class CrudControllerTest {
 
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void shouldPerformDeleteOnFormComponent() throws Exception {
+    public void shouldPerformDelete() throws Exception {
         // given
         Map<String, String> arguments = new HashMap<String, String>();
 
@@ -346,6 +346,52 @@ public class CrudControllerTest {
 
         // when
         Object viewValue = crudController.performDelete("pluginName", "viewName", arguments, new StringBuilder(json.toString()));
+
+        // then
+        assertEquals(newViewValue, viewValue);
+        verify(((Component) component).getDataDefinition()).delete(12L);
+        verify(entity, never()).setField(anyString(), anyLong());
+    }
+
+    @Test
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void shouldPerformMove() throws Exception {
+        // given
+        Map<String, String> arguments = new HashMap<String, String>();
+        arguments.put("offset", "1");
+
+        SelectableComponent component = mock(SelectableComponent.class, Mockito.withSettings().extraInterfaces(Component.class)
+                .defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
+
+        Entity entity = mock(Entity.class);
+
+        JSONObject json = new JSONObject();
+        json.put("componentName", "trigger");
+        json.put("data", new JSONObject());
+
+        final ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
+        oldViewValue.addComponent("trigger", new ViewValue(12L));
+
+        ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+
+        given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willAnswer(new Answer<ViewValue<Object>>() {
+
+            @Override
+            public ViewValue<Object> answer(final InvocationOnMock invocation) throws Throwable {
+                Map<String, Entity> selectedEntities = (Map<String, Entity>) invocation.getArguments()[0];
+                selectedEntities.put("trigger", new DefaultEntity(11L));
+                return oldViewValue;
+            }
+
+        });
+
+        given(viewDefinition.lookupComponent("trigger")).willReturn((Component) component);
+        given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true)).willReturn(
+                newViewValue);
+        given(component.getSelectedEntityId(oldViewValue)).willReturn(12L);
+
+        // when
+        Object viewValue = crudController.performMove("pluginName", "viewName", arguments, new StringBuilder(json.toString()));
 
         // then
         assertEquals(newViewValue, viewValue);

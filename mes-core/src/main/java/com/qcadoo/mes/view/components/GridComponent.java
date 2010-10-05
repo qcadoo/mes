@@ -161,42 +161,45 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
         JSONObject value = viewObject.getJSONObject("value");
 
-        if (!viewObject.isNull("paging")) {
-            if (!viewObject.getJSONObject("paging").isNull("first")) {
-                listData.setFirstResult(viewObject.getJSONObject("paging").getInt("first"));
-            }
-            if (!viewObject.getJSONObject("paging").isNull("max")) {
-                listData.setMaxResults(viewObject.getJSONObject("paging").getInt("max"));
-            }
-        }
-
-        if (!viewObject.isNull("sort")) {
-            if (!viewObject.getJSONObject("sort").isNull("column")) {
-                listData.setOrderColumn(viewObject.getJSONObject("sort").getString("column"));
-            }
-            if (!viewObject.getJSONObject("sort").isNull("asc")
-                    && "asc".equals(viewObject.getJSONObject("sort").getString("order"))) {
-                listData.setOrderAsc(true);
-            } else {
-                listData.setOrderAsc(false);
-            }
-        }
-
-        if (!viewObject.isNull("filter")) {
-            JSONArray filters = viewObject.getJSONArray("filter");
-            for (int i = 0; i < filters.length(); i++) {
-                listData.addFilter(((JSONObject) filters.get(i)).getString("column"),
-                        ((JSONObject) filters.get(i)).getString("value"));
-            }
-        }
-
         if (value != null) {
-            String selectedEntityId = value.getString("selectedEntityId");
 
-            if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
-                Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
-                selectedEntities.put(getPath(), selectedEntity);
-                listData.setSelectedEntityId(Long.parseLong(selectedEntityId));
+            if (!viewObject.isNull("paging")) {
+                if (!viewObject.getJSONObject("paging").isNull("first")) {
+                    listData.setFirstResult(viewObject.getJSONObject("paging").getInt("first"));
+                }
+                if (!viewObject.getJSONObject("paging").isNull("max")) {
+                    listData.setMaxResults(viewObject.getJSONObject("paging").getInt("max"));
+                }
+            }
+
+            if (!viewObject.isNull("sort")) {
+                if (!viewObject.getJSONObject("sort").isNull("column")) {
+                    listData.setOrderColumn(viewObject.getJSONObject("sort").getString("column"));
+                }
+                if (!viewObject.getJSONObject("sort").isNull("asc")
+                        && "asc".equals(viewObject.getJSONObject("sort").getString("order"))) {
+                    listData.setOrderAsc(true);
+                } else {
+                    listData.setOrderAsc(false);
+                }
+            }
+
+            if (!viewObject.isNull("filter")) {
+                JSONArray filters = viewObject.getJSONArray("filter");
+                for (int i = 0; i < filters.length(); i++) {
+                    listData.addFilter(((JSONObject) filters.get(i)).getString("column"),
+                            ((JSONObject) filters.get(i)).getString("value"));
+                }
+            }
+
+            if (!viewObject.isNull("selectedEntityId")) {
+                String selectedEntityId = value.getString("selectedEntityId");
+
+                if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
+                    Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
+                    selectedEntities.put(getPath(), selectedEntity);
+                    listData.setSelectedEntityId(Long.parseLong(selectedEntityId));
+                }
             }
         }
 

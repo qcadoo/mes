@@ -33,8 +33,6 @@ import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewValue;
-import com.qcadoo.mes.view.components.GridComponent;
-import com.qcadoo.mes.view.components.grid.ListData;
 
 @Controller
 public final class CrudController {
@@ -215,7 +213,6 @@ public final class CrudController {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/move", method = RequestMethod.POST)
     @ResponseBody
     public Object performMove(@PathVariable("pluginIdentifier") final String pluginIdentifier,
@@ -234,13 +231,13 @@ public final class CrudController {
             if (StringUtils.hasText(arguments.get("offset"))) {
                 int offset = Integer.valueOf(arguments.get("offset"));
 
-                GridComponent gridComponent = (GridComponent) viewDefinition.lookupComponent(componentName);
+                SelectableComponent selectableComponent = (SelectableComponent) viewDefinition.lookupComponent(componentName);
 
-                ViewValue<ListData> gridValue = (ViewValue<ListData>) viewValue.lookupValue(componentName);
+                Long id = selectableComponent.getSelectedEntityId(viewValue);
 
-                gridComponent.getDataDefinition().move(gridValue.getValue().getSelectedEntityId(), offset);
-
-                selectedEntities.put(componentName, null);
+                if (id != null) {
+                    ((Component<?>) selectableComponent).getDataDefinition().move(id, offset);
+                }
             }
 
             return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
