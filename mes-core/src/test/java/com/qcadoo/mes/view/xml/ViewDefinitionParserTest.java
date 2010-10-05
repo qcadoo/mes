@@ -16,6 +16,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +54,7 @@ import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
 import com.qcadoo.mes.view.components.TextInputComponent;
 import com.qcadoo.mes.view.components.grid.ColumnAggregationMode;
+import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 import com.qcadoo.mes.view.containers.FormComponent;
 import com.qcadoo.mes.view.containers.WindowComponent;
 import com.qcadoo.mes.view.internal.ViewDefinitionParser;
@@ -251,6 +253,7 @@ public class ViewDefinitionParserTest {
         GridComponent grid = (GridComponent) root.lookupComponent("mainWindow.beanBForm.beansBGrig");
         checkComponent(grid, GridComponent.class, "mainWindow.beanBForm.beansBGrig", "grid", "beanB", null,
                 "mainWindow.beanBForm.selectBeanA", "beansB", Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
+        List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>(grid.getColumns());
 
         assertThat((List<String>) grid.getOptions().get("columns"), hasItems("name"));
         assertThat((List<String>) grid.getOptions().get("fields"), hasItems("name", "beanA"));
@@ -263,20 +266,21 @@ public class ViewDefinitionParserTest {
         assertFalse(grid.getOptions().containsKey("height"));
         assertTrue((Boolean) grid.getOptions().get("canDelete"));
         assertTrue((Boolean) grid.getOptions().get("canNew"));
-        assertTrue(((Set<FieldDefinition>) getField(grid, "orderableFields")).isEmpty());
+        assertTrue(((Set<ColumnDefinition>) getField(grid, "orderableColumns")).isEmpty());
         assertTrue(((Set<FieldDefinition>) getField(grid, "searchableFields")).isEmpty());
-        assertEquals("name", grid.getColumns().get(0).getName());
-        assertEquals(ColumnAggregationMode.NONE, grid.getColumns().get(0).getAggregationMode());
-        assertNull(grid.getColumns().get(0).getExpression());
-        assertNull(grid.getColumns().get(0).getWidth());
-        assertEquals(1, grid.getColumns().get(0).getFields().size());
-        assertThat(grid.getColumns().get(0).getFields(), hasItems(dataDefinitionB.getField("name")));
+        assertEquals("name", columns.get(0).getName());
+        assertEquals(ColumnAggregationMode.NONE, columns.get(0).getAggregationMode());
+        assertNull(columns.get(0).getExpression());
+        assertNull(columns.get(0).getWidth());
+        assertEquals(1, columns.get(0).getFields().size());
+        assertThat(columns.get(0).getFields(), hasItems(dataDefinitionB.getField("name")));
 
         GridComponent grid2 = (GridComponent) root.lookupComponent("mainWindow.beansBGrig");
         checkComponent(grid2, GridComponent.class, "mainWindow.beansBGrig", "grid", "beanB", null,
                 "mainWindow.beanBForm.selectBeanA", "beansB", Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
+        List<ColumnDefinition> columns2 = new ArrayList<ColumnDefinition>(grid2.getColumns());
 
-        assertThat((List<String>) grid2.getOptions().get("columns"), hasItems("multicolumn"));
+        assertThat((List<String>) grid2.getOptions().get("columns"), hasItems("name", "multicolumn"));
         assertThat((List<String>) grid2.getOptions().get("fields"), hasItems("name", "beanA"));
         assertEquals("products/form", grid2.getOptions().get("correspondingViewName"));
         assertTrue((Boolean) grid2.getOptions().get("header"));
@@ -287,18 +291,17 @@ public class ViewDefinitionParserTest {
         assertFalse((Boolean) grid2.getOptions().get("canDelete"));
         assertFalse((Boolean) grid2.getOptions().get("canNew"));
         assertEquals(Integer.valueOf(450), grid2.getOptions().get("height"));
-        assertEquals(1, ((Set<FieldDefinition>) getField(grid2, "orderableFields")).size());
-        assertThat(((Set<FieldDefinition>) getField(grid2, "orderableFields")), hasItems(dataDefinitionB.getField("name")));
+        assertEquals(1, ((Set<ColumnDefinition>) getField(grid2, "orderableColumns")).size());
+        assertThat(((Set<ColumnDefinition>) getField(grid2, "orderableColumns")), hasItems(columns2.get(0)));
         assertEquals(2, ((Set<FieldDefinition>) getField(grid2, "searchableFields")).size());
         assertThat(((Set<FieldDefinition>) getField(grid2, "searchableFields")),
                 hasItems(dataDefinitionB.getField("name"), dataDefinitionB.getField("beanA")));
-        assertEquals("multicolumn", grid2.getColumns().get(0).getName());
-        assertEquals(ColumnAggregationMode.SUM, grid2.getColumns().get(0).getAggregationMode());
-        assertEquals("2 + 2", grid2.getColumns().get(0).getExpression());
-        assertEquals(Integer.valueOf(20), grid2.getColumns().get(0).getWidth());
-        assertEquals(2, grid2.getColumns().get(0).getFields().size());
-        assertThat(grid2.getColumns().get(0).getFields(),
-                hasItems(dataDefinitionB.getField("name"), dataDefinitionB.getField("beanA")));
+        assertEquals("multicolumn", columns2.get(1).getName());
+        assertEquals(ColumnAggregationMode.SUM, columns2.get(1).getAggregationMode());
+        assertEquals("2 + 2", columns2.get(1).getExpression());
+        assertEquals(Integer.valueOf(20), columns2.get(1).getWidth());
+        assertEquals(2, columns2.get(1).getFields().size());
+        assertThat(columns2.get(1).getFields(), hasItems(dataDefinitionB.getField("name"), dataDefinitionB.getField("beanA")));
 
         checkComponent(root.lookupComponent("mainWindow.link"), LinkButtonComponent.class, "mainWindow.link", "linkButton",
                 "beanB", null, null, null, Sets.<String> newHashSet(), 0,

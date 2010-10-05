@@ -33,6 +33,7 @@
 			</component>
 			<component type="grid" name="beansBGrig"
 				source="#{mainWindow.beanBForm.selectBeanA}.beansB">
+				<option type="column" name="name" fields="name" />
 				<option type="column" name="multicolumn" aggregation="sum"
 					expression="2 + 2" width="20" fields="name,beanA" />
 				<option type="header" value="true" />
