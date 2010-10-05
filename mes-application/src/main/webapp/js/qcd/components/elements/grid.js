@@ -130,7 +130,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			//grid.jqGrid('addRowData', entity.id, fields);
 			grid.jqGrid('addRowData', entity.id, entity.fields);
 		}
-		headerController.updatePagingParameters(currentState.paging, response.totalNumberOfEntities);
+		headerController.updatePagingParameters(currentState.paging, value.totalNumberOfEntities);
 		//updateFullScreenSize();
 	}
 	
@@ -257,7 +257,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.onNewButtonClicked = function() {
-		performNew()
+		performNew();
 	}
 	
 	this.onDeleteButtonClicked = function() {
@@ -297,13 +297,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			actionsPerformer.performNext();
 		}
 	}
-	performNew = this.performNew;
+	var performNew = this.performNew;
 	
 	
 	this.performDelete = function(actionsPerformer) {
 		QCD.error("to implement: QCD.components.elements.Grid.performDelete()");
 	}
-	performDelete = this.performDelete;
+	var performDelete = this.performDelete;
 	
 	constructor(this);
 }
