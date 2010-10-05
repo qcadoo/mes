@@ -11,22 +11,26 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var mainController = _mainController;
 	var element = _element;
 	
+	var headerController;
+	
 	var elementPath = this.elementPath;
 	var elementName = this.elementName;
-	
-	QCD.info(this.elementName);
 	
 	var gridParameters;
 	var grid;
 	var contextFieldName;
 	var contextId;
-	var actionButtons = new Object();
-
-	actionButtons.newButton = null;
-	actionButtons.deleteButton = null;
+	
+	var componentEnabled = false;
+	
+	var searchEnabled = false;
+	
+	var currentState = {
+	}
 	
 	var defaultOptions = {
 		paging: true,
+		fullScreen: false
 	};
 	
 	function parseOptions(options) {
@@ -38,15 +42,18 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		for (var i in options.columns) {
 			var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+options.columns[i];
 			colNames.push(mainController.getTranslation(nameToTranslate));
-			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: false});
+			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: true});
 		}
-		
+		QCD.info(options.width);
 		gridParameters.element = elementPath+"_grid";
 //		gridParameters.viewName = viewName,
 //		gridParameters.viewElementName = gridName;
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
-		gridParameters.datatype = 'local';
+		//gridParameters.datatype = 'local';
+		gridParameters.datatype = function(postdata) {
+			onPostDataChange(postdata);
+		}
 		
 		gridParameters.listeners = options.listeners;
 		
@@ -74,7 +81,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		gridParameters.parent = parameters.parent;
 		gridParameters.canNew = options.canNew;
 		gridParameters.canDelete = options.canDelete;
+		gridParameters.fullScreen = options.fullScreen;
 		if (options.height) { gridParameters.height = parseInt(options.height); }
+		if (options.width) { gridParameters.width = parseInt(options.width); }
 
 		gridParameters.correspondingViewName = options.correspondingViewName;
 //		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
@@ -86,38 +95,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 	};
-//	
-////	function refresh() {
-////		
-////		grid.jqGrid('clearGridData');
-////		//blockList();
-//////		var parameters = new Object();
-//////		if (thisMax) {
-//////			parameters.maxResults = thisMax;
-//////		}
-//////		if (thisFirst != null) {
-//////			parameters.firstResult = thisFirst;
-//////		}
-//////		if (sortColumn && sortOrder) {
-//////			parameters.sortColumn = sortColumn;
-//////			parameters.sortOrder = sortOrder;
-//////		}
-//////		if (parentId) {
-//////			parameters.parentId = parentId;
-//////		}
-////		QCDConnector.sendGet(gridParameters.elementName, null, function(response) {
-////			alert("ok");
-////		});
-////	}
-//	
-////	this.init = function() {
-////		refresh();
-////	}
-//	
 	function rowClicked(rowId) {
-		if (actionButtons.deleteButton) {
-			actionButtons.deleteButton.removeAttr('disabled');
-		}
+//		if (actionButtons.deleteButton) {
+//			actionButtons.deleteButton.removeAttr('disabled');
+//		}
+		currentState.selectedEntityId = rowId;
 		if (gridParameters.listeners.length > 0) {
 			//QCD.info("SEND");
 			mainController.getUpdate(elementPath, rowId, gridParameters.listeners);
@@ -139,9 +121,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.getComponentValue = function() {
-		return {
-			selectedEntityId: grid.getGridParam('selrow')
-		}
+		return currentState;
 	}
 	
 	this.setComponentValue = function(value) {
@@ -153,24 +133,33 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (value.entities == null) {
 			return;
 		}
-		if (actionButtons.deleteButton) {
-			actionButtons.deleteButton.attr('disabled', 'true');
-		}
+//		if (actionButtons.deleteButton) {
+//			actionButtons.deleteButton.attr('disabled', 'true');
+//		}
 		grid.jqGrid('clearGridData');
 		for (var entityNo in value.entities) {
 			var entity = value.entities[entityNo];
+			//var fields = new Object();
+			//for (var fieldName in entity.fields) {
+				//fields[fieldName] = "<a href=# onclick=''>" + entity.fields[fieldName] + "</a>";
+			//}
+			//grid.jqGrid('addRowData', entity.id, fields);
 			grid.jqGrid('addRowData', entity.id, entity.fields);
+		}
+		if (gridParameters.fullScreen) {
+			updateFullScreenSize();
 		}
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
-		if (actionButtons.newButton) {
-			if (isEnabled) {
-				actionButtons.newButton.removeAttr('disabled');
-			} else {
-				actionButtons.newButton.attr('disabled', 'true');
-			}
-		}
+		componentEnabled = isEnabled;
+//		if (actionButtons.newButton) {
+//			if (isEnabled) {
+//				actionButtons.newButton.removeAttr('disabled');
+//			} else {
+//				actionButtons.newButton.attr('disabled', 'true');
+//			}
+//		}
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
@@ -203,11 +192,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function constructor(_this) {
 		parseOptions(_this.options, _this);
 		
-		var headerController = new QCD.components.elements.grid.GridHeader(_this)
-		
-		QCD.info(element);
-		element.prepend(headerController.getHeaderElement());
-		element.append(headerController.getFooterElement());
+		headerController = new QCD.components.elements.grid.GridHeader(_this)
+		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
+		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
 		
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
@@ -215,15 +202,90 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.ondblClickRow = function(id){
 			rowDblClicked(id);
         }
+		
+		gridParameters.beforeRequest = function(id){
+			QCD.info("aaa");
+			return false;
+        }
+		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
-		//grid.setGridWidth(900);
-		//QCD.info(element);
-		//grid.setGridWidth(grid.parent().width());
-//		$(window).bind('resize', function() {
-//		    grid.setGridWidth(grid.parent().width());
-//		    grid.setGridHeight(element.height());
-//		}).trigger('resize');
-
+		
+		if (gridParameters.fullScreen) {
+			if (! gridParameters.height) {
+				element.height("100%");
+			}
+			
+			//QCD.info($("#"+gridParameters.element+"Cell").height());
+			$(window).bind('resize', function() {
+				updateFullScreenSize();
+			});
+			updateFullScreenSize();
+		} else {
+			QCD.info(gridParameters.width);
+			grid.setGridWidth(gridParameters.width, true);
+			grid.setGridHeight(gridParameters.height);
+		}
+		
+		QCD.info(grid.jqGrid('filterToolbar',{
+			stringResult: true
+		}));
+		grid[0].toggleToolbar();
+	}
+	
+	function onPostDataChange(postdata) {
+		//QCD.info(postdata);
+		if (searchEnabled) {
+			var postFilters = JSON.parse(postdata.filters);
+			var filterArray = new Array();
+			for (var i in postFilters.rules) {
+				var filterRule = postFilters.rules[i];
+				filterArray.push({
+					column: filterRule.field,
+					value: filterRule.data
+				});
+			}
+			currentState.filters = filterArray;
+		} else {
+			currentState.filters = null;
+		}
+		
+		var sortCol = postdata.sidx;
+		if (sortCol && sortCol != "") {
+			currentState.sort = {
+				column: sortCol,
+				order: postdata.sord
+			}
+		} else {
+			currentState.sort = null;
+		}
+		
+		onCurrentStateChange();
+	}
+	
+	this.onFilterButtonClicked = function() {
+		grid[0].toggleToolbar();
+		updateFullScreenSize();
+		searchEnabled = !searchEnabled;
+		if (! searchEnabled) {
+			currentState.filters = null;
+			onCurrentStateChange();
+		}
+	}
+	
+	function updateFullScreenSize() {
+		if (! gridParameters.height) {
+			grid.setGridHeight(element.height() - 110);
+		}
+		if (! gridParameters.width) {
+			grid.setGridWidth(element.width()-10, true);
+		}
+	}
+	
+	function onCurrentStateChange() {
+		//QCD.info(currentState);
+		if (componentEnabled) {
+			mainController.getUpdate(elementPath, currentState, gridParameters.listeners);
+		}
 	}
 	
 	this.performNew = function(actionsPerformer) {

@@ -98,6 +98,10 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 deletable = Boolean.parseBoolean(option.getValue());
             } else if ("height".equals(option.getType())) {
                 addOption("height", Integer.parseInt(option.getValue()));
+            } else if ("width".equals(option.getType())) {
+                addOption("width", Integer.parseInt(option.getValue()));
+            } else if ("fullScreen".equals(option.getType())) {
+                addOption("fullScreen", Boolean.parseBoolean(option.getValue()));
             } else if ("searchable".equals(option.getType())) {
                 for (FieldDefinition field : getFields(option.getValue())) {
                     searchableFields.add(field);
