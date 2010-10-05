@@ -77,6 +77,14 @@
 	</view>
 	<view name="substituteDetailsView" model="substitute">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performBack;"/>
+				</group>
+			</ribbon>
 			<component type="form" name="substitutesDetailsForm">
 				<component type="input" name="number" field="number" />
 				<component type="input" name="name" field="name" />
@@ -90,7 +98,15 @@
 	</view>
 	<view name="substituteComponentDetailsView" model="substituteComponent">
 		<component type="window" name="mainWindow">
-			<component type="form" name="instructionDetailsView">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performBack;"/>
+				</group>
+			</ribbon>
+			<component type="form" name="substitutesComponentDetailsForm">
 				<component type="lookup" name="product" field="product" />
 				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />

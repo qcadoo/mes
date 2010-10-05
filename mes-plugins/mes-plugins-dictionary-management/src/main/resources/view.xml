@@ -2,11 +2,6 @@
 <qcd:views plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="dictionaryGridView" model="dictionary">
 		<component type="window" name="mainWindow">
-			<!-- menu>
-				<group name="aaa">
-					<item name="fff" type="bigButton" action="${dictionaryGridView.mainWindow.dictionaries}.new"/>
-				</group>
-			</menu -->
 			<component type="grid" name="dictionaries">
 				<option type="column" name="name" fields="name" />
 				<option type="header" value="false" />

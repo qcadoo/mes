@@ -187,8 +187,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 }
             }
 
-            if (!value.isNull("filter")) {
-                JSONArray filters = value.getJSONArray("filter");
+            if (!value.isNull("filters")) {
+                JSONArray filters = value.getJSONArray("filters");
                 for (int i = 0; i < filters.length(); i++) {
                     listData.addFilter(((JSONObject) filters.get(i)).getString("column"),
                             ((JSONObject) filters.get(i)).getString("value"));
