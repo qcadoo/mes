@@ -103,6 +103,40 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		gridController.onPagingParametersChange();
 	}
 	
+	this.paging_setPageNoHeader = function() {
+		if (!parseInt(header.getPagingElements().pageNo.val())) {
+			alert("error1");
+			return;
+		}
+		if (header.getPagingElements().pageNo.val() <= 0) {
+			alert("error2");
+			return;
+		}
+		if (header.getPagingElements().pageNo.val() > Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max)) {
+			alert("error3");
+			return;
+		}
+		pagingVars.first = pagingVars.max * (header.getPagingElements().pageNo.val() - 1);
+		gridController.onPagingParametersChange();
+	}
+	
+	this.paging_setPageNoFooter = function() {
+		if (!parseInt(footer.getPagingElements().pageNo.val())) {
+			alert("error1");
+			return;
+		}
+		if (parseInt(footer.getPagingElements().pageNo.val()) <= 0) {
+			alert("error2");
+			return;
+		}
+		if (footer.getPagingElements().pageNo.val() > Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max)) {
+			alert("error3");
+			return;
+		}
+		pagingVars.first = pagingVars.max * (footer.getPagingElements().pageNo.val() - 1);
+		gridController.onPagingParametersChange();
+	}
+	
 	this.getPagingParameters = function() {
 		return pagingVars;
 	}
@@ -199,8 +233,10 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 		pagingElements.prevButton.click(gridHeader.paging_prev);
 		if(isHeader){
 			pagingElements.recordsNoSelect.change(gridHeader.paging_onRecordsNoSelectChangeHeader);
+			pagingElements.pageNo.change(gridHeader.paging_setPageNoHeader);
 		} else {
 			pagingElements.recordsNoSelect.change(gridHeader.paging_onRecordsNoSelectChangeFooter);
+			pagingElements.pageNo.change(gridHeader.paging_setPageNoFooter);
 		}
 		pagingElements.nextButton.click(gridHeader.paging_next);
 		pagingElements.lastButton.click(gridHeader.paging_last);
