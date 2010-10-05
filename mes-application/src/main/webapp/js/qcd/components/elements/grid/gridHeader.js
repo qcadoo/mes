@@ -66,6 +66,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		footer.getPagingElements().pageNo.val(currPage);
 		header.getPagingElements().recordsNoSelect.val(pagingVars.max);
 		footer.getPagingElements().recordsNoSelect.val(pagingVars.max);
+		
+		gridController.onPagingParametersChange();
 	}
 		
 	this.paging_prev = function() {
@@ -109,10 +111,10 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		return pagingVars;
 	}
 	
-	this.updatePagingParameters = function(_pagingVars) {
+	this.updatePagingParameters = function(_pagingVars, _totalNumberOfEntities) {
 		pagingVars.first = _pagingVars.first;
 		pagingVars.max = _pagingVars.max;
-		pagingVars.totalNumberOfEntities = _pagingVars.totalNumberOfEntities;
+		pagingVars.totalNumberOfEntities = _totalNumberOfEntities;
 	}
 	
 	this.getHeaderElement = function() {
