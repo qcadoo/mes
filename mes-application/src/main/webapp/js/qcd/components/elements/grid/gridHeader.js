@@ -84,16 +84,23 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	}
 
 	this.paging_last = function() {
-		pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.totalNumberOfEntities % pagingVars.max;
+		if (pagingVars.totalNumberOfEntities % pagingVars.max > 0) {
+			pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.totalNumberOfEntities % pagingVars.max;
+		} else {
+			pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.max;
+		}
+		QCD.info(pagingVars.first);
 		paging_refresh();
 	}
 
 	this.paging_onRecordsNoSelectChangeHeader = function() {
+		//pagingVars.first = 0;
 		pagingVars.max = parseInt(header.getPagingElements().recordsNoSelect.val());
 		paging_refresh();
 	}
 	
 	this.paging_onRecordsNoSelectChangeFooter = function() {
+		//pagingVars.first = 0;
 		pagingVars.max = parseInt(footer.getPagingElements().recordsNoSelect.val());
 		paging_refresh();
 	}
