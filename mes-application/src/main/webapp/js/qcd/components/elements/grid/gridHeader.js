@@ -6,7 +6,6 @@ QCD.components.elements.grid = QCD.components.elements.grid || {};
 QCD.components.elements.grid.GridHeader = function(_gridController) {
 	
 	var gridController = _gridController;
-	// gridController.onPagingParametersChange();
 	
 	var pagingVars = new Object();
 	pagingVars.first = null;
@@ -19,7 +18,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	function constructor(_this) {
 		pagingVars.first = 0;
 		pagingVars.max = 30;
-		pagingVars.totalNumberOfEntities = 200;
+		pagingVars.totalNumberOfEntities = 0;
 		header = new QCD.components.elements.grid.GridHeaderElement(_this)
 		footer = new QCD.components.elements.grid.GridHeaderElement(_this)
 	}
@@ -43,7 +42,6 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 			header.getPagingElements().lastButton.attr("disabled", false);
 			footer.getPagingElements().nextButton.attr("disabled", false);
 			footer.getPagingElements().lastButton.attr("disabled", false);
-			
 		} else {
 			header.getPagingElements().nextButton.attr("disabled", true);
 			header.getPagingElements().lastButton.attr("disabled", true);
@@ -66,8 +64,6 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		footer.getPagingElements().pageNo.val(currPage);
 		header.getPagingElements().recordsNoSelect.val(pagingVars.max);
 		footer.getPagingElements().recordsNoSelect.val(pagingVars.max);
-		
-		gridController.onPagingParametersChange();
 	}
 		
 	this.paging_prev = function() {
@@ -75,17 +71,17 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		if (pagingVars.first < 0) {
 			pagingVars.first = 0;
 		}
-		paging_refresh();
+		gridController.onPagingParametersChange();
 	}
 
 	this.paging_next = function() {
 		pagingVars.first += pagingVars.max;
-		paging_refresh();
+		gridController.onPagingParametersChange();
 	}
 	
 	this.paging_first = function() {
 		pagingVars.first = 0;
-		paging_refresh();
+		gridController.onPagingParametersChange();
 	}
 
 	this.paging_last = function() {
@@ -94,17 +90,17 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		} else {
 			pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.max;
 		}
-		paging_refresh();
+		gridController.onPagingParametersChange();
 	}
 
 	this.paging_onRecordsNoSelectChangeHeader = function() {
 		pagingVars.max = parseInt(header.getPagingElements().recordsNoSelect.val());
-		paging_refresh();
+		gridController.onPagingParametersChange();
 	}
 	
 	this.paging_onRecordsNoSelectChangeFooter = function() {
 		pagingVars.max = parseInt(footer.getPagingElements().recordsNoSelect.val());
-		paging_refresh();
+		gridController.onPagingParametersChange();
 	}
 	
 	this.getPagingParameters = function() {
@@ -115,6 +111,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		pagingVars.first = _pagingVars.first;
 		pagingVars.max = _pagingVars.max;
 		pagingVars.totalNumberOfEntities = _totalNumberOfEntities;
+		paging_refresh();
 	}
 	
 	this.getHeaderElement = function() {
