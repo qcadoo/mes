@@ -4,6 +4,14 @@
 	background: #ccc;
 }
 
+.grid_header .pageInput {
+	border: solid black 1px;
+}
+
+.grid_header .pageInput.inputError {
+	border: solid red 1px;
+}
+
 .grid_header {
 	background: #ccc;
 	line-height: 30px;

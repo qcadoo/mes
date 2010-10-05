@@ -103,39 +103,26 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		gridController.onPagingParametersChange();
 	}
 	
-	this.paging_setPageNoHeader = function() {
-		if (!parseInt(header.getPagingElements().pageNo.val())) {
-			alert("error1");
+	this.paging_setPageNo = function(pageNoElement) {
+		var pageNoValue = pageNoElement.val();
+		if (! /^\d*$/.test(pageNoValue)) {
+			//alert("error1");
+			pageNoElement.addClass("inputError");
 			return;
 		}
-		if (header.getPagingElements().pageNo.val() <= 0) {
-			alert("error2");
+		var intValue = parseInt(pageNoValue);
+		if (intValue <= 0) {
+			pageNoElement.addClass("inputError");
 			return;
 		}
-		if (header.getPagingElements().pageNo.val() > Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max)) {
-			alert("error3");
+		if (intValue > Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max)) {
+			pageNoElement.addClass("inputError");
 			return;
 		}
-		pagingVars.first = pagingVars.max * (header.getPagingElements().pageNo.val() - 1);
+		pagingVars.first = pagingVars.max * (pageNoValue - 1);
 		gridController.onPagingParametersChange();
 	}
 	
-	this.paging_setPageNoFooter = function() {
-		if (!parseInt(footer.getPagingElements().pageNo.val())) {
-			alert("error1");
-			return;
-		}
-		if (parseInt(footer.getPagingElements().pageNo.val()) <= 0) {
-			alert("error2");
-			return;
-		}
-		if (footer.getPagingElements().pageNo.val() > Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max)) {
-			alert("error3");
-			return;
-		}
-		pagingVars.first = pagingVars.max * (footer.getPagingElements().pageNo.val() - 1);
-		gridController.onPagingParametersChange();
-	}
 	
 	this.getPagingParameters = function() {
 		return pagingVars;
@@ -217,7 +204,7 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 		var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
 		
 		var pageInfoSpan = $("<span>").addClass('grid_paging_pageInfo');
-			pagingElements.pageNo = $("<input type='text'></input>");
+			pagingElements.pageNo = $("<input type='text'></input>").addClass('pageInput');
 			pageInfoSpan.append(pagingElements.pageNo.val(currPage));
 			pageInfoSpan.append('<span>z</span>');
 			pagingElements.allPagesNoSpan = $("<span>");
@@ -233,11 +220,17 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 		pagingElements.prevButton.click(gridHeader.paging_prev);
 		if(isHeader){
 			pagingElements.recordsNoSelect.change(gridHeader.paging_onRecordsNoSelectChangeHeader);
-			pagingElements.pageNo.change(gridHeader.paging_setPageNoHeader);
+			//pagingElements.pageNo.change(gridHeader.paging_setPageNoHeader);
 		} else {
 			pagingElements.recordsNoSelect.change(gridHeader.paging_onRecordsNoSelectChangeFooter);
-			pagingElements.pageNo.change(gridHeader.paging_setPageNoFooter);
+			//pagingElements.pageNo.change(gridHeader.paging_setPageNoFooter);
 		}
+		
+		pagingElements.pageNo.change(function(e) {
+			gridHeader.paging_setPageNo($(this));
+		});
+		
+		
 		pagingElements.nextButton.click(gridHeader.paging_next);
 		pagingElements.lastButton.click(gridHeader.paging_last);
 		if (pagingVars.first > 0) {
