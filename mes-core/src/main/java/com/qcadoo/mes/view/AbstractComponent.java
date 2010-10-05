@@ -463,4 +463,19 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return translationService;
     }
 
+    protected ViewValue<?> lookupViewValue(final ViewValue<Object> viewValue) {
+        ViewValue<?> lookupedViewValue = viewValue;
+        String[] fields = getPath().split("\\.");
+
+        for (String field : fields) {
+            lookupedViewValue = lookupedViewValue.getComponent(field);
+            if (lookupedViewValue == null) {
+                return null;
+            }
+        }
+
+        return lookupedViewValue;
+
+    }
+
 }

@@ -26,6 +26,7 @@ import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
+import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.components.grid.ColumnAggregationMode;
 import com.qcadoo.mes.view.components.grid.ColumnDefinition;
@@ -42,7 +43,7 @@ import com.qcadoo.mes.view.components.grid.ListData;
  * @apiviz.uses com.qcadoo.mes.core.data.search.Order
  * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
  */
-public final class GridComponent extends AbstractComponent<ListData> {
+public final class GridComponent extends AbstractComponent<ListData> implements SelectableComponent {
 
     private final Set<FieldDefinition> searchableFields = new HashSet<FieldDefinition>();
 
@@ -244,6 +245,13 @@ public final class GridComponent extends AbstractComponent<ListData> {
 
         int totalNumberOfEntities = rs.getTotalNumberOfEntities();
         return new ListData(totalNumberOfEntities, gridEntities, contextFieldName, contextId);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Long getSelectedEntityId(final ViewValue<Object> viewValue) {
+        ViewValue<ListData> value = (ViewValue<ListData>) lookupViewValue(viewValue);
+        return value.getValue().getSelectedEntityId();
     }
 
 }

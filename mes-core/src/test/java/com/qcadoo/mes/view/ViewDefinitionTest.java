@@ -1,6 +1,7 @@
 package com.qcadoo.mes.view;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -67,6 +68,26 @@ public class ViewDefinitionTest {
     }
 
     @Test
+    public void shouldCastNullVauleFromRootComponent() throws Exception {
+        // given
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+
+        RootComponent root = mock(RootComponent.class);
+        given(root.castValue(selectedEntities, null)).willReturn(null);
+        given(root.getName()).willReturn("rootName");
+
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
+        viewDefinition.setRoot(root);
+
+        // when
+        ViewValue<Object> value = viewDefinition.castValue(selectedEntities, null);
+
+        // then
+        assertNull(value.getComponent("rootName"));
+        verify(root).castValue(selectedEntities, null);
+    }
+
+    @Test
     public void shouldGetVauleFromRootComponent() throws Exception {
         // given
         Entity entity = new DefaultEntity(1L);
@@ -96,12 +117,34 @@ public class ViewDefinitionTest {
 
         // then
         assertEquals(2, pathsToUpdate.size());
-        assertEquals(triggerComponentName, pathsToUpdate.iterator().next());
         assertThat(pathsToUpdate, JUnitMatchers.hasItems(triggerComponentName, "removeIt"));
         assertEquals(1, selectedEntities.size());
         assertEquals(new DefaultEntity(3L), selectedEntities.get("keepIt"));
         assertEquals("test", value.getComponent("rootName").getValue());
         verify(root).getValue(entity, selectedEntities, viewValue, pathsToUpdate);
+    }
+
+    @Test
+    public void shouldGetNullVauleFromRootComponent() throws Exception {
+        // given
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        String triggerComponentName = "trigger";
+        Set<String> pathsToUpdate = new HashSet<String>();
+
+        RootComponent root = mock(RootComponent.class);
+        given(root.getValue(null, selectedEntities, null, pathsToUpdate)).willReturn(null);
+        given(root.getName()).willReturn("rootName");
+        given(root.lookupListeners(triggerComponentName)).willReturn(pathsToUpdate);
+
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
+        viewDefinition.setRoot(root);
+
+        // when
+        ViewValue<Object> value = viewDefinition.getValue(null, selectedEntities, null, triggerComponentName, true);
+
+        // then
+        assertNull(value.getComponent("rootName"));
+        verify(root).getValue(null, selectedEntities, null, pathsToUpdate);
     }
 
     @Test
@@ -183,5 +226,17 @@ public class ViewDefinitionTest {
 
         // then
         verify(root).lookupComponent("path");
+    }
+
+    @Test
+    public void shouldHasRootComponent() throws Exception {
+        // given
+        RootComponent root = mock(RootComponent.class);
+
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
+        viewDefinition.setRoot(root);
+
+        // then
+        assertEquals(root, viewDefinition.getRoot());
     }
 }

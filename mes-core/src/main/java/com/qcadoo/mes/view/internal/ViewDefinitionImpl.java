@@ -57,7 +57,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     private void cleanSelectedEntities(final Map<String, Entity> selectedEntities, final Set<String> pathsToUpdate) {
-        if (pathsToUpdate != null && selectedEntities != null) {
+        if (selectedEntities != null) {
             for (String pathToUpdate : pathsToUpdate) {
                 selectedEntities.remove(pathToUpdate);
             }
@@ -67,13 +67,15 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     @Override
     public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Object> globalViewValue, final String triggerComponentName, final boolean saveOrDelete) {
-        Set<String> pathsToUpdate = new HashSet<String>();
+        Set<String> pathsToUpdate = null;
         if (triggerComponentName != null) {
             pathsToUpdate = root.lookupListeners(triggerComponentName);
+            cleanSelectedEntities(selectedEntities, pathsToUpdate);
             if (saveOrDelete) {
                 pathsToUpdate.add(triggerComponentName);
             }
-            cleanSelectedEntities(selectedEntities, pathsToUpdate);
+        } else {
+            pathsToUpdate = new HashSet<String>();
         }
         ViewValue<Object> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate));

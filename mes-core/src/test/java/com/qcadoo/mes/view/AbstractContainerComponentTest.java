@@ -125,8 +125,6 @@ public class AbstractContainerComponentTest {
         verify(child2).castValue(selectedEntities, jsonChild2Object);
         verify(container).castContainerValue(selectedEntities, jsonTestObject);
 
-        System.out.println(value.getComponents());
-
         assertNotNull(value.getValue());
         assertNotNull(value.getComponent("child1Name"));
         assertNotNull(value.getComponent("child2Name"));
@@ -138,6 +136,39 @@ public class AbstractContainerComponentTest {
         assertEquals("valueTest", value.getValue());
         assertEquals("valueChild1", value.getComponent("child1Name").getValue());
         assertEquals("valueChild2", value.getComponent("child2Name").getValue());
+    }
+
+    @Test
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void shouldCastNullContainerValue() throws Exception {
+        // given
+        Component<?> child1 = mock(Component.class);
+        given(child1.getName()).willReturn("child1Name");
+
+        Component<?> child2 = mock(Component.class);
+        given(child2.getName()).willReturn("child2Name");
+
+        CustomAbstractContainerComponent container = spy(new CustomAbstractContainerComponent("test", null, null, null, null));
+        container.addComponent(child1);
+        container.addComponent(child2);
+
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+
+        given(child1.castValue(selectedEntities, null)).willReturn(new ViewValue("valueChild1"));
+        given(child2.castValue(selectedEntities, null)).willReturn(new ViewValue("valueChild2"));
+        given(container.castContainerValue(selectedEntities, null)).willReturn("valueTest");
+        // given
+
+        // when
+        ViewValue<Object> value = container.castValue(selectedEntities, null);
+
+        // then
+        verify(child1).castValue(selectedEntities, null);
+        verify(child2).castValue(selectedEntities, null);
+        verify(container).castContainerValue(selectedEntities, null);
+        assertNotNull(value.getValue());
+        assertNotNull(value.getComponent("child1Name").getValue());
+        assertNotNull(value.getComponent("child2Name").getValue());
     }
 
     @Test
@@ -187,6 +218,41 @@ public class AbstractContainerComponentTest {
 
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void shouldGetNullContainerValue() throws Exception {
+        // given
+        Component<?> child1 = mock(Component.class);
+        given(child1.getName()).willReturn("child1Name");
+
+        Component<?> child2 = mock(Component.class);
+        given(child2.getName()).willReturn("child2Name");
+
+        CustomAbstractContainerComponent container = spy(new CustomAbstractContainerComponent("test", null, null, null, null));
+        container.addComponent(child1);
+        container.addComponent(child2);
+
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        Set<String> pathsToUpdate = new HashSet<String>();
+
+        Entity entity = new DefaultEntity(1L);
+
+        given(container.getContainerValue(entity, selectedEntities, null, pathsToUpdate)).willReturn(null);
+        given(child1.getValue(entity, selectedEntities, null, pathsToUpdate)).willReturn(new ViewValue("child1Value"));
+        given(child2.getValue(entity, selectedEntities, null, pathsToUpdate)).willReturn(new ViewValue("child2Value"));
+
+        // when
+        ViewValue<Object> newViewValue = container.getValue(entity, selectedEntities, null, pathsToUpdate);
+
+        // then
+        verify(container).addContainerMessages(entity, newViewValue);
+        verify(container).getContainerValue(entity, selectedEntities, null, pathsToUpdate);
+        verify(child1).getValue(entity, selectedEntities, null, pathsToUpdate);
+        verify(child2).getValue(entity, selectedEntities, null, pathsToUpdate);
+        assertEquals(null, newViewValue.getValue());
+        assertEquals("child1Value", newViewValue.getComponent("child1Name").getValue());
+        assertEquals("child2Value", newViewValue.getComponent("child2Name").getValue());
+    }
+
+    @Test
     public void shouldHasEmptyValueIfNothingHasChanged() throws Exception {
         // given
         Component<?> child1 = mock(Component.class);
