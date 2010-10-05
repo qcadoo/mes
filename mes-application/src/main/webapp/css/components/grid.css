@@ -1,6 +1,11 @@
+
+.gridHeaderCell,
+.gridFooterCell {
+	background: #ccc;
+}
+
 .grid_header {
 	background: #ccc;
-	height: 30px;
 	line-height: 30px;
 }
 
