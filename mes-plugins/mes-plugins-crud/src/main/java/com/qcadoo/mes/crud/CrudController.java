@@ -47,32 +47,22 @@ public final class CrudController {
     public ModelAndView getView(@PathVariable("pluginIdentifier") final String pluginIdentifier,
             @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
             final Locale locale) {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("crudView");
-
         Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
 
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
-        mav.addObject("viewDefinition", viewDefinition);
-
         viewDefinition.updateTranslations(translationsMap, locale);
 
-        mav.addObject("entityId", arguments.get("entityId"));
-        mav.addObject("contextEntityId", arguments.get("contextEntityId"));
-        mav.addObject("contextFieldName", arguments.get("contextFieldName"));
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("crudView");
+        modelAndView.addObject("viewDefinition", viewDefinition);
+        modelAndView.addObject("entityId", arguments.get("entityId"));
+        modelAndView.addObject("contextEntityId", arguments.get("contextEntityId"));
+        modelAndView.addObject("contextFieldName", arguments.get("contextFieldName"));
+        modelAndView.addObject("translationsMap", translationsMap);
 
-        mav.addObject("translationsMap", translationsMap);
+        addMessageToModel(arguments, modelAndView);
 
-        if (arguments.get("message") != null) {
-            mav.addObject("message", arguments.get("message"));
-            if (arguments.get("messageType") != null) {
-                mav.addObject("messageType", arguments.get("messageType"));
-            } else {
-                mav.addObject("messageType", "info");
-            }
-        }
-
-        return mav;
+        return modelAndView;
     }
 
     @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/data", method = RequestMethod.GET)
@@ -80,43 +70,14 @@ public final class CrudController {
     public Object getData(@PathVariable("pluginIdentifier") final String pluginIdentifier,
             @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
-        if (arguments.get("entityId") != null) {
-            Entity entity = viewDefinition.getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
-            return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, "", false);
-        } else {
-            return viewDefinition.getValue(null, new HashMap<String, Entity>(), null, "", false);
-        }
-    }
 
-    @InitBinder("jsonBody")
-    public void initBinder(final WebDataBinder binder, final HttpServletRequest request) {
-        StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = null;
-        try {
-            InputStream inputStream = request.getInputStream();
-            if (inputStream != null) {
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                char[] charBuffer = new char[128];
-                int bytesRead = -1;
-                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                    stringBuilder.append(charBuffer, 0, bytesRead);
-                }
-            } else {
-                stringBuilder.append("");
-            }
-        } catch (IOException ex) {
-            // throw ex;
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException ex) {
-                    // throw ex;
-                }
-            }
+        Entity entity = null;
+
+        if (arguments.get("entityId") != null) {
+            entity = viewDefinition.getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
         }
-        String body = stringBuilder.toString();
-        ((StringBuilder) binder.getTarget()).append(body);
+
+        return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, "", false);
     }
 
     @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/dataUpdate", method = RequestMethod.POST)
@@ -127,14 +88,14 @@ public final class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
-        String componentName = getComponentName(jsonBody);
-        JSONObject jsonValues = getJsonObject(jsonBody);
+        JSONObject jsonObject = getJsonObject(jsonBody);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
 
-        ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, componentName, false);
+        ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, getComponentName(jsonBody),
+                false);
 
         return newViewValue;
     }
@@ -147,33 +108,31 @@ public final class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
-        String componentName = getComponentName(jsonBody);
-        JSONObject jsonValues = getJsonObject(jsonBody);
+        JSONObject jsonObject = getJsonObject(jsonBody);
 
-        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
-
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
-
-        SaveableComponent saveableComponent = (SaveableComponent) viewDefinition.lookupComponent(componentName);
-
-        Entity entity = saveableComponent.getSaveableEntity(viewValue);
-
+        String triggerComponentName = getComponentName(jsonBody);
         String contextFieldName = getJsonString(jsonBody, "contextFieldName");
         String contextEntityId = getJsonString(jsonBody, "contextEntityId");
 
-        if (saveableComponent.isRelatedToMainEntity() && StringUtils.hasText(contextFieldName)
-                && StringUtils.hasText(contextEntityId)) {
+        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+
+        SaveableComponent component = (SaveableComponent) viewDefinition.lookupComponent(triggerComponentName);
+
+        Entity entity = component.getSaveableEntity(viewValue);
+
+        if (component.isRelatedToMainEntity() && StringUtils.hasText(contextFieldName) && StringUtils.hasText(contextEntityId)) {
             entity.setField(contextFieldName, Long.parseLong(contextEntityId));
         }
 
-        entity = saveableComponent.getDataDefinition().save(entity);
+        entity = component.getDataDefinition().save(entity);
 
-        selectedEntities.put(componentName, entity);
+        selectedEntities.put(triggerComponentName, entity);
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
+        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
     }
 
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/delete", method = RequestMethod.POST)
     @ResponseBody
     public Object performDelete(@PathVariable("pluginIdentifier") final String pluginIdentifier,
@@ -182,23 +141,24 @@ public final class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
-        String componentName = getComponentName(jsonBody);
-        JSONObject jsonValues = getJsonObject(jsonBody);
+        JSONObject jsonObject = getJsonObject(jsonBody);
+
+        String triggerComponentName = getComponentName(jsonBody);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
 
-        SelectableComponent selectableComponent = (SelectableComponent) viewDefinition.lookupComponent(componentName);
+        SelectableComponent component = (SelectableComponent) viewDefinition.lookupComponent(triggerComponentName);
 
-        Long id = selectableComponent.getSelectedEntityId(viewValue);
+        Long id = component.getSelectedEntityId(viewValue);
 
         if (id != null) {
-            ((Component<?>) selectableComponent).getDataDefinition().delete(id);
-            selectedEntities.remove(componentName);
+            ((Component<?>) component).getDataDefinition().delete(id);
+            selectedEntities.remove(triggerComponentName);
         }
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
+        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
     }
 
     @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/move", method = RequestMethod.POST)
@@ -209,25 +169,38 @@ public final class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
-        String componentName = getComponentName(jsonBody);
-        JSONObject jsonValues = getJsonObject(jsonBody);
+        JSONObject jsonObject = getJsonObject(jsonBody);
+
+        String triggerComponentName = getComponentName(jsonBody);
+
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonValues);
+        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
 
         if (StringUtils.hasText(arguments.get("offset"))) {
             int offset = Integer.valueOf(arguments.get("offset"));
 
-            SelectableComponent selectableComponent = (SelectableComponent) viewDefinition.lookupComponent(componentName);
+            SelectableComponent component = (SelectableComponent) viewDefinition.lookupComponent(triggerComponentName);
 
-            Long id = selectableComponent.getSelectedEntityId(viewValue);
+            Long id = component.getSelectedEntityId(viewValue);
 
             if (id != null) {
-                ((Component<?>) selectableComponent).getDataDefinition().move(id, offset);
+                ((Component<?>) component).getDataDefinition().move(id, offset);
             }
         }
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, componentName, true);
+        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+    }
+
+    private void addMessageToModel(final Map<String, String> arguments, final ModelAndView modelAndView) {
+        if (arguments.get("message") != null) {
+            modelAndView.addObject("message", arguments.get("message"));
+            if (arguments.get("messageType") != null) {
+                modelAndView.addObject("messageType", arguments.get("messageType"));
+            } else {
+                modelAndView.addObject("messageType", "info");
+            }
+        }
     }
 
     private String getComponentName(final JSONObject json) {
@@ -256,6 +229,37 @@ public final class CrudController {
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
+    }
+
+    @InitBinder("jsonBody")
+    public void initBinder(final WebDataBinder binder, final HttpServletRequest request) {
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+        try {
+            InputStream inputStream = request.getInputStream();
+            if (inputStream != null) {
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                char[] charBuffer = new char[128];
+                int bytesRead = -1;
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            } else {
+                stringBuilder.append("");
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                }
+            }
+        }
+        String body = stringBuilder.toString();
+        ((StringBuilder) binder.getTarget()).append(body);
     }
 
 }
