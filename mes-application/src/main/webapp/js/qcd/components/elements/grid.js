@@ -5,9 +5,6 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.Grid = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Component(_element, _mainController));
 	
-//	var elementFullName = args.elementFullName;
-//	this.elementName = args.elementName;
-	
 	var mainController = _mainController;
 	var element = _element;
 	
@@ -44,27 +41,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			colNames.push(mainController.getTranslation(nameToTranslate));
 			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: true});
 		}
-		QCD.info(options.width);
 		gridParameters.element = elementPath+"_grid";
-//		gridParameters.viewName = viewName,
-//		gridParameters.viewElementName = gridName;
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
-		//gridParameters.datatype = 'local';
 		gridParameters.datatype = function(postdata) {
 			onPostDataChange(postdata);
 		}
 		
 		gridParameters.listeners = options.listeners;
 		
-//		gridParameters.fields = new Array();
-//		for (var i in parameters.fields) {
-//			var nameToTranslate = viewName+"."+gridName+".field."+parameters.fields[i];
-//			gridParameters.fields.push({
-//				name: parameters.fields[i],
-//				label: mainController.getTranslation(nameToTranslate)
-//			});
-//		}
 //		gridParameters.paging = parameters.options.paging == "true" ? true : false;
 //		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;
 //		gridParameters.isDataDefinitionProritizable = parameters.isDataDefinitionProritizable;
@@ -79,6 +64,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		}
 //		gridParameters.events = parameters.events;
 //		gridParameters.parent = parameters.parent;
+		
 		gridParameters.canNew = options.canNew;
 		gridParameters.canDelete = options.canDelete;
 		gridParameters.fullScreen = options.fullScreen;
@@ -86,7 +72,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (options.width) { gridParameters.width = parseInt(options.width); }
 
 		gridParameters.correspondingViewName = options.correspondingViewName;
-//		gridParameters.isCorrespondingViewModal = parameters.isCorrespondingViewModal;
 		
 		for (var opName in defaultOptions) {
 			if (gridParameters[opName] == undefined) {
@@ -101,7 +86,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //		}
 		currentState.selectedEntityId = rowId;
 		if (gridParameters.listeners.length > 0) {
-			//QCD.info("SEND");
 			mainController.getUpdate(elementPath, rowId, gridParameters.listeners);
 		}
 	}
@@ -146,9 +130,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			//grid.jqGrid('addRowData', entity.id, fields);
 			grid.jqGrid('addRowData', entity.id, entity.fields);
 		}
-		if (gridParameters.fullScreen) {
-			updateFullScreenSize();
-		}
+		headerController.updatePagingParameters(currentState.paging, response.totalNumberOfEntities);
+		//updateFullScreenSize();
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -191,6 +174,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		headerController = new QCD.components.elements.grid.GridHeader(_this)
 		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
 		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
+		currentState.paging = headerController.getPagingParameters();
 		
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
@@ -217,7 +201,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			});
 			updateFullScreenSize();
 		} else {
-			QCD.info(gridParameters.width);
 			grid.setGridWidth(gridParameters.width, true);
 			grid.setGridHeight(gridParameters.height);
 		}
@@ -226,6 +209,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			stringResult: true
 		}));
 		grid[0].toggleToolbar();
+	}
+	
+	this.onPagingParametersChange = function() {
+		currentState.paging = headerController.getPagingParameters();
+		onCurrentStateChange();
 	}
 	
 	function onPostDataChange(postdata) {
@@ -260,12 +248,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.onFilterButtonClicked = function() {
 		grid[0].toggleToolbar();
-		updateFullScreenSize();
 		searchEnabled = !searchEnabled;
+		updateFullScreenSize();
 		if (! searchEnabled) {
 			currentState.filters = null;
-			onCurrentStateChange();
 		}
+		onCurrentStateChange();
 	}
 	
 	this.onNewButtonClicked = function() {
@@ -285,16 +273,19 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function updateFullScreenSize() {
-		if (! gridParameters.height) {
-			grid.setGridHeight(element.height() - 110);
+		if (! gridParameters.height && gridParameters.fullScreen) {
+			if (searchEnabled) {
+				grid.setGridHeight(element.height() - 108);	
+			} else {
+				grid.setGridHeight(element.height() - 100);
+			}
 		}
-		if (! gridParameters.width) {
+		if (! gridParameters.width && gridParameters.fullScreen) {
 			grid.setGridWidth(element.width()-10, true);
 		}
 	}
 	
 	function onCurrentStateChange() {
-		//QCD.info(currentState);
 		if (componentEnabled) {
 			mainController.getUpdate(elementPath, currentState, gridParameters.listeners);
 		}
