@@ -16,14 +16,16 @@
        http://www.springframework.org/schema/security 
        http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
+	<context:property-placeholder location="WEB-INF/db.properties"/>
+
 	<context:component-scan base-package="com.qcadoo.mes" />
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
-		<property name="driverClass" value="org.postgresql.Driver" />
-		<property name="jdbcUrl" value="jdbc:postgresql:mes" />
-		<property name="user" value="postgres" />
-		<property name="password" value="postgres123" />
+		<property name="driverClass" value="${dbDriverClass}" />
+		<property name="jdbcUrl" value="${dbJdbcUrl}" />
+		<property name="user" value="${dbUsername}" />
+		<property name="password" value="${dbPassword}" />
 	</bean>
 
 	<bean id="sessionFactory"
@@ -31,11 +33,11 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="com.qcadoo.mes" />
 		<property name="hibernateProperties">
-			<value>
-				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-				hibernate.show_sql=true
-				hibernate.hbm2ddl.auto=update
-      		</value>
+			<props>
+				<prop key="hibernate.dialect">${hibernateDialect}</prop>
+				<prop key="hibernate.show_sql">${hibernateShowSql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernateHbm2ddlAuto}</prop>
+			</props>
 		</property>
 	</bean>
 
@@ -45,28 +47,33 @@
 	</bean>
 
 	<tx:annotation-driven />
-	
-	<security:global-method-security pre-post-annotations="enabled">
+
+	<security:global-method-security
+		pre-post-annotations="enabled">
 		<security:expression-handler ref="methodSecurityExpressionHandler" />
 	</security:global-method-security>
 
 	<security:http use-expressions="true" auto-config="false"
 		entry-point-ref="loginUrlAuthenticationEntryPoint">
-		<security:intercept-url pattern="/login.html" filters="none" />
-		<security:intercept-url pattern="/css/**" filters="none" />
-		<security:intercept-url pattern="/js/**" filters="none" />
-		<security:intercept-url pattern="/**" access="isAuthenticated()" />
+		<security:intercept-url pattern="/login.html"
+			filters="none" />
+		<security:intercept-url pattern="/css/**"
+			filters="none" />
+		<security:intercept-url pattern="/js/**"
+			filters="none" />
+		<security:intercept-url pattern="/**"
+			access="isAuthenticated()" />
 
 		<security:logout logout-success-url="/login.html?logout=true" />
 
-		<security:session-management invalid-session-url="/login.html?timeout=true">
-			<security:concurrency-control max-sessions="1"
-				error-if-maximum-exceeded="true" />
+		<security:session-management
+			invalid-session-url="/login.html?timeout=true">
+			<security:concurrency-control
+				max-sessions="1" error-if-maximum-exceeded="true" />
 		</security:session-management>
 
-		<security:custom-filter ref="mySessionExpirationFilter" before="FIRST" />
-
-		<!--<custom-filter ref="securityContextPersistenceFilter" position="SECURITY_CONTEXT_FILTER"/> -->
+		<security:custom-filter ref="mySessionExpirationFilter"
+			before="FIRST" />
 
 		<security:custom-filter ref="customAuthenticationFilter"
 			position="FORM_LOGIN_FILTER" />
@@ -76,7 +83,8 @@
 	</security:http>
 
 	<security:authentication-manager alias="authenticationManager">
-		<security:authentication-provider user-service-ref="userDetailsService">
+		<security:authentication-provider
+			user-service-ref="userDetailsService">
 			<security:password-encoder ref="passwordEncoder" />
 		</security:authentication-provider>
 	</security:authentication-manager>
@@ -86,7 +94,8 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="usersByUsernameQuery">
 			<value>
-				SELECT USERNAME, PASSWORD, not deleted as enabled FROM Users_User WHERE
+				SELECT USERNAME, PASSWORD, not deleted as enabled FROM
+				Users_User WHERE
 				USERNAME=?
             </value>
 		</property>
@@ -112,7 +121,7 @@
 			<value>
 				ROLE_ADMIN > ROLE_SUPERVISOR
 				ROLE_SUPERVISOR > ROLE_USER
-	        </value>
+			</value>
 		</property>
 	</bean>
 
@@ -132,10 +141,8 @@
 	<bean id="customAuthenticationFilter"
 		class="com.qcadoo.mes.security.internal.CustomAuthenticationFilter">
 		<property name="authenticationManager" ref="authenticationManager" />
-		<property name="authenticationFailureHandler"
-			ref="failureHandler" />
-		<property name="authenticationSuccessHandler"
-			ref="successHandler" />
+		<property name="authenticationFailureHandler" ref="failureHandler" />
+		<property name="authenticationSuccessHandler" ref="successHandler" />
 	</bean>
 
 	<bean id="successHandler"
