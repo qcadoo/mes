@@ -13,7 +13,7 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 
 @Service
-public class SecurityServiceImpl implements SecurityService {
+public final class SecurityServiceImpl implements SecurityService {
 
     @Autowired
     private SessionFactory sessionFactory;

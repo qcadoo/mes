@@ -28,8 +28,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
 
-    private MenuDefinition baseMenuDefinition;
-
     @Override
     @Transactional(readOnly = true)
     public ViewDefinition get(final String pluginIdentifier, final String viewName) {
@@ -71,7 +69,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     public MenuDefinition getMenu() {
 
-        baseMenuDefinition = new MenuDefinition();
+        MenuDefinition baseMenuDefinition = new MenuDefinition();
 
         MenulItemsGroup homeItem = new MenulItemsGroup("home", "start");
         homeItem.addItem(new UrlMenuItem("home", "start", null, "homePage.html"));

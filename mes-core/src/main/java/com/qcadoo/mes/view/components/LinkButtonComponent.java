@@ -58,7 +58,7 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
     }
 
     @Override
-    public final void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
+    public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                 + ".label";
         translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));

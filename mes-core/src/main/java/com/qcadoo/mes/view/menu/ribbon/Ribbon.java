@@ -38,9 +38,9 @@ public final class Ribbon {
                 groupsArray.put(group.getAsJson());
             }
             ribbonJson.put("groups", groupsArray);
+            return ribbonJson;
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e.getMessage(), e);
         }
-        return ribbonJson;
     }
 }

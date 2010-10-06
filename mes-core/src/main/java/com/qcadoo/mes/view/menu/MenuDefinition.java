@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MenuDefinition {
+public final class MenuDefinition {
 
     private final List<MenulItemsGroup> items;
 
@@ -19,7 +19,7 @@ public class MenuDefinition {
         return items;
     }
 
-    public void addItem(MenulItemsGroup item) {
+    public void addItem(final MenulItemsGroup item) {
         items.add(item);
     }
 
@@ -33,8 +33,7 @@ public class MenuDefinition {
             menuStructure.put("menuItems", menuItems);
             return menuStructure.toString();
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e.getMessage(), e);
         }
-        return null;
     }
 }

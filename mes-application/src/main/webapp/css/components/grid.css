@@ -13,11 +13,13 @@
 	border-top: solid black 1px;
 }
 
-.grid_header .pageInput {
+.grid_header .pageInput,
+.grid_footer .pageInput {
 	border: solid black 1px;
 }
 
-.grid_header .pageInput.inputError {
+.grid_header .pageInput.inputError,
+.grid_footer .pageInput.inputError {
 	border: solid red 1px;
 }
 

@@ -105,15 +105,13 @@ public final class Restrictions {
 
     private static Object validateValue(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         Object fieldValue = value;
-        if (fieldValue != null) {
-            if (!fieldDefinition.getType().getType().isInstance(fieldValue)) {
-                if (fieldValue instanceof String) {
-                    fieldValue = fieldDefinition.getType().toObject(fieldDefinition, fieldValue, validatedEntity);
-                } else {
-                    validatedEntity.addError(fieldDefinition, "core.validation.error.wrongType", fieldValue.getClass()
-                            .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
-                    return null;
-                }
+        if (fieldValue != null && !fieldDefinition.getType().getType().isInstance(fieldValue)) {
+            if (fieldValue instanceof String) {
+                fieldValue = fieldDefinition.getType().toObject(fieldDefinition, fieldValue, validatedEntity);
+            } else {
+                validatedEntity.addError(fieldDefinition, "core.validation.error.wrongType", fieldValue.getClass()
+                        .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
+                return null;
             }
         }
         return fieldValue;

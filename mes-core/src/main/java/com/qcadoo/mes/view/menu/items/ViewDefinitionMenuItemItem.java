@@ -2,11 +2,11 @@ package com.qcadoo.mes.view.menu.items;
 
 import com.qcadoo.mes.view.menu.MenuItem;
 
-public class ViewDefinitionMenuItemItem extends MenuItem {
+public final class ViewDefinitionMenuItemItem extends MenuItem {
 
     private final String viewName;
 
-    public ViewDefinitionMenuItemItem(String name, String label, String pluginIdentifier, String viewName) {
+    public ViewDefinitionMenuItemItem(final String name, final String label, final String pluginIdentifier, final String viewName) {
         super(name, label, pluginIdentifier);
         this.viewName = viewName;
     }
