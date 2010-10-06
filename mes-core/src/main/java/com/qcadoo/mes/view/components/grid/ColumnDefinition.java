@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
@@ -37,7 +39,7 @@ public final class ColumnDefinition {
 
     private Integer width;
 
-    private boolean isLink = false;
+    private boolean link = false;
 
     public ColumnDefinition(final String name) {
         this.name = name;
@@ -103,6 +105,27 @@ public final class ColumnDefinition {
         ColumnDefinition other = (ColumnDefinition) obj;
         return new EqualsBuilder().append(aggregationMode, other.aggregationMode).append(expression, other.expression)
                 .append(name, other.name).append(width, other.width).append(fields, other.fields).isEquals();
+    }
+
+    public boolean isLink() {
+        return link;
+    }
+
+    public void setLink(boolean link) {
+        this.link = link;
+    }
+
+    @Override
+    public String toString() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("name", name);
+            obj.put("width", width);
+            obj.put("link", link);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
     }
 
 }

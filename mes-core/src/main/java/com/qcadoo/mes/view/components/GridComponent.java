@@ -125,6 +125,9 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 } else {
                     columnDefinition.setAggregationMode(ColumnAggregationMode.NONE);
                 }
+                if (option.getAtrributeValue("link") != null) {
+                    columnDefinition.setLink(Boolean.parseBoolean(option.getAtrributeValue("link")));
+                }
                 columns.put(columnDefinition.getName(), columnDefinition);
             }
         }
@@ -332,8 +335,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         return new ArrayList<String>(fields.keySet());
     }
 
-    private List<String> getColumnsForOptions() {
-        return new ArrayList<String>(columns.keySet());
+    private List<ColumnDefinition> getColumnsForOptions() {
+        return new ArrayList<ColumnDefinition>(columns.values());
     }
 
     private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {

@@ -25,6 +25,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var currentState = {
 	}
 	
+	var columnModel = new Object();
+	
 	var defaultOptions = {
 		paging: true,
 		fullScreen: false
@@ -36,10 +38,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		var colNames = new Array();
 		var colModel = new Array();
 		
+		QCD.info(options.columns);
 		for (var i in options.columns) {
-			var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+options.columns[i];
+			var column = JSON.parse(options.columns[i]);
+			columnModel[column.name] = column;
+			QCD.info(column);
+			var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+column.name;
 			colNames.push(mainController.getTranslation(nameToTranslate));
-			colModel.push({name:options.columns[i], index:options.columns[i], width:100, sortable: true});
+			colModel.push({name:column.name, index:column.name, width:column.width, sortable: true});
 		}
 		gridParameters.element = elementPath+"_grid";
 		gridParameters.colNames = colNames;
@@ -93,8 +99,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
-	function rowDblClicked(rowId) {
-		redirectToCorrespondingPage(rowId ? "entityId="+rowId : null);
+	function linkClicked(entityId) {
+		QCD.info("linkClicked: "+entityId);
+		redirectToCorrespondingPage("entityId="+entityId);
 	}
 	
 	function redirectToCorrespondingPage(params) {
@@ -123,15 +130,31 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 //			actionButtons.deleteButton.attr('disabled', 'true');
 //		}
 		grid.jqGrid('clearGridData');
+		var rowCounter = 1;
 		for (var entityNo in value.entities) {
 			var entity = value.entities[entityNo];
-			//var fields = new Object();
-			//for (var fieldName in entity.fields) {
-				//fields[fieldName] = "<a href=# onclick=''>" + entity.fields[fieldName] + "</a>";
-			//}
-			//grid.jqGrid('addRowData', entity.id, fields);
-			grid.jqGrid('addRowData', entity.id, entity.fields);
+			var fields = new Object();
+			for (var fieldName in entity.fields) {
+				if (columnModel[fieldName].link) {
+					fields[fieldName] = "<a href=# id='"+elementPath+"_"+fieldName+"_"+entity.id+"' class='"+elementPath+"_link gridLink'>" + entity.fields[fieldName] + "</a>";
+					
+				} else {
+					fields[fieldName] = entity.fields[fieldName];
+				}
+			}
+			grid.jqGrid('addRowData', entity.id, fields);
+			if (rowCounter % 2 == 0) {
+				grid.jqGrid('setRowData', entity.id, false, "darkRow");
+			} else {
+				grid.jqGrid('setRowData', entity.id, false, "lightRow");
+			}
+			rowCounter++;
 		}
+		$("."+elementPath+"_link").click(function(e) {
+			var idArr = e.target.id.split("_");
+			var entityId = idArr[idArr.length-1];
+			linkClicked(entityId);
+		});
 		headerController.updatePagingParameters(currentState.paging, value.totalNumberOfEntities);
 		//updateFullScreenSize();
 	}
@@ -181,9 +204,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
         }
-		gridParameters.ondblClickRow = function(id){
-			rowDblClicked(id);
-        }
+//		gridParameters.ondblClickRow = function(id){
+//			rowDblClicked(id);
+//        }
 		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		

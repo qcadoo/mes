@@ -1,7 +1,16 @@
+.gridTable {
+	background: #ccc;
+	margin: 0px;
+	
+}
 
-.gridHeaderCell,
+.gridHeaderCell {
+	background: #ccc;
+	border-bottom: solid black 1px;
+}
 .gridFooterCell {
 	background: #ccc;
+	border-top: solid black 1px;
 }
 
 .grid_header .pageInput {
@@ -26,4 +35,20 @@
 	background: #ccc;
 	height: 30px;
 	line-height: 30px;
+}
+
+a.gridLink {
+	color: #1C54C4;
+	font-weight: bold;
+}
+a.gridLink:hover {
+	color: #1C94C4;
+}
+
+.lightRow {
+	background: #ffffff;
+}
+
+.darkRow {
+	background: #eeeeee;
 }
