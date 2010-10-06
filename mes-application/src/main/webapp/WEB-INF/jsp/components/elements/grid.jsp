@@ -18,25 +18,17 @@
 	</div>
 	
 	<table style="height: 100%; width: 100%;" cellpadding=0 cellspacing=0 class="gridTable">
-	<c:if test="${component.options['header']}">
-		<tr><td>
-		<div style="font-weight: bold; margin-bottom: 10px;">
-			<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
-			${translationsMap[headerLabel]}
-		</div>
+	
+		<tr><td id="${componentFullName}_gridHeader" class="gridHeaderCell">
 		</td></tr>
-	</c:if>
-	
-	<tr><td id="${componentFullName}_gridHeader" class="gridHeaderCell">
-	</td></tr>
-	
-	<tr style="height: 100%; width: 100%;" id="${componentFullName}_gridCell"><td>
-			<table class="element_table" id="${componentFullName}_grid" style="height: 100%">
-			</table>
-	</td></tr>
-	
-	<tr><td id="${componentFullName}_gridFooter" class="gridFooterCell">
-	</td></tr>
-	
+		
+		<tr style="height: 100%; width: 100%;" id="${componentFullName}_gridCell"><td>
+				<table class="element_table" id="${componentFullName}_grid" style="height: 100%">
+				</table>
+		</td></tr>
+		
+		<tr><td id="${componentFullName}_gridFooter" class="gridFooterCell">
+		</td></tr>
+		
 	</table>
 </div>

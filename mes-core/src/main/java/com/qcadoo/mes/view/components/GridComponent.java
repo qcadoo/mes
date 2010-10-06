@@ -142,6 +142,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         addOption("filter", !searchableFields.isEmpty());
         addOption("canDelete", deletable);
         addOption("canNew", creatable);
+        addOption("prioritizable", getDataDefinition().isPrioritizable());
 
     }
 
@@ -316,11 +317,9 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
-        if (header) {
-            String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
-                    + getPath() + ".header";
-            translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
-        }
+        String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                + ".header";
+        translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
         for (ColumnDefinition column : columns.values()) {
             List<String> messageCodes = new LinkedList<String>();
             messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()

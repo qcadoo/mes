@@ -194,9 +194,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function constructor(_this) {
+		
 		parseOptions(_this.options, _this);
 		
-		headerController = new QCD.components.elements.grid.GridHeader(_this)
+		var gridName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".header";
+		headerController = new QCD.components.elements.grid.GridHeader(_this, mainController.getTranslation(gridName))
+		
 		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
 		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
 		currentState.paging = headerController.getPagingParameters();
@@ -204,6 +207,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
         }
+		gridParameters.onSortCol = function(index,iCol,sortorder) {
+			QCD.info(index+"-"+iCol);
+			if (currentState.sort && currentState.sort.column) {
+				$("#"+elementPath+"_grid_"+currentState.sort.column).removeClass("sortColumn");
+			}
+			$("#"+elementPath+"_grid_"+index).addClass("sortColumn");
+		}
 //		gridParameters.ondblClickRow = function(id){
 //			rowDblClicked(id);
 //        }
@@ -299,9 +309,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function updateFullScreenSize() {
 		if (! gridParameters.height && gridParameters.fullScreen) {
 			if (searchEnabled) {
-				grid.setGridHeight(element.height() - 108);	
+				grid.setGridHeight(element.height() - 96);	
 			} else {
-				grid.setGridHeight(element.height() - 100);
+				grid.setGridHeight(element.height() - 88);
 			}
 		}
 		if (! gridParameters.width && gridParameters.fullScreen) {
