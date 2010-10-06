@@ -63,9 +63,9 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     private boolean paginable = false;
 
-    private boolean deletable = true;
+    private boolean deletable = false;
 
-    private boolean creatable = true;
+    private boolean creatable = false;
 
     public GridComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {

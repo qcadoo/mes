@@ -23,6 +23,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var searchEnabled = false;
 	
 	var currentState = {
+		selectedEntityId: null
 	}
 	
 	var columnModel = new Object();
@@ -92,6 +93,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 		}
 		
+		// kurczak w sosie curry
+		// kurczak po wietnamsku
+		// wieprzowina z ananasem i cebula
+		// kurczak z ananasem i cebula
+		
 	};
 	function rowClicked(rowId) {
 		var rowIndex = grid.jqGrid('getInd', rowId);
@@ -126,12 +132,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			contextFieldName = value.contextFieldName;
 			contextId = value.contextId; 
 		}
+		QCD.info("setComponentValue "+value.selectedEntityId);
+		QCD.info(value);
+		if (value.selectedEntityId) {
+			currentState.selectedEntityId = value.selectedEntityId;
+		}
+		
 		if (value.entities == null) {
 			return;
 		}
-//		if (actionButtons.deleteButton) {
-//			actionButtons.deleteButton.attr('disabled', 'true');
-//		}
 		grid.jqGrid('clearGridData');
 		var rowCounter = 1;
 		for (var entityNo in value.entities) {
@@ -144,6 +153,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				} else {
 					fields[fieldName] = entity.fields[fieldName];
 				}
+			}
+			if (currentState.selectedEntityId && entity.id == currentState.selectedEntityId) {
+				QCD.info("SELECT");
 			}
 			grid.jqGrid('addRowData', entity.id, fields);
 			if (rowCounter % 2 == 0) {

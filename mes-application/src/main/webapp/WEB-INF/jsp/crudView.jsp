@@ -55,15 +55,7 @@
 
 		window.init = function(serializationObject) {
 			controller = new QCD.PageController(viewName, pluginIdentifier, contextFieldName, contextEntityId);
-			controller.init(entityId);
-			//if (isForEntity && isForEntity.trim() == "true") {
-			//	if (entityId && entityId.trim() != "") {
-			//		controller.init(entityId);
-			//	}
-			//} else {
-			//	controller.init();
-			//}
-			//controller.init(entityId, contextEntityId, serializationObject);
+			controller.init(entityId, serializationObject);
 		}
 
 		window.translationsMap = new Object();
