@@ -25,18 +25,18 @@ public final class LoginController {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("login");
-        mav.addObject("translation", translationService.getLoginTranslations(locale));
+        mav.addObject("translation", translationService.getSecurityMessages(locale));
         mav.addObject("currentLanguage", locale.getLanguage());
         mav.addObject("iframe", iframe);
 
         if (logout) {
-            mav.addObject("successMessage", "login.message.logout");
+            mav.addObject("successMessage", "security.message.logout");
         } else if (timeout) {
-            mav.addObject("errorMessage", "login.message.timeout");
+            mav.addObject("errorMessage", "security.message.timeout");
         } else if (loginError != null) {
-            mav.addObject("errorMessage", "login.message.error");
+            mav.addObject("errorMessage", "security.message.error");
         } else if (iframe) {
-            mav.addObject("errorMessage", "login.message.timeout");
+            mav.addObject("errorMessage", "security.message.timeout");
         }
 
         return mav;
@@ -47,7 +47,7 @@ public final class LoginController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("accessDenied");
 
-        mav.addObject("translation", translationService.getLoginTranslations(locale));
+        mav.addObject("translation", translationService.getSecurityMessages(locale));
 
         return mav;
     }

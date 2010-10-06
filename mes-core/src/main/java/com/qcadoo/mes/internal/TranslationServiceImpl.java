@@ -1,40 +1,40 @@
 package com.qcadoo.mes.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.validators.ErrorMessage;
 
 @Controller
 public final class TranslationServiceImpl implements TranslationService {
 
-    private static final String[] COMMONS_MESSAGES = new String[] { "commons.confirm.deleteMessage",
-            "commons.loading.gridLoading", "commons.button.go", "commons.button.logout", "commons.form.button.accept",
-            "commons.form.button.acceptAndClose", "commons.form.button.cancel", "commons.form.message.save",
-            "commons.grid.button.new", "commons.grid.button.delete", "commons.grid.button.sort", "commons.grid.button.sort.asc",
-            "commons.grid.button.sort.desc", "commons.grid.button.filter", "commons.grid.button.filter.null",
-            "commons.grid.button.filter.notNull", "commons.grid.button.prev", "commons.grid.button.next",
-            "commons.grid.span.pageInfo", "commons.grid.span.priority", "commons.grid.button.up", "commons.grid.button.down",
-            "commons.validate.field.error.missing", "commons.validate.field.error.invalidNumericFormat",
-            "commons.validate.field.error.invalidDateFormat", "commons.validate.field.error.invalidDateTimeFormat",
-            "commons.validate.field.error.notMatch", "commons.validate.global.error", "commons.form.field.confirmable.label" };
+    private static final Logger LOG = LoggerFactory.getLogger(TranslationServiceImpl.class);
 
-    private static final String[] LOGIN_MESSAGES = new String[] { "login.form.label.language", "login.form.label.login",
-            "login.form.label.password", "login.form.button.logIn", "login.message.error", "login.message.logout",
-            "login.message.timeout", "login.message.accessDenied.header", "login.message.accessDenied.info" };
+    private static final Set<String> COMMONS_MESSAGES = new HashSet<String>();
+
+    private static final Set<String> SECURITY_MESSAGES = new HashSet<String>();
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public String translate(final String messageCode, final Locale locale, final Object... args) {
@@ -44,21 +44,20 @@ public final class TranslationServiceImpl implements TranslationService {
     @Override
     public String translate(final List<String> messageCodes, final Locale locale, final Object... args) {
         for (String messageCode : messageCodes) {
-            try {
-                return translateWithError(messageCode, locale, args);
-            } catch (NoSuchMessageException e) {
-
+            String message = translateWithError(messageCode, locale, args);
+            if (message != null) {
+                return message;
             }
         }
         return "TO TRANSLATE: " + messageCodes;
     }
 
     private String translateWithError(final String messageCode, final Locale locale, final Object[] args) {
-        return messageSource.getMessage(messageCode, args, locale);
+        return messageSource.getMessage(messageCode, args, null, locale);
     }
 
     @Override
-    public Map<String, String> getCommonsTranslations(final Locale locale) {
+    public Map<String, String> getCommonsMessages(final Locale locale) {
         Map<String, String> commonsTranslations = new HashMap<String, String>();
         for (String commonMessage : COMMONS_MESSAGES) {
             commonsTranslations.put(commonMessage, translate(commonMessage, locale));
@@ -67,9 +66,9 @@ public final class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public Map<String, String> getLoginTranslations(final Locale locale) {
+    public Map<String, String> getSecurityMessages(final Locale locale) {
         Map<String, String> loginTranslations = new HashMap<String, String>();
-        for (String loginMessage : LOGIN_MESSAGES) {
+        for (String loginMessage : SECURITY_MESSAGES) {
             loginTranslations.put(loginMessage, translate(loginMessage, locale));
         }
         return loginTranslations;
@@ -80,12 +79,37 @@ public final class TranslationServiceImpl implements TranslationService {
         return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName + ".label";
     }
 
-    public void translateEntity(final Entity entity, final Locale locale) {
-        for (ErrorMessage error : entity.getGlobalErrors()) {
-            error.setMessage(translate(error.getMessage(), locale, error.getVars()));
+    public void init() {
+        getMessagesByPrefix("commons", COMMONS_MESSAGES);
+        getMessagesByPrefix("security", SECURITY_MESSAGES);
+    }
+
+    private void getMessagesByPrefix(final String prefix, final Set<String> messages) {
+        try {
+            Resource[] resources = applicationContext.getResources("classpath*:locales/messages*.properties");
+            for (Resource resource : resources) {
+                getMessagesByPrefix(prefix, messages, resource.getInputStream());
+            }
+            resources = applicationContext.getResources("WEB-INF/locales/messages*.properties");
+            for (Resource resource : resources) {
+                getMessagesByPrefix(prefix, messages, resource.getInputStream());
+            }
+        } catch (IOException e) {
+            LOG.error("Cannot read messages file", e);
         }
-        for (ErrorMessage error : entity.getErrors().values()) {
-            error.setMessage(translate(error.getMessage(), locale, error.getVars()));
+
+        LOG.info("Messages for " + prefix + ": " + messages);
+    }
+
+    private void getMessagesByPrefix(final String prefix, final Set<String> messages, final InputStream inputStream)
+            throws IOException {
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        for (Object property : properties.keySet()) {
+            if (String.valueOf(property).startsWith(prefix)) {
+                messages.add((String) property);
+            }
         }
     }
+
 }

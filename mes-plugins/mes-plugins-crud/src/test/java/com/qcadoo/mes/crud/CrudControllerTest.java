@@ -65,7 +65,7 @@ public class CrudControllerTest {
         translations.put("commons.message1", "test1");
         translations.put("commons.message2", "test2");
 
-        given(translationService.getCommonsTranslations(Locale.ENGLISH)).willReturn(translations);
+        given(translationService.getCommonsMessages(Locale.ENGLISH)).willReturn(translations);
         given(viewDefinitionService.get("pluginName", "viewName")).willReturn(viewDefinition);
 
         doAnswer(new Answer<Object>() {

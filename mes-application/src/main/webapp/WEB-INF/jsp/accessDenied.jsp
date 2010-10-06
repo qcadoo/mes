@@ -10,10 +10,10 @@
 </head>
 <body>
 	<div class="errorMessageHeader">
-		${translation["login.message.accessDenied.header"] }
+		${translation["security.message.accessDenied.header"] }
 	</div>
 	<div class="errorMessageContent">
-		${translation["login.message.accessDenied.info"] }
+		${translation["security.message.accessDenied.info"] }
 	</div>
 
 </body>

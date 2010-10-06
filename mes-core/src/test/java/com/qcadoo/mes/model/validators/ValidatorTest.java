@@ -623,7 +623,7 @@ public class ValidatorTest extends DataAccessTest {
         assertFalse(entity.isValid());
         assertTrue(entity.getErrors().isEmpty());
         assertEquals(1, entity.getGlobalErrors().size());
-        assertEquals("commons.validate.field.error.customEntity", entity.getGlobalErrors().get(0).getMessage());
+        assertEquals("commons.validate.global.error.custom", entity.getGlobalErrors().get(0).getMessage());
     }
 
     @Test

@@ -52,7 +52,7 @@
 		}
 
 		showLoginError = function(error) {
-			$(".errorBox").show().html("${translation["login.message.error"]}");
+			$(".errorBox").show().html("${translation["security.message.error"]}");
 		}
 
 	</script>
@@ -73,7 +73,7 @@
 
 	<c:if test="${! iframe}">
 		<div class="langiageDiv">
-			${translation["login.form.label.language"]}
+			${translation["security.form.label.language"]}
 	 		<select id="languageSelect" onchange="changeLanguage(this.value)">
 	 			<option value="pl">polski</option>
 	 			<option value="en">english</option>
@@ -83,11 +83,11 @@
  		
 	<form id="loginForm" name="loginForm" action="<c:url value='j_spring_security_check'/>" method="POST">
  		<table>
-        	<tr><td>${translation["login.form.label.login"]}</td><td><input type='text' id="usernameInput" name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
- 	       <tr><td>${translation["login.form.label.password"]}</td><td><input type='password' name='j_password'></td></tr>
+        	<tr><td>${translation["security.form.label.login"]}</td><td><input type='text' id="usernameInput" name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
+ 	       <tr><td>${translation["security.form.label.password"]}</td><td><input type='password' name='j_password'></td></tr>
 		</table>
 		<div>
- 			<input type="submit" value="${translation['login.form.button.logIn']}" onclick="ajaxLogin(); return false;" />
+ 			<input type="submit" value="${translation['security.form.button.logIn']}" onclick="ajaxLogin(); return false;" />
 		</div>
     </form>
 </body>

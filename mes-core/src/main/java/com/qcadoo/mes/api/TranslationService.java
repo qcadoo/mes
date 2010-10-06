@@ -8,9 +8,9 @@ import com.qcadoo.mes.model.DataDefinition;
 
 public interface TranslationService {
 
-    Map<String, String> getCommonsTranslations(Locale locale);
+    Map<String, String> getCommonsMessages(Locale locale);
 
-    Map<String, String> getLoginTranslations(Locale locale);
+    Map<String, String> getSecurityMessages(Locale locale);
 
     String translate(final String messageCode, final Locale locale, final Object... args);
 
