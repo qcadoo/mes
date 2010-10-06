@@ -55,26 +55,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		gridParameters.listeners = options.listeners;
 		
-//		gridParameters.paging = parameters.options.paging == "true" ? true : false;
-//		gridParameters.parentDefinition = parameters.parentDefinition ? parameters.parentDefinition : null;
-//		gridParameters.isDataDefinitionProritizable = parameters.isDataDefinitionProritizable;
-//		if (parameters.options) {
 //			gridParameters.paging = parameters.options.paging == "true" ? true : false;
 //			gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
 //			gridParameters.filter = parameters.options.filter == "true" ? true : false;
 //			gridParameters.multiselect = parameters.options.multiselect == "true" ? true : false;
-//			gridParameters.canNew = parameters.options.canNew == "false" ? false : true;
-//			gridParameters.canDelete = parameters.options.canDelete == "false" ? false : true;
-//			if (parameters.options.height) { gridParameters.height = parseInt(parameters.options.height); }
-//		}
-//		gridParameters.events = parameters.events;
-//		gridParameters.parent = parameters.parent;
 		
 		gridParameters.canNew = options.canNew;
 		gridParameters.canDelete = options.canDelete;
 		gridParameters.paging = options.paginable;
 		
-		//gridParameters.paging = parameters.options.paging == "true" ? true : false;
 		//gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
 		gridParameters.filter = options.filter ? true : false;
 		
@@ -134,10 +123,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			currentState.filters = state.filters;
 			grid[0].toggleToolbar();
 			searchEnabled = true;
-			
-			
-			
+			for (var filterIndex in currentState.filters) {
+				var filter = currentState.filters[filterIndex];
+				$("#gs_"+filter.column).val(filter.value);
+			}
 			updateFullScreenSize();
+		}
+		if (state.sort) {
+			currentState.sort = state.sort;
+			$("#"+elementPath+"_grid_"+currentState.sort.column).addClass("sortColumn");
 		}
 	}
 	
@@ -182,23 +176,26 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 		headerController.updatePagingParameters(currentState.paging, value.totalNumberOfEntities);
-		//updateFullScreenSize();
+		
+		unblockGrid();
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
 		componentEnabled = isEnabled;
 		headerController.setEnabled(isEnabled);
-//		if (actionButtons.newButton) {
-//			if (isEnabled) {
-//				actionButtons.newButton.removeAttr('disabled');
-//			} else {
-//				actionButtons.newButton.attr('disabled', 'true');
-//			}
-//		}
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {
+			blockGrid();
+		} else {
+			unblockGrid();
+		}
+	}
+
+	
+	function blockGrid() {
+		if (grid) {
 			grid.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
@@ -207,19 +204,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	            '-moz-border-radius': '10px', 
 	            opacity: .5, 
 	            color: '#fff' } });
-		} else {
+		}
+	}
+	
+	function unblockGrid() {
+		if (grid) {
 			grid.unblock();
 		}
 	}
-	
-	function deleteClicked() {
-		var selectedId = grid.getGridParam('selrow');
-		if (selectedId) {
-			//alert("delete "+selectedId);
-			mainController.performDelete(elementPath, selectedId);
-		}
-	}
-	
+
 	function constructor(_this) {
 		
 		parseOptions(_this.options, _this);
@@ -241,9 +234,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			$("#"+elementPath+"_grid_"+index).addClass("sortColumn");
 		}
-//		gridParameters.ondblClickRow = function(id){
-//			rowDblClicked(id);
-//        }
 		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		
@@ -255,7 +245,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				element.height("100%");
 			}
 			
-			//QCD.info($("#"+gridParameters.element+"Cell").height());
 			$(window).bind('resize', function() {
 				updateFullScreenSize();
 			});
@@ -266,19 +255,20 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			$("#"+gridParameters.element+"Header").width(gridParameters.width);
 		}
 		
-		QCD.info(grid.jqGrid('filterToolbar',{
+		grid.jqGrid('filterToolbar',{
 			stringResult: true
-		}));
+		});
 		grid[0].toggleToolbar();
 	}
 	
 	this.onPagingParametersChange = function() {
+		blockGrid();
 		currentState.paging = headerController.getPagingParameters();
 		onCurrentStateChange();
 	}
 	
 	function onPostDataChange(postdata) {
-		//QCD.info(postdata);
+		blockGrid();
 		if (searchEnabled) {
 			var postFilters = JSON.parse(postdata.filters);
 			var filterArray = new Array();
