@@ -93,11 +93,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 		}
 		
-		// kurczak w sosie curry
-		// kurczak po wietnamsku
-		// wieprzowina z ananasem i cebula
-		// kurczak z ananasem i cebula
-		
 	};
 	function rowClicked(rowId) {
 		var rowIndex = grid.jqGrid('getInd', rowId);
@@ -127,15 +122,25 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		return currentState;
 	}
 	
+	this.setComponentState = function(state) {
+		if (state.selectedEntityId) {
+			currentState.selectedEntityId = state.selectedEntityId;
+		}
+		if (state.paging && state.paging.first) {
+			currentState.paging = state.paging;
+			headerController.updatePagingParameters(currentState.paging, 0);
+		}
+//		if (value.filters && value.filters.length > 0) {
+//			grid[0].toggleToolbar();
+//			searchEnabled = true;
+//			currentState.filters = value.filters;
+//		}
+	}
+	
 	this.setComponentValue = function(value) {
 		if(value.contextFieldName || value.contextId) {
 			contextFieldName = value.contextFieldName;
 			contextId = value.contextId; 
-		}
-		QCD.info("setComponentValue "+value.selectedEntityId);
-		QCD.info(value);
-		if (value.selectedEntityId) {
-			currentState.selectedEntityId = value.selectedEntityId;
 		}
 		
 		if (value.entities == null) {
@@ -154,9 +159,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 					fields[fieldName] = entity.fields[fieldName];
 				}
 			}
-			if (currentState.selectedEntityId && entity.id == currentState.selectedEntityId) {
-				QCD.info("SELECT");
-			}
 			grid.jqGrid('addRowData', entity.id, fields);
 			if (rowCounter % 2 == 0) {
 				grid.jqGrid('setRowData', entity.id, false, "darkRow");
@@ -170,6 +172,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var entityId = idArr[idArr.length-1];
 			linkClicked(entityId);
 		});
+		
+		if (currentState.selectedEntityId) {
+			grid.setSelection(currentState.selectedEntityId);
+		}
+		
 		headerController.updatePagingParameters(currentState.paging, value.totalNumberOfEntities);
 		//updateFullScreenSize();
 	}

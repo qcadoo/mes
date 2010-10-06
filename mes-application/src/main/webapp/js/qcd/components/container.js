@@ -44,6 +44,18 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 	}
 	
+	this.setState = function(state) {
+		if (this.setComponentState) {
+			this.setComponentState(state);
+		} else {
+			QCD.error(this.elementPath+".setComponentState() no implemented");
+		}
+		for (var i in state.components) {
+			var componentState = state.components[i];
+			components[i].setState(componentState);
+		}
+	}
+	
 //	this.setComponentsEnabled = function(isEnabled) {
 //		for (var i in components) {
 //			components[i].setEnabled(isEnabled);
