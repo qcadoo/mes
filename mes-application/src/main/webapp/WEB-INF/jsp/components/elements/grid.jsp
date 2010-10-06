@@ -27,7 +27,7 @@
 		</td></tr>
 	</c:if>
 	
-	<tr><td id="${componentFullName}_gridHeader">
+	<tr><td id="${componentFullName}_gridHeader" class="gridHeaderCell">
 	</td></tr>
 	
 	<tr style="height: 100%; width: 100%;" id="${componentFullName}_gridCell"><td>
@@ -35,7 +35,7 @@
 			</table>
 	</td></tr>
 	
-	<tr><td id="${componentFullName}_gridFooter">
+	<tr><td id="${componentFullName}_gridFooter" class="gridFooterCell">
 	</td></tr>
 	
 	</table>

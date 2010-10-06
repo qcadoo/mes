@@ -37,6 +37,8 @@ public final class ColumnDefinition {
 
     private Integer width;
 
+    private boolean isLink = false;
+
     public ColumnDefinition(final String name) {
         this.name = name;
     }

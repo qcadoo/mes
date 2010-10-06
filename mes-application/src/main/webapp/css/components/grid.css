@@ -1,6 +1,21 @@
+
+.gridHeaderCell,
+.gridFooterCell {
+	background: #ccc;
+}
+
+.grid_header .pageInput,
+.grid_footer .pageInput {
+	border: solid black 1px;
+}
+
+.grid_header .pageInput.inputError,
+.grid_footer .pageInput.inputError {
+	border: solid red 1px;
+}
+
 .grid_header {
 	background: #ccc;
-	height: 30px;
 	line-height: 30px;
 }
 

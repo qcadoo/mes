@@ -70,6 +70,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.fullScreen = options.fullScreen;
 		if (options.height) { gridParameters.height = parseInt(options.height); }
 		if (options.width) { gridParameters.width = parseInt(options.width); }
+		if (! gridParameters.width && ! gridParameters.fullScreen) {
+			gridParameters.width = 300;
+		}
 
 		gridParameters.correspondingViewName = options.correspondingViewName;
 		
@@ -113,7 +116,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			contextFieldName = value.contextFieldName;
 			contextId = value.contextId; 
 		}
-		//pagingVars.totalNumberOfEntities = response.totalNumberOfEntities;
 		if (value.entities == null) {
 			return;
 		}
@@ -183,13 +185,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			rowDblClicked(id);
         }
 		
-		gridParameters.beforeRequest = function(id){
-			QCD.info("aaa");
-			return false;
-        }
-		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		
+		if (gridParameters.width) {
+			element.width(gridParameters.width);
+		}
 		if (gridParameters.fullScreen) {
 			if (! gridParameters.height) {
 				element.height("100%");
@@ -203,6 +203,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		} else {
 			grid.setGridWidth(gridParameters.width, true);
 			grid.setGridHeight(gridParameters.height);
+			$("#"+gridParameters.element+"Header").width(gridParameters.width);
 		}
 		
 		QCD.info(grid.jqGrid('filterToolbar',{
