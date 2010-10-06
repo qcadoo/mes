@@ -75,17 +75,10 @@ public final class CrudController {
 
     @RequestMapping(value = CONTROLLER_PATH + "/data", method = RequestMethod.GET)
     @ResponseBody
-    public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+    public Object getOldData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments) {
-        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
-
-        Entity entity = null;
-
-        if (arguments.get("entityId") != null) {
-            entity = viewDefinition.getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
-        }
-
-        return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, "", false);
+        // TODO masz remove me
+        return getData(pluginIdentifier, viewName, arguments, null);
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/dataUpdate", method = RequestMethod.POST)
@@ -93,19 +86,35 @@ public final class CrudController {
     public Object getDataUpdate(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
             @ModelAttribute(JSON_BODY) final StringBuilder body) {
-        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
+        // TODO masz remove me
+        return getData(pluginIdentifier, viewName, arguments, body);
+    }
 
-        JSONObject jsonBody = getJsonBody(body);
-        JSONObject jsonObject = getJsonObject(jsonBody);
+    @RequestMapping(value = CONTROLLER_PATH + "/data", method = RequestMethod.POST)
+    @ResponseBody
+    public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+        Entity entity = null;
+        String componentName = "";
+        ViewValue<Object> viewValue = null;
 
-        ViewValue<Object> newViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, getComponentName(jsonBody),
-                false);
+        if (body != null && StringUtils.hasText(body.toString())) {
+            JSONObject jsonBody = getJsonBody(body);
+            JSONObject jsonObject = getJsonObject(jsonBody);
+            viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+            componentName = getComponentName(jsonBody);
+        }
 
-        return newViewValue;
+        if (arguments.get("entityId") != null) {
+            entity = viewDefinition.getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
+        }
+
+        return viewDefinition.getValue(entity, selectedEntities, viewValue, componentName, false);
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/save", method = RequestMethod.POST)

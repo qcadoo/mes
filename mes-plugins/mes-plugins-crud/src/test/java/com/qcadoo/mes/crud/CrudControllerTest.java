@@ -174,7 +174,7 @@ public class CrudControllerTest {
                 expectedViewValue);
 
         // when
-        Object viewValue = crudController.getData("pluginName", "viewName", arguments);
+        Object viewValue = crudController.getData("pluginName", "viewName", arguments, null);
 
         // then
         assertEquals(expectedViewValue, viewValue);
@@ -196,7 +196,7 @@ public class CrudControllerTest {
         given(viewDefinition.getDataDefinition().get(11L)).willReturn(entity);
 
         // when
-        Object viewValue = crudController.getData("pluginName", "viewName", arguments);
+        Object viewValue = crudController.getData("pluginName", "viewName", arguments, null);
 
         // then
         assertEquals(expectedViewValue, viewValue);
