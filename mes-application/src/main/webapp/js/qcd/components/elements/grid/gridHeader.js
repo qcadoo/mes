@@ -35,6 +35,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	function paging_refresh() {
+		
 		header.getPagingElements().pageNo.val(pagingVars.first);
 		footer.getPagingElements().pageNo.val(pagingVars.first);
 		if (pagingVars.first > 0) {
@@ -159,7 +160,11 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
-		if (gridParameters.canFiltr) {
+		QCD.info(gridParameters.filter);
+		QCD.info(gridParameters.canNew);
+		QCD.info(gridParameters.canDelete);
+		QCD.info(gridParameters.paging);
+		if (gridParameters.filter) {
 			headerElements.filtrButton = $("<button>").html("filtr").click(gridController.onFilterButtonClicked);
 			headerElement.append(headerElements.filtrButton);
 		}
@@ -174,8 +179,6 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		if (gridParameters.canUp) {
 			headerElements.upButton = $("<button>").html("up").click(gridController.onUpButtonClicked);
 			headerElement.append(headerElements.upButton);
-		}
-		if (gridParameters.canDown) {
 			headerElements.downButton = $("<button>").html("down").click(gridController.onDownButtonClicked);
 			headerElement.append(headerElements.downButton);
 		}
