@@ -66,6 +66,9 @@ public class CrudControllerTest {
         translations.put("commons.message2", "test2");
 
         given(translationService.getCommonsMessages(Locale.ENGLISH)).willReturn(translations);
+        given(translationService.translate("commons.message.save", Locale.ENGLISH)).willReturn("saved");
+        given(translationService.translate("commons.message.delete", Locale.ENGLISH)).willReturn("deleted");
+        given(translationService.translate("commons.message.move", Locale.ENGLISH)).willReturn("moved");
         given(viewDefinitionService.get("pluginName", "viewName")).willReturn(viewDefinition);
 
         doAnswer(new Answer<Object>() {
@@ -79,7 +82,6 @@ public class CrudControllerTest {
             }
 
         }).when(viewDefinition).updateTranslations(translations, Locale.ENGLISH);
-
     }
 
     @Test
@@ -253,8 +255,10 @@ public class CrudControllerTest {
 
         ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
         ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        newViewValue.addComponent("root", new ViewValue<Object>("root"));
 
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
+        given(viewDefinition.getRoot().getName()).willReturn("root");
         given(viewDefinition.lookupComponent("trigger.component")).willReturn((Component) component);
         given(
                 viewDefinition.getValue(null, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
@@ -263,7 +267,8 @@ public class CrudControllerTest {
         given(component.getDataDefinition().save(entity)).willReturn(entity);
 
         // when
-        Object viewValue = crudController.performSave("pluginName", "viewName", arguments, new StringBuilder(json.toString()));
+        Object viewValue = crudController.performSave("pluginName", "viewName", arguments, new StringBuilder(json.toString()),
+                Locale.ENGLISH);
 
         // then
         assertEquals(newViewValue, viewValue);
@@ -289,7 +294,9 @@ public class CrudControllerTest {
 
         ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
         ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        newViewValue.addComponent("root", new ViewValue<Object>("root"));
 
+        given(viewDefinition.getRoot().getName()).willReturn("root");
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
         given(viewDefinition.lookupComponent("trigger.component")).willReturn((Component) component);
         given(
@@ -300,10 +307,13 @@ public class CrudControllerTest {
         given(component.isRelatedToMainEntity()).willReturn(true);
 
         // when
-        Object viewValue = crudController.performSave("pluginName", "viewName", arguments, new StringBuilder(json.toString()));
+        ViewValue<Object> viewValue = (ViewValue<Object>) crudController.performSave("pluginName", "viewName", arguments,
+                new StringBuilder(json.toString()), Locale.ENGLISH);
 
         // then
         assertEquals(newViewValue, viewValue);
+        assertEquals(1, viewValue.getComponent("root").getSuccessMessages().size());
+        assertEquals("saved", viewValue.getComponent("root").getSuccessMessages().get(0));
         verify(component.getDataDefinition()).save(entity);
         verify(entity).setField("contextField", 11L);
     }
@@ -327,7 +337,9 @@ public class CrudControllerTest {
         oldViewValue.addComponent("trigger", new ViewValue(12L));
 
         ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        newViewValue.addComponent("root", new ViewValue<Object>("root"));
 
+        given(viewDefinition.getRoot().getName()).willReturn("root");
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willAnswer(new Answer<ViewValue<Object>>() {
 
             @Override
@@ -345,10 +357,13 @@ public class CrudControllerTest {
         given(component.getSelectedEntityId(oldViewValue)).willReturn(12L);
 
         // when
-        Object viewValue = crudController.performDelete("pluginName", "viewName", arguments, new StringBuilder(json.toString()));
+        ViewValue<Object> viewValue = (ViewValue<Object>) crudController.performDelete("pluginName", "viewName", arguments,
+                new StringBuilder(json.toString()), Locale.ENGLISH);
 
         // then
         assertEquals(newViewValue, viewValue);
+        assertEquals(1, viewValue.getComponent("root").getSuccessMessages().size());
+        assertEquals("deleted", viewValue.getComponent("root").getSuccessMessages().get(0));
         verify(((Component) component).getDataDefinition()).delete(12L);
         verify(entity, never()).setField(anyString(), anyLong());
     }
@@ -373,6 +388,9 @@ public class CrudControllerTest {
         oldViewValue.addComponent("trigger", new ViewValue(12L));
 
         ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        newViewValue.addComponent("root", new ViewValue<Object>("root"));
+
+        given(viewDefinition.getRoot().getName()).willReturn("root");
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
         given(viewDefinition.lookupComponent("trigger")).willReturn((Component) component);
         given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true)).willReturn(
@@ -380,10 +398,13 @@ public class CrudControllerTest {
         given(component.getSelectedEntityId(oldViewValue)).willReturn(12L);
 
         // when
-        Object viewValue = crudController.performMove("pluginName", "viewName", arguments, new StringBuilder(json.toString()));
+        ViewValue<Object> viewValue = (ViewValue<Object>) crudController.performMove("pluginName", "viewName", arguments,
+                new StringBuilder(json.toString()), Locale.ENGLISH);
 
         // then
         assertEquals(newViewValue, viewValue);
+        assertEquals(1, viewValue.getComponent("root").getSuccessMessages().size());
+        assertEquals("moved", viewValue.getComponent("root").getSuccessMessages().get(0));
         verify(((Component) component).getDataDefinition()).move(12L, 1);
         verify(entity, never()).setField(anyString(), anyLong());
     }

@@ -121,7 +121,7 @@ public final class CrudController {
     @ResponseBody
     public Object performSave(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @ModelAttribute(JSON_BODY) final StringBuilder body, final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -147,18 +147,20 @@ public final class CrudController {
 
         selectedEntities.put(triggerComponentName, entity);
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+                true);
 
-        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
-        //
-        // return responseViewValue;
+        responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
+                translationService.translate("commons.message.save", locale));
+
+        return responseViewValue;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/delete", method = RequestMethod.POST)
     @ResponseBody
     public Object performDelete(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @ModelAttribute(JSON_BODY) final StringBuilder body, final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -179,20 +181,22 @@ public final class CrudController {
             selectedEntities.remove(triggerComponentName);
         }
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+                true);
 
-        // if (id != null) {
-        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.delete", locale));
-        // }
-        //
-        // return responseViewValue;
+        if (id != null) {
+            responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
+                    translationService.translate("commons.message.delete", locale));
+        }
+
+        return responseViewValue;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/move", method = RequestMethod.POST)
     @ResponseBody
     public Object performMove(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @ModelAttribute(JSON_BODY) final StringBuilder body, final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -218,13 +222,15 @@ public final class CrudController {
             }
         }
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+                true);
 
-        // if (id != null) {
-        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.move", locale));
-        // }
-        //
-        // return responseViewValue;
+        if (id != null) {
+            responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
+                    translationService.translate("commons.message.move", locale));
+        }
+
+        return responseViewValue;
     }
 
     private void addMessageToModel(final Map<String, String> arguments, final ModelAndView modelAndView) {

@@ -114,6 +114,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         return root.lookupComponent(path);
     }
 
+    @Override
     public RootComponent getRoot() {
         return root;
     }
