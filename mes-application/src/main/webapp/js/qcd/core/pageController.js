@@ -17,10 +17,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		QCD.debug(pageComponents);
 	}
 	
-	this.init = function(entityId) {
+	this.init = function(entityId, serializationObject) {
 		var parameters = new Object();
 		if (entityId && entityId.trim() != "") {
 			parameters.entityId = entityId;
+		}
+		if (serializationObject) {
+			setValueData(serializationObject);
 		}
 		parameters.data = getValueData();
 		QCDConnector.sendGet("data", parameters, function(response) {
@@ -127,7 +130,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 				}
 				elementAction = elementAction.substring(1);
 				
-				QCD.info(component);
 				var actionObject = {
 					component: component,
 					action: elementAction
@@ -187,10 +189,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	}
 	
 	this.goToPage = function(url) {
-		var serializationObject = new Object();
-//		for (var i in pageElements) {
-//			serializationObject[i] = pageElements[i].serialize();
-//		}
+		var serializationObject = {
+			components: getValueData()
+		}
 		window.parent.goToPage(url, serializationObject);
 	}
 	

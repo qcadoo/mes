@@ -23,13 +23,6 @@ QCD.WindowController = function() {
 
 	}
 	
-	this.goToSelectedPage = function() {
-		var selectedValue = $("#viewsSelect").val();
-		currentPage = "page/"+selectedValue+".html";
-		statesStack = new Array();
-		performGoToPage(currentPage);
-	}
-
 	this.performLogout = function() {
 		QCD.info("logout");
 		window.location = "j_spring_security_logout";
@@ -47,7 +40,6 @@ QCD.WindowController = function() {
 	
 	this.goBack = function() {
 		var stateObject = statesStack.pop();
-		//iframe.insertState(stateObject.serializationObject);
 		serializationObjectToInsert = stateObject.serializationObject;
 		currentPage = stateObject.url;
 		performGoToPage(currentPage);
