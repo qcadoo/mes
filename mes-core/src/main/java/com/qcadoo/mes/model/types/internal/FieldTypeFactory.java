@@ -5,7 +5,6 @@ import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.LookupedType;
-import com.qcadoo.mes.model.types.HasManyType.Cascade;
 
 public interface FieldTypeFactory {
 

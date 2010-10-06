@@ -7,7 +7,7 @@ import com.qcadoo.mes.model.validators.EntityValidator;
 
 public final class CustomEntityValidator implements EntityValidator {
 
-    private static final String CUSTOM_ERROR = "commons.validate.field.error.customEntity";
+    private static final String CUSTOM_ERROR = "commons.validate.global.error.custom";
 
     private final HookDefinition entityValidateHook;
 

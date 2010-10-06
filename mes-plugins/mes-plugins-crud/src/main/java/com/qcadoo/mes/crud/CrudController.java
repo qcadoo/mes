@@ -55,7 +55,7 @@ public final class CrudController {
     public ModelAndView getView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
             final Locale locale) {
-        Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
+        Map<String, String> translationsMap = translationService.getCommonsMessages(locale);
 
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
         viewDefinition.updateTranslations(translationsMap, locale);

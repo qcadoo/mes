@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -90,8 +91,6 @@ public final class DataDefinitionParser {
         } catch (IOException e) {
             LOG.error("Cannot read data definition", e);
         }
-
-        viewDefinitionParser.parse();
     }
 
     public void parse(final InputStream dataDefinitionInputStream) {
@@ -138,7 +137,7 @@ public final class DataDefinitionParser {
 
     private void addModelElement(final XMLStreamReader reader, final String pluginIdentifier,
             final DataDefinitionImpl dataDefinition, final String tag) throws XMLStreamException {
-        ModelTag modelTag = ModelTag.valueOf(tag.toUpperCase());
+        ModelTag modelTag = ModelTag.valueOf(tag.toUpperCase(Locale.ENGLISH));
 
         switch (modelTag) {
             case PRIORITY:
@@ -236,7 +235,7 @@ public final class DataDefinitionParser {
 
     private void addFieldElement(final XMLStreamReader reader, final FieldDefinitionImpl fieldDefinition, final FieldType type,
             final String tag) {
-        switch (FieldTag.valueOf(tag.toUpperCase())) {
+        switch (FieldTag.valueOf(tag.toUpperCase(Locale.ENGLISH))) {
             case VALIDATESPRESENCE:
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.required()));
                 break;

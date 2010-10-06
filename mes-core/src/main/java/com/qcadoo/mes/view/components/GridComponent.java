@@ -142,6 +142,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         addOption("filter", !searchableFields.isEmpty());
         addOption("canDelete", deletable);
         addOption("canNew", creatable);
+        addOption("prioritizable", getDataDefinition().isPrioritizable());
 
     }
 

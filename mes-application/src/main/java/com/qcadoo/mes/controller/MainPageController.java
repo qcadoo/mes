@@ -27,7 +27,7 @@ public final class MainPageController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("mainPage");
         mav.addObject("viewsList", viewDefinitionService.list());
-        mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
+        mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
         return mav;
     }
 
@@ -36,7 +36,7 @@ public final class MainPageController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("main");
         mav.addObject("viewsList", viewDefinitionService.list());
-        mav.addObject("commonTranslations", translationService.getCommonsTranslations(locale));
+        mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
 
         mav.addObject("menuStructure", viewDefinitionService.getMenu().getAsJson());
 

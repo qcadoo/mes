@@ -168,6 +168,14 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		return $("<div>").addClass('grid_footer').append(footer.getHeaderElement(pagingVars));
 	}
 	
+	this.setEnabled = function(enabled) {
+		
+	}
+	
+	this.onRowClicked = function(rowId) {
+		
+	}
+	
 	function filterClicked() {
 		gridController.onFilterButtonClicked();
 	}

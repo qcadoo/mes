@@ -23,8 +23,6 @@ import com.qcadoo.mes.internal.DataAccessTest;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
-import com.qcadoo.mes.model.types.EnumeratedType;
-import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
 import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
@@ -179,7 +177,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
         assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 255), entity));
         assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 256), entity));
-        assertEquals("commons.validate.field.error.stringIsTooLong", entity.getError("aa").getMessage());
+        assertEquals("commons.validate.field.error.invalidLength", entity.getError("aa").getMessage());
         assertEquals("255", entity.getError("aa").getVars()[0]);
     }
 
@@ -197,7 +195,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
         assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2048), entity));
         assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2049), entity));
-        assertEquals("commons.validate.field.error.stringIsTooLong", entity.getError("aa").getMessage());
+        assertEquals("commons.validate.field.error.invalidLength", entity.getError("aa").getMessage());
         assertEquals("2048", entity.getError("aa").getVars()[0]);
     }
 
