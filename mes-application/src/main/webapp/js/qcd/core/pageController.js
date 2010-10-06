@@ -26,7 +26,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 			setComponentState(serializationObject);
 		}
 		parameters.data = getValueData();
-		QCDConnector.sendGet("data", parameters, function(response) {
+		var valuesJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("data", valuesJson, function(response) {
 			setValueData(response);
 		});
 	}
