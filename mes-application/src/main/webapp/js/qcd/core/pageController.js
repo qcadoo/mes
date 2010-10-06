@@ -23,10 +23,11 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 			parameters.entityId = entityId;
 		}
 		if (serializationObject) {
-			setValueData(serializationObject);
+			setComponentState(serializationObject);
 		}
 		parameters.data = getValueData();
-		QCDConnector.sendGet("data", parameters, function(response) {
+		var valuesJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("data", valuesJson, function(response) {
 			setValueData(response);
 		});
 	}
@@ -168,6 +169,14 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		}
 		//QCD.info(values);
 		return values;
+	}
+	
+	function setComponentState(state) {
+		QCD.debug(state);
+		for (var i in state.components) {
+			var component = pageComponents[i];
+			component.setState(state.components[i]);
+		}
 	}
 	
 	function setValueData(data) {

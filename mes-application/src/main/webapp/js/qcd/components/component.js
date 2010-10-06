@@ -44,6 +44,14 @@ QCD.components.Component = function(_element, _mainController) {
 		}
 	}
 	
+	this.setState = function(state) {
+		if (this.setComponentState) {
+			this.setComponentState(state.value);
+		} else {
+			QCD.error(this.elementPath+".setComponentState() no implemented");
+		}
+	}
+	
 	this.setLoading = function(isLoadingVisible) {
 		var listeners = options.listeners;
 		if (listeners) {
