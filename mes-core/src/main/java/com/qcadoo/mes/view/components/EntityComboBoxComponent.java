@@ -58,7 +58,7 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
     @Override
     public ViewValue<EntityComboBoxValue> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<EntityComboBoxValue> viewValue,
-            final Set<String> pathsToUpdate) {
+            final Set<String> pathsToUpdate, final Locale locale) {
 
         DataDefinition parentDefinition = getParentContainer().getDataDefinition();
         EntityComboBoxValue value = new EntityComboBoxValue();

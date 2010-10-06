@@ -215,7 +215,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     @Override
     public ViewValue<ListData> getComponentValue(final Entity entity, final Entity parentEntity,
-            final Map<String, Entity> selectedEntities, final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate) {
+            final Map<String, Entity> selectedEntities, final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate,
+            final Locale locale) {
         String joinFieldName = null;
         Long belongsToEntityId = null;
         SearchCriteriaBuilder searchCriteriaBuilder = null;

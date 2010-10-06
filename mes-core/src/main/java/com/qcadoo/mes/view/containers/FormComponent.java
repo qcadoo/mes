@@ -56,7 +56,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
     @Override
     public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Long> viewValue, final Set<String> pathsToUpdate) {
+            final ViewValue<Long> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
         if (entity != null) {
             return entity.getId();
         } else {
@@ -65,10 +65,10 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue) {
+    public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue, final Locale locale) {
         if (entity != null) {
             for (ErrorMessage validationError : entity.getGlobalErrors()) {
-                viewValue.addErrorMessage(validationError.getMessage()); // TODO masz i18n
+                viewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
             }
         }
     }

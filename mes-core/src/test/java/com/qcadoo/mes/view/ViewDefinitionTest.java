@@ -105,7 +105,8 @@ public class ViewDefinitionTest {
         globalViewValue.addComponent("rootName", viewValue);
 
         RootComponent root = mock(RootComponent.class);
-        given(root.getValue(entity, selectedEntities, viewValue, pathsToUpdate)).willReturn(new ViewValue<Object>("test"));
+        given(root.getValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH)).willReturn(
+                new ViewValue<Object>("test"));
         given(root.getName()).willReturn("rootName");
         given(root.lookupListeners(triggerComponentName)).willReturn(pathsToUpdate);
 
@@ -113,7 +114,8 @@ public class ViewDefinitionTest {
         viewDefinition.setRoot(root);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, true);
+        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, true,
+                Locale.ENGLISH);
 
         // then
         assertEquals(2, pathsToUpdate.size());
@@ -121,7 +123,7 @@ public class ViewDefinitionTest {
         assertEquals(1, selectedEntities.size());
         assertEquals(new DefaultEntity(3L), selectedEntities.get("keepIt"));
         assertEquals("test", value.getComponent("rootName").getValue());
-        verify(root).getValue(entity, selectedEntities, viewValue, pathsToUpdate);
+        verify(root).getValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH);
     }
 
     @Test
@@ -132,7 +134,7 @@ public class ViewDefinitionTest {
         Set<String> pathsToUpdate = new HashSet<String>();
 
         RootComponent root = mock(RootComponent.class);
-        given(root.getValue(null, selectedEntities, null, pathsToUpdate)).willReturn(null);
+        given(root.getValue(null, selectedEntities, null, pathsToUpdate, Locale.ENGLISH)).willReturn(null);
         given(root.getName()).willReturn("rootName");
         given(root.lookupListeners(triggerComponentName)).willReturn(pathsToUpdate);
 
@@ -140,11 +142,12 @@ public class ViewDefinitionTest {
         viewDefinition.setRoot(root);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(null, selectedEntities, null, triggerComponentName, true);
+        ViewValue<Object> value = viewDefinition.getValue(null, selectedEntities, null, triggerComponentName, true,
+                Locale.ENGLISH);
 
         // then
         assertNull(value.getComponent("rootName"));
-        verify(root).getValue(null, selectedEntities, null, pathsToUpdate);
+        verify(root).getValue(null, selectedEntities, null, pathsToUpdate, Locale.ENGLISH);
     }
 
     @Test
@@ -166,7 +169,8 @@ public class ViewDefinitionTest {
         viewDefinition.setViewHook(hookDefinition);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, false);
+        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, false,
+                Locale.ENGLISH);
 
         // then
         assertEquals(0, pathsToUpdate.size());
@@ -192,7 +196,7 @@ public class ViewDefinitionTest {
         viewDefinition.setViewHook(hookDefinition);
 
         // when
-        viewDefinition.getValue(entity, selectedEntities, globalViewValue, null, false);
+        viewDefinition.getValue(entity, selectedEntities, globalViewValue, null, false, Locale.ENGLISH);
 
         // then
         verify(root, never()).lookupListeners(Mockito.anyString());

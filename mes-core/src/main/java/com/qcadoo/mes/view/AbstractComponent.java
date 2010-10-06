@@ -79,7 +79,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
             throws JSONException;
 
     public abstract ViewValue<T> getComponentValue(Entity entity, Entity parentEntity, Map<String, Entity> selectedEntities,
-            ViewValue<T> viewValue, final Set<String> pathsToUpdate);
+            ViewValue<T> viewValue, final Set<String> pathsToUpdate, final Locale locale);
 
     @Override
     public final ViewValue<T> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
@@ -99,7 +99,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final ViewValue<T> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<?> viewValue, final Set<String> pathsToUpdate) {
+            final ViewValue<?> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
 
         listeners = Collections.unmodifiableSet(listeners);
 
@@ -129,7 +129,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
             selectedEntity = parentEntity;
         }
 
-        value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate);
+        value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate, locale);
 
         if (value == null) {
             return null;

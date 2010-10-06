@@ -44,15 +44,16 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
 
     @Override
     public final ViewValue<String> getComponentValue(final Entity entity, final Entity parentEntity,
-            final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
+            final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate,
+            final Locale locale) {
         String value = getStringValue(entity, selectedEntities);
 
         ViewValue<String> newViewValue = new ViewValue<String>(convertToViewValue(value.trim()));
 
-        String errorMessage = getErrorMessage(entity, selectedEntities);
+        ErrorMessage validationError = getErrorMessage(entity, selectedEntities);
 
-        if (errorMessage != null) {
-            newViewValue.addErrorMessage(errorMessage);
+        if (validationError != null) {
+            newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
         }
 
         return newViewValue;
@@ -85,21 +86,15 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
         }
     }
 
-    private String getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {
+    private ErrorMessage getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {
         ErrorMessage value = null;
 
         if (getSourceComponent() != null) {
-            value = getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
+            return getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
         } else if (getSourceFieldPath() != null) {
-            value = getFieldError(entity, getSourceFieldPath());
+            return getFieldError(entity, getSourceFieldPath());
         } else {
-            value = getFieldError(entity, getFieldPath());
-        }
-
-        if (value == null) {
-            return null;
-        } else {
-            return value.getMessage(); // TODO masz i18n
+            return getFieldError(entity, getFieldPath());
         }
     }
 

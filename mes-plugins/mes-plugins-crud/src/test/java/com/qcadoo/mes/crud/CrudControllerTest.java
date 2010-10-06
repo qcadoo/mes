@@ -170,11 +170,11 @@ public class CrudControllerTest {
         // given
         ViewValue<Object> expectedViewValue = new ViewValue<Object>("test");
 
-        given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), null, "", false)).willReturn(
-                expectedViewValue);
+        given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), null, "", false, Locale.ENGLISH))
+                .willReturn(expectedViewValue);
 
         // when
-        Object viewValue = crudController.getData("pluginName", "viewName", null);
+        Object viewValue = crudController.getData("pluginName", "viewName", null, Locale.ENGLISH);
 
         // then
         assertEquals(expectedViewValue, viewValue);
@@ -190,13 +190,13 @@ public class CrudControllerTest {
 
         ViewValue<Object> expectedViewValue = new ViewValue<Object>("test");
 
-        given(viewDefinition.getValue(entity, Collections.<String, Entity> emptyMap(), null, null, false)).willReturn(
-                expectedViewValue);
+        given(viewDefinition.getValue(entity, Collections.<String, Entity> emptyMap(), null, null, false, Locale.ENGLISH))
+                .willReturn(expectedViewValue);
 
         given(viewDefinition.getDataDefinition().get(11L)).willReturn(entity);
 
         // when
-        Object viewValue = crudController.getData("pluginName", "viewName", new StringBuilder(json.toString()));
+        Object viewValue = crudController.getData("pluginName", "viewName", new StringBuilder(json.toString()), Locale.ENGLISH);
 
         // then
         assertEquals(expectedViewValue, viewValue);
@@ -214,11 +214,13 @@ public class CrudControllerTest {
         ViewValue<Object> newViewValue = new ViewValue<Object>("test");
 
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
-        given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger.component", false))
-                .willReturn(newViewValue);
+        given(
+                viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger.component", false,
+                        Locale.ENGLISH)).willReturn(newViewValue);
 
         // when
-        Object viewValue = crudController.getDataUpdate("pluginName", "viewName", new StringBuilder(json.toString()));
+        Object viewValue = crudController.getDataUpdate("pluginName", "viewName", new StringBuilder(json.toString()),
+                Locale.ENGLISH);
 
         // then
         assertEquals(newViewValue, viewValue);
@@ -227,7 +229,7 @@ public class CrudControllerTest {
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfJsonIsInvalid() throws Exception {
         // when
-        crudController.getDataUpdate("pluginName", "viewName", new StringBuilder("{ sss"));
+        crudController.getDataUpdate("pluginName", "viewName", new StringBuilder("{ sss"), Locale.ENGLISH);
     }
 
     @Test
@@ -253,7 +255,7 @@ public class CrudControllerTest {
         given(viewDefinition.lookupComponent("trigger.component")).willReturn((Component) component);
         given(
                 viewDefinition.getValue(null, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
-                        true)).willReturn(newViewValue);
+                        true, Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSaveableEntity(oldViewValue)).willReturn(entity);
         given(component.getDataDefinition().save(entity)).willReturn(entity);
 
@@ -290,7 +292,7 @@ public class CrudControllerTest {
         given(viewDefinition.lookupComponent("trigger.component")).willReturn((Component) component);
         given(
                 viewDefinition.getValue(null, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
-                        true)).willReturn(newViewValue);
+                        true, Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSaveableEntity(oldViewValue)).willReturn(entity);
         given(component.getDataDefinition().save(entity)).willReturn(entity);
         given(component.isRelatedToMainEntity()).willReturn(true);
@@ -339,8 +341,9 @@ public class CrudControllerTest {
         });
 
         given(viewDefinition.lookupComponent("trigger")).willReturn((Component) component);
-        given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true)).willReturn(
-                newViewValue);
+        given(
+                viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true,
+                        Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSelectedEntityId(oldViewValue)).willReturn(12L);
 
         // when
@@ -378,8 +381,9 @@ public class CrudControllerTest {
         given(viewDefinition.getRoot().getName()).willReturn("root");
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
         given(viewDefinition.lookupComponent("trigger")).willReturn((Component) component);
-        given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true)).willReturn(
-                newViewValue);
+        given(
+                viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true,
+                        Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSelectedEntityId(oldViewValue)).willReturn(12L);
 
         // when

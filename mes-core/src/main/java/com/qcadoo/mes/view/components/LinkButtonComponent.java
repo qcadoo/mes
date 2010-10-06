@@ -50,7 +50,8 @@ public final class LinkButtonComponent extends AbstractComponent<String> {
 
     @Override
     public ViewValue<String> getComponentValue(final Entity entity, final Entity parentEntity,
-            final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate) {
+            final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate,
+            final Locale locale) {
         if (entity != null) {
             return new ViewValue<String>(url + "?entityId=" + entity.getId());
         }
