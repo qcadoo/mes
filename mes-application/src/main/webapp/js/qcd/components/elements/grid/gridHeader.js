@@ -3,10 +3,14 @@ QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.grid = QCD.components.elements.grid || {};
 
-QCD.components.elements.grid.GridHeader = function(_gridController, _gridName) {
+QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _gridParameters) {
 	
 	var gridController = _gridController;
 	var gridName = _gridName;
+	var gridParameters = _gridParameters;
+	// gridParameters.canNew
+	// gridParameters.canDelete
+	// gridParameters.paging
 	
 	var pagingVars = new Object();
 	pagingVars.first = null;

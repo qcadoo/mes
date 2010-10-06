@@ -38,11 +38,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		var colNames = new Array();
 		var colModel = new Array();
 		
-		QCD.info(options.columns);
 		for (var i in options.columns) {
 			var column = JSON.parse(options.columns[i]);
 			columnModel[column.name] = column;
-			QCD.info(column);
 			var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+column.name;
 			colNames.push(mainController.getTranslation(nameToTranslate));
 			colModel.push({name:column.name, index:column.name, width:column.width, sortable: true});
@@ -73,6 +71,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		gridParameters.canNew = options.canNew;
 		gridParameters.canDelete = options.canDelete;
+		gridParameters.paging = options.paginable;
+		
+		//gridParameters.paging = parameters.options.paging == "true" ? true : false;
+		//gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
+		//gridParameters.filter = parameters.options.filter == "true" ? true : false;
+		
 		gridParameters.fullScreen = options.fullScreen;
 		if (options.height) { gridParameters.height = parseInt(options.height); }
 		if (options.width) { gridParameters.width = parseInt(options.width); }
@@ -198,7 +202,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		parseOptions(_this.options, _this);
 		
 		var gridName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".header";
-		headerController = new QCD.components.elements.grid.GridHeader(_this, mainController.getTranslation(gridName))
+		headerController = new QCD.components.elements.grid.GridHeader(_this, mainController.getTranslation(gridName), gridParameters)
 		
 		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
 		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
