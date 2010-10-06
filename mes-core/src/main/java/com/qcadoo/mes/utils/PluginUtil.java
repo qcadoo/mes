@@ -23,13 +23,13 @@ import com.qcadoo.mes.exceptions.PluginException;
 
 public final class PluginUtil {
 
-    private static final String binPath = "bin/";
+    private static final String BIN_PATH = "bin/";
 
-    private static final String webappsRegex = "webapps/\\S*/";
+    private static final String WEBAPPS_REGEX = "webapps/\\S*/";
 
-    private static final int restartInterval = 1000;
+    private static final int RESTART_INTERVAL = 1000;
 
-    private static final String descriptor = "plugin.xml";
+    private static final String DESCRIPTOR = "plugin.xml";
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginUtil.class);
 
@@ -100,7 +100,7 @@ public final class PluginUtil {
         PluginsPlugin plugin = new PluginsPlugin();
         JarFile jarFile = new JarFile(file);
 
-        InputStream in = jarFile.getInputStream(jarFile.getEntry(descriptor));
+        InputStream in = jarFile.getInputStream(jarFile.getEntry(DESCRIPTOR));
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -147,7 +147,7 @@ public final class PluginUtil {
     public static void restartServer(final String webappPath) throws PluginException {
         String[] commandsStop = { "./shutdown.sh" };
         String[] commandsStart = { "./startup.sh" };
-        String commandPath = webappPath.replaceAll(webappsRegex, binPath);
+        String commandPath = webappPath.replaceAll(WEBAPPS_REGEX, BIN_PATH);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Command path: " + commandPath);
         }
@@ -161,7 +161,7 @@ public final class PluginUtil {
                 LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
             }
 
-            Thread.sleep(restartInterval);
+            Thread.sleep(RESTART_INTERVAL);
 
             Process startupProcess = runtime.exec(commandsStart, null, dir);
             startupProcess.waitFor();
@@ -170,9 +170,9 @@ public final class PluginUtil {
             }
 
         } catch (IOException e) {
-            throw new PluginException("Restart failed - " + e.getMessage());
+            throw new PluginException("Restart failed - " + e.getMessage(), e);
         } catch (InterruptedException e) {
-            throw new PluginException("Restart failed - " + e.getMessage());
+            throw new PluginException("Restart failed - " + e.getMessage(), e);
         }
 
     }

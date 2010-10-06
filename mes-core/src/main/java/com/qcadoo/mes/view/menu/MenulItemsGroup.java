@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MenulItemsGroup {
+public final class MenulItemsGroup {
 
     private final String name;
 
@@ -15,7 +15,7 @@ public class MenulItemsGroup {
 
     private final List<MenuItem> items;
 
-    public MenulItemsGroup(String name, String label) {
+    public MenulItemsGroup(final String name, final String label) {
         super();
         this.name = name;
         this.label = label;
@@ -34,7 +34,7 @@ public class MenulItemsGroup {
         return items;
     }
 
-    public void addItem(MenuItem item) {
+    public void addItem(final MenuItem item) {
         items.add(item);
     }
 

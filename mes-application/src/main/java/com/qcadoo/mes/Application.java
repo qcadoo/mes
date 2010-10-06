@@ -9,7 +9,7 @@ import com.qcadoo.mes.model.internal.DataDefinitionParser;
 import com.qcadoo.mes.view.internal.ViewDefinitionParser;
 
 @Service
-public class Application {
+public final class Application {
 
     @Autowired
     private DataDefinitionParser dataDefinitionParser;

@@ -37,15 +37,23 @@ import com.qcadoo.mes.view.ViewValue;
 @Controller
 public final class CrudController {
 
+    private static final String VIEW_NAME_VARIABLE = "viewName";
+
+    private static final String PLUGIN_IDENTIFIER_VARIABLE = "pluginIdentifier";
+
+    private static final String CONTROLLER_PATH = "page/{" + PLUGIN_IDENTIFIER_VARIABLE + "}/{" + VIEW_NAME_VARIABLE + "}";
+
+    private static final String JSON_BODY = "jsonBody";
+
     @Autowired
     private ViewDefinitionService viewDefinitionService;
 
     @Autowired
     private TranslationService translationService;
 
-    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}", method = RequestMethod.GET)
-    public ModelAndView getView(@PathVariable("pluginIdentifier") final String pluginIdentifier,
-            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
+    @RequestMapping(value = CONTROLLER_PATH, method = RequestMethod.GET)
+    public ModelAndView getView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
             final Locale locale) {
         Map<String, String> translationsMap = translationService.getCommonsTranslations(locale);
 
@@ -65,10 +73,10 @@ public final class CrudController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/data", method = RequestMethod.GET)
+    @RequestMapping(value = CONTROLLER_PATH + "/data", method = RequestMethod.GET)
     @ResponseBody
-    public Object getData(@PathVariable("pluginIdentifier") final String pluginIdentifier,
-            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments) {
+    public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         Entity entity = null;
@@ -80,11 +88,11 @@ public final class CrudController {
         return viewDefinition.getValue(entity, new HashMap<String, Entity>(), null, "", false);
     }
 
-    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/dataUpdate", method = RequestMethod.POST)
+    @RequestMapping(value = CONTROLLER_PATH + "/dataUpdate", method = RequestMethod.POST)
     @ResponseBody
-    public Object getDataUpdate(@PathVariable("pluginIdentifier") final String pluginIdentifier,
-            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute("jsonBody") final StringBuilder body) {
+    public Object getDataUpdate(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute(JSON_BODY) final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -100,11 +108,11 @@ public final class CrudController {
         return newViewValue;
     }
 
-    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/save", method = RequestMethod.POST)
+    @RequestMapping(value = CONTROLLER_PATH + "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Object performSave(@PathVariable("pluginIdentifier") final String pluginIdentifier,
-            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute("jsonBody") final StringBuilder body) {
+    public Object performSave(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute(JSON_BODY) final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -133,11 +141,11 @@ public final class CrudController {
         return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
     }
 
-    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/delete", method = RequestMethod.POST)
+    @RequestMapping(value = CONTROLLER_PATH + "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Object performDelete(@PathVariable("pluginIdentifier") final String pluginIdentifier,
-            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute("jsonBody") final StringBuilder body) {
+    public Object performDelete(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute(JSON_BODY) final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -161,11 +169,11 @@ public final class CrudController {
         return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
     }
 
-    @RequestMapping(value = "page/{pluginIdentifier}/{viewName}/move", method = RequestMethod.POST)
+    @RequestMapping(value = CONTROLLER_PATH + "/move", method = RequestMethod.POST)
     @ResponseBody
-    public Object performMove(@PathVariable("pluginIdentifier") final String pluginIdentifier,
-            @PathVariable("viewName") final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute("jsonBody") final StringBuilder body) {
+    public Object performMove(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
+            @ModelAttribute(JSON_BODY) final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -231,7 +239,7 @@ public final class CrudController {
         }
     }
 
-    @InitBinder("jsonBody")
+    @InitBinder(JSON_BODY)
     public void initBinder(final WebDataBinder binder, final HttpServletRequest request) {
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;

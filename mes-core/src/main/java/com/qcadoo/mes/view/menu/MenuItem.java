@@ -11,27 +11,27 @@ public abstract class MenuItem {
 
     private final String pluginIdentifier;
 
-    public MenuItem(String name, String label, String pluginIdentifier) {
+    public MenuItem(final String name, final String label, final String pluginIdentifier) {
         this.name = name;
         this.label = label;
         this.pluginIdentifier = pluginIdentifier;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public String getLabel() {
+    public final String getLabel() {
         return label;
     }
 
-    public String getPluginIdentifier() {
+    public final String getPluginIdentifier() {
         return pluginIdentifier;
     }
 
     public abstract String getPage();
 
-    public JSONObject getAsJson() throws JSONException {
+    public final JSONObject getAsJson() throws JSONException {
         JSONObject itemObject = new JSONObject();
         itemObject.put("name", getName());
         itemObject.put("label", getLabel());
