@@ -75,31 +75,26 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Override
     public FieldType passwordType() {
-        // TODO masz don't create new fieltType every time, use some cache
         return new PasswordType(passwordEncoder);
     }
 
     @Override
     public EnumeratedType enumType(final String... values) {
-        // TODO masz don't create new fieltType every time, use some cache
         return new EnumType(values);
     }
 
     @Override
     public EnumeratedType dictionaryType(final String dictionaryName) {
-        // TODO masz don't create new fieltType every time, use some cache
         return new DictionaryType(dictionaryName, dictionaryService);
     }
 
     @Override
     public LookupedType lazyBelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName) {
-        // TODO masz don't create new fieltType every time, use some cache
         return new BelongsToEntityType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService, true);
     }
 
     @Override
     public LookupedType eagerBelongsToType(final String pluginIdentifier, final String entityName, final String lookupFieldName) {
-        // TODO masz don't create new fieltType every time, use some cache
         return new BelongsToEntityType(pluginIdentifier, entityName, lookupFieldName, dataDefinitionService, false);
     }
 

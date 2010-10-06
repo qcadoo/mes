@@ -86,8 +86,12 @@ public abstract class AbstractComponent<T> implements Component<T> {
             throws JSONException {
         ViewValue<T> value = castComponentValue(selectedEntities, viewObject);
         if (viewObject != null && value != null) {
-            value.setEnabled(viewObject.getBoolean("enabled"));
-            value.setVisible(viewObject.getBoolean("visible"));
+            if (!viewObject.isNull("enabled")) {
+                value.setEnabled(viewObject.getBoolean("enabled"));
+            }
+            if (!viewObject.isNull("visible")) {
+                value.setVisible(viewObject.getBoolean("visible"));
+            }
         }
         return value;
     }
