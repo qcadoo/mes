@@ -1,56 +1,93 @@
 .gridTable {
 	background: #ccc;
 	margin: 0px;
-	
 }
 
-.gridHeaderCell {
+.gridTable .gridHeaderCell {
 	background: #ccc;
 	border-bottom: solid black 1px;
 }
-.gridFooterCell {
+.gridTable .gridFooterCell {
 	background: #ccc;
 	border-top: solid black 1px;
 }
 
-.grid_header .pageInput,
-.grid_footer .pageInput {
+.gridTable .grid_header .pageInput,
+.gridTable .grid_footer .pageInput {
 	border: solid black 1px;
 }
 
-.grid_header .pageInput.inputError,
-.grid_footer .pageInput.inputError {
+.gridTable .grid_header .pageInput.inputError,
+.gridTable .grid_footer .pageInput.inputError {
 	border: solid red 1px;
 }
 
-.grid_header {
+.gridTable .grid_header {
 	background: #ccc;
 	line-height: 30px;
 }
 
-.grid_paging {
+.gridTable .grid_header .grid_header_gridName {
+	padding-left: 10px;
+}
+
+.gridTable .grid_header .grid_header_totalNumberOfEntities {
+	color: #666666;
+	padding-left: 10px;
+}
+
+.gridTable .grid_paging {
 	float: right;
 	margin-right: 10px;
 }
 
-.grid_footer {
+.gridTable .grid_footer {
 	background: #ccc;
 	height: 30px;
 	line-height: 30px;
 }
 
-a.gridLink {
+.gridTable a.gridLink {
 	color: #1C54C4;
 	font-weight: bold;
+	text-decoration: underline;
 }
-a.gridLink:hover {
-	color: #1C94C4;
+.gridTable a.gridLink:hover {
+	color: #5289f9;
 }
 
-.lightRow {
+.gridTable .lightRow {
 	background: #ffffff;
 }
-
-.darkRow {
+.gridTable .darkRow {
 	background: #eeeeee;
 }
+.gridTable .lightRow.ui-state-hover {
+	background: #cccccc;
+	border-color: #cccccc;
+	color: black;
+	
+}
+.gridTable .darkRow.ui-state-hover {
+	background: #bbbbbb;
+	border-color: #bbbbbb;
+	color: black;
+}
+.gridTable .lightRow.ui-state-highlight,
+.gridTable .darkRow.ui-state-highlight {
+	background: #efd24a;
+	border-color: #efd24a;
+}
+.gridTable .ui-th-column {
+	background: #555555;
+	color: white;
+}
+.gridTable .ui-th-column:hover {
+	background: #888888;
+	border-color: #888888;
+}
+.gridTable .ui-th-column.sortColumn {
+	background: #a28a41;
+	border-color: #a28a41;
+}
+

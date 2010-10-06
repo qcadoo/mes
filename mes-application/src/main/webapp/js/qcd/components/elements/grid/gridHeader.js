@@ -3,9 +3,10 @@ QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.grid = QCD.components.elements.grid || {};
 
-QCD.components.elements.grid.GridHeader = function(_gridController) {
+QCD.components.elements.grid.GridHeader = function(_gridController, _gridName) {
 	
 	var gridController = _gridController;
+	var gridName = _gridName;
 	
 	var pagingVars = new Object();
 	pagingVars.first = null;
@@ -14,6 +15,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	
 	var header = null;
 	var footer = null;
+	
+	var entitiesNumberSpan;
 	
 	function constructor(_this) {
 		pagingVars.first = 0;
@@ -64,6 +67,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 		footer.getPagingElements().pageNo.val(currPage);
 		header.getPagingElements().recordsNoSelect.val(pagingVars.max);
 		footer.getPagingElements().recordsNoSelect.val(pagingVars.max);
+		
+		entitiesNumberSpan.html("("+pagingVars.totalNumberOfEntities+")");
 	}
 		
 	this.paging_prev = function() {
@@ -143,7 +148,9 @@ QCD.components.elements.grid.GridHeader = function(_gridController) {
 	
 	this.getHeaderElement = function() {
 		var headerElement = $("<div>").addClass('grid_header');
-		headerElement.append($("<span>").html("GRID"));
+		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
+		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
+		headerElement.append(entitiesNumberSpan);
 		headerElement.append($("<button>").html("filtr").click(gridController.onFilterButtonClicked));
 		headerElement.append($("<button>").html("new").click(gridController.onNewButtonClicked));
 		headerElement.append($("<button>").html("delete").click(gridController.onDeleteButtonClicked));
