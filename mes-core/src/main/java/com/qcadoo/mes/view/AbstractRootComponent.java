@@ -111,6 +111,7 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
 
     private void getListenersForPath(final String path, final Set<String> paths) {
         Component<?> component = componentRegistry.get(path);
+
         if (component == null) {
             return;
         }
@@ -127,6 +128,7 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
             }
         }
         Set<String> listenerPaths = new HashSet<String>(component.getListeners());
+
         listenerPaths.removeAll(paths);
         paths.addAll(listenerPaths);
         for (String listenerPath : listenerPaths) {
