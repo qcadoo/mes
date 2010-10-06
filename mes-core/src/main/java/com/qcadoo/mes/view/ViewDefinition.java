@@ -21,7 +21,7 @@ public interface ViewDefinition {
     ViewValue<Object> castValue(Map<String, Entity> selectedEntities, JSONObject jsonObject);
 
     ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalJsonValue, String triggerComponentName, boolean saveOrDelete);
+            final ViewValue<Object> globalJsonValue, String triggerComponentName, boolean saveOrDelete, final Locale locale);
 
     void updateTranslations(final Map<String, String> translations, final Locale locale);
 

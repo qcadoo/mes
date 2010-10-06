@@ -48,7 +48,8 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
 
     @Override
     public ViewValue<ComboBoxValue> getComponentValue(final Entity entity, final Entity parentEntity,
-            final Map<String, Entity> selectedEntities, final ViewValue<ComboBoxValue> viewValue, final Set<String> pathsToUpdate) {
+            final Map<String, Entity> selectedEntities, final ViewValue<ComboBoxValue> viewValue,
+            final Set<String> pathsToUpdate, final Locale locale) {
         Object value = getFieldValue(entity, getFieldPath());
         String strValue;
         if (value == null) {
@@ -61,7 +62,7 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
 
         ErrorMessage validationError = getFieldError(entity, getFieldPath());
         if (validationError != null && validationError.getMessage() != null) {
-            newViewValue.addErrorMessage(validationError.getMessage());
+            newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
         }
 
         return newViewValue;

@@ -19,9 +19,9 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
             throws JSONException;
 
     public abstract T getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<T> viewValue, final Set<String> pathsToUpdate);
+            final ViewValue<T> viewValue, final Set<String> pathsToUpdate, final Locale locale);
 
-    public abstract void addContainerMessages(final Entity entity, final ViewValue<T> viewValue);
+    public abstract void addContainerMessages(final Entity entity, final ViewValue<T> viewValue, final Locale locale);
 
     public AbstractContainerComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
@@ -56,7 +56,8 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
 
     @Override
     public final ViewValue<T> getComponentValue(final Entity entity, final Entity parentEntity,
-            final Map<String, Entity> selectedEntities, final ViewValue<T> viewValue, final Set<String> pathsToUpdate) {
+            final Map<String, Entity> selectedEntities, final ViewValue<T> viewValue, final Set<String> pathsToUpdate,
+            final Locale locale) {
 
         ViewValue<T> value = new ViewValue<T>();
 
@@ -64,16 +65,16 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
 
         for (Component<?> component : components.values()) {
             ViewValue<?> componentViewValue = viewValue != null ? viewValue.getComponent(component.getName()) : null;
-            ViewValue<?> newViewValue = component.getValue(entity, selectedEntities, componentViewValue, pathsToUpdate);
+            ViewValue<?> newViewValue = component.getValue(entity, selectedEntities, componentViewValue, pathsToUpdate, locale);
             if (newViewValue != null) {
                 isAnyViewValueNotNull = true;
                 value.addComponent(component.getName(), newViewValue);
             }
         }
 
-        value.setValue(getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate));
+        value.setValue(getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate, locale));
 
-        addContainerMessages(entity, value);
+        addContainerMessages(entity, value, locale);
 
         if (isAnyViewValueNotNull || value.getValue() != null) {
             return value;

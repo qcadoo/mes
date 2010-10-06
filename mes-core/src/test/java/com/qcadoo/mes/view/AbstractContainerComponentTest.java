@@ -196,18 +196,21 @@ public class AbstractContainerComponentTest {
         viewValue.addComponent("child1Name", viewChild1Value);
         viewValue.addComponent("child2Name", viewChild2Value);
 
-        given(container.getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate)).willReturn("testValue");
-        given(child1.getValue(entity, selectedEntities, viewChild1Value, pathsToUpdate)).willReturn(new ViewValue("child1Value"));
-        given(child2.getValue(entity, selectedEntities, viewChild2Value, pathsToUpdate)).willReturn(new ViewValue("child2Value"));
+        given(container.getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH)).willReturn(
+                "testValue");
+        given(child1.getValue(entity, selectedEntities, viewChild1Value, pathsToUpdate, Locale.ENGLISH)).willReturn(
+                new ViewValue("child1Value"));
+        given(child2.getValue(entity, selectedEntities, viewChild2Value, pathsToUpdate, Locale.ENGLISH)).willReturn(
+                new ViewValue("child2Value"));
 
         // when
-        ViewValue<Object> newViewValue = container.getValue(entity, selectedEntities, viewValue, pathsToUpdate);
+        ViewValue<Object> newViewValue = container.getValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH);
 
         // then
-        verify(container).addContainerMessages(entity, newViewValue);
-        verify(container).getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate);
-        verify(child1).getValue(entity, selectedEntities, viewChild1Value, pathsToUpdate);
-        verify(child2).getValue(entity, selectedEntities, viewChild2Value, pathsToUpdate);
+        verify(container).addContainerMessages(entity, newViewValue, Locale.ENGLISH);
+        verify(container).getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH);
+        verify(child1).getValue(entity, selectedEntities, viewChild1Value, pathsToUpdate, Locale.ENGLISH);
+        verify(child2).getValue(entity, selectedEntities, viewChild2Value, pathsToUpdate, Locale.ENGLISH);
         assertEquals("testValue", newViewValue.getValue());
         assertEquals(2, newViewValue.getComponents().size());
         assertEquals("child1Value", newViewValue.getComponent("child1Name").getValue());
@@ -235,18 +238,20 @@ public class AbstractContainerComponentTest {
 
         Entity entity = new DefaultEntity(1L);
 
-        given(container.getContainerValue(entity, selectedEntities, null, pathsToUpdate)).willReturn(null);
-        given(child1.getValue(entity, selectedEntities, null, pathsToUpdate)).willReturn(new ViewValue("child1Value"));
-        given(child2.getValue(entity, selectedEntities, null, pathsToUpdate)).willReturn(new ViewValue("child2Value"));
+        given(container.getContainerValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH)).willReturn(null);
+        given(child1.getValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH)).willReturn(
+                new ViewValue("child1Value"));
+        given(child2.getValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH)).willReturn(
+                new ViewValue("child2Value"));
 
         // when
-        ViewValue<Object> newViewValue = container.getValue(entity, selectedEntities, null, pathsToUpdate);
+        ViewValue<Object> newViewValue = container.getValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH);
 
         // then
-        verify(container).addContainerMessages(entity, newViewValue);
-        verify(container).getContainerValue(entity, selectedEntities, null, pathsToUpdate);
-        verify(child1).getValue(entity, selectedEntities, null, pathsToUpdate);
-        verify(child2).getValue(entity, selectedEntities, null, pathsToUpdate);
+        verify(container).addContainerMessages(entity, newViewValue, Locale.ENGLISH);
+        verify(container).getContainerValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH);
+        verify(child1).getValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH);
+        verify(child2).getValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH);
         assertEquals(null, newViewValue.getValue());
         assertEquals("child1Value", newViewValue.getComponent("child1Name").getValue());
         assertEquals("child2Value", newViewValue.getComponent("child2Name").getValue());
@@ -276,12 +281,12 @@ public class AbstractContainerComponentTest {
         viewValue.addComponent("child1Name", viewChild1Value);
         viewValue.addComponent("child2Name", viewChild2Value);
 
-        given(container.getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate)).willReturn(null);
-        given(child1.getValue(entity, selectedEntities, viewChild1Value, pathsToUpdate)).willReturn(null);
-        given(child2.getValue(entity, selectedEntities, viewChild2Value, pathsToUpdate)).willReturn(null);
+        given(container.getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH)).willReturn(null);
+        given(child1.getValue(entity, selectedEntities, viewChild1Value, pathsToUpdate, Locale.ENGLISH)).willReturn(null);
+        given(child2.getValue(entity, selectedEntities, viewChild2Value, pathsToUpdate, Locale.ENGLISH)).willReturn(null);
 
         // when
-        ViewValue<Object> newViewValue = container.getValue(entity, selectedEntities, viewValue, pathsToUpdate);
+        ViewValue<Object> newViewValue = container.getValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH);
 
         // then
         assertNull(newViewValue);
@@ -307,12 +312,12 @@ public class AbstractContainerComponentTest {
 
         @Override
         public Object getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-                final ViewValue<Object> viewValue, final Set<String> pathsToUpdate) {
+                final ViewValue<Object> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
             return null;
         }
 
         @Override
-        public void addContainerMessages(final Entity entity, final ViewValue<Object> viewValue) {
+        public void addContainerMessages(final Entity entity, final ViewValue<Object> viewValue, final Locale locale) {
         }
 
         @Override

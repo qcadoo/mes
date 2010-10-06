@@ -3,6 +3,7 @@ package com.qcadoo.mes.view;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     }
 
     @Override
-    public final void addContainerMessages(final Entity entity, final ViewValue<Object> viewValue) {
+    public final void addContainerMessages(final Entity entity, final ViewValue<Object> viewValue, final Locale locale) {
     }
 
     @Override
@@ -63,7 +64,7 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
 
     @Override
     public final Object getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> viewValue, final Set<String> pathsToUpdate) {
+            final ViewValue<Object> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
         return null;
     }
 

@@ -76,15 +76,17 @@ public final class CrudController {
     @RequestMapping(value = CONTROLLER_PATH + "/dataUpdate", method = RequestMethod.POST)
     @ResponseBody
     public Object getDataUpdate(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
+            final Locale locale) {
         // TODO masz remove me
-        return getData(pluginIdentifier, viewName, body);
+        return getData(pluginIdentifier, viewName, body, locale);
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/data", method = RequestMethod.POST)
     @ResponseBody
     public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
+            final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
@@ -111,7 +113,7 @@ public final class CrudController {
             }
         }
 
-        return viewDefinition.getValue(entity, selectedEntities, viewValue, componentName, false);
+        return viewDefinition.getValue(entity, selectedEntities, viewValue, componentName, false, locale);
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/save", method = RequestMethod.POST)
@@ -145,7 +147,7 @@ public final class CrudController {
         selectedEntities.put(triggerComponentName, entity);
 
         ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
-                true);
+                true, locale);
 
         responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
                 translationService.translate("commons.message.save", locale));
@@ -179,7 +181,7 @@ public final class CrudController {
         }
 
         ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
-                true);
+                true, locale);
 
         if (id != null) {
             responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
@@ -220,7 +222,7 @@ public final class CrudController {
         }
 
         ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
-                true);
+                true, locale);
 
         if (id != null) {
             responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
