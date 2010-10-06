@@ -264,8 +264,8 @@ public class ViewDefinitionParserTest {
         assertFalse((Boolean) grid.getOptions().get("multiselect"));
         assertFalse((Boolean) grid.getOptions().get("paginable"));
         assertFalse(grid.getOptions().containsKey("height"));
-        assertTrue((Boolean) grid.getOptions().get("canDelete"));
-        assertTrue((Boolean) grid.getOptions().get("canNew"));
+        assertFalse((Boolean) grid.getOptions().get("canDelete"));
+        assertFalse((Boolean) grid.getOptions().get("canNew"));
         assertTrue(((Set<ColumnDefinition>) getField(grid, "orderableColumns")).isEmpty());
         assertTrue(((Set<FieldDefinition>) getField(grid, "searchableFields")).isEmpty());
         assertEquals("name", columns.get(0).getName());
