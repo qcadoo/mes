@@ -75,7 +75,7 @@ QCD.elements.FormElement = function(args, _mainController) {
 	}
 	
 	showSaveInfo = function() {
-		$('#'+parameters.name+'_globalInfo').show().html(mainController.getTranslation('commons.form.message.save'));
+		$('#'+parameters.name+'_globalInfo').show().html(mainController.getTranslation('commons.message.save'));
 	}
 	
 	hideSaveInfo = function() {

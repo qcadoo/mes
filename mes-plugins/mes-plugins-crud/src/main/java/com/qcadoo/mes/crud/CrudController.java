@@ -139,6 +139,10 @@ public final class CrudController {
         selectedEntities.put(triggerComponentName, entity);
 
         return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+
+        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
+        //
+        // return responseViewValue;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/delete", method = RequestMethod.POST)
@@ -167,6 +171,12 @@ public final class CrudController {
         }
 
         return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+
+        // if (id != null) {
+        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.delete", locale));
+        // }
+        //
+        // return responseViewValue;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/move", method = RequestMethod.POST)
@@ -185,12 +195,14 @@ public final class CrudController {
 
         ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
 
+        Long id = null;
+
         if (StringUtils.hasText(arguments.get("offset"))) {
             int offset = Integer.valueOf(arguments.get("offset"));
 
             SelectableComponent component = (SelectableComponent) viewDefinition.lookupComponent(triggerComponentName);
 
-            Long id = component.getSelectedEntityId(viewValue);
+            id = component.getSelectedEntityId(viewValue);
 
             if (id != null) {
                 ((Component<?>) component).getDataDefinition().move(id, offset);
@@ -198,6 +210,12 @@ public final class CrudController {
         }
 
         return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+
+        // if (id != null) {
+        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.move", locale));
+        // }
+        //
+        // return responseViewValue;
     }
 
     private void addMessageToModel(final Map<String, String> arguments, final ModelAndView modelAndView) {
