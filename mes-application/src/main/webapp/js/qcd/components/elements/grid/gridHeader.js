@@ -26,6 +26,9 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	
 	var entitiesNumberSpan;
 	
+	var enabled = false;
+	var rowIndex = null;
+	
 	function constructor(_this) {
 		pagingVars.first = 0;
 		pagingVars.max = 30;
@@ -167,20 +170,25 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		if (gridParameters.filter) {
 			headerElements.filtrButton = $("<button>").html("filtr").click(gridController.onFilterButtonClicked);
 			headerElement.append(headerElements.filtrButton);
+			headerElements.filtrButton.attr("disabled", true);
 		}
 		if (gridParameters.canNew) {
 			headerElements.newButton = $("<button>").html("new").click(gridController.onNewButtonClicked);
 			headerElement.append(headerElements.newButton);
+			headerElements.newButton.attr("disabled", true);
 		}
 		if (gridParameters.canDelete) {
 			headerElements.deleteButton = $("<button>").html("delete").click(gridController.onDeleteButtonClicked);
 			headerElement.append(headerElements.deleteButton);
+			headerElements.deleteButton.attr("disabled", true);
 		}
-		if (gridParameters.canUp) {
+		if (gridParameters.orderable) {
 			headerElements.upButton = $("<button>").html("up").click(gridController.onUpButtonClicked);
 			headerElement.append(headerElements.upButton);
+			headerElements.upButton.attr("disabled", true);
 			headerElements.downButton = $("<button>").html("down").click(gridController.onDownButtonClicked);
 			headerElement.append(headerElements.downButton);
+			headerElements.downButton.attr("disabled", true);
 		}
 		if (gridParameters.paging) {
 			headerElement.append(header.getHeaderElement(pagingVars));
@@ -195,48 +203,81 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		return $("<div>").addClass('grid_footer').append(footer.getHeaderElement(pagingVars));
 	}
 	
-	this.setEnabled = function(enabled) {
-		if (headerElements.filtrButton != null) {
-			headerElements.filtrButton.attr("disabled", !enabled);
-		}
-		if (headerElements.newButton != null) {
-			headerElements.newButton.attr("disabled", !enabled);
-		}
-		if (headerElements.deleteButton != null) {
-			headerElements.deleteButton.attr("disabled", !enabled);
-		}
-		if (headerElements.upButton != null) {
-			headerElements.upButton.attr("disabled", !enabled);
-		}
-		if (headerElements.downButton != null) {
-			headerElements.downButton.attr("disabled", !enabled);
-		}
+	this.setEnabled = function(_enabled) {
+		enabled = _enabled;
+		refreshButtons();
 	}
 	
-	this.onRowClicked = function(rowIndex) {
-		//paging
-		var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
-		var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
-		if (pagesNo == 0) {
-			pagesNo = 1;
-		}
-		if (headerElements.upButton != null) {
-			if (rowIndex == 1 && currPage == 1) {
-				headerElements.upButton.attr("disabled", true);
+	this.onRowClicked = function(_rowIndex) {
+		rowIndex = _rowIndex;
+		refreshButtons();
+	}
+	
+	function refreshButtons() {
+		if (enabled == false) {
+			if (headerElements.filtrButton != null) {
+				headerElements.filtrButton.attr("disabled", !enabled);
+			}
+			if (headerElements.newButton != null) {
+				headerElements.newButton.attr("disabled", !enabled);
+			}
+			if (headerElements.deleteButton != null) {
+				headerElements.deleteButton.attr("disabled", !enabled);
+			} 
+			if (headerElements.upButton != null) {
+				headerElements.upButton.attr("disabled", !enabled);
+			}
+			if (headerElements.downButton != null) {
+				headerElements.downButton.attr("disabled", !enabled);
+			}
+		} else {
+			if (headerElements.filtrButton != null) {
+				headerElements.filtrButton.attr("disabled", !enabled);
+			}
+			if (headerElements.newButton != null) {
+				headerElements.newButton.attr("disabled", !enabled);
+			}
+			if (headerElements.deleteButton != null && rowIndex != null) {
+				headerElements.deleteButton.attr("disabled", !enabled);
+			}
+			if (gridParameters.paging) {
+				var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
+				var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
+				if (pagesNo == 0) {
+					pagesNo = 1;
+				}
+				if (headerElements.upButton != null) {
+					if (rowIndex == 1 && currPage == 1) {
+						headerElements.upButton.attr("disabled", true);
+					} else {
+						headerElements.upButton.attr("disabled", false);
+					}
+				}
+				if (headerElements.downButton != null) {
+					if (rowIndex == pagingVars.totalNumberOfEntities % pagingVars.max && currPage == pagesNo) {
+						headerElements.downButton.attr("disabled", true);	
+					} else {
+						headerElements.downButton.attr("disabled", false);
+					}
+				}
 			} else {
-				headerElements.upButton.attr("disabled", false);
+				if (headerElements.upButton != null) {
+					if (rowIndex == 1) {
+						headerElements.upButton.attr("disabled", true);
+					} else {
+						headerElements.upButton.attr("disabled", false);
+					}
+				}
+				if (headerElements.downButton != null) {
+					if (rowIndex == pagingVars.totalNumberOfEntities) {	
+						headerElements.downButton.attr("disabled", true);
+					} else {
+						headerElements.downButton.attr("disabled", false);
+					}
+				}
 			}
 		}
-		if (headerElements.downButton != null) {
-			if (rowIndex == pagingVars.totalNumberOfEntities % pagingVars.max && currPage == pagesNo) {
-				headerElements.downButton.attr("disabled", true);	
-			} else {
-				headerElements.downButton.attr("disabled", false);
-			}
-		}
-		if (headerElements.deleteButton != null) {
-			headerElements.deleteButton.attr("disabled", false);
-		}
+		
 	}
 	
 	function filterClicked() {
