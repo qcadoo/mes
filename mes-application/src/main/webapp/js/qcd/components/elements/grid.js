@@ -76,7 +76,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		//gridParameters.paging = parameters.options.paging == "true" ? true : false;
 		//gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
-		//gridParameters.filter = parameters.options.filter == "true" ? true : false;
+		gridParameters.filter = options.filter ? true : false;
 		
 		gridParameters.fullScreen = options.fullScreen;
 		if (options.height) { gridParameters.height = parseInt(options.height); }
@@ -130,11 +130,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			currentState.paging = state.paging;
 			headerController.updatePagingParameters(currentState.paging, 0);
 		}
-//		if (value.filters && value.filters.length > 0) {
-//			grid[0].toggleToolbar();
-//			searchEnabled = true;
-//			currentState.filters = value.filters;
-//		}
+		if (value.filters && value.filters.length > 0) {
+			currentState.filters = value.filters;
+			grid[0].toggleToolbar();
+			searchEnabled = true;			
+		}
 	}
 	
 	this.setComponentValue = function(value) {
