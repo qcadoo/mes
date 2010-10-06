@@ -84,10 +84,16 @@
 }
 .gridTable .ui-th-column:hover {
 	background: #888888;
-	border-color: #888888;
+	border-color: #bbbbbb;
 }
 .gridTable .ui-th-column.sortColumn {
 	background: #a28a41;
 	border-color: #a28a41;
+}
+.gridTable .ui-search-toolbar {
+	border-color: #555555;
+}
+.gridTable .ui-search-toolbar th:hover {
+	background: #555555;
 }
 

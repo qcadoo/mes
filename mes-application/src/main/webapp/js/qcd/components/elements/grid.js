@@ -130,10 +130,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			currentState.paging = state.paging;
 			headerController.updatePagingParameters(currentState.paging, 0);
 		}
-		if (value.filters && value.filters.length > 0) {
-			currentState.filters = value.filters;
+		if (state.filters && state.filters.length > 0) {
+			currentState.filters = state.filters;
 			grid[0].toggleToolbar();
-			searchEnabled = true;			
+			searchEnabled = true;
+			
+			
+			
+			updateFullScreenSize();
 		}
 	}
 	
