@@ -60,6 +60,8 @@
 				<option type="multiselect" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="500" />
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
 			</component>
 			<component type="grid" name="substitutesComponentGrid"
 				source="#{mainWindow.substitutesGrid}.components">
@@ -72,6 +74,8 @@
 				<option type="paginable" value="false" />
 				<option type="multiselect" value="false" />
 				<option type="height" value="150" />
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
 			</component>
 		</component>
 	</view>
