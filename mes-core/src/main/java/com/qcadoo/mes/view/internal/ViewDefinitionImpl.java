@@ -69,7 +69,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     @Override
     public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalViewValue, final String triggerComponentName, final boolean saveOrDelete) {
+            final ViewValue<Object> globalViewValue, final String triggerComponentName, final boolean saveOrDelete,
+            final Locale locale) {
         Set<String> pathsToUpdate = null;
         if (triggerComponentName != null) {
             pathsToUpdate = root.lookupListeners(triggerComponentName);
@@ -81,7 +82,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             pathsToUpdate = new HashSet<String>();
         }
         ViewValue<Object> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
-                globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate));
+                globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate, locale));
         callOnViewHook(value, triggerComponentName);
         return value;
 

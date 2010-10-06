@@ -14,7 +14,8 @@ public interface Component<T> {
 
     String getType();
 
-    ViewValue<T> getValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<?> viewValue, Set<String> pathsToUpdate);
+    ViewValue<T> getValue(Entity entity, Map<String, Entity> selectedEntities, ViewValue<?> viewValue, Set<String> pathsToUpdate,
+            Locale locale);
 
     String getName();
 

@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 
 public interface TranslationService {
 
@@ -17,5 +18,7 @@ public interface TranslationService {
     String translate(final List<String> messageCodes, final Locale locale, final Object... args);
 
     String getEntityFieldMessageCode(DataDefinition dataDefinition, String fieldName);
+
+    String translateErrorMessage(ErrorMessage validationError, Locale locale);
 
 }
