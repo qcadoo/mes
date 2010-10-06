@@ -8,14 +8,18 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	var gridController = _gridController;
 	var gridName = _gridName;
 	var gridParameters = _gridParameters;
-	// gridParameters.canNew
-	// gridParameters.canDelete
-	// gridParameters.paging
 	
 	var pagingVars = new Object();
 	pagingVars.first = null;
 	pagingVars.max = null;
 	pagingVars.totalNumberOfEntities = null;
+	
+	var headerElements = new Object();
+	headerElements.filtrButton = null;
+	headerElements.newButton = null;
+	headerElements.deleteButton = null;
+	headerElements.upButton = null;
+	headerElements.downButton = null;
 	
 	var header = null;
 	var footer = null;
@@ -155,25 +159,81 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
-		headerElement.append($("<button>").html("filtr").click(gridController.onFilterButtonClicked));
-		headerElement.append($("<button>").html("new").click(gridController.onNewButtonClicked));
-		headerElement.append($("<button>").html("delete").click(gridController.onDeleteButtonClicked));
-		headerElement.append($("<button>").html("up").click(gridController.onUpButtonClicked));
-		headerElement.append($("<button>").html("down").click(gridController.onDownButtonClicked));
-		headerElement.append(header.getHeaderElement(pagingVars));
+		if (gridParameters.canFiltr) {
+			headerElements.filtrButton = $("<button>").html("filtr").click(gridController.onFilterButtonClicked);
+			headerElement.append(headerElements.filtrButton);
+		}
+		if (gridParameters.canNew) {
+			headerElements.newButton = $("<button>").html("new").click(gridController.onNewButtonClicked);
+			headerElement.append(headerElements.newButton);
+		}
+		if (gridParameters.canDelete) {
+			headerElements.deleteButton = $("<button>").html("delete").click(gridController.onDeleteButtonClicked);
+			headerElement.append(headerElements.deleteButton);
+		}
+		if (gridParameters.canUp) {
+			headerElements.upButton = $("<button>").html("up").click(gridController.onUpButtonClicked);
+			headerElement.append(headerElements.upButton);
+		}
+		if (gridParameters.canDown) {
+			headerElements.downButton = $("<button>").html("down").click(gridController.onDownButtonClicked);
+			headerElement.append(headerElements.downButton);
+		}
+		if (gridParameters.paging) {
+			headerElement.append(header.getHeaderElement(pagingVars));
+		}
 		return headerElement;
 	}
 	
 	this.getFooterElement = function() {
+		if (!gridParameters.paging) {
+			return null;
+		}
 		return $("<div>").addClass('grid_footer').append(footer.getHeaderElement(pagingVars));
 	}
 	
 	this.setEnabled = function(enabled) {
-		
+		if (headerElements.filtrButton != null) {
+			headerElements.filtrButton.attr("disabled", !enabled);
+		}
+		if (headerElements.newButton != null) {
+			headerElements.newButton.attr("disabled", !enabled);
+		}
+		if (headerElements.deleteButton != null) {
+			headerElements.deleteButton.attr("disabled", !enabled);
+		}
+		if (headerElements.upButton != null) {
+			headerElements.upButton.attr("disabled", !enabled);
+		}
+		if (headerElements.downButton != null) {
+			headerElements.downButton.attr("disabled", !enabled);
+		}
 	}
 	
-	this.onRowClicked = function(rowId) {
-		
+	this.onRowClicked = function(rowIndex) {
+		//paging
+		var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
+		var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
+		if (pagesNo == 0) {
+			pagesNo = 1;
+		}
+		if (headerElements.upButton != null) {
+			if (rowIndex == 1 && currPage == 1) {
+				headerElements.upButton.attr("disabled", true);
+			} else {
+				headerElements.upButton.attr("disabled", false);
+			}
+		}
+		if (headerElements.downButton != null) {
+			if (rowIndex == pagingVars.totalNumberOfEntities % pagingVars.max && currPage == pagesNo) {
+				headerElements.downButton.attr("disabled", true);	
+			} else {
+				headerElements.downButton.attr("disabled", false);
+			}
+		}
+		if (headerElements.deleteButton != null) {
+			headerElements.deleteButton.attr("disabled", false);
+		}
 	}
 	
 	function filterClicked() {
