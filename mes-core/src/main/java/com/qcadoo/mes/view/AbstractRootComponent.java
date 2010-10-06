@@ -37,9 +37,6 @@ public abstract class AbstractRootComponent extends AbstractContainerComponent<O
     public final void initialize() {
         registerComponents(getComponents());
         initializeComponents(0);
-        // for (Component<?> component : componentRegistry.values()) {
-        // System.out.println(" 1 ----> " + component);
-        // }
     }
 
     @Override

@@ -73,28 +73,18 @@ public final class CrudController {
         return modelAndView;
     }
 
-    @RequestMapping(value = CONTROLLER_PATH + "/data", method = RequestMethod.GET)
-    @ResponseBody
-    public Object getOldData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments) {
-        // TODO masz remove me
-        return getData(pluginIdentifier, viewName, arguments, null);
-    }
-
     @RequestMapping(value = CONTROLLER_PATH + "/dataUpdate", method = RequestMethod.POST)
     @ResponseBody
     public Object getDataUpdate(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body) {
         // TODO masz remove me
-        return getData(pluginIdentifier, viewName, arguments, body);
+        return getData(pluginIdentifier, viewName, body);
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/data", method = RequestMethod.POST)
     @ResponseBody
     public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
@@ -105,13 +95,20 @@ public final class CrudController {
 
         if (body != null && StringUtils.hasText(body.toString())) {
             JSONObject jsonBody = getJsonBody(body);
-            JSONObject jsonObject = getJsonObject(jsonBody);
-            viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
-            componentName = getComponentName(jsonBody);
-        }
 
-        if (arguments.get("entityId") != null) {
-            entity = viewDefinition.getDataDefinition().get(Long.parseLong(arguments.get("entityId")));
+            JSONObject jsonObject = getJsonObject(jsonBody);
+
+            if (jsonObject != null) {
+                viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+            }
+
+            componentName = getComponentName(jsonBody);
+
+            String entityId = getJsonString(jsonBody, "entityId");
+
+            if (entityId != null) {
+                entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
+            }
         }
 
         return viewDefinition.getValue(entity, selectedEntities, viewValue, componentName, false);
@@ -120,8 +117,8 @@ public final class CrudController {
     @RequestMapping(value = CONTROLLER_PATH + "/save", method = RequestMethod.POST)
     @ResponseBody
     public Object performSave(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
+            final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -147,18 +144,20 @@ public final class CrudController {
 
         selectedEntities.put(triggerComponentName, entity);
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+                true);
 
-        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
-        //
-        // return responseViewValue;
+        responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
+                translationService.translate("commons.message.save", locale));
+
+        return responseViewValue;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/delete", method = RequestMethod.POST)
     @ResponseBody
     public Object performDelete(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
+            final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -179,20 +178,22 @@ public final class CrudController {
             selectedEntities.remove(triggerComponentName);
         }
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+                true);
 
-        // if (id != null) {
-        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.delete", locale));
-        // }
-        //
-        // return responseViewValue;
+        if (id != null) {
+            responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
+                    translationService.translate("commons.message.delete", locale));
+        }
+
+        return responseViewValue;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/move", method = RequestMethod.POST)
     @ResponseBody
     public Object performMove(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
-            @ModelAttribute(JSON_BODY) final StringBuilder body) {
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
+            final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         JSONObject jsonBody = getJsonBody(body);
@@ -206,25 +207,27 @@ public final class CrudController {
 
         Long id = null;
 
-        if (StringUtils.hasText(arguments.get("offset"))) {
-            int offset = Integer.valueOf(arguments.get("offset"));
+        String offset = getJsonString(jsonBody, "offset");
 
+        if (offset != null) {
             SelectableComponent component = (SelectableComponent) viewDefinition.lookupComponent(triggerComponentName);
 
             id = component.getSelectedEntityId(viewValue);
 
             if (id != null) {
-                ((Component<?>) component).getDataDefinition().move(id, offset);
+                ((Component<?>) component).getDataDefinition().move(id, Integer.valueOf(offset));
             }
         }
 
-        return viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName, true);
+        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+                true);
 
-        // if (id != null) {
-        // responseViewValue.addSuccessMessage(translationService.translate("commons.message.move", locale));
-        // }
-        //
-        // return responseViewValue;
+        if (id != null) {
+            responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
+                    translationService.translate("commons.message.move", locale));
+        }
+
+        return responseViewValue;
     }
 
     private void addMessageToModel(final Map<String, String> arguments, final ModelAndView modelAndView) {
@@ -239,12 +242,21 @@ public final class CrudController {
     }
 
     private String getComponentName(final JSONObject json) {
-        return getJsonString(json, "componentName").replaceAll("-", ".");
+        String componentName = getJsonString(json, "componentName");
+        if (componentName != null) {
+            return componentName.replaceAll("-", ".");
+        } else {
+            return null;
+        }
     }
 
     private String getJsonString(final JSONObject json, final String name) {
         try {
-            return json.getString(name);
+            if (!json.isNull(name)) {
+                return json.getString(name);
+            } else {
+                return null;
+            }
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -252,7 +264,11 @@ public final class CrudController {
 
     private JSONObject getJsonObject(final JSONObject json) {
         try {
-            return json.getJSONObject("data");
+            if (!json.isNull("data")) {
+                return json.getJSONObject("data");
+            } else {
+                return null;
+            }
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

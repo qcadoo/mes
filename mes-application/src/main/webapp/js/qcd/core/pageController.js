@@ -26,15 +26,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 			setComponentState(serializationObject);
 		}
 		
-		QCDConnector.sendGet("data", parameters, function(response) {
+		//QCDConnector.sendGet("data", parameters, function(response) {
+		//	setValueData(response);
+		//});
+		
+		parameters.data = getValueData();
+		var valuesJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("data", valuesJson, function(response) {
 			setValueData(response);
 		});
-		
-//		parameters.data = getValueData();
-//		var valuesJson = JSON.stringify(parameters);
-//		QCDConnector.sendPost("data", valuesJson, function(response) {
-//			setValueData(response);
-//		});
 	}
 	
 	this.getViewName = function() {
