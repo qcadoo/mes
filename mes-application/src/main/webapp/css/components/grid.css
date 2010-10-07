@@ -21,11 +21,13 @@
 .gridTable .grid_header .pageInput,
 .gridTable .grid_footer .pageInput {
 	border: solid black 1px;
+	width: 20px;
 }
 
 .gridTable .grid_header .pageInput.inputError,
 .gridTable .grid_footer .pageInput.inputError {
 	border: solid red 1px;
+	width: 20px;
 }
 
 .gridTable .grid_header {
@@ -146,7 +148,8 @@
 	background: #555555;
 }
 
-.gridTable .grid_header .headerButton {
+.gridTable .grid_header .headerButton,
+.gridTable .grid_footer .headerButton {
 	display: inline-block;
 	border: solid black 1px;
 	padding: 0px 5px 0px 5px;
@@ -154,16 +157,19 @@
 	cursor: pointer;
 }
 
-.gridTable .grid_header .headerButton:hover {
+.gridTable .grid_header .headerButton:hover,
+.gridTable .grid_footer .headerButton:hover {
 	background: #888888;
 }
 
-.gridTable .grid_header .headerButtonDisabled {
+.gridTable .grid_header .headerButtonDisabled,
+.gridTable .grid_footer .headerButtonDisabled {
 	border: solid #A9A9A9 2px;
 	color: #A9A9A9;
 }
 
-.gridTable .grid_header .headerButtonDisabled:hover {
+.gridTable .grid_header .headerButtonDisabled:hover,
+.gridTable .grid_footer .headerButtonDisabled:hover {
 	background: #cccccc;
 }
 
