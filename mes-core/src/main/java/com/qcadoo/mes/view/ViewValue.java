@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
+
 public final class ViewValue<T> {
 
     private Boolean visible;
@@ -62,6 +64,24 @@ public final class ViewValue<T> {
 
     public void addComponent(final String name, final ViewValue<?> value) {
         this.components.put(name, value);
+    }
+
+    public List<Map<String, String>> getMessages() {
+        List<Map<String, String>> messages = new ArrayList<Map<String, String>>();
+
+        for (String message : errorMessages) {
+            messages.add(ImmutableMap.of("message", message, "type", "error"));
+        }
+
+        for (String message : successMessages) {
+            messages.add(ImmutableMap.of("message", message, "type", "success"));
+        }
+
+        for (String message : infoMessages) {
+            messages.add(ImmutableMap.of("message", message, "type", "info"));
+        }
+
+        return messages;
     }
 
     public List<String> getErrorMessages() {

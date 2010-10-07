@@ -303,8 +303,8 @@ public class CrudControllerTest {
 
         // then
         assertEquals(newViewValue, viewValue);
-        assertEquals(1, viewValue.getComponent("root").getSuccessMessages().size());
-        assertEquals("saved", viewValue.getComponent("root").getSuccessMessages().get(0));
+        assertEquals(1, viewValue.getSuccessMessages().size());
+        assertEquals("saved", viewValue.getSuccessMessages().get(0));
         verify(component.getDataDefinition()).save(entity);
         verify(entity).setField("contextField", 11L);
     }
@@ -352,8 +352,8 @@ public class CrudControllerTest {
 
         // then
         assertEquals(newViewValue, viewValue);
-        assertEquals(1, viewValue.getComponent("root").getSuccessMessages().size());
-        assertEquals("deleted", viewValue.getComponent("root").getSuccessMessages().get(0));
+        assertEquals(1, viewValue.getSuccessMessages().size());
+        assertEquals("deleted", viewValue.getSuccessMessages().get(0));
         verify(((Component) component).getDataDefinition()).delete(12L);
         verify(entity, never()).setField(anyString(), anyLong());
     }
@@ -392,8 +392,8 @@ public class CrudControllerTest {
 
         // then
         assertEquals(newViewValue, viewValue);
-        assertEquals(1, viewValue.getComponent("root").getSuccessMessages().size());
-        assertEquals("moved", viewValue.getComponent("root").getSuccessMessages().get(0));
+        assertEquals(1, viewValue.getSuccessMessages().size());
+        assertEquals("moved", viewValue.getSuccessMessages().get(0));
         verify(((Component) component).getDataDefinition()).move(12L, 1);
         verify(entity, never()).setField(anyString(), anyLong());
     }
