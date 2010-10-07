@@ -1,6 +1,7 @@
 .gridNotFullScreen {
 	border: solid black 1px;
 	margin: 10px;
+	padding-right: 2px;
 }
 
 .gridTable {
@@ -14,7 +15,7 @@
 }
 .gridTable .gridFooterCell {
 	background: #ccc;
-	border-top: solid black 1px;
+	
 }
 
 .gridTable .grid_header .pageInput,
@@ -50,6 +51,7 @@
 	background: #ccc;
 	height: 30px;
 	line-height: 30px;
+	border-top: solid black 1px;
 }
 
 .gridTable a.gridLink {
@@ -83,6 +85,32 @@
 	background: #efd24a;
 	border-color: #efd24a;
 }
+
+.gridTable .ui-grid-ico-sort {
+	display: none;
+}
+.gridTable .ui-jqgrid-sortable {
+	
+}
+.gridTable .ui-jqgrid-sortable .sortArrow.ui-jqgrid-sortable {
+	width: 16px;
+	height: 16px;
+	visible: none;
+	display: inline-block;
+	visibility: hidden;
+	background: transparent url('../images/sortArrows.png') no-repeat 0 -16px;
+	vertical-align: top;
+	margin-left: 5px;
+}
+.gridTable .sortColumn .ui-jqgrid-sortable .sortArrow.ui-jqgrid-sortable.upArrow {
+	visibility: visible;
+	background-position: 0 0;
+}
+.gridTable .sortColumn .ui-jqgrid-sortable .sortArrow.ui-jqgrid-sortable.downArrow {
+	visibility: visible;
+	background-position: 0 -16px;
+}
+
 .gridTable .ui-th-column {
 	background: #555555;
 	color: white;
