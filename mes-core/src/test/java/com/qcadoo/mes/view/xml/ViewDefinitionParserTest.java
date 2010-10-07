@@ -291,8 +291,8 @@ public class ViewDefinitionParserTest {
         assertFalse((Boolean) grid2.getOptions().get("canDelete"));
         assertFalse((Boolean) grid2.getOptions().get("canNew"));
         assertEquals(Integer.valueOf(450), grid2.getOptions().get("height"));
-        assertEquals(1, ((Set<ColumnDefinition>) getField(grid2, "orderableColumns")).size());
-        assertThat(((Set<ColumnDefinition>) getField(grid2, "orderableColumns")), hasItems(columns2.get(0)));
+        assertEquals(1, ((Set<String>) getField(grid2, "orderableColumns")).size());
+        assertThat(((Set<String>) getField(grid2, "orderableColumns")), hasItems(columns2.get(0).getName()));
         assertEquals(2, ((Set<FieldDefinition>) getField(grid2, "searchableFields")).size());
         assertThat(((Set<FieldDefinition>) getField(grid2, "searchableFields")),
                 hasItems(dataDefinitionB.getField("name"), dataDefinitionB.getField("beanA")));

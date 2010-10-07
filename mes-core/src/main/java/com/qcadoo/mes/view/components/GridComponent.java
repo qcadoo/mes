@@ -51,7 +51,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     private final Set<FieldDefinition> searchableFields = new HashSet<FieldDefinition>();
 
-    private final Set<ColumnDefinition> orderableColumns = new HashSet<ColumnDefinition>();
+    private Set<String> orderableColumns = new HashSet<String>();
 
     private final Map<String, ColumnDefinition> columns = new LinkedHashMap<String, ColumnDefinition>();
 
@@ -107,9 +107,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                     searchableFields.add(field);
                 }
             } else if ("orderable".equals(option.getType())) {
-                for (ColumnDefinition column : getColumns(option.getValue())) {
-                    orderableColumns.add(column);
-                }
+                orderableColumns = getColumnNames(option.getValue());
             } else if ("column".equals(option.getType())) {
                 ColumnDefinition columnDefinition = new ColumnDefinition(option.getAtrributeValue("name"));
                 for (FieldDefinition field : getFields(option.getAtrributeValue("fields"))) {
@@ -139,6 +137,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         addOption("columns", getColumnsForOptions());
         addOption("fields", getFieldsForOptions(getDataDefinition().getFields()));
         addOption("sortable", !orderableColumns.isEmpty());
+        addOption("sortColumns", orderableColumns);
         addOption("filter", !searchableFields.isEmpty());
         addOption("canDelete", deletable);
         addOption("canNew", creatable);
@@ -146,10 +145,10 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     }
 
-    private Set<ColumnDefinition> getColumns(final String columns) {
-        Set<ColumnDefinition> set = new HashSet<ColumnDefinition>();
+    private Set<String> getColumnNames(final String columns) {
+        Set<String> set = new HashSet<String>();
         for (String column : columns.split("\\s*,\\s*")) {
-            set.add(this.columns.get(column));
+            set.add(column);
         }
         return set;
     }

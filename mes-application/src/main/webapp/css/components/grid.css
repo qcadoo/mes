@@ -116,12 +116,28 @@
 	color: white;
 }
 .gridTable .ui-th-column:hover {
-	background: #888888;
 	border-color: #bbbbbb;
+}
+.gridTable .ui-jqgrid .ui-jqgrid-sortable {
+	cursor: default;
+}
+.gridTable .ui-jqgrid tr.ui-row-ltr td {
+	cursor: default;
+}
+.gridTable .ui-jqgrid .ui-th-column.sortableColumn,
+.gridTable .ui-jqgrid .ui-th-column.sortableColumn .ui-jqgrid-sortable {
+	cursor: pointer;
+}
+.gridTable .ui-th-column.sortableColumn:hover {
+	background: #888888;
 }
 .gridTable .ui-th-column.sortColumn {
 	background: #a28a41;
-	border-color: #a28a41;
+	border-color: #bbbbbb;
+}
+.gridTable .ui-th-column.sortColumn:hover {
+	background: #c7aa50;
+	border-color: #bbbbbb;
 }
 .gridTable .ui-search-toolbar {
 	border-color: #555555;

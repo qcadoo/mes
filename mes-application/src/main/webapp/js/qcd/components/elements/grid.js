@@ -43,9 +43,17 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var column = JSON.parse(options.columns[i]);
 			columnModel[column.name] = column;
 			var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+column.name;
+			var isSortable = false;
+			for (var sortColIter in options.sortColumns) {
+				if (options.sortColumns[sortColIter] == column.name) {
+					isSortable = true;
+					break;
+				}
+			}
 			colNames.push(mainController.getTranslation(nameToTranslate)+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
-			colModel.push({name:column.name, index:column.name, width:column.width, sortable: true});
+			colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable});
 		}
+		gridParameters.sortColumns = options.sortColumns;
 		gridParameters.element = elementPath+"_grid";
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
@@ -244,6 +252,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		
+		for (var i in gridParameters.sortColumns) {
+			$("#"+elementPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
+		}
+		
 		if (gridParameters.width) {
 			element.width(gridParameters.width);
 		}
@@ -251,7 +263,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			if (! gridParameters.height) {
 				element.height("100%");
 			}
-			
 			$(window).bind('resize', function() {
 				updateFullScreenSize();
 			});
