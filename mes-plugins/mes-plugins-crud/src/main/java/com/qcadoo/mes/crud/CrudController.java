@@ -188,6 +188,8 @@ public final class CrudController {
 
         if (id != null) {
             responseViewValue.addSuccessMessage(translationService.translate("commons.message.delete", locale));
+        } else {
+            responseViewValue.addErrorMessage(translationService.translate("commons.message.deleteFailed", locale));
         }
 
         return responseViewValue;
@@ -228,6 +230,8 @@ public final class CrudController {
 
         if (id != null) {
             responseViewValue.addSuccessMessage(translationService.translate("commons.message.move", locale));
+        } else {
+            responseViewValue.addErrorMessage(translationService.translate("commons.message.moveFailed", locale));
         }
 
         return responseViewValue;

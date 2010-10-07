@@ -253,7 +253,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         ListData listData = generateListData(searchCriteriaBuilder.list(), joinFieldName, belongsToEntityId);
 
         if (viewValue != null) {
-            copyRestrictionsOrderAndPaging(listData, viewValue.getValue());
+            copyRestrictionsOrderPagingAndSelectedEntityId(listData, viewValue.getValue());
         }
 
         return new ViewValue<ListData>(listData);
@@ -305,11 +305,12 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         }
     }
 
-    private void copyRestrictionsOrderAndPaging(final ListData listData, final ListData oldListData) {
+    private void copyRestrictionsOrderPagingAndSelectedEntityId(final ListData listData, final ListData oldListData) {
         listData.setFirstResult(oldListData.getFirstResult());
         listData.setMaxResults(oldListData.getMaxResults());
         listData.setOrderColumn(oldListData.getOrderColumn());
         listData.setOrderAsc(oldListData.isOrderAsc());
+        listData.setSelectedEntityId(oldListData.getSelectedEntityId());
         for (Map<String, String> filter : oldListData.getFilters()) {
             listData.addFilter(filter.get("column"), filter.get("value"));
         }

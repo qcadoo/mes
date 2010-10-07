@@ -55,6 +55,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             return wrapIntoViewValue(root.castValue(selectedEntities,
                     viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
         } catch (JSONException e) {
+            e.printStackTrace();
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
