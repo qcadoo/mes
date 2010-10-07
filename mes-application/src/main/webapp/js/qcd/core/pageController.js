@@ -109,6 +109,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	}
 	
 	this.performRibbonAction = function(ribbonAction) {
+		window.parent.addMessage("info", ribbonAction);
 		var actionParts = ribbonAction.split(";");
 		var actions = new Array();
 		for (var actionIter in actionParts) {

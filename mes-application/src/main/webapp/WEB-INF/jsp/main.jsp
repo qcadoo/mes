@@ -17,6 +17,7 @@
 	<script type="text/javascript" src="js/qcd/menu/model.js"></script>
 	<script type="text/javascript" src="js/qcd/menu/menuController.js"></script>
 	<script type="text/javascript" src="js/qcd/core/windowController.js"></script>
+	<script type="text/javascript" src="js/qcd/core/messagesController.js"></script>
 	
 	<script type="text/javascript">
 
@@ -49,6 +50,10 @@
 
 		window.onSessionExpired = function(serializationObject) {
 			windowController.onSessionExpired(serializationObject);
+		}
+
+		window.addMessage = function(type, content) {
+			windowController.addMessage(type, content);
 		}
 	
 		</script>
