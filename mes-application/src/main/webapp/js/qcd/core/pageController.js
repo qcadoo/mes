@@ -96,16 +96,18 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	}
 	
 	this.performDelete = function(componentName, entityId) {
-		QCD.info("delete " +componentName+" - "+entityId);
-		var parameters = {
-			componentName: componentName,
-			data: getValueData()
-		};
-		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("delete", parametersJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
-		});
+		if (window.confirm(getTranslation("commons.confirm.deleteMessage"))) {
+			QCD.info("delete " +componentName+" - "+entityId);
+			var parameters = {
+				componentName: componentName,
+				data: getValueData()
+			};
+			var parametersJson = JSON.stringify(parameters);
+			QCDConnector.sendPost("delete", parametersJson, function(response) {
+				QCD.info(response);
+				setValueData(response);
+			});
+		}
 	}
 	
 	this.performRibbonAction = function(ribbonAction) {
@@ -208,6 +210,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	this.getTranslation = function(key) {
 		return window.translationsMap[key] ? window.translationsMap[key] : "TT: "+key;
 	}
+	var getTranslation = this.getTranslation;
 	
 	this.goToPage = function(url) {
 		var serializationObject = {

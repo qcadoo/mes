@@ -353,7 +353,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	
 	this.performDelete = function(actionsPerformer) {
-		QCD.error("to implement: QCD.components.elements.Grid.performDelete()");
+		mainController.performDelete(elementPath, currentState.selectedEntityId)
 	}
 	var performDelete = this.performDelete;
 	
