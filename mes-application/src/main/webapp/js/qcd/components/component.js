@@ -11,8 +11,8 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	var options;
 	
-	var isVisible;
-	var isEnabled;
+	var isVisible = null;
+	var isEnabled = null;
 	
 	function constructor(_this) {
 		options = QCDOptions.getElementOptions(_this.elementPath);
@@ -45,6 +45,8 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.setState = function(state) {
+		this.setEnabled(state.enabled);
+		this.setVisible(state.visible);
 		if (this.setComponentState) {
 			this.setComponentState(state.value);
 		} else {
