@@ -13,6 +13,8 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	
 	var messagesSpan = $("#"+element.attr('id')+"_messagesSpan");
 	
+	var valueToSelect = null;
+	
 	this.getComponentValue = function() {
 		var selectedVal = select.val();
 		if (!selectedVal || selectedVal.trim() == "") {
@@ -25,14 +27,6 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-		insertValue(value);
-	}
-	
-	this.setComponentState = function(state) {
-		insertValue(state);
-	}
-	
-	function insertValue(value) {
 		var previousSelectedVal = select.val();
 		select.children().remove();
 		select.append("<option value=''></option>");
@@ -40,12 +34,22 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 			var val = value.values[i];
 			select.append("<option value='"+val+"'>"+val+"</option>");
 		}
-		if (value.selectedValue != null) {
-			select.val(value.selectedValue);
+		if (valueToSelect) {
+			select.val(valueToSelect);
+			valueToSelect = null;
 		} else {
-			select.val(previousSelectedVal);
+			if (value.selectedValue != null) {
+				select.val(value.selectedValue);
+			} else {
+				select.val(previousSelectedVal);
+			}
 		}
 	}
+	
+	this.setComponentState = function(state) {
+		valueToSelect = state.selectedValue;
+	}
+	
 	
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {

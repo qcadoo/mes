@@ -83,5 +83,21 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		}
 	}
 	
+	this.performCancel = function(actionsPerformer) {
+		//QCD.error("to implement: QCD.PageController.performCancel()");
+		var parameters = new Object();
+		//if (entityId && entityId.trim() != "") {
+		//	parameters.entityId = entityId;
+		//}
+		parameters.entityId = 1;
+		var valuesJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("data", valuesJson, function(response) {
+			setValueData(response);
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
+		});
+	}
+	
 	constructor(this);
 }

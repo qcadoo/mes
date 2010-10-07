@@ -40,24 +40,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		return pluginIdentifier;
 	}
 	
-	this.performCancel = function(actionsPerformer) {
-		QCD.error("to implement: QCD.PageController.performCancel()");
-		var parameters = new Object();
-		//if (entityId && entityId.trim() != "") {
-		//	parameters.entityId = entityId;
-		//}
-		parameters.entityId = 1;
-		var valuesJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("data", valuesJson, function(response) {
-			setValueData(response);
-			if (actionsPerformer) {
-				actionsPerformer.performNext();
-			}
-		});
-	}
-	
 	this.performNew = function(actionsPerformer) {
-		//QCD.error("to implement: QCD.PageController.performNew()");
 		var parameters = new Object();
 		var valuesJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("data", valuesJson, function(response) {

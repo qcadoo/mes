@@ -35,7 +35,7 @@
 					<bigButtons name="saveBack" action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack">
 						<bigButton name="saveNew" action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel" action="#{mainWindow}.performCancel;" />
+					<smallButton name="cancel" action="#{mainWindow.productDetailsForm}.performCancel;" />
 					<smallButtons name="delete" icon="icon2" action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performBack">
 						<smallButton name="deleteNew" action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performNew;" />
 					</smallButtons>
@@ -86,7 +86,7 @@
 					<bigButton name="back" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performBack;"/>
+					<bigButton name="save" action="#{mainWindow.substitutesDetailsForm}.performSave;"/>
 					<bigButtons name="saveBack" action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performBack">
 						<bigButton name="saveNew" action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
