@@ -187,6 +187,12 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	
 	function setValueData(data) {
 		QCD.debug(data);
+		if (data.messages) {
+			for (var i in data.messages) {
+				var message = data.messages[i];
+				window.parent.addMessage(message.type, message.message);
+			}
+		}
 		for (var i in data.components) {
 			var component = pageComponents[i];
 			component.setValue(data.components[i]);
