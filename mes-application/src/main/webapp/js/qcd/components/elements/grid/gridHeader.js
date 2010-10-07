@@ -236,6 +236,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 			}
 			if (headerElements.deleteButton != null && rowIndex != null) {
 				headerElements.deleteButton.attr("disabled", !enabled);
+			} else {
+				headerElements.deleteButton.attr("disabled", true);
 			}
 			if (gridParameters.paging) {
 				var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;

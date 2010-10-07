@@ -173,6 +173,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		if (currentState.selectedEntityId) {
 			grid.setSelection(currentState.selectedEntityId);
+			var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
+			if (rowIndex != false) {
+				headerController.onRowClicked(rowIndex);	
+			} else {
+				headerController.onRowClicked(null);
+			}
+		} else {
+			headerController.onRowClicked(null);
 		}
 		
 		headerController.updatePagingParameters(currentState.paging, value.totalNumberOfEntities);
