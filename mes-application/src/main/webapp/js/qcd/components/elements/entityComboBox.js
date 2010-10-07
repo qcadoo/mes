@@ -37,6 +37,14 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		insertValue(value);
+	}
+	
+	this.setComponentState = function(state) {
+		insertValue(state);
+	}
+	
+	function insertValue(value) {
 		var previousSelectedVal = select.val();
 		if (value.values != null) {
 			select.children().remove();

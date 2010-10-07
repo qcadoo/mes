@@ -21,6 +21,16 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 		});
 	}
 	
+	this.setComponentState = function(state) {
+		insertValue(state);
+	}
+	
+	function insertValue(value) {
+		button.click(function() {
+			mainController.goToPage(value);
+		});
+	}
+	
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
 			button.removeAttr('disabled');

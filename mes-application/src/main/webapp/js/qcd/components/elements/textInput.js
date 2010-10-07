@@ -28,6 +28,10 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 		input.val(value);
 	}
 	
+	this.setComponentState = function(state) {
+		input.val(state);
+	}
+	
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
 			input.removeAttr('disabled');

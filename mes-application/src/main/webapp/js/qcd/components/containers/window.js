@@ -35,6 +35,8 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	this.setComponentValue = function(value) {
 	}
+	this.setComponentState = function(state) {
+	}
 	
 	this.setMessages = function(messages) {
 		QCD.info(messages);
@@ -51,6 +53,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	this.performCancel = function(actionsPerformer) {
 		mainController.performCancel(actionsPerformer);
+	}
+	this.performNew = function(actionsPerformer) {
+		mainController.performNew(actionsPerformer);
 	}
 	
 	constructor(this);

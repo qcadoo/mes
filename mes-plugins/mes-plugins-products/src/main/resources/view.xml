@@ -52,8 +52,8 @@
 				<option type="height" value="300" />
 			</component>
 			<component type="grid" name="substitutesGrid" source="substitutes">
-				<option type="column" name="number" fields="number" />
-				<option type="column" name="name" fields="name" />
+				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="priority" fields="priority" />
 				<option type="correspondingView" value="products/substituteDetailsView" />
 				<option type="paginable" value="false" />
@@ -68,7 +68,7 @@
 				<option type="column" name="number" fields="product"
 					expression="#product['number']" />
 				<option type="column" name="name" fields="product"
-					expression="#product['name']" />
+					expression="#product['name']" link="true"/>
 				<option type="column" name="quantity" fields="quantity" />
 				<option type="correspondingView" value="products/substituteComponentDetailsView" />
 				<option type="paginable" value="false" />
@@ -87,6 +87,13 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performBack;"/>
+					<bigButtons name="saveBack" action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performBack">
+						<bigButton name="saveNew" action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performNew;" />
+					</bigButtons>
+					<smallButton name="cancel" action="#{mainWindow}.performCancel;" />
+					<smallButtons name="delete" icon="icon2" action="#{mainWindow.substitutesDetailsForm}.performDelete; #{mainWindow}.performBack">
+						<smallButton name="deleteNew" action="#{mainWindow.substitutesDetailsForm}.performDelete; #{mainWindow}.performNew;" />
+					</smallButtons>
 				</group>
 			</ribbon>
 			<component type="form" name="substitutesDetailsForm">
@@ -108,6 +115,13 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performBack;"/>
+					<bigButtons name="saveBack" action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performBack">
+						<bigButton name="saveNew" action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performNew;" />
+					</bigButtons>
+					<smallButton name="cancel" action="#{mainWindow}.performCancel;" />
+					<smallButtons name="delete" icon="icon2" action="#{mainWindow.substitutesComponentDetailsForm}.performDelete; #{mainWindow}.performBack">
+						<smallButton name="deleteNew" action="#{mainWindow.substitutesComponentDetailsForm}.performDelete; #{mainWindow}.performNew;" />
+					</smallButtons>
 				</group>
 			</ribbon>
 			<component type="form" name="substitutesComponentDetailsForm">

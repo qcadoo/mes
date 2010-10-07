@@ -21,6 +21,14 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		insertValue(value);
+	}
+	
+	this.setComponentState = function(state) {
+		insertValue(state);
+	}
+	
+	function insertValue(value) {
 		if (value == 1) {
 			input.attr('checked', true);
 		} else {

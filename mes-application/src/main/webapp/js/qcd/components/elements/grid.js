@@ -141,6 +141,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
+	this.setComponentState = function(state) {
+	}
+	
 	this.setComponentValue = function(value) {
 		if(value.contextFieldName || value.contextId) {
 			contextFieldName = value.contextFieldName;
@@ -384,7 +387,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.performDelete = function(actionsPerformer) {
 		blockGrid();
-		mainController.performDelete(elementPath, currentState.selectedEntityId);
+		mainController.performDelete(elementPath, currentState.selectedEntityId, actionsPerformer);
 	}
 	var performDelete = this.performDelete;
 	

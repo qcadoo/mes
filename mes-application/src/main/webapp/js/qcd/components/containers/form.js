@@ -9,6 +9,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	var element = _element;
 	var elementName = element.attr('id');
 	
+	var elementPath = this.elementPath;
+	
 	var buttons = new Object();
 	buttons.saveButton = $("#"+elementName+"_saveButton");
 	
@@ -45,6 +47,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		formValue = value;
 	}
 	
+	this.setComponentState = function(state) {
+		formValue = state;
+	}
+	
 	this.setComponentEnabled = function(isEnabled) {
 		if (buttons.saveButton) {
 			if (isEnabled) {
@@ -68,6 +74,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		} else {
 			element.unblock();
 		}
+	}
+	
+	this.performDelete = function(actionsPerformer) {
+		mainController.performDelete(elementPath, formValue, actionsPerformer);
 	}
 	
 	constructor(this);

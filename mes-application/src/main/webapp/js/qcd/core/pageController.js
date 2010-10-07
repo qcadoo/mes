@@ -25,11 +25,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		if (serializationObject) {
 			setComponentState(serializationObject);
 		}
-		
-		//QCDConnector.sendGet("data", parameters, function(response) {
-		//	setValueData(response);
-		//});
-		
 		parameters.data = getValueData();
 		var valuesJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("data", valuesJson, function(response) {
@@ -47,6 +42,30 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	
 	this.performCancel = function(actionsPerformer) {
 		QCD.error("to implement: QCD.PageController.performCancel()");
+		var parameters = new Object();
+		//if (entityId && entityId.trim() != "") {
+		//	parameters.entityId = entityId;
+		//}
+		parameters.entityId = 1;
+		var valuesJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("data", valuesJson, function(response) {
+			setValueData(response);
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
+		});
+	}
+	
+	this.performNew = function(actionsPerformer) {
+		QCD.error("to implement: QCD.PageController.performNew()");
+		var parameters = new Object();
+		var valuesJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("data", valuesJson, function(response) {
+			setValueData(response);
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
+		});
 	}
 		
 	this.getUpdate = function(componentName, value, listeners) {
@@ -95,7 +114,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		});
 	}
 	
-	this.performDelete = function(componentName, entityId) {
+	this.performDelete = function(componentName, entityId, actionsPerformer) {
 		if (window.confirm(getTranslation("commons.confirm.deleteMessage"))) {
 			QCD.info("delete " +componentName+" - "+entityId);
 			var parameters = {
@@ -106,6 +125,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 			QCDConnector.sendPost("delete", parametersJson, function(response) {
 				QCD.info(response);
 				setValueData(response);
+				if (actionsPerformer) {
+					actionsPerformer.performNext();
+				}
 			});
 		}
 	}
