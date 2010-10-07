@@ -149,8 +149,7 @@ public final class CrudController {
         ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
 
-        responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
-                translationService.translate("commons.message.save", locale));
+        responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
 
         return responseViewValue;
     }
@@ -184,8 +183,7 @@ public final class CrudController {
                 true, locale);
 
         if (id != null) {
-            responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
-                    translationService.translate("commons.message.delete", locale));
+            responseViewValue.addSuccessMessage(translationService.translate("commons.message.delete", locale));
         }
 
         return responseViewValue;
@@ -225,8 +223,7 @@ public final class CrudController {
                 true, locale);
 
         if (id != null) {
-            responseViewValue.getComponent(viewDefinition.getRoot().getName()).addSuccessMessage(
-                    translationService.translate("commons.message.move", locale));
+            responseViewValue.addSuccessMessage(translationService.translate("commons.message.move", locale));
         }
 
         return responseViewValue;

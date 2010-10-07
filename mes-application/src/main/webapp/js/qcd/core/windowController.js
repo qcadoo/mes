@@ -12,6 +12,8 @@ QCD.WindowController = function() {
 	
 	var currentPage = null;
 	
+	var messagesController = new QCD.MessagesController();
+	
 	function constructor() {
 		QCD.info("init main page");
 		iframe = $("#mainPageIframe");
@@ -21,6 +23,10 @@ QCD.WindowController = function() {
 			onIframeLoad(this);
 		});
 
+	}
+	
+	this.addMessage = function(type, content) {
+		messagesController.addMessage(type, content);
 	}
 	
 	this.performLogout = function() {
