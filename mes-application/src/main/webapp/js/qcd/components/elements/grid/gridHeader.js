@@ -270,14 +270,14 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 					pagesNo = 1;
 				}
 				if (headerElements.upButton != null) {
-					if (rowIndex == 1 && currPage == 1) {
+					if (rowIndex == 1 && currPage == 1 || rowIndex == null) {
 						setEnabledButton(headerElements.upButton, false);
 					} else {
 						setEnabledButton(headerElements.upButton, true);
 					}
 				}
 				if (headerElements.downButton != null) {
-					if (rowIndex == pagingVars.totalNumberOfEntities % pagingVars.max && currPage == pagesNo) {
+					if (rowIndex == pagingVars.totalNumberOfEntities % pagingVars.max && currPage == pagesNo || rowIndex == null) {
 						setEnabledButton(headerElements.downButton, false);
 					} else {
 						setEnabledButton(headerElements.downButton, true);
@@ -285,14 +285,14 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 				}
 			} else {
 				if (headerElements.upButton != null) {
-					if (rowIndex == 1) {
+					if (rowIndex == 1 || rowIndex == null) {
 						setEnabledButton(headerElements.upButton, false);
 					} else {
 						setEnabledButton(headerElements.upButton, true);
 					}
 				}
 				if (headerElements.downButton != null) {
-					if (rowIndex == pagingVars.totalNumberOfEntities) {	
+					if (rowIndex == pagingVars.totalNumberOfEntities || rowIndex == null) {	
 						setEnabledButton(headerElements.downButton, false);
 					} else {
 						setEnabledButton(headerElements.downButton, true);
@@ -309,10 +309,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 
 	function setEnabledButton(button, enabled) {
 		if (enabled) {
-			QCD.info("enabled");
 			button.removeClass("headerButtonDisabled");
 		} else {
-			QCD.info("disabled");
 			button.addClass("headerButtonDisabled");
 		}		
 	} 
