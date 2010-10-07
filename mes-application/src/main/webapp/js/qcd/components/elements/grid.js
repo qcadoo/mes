@@ -253,6 +253,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			grid.setGridWidth(gridParameters.width, true);
 			grid.setGridHeight(gridParameters.height);
 			$("#"+gridParameters.element+"Header").width(gridParameters.width);
+			element.addClass("gridNotFullScreen");
 		}
 		
 		grid.jqGrid('filterToolbar',{

@@ -1,3 +1,8 @@
+.gridNotFullScreen {
+	border: solid black 1px;
+	margin: 10px;
+}
+
 .gridTable {
 	background: #ccc;
 	margin: 0px;
