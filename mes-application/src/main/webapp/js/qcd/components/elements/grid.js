@@ -62,18 +62,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 		gridParameters.listeners = options.listeners;
-		
-//			gridParameters.paging = parameters.options.paging == "true" ? true : false;
-//			gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
-//			gridParameters.filter = parameters.options.filter == "true" ? true : false;
-//			gridParameters.multiselect = parameters.options.multiselect == "true" ? true : false;
-		
 		gridParameters.canNew = options.canNew;
 		gridParameters.canDelete = options.canDelete;
 		gridParameters.paging = options.paginable;
-		
-		//gridParameters.sortable = parameters.options.sortable == "true" ? true : false;
 		gridParameters.filter = options.filter ? true : false;
+		gridParameters.orderable = options.prioritizable;
 		
 		gridParameters.fullScreen = options.fullScreen;
 		if (options.height) { gridParameters.height = parseInt(options.height); }
@@ -352,11 +345,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.onUpButtonClicked = function() {
-		QCD.error("to implement: QCD.components.elements.Grid.onUpButtonClicked()");
+		blockGrid();
+		mainController.performChangePriority(elementPath, currentState.selectedEntityId, -1);
 	}
 	
 	this.onDownButtonClicked = function() {
-		QCD.error("to implement: QCD.components.elements.Grid.onDownButtonClicked()");
+		blockGrid();
+		mainController.performChangePriority(elementPath, currentState.selectedEntityId, 1);
 	}
 	
 	function updateFullScreenSize() {
@@ -388,6 +383,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	
 	this.performDelete = function(actionsPerformer) {
+		blockGrid();
 		mainController.performDelete(elementPath, currentState.selectedEntityId);
 	}
 	var performDelete = this.performDelete;

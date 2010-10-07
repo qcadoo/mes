@@ -110,6 +110,19 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		}
 	}
 	
+	this.performChangePriority = function(componentName, entityId, direction) {
+		var parameters = {
+			componentName: componentName,
+			data: getValueData(),
+			offset: direction
+		};
+		var parametersJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("move", parametersJson, function(response) {
+			QCD.info(response);
+			setValueData(response);
+		});
+	}
+	
 	this.performRibbonAction = function(ribbonAction) {
 		window.parent.addMessage("info", ribbonAction);
 		var actionParts = ribbonAction.split(";");
