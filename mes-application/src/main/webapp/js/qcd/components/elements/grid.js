@@ -94,7 +94,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function linkClicked(entityId) {
-		QCD.info("linkClicked: "+entityId);
 		redirectToCorrespondingPage("entityId="+entityId);
 	}
 	
@@ -386,8 +385,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	
 	this.performDelete = function(actionsPerformer) {
-		blockGrid();
-		mainController.performDelete(elementPath, currentState.selectedEntityId, actionsPerformer);
+		if (window.confirm(mainController.getTranslation("commons.confirm.deleteMessage"))) {
+			blockGrid();
+			mainController.performDelete(elementPath, currentState.selectedEntityId, actionsPerformer);
+		}
 	}
 	var performDelete = this.performDelete;
 	

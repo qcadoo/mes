@@ -57,7 +57,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	}
 	
 	this.performNew = function(actionsPerformer) {
-		QCD.error("to implement: QCD.PageController.performNew()");
+		//QCD.error("to implement: QCD.PageController.performNew()");
 		var parameters = new Object();
 		var valuesJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("data", valuesJson, function(response) {
@@ -115,21 +115,19 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	}
 	
 	this.performDelete = function(componentName, entityId, actionsPerformer) {
-		if (window.confirm(getTranslation("commons.confirm.deleteMessage"))) {
-			QCD.info("delete " +componentName+" - "+entityId);
-			var parameters = {
-				componentName: componentName,
-				data: getValueData()
-			};
-			var parametersJson = JSON.stringify(parameters);
-			QCDConnector.sendPost("delete", parametersJson, function(response) {
-				QCD.info(response);
-				setValueData(response);
-				if (actionsPerformer) {
-					actionsPerformer.performNext();
-				}
-			});
-		}
+		QCD.info("delete " +componentName+" - "+entityId);
+		var parameters = {
+			componentName: componentName,
+			data: getValueData()
+		};
+		var parametersJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("delete", parametersJson, function(response) {
+			QCD.info(response);
+			setValueData(response);
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
+		});
 	}
 	
 	this.performChangePriority = function(componentName, entityId, direction) {

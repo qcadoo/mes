@@ -44,6 +44,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		QCD.info("FORMVALUE: "+value);
 		formValue = value;
 	}
 	
@@ -77,7 +78,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performDelete = function(actionsPerformer) {
-		mainController.performDelete(elementPath, formValue, actionsPerformer);
+		if (window.confirm(mainController.getTranslation("commons.confirm.deleteMessage"))) {
+			mainController.performDelete(elementPath, formValue, actionsPerformer);
+		}
 	}
 	
 	constructor(this);
