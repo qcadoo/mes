@@ -15,7 +15,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	pagingVars.totalNumberOfEntities = null;
 	
 	var headerElements = new Object();
-	headerElements.filtrButton = null;
+	headerElements.filterButton = null;
 	headerElements.newButton = null;
 	headerElements.deleteButton = null;
 	headerElements.upButton = null;
@@ -150,9 +150,6 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	this.updatePagingParameters = function(_pagingVars, _totalNumberOfEntities) {
-		QCD.info(_totalNumberOfEntities);
-		QCD.info(_pagingVars.first);
-		QCD.info(_pagingVars.max);
 		if (_pagingVars.first > _totalNumberOfEntities) {
 			pagingVars.first = 0;
 			gridController.onPagingParametersChange();
@@ -170,25 +167,25 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
 		if (gridParameters.filter) {
-			headerElements.filtrButton = $("<button>").html("filtr").click(gridController.onFilterButtonClicked);
-			headerElement.append(headerElements.filtrButton);
-			headerElements.filtrButton.attr("disabled", true);
+			headerElements.filterButton = $("<div>").html("Filtruj").addClass("headerButton").click(gridController.onFilterButtonClicked);
+			headerElement.append(headerElements.filterButton);
+			headerElements.filterButton.attr("disabled", true);
 		}
 		if (gridParameters.canNew) {
-			headerElements.newButton = $("<button>").html("new").click(gridController.onNewButtonClicked);
+			headerElements.newButton = $("<div>").html("Nowy").addClass("headerButton").click(gridController.onNewButtonClicked);
 			headerElement.append(headerElements.newButton);
 			headerElements.newButton.attr("disabled", true);
 		}
 		if (gridParameters.canDelete) {
-			headerElements.deleteButton = $("<button>").html("delete").click(gridController.onDeleteButtonClicked);
+			headerElements.deleteButton = $("<div>").html("Usuń").addClass("headerButton").click(gridController.onDeleteButtonClicked);
 			headerElement.append(headerElements.deleteButton);
 			headerElements.deleteButton.attr("disabled", true);
 		}
 		if (gridParameters.orderable) {
-			headerElements.upButton = $("<button>").html("up").click(gridController.onUpButtonClicked);
+			headerElements.upButton = $("<div>").html("Góra").addClass("headerButton").click(gridController.onUpButtonClicked);
 			headerElement.append(headerElements.upButton);
 			headerElements.upButton.attr("disabled", true);
-			headerElements.downButton = $("<button>").html("down").click(gridController.onDownButtonClicked);
+			headerElements.downButton = $("<div>").html("Dół").addClass("headerButton").click(gridController.onDownButtonClicked);
 			headerElement.append(headerElements.downButton);
 			headerElements.downButton.attr("disabled", true);
 		}
@@ -217,8 +214,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	
 	function refreshButtons() {
 		if (!enabled) {
-			if (headerElements.filtrButton != null) {
-				headerElements.filtrButton.attr("disabled", !enabled);
+			if (headerElements.filterButton != null) {
+				headerElements.filterButton.attr("disabled", !enabled);
 			}
 			if (headerElements.newButton != null) {
 				headerElements.newButton.attr("disabled", !enabled);
@@ -233,8 +230,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 				headerElements.downButton.attr("disabled", !enabled);
 			}
 		} else {
-			if (headerElements.filtrButton != null) {
-				headerElements.filtrButton.attr("disabled", !enabled);
+			if (headerElements.filterButton != null) {
+				headerElements.filterButton.attr("disabled", !enabled);
 			}
 			if (headerElements.newButton != null) {
 				headerElements.newButton.attr("disabled", !enabled);
