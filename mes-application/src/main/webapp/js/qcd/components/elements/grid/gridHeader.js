@@ -163,6 +163,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
+		gridParameters.canDelete = true;
 		if (gridParameters.filter) {
 			headerElements.filtrButton = $("<button>").html("filtr").click(gridController.onFilterButtonClicked);
 			headerElement.append(headerElements.filtrButton);
