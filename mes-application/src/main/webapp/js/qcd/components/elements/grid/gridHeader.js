@@ -163,7 +163,6 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
-		gridParameters.canDelete = true;
 		if (gridParameters.filter) {
 			headerElements.filtrButton = $("<button>").html("filtr").click(gridController.onFilterButtonClicked);
 			headerElement.append(headerElements.filtrButton);
@@ -211,7 +210,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	function refreshButtons() {
-		if (enabled == false) {
+		if (!enabled) {
 			if (headerElements.filtrButton != null) {
 				headerElements.filtrButton.attr("disabled", !enabled);
 			}
@@ -234,10 +233,12 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 			if (headerElements.newButton != null) {
 				headerElements.newButton.attr("disabled", !enabled);
 			}
-			if (headerElements.deleteButton != null && rowIndex != null) {
-				headerElements.deleteButton.attr("disabled", !enabled);
-			} else {
-				headerElements.deleteButton.attr("disabled", true);
+			if (headerElements.deleteButton != null) {
+				if (rowIndex != null) {
+					headerElements.deleteButton.attr("disabled", !enabled);
+				} else {
+					headerElements.deleteButton.attr("disabled", true);
+				}
 			}
 			if (gridParameters.paging) {
 				var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
