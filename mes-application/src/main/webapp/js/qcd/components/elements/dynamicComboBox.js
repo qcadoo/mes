@@ -27,6 +27,9 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		if (value == null) {
+			return;
+		}
 		var previousSelectedVal = select.val();
 		select.children().remove();
 		select.append("<option value=''></option>");

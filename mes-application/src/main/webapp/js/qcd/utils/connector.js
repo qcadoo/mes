@@ -43,7 +43,8 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 					}
 				}
 			} else {
-				alert(XMLHttpRequest.statusText);
+				//alert(XMLHttpRequest.statusText);
+				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);
 				}
@@ -79,7 +80,8 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 					}
 				}
 			} else {
-				alert(XMLHttpRequest.statusText);
+				//alert(XMLHttpRequest.statusText);
+				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);
 				}

@@ -40,12 +40,24 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		return pluginIdentifier;
 	}
 	
+	this.performCancel = function(entityId, actionsPerformer) {
+		var parameters = new Object();
+		parameters.entityId = entityId;
+		var valuesJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("data", valuesJson, function(response) {
+			setValueData(response);
+			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
+				actionsPerformer.performNext();
+			}
+		});
+	}
+	
 	this.performNew = function(actionsPerformer) {
 		var parameters = new Object();
 		var valuesJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("data", valuesJson, function(response) {
 			setValueData(response);
-			if (actionsPerformer) {
+			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 				actionsPerformer.performNext();
 			}
 		});
@@ -91,7 +103,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		QCDConnector.sendPost("save", parametersJson, function(response) {
 			QCD.info(response);
 			setValueData(response);
-			if (actionsPerformer) {
+			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 				actionsPerformer.performNext();
 			}
 		});
@@ -107,7 +119,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		QCDConnector.sendPost("delete", parametersJson, function(response) {
 			QCD.info(response);
 			setValueData(response);
-			if (actionsPerformer) {
+			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 				actionsPerformer.performNext();
 			}
 		});
@@ -127,7 +139,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	}
 	
 	this.performRibbonAction = function(ribbonAction) {
-		window.parent.addMessage("info", ribbonAction);
 		var actionParts = ribbonAction.split(";");
 		var actions = new Array();
 		for (var actionIter in actionParts) {
@@ -201,6 +212,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 			var component = pageComponents[i];
 			component.setState(state.components[i]);
 		}
+	}
+	
+	this.showMessage = function(type, content) {
+		window.parent.addMessage(type, content);
 	}
 	
 	function setValueData(data) {
