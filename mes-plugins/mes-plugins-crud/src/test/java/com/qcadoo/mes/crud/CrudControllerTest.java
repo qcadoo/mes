@@ -287,6 +287,7 @@ public class CrudControllerTest {
         ViewValue<Object> newViewValue = new ViewValue<Object>("test");
         newViewValue.addComponent("root", new ViewValue<Object>("root"));
 
+        given(entity.isValid()).willReturn(true);
         given(viewDefinition.getRoot().getName()).willReturn("root");
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
         given(viewDefinition.lookupComponent("trigger.component")).willReturn((Component) component);
