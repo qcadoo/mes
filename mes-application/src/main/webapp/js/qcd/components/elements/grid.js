@@ -117,7 +117,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		if (state.paging && state.paging.first) {
 			currentState.paging = state.paging;
-			headerController.updatePagingParameters(currentState.paging, 0);
 		}
 		if (state.filters && state.filters.length > 0) {
 			currentState.filters = state.filters;
@@ -138,9 +137,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				$("#"+elementPath+"_sortArrow_"+currentState.sort.column).addClass("downArrow");
 			}
 		}
-	}
-	
-	this.setComponentState = function(state) {
 	}
 	
 	this.setComponentValue = function(value) {
