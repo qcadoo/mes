@@ -46,7 +46,7 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 	
 	this.setState = function(state) {
 		if (this.setComponentState) {
-			this.setComponentState(state);
+			this.setComponentState(state.value);
 		} else {
 			QCD.error(this.elementPath+".setComponentState() no implemented");
 		}
