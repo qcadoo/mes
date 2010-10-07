@@ -39,9 +39,21 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	
 	function paging_refresh() {
 		if (gridParameters.paging) {
-			header.getPagingElements().pageNo.val(pagingVars.first);
-			footer.getPagingElements().pageNo.val(pagingVars.first);
-			if (pagingVars.first > 0) {
+			var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
+			if (pagesNo == 0) {
+				pagesNo = 1;
+			}
+			header.getPagingElements().allPagesNoSpan.html(pagesNo);
+			footer.getPagingElements().allPagesNoSpan.html(pagesNo);
+			var currPage = Math.ceil(pagingVars.first / pagingVars.max);
+			if (pagingVars.first % pagingVars.max == 0) {
+				currPage += 1;
+			}
+			header.getPagingElements().pageNo.val(currPage);
+			footer.getPagingElements().pageNo.val(currPage);
+			header.getPagingElements().recordsNoSelect.val(pagingVars.max);
+			footer.getPagingElements().recordsNoSelect.val(pagingVars.max);
+			if (currPage > 1) {
 				header.getPagingElements().prevButton.attr("disabled", false);
 				header.getPagingElements().firstButton.attr("disabled", false);
 				footer.getPagingElements().prevButton.attr("disabled", false);
@@ -65,20 +77,6 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 			}
 			header.getPagingElements().recordsNoSelect.attr("disabled", false);
 			footer.getPagingElements().recordsNoSelect.attr("disabled", false);
-			var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
-			if (pagesNo == 0) {
-				pagesNo = 1;
-			}
-			header.getPagingElements().allPagesNoSpan.html(pagesNo);
-			footer.getPagingElements().allPagesNoSpan.html(pagesNo);
-			var currPage = Math.ceil(pagingVars.first / pagingVars.max);
-			if (pagingVars.first % pagingVars.max == 0) {
-				currPage += 1;
-			}
-			header.getPagingElements().pageNo.val(currPage);
-			footer.getPagingElements().pageNo.val(currPage);
-			header.getPagingElements().recordsNoSelect.val(pagingVars.max);
-			footer.getPagingElements().recordsNoSelect.val(pagingVars.max);
 		}
 		entitiesNumberSpan.html("("+pagingVars.totalNumberOfEntities+")");
 	}
@@ -152,7 +150,15 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	this.updatePagingParameters = function(_pagingVars, _totalNumberOfEntities) {
-		pagingVars.first = _pagingVars.first;
+		QCD.info(_totalNumberOfEntities);
+		QCD.info(_pagingVars.first);
+		QCD.info(_pagingVars.max);
+		if (_pagingVars.first > _totalNumberOfEntities) {
+			pagingVars.first = 0;
+			gridController.onPagingParametersChange();
+		} else {
+			pagingVars.first = _pagingVars.first;
+		}
 		pagingVars.max = _pagingVars.max;
 		pagingVars.totalNumberOfEntities = _totalNumberOfEntities;
 		paging_refresh();
