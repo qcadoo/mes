@@ -348,7 +348,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.onDeleteButtonClicked = function() {
-		 performDelete()
+		 performDelete();
 	}
 	
 	this.onUpButtonClicked = function() {
@@ -388,7 +388,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	
 	this.performDelete = function(actionsPerformer) {
-		mainController.performDelete(elementPath, currentState.selectedEntityId)
+		mainController.performDelete(elementPath, currentState.selectedEntityId);
 	}
 	var performDelete = this.performDelete;
 	

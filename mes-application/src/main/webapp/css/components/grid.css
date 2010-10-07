@@ -146,3 +146,16 @@
 	background: #555555;
 }
 
+.gridTable .grid_header .headerButton {
+	display: inline-block;
+	border: solid black 1px;
+	padding: 0px 5px 0px 5px;
+	line-height: 18px;
+	cursor: pointer;
+}
+
+.gridTable .grid_header .headerButton:hover {
+	background: #888888;
+}
+
+
