@@ -350,10 +350,10 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 			pagingElements.recordsNoSelect.val(pagingVars.max);
 		pagingDiv.append(pagingElements.recordsNoSelect);
 		
-		pagingElements.firstButton =  $("<button>").html("first");
+		pagingElements.firstButton =  $("<div>").html("<<").addClass("headerButton");
 		pagingDiv.append(pagingElements.firstButton);
 		
-		pagingElements.prevButton =  $("<button>").html("prev");
+		pagingElements.prevButton =  $("<div>").html("<").addClass("headerButton");
 		pagingDiv.append(pagingElements.prevButton);
 
 		var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
@@ -365,14 +365,14 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 		var pageInfoSpan = $("<span>").addClass('grid_paging_pageInfo');
 			pagingElements.pageNo = $("<input type='text'></input>").addClass('pageInput');
 			pageInfoSpan.append(pagingElements.pageNo.val(currPage));
-			pageInfoSpan.append('<span>z</span>');
+			pageInfoSpan.append('<span> z </span>');
 			pagingElements.allPagesNoSpan = $("<span>");
 			pageInfoSpan.append(pagingElements.allPagesNoSpan.html(pagesNo));
 		pagingDiv.append(pageInfoSpan);
 	
-		pagingElements.nextButton =  $("<button>").html("next");
+		pagingElements.nextButton =  $("<div>").html(">").addClass("headerButton");
 		pagingDiv.append(pagingElements.nextButton);
-		pagingElements.lastButton =  $("<button>").html("last");
+		pagingElements.lastButton =  $("<div>").html(">>").addClass("headerButton");
 		pagingDiv.append(pagingElements.lastButton);
 		
 		pagingElements.firstButton.click(gridHeader.paging_first);
