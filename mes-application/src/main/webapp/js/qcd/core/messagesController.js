@@ -4,6 +4,10 @@ var pnotify_stack = {"dir1": "up", "dir2": "left", "firstpos1": 15, "firstpos2":
 
 QCD.MessagesController = function() {
 
+	this.clearMessager = function() {
+		$.pnotify_remove_all()
+	}
+	
 	this.addMessage = function(type, content) { // type = [info|error|success]
 		contents = content.split('\n')
 		
@@ -26,8 +30,8 @@ QCD.MessagesController = function() {
 			pnotify_notice_icon: type == 'success' ? 'ui-icon ui-icon-success' : 'ui-icon ui-icon-notify',
 			pnotify_error_icon: 'ui-icon ui-icon-error',
 			pnotify_opacity: .9,
-			pnotify_delay: 8000,
-			pnotify_hide: type == 'error' ? false : true
+			pnotify_delay: 4000,
+			pnotify_hide: true // type == 'error' ? false : true
 		});
 		
 	}

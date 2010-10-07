@@ -149,7 +149,11 @@ public final class CrudController {
         ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
 
-        responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
+        if (entity.isValid()) {
+            responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
+        } else {
+            responseViewValue.addErrorMessage(translationService.translate("commons.message.saveFailed", locale));
+        }
 
         return responseViewValue;
     }
