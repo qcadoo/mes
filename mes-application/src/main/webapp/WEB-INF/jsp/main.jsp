@@ -11,8 +11,10 @@
 	<link rel="stylesheet" href="css/menuTopLevel.css" type="text/css" />
 	<link rel="stylesheet" href="css/menu.css" type="text/css" />
 	<link rel="stylesheet" href="css/menuRibbon.css" type="text/css" />
-	
+	<link rel="stylesheet" href="css/notification.css" type="text/css" />
+
 	<script type="text/javascript" src="js/lib/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.pnotify.min.js"></script>
 	<script type="text/javascript" src="js/qcd/utils/logger.js"></script>
 	<script type="text/javascript" src="js/qcd/menu/model.js"></script>
 	<script type="text/javascript" src="js/qcd/menu/menuController.js"></script>
@@ -80,7 +82,7 @@
 		</tr>
 		<tr id="mainContentRow">
 			<td class="noMargin">
-				<iframe id="mainPageIframe" src="testPage.html" >
+				<iframe id="mainPageIframe" >
 				</iframe>
 			</td>
 		</tr>
