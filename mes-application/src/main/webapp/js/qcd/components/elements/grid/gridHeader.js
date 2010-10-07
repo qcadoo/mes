@@ -167,27 +167,47 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
 		if (gridParameters.filter) {
-			headerElements.filterButton = $("<div>").html("Filtruj").addClass("headerButton").click(gridController.onFilterButtonClicked);
+			headerElements.filterButton = $("<div>").html("Filtruj").addClass("headerButton").click(function(e) {
+				if (!$(e.target).hasClass("headerButtonDisabled")) {
+					gridController.onFilterButtonClicked();
+				}
+			});
 			headerElement.append(headerElements.filterButton);
-			headerElements.filterButton.attr("disabled", true);
+			setEnabledButton(headerElements.filterButton, false);
 		}
 		if (gridParameters.canNew) {
-			headerElements.newButton = $("<div>").html("Nowy").addClass("headerButton").click(gridController.onNewButtonClicked);
+			headerElements.newButton = $("<div>").html("Nowy").addClass("headerButton").click(function(e) {
+				if (!$(e.target).hasClass("headerButtonDisabled")) {
+					gridController.onNewButtonClicked();
+				}
+			});
 			headerElement.append(headerElements.newButton);
-			headerElements.newButton.attr("disabled", true);
+			setEnabledButton(headerElements.newButton, false);
 		}
 		if (gridParameters.canDelete) {
-			headerElements.deleteButton = $("<div>").html("Usuń").addClass("headerButton").click(gridController.onDeleteButtonClicked);
+			headerElements.deleteButton = $("<div>").html("Usuń").addClass("headerButton").click(function(e) {
+				if (!$(e.target).hasClass("headerButtonDisabled")) {
+					gridController.onDeleteButtonClicked();
+				}
+			});
 			headerElement.append(headerElements.deleteButton);
-			headerElements.deleteButton.attr("disabled", true);
+			setEnabledButton(headerElements.deleteButton, false);
 		}
 		if (gridParameters.orderable) {
-			headerElements.upButton = $("<div>").html("Góra").addClass("headerButton").click(gridController.onUpButtonClicked);
+			headerElements.upButton = $("<div>").html("Góra").addClass("headerButton").click(function(e) {
+				if (!$(e.target).hasClass("headerButtonDisabled")) {
+					gridController.onUpButtonClicked();
+				}
+			});
 			headerElement.append(headerElements.upButton);
-			headerElements.upButton.attr("disabled", true);
-			headerElements.downButton = $("<div>").html("Dół").addClass("headerButton").click(gridController.onDownButtonClicked);
+			setEnabledButton(headerElements.upButton, false);
+			headerElements.downButton = $("<div>").html("Dół").addClass("headerButton").click(function(e) {
+				if (!$(e.target).hasClass("headerButtonDisabled")) {
+					gridController.onDownButtonClicked();
+				}
+			});
 			headerElement.append(headerElements.downButton);
-			headerElements.downButton.attr("disabled", true);
+			setEnabledButton(headerElements.downButton, false);
 		}
 		if (gridParameters.paging) {
 			headerElement.append(header.getHeaderElement(pagingVars));
@@ -215,32 +235,32 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	function refreshButtons() {
 		if (!enabled) {
 			if (headerElements.filterButton != null) {
-				headerElements.filterButton.attr("disabled", !enabled);
+				setEnabledButton(headerElements.filterButton, false);
 			}
 			if (headerElements.newButton != null) {
-				headerElements.newButton.attr("disabled", !enabled);
+				setEnabledButton(headerElements.newButton, false);
 			}
 			if (headerElements.deleteButton != null) {
-				headerElements.deleteButton.attr("disabled", !enabled);
+				setEnabledButton(headerElements.deleteButton, false);
 			} 
 			if (headerElements.upButton != null) {
-				headerElements.upButton.attr("disabled", !enabled);
+				setEnabledButton(headerElements.upButton, false);
 			}
 			if (headerElements.downButton != null) {
-				headerElements.downButton.attr("disabled", !enabled);
+				setEnabledButton(headerElements.downButton, false);
 			}
 		} else {
 			if (headerElements.filterButton != null) {
-				headerElements.filterButton.attr("disabled", !enabled);
+				setEnabledButton(headerElements.filterButton, true);
 			}
 			if (headerElements.newButton != null) {
-				headerElements.newButton.attr("disabled", !enabled);
+				setEnabledButton(headerElements.newButton, true);
 			}
 			if (headerElements.deleteButton != null) {
 				if (rowIndex != null) {
-					headerElements.deleteButton.attr("disabled", !enabled);
+					setEnabledButton(headerElements.deleteButton, true);
 				} else {
-					headerElements.deleteButton.attr("disabled", true);
+					setEnabledButton(headerElements.deleteButton, false);
 				}
 			}
 			if (gridParameters.paging) {
@@ -251,31 +271,31 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 				}
 				if (headerElements.upButton != null) {
 					if (rowIndex == 1 && currPage == 1) {
-						headerElements.upButton.attr("disabled", true);
+						setEnabledButton(headerElements.upButton, false);
 					} else {
-						headerElements.upButton.attr("disabled", false);
+						setEnabledButton(headerElements.upButton, true);
 					}
 				}
 				if (headerElements.downButton != null) {
 					if (rowIndex == pagingVars.totalNumberOfEntities % pagingVars.max && currPage == pagesNo) {
-						headerElements.downButton.attr("disabled", true);	
+						setEnabledButton(headerElements.downButton, false);
 					} else {
-						headerElements.downButton.attr("disabled", false);
+						setEnabledButton(headerElements.downButton, true);
 					}
 				}
 			} else {
 				if (headerElements.upButton != null) {
 					if (rowIndex == 1) {
-						headerElements.upButton.attr("disabled", true);
+						setEnabledButton(headerElements.upButton, false);
 					} else {
-						headerElements.upButton.attr("disabled", false);
+						setEnabledButton(headerElements.upButton, true);
 					}
 				}
 				if (headerElements.downButton != null) {
 					if (rowIndex == pagingVars.totalNumberOfEntities) {	
-						headerElements.downButton.attr("disabled", true);
+						setEnabledButton(headerElements.downButton, false);
 					} else {
-						headerElements.downButton.attr("disabled", false);
+						setEnabledButton(headerElements.downButton, true);
 					}
 				}
 			}
@@ -287,6 +307,15 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		gridController.onFilterButtonClicked();
 	}
 
+	function setEnabledButton(button, enabled) {
+		if (enabled) {
+			QCD.info("enabled");
+			button.removeClass("headerButtonDisabled");
+		} else {
+			QCD.info("disabled");
+			button.addClass("headerButtonDisabled");
+		}		
+	} 
 	constructor(this);
 }
 

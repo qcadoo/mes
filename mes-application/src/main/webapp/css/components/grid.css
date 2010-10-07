@@ -158,4 +158,13 @@
 	background: #888888;
 }
 
+.gridTable .grid_header .headerButtonDisabled {
+	border: solid #A9A9A9 2px;
+	color: #A9A9A9;
+}
+
+.gridTable .grid_header .headerButtonDisabled:hover {
+	background: #cccccc;
+}
+
 
