@@ -44,7 +44,7 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 	}
 	
-	this.setState = function(state) {
+	this.setComponentsState = function(state) {
 		if (this.setComponentState) {
 			this.setComponentState(state.value);
 		} else {

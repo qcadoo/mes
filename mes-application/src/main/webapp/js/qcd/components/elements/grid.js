@@ -192,6 +192,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		unblockGrid();
 	}
 	
+	this.getUpdateMode = function() {
+		return QCD.components.Component.UPDATE_MODE_UPDATE;
+	}
+	
 	this.setComponentEnabled = function(isEnabled) {
 		componentEnabled = isEnabled;
 		headerController.setEnabled(isEnabled);

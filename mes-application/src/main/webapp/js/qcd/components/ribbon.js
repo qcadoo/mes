@@ -153,8 +153,6 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	function buttonClicked(e) {
 		var action = e.data.clickAction;
 		var name = e.data.itemName;
-		QCD.info("clicked "+name+": "+action);
-		
 		mainController.performRibbonAction(action);
 	}
 

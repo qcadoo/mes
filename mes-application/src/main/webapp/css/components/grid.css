@@ -155,6 +155,7 @@
 	padding: 0px 5px 0px 5px;
 	line-height: 18px;
 	cursor: pointer;
+	margin-left: 5px;
 }
 
 .gridTable .grid_header .headerButton:hover,
@@ -162,10 +163,11 @@
 	background: #888888;
 }
 
-.gridTable .grid_header .headerButtonDisabled,
-.gridTable .grid_footer .headerButtonDisabled {
+.gridTable .grid_header .headerButton.headerButtonDisabled,
+.gridTable .grid_footer .headerButton.headerButtonDisabled {
 	border: solid #A9A9A9 2px;
 	color: #A9A9A9;
+	cursor: default;
 }
 
 .gridTable .grid_header .headerButtonDisabled:hover,

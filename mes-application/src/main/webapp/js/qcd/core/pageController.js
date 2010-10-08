@@ -24,6 +24,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		}
 		if (serializationObject) {
 			setComponentState(serializationObject);
+			//parameters.entityId = null;
 		}
 		parameters.data = getValueData();
 		var valuesJson = JSON.stringify(parameters);
