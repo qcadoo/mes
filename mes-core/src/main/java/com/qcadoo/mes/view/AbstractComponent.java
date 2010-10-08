@@ -92,6 +92,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
             if (!viewObject.isNull("visible")) {
                 value.setVisible(viewObject.getBoolean("visible"));
             }
+            if (!viewObject.isNull("updateMode")) {
+                value.setUpdateMode("igrore".equals(viewObject.getString("updateMode")) ? "ignore" : "update");
+            } else {
+                value.setUpdateMode("update");
+            }
         }
         return value;
     }
@@ -104,7 +109,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
         listeners = Collections.unmodifiableSet(listeners);
 
         if (shouldNotBeUpdated(pathsToUpdate)) {
-            return (ViewValue<T>) viewValue;
+            return null; // (ViewValue<T>) viewValue;
+        }
+
+        if (!isContainer() && viewValue != null && viewValue.isIgnoreMode()) {
+            return null;
         }
 
         Entity selectedEntity = null;

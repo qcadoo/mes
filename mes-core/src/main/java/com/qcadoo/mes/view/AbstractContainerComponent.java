@@ -72,7 +72,9 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
             }
         }
 
-        value.setValue(getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate, locale));
+        if (viewValue == null || !viewValue.isIgnoreMode()) {
+            value.setValue(getContainerValue(entity, selectedEntities, viewValue, pathsToUpdate, locale));
+        }
 
         addContainerMessages(entity, value, locale);
 

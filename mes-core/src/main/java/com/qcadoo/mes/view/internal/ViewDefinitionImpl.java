@@ -82,11 +82,11 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         } else {
             pathsToUpdate = new HashSet<String>();
         }
+
         ViewValue<Object> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate, locale));
         callOnViewHook(value, triggerComponentName);
         return value;
-
     }
 
     private void callOnViewHook(final ViewValue<Object> value, final String triggerComponentName) {

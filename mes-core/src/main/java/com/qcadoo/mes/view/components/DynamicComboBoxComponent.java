@@ -51,6 +51,7 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
             final Map<String, Entity> selectedEntities, final ViewValue<ComboBoxValue> viewValue,
             final Set<String> pathsToUpdate, final Locale locale) {
         Object value = getFieldValue(entity, getFieldPath());
+
         String strValue;
         if (value == null) {
             strValue = null;

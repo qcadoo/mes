@@ -13,6 +13,8 @@ public final class ViewValue<T> {
 
     private Boolean enabled;
 
+    private String updateMode;
+
     private final List<String> errorMessages = new ArrayList<String>();
 
     private final List<String> infoMessages = new ArrayList<String>();
@@ -52,6 +54,18 @@ public final class ViewValue<T> {
 
     public void setValue(final T value) {
         this.value = value;
+    }
+
+    public String getUpdateMode() {
+        return updateMode;
+    }
+
+    public boolean isIgnoreMode() {
+        return "ignore".equals(updateMode);
+    }
+
+    public void setUpdateMode(final String updateMode) {
+        this.updateMode = updateMode;
     }
 
     public Map<String, ViewValue<?>> getComponents() {
