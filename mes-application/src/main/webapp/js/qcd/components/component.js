@@ -3,6 +3,9 @@ QCD.components = QCD.components || {};
 
 QCD.components.Component = function(_element, _mainController) {
 	
+	QCD.components.Component.UPDATE_MODE_UPDATE = "update";
+	QCD.components.Component.UPDATE_MODE_IGNORE = "ignore";
+	
 	var mainController = _mainController;
 	var element = _element;
 	this.elementPath = element.attr('id');
@@ -14,16 +17,23 @@ QCD.components.Component = function(_element, _mainController) {
 	var isVisible = null;
 	var isEnabled = null;
 	
+	var updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
+	
 	function constructor(_this) {
 		options = QCDOptions.getElementOptions(_this.elementPath);
 		_this.options = options;
 	}
 	
 	this.getValue = function() {
+		var mode = updateMode;
+		if (this.getUpdateMode) {
+			mode = this.getUpdateMode();
+		}
 		return {
 			enabled: this.isEnabled(),
 			visible: this.isVisible(),
 			value: this.getComponentValue(),
+			updateMode: mode,
 			components: this.getComponentsValue()
 		}
 	}
@@ -31,9 +41,9 @@ QCD.components.Component = function(_element, _mainController) {
 	this.setValue = function(value) {
 		this.setEnabled(value.enabled);
 		this.setVisible(value.visible);
-		//if (value.value != null) {
+		if (value.value != null) {
 			this.setComponentValue(value.value);
-		//}
+		}
 		this.setMessages({
 			error: value.errorMessages,
 			info: value.infoMessages,
@@ -42,6 +52,7 @@ QCD.components.Component = function(_element, _mainController) {
 		if (value.components) {
 			this.setComponentsValue(value);
 		}
+		updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
 	}
 	
 	this.setState = function(state) {
@@ -52,6 +63,10 @@ QCD.components.Component = function(_element, _mainController) {
 		} else {
 			QCD.error(this.elementPath+".setComponentState() no implemented");
 		}
+		if (state.components) {
+			this.setComponentsState(state);
+		}
+		updateMode = QCD.components.Component.UPDATE_MODE_IGNORE;
 	}
 	
 	this.setLoading = function(isLoadingVisible) {
