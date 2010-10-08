@@ -13,10 +13,12 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	
 	var messagesSpan = $("#"+element.attr('id')+"_messagesSpan");
 	
+	var selectedValue = null;
+	
 	this.getComponentValue = function() {
 		var selectedVal = select.val();
 		if (!selectedVal || selectedVal.trim() == "") {
-			selectedVal = null;
+			selectedVal = selectedValue;
 		}
 		var value = {
 			selectedValue: selectedVal
@@ -35,15 +37,16 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 			var val = value.values[i];
 			select.append("<option value='"+val+"'>"+val+"</option>");
 		}
-		if (value.selectedValue != null) {
-			select.val(value.selectedValue);
+		selectedValue = value.selectedValue;
+		if (selectedValue != null) {
+			select.val(selectedValue);
 		} else {
 			select.val(previousSelectedVal);
 		}
 	}
 	
 	this.setComponentState = function(state) {
-		//valueToSelect = state.selectedValue;
+		selectedValue = state.selectedValue;
 	}
 	
 	

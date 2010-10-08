@@ -269,6 +269,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			element.addClass("gridNotFullScreen");
 		}
 		
+		blockGrid();
+		
 		grid.jqGrid('filterToolbar',{
 			stringResult: true
 		});

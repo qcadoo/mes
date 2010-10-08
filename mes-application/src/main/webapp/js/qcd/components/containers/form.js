@@ -28,13 +28,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 //	function performCancel() {
 //		mainController.goBack();
 //	}
-	this.performSave = function(actionsPerformer) {
-		mainController.performSave(elementName, actionsPerformer);
-	}
+	
 	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementPath+"_formComponents");
 		_this.constructChildren(childrenElement.children());
+		block();
 		//mainWindow-beanAForm_saveButton
 		//buttons.saveButton.click(performSave);
 	}
@@ -45,10 +44,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		formValue = value;
+		unblock();
 	}
 	
 	this.setComponentState = function(state) {
 		formValue = state;
+		unblock();
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -57,33 +58,51 @@ QCD.components.containers.Form = function(_element, _mainController) {
 				buttons.saveButton.removeAttr('disabled');
 			} else {
 				buttons.saveButton.attr('disabled', 'true');
+				unblock();
 			}
 		}
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {
-			element.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
-	            border: 'none', 
-	            padding: '15px', 
-	            backgroundColor: '#000', 
-	            '-webkit-border-radius': '10px', 
-	            '-moz-border-radius': '10px', 
-	            opacity: .5, 
-	            color: '#fff' } });
+			block();
 		} else {
-			element.unblock();
+			unblock();
 		}
+	}
+	
+	this.performSave = function(actionsPerformer) {
+		block();
+		mainController.performSave(elementName, actionsPerformer);
 	}
 	
 	this.performDelete = function(actionsPerformer) {
 		if (window.confirm(mainController.getTranslation("commons.confirm.deleteMessage"))) {
+			block();
 			mainController.performDelete(elementPath, formValue, actionsPerformer);
 		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-		mainController.performCancel(formValue, actionsPerformer)
+		if (window.confirm("cancel?")) {
+			block();
+			mainController.performCancel(formValue, actionsPerformer);
+		}
+	}
+	
+	function block() {
+		element.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' } });
+	}
+	
+	function unblock() {
+		element.unblock();
 	}
 	
 	constructor(this);
