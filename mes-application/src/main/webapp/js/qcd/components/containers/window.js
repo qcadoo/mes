@@ -46,6 +46,10 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		
 	}
 	
+	this.setComponentLoading = function() {
+		
+	}
+	
 	this.performBack = function(actionsPerformer) {
 		mainController.goBack();
 		actionsPerformer.performNext();

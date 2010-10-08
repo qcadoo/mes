@@ -43,6 +43,8 @@ QCD.components.Component = function(_element, _mainController) {
 		this.setVisible(value.visible);
 		if (value.value != null) {
 			this.setComponentValue(value.value);
+		} else {
+			this.setComponentLoading(false);
 		}
 		this.setMessages({
 			error: value.errorMessages,
