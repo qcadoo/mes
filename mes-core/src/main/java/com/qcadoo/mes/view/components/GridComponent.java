@@ -216,6 +216,11 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
     public ViewValue<ListData> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
+
+        System.out.println(" 4 ---> " + getPath() + ": " + entity);
+        System.out.println(" 5 ---> " + getPath() + ": " + parentEntity);
+        System.out.println(" 6 ---> " + getPath() + ": " + viewValue);
+
         String joinFieldName = null;
         Long belongsToEntityId = null;
         SearchCriteriaBuilder searchCriteriaBuilder = null;
@@ -250,7 +255,12 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
         }
 
+        System.out.println(" 7 ---> " + getPath() + ": " + joinFieldName);
+        System.out.println(" 8 ---> " + getPath() + ": " + belongsToEntityId);
+
         ListData listData = generateListData(searchCriteriaBuilder.list(), joinFieldName, belongsToEntityId);
+
+        System.out.println(" 9 ---> " + getPath());
 
         if (viewValue != null) {
             copyRestrictionsOrderPagingAndSelectedEntityId(listData, viewValue.getValue());

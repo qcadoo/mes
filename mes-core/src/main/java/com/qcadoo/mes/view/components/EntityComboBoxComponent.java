@@ -123,6 +123,12 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
             }
 
         }
+
+        // combobox always must be submitted - we need to populate options, but don't change selected value if ignoreMode is true
+        if (viewValue != null && viewValue.getValue() != null && viewValue.isIgnoreMode()) {
+            value.setSelectedValue(viewValue.getValue().getSelectedValue());
+        }
+
         return new ViewValue<EntityComboBoxValue>(value);
     }
 

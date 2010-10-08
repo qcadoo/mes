@@ -72,6 +72,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<Object> globalViewValue, final String triggerComponentName, final boolean saveOrDelete,
             final Locale locale) {
+
         Set<String> pathsToUpdate = null;
         if (triggerComponentName != null) {
             pathsToUpdate = root.lookupListeners(triggerComponentName);

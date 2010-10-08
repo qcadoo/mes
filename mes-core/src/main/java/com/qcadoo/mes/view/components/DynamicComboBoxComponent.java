@@ -35,6 +35,7 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
     public ViewValue<ComboBoxValue> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
         JSONObject valueObject = viewObject.getJSONObject("value");
+
         String value = null;
         if (!valueObject.isNull("selectedValue")) {
             value = valueObject.getString("selectedValue");
@@ -53,11 +54,18 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
         Object value = getFieldValue(entity, getFieldPath());
 
         String strValue;
-        if (value == null) {
-            strValue = null;
+
+        // combobox always must be submitted - we need to populate options, but don't change selected value if ignoreMode is true
+        if (viewValue != null && viewValue.getValue() != null && viewValue.isIgnoreMode()) {
+            strValue = viewValue.getValue().getSelectedValue();
         } else {
-            strValue = String.valueOf(value);
+            if (value == null) {
+                strValue = null;
+            } else {
+                strValue = String.valueOf(value);
+            }
         }
+
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
         ViewValue<ComboBoxValue> newViewValue = new ViewValue<ComboBoxValue>(comboValue);
 

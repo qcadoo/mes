@@ -92,8 +92,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
             if (!viewObject.isNull("visible")) {
                 value.setVisible(viewObject.getBoolean("visible"));
             }
+
             if (!viewObject.isNull("updateMode")) {
-                value.setUpdateMode("igrore".equals(viewObject.getString("updateMode")) ? "ignore" : "update");
+                value.setUpdateMode("ignore".equals(viewObject.getString("updateMode")) ? "ignore" : "update");
             } else {
                 value.setUpdateMode("update");
             }
@@ -112,7 +113,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
             return null; // (ViewValue<T>) viewValue;
         }
 
-        if (!isContainer() && viewValue != null && viewValue.isIgnoreMode()) {
+        if (!("dynamicComboBox".equals(getType()) || "entityComboBox".equals(getType())) && !isContainer() && viewValue != null
+                && viewValue.isIgnoreMode()) {
             return null;
         }
 
@@ -120,22 +122,30 @@ public abstract class AbstractComponent<T> implements Component<T> {
         Entity parentEntity = null;
         ViewValue<T> value = null;
 
+        System.out.println("X0 ---> " + selectedEntities);
+        System.out.println("X1 ---> " + getPath());
+
         parentEntity = entity;
         if (parentEntity == null) {
             parentEntity = selectedEntities.get(getPath());
+            System.out.println("X2 ---> " + parentEntity + ", " + getPath());
         } else if (this instanceof ContainerComponent && fieldPath != null) {
             parentEntity = getFieldEntityValue(entity, fieldPath);
+            System.out.println("X3 ---> " + parentEntity + ", " + entity + ", " + fieldPath);
         }
 
         if (sourceComponent != null) {
             selectedEntity = selectedEntities.get(sourceComponent.getPath());
 
+            System.out.println("X4 ---> " + selectedEntity + ", " + sourceComponent.getPath());
             if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
+                System.out.println("X5 ---> " + selectedEntity + ", " + sourceFieldPath);
             }
 
         } else {
             selectedEntity = parentEntity;
+            System.out.println("X6 ---> " + selectedEntity + ", " + parentEntity);
         }
 
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate, locale);

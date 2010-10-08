@@ -115,7 +115,6 @@ public final class TranslationServiceImpl implements TranslationService {
 
     @Override
     public String translateErrorMessage(final ErrorMessage errorMessage, final Locale locale) {
-        System.out.println("XXXXXXXXXX " + errorMessage.getMessage());
         return translate(errorMessage.getMessage(), locale, (Object[]) errorMessage.getVars());
     }
 
