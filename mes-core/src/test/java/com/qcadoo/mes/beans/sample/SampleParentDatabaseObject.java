@@ -10,6 +10,11 @@ import org.hibernate.proxy.LazyInitializer;
 
 public class SampleParentDatabaseObject implements HibernateProxy {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3703171948011903671L;
+
     private Long id;
 
     private String name;
