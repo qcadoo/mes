@@ -87,7 +87,6 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     }
 
     private ErrorMessage getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {
-        ErrorMessage value = null;
 
         if (getSourceComponent() != null) {
             return getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
