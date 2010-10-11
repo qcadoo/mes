@@ -10,18 +10,21 @@
 
 	<link rel="stylesheet" href="../../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/ui.jqgrid.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/jstree/style.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/qcd.css" type="text/css" />
 	<!--<link rel="stylesheet" href="/mes-application/css/menuRibbon.css" type="text/css" />-->
 	<link rel="stylesheet" href="../../css/menuRibbon.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/window.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/grid.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/components/tree.css" type="text/css" />
 	
 	<script type="text/javascript" src="../../js/lib/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../../js/lib/json2.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery.blockUI.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery.jqGrid.min.js"></script>
-	<script type="text/javascript" src="../../js/lib/jquery.jqGrid.min.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery.jstree.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery.cookie.js"></script>
 	<script type="text/javascript" src="../../js/lib/encoder.js"></script>
 	
 	<script type="text/javascript" src="../../js/qcd/utils/logger.js"></script>
@@ -41,6 +44,7 @@
 	<script type="text/javascript" src="../../js/qcd/components/elements/entityComboBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/checkBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/linkButton.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/elements/tree.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/ribbon.js"></script>
 	
 	<script type="text/javascript">

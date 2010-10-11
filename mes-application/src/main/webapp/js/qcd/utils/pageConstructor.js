@@ -24,6 +24,8 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 				component = new QCD.components.elements.CheckBox(element, mainController);
 			} else if (element.hasClass("component_element_linkButton")) {
 				component = new QCD.components.elements.LinkButton(element, mainController);
+			} else if (element.hasClass("component_element_tree")) {
+				component = new QCD.components.elements.Tree(element, mainController);
 			}
 			
 			if (component) {

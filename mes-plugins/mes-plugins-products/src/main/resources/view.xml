@@ -59,7 +59,7 @@
 				<option type="paginable" value="false" />
 				<option type="multiselect" value="false" />
 				<option type="height" value="200" />
-				<option type="width" value="500" />
+				<option type="width" value="300" />
 				<option type="creatable" value="true" />
 				<option type="deletable" value="true" />
 			</component>
@@ -134,8 +134,8 @@
 	<view name="instructionGridView" model="instruction">
 		<component type="window" name="mainWindow">
 			<component type="grid" name="instructionsGrid">
-				<option type="column" name="number" fields="number" />
-				<option type="column" name="name" fields="name" />
+				<option type="column" name="number" fields="number" link="true" />
+				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
 				<option type="header" value="false" />
@@ -160,6 +160,36 @@
 				<component type="input" name="dateFrom" field="dateFrom" />
 				<component type="input" name="dateTo" field="dateTo" />
 				<component type="input" name="description" field="description" />
+				<option type="header" value="false" />
+			</component>
+			<component type="tree" name="bomTree" source="bomComponents">
+				<option type="height" value="200" />
+				<option type="width" value="500" />
+				<option type="expression" value="#quantity + ' x ' + #product['name']" />
+				<option type="correspondingView" value="products/instructionComponentDetailsView" />
+			</component>
+		</component>
+	</view>
+	<view name="instructionComponentDetailsView" model="instructionBomComponent">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack;"/>
+					<bigButtons name="saveBack" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack">
+						<bigButton name="saveNew" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performNew;" />
+					</bigButtons>
+					<smallButton name="cancel" action="#{mainWindow}.performCancel;" />
+					<smallButtons name="delete" icon="icon2" action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performBack">
+						<smallButton name="deleteNew" action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performNew;" />
+					</smallButtons>
+				</group>
+			</ribbon>
+			<component type="form" name="detailsForm">
+				<component type="lookup" name="product" field="product" />
+				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
 			</component>
 		</component>

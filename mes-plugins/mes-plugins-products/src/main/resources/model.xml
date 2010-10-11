@@ -60,8 +60,22 @@
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
 		<text name="description" />
+		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" message="products.validation.error.default" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" message="products.validation.error.datesOrder" />
+	</model>
+	<model name="instructionBomComponent">
+		<belongsTo name="instruction" model="instruction" lookupField="name">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="product" model="product" lookupField="name">
+			<validatesPresence /> 
+		</belongsTo>
+		<decimal name="quantity">
+			<validatesPresence />
+		</decimal>
+		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
+		<hasMany name="children" model="instructionBomComponent" joinField="parent" />
 	</model>
 	<model name="order">
 		<string name="number">
