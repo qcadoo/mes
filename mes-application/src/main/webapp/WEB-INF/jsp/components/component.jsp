@@ -36,6 +36,9 @@
 		<c:when test='${component.type == "textInput"}'>
 			<c:set var="componentJsp" value="elements/textInput.jsp"/>
 		</c:when>
+		<c:when test='${component.type == "passwordInput"}'>
+			<c:set var="componentJsp" value="elements/passwordInput.jsp"/>
+		</c:when>
 		<c:when test='${component.type == "dynamicComboBox"}'>
 			<c:set var="componentJsp" value="elements/dynamicComboBox.jsp"/>
 		</c:when>

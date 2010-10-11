@@ -14,6 +14,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	var buttons = new Object();
 	buttons.saveButton = $("#"+elementName+"_saveButton");
 	
+	var messagesSpan = $("#"+elementName+"_messagesSpan");
+	
 	var formValue = null;
 	
 //	this.insterData = function(data) {
@@ -36,6 +38,29 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		block();
 		//mainWindow-beanAForm_saveButton
 		//buttons.saveButton.click(performSave);
+	}
+	
+	this.setMessages = function(messages) {
+		var message = "";
+		for (var i in messages.error) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.error[i];
+		}
+		for (var i in messages.info) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.info[i];
+		}
+		for (var i in messages.success) {
+			if (message != "") {
+				message += ", ";
+			}
+			message += messages.success[i];
+		}
+		messagesSpan.html(message);
 	}
 	
 	this.getComponentValue = function() {

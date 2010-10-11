@@ -67,7 +67,9 @@ public final class EntityService {
         Entity genericEntity = new DefaultEntity(getId(databaseEntity));
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
+            if (fieldDefinitionEntry.getValue().isPersistent()) {
+                genericEntity.setField(fieldDefinitionEntry.getKey(), getField(databaseEntity, fieldDefinitionEntry.getValue()));
+            }
         }
 
         if (dataDefinition.isPrioritizable()) {
@@ -83,7 +85,9 @@ public final class EntityService {
         Object databaseEntity = getDatabaseEntity(dataDefinition, genericEntity, existingDatabaseEntity);
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
-            setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
+            if (fieldDefinitionEntry.getValue().isPersistent()) {
+                setField(databaseEntity, fieldDefinitionEntry.getValue(), genericEntity.getField(fieldDefinitionEntry.getKey()));
+            }
         }
 
         if (dataDefinition.isPrioritizable()) {

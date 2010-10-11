@@ -16,6 +16,10 @@
 		<password name="password">
 			<validatesPresenceOnCreate />
 		</password>
+		<password name="passwordConfirmation" persistent="false">
+			<validatesPresenceOnCreate />
+		</password>
+		<validatesWith bean="com.qcadoo.mes.users.UserService" method="checkPassword" message="users.validate.global.error.notMatch" />
 	</model>
 	<model name="group">
 		<string name="name" readonly="true">

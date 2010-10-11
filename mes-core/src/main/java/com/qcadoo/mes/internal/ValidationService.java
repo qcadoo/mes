@@ -65,6 +65,7 @@ public final class ValidationService {
                 continue;
             }
             for (FieldValidator fieldValidator : fieldDefinitionEntry.getValue().getValidators()) {
+                System.out.println(" 1 validate --> " + fieldDefinitionEntry.getValue().getName() + " - " + genericEntity);
                 fieldValidator.validate(dataDefinition, fieldDefinitionEntry.getValue(), genericEntity);
                 if (!genericEntity.isFieldValid(fieldDefinitionEntry.getKey())) {
                     break;
@@ -98,6 +99,8 @@ public final class ValidationService {
 
     private Object parseAndValidateBelongsToField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
+        Object referencedEntity;
+
         if (value != null) {
             Long referencedEntityId = null;
             if (value instanceof String) {
@@ -114,19 +117,20 @@ public final class ValidationService {
             } else {
                 validatedEntity.addError(fieldDefinition, "commons.validate.field.error.wrongType", value.getClass()
                         .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
-                return null;
             }
             if (referencedEntityId == null) {
-                return null;
+                referencedEntity = null;
+            } else {
+                BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
+                InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) belongsToFieldType.getDataDefinition();
+                Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
+                referencedEntity = sessionFactory.getCurrentSession().load(referencedClass, referencedEntityId);
             }
-            BelongsToType belongsToFieldType = (BelongsToType) fieldDefinition.getType();
-            InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) belongsToFieldType.getDataDefinition();
-            Class<?> referencedClass = referencedDataDefinition.getClassForEntity();
-            Object referencedEntity = sessionFactory.getCurrentSession().load(referencedClass, referencedEntityId);
-            return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validatedEntity);
         } else {
-            return null;
+            referencedEntity = null;
         }
+
+        return parseAndValidateValue(dataDefinition, fieldDefinition, referencedEntity, validatedEntity);
     }
 
     private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,

@@ -43,6 +43,8 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     private boolean unique;
 
+    private boolean persistent = true;
+
     private Object defaultValue;
 
     public FieldDefinitionImpl(final String name) {
@@ -144,6 +146,15 @@ public final class FieldDefinitionImpl implements FieldDefinition {
     @Override
     public boolean isUnique() {
         return unique;
+    }
+
+    public void setPersistent(final boolean persistent) {
+        this.persistent = persistent;
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return persistent;
     }
 
     @Override

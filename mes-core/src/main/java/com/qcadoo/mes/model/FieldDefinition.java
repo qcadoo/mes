@@ -29,4 +29,6 @@ public interface FieldDefinition {
 
     boolean isUnique();
 
+    boolean isPersistent();
+
 }

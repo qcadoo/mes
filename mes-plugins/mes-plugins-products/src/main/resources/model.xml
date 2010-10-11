@@ -30,7 +30,7 @@
 		</belongsTo>
 		<hasMany name="components" model="substituteComponent" joinField="substitute" />
 		<priority name="priority" scope="product" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" message="products.validation.error.datesOrder" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" message="products.validate.global.error.datesOrder" />
 	</model>
 	<model name="substituteComponent">
 		<belongsTo name="product" model="product" lookupField="name">
@@ -60,8 +60,8 @@
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
 		<text name="description" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" message="products.validation.error.default" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" message="products.validation.error.datesOrder" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" message="products.validate.global.error.default" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" message="products.validate.global.error.datesOrder" />
 	</model>
 	<model name="order">
 		<string name="number">
@@ -90,7 +90,7 @@
 		<date name="effectiveDateTo" readonly="true" />
 		<text name="startWorker" readonly="true" />
 		<text name="endWorker" readonly="true" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" message="products.validation.error.datesOrder" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" message="products.validate.global.error.datesOrder" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
 	</model>
 </qcd:models>

@@ -93,6 +93,7 @@
 			</props>  
   		</property>  
   		<property name="defaultErrorView" value="exception" />
+  		<property name="warnLogCategory" value="com.qcadoo.mes.Application" />
  	</bean>  
 
 </beans>

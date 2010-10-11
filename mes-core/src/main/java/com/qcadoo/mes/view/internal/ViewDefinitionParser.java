@@ -39,6 +39,7 @@ import com.qcadoo.mes.view.components.DynamicComboBoxComponent;
 import com.qcadoo.mes.view.components.EntityComboBoxComponent;
 import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
+import com.qcadoo.mes.view.components.PasswordInputComponent;
 import com.qcadoo.mes.view.components.TextInputComponent;
 import com.qcadoo.mes.view.containers.FormComponent;
 import com.qcadoo.mes.view.containers.WindowComponent;
@@ -157,6 +158,8 @@ public final class ViewDefinitionParser {
 
         if ("input".equals(componentType)) {
             component = new TextInputComponent(componentName, parentComponent, fieldName, dataSource, translationService);
+        } else if ("password".equals(componentType)) {
+            component = new PasswordInputComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("grid".equals(componentType)) {
             component = new GridComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("form".equals(componentType)) {
