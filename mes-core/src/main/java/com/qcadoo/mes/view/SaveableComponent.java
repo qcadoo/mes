@@ -4,6 +4,6 @@ import com.qcadoo.mes.api.Entity;
 
 public interface SaveableComponent extends Component<Long> {
 
-    Entity getSaveableEntity(final ViewValue<Object> viewValue);
+    Entity getSaveableEntity(final ViewValue<Long> viewValue);
 
 }

@@ -50,7 +50,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public ViewValue<Object> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) {
+    public ViewValue<Long> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) {
         try {
             return wrapIntoViewValue(root.castValue(selectedEntities,
                     viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
@@ -69,8 +69,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public ViewValue<Object> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Object> globalViewValue, final String triggerComponentName, final boolean saveOrDelete,
+    public ViewValue<Long> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<Long> globalViewValue, final String triggerComponentName, final boolean saveOrDelete,
             final Locale locale) {
 
         Set<String> pathsToUpdate = null;
@@ -84,13 +84,16 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             pathsToUpdate = new HashSet<String>();
         }
 
-        ViewValue<Object> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
+        ViewValue<Long> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate, locale));
         callOnViewHook(value, triggerComponentName);
+        if (entity != null) {
+            value.setValue(entity.getId());
+        }
         return value;
     }
 
-    private void callOnViewHook(final ViewValue<Object> value, final String triggerComponentName) {
+    private void callOnViewHook(final ViewValue<Long> value, final String triggerComponentName) {
         if (viewHook != null) {
             viewHook.callWithViewValue(value, triggerComponentName);
         }
@@ -101,8 +104,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         root.updateTranslations(translationsMap, locale);
     }
 
-    private ViewValue<Object> wrapIntoViewValue(final ViewValue<?> viewValue) {
-        ViewValue<Object> value = new ViewValue<Object>();
+    private ViewValue<Long> wrapIntoViewValue(final ViewValue<?> viewValue) {
+        ViewValue<Long> value = new ViewValue<Long>();
         value.addComponent(root.getName(), viewValue);
         return value;
     }

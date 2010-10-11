@@ -27,7 +27,7 @@ public final class ProductService {
     private SecurityService securityService;
 
     @SuppressWarnings("unchecked")
-    public void afterOrderDetailsLoad(final ViewValue<Object> value, final String triggerComponentName) {
+    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName) {
         ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
                 .lookupValue("mainWindow.orderDetailsForm.product");
         ViewValue<String> defaultInstructionValue = (ViewValue<String>) value
