@@ -25,7 +25,6 @@ import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
-import com.qcadoo.mes.view.components.grid.ListData;
 import com.qcadoo.mes.view.components.tree.TreeData;
 import com.qcadoo.mes.view.components.tree.TreeNode;
 
@@ -61,7 +60,24 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
     @Override
     public ViewValue<TreeData> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
-        return null;
+        TreeData data = new TreeData();
+
+        JSONObject value = viewObject.getJSONObject("value");
+
+        if (value != null) {
+
+            if (!value.isNull("selectedEntityId")) {
+                String selectedEntityId = value.getString("selectedEntityId");
+
+                if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
+                    Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
+                    selectedEntities.put(getPath(), selectedEntity);
+                    data.setSelectedEntityId(Long.parseLong(selectedEntityId));
+                }
+            }
+        }
+
+        return new ViewValue<TreeData>(data);
     }
 
     @Override
@@ -148,8 +164,8 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
 
     @Override
     @SuppressWarnings("unchecked")
-    public Long getSelectedEntityId(final ViewValue<Object> viewValue) {
-        ViewValue<ListData> value = (ViewValue<ListData>) lookupViewValue(viewValue);
+    public Long getSelectedEntityId(final ViewValue<Long> viewValue) {
+        ViewValue<TreeData> value = (ViewValue<TreeData>) lookupViewValue(viewValue);
         return value.getValue().getSelectedEntityId();
     }
 
