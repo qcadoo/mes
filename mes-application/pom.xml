@@ -84,7 +84,7 @@
 								<configuration>
 									<target>
 										<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.war"
-											tofile="/Library/Tomcat/deploy/${pom.artifactId}.war" />
+											tofile="/Users/tomcat/${pom.artifactId}.war" />
 									</target>
 								</configuration>
 								<goals>
