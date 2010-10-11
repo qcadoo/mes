@@ -12,6 +12,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.AbstractContainerComponent;
 import com.qcadoo.mes.view.Component;
 import com.qcadoo.mes.view.ComponentOption;
@@ -65,9 +66,8 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
         String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
         if (entity != null) {
             formValue.setSelectedValue(entity.getId());
-            // formValue.setHeader(ExpressionUtil.getValue(getTranslationService().translate(messageCode + ".headerEdit", locale),
-            // entity);
-            formValue.setHeader(getTranslationService().translate(messageCode + ".headerEdit", locale));
+            formValue.setHeader(ExpressionUtil.getValue(entity,
+                    getTranslationService().translate(messageCode + ".headerEdit", locale)));
         } else {
             formValue.setHeader(getTranslationService().translate(messageCode + ".headerNew", locale));
         }

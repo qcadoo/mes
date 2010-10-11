@@ -255,6 +255,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		var serializationObject = {
 			components: getValueData()
 		}
+		QCD.info(url);
 		window.parent.goToPage(url, serializationObject);
 	}
 	

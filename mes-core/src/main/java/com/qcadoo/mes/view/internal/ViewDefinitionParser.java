@@ -41,6 +41,7 @@ import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
 import com.qcadoo.mes.view.components.PasswordInputComponent;
 import com.qcadoo.mes.view.components.TextInputComponent;
+import com.qcadoo.mes.view.components.TreeComponent;
 import com.qcadoo.mes.view.containers.FormComponent;
 import com.qcadoo.mes.view.containers.WindowComponent;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
@@ -172,6 +173,8 @@ public final class ViewDefinitionParser {
             component = new EntityComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("button".equals(componentType)) {
             component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource, translationService);
+        } else if ("tree".equals(componentType)) {
+            component = new TreeComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
