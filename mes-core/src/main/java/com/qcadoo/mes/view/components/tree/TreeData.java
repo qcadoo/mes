@@ -8,6 +8,8 @@ public class TreeData {
 
     private final Long contextId;
 
+    private Long selectedEntityId;
+
     public TreeNode getRootNode() {
         return rootNode;
     }
@@ -24,11 +26,23 @@ public class TreeData {
         return contextId;
     }
 
+    public TreeData() {
+        this(null, null, null);
+    }
+
     public TreeData(TreeNode rootNode, String contextFieldName, Long contextId) {
         super();
         this.rootNode = rootNode;
         this.contextFieldName = contextFieldName;
         this.contextId = contextId;
+    }
+
+    public Long getSelectedEntityId() {
+        return selectedEntityId;
+    }
+
+    public void setSelectedEntityId(Long selectedEntityId) {
+        this.selectedEntityId = selectedEntityId;
     }
 
 }
