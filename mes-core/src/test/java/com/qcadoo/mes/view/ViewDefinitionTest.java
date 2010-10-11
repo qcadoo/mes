@@ -60,7 +60,7 @@ public class ViewDefinitionTest {
         viewDefinition.setRoot(root);
 
         // when
-        ViewValue<Object> value = viewDefinition.castValue(selectedEntities, jsonObject);
+        ViewValue<Long> value = viewDefinition.castValue(selectedEntities, jsonObject);
 
         // then
         assertEquals("test", value.getComponent("rootName").getValue());
@@ -80,7 +80,7 @@ public class ViewDefinitionTest {
         viewDefinition.setRoot(root);
 
         // when
-        ViewValue<Object> value = viewDefinition.castValue(selectedEntities, null);
+        ViewValue<Long> value = viewDefinition.castValue(selectedEntities, null);
 
         // then
         assertNull(value.getComponent("rootName"));
@@ -100,8 +100,8 @@ public class ViewDefinitionTest {
         Set<String> pathsToUpdate = new HashSet<String>();
         pathsToUpdate.add("removeIt");
 
-        ViewValue<Object> globalViewValue = new ViewValue<Object>();
-        ViewValue<Object> viewValue = new ViewValue<Object>();
+        ViewValue<Long> globalViewValue = new ViewValue<Long>();
+        ViewValue<Long> viewValue = new ViewValue<Long>();
         globalViewValue.addComponent("rootName", viewValue);
 
         RootComponent root = mock(RootComponent.class);
@@ -114,7 +114,7 @@ public class ViewDefinitionTest {
         viewDefinition.setRoot(root);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, true,
+        ViewValue<Long> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, true,
                 Locale.ENGLISH);
 
         // then
@@ -142,8 +142,7 @@ public class ViewDefinitionTest {
         viewDefinition.setRoot(root);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(null, selectedEntities, null, triggerComponentName, true,
-                Locale.ENGLISH);
+        ViewValue<Long> value = viewDefinition.getValue(null, selectedEntities, null, triggerComponentName, true, Locale.ENGLISH);
 
         // then
         assertNull(value.getComponent("rootName"));
@@ -154,7 +153,7 @@ public class ViewDefinitionTest {
     public void shouldCallHook() throws Exception {
         // given
         Entity entity = new DefaultEntity(1L);
-        ViewValue<Object> globalViewValue = new ViewValue<Object>();
+        ViewValue<Long> globalViewValue = new ViewValue<Long>();
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
         String triggerComponentName = "trigger";
         Set<String> pathsToUpdate = new HashSet<String>();
@@ -169,7 +168,7 @@ public class ViewDefinitionTest {
         viewDefinition.setViewHook(hookDefinition);
 
         // when
-        ViewValue<Object> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, false,
+        ViewValue<Long> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, false,
                 Locale.ENGLISH);
 
         // then
@@ -186,7 +185,7 @@ public class ViewDefinitionTest {
 
         HookDefinition hookDefinition = mock(HookDefinition.class);
 
-        ViewValue<Object> globalViewValue = new ViewValue<Object>();
+        ViewValue<Long> globalViewValue = new ViewValue<Long>();
 
         RootComponent root = mock(RootComponent.class);
         given(root.getName()).willReturn("rootName");

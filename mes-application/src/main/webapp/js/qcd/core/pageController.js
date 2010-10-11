@@ -7,6 +7,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 	var pluginIdentifier = _pluginIdentifier;
 	var contextFieldName = _contextFieldName; 
 	var contextEntityId = _contextEntityId;
+	var rootEntityId = null;
 	
 	function constructor(_this) {
 		QCDConnector.windowName = viewName;
@@ -21,6 +22,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		var parameters = new Object();
 		if (entityId && entityId.trim() != "") {
 			parameters.entityId = entityId;
+			rootEntityId = entityId;
 		}
 		if (serializationObject) {
 			setComponentState(serializationObject);
@@ -114,7 +116,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		QCD.info("delete " +componentName+" - "+entityId);
 		var parameters = {
 			componentName: componentName,
-			data: getValueData()
+			data: getValueData(),
+			entityId: rootEntityId
 		};
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("delete", parametersJson, function(response) {
@@ -130,7 +133,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		var parameters = {
 			componentName: componentName,
 			data: getValueData(),
-			offset: direction
+			offset: direction,
+			entityId: rootEntityId
 		};
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("move", parametersJson, function(response) {
@@ -230,6 +234,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _contextFieldName, _
 		for (var i in data.components) {
 			var component = pageComponents[i];
 			component.setValue(data.components[i]);
+		}
+		if (data.value) {
+			rootEntityId = data.value;
 		}
 	}
 	

@@ -11,6 +11,6 @@ public interface HookDefinition {
 
     void callWithEntity(final DataDefinition dataDefinition, final Entity entity);
 
-    void callWithViewValue(ViewValue<Object> value, String triggerComponentName);
+    void callWithViewValue(ViewValue<Long> value, String triggerComponentName);
 
 }

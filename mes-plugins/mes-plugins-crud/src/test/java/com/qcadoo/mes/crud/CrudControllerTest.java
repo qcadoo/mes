@@ -168,7 +168,7 @@ public class CrudControllerTest {
     @Test
     public void shouldGetDataWithoutEntityId() throws Exception {
         // given
-        ViewValue<Object> expectedViewValue = new ViewValue<Object>("test");
+        ViewValue<Long> expectedViewValue = new ViewValue<Long>(118L);
 
         given(viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), null, "", false, Locale.ENGLISH))
                 .willReturn(expectedViewValue);
@@ -188,7 +188,7 @@ public class CrudControllerTest {
 
         Entity entity = new DefaultEntity(1L);
 
-        ViewValue<Object> expectedViewValue = new ViewValue<Object>("test");
+        ViewValue<Long> expectedViewValue = new ViewValue<Long>(117L);
 
         given(viewDefinition.getValue(entity, Collections.<String, Entity> emptyMap(), null, null, false, Locale.ENGLISH))
                 .willReturn(expectedViewValue);
@@ -210,8 +210,8 @@ public class CrudControllerTest {
         json.put("componentName", "trigger-component");
         json.put("data", new JSONObject());
 
-        ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
-        ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        ViewValue<Long> oldViewValue = new ViewValue<Long>(221L);
+        ViewValue<Long> newViewValue = new ViewValue<Long>(116L);
 
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
         given(
@@ -246,8 +246,8 @@ public class CrudControllerTest {
         json.put("contextEntityId", "");
         json.put("data", new JSONObject());
 
-        ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
-        ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        ViewValue<Long> oldViewValue = new ViewValue<Long>(221L);
+        ViewValue<Long> newViewValue = new ViewValue<Long>(115L);
         newViewValue.addComponent("root", new ViewValue<Object>("root"));
 
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
@@ -283,8 +283,8 @@ public class CrudControllerTest {
         json.put("contextEntityId", "11");
         json.put("data", new JSONObject());
 
-        ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
-        ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        ViewValue<Long> oldViewValue = new ViewValue<Long>(222L);
+        ViewValue<Long> newViewValue = new ViewValue<Long>(114L);
         newViewValue.addComponent("root", new ViewValue<Object>("root"));
 
         given(entity.isValid()).willReturn(true);
@@ -323,17 +323,17 @@ public class CrudControllerTest {
         json.put("componentName", "trigger");
         json.put("data", new JSONObject());
 
-        final ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
+        final ViewValue<Long> oldViewValue = new ViewValue<Long>(223L);
         oldViewValue.addComponent("trigger", new ViewValue(12L));
 
-        ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+        ViewValue<Long> newViewValue = new ViewValue<Long>(113L);
         newViewValue.addComponent("root", new ViewValue<Object>("root"));
 
         given(viewDefinition.getRoot().getName()).willReturn("root");
-        given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willAnswer(new Answer<ViewValue<Object>>() {
+        given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willAnswer(new Answer<ViewValue<Long>>() {
 
             @Override
-            public ViewValue<Object> answer(final InvocationOnMock invocation) throws Throwable {
+            public ViewValue<Long> answer(final InvocationOnMock invocation) throws Throwable {
                 Map<String, Entity> selectedEntities = (Map<String, Entity>) invocation.getArguments()[0];
                 selectedEntities.put("trigger", new DefaultEntity(11L));
                 return oldViewValue;
@@ -359,44 +359,44 @@ public class CrudControllerTest {
         verify(entity, never()).setField(anyString(), anyLong());
     }
 
-    @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void shouldPerformMove() throws Exception {
-        // given
-        SelectableComponent component = mock(SelectableComponent.class, Mockito.withSettings().extraInterfaces(Component.class)
-                .defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
-
-        Entity entity = mock(Entity.class);
-
-        JSONObject json = new JSONObject();
-        json.put("componentName", "trigger");
-        json.put("offset", "1");
-        json.put("data", new JSONObject());
-
-        final ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
-        oldViewValue.addComponent("trigger", new ViewValue(12L));
-
-        ViewValue<Object> newViewValue = new ViewValue<Object>("test");
-        newViewValue.addComponent("root", new ViewValue<Object>("root"));
-
-        given(viewDefinition.getRoot().getName()).willReturn("root");
-        given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
-        given(viewDefinition.lookupComponent("trigger")).willReturn((Component) component);
-        given(
-                viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true,
-                        Locale.ENGLISH)).willReturn(newViewValue);
-        given(component.getSelectedEntityId(oldViewValue)).willReturn(12L);
-
-        // when
-        ViewValue<Object> viewValue = (ViewValue<Object>) crudController.performMove("pluginName", "viewName", new StringBuilder(
-                json.toString()), Locale.ENGLISH);
-
-        // then
-        assertEquals(newViewValue, viewValue);
-        assertEquals(1, viewValue.getSuccessMessages().size());
-        assertEquals("moved", viewValue.getSuccessMessages().get(0));
-        verify(((Component) component).getDataDefinition()).move(12L, 1);
-        verify(entity, never()).setField(anyString(), anyLong());
-    }
+    // @Test
+    // @SuppressWarnings({ "rawtypes", "unchecked" })
+    // public void shouldPerformMove() throws Exception {
+    // // given
+    // SelectableComponent component = mock(SelectableComponent.class, Mockito.withSettings().extraInterfaces(Component.class)
+    // .defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
+    //
+    // Entity entity = mock(Entity.class);
+    //
+    // JSONObject json = new JSONObject();
+    // json.put("componentName", "trigger");
+    // json.put("offset", "1");
+    // json.put("data", new JSONObject());
+    //
+    // final ViewValue<Object> oldViewValue = new ViewValue<Object>("test");
+    // oldViewValue.addComponent("trigger", new ViewValue(12L));
+    //
+    // ViewValue<Object> newViewValue = new ViewValue<Object>("test");
+    // newViewValue.addComponent("root", new ViewValue<Object>("root"));
+    //
+    // given(viewDefinition.getRoot().getName()).willReturn("root");
+    // given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
+    // given(viewDefinition.lookupComponent("trigger")).willReturn((Component) component);
+    // given(
+    // viewDefinition.getValue(null, Collections.<String, Entity> emptyMap(), oldViewValue, "trigger", true,
+    // Locale.ENGLISH)).willReturn(newViewValue);
+    // given(component.getSelectedEntityId(oldViewValue)).willReturn(12L);
+    //
+    // // when
+    // ViewValue<Object> viewValue = (ViewValue<Object>) crudController.performMove("pluginName", "viewName", new StringBuilder(
+    // json.toString()), Locale.ENGLISH);
+    //
+    // // then
+    // assertEquals(newViewValue, viewValue);
+    // assertEquals(1, viewValue.getSuccessMessages().size());
+    // assertEquals("moved", viewValue.getSuccessMessages().get(0));
+    // verify(((Component) component).getDataDefinition()).move(12L, 1);
+    // verify(entity, never()).setField(anyString(), anyLong());
+    // }
 
 }

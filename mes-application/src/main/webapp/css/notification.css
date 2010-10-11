@@ -114,19 +114,3 @@ html>body .ui-pnotify {
 	width: 17px;
 	height: 17px;
 }
-
-/** JOKE **/
-
-.ui-state-success .ui-pnotify-icon span {
-	height: 50px;
-	width: 50px;
-}
-
-.ui-state-success .ui-icon-success {
-	background-image: url(images/perlak.jpg);
-	background-position: 0px 0px;
-}
-
-.ui-state-success .ui-pnotify-container {
-	height: 50px;
-}
