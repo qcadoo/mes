@@ -20,7 +20,7 @@ import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
 
-public final class FormComponent extends AbstractContainerComponent<Long> implements SaveableComponent, SelectableComponent {
+public final class FormComponent extends AbstractContainerComponent<FormValue> implements SaveableComponent, SelectableComponent {
 
     private boolean header = true;
 
@@ -46,29 +46,36 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     @Override
-    public Long castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) throws JSONException {
+    public FormValue castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
         if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
             Long entityId = viewObject.getLong("value");
             Entity entity = getDataDefinition().get(entityId);
             selectedEntities.put(getPath(), entity);
-            return entityId;
+            return new FormValue(entityId);
         } else {
             return null;
         }
     }
 
     @Override
-    public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Long> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
+    public FormValue getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<FormValue> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
+        FormValue formValue = new FormValue();
+        String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
         if (entity != null) {
-            return entity.getId();
+            formValue.setSelectedValue(entity.getId());
+            // formValue.setHeader(ExpressionUtil.getValue(getTranslationService().translate(messageCode + ".headerEdit", locale),
+            // entity);
+            formValue.setHeader(getTranslationService().translate(messageCode + ".headerEdit", locale));
         } else {
-            return null;
+            formValue.setHeader(getTranslationService().translate(messageCode + ".headerNew", locale));
         }
+        return formValue;
     }
 
     @Override
-    public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue, final Locale locale) {
+    public void addContainerMessages(final Entity entity, final ViewValue<FormValue> viewValue, final Locale locale) {
         if (entity != null) {
             if (!entity.isValid()) {
                 viewValue.addErrorMessage(getTranslationService().translate("commons.validate.global.error", locale));
