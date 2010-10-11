@@ -92,6 +92,7 @@
     			<prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">downloadError</prop>  
 			</props>  
   		</property>  
+  		<property name="defaultErrorView" value="exception" />
  	</bean>  
 
 </beans>
