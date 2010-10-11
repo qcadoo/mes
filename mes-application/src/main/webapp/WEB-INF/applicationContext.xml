@@ -92,6 +92,8 @@
     			<prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">downloadError</prop>  
 			</props>  
   		</property>  
+  		<property name="defaultErrorView" value="exception" />
+  		<property name="warnLogCategory" value="com.qcadoo.mes.Application" />
  	</bean>  
 
 </beans>

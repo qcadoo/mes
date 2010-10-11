@@ -101,6 +101,7 @@
 		<xs:attribute name="readonly" type="xs:boolean" default="false" />
 		<xs:attribute name="readonlyOnCreate" type="xs:boolean"
 			default="false" />
+		<xs:attribute name="persistent" type="xs:boolean" default="true" />
 	</xs:complexType>
 
 	<xs:complexType name="belongsToFieldType">

@@ -48,7 +48,10 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     public Long castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) throws JSONException {
         if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
-            return viewObject.getLong("value");
+            Long entityId = viewObject.getLong("value");
+            Entity entity = getDataDefinition().get(entityId);
+            selectedEntities.put(getPath(), entity);
+            return entityId;
         } else {
             return null;
         }
@@ -67,6 +70,9 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue, final Locale locale) {
         if (entity != null) {
+            if (!entity.isValid()) {
+                viewValue.addErrorMessage(getTranslationService().translate("commons.validate.global.error", locale));
+            }
             for (ErrorMessage validationError : entity.getGlobalErrors()) {
                 viewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
             }
@@ -75,7 +81,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
     @Override
     @SuppressWarnings("unchecked")
-    public Entity getSaveableEntity(final ViewValue<Object> viewValue) {
+    public Entity getSaveableEntity(final ViewValue<Long> viewValue) {
         ViewValue<Long> formValue = (ViewValue<Long>) lookupViewValue(viewValue);
         Entity entity = new DefaultEntity(formValue.getValue());
 
@@ -120,7 +126,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
 
     @Override
     @SuppressWarnings("unchecked")
-    public Long getSelectedEntityId(final ViewValue<Object> viewValue) {
+    public Long getSelectedEntityId(final ViewValue<Long> viewValue) {
         ViewValue<Long> formValue = (ViewValue<Long>) lookupViewValue(viewValue);
         return formValue.getValue();
     }

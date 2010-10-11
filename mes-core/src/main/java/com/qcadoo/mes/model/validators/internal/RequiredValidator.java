@@ -14,6 +14,9 @@ public final class RequiredValidator implements FieldValidator {
     @Override
     public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
             final Entity validatedEntity) {
+
+        System.out.println("required --> " + value);
+
         if (value == null) {
             validatedEntity.addError(fieldDefinition, errorMessage);
             return false;

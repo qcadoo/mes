@@ -93,7 +93,7 @@ public final class CrudController {
 
         Entity entity = null;
         String componentName = "";
-        ViewValue<Object> viewValue = null;
+        ViewValue<Long> viewValue = null;
 
         if (body != null && StringUtils.hasText(body.toString())) {
             JSONObject jsonBody = getJsonBody(body);
@@ -113,7 +113,10 @@ public final class CrudController {
             }
         }
 
-        return viewDefinition.getValue(entity, selectedEntities, viewValue, componentName, false, locale);
+        ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, componentName, false,
+                locale);
+
+        return responseViewValue;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/save", method = RequestMethod.POST)
@@ -132,7 +135,7 @@ public final class CrudController {
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+        ViewValue<Long> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
 
         SaveableComponent component = (SaveableComponent) viewDefinition.lookupComponent(triggerComponentName);
 
@@ -146,13 +149,17 @@ public final class CrudController {
 
         selectedEntities.put(triggerComponentName, entity);
 
-        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+        ViewValue<Long> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
 
         if (entity.isValid()) {
             responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
         } else {
             responseViewValue.addErrorMessage(translationService.translate("commons.message.saveFailed", locale));
+        }
+
+        if (component.isRelatedToMainEntity()) {
+            responseViewValue.setValue(entity.getId());
         }
 
         return responseViewValue;
@@ -172,9 +179,17 @@ public final class CrudController {
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+        ViewValue<Long> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
 
         SelectableComponent component = (SelectableComponent) viewDefinition.lookupComponent(triggerComponentName);
+
+        Entity entity = null;
+
+        String entityId = getJsonString(jsonBody, "entityId");
+
+        if (entityId != null) {
+            entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
+        }
 
         Long id = component.getSelectedEntityId(viewValue);
 
@@ -183,7 +198,7 @@ public final class CrudController {
             selectedEntities.remove(triggerComponentName);
         }
 
-        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+        ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
 
         if (id != null) {
@@ -209,7 +224,15 @@ public final class CrudController {
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
-        ViewValue<Object> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+        ViewValue<Long> viewValue = viewDefinition.castValue(selectedEntities, jsonObject);
+
+        Entity entity = null;
+
+        String entityId = getJsonString(jsonBody, "entityId");
+
+        if (entityId != null) {
+            entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
+        }
 
         Long id = null;
 
@@ -225,7 +248,7 @@ public final class CrudController {
             }
         }
 
-        ViewValue<Object> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+        ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
 
         if (id != null) {
