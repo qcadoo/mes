@@ -17,6 +17,7 @@
 				<option type="height" value="450" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
+				<option type="fullScreen" value="true" />
 			</component>
 			<component type="button" name="download">
 				<option type="url" value="../download.html" />
@@ -37,6 +38,7 @@
 				<option type="url" value="../update.html" />
 			</component>
 			<option type="backButton" value="false" />
+			<option type="fullScreen" value="true" />
 		</component>
 	</view>
 	<view name="pluginDetailsView" model="plugin">
