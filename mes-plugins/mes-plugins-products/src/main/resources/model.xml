@@ -75,7 +75,7 @@
 			<validatesPresence />
 		</decimal>
 		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
-		<hasMany name="children" model="instructionBomComponent" joinField="parent" />
+		<hasMany name="children" model="instructionBomComponent" joinField="parent" cascade="delete" />
 	</model>
 	<model name="order">
 		<string name="number">
