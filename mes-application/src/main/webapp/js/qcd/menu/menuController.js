@@ -19,27 +19,29 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	function constructor(menuStructure) {
 		model = new QCD.menu.MenuModel(menuStructure.menuItems);
 		QCD.info(model);
+		
+		var menuContentElement = $("<ul>").addClass("q_row1");
+		var q_menu_row1 = $("<div>").attr("id", "q_menu_row1");
+			q_menu_row1.append(menuContentElement);
+		var q_row1 = $("<div>").attr("id", "q_row1");
+			q_row1.append(q_menu_row1);
+		var q_row1_out = $("<div>").attr("id", "q_row1_out");
+			q_row1_out.append(q_row1);
+		firstLevelElement.append(q_row1_out);
+		
 		for (var i in model.items) {
 			var item = model.items[i];
-			var firstLevelButton = $("<div>").html(item.label).addClass("firstLevelButton").attr("id", "firstLevelButton_"+item.name);
-			var firstLevelButtonWrapper =  $("<div>").addClass("firstLevelButtonWrapper").append(firstLevelButton);
-			firstLevelElement.append(firstLevelButtonWrapper);
+			
+			var firstLevelButton = $("<li>").html("<a href='#'><span>"+item.label+"</span></a>").attr("id", "firstLevelButton_"+item.name);
+			menuContentElement.append(firstLevelButton);
 			item.element = firstLevelButton;
 			
-			firstLevelButton.hover(
-				function() {
-					onTopItemOver($(this));
-				},
-				function() {
-					onTopItemOut($(this));
-				}
-			);
-			firstLevelButton.click(function() {
-				onTopItemClick($(this));
+			firstLevelButton.click(function(e) {
+				onTopItemClick($(this), e);
 			});
 		}
 		previousActive.first = model.selectedItem;
-		model.selectedItem.element.addClass("previousActive");
+		model.selectedItem.element.addClass("path");
 		previousActive.second = model.selectedItem.selectedItem;
 		
 		updateState();
@@ -47,23 +49,11 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		changePage(model.selectedItem.selectedItem.page);
 	}
 	
-	function onTopItemOver(itemElement) {
-		itemElement.addClass("hover");
-	}
 	
-	function onTopItemOut(itemElement) {
-		itemElement.removeClass("hover");
-	}
 	
-	function onBottomItemOver(itemElement) {
-		itemElement.addClass("hover");
-	}
-	
-	function onBottomItemOut(itemElement) {
-		itemElement.removeClass("hover");
-	}
-	
-	function onTopItemClick(itemElement) {
+	function onTopItemClick(itemElement, e) {
+		itemElement.children().blur();
+		
 		var buttonName = itemElement.attr("id").substring(17);
 		var topItem = model.itemsMap[buttonName];
 		
@@ -76,21 +66,17 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	}
 	
 	function onBottomItemClick(itemElement) {
+		itemElement.children().blur();
+		
 		var buttonName = itemElement.attr("id").substring(18);
 		var selectedItem = model.selectedItem.itemsMap[buttonName];
 		
 		model.selectedItem.selectedItem = selectedItem;
 		
-		previousActive.first.element.removeClass("previousActive");
-		if (previousActive.second) {
-			previousActive.second.element.removeClass("previousActive");
-		}
+		previousActive.first.element.removeClass("path");
 		previousActive.first = model.selectedItem;
 		previousActive.second = model.selectedItem.selectedItem;
-		previousActive.first.element.addClass("previousActive");
-		if (previousActive.second) {
-			previousActive.second.element.addClass("previousActive");
-		}
+		previousActive.first.element.addClass("path");
 		
 		updateState();
 		
@@ -108,29 +94,26 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	function updateState() {
 		if (currentActive.first != model.selectedItem) {
 			if (currentActive.first) {
-				currentActive.first.element.removeClass("active");
+				currentActive.first.element.removeClass("activ");
+				currentActive.first.selectedItem = null;
 			}
 			currentActive.first = model.selectedItem;
-			currentActive.first.element.addClass("active");
+			currentActive.first.element.addClass("activ");
 			
 			if (model.selectedItem.items.length > 0) {
 				updateSecondLevel();
 			} else {
 				secondLevelElement.hide();
-				//ribbon.setRibbon(model.selectedItem.ribbon);
 			}
 			
 		} else {
 			if (currentActive.second != model.selectedItem.selectedItem) {
 				if (currentActive.second) {
-					currentActive.second.element.removeClass("active");
+					currentActive.second.element.removeClass("activ");
 				}
 				currentActive.second = model.selectedItem.selectedItem;
 				if (currentActive.second) {
-					currentActive.second.element.addClass("active");
-					//ribbon.setRibbon(model.selectedItem.selectedItem.ribbon);
-				} else {
-					//ribbon.setRibbon(model.selectedItem.ribbon);
+					currentActive.second.element.addClass("activ");
 				}
 			}
 		}
@@ -140,41 +123,32 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	function updateSecondLevel() {
 		if (model.selectedItem.items.length > 0) {
 			secondLevelElement.children().remove();
+			
+			var menuContentElement = $("<ul>").addClass("q_row2");
+			var q_menu_row2 = $("<div>").attr("id", "q_menu_row2");
+				q_menu_row2.append(menuContentElement);
+			var q_row2_out = $("<div>").attr("id", "q_row2_out");
+				q_row2_out.append(q_menu_row2);
+			secondLevelElement.append(q_row2_out);
+			
 			for (var i in model.selectedItem.items) {
 				var secondLevelItem = model.selectedItem.items[i];
-				var secondLevelButton = $("<div>").html(secondLevelItem.label).addClass("secondLevelButton").attr("id", "secondLevelButton_"+secondLevelItem.name);
-				var secondLevelButtonWrapper =  $("<div>").addClass("secondLevelButtonWrapper").append(secondLevelButton);
-				secondLevelElement.append(secondLevelButtonWrapper);
+				var secondLevelButton = $("<li>").html("<a href='#'><span>"+secondLevelItem.label+"</span></a>").attr("id", "secondLevelButton_"+secondLevelItem.name);
+				menuContentElement.append(secondLevelButton);
 				secondLevelItem.element = secondLevelButton;
-				
-				secondLevelButton.hover(
-					function() {
-						onBottomItemOver($(this));
-					},
-					function() {
-						onBottomItemOut($(this));
-					}
-				);
+
 				secondLevelButton.click(function() {
 					onBottomItemClick($(this));
 				});
 				
 				if (previousActive.second && previousActive.second.name == secondLevelItem.name) {
-					//secondLevelItem.element.addClass("previousActive");
-					secondLevelItem.element.addClass("active");
+					secondLevelItem.element.addClass("activ");
 				}
 				
 			}
 			secondLevelElement.show();
-			//if (model.selectedItem.selectedItem) {
-			//	model.selectedItem.selectedItem.element.addClass("active");	
-			//}
-			
-			//currentActive.second = model.selectedItem.selectedItem;
-			//ribbon.setRibbon(model.selectedItem.selectedItem.ribbon);
 		} else {
 			secondLevelElement.hide();
-			//ribbon.setRibbon(model.selectedItem.ribbon);
 		}
 	} 
 	
