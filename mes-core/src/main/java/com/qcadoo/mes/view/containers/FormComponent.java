@@ -25,6 +25,8 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
 
     private boolean header = true;
 
+    private String expression = "#id";
+
     public FormComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
         super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
@@ -41,6 +43,9 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             if ("header".equals(option.getType())) {
                 header = Boolean.parseBoolean(option.getValue());
             }
+            if ("expression".equals(option.getType())) {
+                expression = option.getValue();
+            }
         }
 
         addOption("header", header);
@@ -49,8 +54,9 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
     @Override
     public FormValue castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
-        if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
-            Long entityId = viewObject.getLong("value");
+        if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")
+                && !viewObject.getJSONObject("value").isNull("id")) {
+            Long entityId = viewObject.getJSONObject("value").getLong("id");
             Entity entity = getDataDefinition().get(entityId);
             selectedEntities.put(getPath(), entity);
             return new FormValue(entityId);
@@ -65,12 +71,13 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
         FormValue formValue = new FormValue();
         String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
         if (entity != null) {
-            formValue.setSelectedValue(entity.getId());
-            formValue.setHeader(ExpressionUtil.getValue(entity,
-                    getTranslationService().translate(messageCode + ".headerEdit", locale)));
+            formValue.setId(entity.getId());
+            formValue.setHeader(getTranslationService().translate(messageCode + ".headerEdit", locale));
+            formValue.setHeaderEntityIdentifier(ExpressionUtil.getValue(entity, expression));
         } else {
             formValue.setHeader(getTranslationService().translate(messageCode + ".headerNew", locale));
         }
+
         return formValue;
     }
 
@@ -89,8 +96,15 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
     @Override
     @SuppressWarnings("unchecked")
     public Entity getSaveableEntity(final ViewValue<Long> viewValue) {
-        ViewValue<Long> formValue = (ViewValue<Long>) lookupViewValue(viewValue);
-        Entity entity = new DefaultEntity(formValue.getValue());
+        ViewValue<FormValue> formValue = (ViewValue<FormValue>) lookupViewValue(viewValue);
+
+        Long entityId = null;
+
+        if (formValue.getValue() != null) {
+            entityId = formValue.getValue().getId();
+        }
+
+        Entity entity = new DefaultEntity(entityId);
 
         for (Map.Entry<String, Component<?>> component : getComponents().entrySet()) {
             String fieldPath = component.getValue().getFieldPath();
@@ -110,7 +124,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
     }
 
     private Object setEntityField(final Entity entity, final String fieldPath, final String fieldName,
-            final ViewValue<Long> formValue) {
+            final ViewValue<FormValue> formValue) {
         ViewValue<?> componentValue = formValue.getComponent(fieldName);
         Object value = componentValue.getValue();
 

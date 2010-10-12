@@ -58,6 +58,7 @@
 				<component type="input" name="ean" field="ean" />
 				<component type="select" name="category" field="category" />
 				<component type="input" name="unit" field="unit" />
+				<option type="expression" value="#name + ' (' + #id + ')'" />
 				<option type="header" value="false" />
 				<option type="height" value="300" />
 			</component>

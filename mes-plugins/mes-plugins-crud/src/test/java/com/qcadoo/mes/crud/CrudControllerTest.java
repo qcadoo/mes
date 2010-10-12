@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.withSettings;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -236,7 +237,8 @@ public class CrudControllerTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void shouldPerformSave() throws Exception {
         // given
-        SaveableComponent component = mock(SaveableComponent.class, RETURNS_DEEP_STUBS);
+        SaveableComponent component = mock(SaveableComponent.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS)
+                .extraInterfaces(Component.class));
 
         Entity entity = mock(Entity.class);
 
@@ -257,7 +259,7 @@ public class CrudControllerTest {
                 viewDefinition.getValue(null, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
                         true, Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSaveableEntity(oldViewValue)).willReturn(entity);
-        given(component.getDataDefinition().save(entity)).willReturn(entity);
+        given(((Component<?>) component).getDataDefinition().save(entity)).willReturn(entity);
 
         // when
         Object viewValue = crudController.performSave("pluginName", "viewName", new StringBuilder(json.toString()),
@@ -265,7 +267,7 @@ public class CrudControllerTest {
 
         // then
         assertEquals(newViewValue, viewValue);
-        verify(component.getDataDefinition()).save(entity);
+        verify(((Component<?>) component).getDataDefinition()).save(entity);
         verify(entity, never()).setField(anyString(), anyLong());
     }
 
@@ -273,7 +275,8 @@ public class CrudControllerTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void shouldPerformSaveWithContextId() throws Exception {
         // given
-        SaveableComponent component = mock(SaveableComponent.class, RETURNS_DEEP_STUBS);
+        SaveableComponent component = mock(SaveableComponent.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS)
+                .extraInterfaces(Component.class));
 
         Entity entity = mock(Entity.class);
 
@@ -295,8 +298,8 @@ public class CrudControllerTest {
                 viewDefinition.getValue(null, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
                         true, Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSaveableEntity(oldViewValue)).willReturn(entity);
-        given(component.getDataDefinition().save(entity)).willReturn(entity);
-        given(component.isRelatedToMainEntity()).willReturn(true);
+        given(((Component<?>) component).getDataDefinition().save(entity)).willReturn(entity);
+        given(((Component<?>) component).isRelatedToMainEntity()).willReturn(true);
 
         // when
         ViewValue<Object> viewValue = (ViewValue<Object>) crudController.performSave("pluginName", "viewName", new StringBuilder(
@@ -306,7 +309,7 @@ public class CrudControllerTest {
         assertEquals(newViewValue, viewValue);
         assertEquals(1, viewValue.getSuccessMessages().size());
         assertEquals("saved", viewValue.getSuccessMessages().get(0));
-        verify(component.getDataDefinition()).save(entity);
+        verify(((Component<?>) component).getDataDefinition()).save(entity);
         verify(entity).setField("contextField", 11L);
     }
 

@@ -2,23 +2,25 @@ package com.qcadoo.mes.view.containers;
 
 public final class FormValue {
 
-    private Long selectedValue;
+    private Long id;
 
     private String header;
+
+    private String headerEntityIdentifier;
 
     public FormValue() {
     }
 
-    public FormValue(final Long selectedValue) {
-        this.selectedValue = selectedValue;
+    public FormValue(final Long id) {
+        this.id = id;
     }
 
-    public Long getSelectedValue() {
-        return selectedValue;
+    public Long getId() {
+        return id;
     }
 
-    public void setSelectedValue(final Long selectedValue) {
-        this.selectedValue = selectedValue;
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     public String getHeader() {
@@ -29,12 +31,20 @@ public final class FormValue {
         this.header = header;
     }
 
+    public void setHeaderEntityIdentifier(final String headerEntityIdentifier) {
+        this.headerEntityIdentifier = headerEntityIdentifier;
+    }
+
+    public String getHeaderEntityIdentifier() {
+        return headerEntityIdentifier;
+    }
+
     @Override
     public String toString() {
-        if (selectedValue == null) {
+        if (id == null) {
             return ""; // FIXME masz toString cannot return null
         }
-        return selectedValue.toString();
+        return id.toString();
     }
 
 }

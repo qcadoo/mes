@@ -53,14 +53,17 @@ public final class ExpressionUtil {
         Expression exp = parser.parseExpression(expression);
         EvaluationContext context = new StandardEvaluationContext();
 
-        for (String fieldName : entity.getFields().keySet()) {
-            Object value = entity.getField(fieldName);
-            if (value instanceof Entity) {
-                Map<String, Object> values = ((Entity) value).getFields();
-                values.put("id", ((Entity) value).getId());
-                context.setVariable(fieldName, values);
-            } else {
-                context.setVariable(fieldName, value);
+        if (entity != null) {
+            context.setVariable("id", entity.getId());
+            for (String fieldName : entity.getFields().keySet()) {
+                Object value = entity.getField(fieldName);
+                if (value instanceof Entity) {
+                    Map<String, Object> values = ((Entity) value).getFields();
+                    values.put("id", ((Entity) value).getId());
+                    context.setVariable(fieldName, values);
+                } else {
+                    context.setVariable(fieldName, value);
+                }
             }
         }
 
