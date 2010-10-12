@@ -53,13 +53,14 @@
 		var viewName = "${viewDefinition.name}";
 		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
 		var entityId = "${entityId}";
-		var contextEntityId = "${contextEntityId}";
-		var contextFieldName = "${contextFieldName}";
+		//var contextEntityId = "${contextEntityId}";
+		//var contextFieldName = "${contextFieldName}";
+		var context = '${context}';
 
 		var controller = null
 
 		window.init = function(serializationObject) {
-			controller = new QCD.PageController(viewName, pluginIdentifier, contextFieldName, contextEntityId);
+			controller = new QCD.PageController(viewName, pluginIdentifier, context);
 			controller.init(entityId, serializationObject);
 		}
 

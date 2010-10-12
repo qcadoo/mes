@@ -163,7 +163,22 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function newClicked() {
 		if (buttons.newButton.hasClass("enabled")) {
 			QCD.info("new");
-			redirectToCorrespondingPage((contextFieldName && contextId) ? "contextFieldName="+contextFieldName+"&contextEntityId="+contextId : null);
+			var contextArray = new Array();
+			var parentId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
+			contextArray.push({
+				fieldName: "parent",
+				entityId: (parentId == 0) ? null : parentId
+			});
+			if (contextFieldName && contextId) {
+				contextArray.push({
+					fieldName: contextFieldName,
+					entityId: contextId
+				});
+			}
+			context = "context="+JSON.stringify(contextArray);
+			QCD.info("newClicked");
+			QCD.info(context);
+			redirectToCorrespondingPage(context);
 		}
 	}
 	
