@@ -1,0 +1,19 @@
+.component_container_form {
+	margin: 0;
+	padding: 0;
+	background: #fff;
+}
+
+.component_container_form .header {
+	background: #ebebeb;
+	height: 33px;
+	font: bold 13px arial;
+	color: #7d7d7d;
+	border-bottom: 1px solid #a7a7a7; 
+	padding-left: 20px;	 
+	line-height: 35px;      
+}
+
+.component_container_form .header .entity_identifier {
+	color: #555;
+}

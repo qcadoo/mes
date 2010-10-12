@@ -16,7 +16,7 @@ public final class UserService {
             return true;
         }
 
-        if (!password.equals(passwordConfirmation)) {
+        if (password == null || passwordConfirmation == null || !password.equals(passwordConfirmation)) {
             entity.addError(dataDefinition.getField("password"), "commons.validate.field.error.notMatch");
             entity.addError(dataDefinition.getField("passwordConfirmation"), "commons.validate.field.error.notMatch");
 

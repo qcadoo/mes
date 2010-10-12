@@ -12,6 +12,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.AbstractContainerComponent;
 import com.qcadoo.mes.view.Component;
 import com.qcadoo.mes.view.ComponentOption;
@@ -20,9 +21,11 @@ import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
 
-public final class FormComponent extends AbstractContainerComponent<Long> implements SaveableComponent, SelectableComponent {
+public final class FormComponent extends AbstractContainerComponent<FormValue> implements SaveableComponent, SelectableComponent {
 
     private boolean header = true;
+
+    private String expression = "#id";
 
     public FormComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
@@ -40,35 +43,46 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
             if ("header".equals(option.getType())) {
                 header = Boolean.parseBoolean(option.getValue());
             }
+            if ("expression".equals(option.getType())) {
+                expression = option.getValue();
+            }
         }
 
         addOption("header", header);
     }
 
     @Override
-    public Long castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) throws JSONException {
-        if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")) {
-            Long entityId = viewObject.getLong("value");
+    public FormValue castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
+        if (viewObject != null && viewObject.has("value") && !viewObject.isNull("value")
+                && !viewObject.getJSONObject("value").isNull("id")) {
+            Long entityId = viewObject.getJSONObject("value").getLong("id");
             Entity entity = getDataDefinition().get(entityId);
             selectedEntities.put(getPath(), entity);
-            return entityId;
+            return new FormValue(entityId);
         } else {
             return null;
         }
     }
 
     @Override
-    public Long getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Long> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
+    public FormValue getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
+            final ViewValue<FormValue> viewValue, final Set<String> pathsToUpdate, final Locale locale) {
+        FormValue formValue = new FormValue();
+        String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
         if (entity != null) {
-            return entity.getId();
+            formValue.setId(entity.getId());
+            formValue.setHeader(getTranslationService().translate(messageCode + ".headerEdit", locale));
+            formValue.setHeaderEntityIdentifier(ExpressionUtil.getValue(entity, expression));
         } else {
-            return null;
+            formValue.setHeader(getTranslationService().translate(messageCode + ".headerNew", locale));
         }
+
+        return formValue;
     }
 
     @Override
-    public void addContainerMessages(final Entity entity, final ViewValue<Long> viewValue, final Locale locale) {
+    public void addContainerMessages(final Entity entity, final ViewValue<FormValue> viewValue, final Locale locale) {
         if (entity != null) {
             if (!entity.isValid()) {
                 viewValue.addErrorMessage(getTranslationService().translate("commons.validate.global.error", locale));
@@ -82,8 +96,15 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     @Override
     @SuppressWarnings("unchecked")
     public Entity getSaveableEntity(final ViewValue<Long> viewValue) {
-        ViewValue<Long> formValue = (ViewValue<Long>) lookupViewValue(viewValue);
-        Entity entity = new DefaultEntity(formValue.getValue());
+        ViewValue<FormValue> formValue = (ViewValue<FormValue>) lookupViewValue(viewValue);
+
+        Long entityId = null;
+
+        if (formValue.getValue() != null) {
+            entityId = formValue.getValue().getId();
+        }
+
+        Entity entity = new DefaultEntity(entityId);
 
         for (Map.Entry<String, Component<?>> component : getComponents().entrySet()) {
             String fieldPath = component.getValue().getFieldPath();
@@ -103,7 +124,7 @@ public final class FormComponent extends AbstractContainerComponent<Long> implem
     }
 
     private Object setEntityField(final Entity entity, final String fieldPath, final String fieldName,
-            final ViewValue<Long> formValue) {
+            final ViewValue<FormValue> formValue) {
         ViewValue<?> componentValue = formValue.getComponent(fieldName);
         Object value = componentValue.getValue();
 

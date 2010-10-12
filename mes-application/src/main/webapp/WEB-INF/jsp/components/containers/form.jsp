@@ -12,16 +12,15 @@
 <tiles:useAttribute name="viewName" ignore="true"/>
 <tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
-<div class="component component_container component_container_form" id="${componentFullName}" style="border: solid black 1px; margin: 10px; padding: 10px; width: 500px;">
+<div class="component component_container component_container_form" id="${componentFullName}">
+
 	<div class=element_options style="display: none">
 		${component.optionsAsJson}
 	</div>
 	
-	<div style="font-weight: bold; margin-bottom: 10px;">
-		<c:if test="${component.options['header']}">
-			<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
-			${translationsMap[headerLabel]}
-		</c:if>
+	<div class="header">
+		<span id="${componentFullName}_header"></span>
+		<span id="${componentFullName}_headerEntityIdentifier" class="entity_identifier"></span>
 	</div>
 	
 	<span id="${componentFullName}_messagesSpan"></span>

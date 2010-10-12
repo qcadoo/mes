@@ -12,9 +12,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	var elementPath = this.elementPath;
 	
 	var buttons = new Object();
+	
 	buttons.saveButton = $("#"+elementName+"_saveButton");
 	
 	var messagesSpan = $("#"+elementName+"_messagesSpan");
+	var headerSpan = $("#"+elementName+"_header");
+	var headerEntityIdentifierSpan = $("#"+elementName+"_headerEntityIdentifier");
 	
 	var formValue = null;
 	
@@ -68,11 +71,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		headerSpan.html(value.header);
+		headerEntityIdentifierSpan.html(value.headerEntityIdentifier);
 		formValue = value;
 		unblock();
 	}
 	
 	this.setComponentState = function(state) {
+		headerSpan.html(state.header);
+		headerEntityIdentifierSpan.html(state.headerEntityIdentifier);
 		formValue = state;
 		unblock();
 	}
@@ -104,14 +111,14 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	this.performDelete = function(actionsPerformer) {
 		if (window.confirm(mainController.getTranslation("commons.confirm.deleteMessage"))) {
 			block();
-			mainController.performDelete(elementPath, formValue, actionsPerformer);
+			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer);
 		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
 		if (window.confirm("cancel?")) {
 			block();
-			mainController.performCancel(formValue, actionsPerformer);
+			mainController.performCancel(formValue ? formValue.id : null, actionsPerformer);
 		}
 	}
 	

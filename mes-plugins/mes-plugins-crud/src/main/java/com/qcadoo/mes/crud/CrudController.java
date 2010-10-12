@@ -141,11 +141,12 @@ public final class CrudController {
 
         Entity entity = component.getSaveableEntity(viewValue);
 
-        if (component.isRelatedToMainEntity() && StringUtils.hasText(contextFieldName) && StringUtils.hasText(contextEntityId)) {
+        if (((Component<?>) component).isRelatedToMainEntity() && StringUtils.hasText(contextFieldName)
+                && StringUtils.hasText(contextEntityId)) {
             entity.setField(contextFieldName, Long.parseLong(contextEntityId));
         }
 
-        entity = component.getDataDefinition().save(entity);
+        entity = ((Component<?>) component).getDataDefinition().save(entity);
 
         selectedEntities.put(triggerComponentName, entity);
 
@@ -158,7 +159,7 @@ public final class CrudController {
             responseViewValue.addErrorMessage(translationService.translate("commons.message.saveFailed", locale));
         }
 
-        if (component.isRelatedToMainEntity()) {
+        if (((Component<?>) component).isRelatedToMainEntity()) {
             responseViewValue.setValue(entity.getId());
         }
 
