@@ -18,6 +18,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var correspondingViewName = this.options.correspondingView;
 	
+	var root;
+	
 	function constructor(_this) {
 		
 		var header = $("<div>").addClass('tree_header');
@@ -55,6 +57,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			"json_data" : {
 				"data" : [ ]
 			},
+			core : {
+				html_titles: true,
+			},
 		    cookies: false
 		}).bind("select_node.jstree", function (e, data) {
 			buttons.newButton.addClass("enabled");
@@ -77,7 +82,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			entityId = tree.jstree("get_selected").attr("id");
 		}
 		return {
-			selectedEntityId: entityId;
+			selectedEntityId: entityId
 		}
 	}
 	
@@ -86,18 +91,21 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			contextFieldName = value.contextFieldName;
 			contextId = value.contextId; 
 		}
-		addNode(value.rootNode, -1, true);
+		if (root) {
+			tree.jstree("remove", root); 
+		}
+		root = addNode(value.rootNode, -1);
+		tree.jstree("open_node", root, false, true);
 	}
 	
-	function addNode(data, node, opened) {
+	function addNode(data, node) {
 		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: data.id }}, false, true);
 		newNode.bind("onselect", function() {alert("aa")})
 		for (var i in data.children) {
 			addNode(data.children[i], newNode, false);
 		}
-		if (!opened) {
-			tree.jstree("close_node", newNode, true);
-		}
+		tree.jstree("close_node", newNode, true);
+		return newNode;
 	}
 	
 	this.setComponentState = function(state) {

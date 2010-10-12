@@ -35,3 +35,17 @@
 .tree_content {
 	overflow: auto;
 }
+
+.grey {
+	color: #888888;
+}
+
+.tree_content a.jstree-hovered {
+	background: #cccccc;
+	border-color: #cccccc;
+}
+.tree_content a.jstree-clicked {
+	background: #efd24a;
+	border-color: #efd24a;
+	color: black;
+}
