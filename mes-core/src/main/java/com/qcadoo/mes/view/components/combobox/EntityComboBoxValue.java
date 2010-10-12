@@ -2,18 +2,18 @@ package com.qcadoo.mes.view.components.combobox;
 
 import java.util.Map;
 
-public final class EntityComboBoxValue {
+import com.qcadoo.mes.view.components.SimpleValue;
 
-    private Long selectedValue;
+public final class EntityComboBoxValue extends SimpleValue {
 
     private Map<Long, String> values;
 
     public Long getSelectedValue() {
-        return selectedValue;
+        return (Long) getValue();
     }
 
     public void setSelectedValue(final Long selectedValue) {
-        this.selectedValue = selectedValue;
+        setValue(selectedValue);
     }
 
     public Map<Long, String> getValues() {
@@ -22,14 +22,6 @@ public final class EntityComboBoxValue {
 
     public void setValues(final Map<Long, String> values) {
         this.values = values;
-    }
-
-    @Override
-    public String toString() {
-        if (selectedValue == null) {
-            return ""; // FIXME masz toString cannot return null
-        }
-        return selectedValue.toString();
     }
 
 }

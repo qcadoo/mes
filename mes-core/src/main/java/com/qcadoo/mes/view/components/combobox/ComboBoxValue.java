@@ -2,24 +2,23 @@ package com.qcadoo.mes.view.components.combobox;
 
 import java.util.List;
 
-public final class ComboBoxValue {
+import com.qcadoo.mes.view.components.SimpleValue;
 
-    private String selectedValue;
+public final class ComboBoxValue extends SimpleValue {
 
     private List<String> values;
 
     public ComboBoxValue(final List<String> values, final String selectedValue) {
-        super();
+        super(selectedValue);
         this.values = values;
-        this.selectedValue = selectedValue;
     }
 
     public String getSelectedValue() {
-        return selectedValue;
+        return (String)getValue();
     }
 
     public void setSelectedValue(final String selectedValue) {
-        this.selectedValue = selectedValue;
+        setValue(selectedValue);
     }
 
     public List<String> getValues() {
@@ -28,11 +27,6 @@ public final class ComboBoxValue {
 
     public void setValues(final List<String> values) {
         this.values = values;
-    }
-
-    @Override
-    public String toString() {
-        return selectedValue;
     }
 
 }

@@ -12,7 +12,6 @@
 	<link rel="stylesheet" href="../../css/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/jstree/style.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/qcd.css" type="text/css" />
-	<!--<link rel="stylesheet" href="/mes-application/css/menuRibbon.css" type="text/css" />-->
 	<link rel="stylesheet" href="../../css/menuRibbon.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/window.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/grid.css" type="text/css" />
@@ -33,14 +32,17 @@
 	<script type="text/javascript" src="../../js/qcd/utils/connector.js"></script>
 	<script type="text/javascript" src="../../js/qcd/utils/options.js"></script>
 	<script type="text/javascript" src="../../js/qcd/utils/pageConstructor.js"></script>
+	<script type="text/javascript" src="../../js/qcd/core/messagesController.js"></script>
 	<script type="text/javascript" src="../../js/qcd/core/pageController.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/component.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/container.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/containers/window.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/containers/form.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/elements/formComponent.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/grid.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/grid/gridHeader.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/textInput.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/elements/passwordInput.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/dynamicComboBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/entityComboBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/checkBox.js"></script>

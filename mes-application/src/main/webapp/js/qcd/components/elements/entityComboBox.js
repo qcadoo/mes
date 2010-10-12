@@ -3,99 +3,53 @@ QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 
 QCD.components.elements.EntityComboBox = function(_element, _mainController) {
-	$.extend(this, new QCD.components.Component(_element, _mainController));
+	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 
 	var mainController = _mainController;
-	
-	var element = _element;
 	var options = this.options;
 	var elementPath = this.elementPath;
 	
-	var select = $("#"+element.attr('id')+"_select");
-	
-	var messagesSpan = $("#"+element.attr('id')+"_messagesSpan");
-	
 	function constructor(_this) {
-		select.change(onChange);
+		_this.input.change(onChange);
 	}
-	
+
 	function onChange() {
 		if (options.listeners.length > 0) {
-			mainController.getUpdate(elementPath, select.val(), options.listeners);
+			mainController.getUpdate(elementPath, this.input.val(), options.listeners);
 		}
 	}
 	
-	this.getComponentValue = function() {
-		var selectedVal = select.val();
-		if (!selectedVal || selectedVal.trim() == "") {
-			selectedVal = null;
+	this.getComponentData = function() {
+		var selected = this.input.val();
+		if (!selected || selected.trim() == "") {
+			selected = null;
 		}
-		var value = {
-			selectedValue: selectedVal
-		};
-		return value;
+		return {
+			value: selected
+		}
 	}
 	
-	this.setComponentValue = function(value) {
-		insertValue(value);
-	}
-	
-	this.setComponentState = function(state) {
-		insertValue(state);
-	}
-	
-	function insertValue(value) {
-		var previousSelectedVal = select.val();
-		if (value.values != null) {
-			select.children().remove();
-			select.append("<option value=''></option>");
-			for (var i in value.values) {
-				var val = value.values[i];
-				select.append("<option value='"+i+"'>"+val+"</option>");
+	this.setComponentData = function(data) {
+		var previousSelected = this.input.val();
+		
+		if(data.values != null) {
+			this.input.children().remove();
+			this.input.append("<option value=''></option>");
+			for (var i in data.values) {
+				var value = data.values[i];
+				this.input.append("<option value='"+value+"'>"+value+"</option>");
 			}
 		}
-		if (value.selectedValue != null) {
-			select.val(value.selectedValue);
+		
+		selected = data.value;
+		
+		if (selected != null) {
+			this.input.val(selected);
 		} else if (value.emptySelected) {
-			select.val('');
+			this.input.val('');
 		} else {
-			select.val(previousSelectedVal);
+			this.input.val(previousSelected);
 		}
-	}
-	
-	this.setComponentEnabled = function(isEnabled) {
-		if (isEnabled) {
-			select.removeAttr('disabled');
-		} else {
-			select.attr('disabled', 'true');
-		}
-	}
-	
-	this.setComponentLoading = function(isLoadingVisible) {
-
-	}
-	
-	this.setMessages = function(messages) {
-		var message = "";
-		for (var i in messages.error) {
-			if (message != "") {
-				message += ", ";
-			}
-			message += messages.error[i];
-		}
-		for (var i in messages.info) {
-			if (message != "") {
-				message += ", ";
-			}
-			message += messages.info[i];
-		}
-		for (var i in messages.success) {
-			if (message != "") {
-				message += ", ";
-			}
-			message += messages.success[i];
-		}
-		messagesSpan.html(message);
 	}
 	
 	constructor(this);

@@ -1,5 +1,7 @@
 package com.qcadoo.mes.view;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -371,13 +374,47 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
     }
 
+    protected FieldDefinition getFieldDefinition() {
+        String[] fields = null;
+
+        if (getSourceFieldPath() != null) {
+            fields = getSourceFieldPath().split("\\.");
+        } else {
+            fields = getFieldPath().split("\\.");
+        }
+
+        DataDefinition newDataDefinition = getDataDefinition();
+        FieldDefinition newFieldDefinition = null;
+
+        for (int i = 0; i < fields.length; i++) {
+            FieldDefinition fieldDefinition = newDataDefinition.getField(fields[0]);
+            if (fieldDefinition == null) {
+                break;
+            }
+            if (fieldDefinition.getType() instanceof BelongsToType) {
+                newDataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
+            } else if (fieldDefinition.getType() instanceof HasManyType) {
+                newDataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
+            } else {
+                if (i == fields.length - 1) {
+                    newFieldDefinition = fieldDefinition;
+                }
+                break;
+            }
+        }
+
+        checkNotNull(newFieldDefinition, "Cannot find fieldDefinitions for " + StringUtils.join(fields, ""));
+
+        return newFieldDefinition;
+    }
+
     private DataDefinition getDataDefinitionBasedOnFieldPath(final DataDefinition dataDefinition, final String fieldPath) {
         String[] fields = fieldPath.split("\\.");
 
         DataDefinition newDataDefinition = dataDefinition;
 
-        for (String field : fields) {
-            FieldDefinition fieldDefinition = newDataDefinition.getField(field);
+        for (int i = 0; i < fields.length; i++) {
+            FieldDefinition fieldDefinition = newDataDefinition.getField(fields[0]);
             if (fieldDefinition == null) {
                 break;
             }

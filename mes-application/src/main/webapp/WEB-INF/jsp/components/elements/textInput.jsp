@@ -12,14 +12,14 @@
 <tiles:useAttribute name="viewName" ignore="true"/>
 <tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
-<div class="component component_element component_element_textInput" id="${componentFullName}">
-	<div class="element_options" style="display: none">
-		${component.optionsAsJson}
-	</div>
-	
-	<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
-	${translationsMap[headerLabel]}
-	
-	<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
-	<span id="${componentFullName}_messagesSpan"></span>
-</div>
+<tiles:insertTemplate template="formComponent.jsp">
+	<tiles:putAttribute name="component" value="${component}" />
+	<tiles:putAttribute name="componentType" value="textInput" />
+	<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
+	<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
+	<tiles:putAttribute name="viewName" value="${viewName}" />
+	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
+	<tiles:putAttribute name="componentBody">
+		<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
+	</tiles:putAttribute>
+</tiles:insertTemplate>

@@ -37,8 +37,8 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
         JSONObject valueObject = viewObject.getJSONObject("value");
 
         String value = null;
-        if (!valueObject.isNull("selectedValue")) {
-            value = valueObject.getString("selectedValue");
+        if (!valueObject.isNull("value")) {
+            value = valueObject.getString("value");
         }
         if (value != null) {
             return new ViewValue<ComboBoxValue>(new ComboBoxValue(getComboBoxValues(), value));
