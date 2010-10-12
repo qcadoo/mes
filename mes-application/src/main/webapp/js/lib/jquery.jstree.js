@@ -545,11 +545,11 @@
 				// so that callback is fired AFTER all nodes are open
 				if(original_obj.find('li.jstree-closed').length === 0) { this.__callback({ "obj" : original_obj }); }
 			},
-			close_all	: function (obj) {
+			close_all	: function (obj, skipAnimation) {
 				var _this = this;
 				obj = obj ? this._get_node(obj) : this.get_container();
 				if(!obj || obj === -1) { obj = this.get_container(); }
-				obj.find("li.jstree-open").andSelf().each(function () { _this.close_node(this); });
+				obj.find("li.jstree-open").andSelf().each(function () { _this.close_node(this, skipAnimation ? skipAnimation : false); });
 				this.__callback({ "obj" : obj });
 			},
 			clean_node	: function (obj) {

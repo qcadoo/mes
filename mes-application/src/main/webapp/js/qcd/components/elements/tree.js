@@ -20,6 +20,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var root;
 	
+	var openedArrayToInstert;
+	var selectedEntityIdToInstert;
+	
 	function constructor(_this) {
 		
 		var header = $("<div>").addClass('tree_header');
@@ -63,7 +66,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		    cookies: false
 		}).bind("select_node.jstree", function (e, data) {
 			buttons.newButton.addClass("enabled");
-			if (tree.jstree("get_selected").attr("id") != 0) {
+			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
 				buttons.editButton.addClass("enabled");
 				buttons.deleteButton.addClass("enabled");
 			} else {
@@ -71,44 +74,80 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				buttons.deleteButton.removeClass("enabled");
 			}
 		});
+		openedArrayToInstert = new Array();
+		openedArrayToInstert.push("0");
+		
+		block();
 	}
 	
-	this.insterData = function(data) {
+	this.setComponentState = function(state) {
+		QCD.info("setComponentState");
+		openedArrayToInstert = state.opened;
+		selectedEntityIdToInstert = state.selectedEntityId;
+	}
+	
+	this.getUpdateMode = function() {
+		return QCD.components.Component.UPDATE_MODE_UPDATE;
 	}
 	
 	this.getComponentValue = function() {
 		var entityId = null;
 		if (tree.jstree("get_selected")) {
 			entityId = tree.jstree("get_selected").attr("id");
+			if (entityId) {
+				entityId = entityId.substring(elementPath.length + 6);
+			}
 		}
+		var openedArray = new Array();
+		tree.find(".jstree-open").each(function () { 
+			openedArray.push(this.id.substring(elementPath.length + 6));
+		});
 		return {
+			opened: openedArray,
 			selectedEntityId: entityId
 		}
 	}
 	
 	this.setComponentValue = function(value) {
+		if (value == null) {
+			return;
+		}
 		if(value.contextFieldName || value.contextId) {
 			contextFieldName = value.contextFieldName;
 			contextId = value.contextId; 
 		}
-		if (root) {
-			tree.jstree("remove", root); 
+		if (value.rootNode) {
+			if (root) {
+				tree.jstree("remove", root); 
+			}
+			root = addNode(value.rootNode, -1);
 		}
-		root = addNode(value.rootNode, -1);
-		tree.jstree("open_node", root, false, true);
+		tree.jstree("close_all", root, true);
+		if (openedArrayToInstert) {
+			for (var i in openedArrayToInstert) {
+				tree.jstree("open_node", $("#"+elementPath+"_node_"+openedArrayToInstert[i]), false, true);
+			}
+			openedArrayToInstert = null;
+		} else {
+			for (var i in value.openedNodes) {
+				tree.jstree("open_node", $("#"+elementPath+"_node_"+value.openedNodes[i]), false, true);
+			}
+		}
+		if (selectedEntityIdToInstert) {
+			tree.jstree("select_node", $("#"+elementPath+"_node_"+selectedEntityIdToInstert), false);
+			selectedEntityIdToInstert = null;
+		}
+		unblock();
 	}
 	
 	function addNode(data, node) {
-		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: data.id }}, false, true);
+		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+data.id }}, false, true);
 		newNode.bind("onselect", function() {alert("aa")})
 		for (var i in data.children) {
 			addNode(data.children[i], newNode, false);
 		}
 		tree.jstree("close_node", newNode, true);
 		return newNode;
-	}
-	
-	this.setComponentState = function(state) {
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -124,14 +163,29 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function newClicked() {
 		if (buttons.newButton.hasClass("enabled")) {
 			QCD.info("new");
-			redirectToCorrespondingPage((contextFieldName && contextId) ? "contextFieldName="+contextFieldName+"&contextEntityId="+contextId : null);
+			var contextArray = new Array();
+			var parentId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
+			contextArray.push({
+				fieldName: "parent",
+				entityId: (parentId == 0) ? null : parentId
+			});
+			if (contextFieldName && contextId) {
+				contextArray.push({
+					fieldName: contextFieldName,
+					entityId: contextId
+				});
+			}
+			context = "context="+JSON.stringify(contextArray);
+			QCD.info("newClicked");
+			QCD.info(context);
+			redirectToCorrespondingPage(context);
 		}
 	}
 	
 	function editClicked() {
 		if (buttons.editButton.hasClass("enabled")) {
 			QCD.info("edit");
-			var entityId = tree.jstree("get_selected").attr("id");
+			var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
 			redirectToCorrespondingPage("entityId="+entityId);
 		}
 	}
@@ -139,6 +193,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function deleteClicked() {
 		if (buttons.deleteButton.hasClass("enabled")) {
 			if (window.confirm("delete?")) {
+				block();
 				var entityId = tree.jstree("get_selected").attr("id");
 				mainController.performDelete(elementPath, entityId, null);	
 			}
@@ -152,6 +207,33 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				url += "?"+params;
 			}
 			mainController.goToPage(url);
+		}
+	}
+	
+	this.setComponentLoading = function(isLoadingVisible) {
+		if (isLoadingVisible) {
+			block();
+		} else {
+			unblock();
+		}
+	}
+	
+	function block() {
+		if (tree) {
+			tree.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+	            border: 'none', 
+	            padding: '15px', 
+	            backgroundColor: '#000', 
+	            '-webkit-border-radius': '10px', 
+	            '-moz-border-radius': '10px', 
+	            opacity: .5, 
+	            color: '#fff' } });
+		}
+	}
+	
+	function unblock() {
+		if (tree) {
+			tree.unblock();
 		}
 	}
 	

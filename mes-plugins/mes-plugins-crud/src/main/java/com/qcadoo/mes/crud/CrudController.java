@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,9 @@ public final class CrudController {
         modelAndView.setViewName("crudView");
         modelAndView.addObject("viewDefinition", viewDefinition);
         modelAndView.addObject("entityId", arguments.get("entityId"));
-        modelAndView.addObject("contextEntityId", arguments.get("contextEntityId"));
-        modelAndView.addObject("contextFieldName", arguments.get("contextFieldName"));
+        // modelAndView.addObject("contextEntityId", arguments.get("contextEntityId"));
+        // modelAndView.addObject("contextFieldName", arguments.get("contextFieldName"));
+        modelAndView.addObject("context", arguments.get("context"));
         modelAndView.addObject("translationsMap", translationsMap);
 
         addMessageToModel(arguments, modelAndView);
@@ -130,8 +132,8 @@ public final class CrudController {
         JSONObject jsonObject = getJsonObject(jsonBody);
 
         String triggerComponentName = getComponentName(jsonBody);
-        String contextFieldName = getJsonString(jsonBody, "contextFieldName");
-        String contextEntityId = getJsonString(jsonBody, "contextEntityId");
+        // String contextFieldName = getJsonString(jsonBody, "contextFieldName");
+        // String contextEntityId = getJsonString(jsonBody, "contextEntityId");
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
@@ -141,9 +143,21 @@ public final class CrudController {
 
         Entity entity = component.getSaveableEntity(viewValue);
 
-        if (((Component<?>) component).isRelatedToMainEntity() && StringUtils.hasText(contextFieldName)
-                && StringUtils.hasText(contextEntityId)) {
-            entity.setField(contextFieldName, Long.parseLong(contextEntityId));
+        JSONArray contextArray = getJsonArray(jsonBody, "context");
+        if (contextArray != null) {
+            for (int i = 0; i < contextArray.length(); i++) {
+                try {
+                    JSONObject contextObject = contextArray.getJSONObject(i);
+                    String contextFieldName = getJsonString(contextObject, "fieldName");
+                    String contextEntityId = getJsonString(contextObject, "entityId");
+                    if (((Component<?>) component).isRelatedToMainEntity() && StringUtils.hasText(contextFieldName)
+                            && StringUtils.hasText(contextEntityId)) {
+                        entity.setField(contextFieldName, Long.parseLong(contextEntityId));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         entity = ((Component<?>) component).getDataDefinition().save(entity);
@@ -285,6 +299,18 @@ public final class CrudController {
         try {
             if (!json.isNull(name)) {
                 return json.getString(name);
+            } else {
+                return null;
+            }
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    private JSONArray getJsonArray(final JSONObject json, final String name) {
+        try {
+            if (!json.isNull(name)) {
+                return json.getJSONArray(name);
             } else {
                 return null;
             }

@@ -378,7 +378,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.performNew = function(actionsPerformer) {
-		redirectToCorrespondingPage((contextFieldName && contextId) ? "contextFieldName="+contextFieldName+"&contextEntityId="+contextId : null);
+		var context = null;
+		if (contextFieldName && contextId) {
+			var contextArray = new Array();
+			contextArray.push({
+				fieldName: contextFieldName,
+				entityId: contextId
+			});
+			context = "context="+JSON.stringify(contextArray);
+		}
+		redirectToCorrespondingPage(context);
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
