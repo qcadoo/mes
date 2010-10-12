@@ -109,6 +109,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
         listeners = Collections.unmodifiableSet(listeners);
 
+        System.out.println("AAAAAAAAAAAAAAAAAAA");
+        System.out.println(pathsToUpdate);
+
         if (shouldNotBeUpdated(pathsToUpdate)) {
             return (ViewValue<T>) viewValue;
         }

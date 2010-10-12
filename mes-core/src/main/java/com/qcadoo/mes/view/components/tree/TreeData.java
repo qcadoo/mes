@@ -1,5 +1,8 @@
 package com.qcadoo.mes.view.components.tree;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class TreeData {
 
     private TreeNode rootNode;
@@ -7,6 +10,8 @@ public class TreeData {
     private final String contextFieldName;
 
     private final Long contextId;
+
+    private List<Long> openedNodes;
 
     private Long selectedEntityId;
 
@@ -43,6 +48,21 @@ public class TreeData {
 
     public void setSelectedEntityId(Long selectedEntityId) {
         this.selectedEntityId = selectedEntityId;
+    }
+
+    public List<Long> getOpenedNodes() {
+        return openedNodes;
+    }
+
+    public void setOpenedNodes(List<Long> openedNodes) {
+        this.openedNodes = openedNodes;
+    }
+
+    public void addOpenedNode(Long nodeId) {
+        if (openedNodes == null) {
+            openedNodes = new LinkedList<Long>();
+        }
+        openedNodes.add(nodeId);
     }
 
 }

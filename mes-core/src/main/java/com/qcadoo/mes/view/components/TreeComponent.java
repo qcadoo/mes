@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,11 +69,16 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
 
             if (!value.isNull("selectedEntityId")) {
                 String selectedEntityId = value.getString("selectedEntityId");
-
                 if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
                     Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
                     selectedEntities.put(getPath(), selectedEntity);
                     data.setSelectedEntityId(Long.parseLong(selectedEntityId));
+                }
+            }
+            if (!value.isNull("opened")) {
+                JSONArray opened = value.getJSONArray("opened");
+                for (int i = 0; i < opened.length(); i++) {
+                    data.addOpenedNode(Long.parseLong(opened.getString(i)));
                 }
             }
         }
@@ -84,17 +90,8 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
     public ViewValue<TreeData> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<TreeData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
-        TreeNode rootNode = new TreeNode(new Long(0), "root");
-        /*
-         * TreeNode child1 = new TreeNode(new Long(1), "child1"); child1.addChild(new TreeNode(new Long(2), "child1-1")); TreeNode
-         * child12 = new TreeNode(new Long(3), "child1-2"); child12.addChild(new TreeNode(new Long(4), "child1-2-1"));
-         * child1.addChild(child12); child1.addChild(new TreeNode(new Long(5), "child1-3")); root.addChild(child1); TreeNode
-         * child2 = new TreeNode(new Long(6), "child1"); child2.addChild(new TreeNode(new Long(7), "child2-1"));
-         * child2.addChild(new TreeNode(new Long(8), "child2-2")); root.addChild(child2); root.addChild(new TreeNode(new Long(9),
-         * "child3"));
-         */
 
-        // return new ViewValue<TreeNode>(root);
+        TreeNode rootNode = new TreeNode(new Long(0), "root");
 
         String joinFieldName = null;
         Long belongsToEntityId = null;
@@ -152,7 +149,13 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
             }
         }
 
-        return new ViewValue<TreeData>(new TreeData(rootNode, joinFieldName, belongsToEntityId));
+        TreeData data = new TreeData(rootNode, joinFieldName, belongsToEntityId);
+        if (viewValue != null) {
+            data.setOpenedNodes(viewValue.getValue().getOpenedNodes());
+            data.setSelectedEntityId(viewValue.getValue().getSelectedEntityId());
+        }
+
+        return new ViewValue<TreeData>(data);
     }
 
     @Override
