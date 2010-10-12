@@ -25,7 +25,7 @@
 	
 	<span id="${componentFullName}_messagesSpan"></span>
 	
-	<div id="${componentFullName}_formComponents">
+	<div id="${componentFullName}_formComponents" class="form_components">
 		<c:forEach items="${component.components}" var="componentEntry">
 			<tiles:insertTemplate template="../component.jsp">
 				<tiles:putAttribute name="component" value="${componentEntry.value}" />
@@ -36,6 +36,5 @@
 			</tiles:insertTemplate>
 		</c:forEach>
 	</div>
-	
 </div>
 

@@ -42,10 +42,10 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
     public ViewValue<EntityComboBoxValue> castComponentValue(final Map<String, Entity> selectedEntities,
             final JSONObject viewObject) throws JSONException {
         JSONObject valueObject = viewObject.getJSONObject("value");
-        if (!valueObject.isNull("selectedValue")) {
+        if (!valueObject.isNull("value")) {
             EntityComboBoxValue value = new EntityComboBoxValue();
-            if (!"".equals(valueObject.getString("selectedValue"))) {
-                Long selectedEntityId = Long.parseLong(valueObject.getString("selectedValue"));
+            if (!"".equals(valueObject.getString("value"))) {
+                Long selectedEntityId = Long.parseLong(valueObject.getString("value"));
                 value.setSelectedValue(selectedEntityId);
                 Entity selectedEntity = getDataDefinition().get(selectedEntityId);
                 selectedEntities.put(getPath(), selectedEntity);

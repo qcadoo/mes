@@ -7,19 +7,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <tiles:useAttribute name="component" />
+<tiles:useAttribute name="componentType" />
 <tiles:useAttribute name="componentFullName"/>
 <tiles:useAttribute name="componentFullNameWithDots"/>
 <tiles:useAttribute name="viewName" ignore="true"/>
 <tiles:useAttribute name="pluginIdentifier" ignore="true"/>
+<tiles:useAttribute name="componentBody"/>
 
-<tiles:insertTemplate template="formComponent.jsp">
-	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="passwordInput" />
-	<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
-	<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
-	<tiles:putAttribute name="viewName" value="${viewName}" />
-	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
-	<tiles:putAttribute name="componentBody">
-		<input type="password" id="${componentFullName}_input" name="fields[${component.name}]" />
-	</tiles:putAttribute>
-</tiles:insertTemplate>
+<div class="component component_element component_element_${componentType}" id="${componentFullName}">
+	<div class="element_options" style="display: none">
+		${component.optionsAsJson}
+	</div>
+	
+	<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
+	
+	<div class="label"><label>${translationsMap[headerLabel]}</label></div>
+	
+	${componentBody}
+	
+	<div class="error_box">
+		<div id="${componentFullName}_error_icon" class="error_icon"></div>
+		<div id="${componentFullName}_error_messages" class="error_messages" style="display: none"></div>
+	</div>
+</div>

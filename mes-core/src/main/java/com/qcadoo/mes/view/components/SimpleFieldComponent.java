@@ -12,12 +12,13 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;
 
-public abstract class SimpleFieldComponent extends AbstractComponent<String> {
+public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue> {
 
     public SimpleFieldComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
@@ -29,26 +30,36 @@ public abstract class SimpleFieldComponent extends AbstractComponent<String> {
     public abstract String convertToDatabaseValue(final String value);
 
     @Override
-    public final ViewValue<String> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+    public final ViewValue<SimpleValue> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException {
         String value = null;
-        if (!viewObject.isNull("value")) {
-            value = viewObject.getString("value");
+        if (!viewObject.isNull("value") && !viewObject.getJSONObject("value").isNull("value")) {
+            value = viewObject.getJSONObject("value").getString("value");
         }
         if (StringUtils.hasText(value)) {
-            return new ViewValue<String>(convertToDatabaseValue(value.trim()));
+            return new ViewValue<SimpleValue>(new SimpleValue(convertToDatabaseValue(value.trim())));
         } else {
-            return new ViewValue<String>();
+            return new ViewValue<SimpleValue>();
         }
     }
 
     @Override
-    public final ViewValue<String> getComponentValue(final Entity entity, final Entity parentEntity,
-            final Map<String, Entity> selectedEntities, final ViewValue<String> viewValue, final Set<String> pathsToUpdate,
+    public final ViewValue<SimpleValue> getComponentValue(final Entity entity, final Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<SimpleValue> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
         String value = getStringValue(entity, selectedEntities);
 
-        ViewValue<String> newViewValue = new ViewValue<String>(convertToViewValue(value.trim()));
+        ViewValue<SimpleValue> newViewValue = new ViewValue<SimpleValue>(new SimpleValue(convertToViewValue(value.trim())));
+
+        FieldDefinition fieldDefinition = getFieldDefinition();
+
+        if (fieldDefinition.isRequired() || (entity == null && fieldDefinition.isRequiredOnCreate())) {
+            newViewValue.getValue().setRequired(true);
+        }
+
+        if (fieldDefinition.isReadOnly() || (entity != null && fieldDefinition.isReadOnlyOnUpdate())) {
+            newViewValue.setEnabled(false);
+        }
 
         ErrorMessage validationError = getErrorMessage(entity, selectedEntities);
 

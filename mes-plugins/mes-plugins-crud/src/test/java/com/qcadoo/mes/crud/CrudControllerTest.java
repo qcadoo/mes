@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,8 +92,7 @@ public class CrudControllerTest {
         // given
         Map<String, String> arguments = new HashMap<String, String>();
         arguments.put("entityId", "1");
-        arguments.put("contextEntityId", "2");
-        arguments.put("contextFieldName", "field");
+        arguments.put("context", "test");
         arguments.put("message", "hello world");
         arguments.put("messageType", "error");
 
@@ -103,8 +103,7 @@ public class CrudControllerTest {
         assertEquals("crudView", modelAndView.getViewName());
         assertEquals(viewDefinition, modelAndView.getModel().get("viewDefinition"));
         assertEquals("1", modelAndView.getModel().get("entityId"));
-        assertEquals("2", modelAndView.getModel().get("contextEntityId"));
-        assertEquals("field", modelAndView.getModel().get("contextFieldName"));
+        assertEquals("test", modelAndView.getModel().get("context"));
         assertEquals("hello world", modelAndView.getModel().get("message"));
         assertEquals("error", modelAndView.getModel().get("messageType"));
 
@@ -244,8 +243,6 @@ public class CrudControllerTest {
 
         JSONObject json = new JSONObject();
         json.put("componentName", "trigger-component");
-        json.put("contextFieldName", "");
-        json.put("contextEntityId", "");
         json.put("data", new JSONObject());
 
         ViewValue<Long> oldViewValue = new ViewValue<Long>(221L);
@@ -282,8 +279,12 @@ public class CrudControllerTest {
 
         JSONObject json = new JSONObject();
         json.put("componentName", "trigger-component");
-        json.put("contextFieldName", "contextField");
-        json.put("contextEntityId", "11");
+        JSONArray contextArr = new JSONArray();
+        JSONObject contextObj = new JSONObject();
+        contextObj.put("fieldName", "testField");
+        contextObj.put("entityId", "44");
+        contextArr.put(contextObj);
+        json.put("context", contextArr);
         json.put("data", new JSONObject());
 
         ViewValue<Long> oldViewValue = new ViewValue<Long>(222L);
@@ -310,7 +311,7 @@ public class CrudControllerTest {
         assertEquals(1, viewValue.getSuccessMessages().size());
         assertEquals("saved", viewValue.getSuccessMessages().get(0));
         verify(((Component<?>) component).getDataDefinition()).save(entity);
-        verify(entity).setField("contextField", 11L);
+        verify(entity).setField("testField", 44L);
     }
 
     @Test

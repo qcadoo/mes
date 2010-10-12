@@ -206,6 +206,7 @@
 				<component type="input" name="dateTo" field="dateTo" />
 				<component type="input" name="description" field="description" />
 				<option type="header" value="false" />
+				<option type="expression" value="#name" />
 			</component>
 			<component type="tree" name="bomTree" source="bomComponents">
 				<option type="height" value="200" />
