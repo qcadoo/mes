@@ -89,9 +89,7 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
 
             }
             value.setValues(valuesMap);
-
         } else {
-
             Map<Long, String> valuesMap = belongsToType.lookup("");
             value.setValues(valuesMap);
         }
@@ -129,7 +127,19 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
             value.setSelectedValue(viewValue.getValue().getSelectedValue());
         }
 
-        return new ViewValue<EntityComboBoxValue>(value);
+        ViewValue<EntityComboBoxValue> newViewValue = new ViewValue<EntityComboBoxValue>(value);
+
+        FieldDefinition fieldDefinition = getFieldDefinition();
+
+        if (fieldDefinition.isRequired() || (entity == null && fieldDefinition.isRequiredOnCreate())) {
+            newViewValue.getValue().setRequired(true);
+        }
+
+        if (fieldDefinition.isReadOnly() || (entity != null && fieldDefinition.isReadOnlyOnUpdate())) {
+            newViewValue.setEnabled(false);
+        }
+
+        return newViewValue;
     }
 
     @Override
