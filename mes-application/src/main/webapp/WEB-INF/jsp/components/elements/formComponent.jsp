@@ -21,7 +21,8 @@
 	
 	<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
 	
-	<div class="label"><label>${translationsMap[headerLabel]}</label></div>
+	<label>${translationsMap[headerLabel]}
+	</label>
 	
 	${componentBody}
 	

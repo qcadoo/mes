@@ -1,4 +1,4 @@
-package com.qcadoo.mes.serurity;
+package com.qcadoo.mes.security;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;

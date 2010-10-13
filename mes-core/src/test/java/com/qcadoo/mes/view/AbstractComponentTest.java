@@ -71,7 +71,7 @@ public class AbstractComponentTest {
         CustomAbstractComponent component = new CustomAbstractComponent("name", root, null, null, translationService);
         component.initializeComponent(componentRegistry);
 
-        // TODO listeners
+        // TODO masz listeners
 
         // when
         component.addOption("test", "testValue");
