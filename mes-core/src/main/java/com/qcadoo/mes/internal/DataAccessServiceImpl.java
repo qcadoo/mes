@@ -222,19 +222,21 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Delete cascade = " + hasManyFieldType.getCascade());
                 }
+                InternalDataDefinition childDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
                 if (HasManyType.Cascade.NULLIFY.equals(hasManyFieldType.getCascade())) {
                     for (Object child : children) {
-                        entityService.setField(child,
-                                hasManyFieldType.getDataDefinition().getField(hasManyFieldType.getJoinFieldName()), null);
-                        getCurrentSession().save(child);
+                        DefaultEntity defaultEntity = (DefaultEntity) child;
+                        defaultEntity.setField(hasManyFieldType.getJoinFieldName(), null);
+                        save(childDataDefinition, defaultEntity);
                     }
                 } else {
                     for (Object child : children) {
-                        deleteEntity((InternalDataDefinition) hasManyFieldType.getDataDefinition(), entityService.getId(child));
+                        deleteEntity(childDataDefinition, entityService.getId(child));
                     }
                 }
             }
         }
+
     }
 
     private Session getCurrentSession() {
