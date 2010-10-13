@@ -28,7 +28,8 @@
 	background-color:#fff;
 	background-image:url('images/q_row4_bg.png');
 	background-position: top;
-	background-repeat: repeat-x;	
+	background-repeat: repeat-x;
+	height: 6px;	
 }
 #q_menu_row1 {
 	width:990px;
@@ -45,7 +46,8 @@
 #q_menu_row3 {
 	width:990px;
 	height:70px;
-	margin:auto;
+	margin-left: 20px;
+	font-family:Arial, Helvetica, sans-serif;
 }
 #q_menu_row4 {
 	width:990px;
@@ -357,7 +359,7 @@ ul.ribbonAddElement li {
 	float:left;
 	display:block;
 	padding: 0px 0px;
-	margin:0px 5px 0px 0px;
+	margin: 0px 2px 0px;
 	height: 45px;
 }
 ul.ribbonAddElement > li:hover {
@@ -387,6 +389,9 @@ ul.ribbonAddElement > li:hover > span > div {
 	background-repeat:no-repeat;
 	background-position:top left;
 }
+ul.ribbonAddElement li ul {
+	padding: 0;
+}
 ul.ribbonAddElement li ul li {
 	float:none;
 	display:block;
@@ -415,6 +420,35 @@ ul.ribbonAddElement li ul li a span {
 	padding:0px;
 	background-repeat:repeat-x;
 }
+
+ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv {
+	background-repeat:no-repeat;
+	background-position: 0px 1px;
+	vertical-align: middle;
+	display: inline-block;
+	height:34px;
+	vertical-align: middle;
+	margin: auto;
+	
+}
+ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv.hasIcon {
+	//background-image:url('images/btn_list.png');
+	//background-image:url('images/testIcon32.png');
+	padding-left: 34px;
+}
+ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv label {
+	vertical-align: middle;
+	display: inline-block;
+	line-height: 110%;
+	cursor: pointer;
+}
+ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv div {
+	vertical-align: middle;
+	display: inline-block;
+	height: 34px;
+	
+}
+
 ul.ribbonAddElement li ul li:hover {
 	background-image:url('images/btn_add_hover_l.png');
 
@@ -450,8 +484,10 @@ ul.ribbonAddElement li ul li.addB a span {
 	margin:0px 5px;
 	height: 12px;
 	padding:0px;
-	 
 }
+
+
+
 ul.ribbonAddElement li ul li.addB:hover {
 	background-image:url('images/btn_addB_hover_l.png');
 
@@ -463,13 +499,13 @@ ul.ribbonAddElement li ul li.addB:hover a span {
 	background-image:url('images/btn_addB_hover_c.png');
 }
 .icon_btn_add {
-	display:block;
+	/*display:block;
 	height:28px;
 	background-image:url('images/icon_btn_add.png');
 	background-repeat:no-repeat;
 	background-position: top left;
 	padding: 5px 5px 0px 34px;
-}
+*/}
 .icon_btn_addB {
 	display:block;
 	width:5px;
@@ -509,6 +545,32 @@ ul.ribbonListElement li a span {
 	padding: 0px;
 	margin: 0px 5px;
 }
+ul.ribbonListElement li a span div {
+	background-repeat:no-repeat;
+	background-position: 0px 7px;
+	vertical-align: middle;
+	display:block;
+	height:40px;
+	vertical-align: middle;
+	margin: auto;
+}
+ul.ribbonListElement li a span div.hasIcon {
+	//background-image:url('images/btn_list.png');
+	//background-image:url('images/testIcon32.png');
+	padding-left: 34px;
+}
+ul.ribbonListElement li a span div label {
+	vertical-align: middle;
+	display: inline-block;
+	line-height: 110%;
+	cursor: pointer;
+}
+ul.ribbonListElement li a span div div {
+	vertical-align: middle;
+	display: inline-block;
+	height: 45px;
+	
+}
 ul.ribbonListElement li:hover {
 	background-image:url('images/btn_list_hover_l.png');
 	background-repeat:no-repeat;
@@ -540,14 +602,6 @@ ul.ribbonListElement li.noActive {
 	background-image:none;
 	color:#b7b7b7;
 }
-.icon_folder_blue {
-	display:block;
-	height:40px;
-	background-image:url('images/btn_list.png');
-	background-repeat:no-repeat;
-	background-position: top left;
-	padding: 5px 2px 0px 32px;
-}
 .icon_folder_noActive {
 	display:block;
 	height:40px;
@@ -571,6 +625,8 @@ ul.ribbon_list {
 	list-style: none;
 	margin:0px;
 	padding:0;
+	float:left;
+	margin-right:0px;
 }
 ul.ribbon_list li {
 	display:block;
@@ -578,7 +634,8 @@ ul.ribbon_list li {
 	height: 23px;
 	background-image:none;
 }
-ul.ribbon_list li a {
+ul.ribbon_list li.btnOne a,
+ul.ribbon_list li.twoB a {
 	display:block;
 	width:auto;
 	height: 23px;
@@ -596,7 +653,22 @@ ul.ribbon_list li.arrow a, ul.ribbon_list li a.make {
 ul.ribbon_list li a span {
 	display:block;
 	padding:0px;
-	margin: 0px 14px 0px 7px;
+	margin: 0px 3px 0px 3px;
+}
+ul.ribbon_list li a span div {
+	display:block;
+	margin-right: 0px;
+	height: 18px;
+	padding-top: 5px;
+	padding-left: 2px;
+	//padding: 5px 0px 0px 23px;
+	//background-image:url('images/lt_1span.png');
+	background-repeat:no-repeat;
+	background-position: left;
+}
+ul.ribbon_list .hasIcon {
+	//background-image:url('images/testIcon16.png');
+	padding-left: 18px;
 }
 ul.ribbon_list li.btnOne:hover  {
 	background-image:url('images/lt_hover_l.png');
@@ -677,15 +749,16 @@ ul.ribbon_list li.twoB span div ul li:hover a span {
 	background-repeat:repeat-x; 
 }
 /* [LIST icon] */
-.icon_list {
-	display:block;
+
+ul.ribbon_list .icon_list {
+	/*display:block;
 	margin-right:0px;
 	height: 18px;
 	padding: 5px 0px 0px 23px;
 	background-image:url('images/lt_1span.png');
 	background-repeat:no-repeat;
 	background-position: left;
-}
+*/}
 .icon_make {
 	display:block;
 	margin-right:0px;
@@ -703,17 +776,21 @@ ul.ribbon_list li.twoB span div ul li:hover a span {
 	background-repeat:no-repeat;
 }
 /* [LIST two button] */
-ul.ribbon_list li ul li {
+ul.ribbon_list li.twoB ul {
+	margin: 0;
+	padding: 0;	
+}
+ul.ribbon_list li.twoB ul li {
 	float:left;
 }
-ul.ribbon_list li ul li a.twoB_down {
+ul.ribbon_list li.twoB ul li a.twoB_down {
 	width:15px;
 	height:23px;
 	background-image:url('images/lt_twoB_down.png');
 	
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li ul li a.twoB_down:hover {
+ul.ribbon_list li.twoB ul li a.twoB_down:hover {
 	background-image:url('images/lt_twoB_downClick.png') !important;
 }
 /* SUBMENU */
@@ -722,9 +799,23 @@ ul.ribbon_list li ul li a.twoB_down:hover {
 	display:block;
 	width:160px;
 }
+.ribbonDropdownContainer {
+	position: relative;
+}
 .m_module {
-	border:1px solid #fff;
+	border:1px solid #d8d8d8;
 	background-color:#f0f0f0;
+	display: none;
+	z-index: 20;
+	position: absolute;
+}
+.m_module.bigButtonDropdownMenu {
+	top: 45px;
+	left: 0px;
+}
+.m_module.smallButtonDropdownMenu {
+	top: 23px;
+	right: 0px;
 }
 .m_module ul {
 	list-style: none;
@@ -736,26 +827,32 @@ ul.ribbon_list li ul li a.twoB_down:hover {
 .m_module ul li {
 	display:block;
 	padding: 0px;
+	float: none !important;
+	height: auto !important;
 }
 .m_module ul li a {
 	display:block;
 	color:#464646;
 	text-decoration:none;
+	height: auto !important;
 }
 .m_module ul li a.icon span {
-	background-image:url('images/lt_1span.png');
+	//background-image:url('images/lt_1span.png');
+	//background-image:url('images/testIcon16.png');
 	background-repeat:no-repeat;
+	background-position: 4px 2px;
+	margin: 0px 0px 0px 0px;
 }
 .m_module ul li a span {
 	display:block;
-	padding: 4px 11px 4px 36px;
+	padding: 4px 10px 4px 35px;
+	border: 1px solid transparent;
 }
 .m_module ul li a:hover {
 	background-image:url('images/m_li_tlo.png');
 	background-repeat:repeat-y;
 }
 .m_module ul li a:hover span {
-	padding: 3px 10px 3px 35px;
-	border: 1px solid #f29d15;	
+	border-color: #f29d15;
 }
 

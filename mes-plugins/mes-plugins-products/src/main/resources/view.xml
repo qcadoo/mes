@@ -4,8 +4,8 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" action="#{mainWindow.productsGrid}.performNew;" />
-					<smallButton name="delete" icon="icon2"
+					<bigButton name="new" icon="addIcon32.png" action="#{mainWindow.productsGrid}.performNew;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.productsGrid}.performDelete;" />
 				</group>
 			</ribbon>
@@ -32,21 +32,21 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save"
+					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.productDetailsForm}.performSave;" />
-					<bigButtons name="saveBack"
+					<bigButtons name="saveBack" icon="saveBackIcon32.png"
 						action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack">
-						<bigButton name="saveNew"
+						<bigButton name="saveNew" icon="saveNewIcon16.png"
 							action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel"
+					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.productDetailsForm}.performCancel;" />
-					<smallButtons name="delete" icon="icon2"
+					<smallButtons name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performBack">
-						<smallButton name="deleteNew"
+						<smallButton name="deleteNew" icon="deleteIcon16.png"
 							action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performNew;" />
 					</smallButtons>
 				</group>
