@@ -360,10 +360,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function updateFullScreenSize() {
 		if (! gridParameters.height && gridParameters.fullScreen) {
+			var HEIGHT_DIFF = 100;
 			if (searchEnabled) {
-				grid.setGridHeight(element.height() - 96);	
+				grid.setGridHeight(element.height() - HEIGHT_DIFF-8);	
 			} else {
-				grid.setGridHeight(element.height() - 88);
+				grid.setGridHeight(element.height() - HEIGHT_DIFF);
 			}
 		}
 		if (! gridParameters.width && gridParameters.fullScreen) {
