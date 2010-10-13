@@ -90,7 +90,7 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
 
     private List<String> getComboBoxValues() {
         FieldType def = getDataDefinition().getField(getName()).getType();
-        // TODO mina
+        // TODO mina check
         // if (!(def instanceof DictionaryType || def instanceof EnumType)) {}
         EnumeratedType fieldDefinition = (EnumeratedType) def;
         return fieldDefinition.values();
