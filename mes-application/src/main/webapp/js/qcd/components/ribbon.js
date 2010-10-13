@@ -159,6 +159,7 @@ QCD.components.Ribbon = function(_model, _mainController) {
 		dropdownTriggerButton.addClass("dropdownTrigger");
 		dropdownTriggerButton.click(function() {
 			var parent = $(this);
+			parent.blur();
 			while(! parent.hasClass("ribbonDropdownContainer")) {
 				parent = parent.parent();
 			}
@@ -186,9 +187,7 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	}
 	
 	function buttonClicked(e) {
-//		$(e.target).children().blur();
-//		$(e.target).blur();
-//		$(e.target).children().children().children().blur();
+		$(this).blur();
 		var action = e.data.clickAction;
 		var name = e.data.itemName;
 		mainController.performRibbonAction(action);
