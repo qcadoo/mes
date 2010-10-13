@@ -20,34 +20,60 @@
 }
 
 .component_container_form .component_element {
-    padding: 10px 0 9px;	
-    margin: 0;
+    padding: 0;	
+    margin: 10px 0 9px;
+    vertical-align: middle;
+    display: inline-block;
 }
 
-.component_container_form .label {
-	display: block;
-	width: 100px;
-	float: left;	
+.component_container_form label {
+	width: 90px;
 	font: 11px arial;
-	height: 22px;
+	margin-right: 10px;
+	display: inline-block;
 	vertical-align: middle;
 }
 
-.component_container_form .required .label {
+.component_container_form .required label {
 	font-weight: bold;
 }
 
-.component_container_form .error .label {
+.component_container_form .error label {
 	color: #ec1c24;
 }
 
-.component_container_form input, .component_container_form select, .component_container_form textarea {
-    padding: 0 6px;
+.component_container_form input, .component_container_form textarea, .component_container_form select {
+    padding: 0 0 0 6px;
     margin: 0;	
 	border: 1px solid #959595;
 	color: #464646;
-	height: 20px;
-	width: 525px;
+	height: 22px;
+	width: 519px;
+	line-height: normal;
+	white-space: pre;
+	font: 11px arial;
+	background: #fff;
+	-webkit-box-align: center;
+	-webkit-box-sizing: border-box;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-boder-radius: 0;
+	background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#e0e0e0), to(#fff));
+	background: -moz-linear-gradient(top, #e0e0e0, #fff 25%, #fff);
+	outline: none;
+	vertical-align: middle;
+}
+
+.component_container_form input:focus, .component_container_form textarea:focus, .component_container_form select:focus {
+	-webkit-box-shadow: 0 0 0 #fff;
+	-moz-box-shadow: 0 0 0 #fff;
+	box-shadow: 0 0 0 #fff;
+	outline:none;
+	-moz-outline-style:none;
+}
+
+.component_container_form select {
+	//-webkit-appearance: textfield;
 }
 
 .component_container_form .required input, .component_container_form .required select, .component_container_form .required textarea {
@@ -73,9 +99,10 @@
 
 .component_container_form .error_icon {
 	display: inline-block;
-	width: 12px;
-	height: 12px;
-	background: url(../images/error.png);
+	width: 13px;
+	height: 8px;
+	background: url(../images/error.icon.png);
+	vertical-align: middle;
 }
 
 .component_container_form .error_messages {

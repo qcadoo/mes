@@ -70,7 +70,6 @@
 		<c:forEach items="${translationsMap}" var="translation">
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
-
 	</script>
 </head>
 <body>
@@ -85,6 +84,6 @@
 			<tiles:putAttribute name="viewName" value="${viewDefinition.name}" />
 			<tiles:putAttribute name="pluginIdentifier" value="${viewDefinition.pluginIdentifier}" />
 		</tiles:insertTemplate>
-	
+
 </body>
 </html>

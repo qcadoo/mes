@@ -20,6 +20,6 @@
 	<tiles:putAttribute name="viewName" value="${viewName}" />
 	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
-		<select id="${componentFullName}_input"></select>
+		<select id="${componentFullName}_input"><option></option></select>
 	</tiles:putAttribute>
 </tiles:insertTemplate>
