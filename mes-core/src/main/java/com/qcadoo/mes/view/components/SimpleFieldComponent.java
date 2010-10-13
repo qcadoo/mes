@@ -77,6 +77,11 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
                 + ".label");
         messageCodes.add(getTranslationService().getEntityFieldMessageCode(getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
+        if (isHasDescription()) {
+            String descriptionCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".description";
+            translationsMap.put(descriptionCode, getTranslationService().translate(descriptionCode, locale));
+        }
     }
 
     private String getStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {

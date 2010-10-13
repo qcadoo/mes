@@ -8,6 +8,8 @@ public final class FormValue {
 
     private String headerEntityIdentifier;
 
+    private boolean valid = true;
+
     public FormValue() {
     }
 
@@ -37,6 +39,14 @@ public final class FormValue {
 
     public String getHeaderEntityIdentifier() {
         return headerEntityIdentifier;
+    }
+
+    public void setValid(final boolean valid) {
+        this.valid = valid;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 
     @Override
