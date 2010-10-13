@@ -386,6 +386,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
 
         DataDefinition newDataDefinition = getDataDefinition();
+
+        if (getParentContainer() != null) {
+            newDataDefinition = getParentContainer().getDataDefinition();
+        }
+
         FieldDefinition newFieldDefinition = null;
 
         for (int i = 0; i < fields.length; i++) {
@@ -393,14 +398,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
             if (fieldDefinition == null) {
                 break;
             }
+            if (i == fields.length - 1) {
+                newFieldDefinition = fieldDefinition;
+                break;
+            }
             if (fieldDefinition.getType() instanceof BelongsToType) {
                 newDataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
             } else if (fieldDefinition.getType() instanceof HasManyType) {
                 newDataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
             } else {
-                if (i == fields.length - 1) {
-                    newFieldDefinition = fieldDefinition;
-                }
                 break;
             }
         }
