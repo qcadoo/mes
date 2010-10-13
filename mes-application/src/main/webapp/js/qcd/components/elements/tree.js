@@ -137,6 +137,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			tree.jstree("select_node", $("#"+elementPath+"_node_"+selectedEntityIdToInstert), false);
 			selectedEntityIdToInstert = null;
 		}
+		if (tree.jstree("get_selected").length > 0) {
+			buttons.editButton.addClass("enabled");
+			buttons.deleteButton.addClass("enabled");
+		} else {
+			buttons.editButton.removeClass("enabled");
+			buttons.deleteButton.removeClass("enabled");
+		}
 		unblock();
 	}
 	
