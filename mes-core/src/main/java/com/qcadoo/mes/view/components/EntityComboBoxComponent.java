@@ -149,6 +149,11 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
                 + ".label");
         messageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
+        if (isHasDescription()) {
+            String descriptionCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".description";
+            translationsMap.put(descriptionCode, getTranslationService().translate(descriptionCode, locale));
+        }
     }
 
     private BelongsToType getBelongsToType(final DataDefinition dataDefinition, final String fieldPath) {

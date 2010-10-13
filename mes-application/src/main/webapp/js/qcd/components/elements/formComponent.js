@@ -12,17 +12,33 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	var component = $("#" + element.attr('id'));
 
 	var errorIcon = $("#" + element.attr('id') + "_error_icon");
-
+	
 	var errorMessages = $("#" + element.attr('id') + "_error_messages");
 
-	errorIcon.hover(function() {
-		errorMessages.show();
-	}, function() {
-		errorMessages.hide();
-	});
+	var descriptionIcon = $("#" + element.attr('id') + "_description_icon");
+
+	var descriptionMessage = $("#" + element.attr('id') + "_description_message");
 	
 	this.input = $("#" + element.attr('id') + "_input");
 
+	function constructor(_this) {
+		_this.registerCallbacks();
+	}
+	
+	this.registerCallbacks = function() {
+		descriptionIcon.hover(function() {
+			descriptionMessage.show();
+		}, function() {
+			descriptionMessage.hide();
+		});
+
+		errorIcon.hover(function() {
+			errorMessages.show();
+		}, function() {
+			errorMessages.hide();
+		});
+	}
+	
 	this.getComponentData = function() {
 		return {
 			value : this.input.val()
@@ -88,7 +104,8 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 		setComponentError(messages.error.length != 0);
 	}
 
-	this.setComponentLoading = function(isLoadingVisible) {
-	}
+	this.setComponentLoading = function(isLoadingVisible) {}
+	
+	constructor(this);
 
 }

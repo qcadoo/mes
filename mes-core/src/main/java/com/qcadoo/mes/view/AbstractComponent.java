@@ -61,6 +61,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private boolean defaultVisible = true;
 
+    private boolean hasDescription = false;
+
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
         this.name = name;
@@ -505,6 +507,14 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     public final void setDefaultVisible(final boolean defaultVisible) {
         this.defaultVisible = defaultVisible;
+    }
+
+    public void setHasDescription(final boolean hasDescription) {
+        this.hasDescription = hasDescription;
+    }
+
+    public boolean isHasDescription() {
+        return hasDescription;
     }
 
     public final void setRibbon(final Ribbon ribbon) {
