@@ -44,6 +44,9 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		model.selectedItem.element.addClass("path");
 		previousActive.second = model.selectedItem.selectedItem;
 		
+		//currentActive.first = model.selectedItem
+		//currentActive.second = model.selectedItem.selectedItem;
+		
 		updateState();
 		
 		changePage(model.selectedItem.selectedItem.page);
@@ -117,7 +120,6 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 				}
 			}
 		}
-		
 	}
 	
 	function updateSecondLevel() {
@@ -143,6 +145,7 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 				
 				if (previousActive.second && previousActive.second.name == secondLevelItem.name) {
 					secondLevelItem.element.addClass("activ");
+					currentActive.second = secondLevelItem;
 				}
 				
 			}

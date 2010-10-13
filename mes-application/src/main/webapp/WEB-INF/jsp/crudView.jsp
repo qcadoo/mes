@@ -12,7 +12,8 @@
 	<link rel="stylesheet" href="../../css/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/jstree/style.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/qcd.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/menuRibbon.css" type="text/css" />
+	<!--<link rel="stylesheet" href="../../css/menuRibbon.css" type="text/css" />-->
+	<link rel="stylesheet" href="../../css/menu/style.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/window.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/grid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/form.css" type="text/css" />
