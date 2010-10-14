@@ -48,8 +48,8 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="groupDetailsForm">
-				<component type="input" name="name" field="name" />
-				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="textarea" name="name" field="name" />
+				<component type="textarea" name="description" field="description" /> <!-- type:description -->
 				<component type="input" name="role" field="role" enabled="false" />
 				<option type="header" value="false" />
 			</component>
@@ -97,7 +97,7 @@
 				<component type="input" name="email" field="email" />
 				<component type="input" name="firstName" field="firstName" />
 				<component type="input" name="lastName" field="lastName" />
-				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="textarea" name="description" field="description" /> <!-- type:description -->
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<option type="header" value="false" />

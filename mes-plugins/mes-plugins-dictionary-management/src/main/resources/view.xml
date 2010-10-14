@@ -63,8 +63,8 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="dictionaryItemDetailsForm">
-				<component type="input" name="name" field="name" />
-				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="textarea" name="name" field="name" />
+				<component type="textarea" name="description" field="description" /> <!-- type:description -->
 				<option type="header" value="false" />
 			</component>
 		</component>

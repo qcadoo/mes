@@ -52,7 +52,7 @@ import com.qcadoo.mes.view.components.CheckBoxComponent;
 import com.qcadoo.mes.view.components.EntityComboBoxComponent;
 import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
-import com.qcadoo.mes.view.components.TextInputComponent;
+import com.qcadoo.mes.view.components.TextAreaComponent;
 import com.qcadoo.mes.view.components.grid.ColumnAggregationMode;
 import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 import com.qcadoo.mes.view.containers.FormComponent;
@@ -216,8 +216,8 @@ public class ViewDefinitionParserTest {
         checkComponent(root.lookupComponent("mainWindow.beanBForm"), FormComponent.class, "mainWindow.beanBForm", "form",
                 "beanB", null, null, null, Sets.<String> newHashSet(), 7, ImmutableMap.<String, Object> of("header", false));
 
-        checkComponent(root.lookupComponent("mainWindow.beanBForm.name"), TextInputComponent.class, "mainWindow.beanBForm.name",
-                "textInput", "beanB", "name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
+        checkComponent(root.lookupComponent("mainWindow.beanBForm.name"), TextAreaComponent.class, "mainWindow.beanBForm.name",
+                "textArea", "beanB", "name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
 
         Component<?> selectBeanA = root.lookupComponent("mainWindow.beanBForm.selectBeanA");
         checkComponent(selectBeanA, EntityComboBoxComponent.class, "mainWindow.beanBForm.selectBeanA", "entityComboBox", "beanA",
@@ -234,20 +234,18 @@ public class ViewDefinitionParserTest {
         assertFalse(active.isDefaultEnabled());
         assertFalse(active.isDefaultVisible());
 
-        checkComponent(root.lookupComponent("mainWindow.beanBForm.beanM"), TextInputComponent.class,
-                "mainWindow.beanBForm.beanM", "textInput", "beanB", "name", null, null, Sets.<String> newHashSet(), 0,
-                Maps.<String, Object> newHashMap());
+        checkComponent(root.lookupComponent("mainWindow.beanBForm.beanM"), TextAreaComponent.class, "mainWindow.beanBForm.beanM",
+                "textArea", "beanB", "name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
 
-        checkComponent(root.lookupComponent("mainWindow.beanBForm.beanB"), TextInputComponent.class,
-                "mainWindow.beanBForm.beanB", "textInput", "beanA", "beanA.name", null, null, Sets.<String> newHashSet(), 0,
-                Maps.<String, Object> newHashMap());
+        checkComponent(root.lookupComponent("mainWindow.beanBForm.beanB"), TextAreaComponent.class, "mainWindow.beanBForm.beanB",
+                "textArea", "beanA", "beanA.name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
 
         checkComponent(root.lookupComponent("mainWindow.beanBForm.beanAForm"), FormComponent.class,
                 "mainWindow.beanBForm.beanAForm", "form", "beanA", "beanA", null, null, Sets.<String> newHashSet(), 1,
                 Maps.<String, Object> newHashMap());
 
-        checkComponent(root.lookupComponent("mainWindow.beanBForm.beanAForm.name"), TextInputComponent.class,
-                "mainWindow.beanBForm.beanAForm.name", "textInput", "beanA", "name", null, null, Sets.<String> newHashSet(), 0,
+        checkComponent(root.lookupComponent("mainWindow.beanBForm.beanAForm.name"), TextAreaComponent.class,
+                "mainWindow.beanBForm.beanAForm.name", "textArea", "beanA", "name", null, null, Sets.<String> newHashSet(), 0,
                 Maps.<String, Object> newHashMap());
 
         GridComponent grid = (GridComponent) root.lookupComponent("mainWindow.beanBForm.beansBGrig");
