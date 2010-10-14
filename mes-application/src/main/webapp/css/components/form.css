@@ -4,6 +4,20 @@
 	background: #fff;
 }
 
+.component_container_form .form_components {
+	padding: 0px 20px;
+	margin: 0;
+}
+
+.component_container_form .component_element {
+	padding: 0;
+	margin-top: 19px;
+	vertical-align: middle;
+	display: block;
+}
+
+/** header **/
+
 .component_container_form .header {
 	background: #ebebeb;
 	height: 33px;
@@ -14,17 +28,11 @@
 	line-height: 35px;
 }
 
-.component_container_form .form_components {
-	padding: 9px 20px;
-	margin: 0;
+.component_container_form .header .entity_identifier {
+	color: #555;
 }
 
-.component_container_form .component_element {
-	padding: 0;
-	margin: 10px 0 9px;
-	vertical-align: middle;
-	display: block;
-}
+/** labels **/
 
 .component_container_form .label {
 	width: 90px;
@@ -42,88 +50,118 @@
 	// color: #ec1c24;
 }
 
-.component_container_form input[type='text'], .component_container_form textarea, .component_container_form select
-	{
+/** inputs **/
+
+.component_container_form_x {
+	margin: 0;
+	padding: 0;
+	background: #fff url(../images/form/input_x.png) repeat-x 0 1px;
+	display: inline-block;
+}
+
+.component_container_form_y {
+	margin: 0;
+	padding: 0;
+	background: transparent url(../images/form/input_y.png) repeat-y 1px 0;
+	display: inline-block;
+	position: relative;
+}
+
+.component_container_form input[type='text'], .component_container_form textarea, .component_container_form select {
+	border: 1px solid #959595;	
 	border-spacing: 0;
   	margin: 0;
   	space: 0;
-	border: 1px solid #959595;
 	color: #464646;
 	height: 22px;
-	width: 519px;
-	line-height: normal;
-	white-space: pre;
+	width: 525px;
 	font: 11px arial;
-	background: #fff;
+	vertical-align: middle;
 	border-radius: 0;
 	-moz-border-radius: 0;
 	-webkit-boder-radius: 0;
-	outline: none;
-	vertical-align: middle;
-	background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#e0e0e0), to(#fff) );
-	background: -moz-linear-gradient(top, #e0e0e0, #fff 25%, #fff);
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
 
-.component_container_form textarea {
-	height: 70px;
-}
-
 .component_container_form input[type='text'], .component_container_form textarea {
-	padding: 0 0 0 6px;
-}
-
-.component_container_form input[type='text']:focus, .component_container_form textarea:focus, .component_container_form select:focus
-	{
-	-webkit-box-shadow: 0 0 0 #fff;
-	-moz-box-shadow: 0 0 0 #fff;
-	box-shadow: 0 0 0 #fff;
-	outline: none;
-	-moz-outline-style: none;
+	background: transparent url(../images/form/input_c.png) no-repeat 0 0;
+	padding-left: 6px;
 }
 
 .component_container_form select {
+	background: #fff;
+	vertical-align: middle;
+	padding: 0;
+	// background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#e0e0e0), to(#fff) );
+	// background: -moz-linear-gradient(top, #e0e0e0, #fff 25%, #fff);
 	// -webkit-appearance: textfield;
-	padding: 0 0 0 0;
+	// -moz-appearance:textfield;
 }
 
-.component_container_form .required input[type='text'], .component_container_form .required select, .component_container_form .required textarea
-	{
-	border: 1px solid #464646;
+.component_container_form .required input[type='text'], .component_container_form .required textarea, .component_container_form .required select {
+	border: 1px solid #464646;	
 }
 
-.component_container_form .error input[type='text'], .component_container_form .error select, .component_container_form .error textarea
-	{
+.component_container_form .error input[type='text'], .component_container_form .error textarea, .component_container_form .error select {
 	border: 1px solid #ec1c24;
 }
 
-.component_container_form .header .entity_identifier {
-	color: #555;
+.component_container_form textarea {
+	height: 128px;
+	padding: 6px;
+}
+
+.component_container_form textarea:focus, .component_container_form select:focus, .component_container_form input:focus {
+	-webkit-box-shadow: 0 0 0 #fff;
+	-moz-box-shadow: 0 0 0 #fff;
+	box-shadow: 0 0 0 #fff;
+	/*outline: none;
+	-moz-outline: none;
+	-webkit-outline: none;
+*/
+}
+
+/** error icons **/
+
+.component_container_form .error_icon {
+  	display: none;
+}
+
+.component_container_form .error .component_container_form_y .error_icon {
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	background: url(../images/form/input_v.png);
+	vertical-align: middle;
+	left: 1px;
+	position: absolute;
+	top: 1px;
+	z-index: 999;
 }
 
 .component_container_form .error_box {
-	display: none;
-}
-
-.component_container_form .error .error_box {
 	display: inline-block;
 	position: relative;
 }
 
-.component_container_form .error_icon {
+.component_container_form .error .error_box .error_icon {
 	display: inline-block;
 	width: 13px;
 	height: 8px;
 	background: url(../images/error.icon.png);
-	vertical-align: middle;
+	vertical-align: baseline;
 }
+
+/** error messages **/
 
 .component_container_form .error_messages {
 	position: absolute;
 	top: 15px;
 	left: 15px;
+	background: #fff;
+	z-index: 999;
 }
 
 .component_container_form .error_messages div {
@@ -147,6 +185,8 @@
 	color: #464646;
 	margin: 7px 6px;
 }
+
+/** descriptions **/
 
 .component_container_form .description_box {
 	display: inline-block;
@@ -172,13 +212,5 @@
 	top: 15px;
 	left: 15px;
 	background: #fff;
-}
-
-a,:focus {
-	outline: none;
-}
-
-button::-moz-focus-inner,input[type="reset"]::-moz-focus-inner,input[type="button"]::-moz-focus-inner,input[type="submit"]::-moz-focus-inner,select::-moz-focus-inner,input[type="file"]>input[type="button"]::-moz-focus-inner
-	{
-	border: none;
+	z-index: 999;
 }
