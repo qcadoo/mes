@@ -40,6 +40,7 @@
 	margin-right: 10px;
 	display: inline-block;
 	vertical-align: middle;
+	text-align: right;
 }
 
 .component_container_form .required .label {
@@ -161,6 +162,7 @@
 	top: 15px;
 	left: 15px;
 	background: #fff;
+	text-align: left;
 	z-index: 999;
 }
 
@@ -212,5 +214,6 @@
 	top: 15px;
 	left: 15px;
 	background: #fff;
+	text-align: left;
 	z-index: 999;
 }
