@@ -47,7 +47,7 @@ public final class ProductService {
         System.out.println(" 2 --> ");
 
         if (productValue.getValue() != null && productValue.getValue().getSelectedValue() != null) {
-            System.out.println(" 4 --> ");
+            System.out.println(" 3 --> ");
             Entity defaultInstructionEntity = getDefaultInstruction(productValue);
             System.out.println(" 4 --> " + defaultInstructionEntity);
             if (defaultInstructionEntity != null) {
@@ -61,13 +61,18 @@ public final class ProductService {
     private void selectDefaultInstruction(final String triggerComponentName,
             final ViewValue<EntityComboBoxValue> instructionValue, final Entity defaultInstructionEntity) {
         Long selectedInstructinId = instructionValue.getValue().getSelectedValue();
+        System.out.println(" 4.1 --> " + selectedInstructinId);
+        System.out.println(" 4.2 --> " + triggerComponentName);
         if (selectedInstructinId == null && "mainWindow.orderDsetailsForm.product".equals(triggerComponentName)) {
+            System.out.println(" 4.3 --> ");
             instructionValue.getValue().setSelectedValue(defaultInstructionEntity.getId());
         }
     }
 
     private Entity getDefaultInstruction(final ViewValue<EntityComboBoxValue> productValue) {
         DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
+
+        System.out.println(" 3.1 --> " + productValue.getValue().getSelectedValue());
 
         SearchCriteriaBuilder searchCriteria = instructionDD
                 .find()
@@ -77,6 +82,8 @@ public final class ProductService {
                         Restrictions.belongsTo(instructionDD.getField("product"), productValue.getValue().getSelectedValue()));
 
         SearchResult searchResult = searchCriteria.list();
+
+        System.out.println(" 3.2 --> " + searchResult.getTotalNumberOfEntities());
 
         if (searchResult.getTotalNumberOfEntities() == 1) {
             return searchResult.getEntities().get(0);
