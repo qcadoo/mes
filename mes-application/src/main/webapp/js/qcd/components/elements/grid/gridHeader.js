@@ -162,50 +162,50 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	this.getHeaderElement = function() {
-		var headerElement = $("<div>").addClass('grid_header');
+		var headerElement = $("<div>").addClass('grid_header').addClass("elementHeader");
 		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
 		if (gridParameters.filter) {
-			headerElements.filterButton = $("<div>").html("Filtruj").addClass("headerButton").click(function(e) {
-				if (!$(e.target).hasClass("headerButtonDisabled")) {
-					gridController.onFilterButtonClicked();
+			headerElements.filterButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("Filtruj",function(e) {
+				if (headerElements.filterButton.hasClass("headerButtonEnabled")) {
+					filterClicked();
 				}
-			});
+			}, "searchIcon16.png");
 			headerElement.append(headerElements.filterButton);
 			setEnabledButton(headerElements.filterButton, false);
 		}
 		if (gridParameters.canNew) {
-			headerElements.newButton = $("<div>").html("Nowy").addClass("headerButton").click(function(e) {
-				if (!$(e.target).hasClass("headerButtonDisabled")) {
+			headerElements.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("new",function(e) {
+				if (headerElements.newButton.hasClass("headerButtonEnabled")) {
 					gridController.onNewButtonClicked();
 				}
-			});
+			}, "addIcon16.png");
 			headerElement.append(headerElements.newButton);
 			setEnabledButton(headerElements.newButton, false);
 		}
 		if (gridParameters.canDelete) {
-			headerElements.deleteButton = $("<div>").html("Usuń").addClass("headerButton").click(function(e) {
-				if (!$(e.target).hasClass("headerButtonDisabled")) {
+			headerElements.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("delete", function(e) {
+				if (headerElements.deleteButton.hasClass("headerButtonEnabled")) {
 					gridController.onDeleteButtonClicked();
 				}
-			});
+			}, "deleteIcon16_disabled.png");
 			headerElement.append(headerElements.deleteButton);
 			setEnabledButton(headerElements.deleteButton, false);
 		}
 		if (gridParameters.orderable) {
-			headerElements.upButton = $("<div>").html("Góra").addClass("headerButton").click(function(e) {
-				if (!$(e.target).hasClass("headerButtonDisabled")) {
-					gridController.onUpButtonClicked();
-				}
-			});
-			headerElement.append(headerElements.upButton);
-			setEnabledButton(headerElements.upButton, false);
-			headerElements.downButton = $("<div>").html("Dół").addClass("headerButton").click(function(e) {
-				if (!$(e.target).hasClass("headerButtonDisabled")) {
+			headerElements.upButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("up",function(e) {
+				if (headerElements.upButton.hasClass("headerButtonEnabled")) {
 					gridController.onDownButtonClicked();
 				}
-			});
+			}, "upIcon16.png");
+			headerElement.append(headerElements.upButton);
+			setEnabledButton(headerElements.upButton, false);
+			headerElements.downButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("down", function(e) {
+				if (headerElements.downButton.hasClass("headerButtonEnabled")) {
+					gridController.onDownButtonClicked();
+				}
+			}, "downIcon16.png");
 			headerElement.append(headerElements.downButton);
 			setEnabledButton(headerElements.downButton, false);
 		}
@@ -304,14 +304,19 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	function filterClicked() {
+		if (headerElements.filterButton.hasClass("headerButtonActive")) {
+			headerElements.filterButton.removeClass("headerButtonActive");
+		} else {
+			headerElements.filterButton.addClass("headerButtonActive");
+		}
 		gridController.onFilterButtonClicked();
 	}
 
 	this.setEnabledButton = function(button, enabled) {
 		if (enabled) {
-			button.removeClass("headerButtonDisabled");
+			button.addClass("headerButtonEnabled");
 		} else {
-			button.addClass("headerButtonDisabled");
+			button.removeClass("headerButtonEnabled");
 		}		
 	} 
 	var setEnabledButton = this.setEnabledButton;

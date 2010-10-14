@@ -1,36 +1,13 @@
 .tree_wrapper {
-	border: solid black 1px;
 	margin: 10px;
+	border: solid #9b9b9b 1px;
 }
 
-.tree_wrapper .tree_header {
-	background: #ccc;
-	line-height: 30px;
-	border-bottom: solid black 1px;
-}
 .tree_wrapper .tree_header .tree_title {
 	display: inline-block;
 	margin-left: 10px;
 	margin-right: 10px;
 }
-
-.tree_wrapper .tree_header .tree_button {
-	display: inline-block;
-	border: solid black 1px;
-	padding: 0px 5px 0px 5px;
-	line-height: 18px;
-	margin-left: 2px;
-	margin-right: 2px;
-	color: #A9A9A9;
-}
-.tree_wrapper .tree_header .tree_button.enabled {
-	cursor: pointer;
-	color: black;
-}
-
-.tree_wrapper .tree_header .tree_button.enabled:hover {
-	background: #888888;
-} 
 
 .tree_content {
 	overflow: auto;
@@ -40,12 +17,19 @@
 	color: #888888;
 }
 
-.tree_content a.jstree-hovered {
+.tree_content.jstree a {
+	border: solid transparent 1px;
+	padding: 2px;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+.tree_content.jstree a.jstree-hovered {
 	background: #cccccc;
 	border-color: #cccccc;
 }
-.tree_content a.jstree-clicked {
-	background: #efd24a;
-	border-color: #efd24a;
+.tree_content.jstree a.jstree-clicked {
+	background: #ffdb67;
+	border-color: #dba700;
 	color: black;
 }

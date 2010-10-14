@@ -164,11 +164,11 @@ QCD.components.Ribbon = function(_model, _mainController) {
 				parent = parent.parent();
 			}
 			if (parent.find(".dropdownMenu").is(":visible")) {
-				parent.find(".dropdownMenu").slideUp('fast');
+				parent.find(".dropdownMenu").slideUp(100);
 			} else {
-				parent.find(".dropdownMenu").slideDown('fast').show();
+				parent.find(".dropdownMenu").slideDown(100).show();
 				parent.hover(function() {}, function(){  
-					parent.find(".dropdownMenu").slideUp('fast');
+					parent.find(".dropdownMenu").slideUp(100);
 				});
 			}
 		});
