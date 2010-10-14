@@ -41,7 +41,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	
 	this.getComponentData = function() {
 		return {
-			value : this.input.val()
+			value : this.input.val()			
 		}
 	}
 
@@ -50,7 +50,9 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	}
 
 	this.getComponentValue = function() {
-		return this.getComponentData()
+		value = this.getComponentData();
+		value.required = component.hasClass("required");
+		return value;
 	}
 
 	this.setComponentValue = function(value) {

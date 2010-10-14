@@ -114,15 +114,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
         listeners = Collections.unmodifiableSet(listeners);
 
-        if (shouldNotBeUpdated(pathsToUpdate)) {
-            return (ViewValue<T>) viewValue;
-        }
-
-        if (!("dynamicComboBox".equals(getType()) || "entityComboBox".equals(getType())) && !isContainer() && viewValue != null
-                && viewValue.isIgnoreMode()) {
-            return null;
-        }
-
         Entity selectedEntity = null;
         Entity parentEntity = null;
         ViewValue<T> value = null;
@@ -136,13 +127,24 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
         if (sourceComponent != null) {
             selectedEntity = selectedEntities.get(sourceComponent.getPath());
-
             if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
             }
-
         } else {
             selectedEntity = parentEntity;
+        }
+
+        if (shouldNotBeUpdated(pathsToUpdate)) {
+            if (viewValue != null) {
+                setVisibleAndEnabled(selectedEntity, (ViewValue<T>) viewValue);
+            }
+
+            return (ViewValue<T>) viewValue;
+        }
+
+        if (!("dynamicComboBox".equals(getType()) || "entityComboBox".equals(getType())) && !isContainer() && viewValue != null
+                && viewValue.isIgnoreMode()) {
+            return null;
         }
 
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate, locale);
@@ -151,6 +153,13 @@ public abstract class AbstractComponent<T> implements Component<T> {
             return null;
         }
 
+        setVisibleAndEnabled(selectedEntity, value);
+
+        return value;
+
+    }
+
+    private void setVisibleAndEnabled(final Entity selectedEntity, final ViewValue<T> value) {
         if (value.isEnabled() == null) {
             value.setEnabled(defaultEnabled);
         }
@@ -158,12 +167,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
             value.setVisible(defaultVisible);
         }
 
-        if (selectedEntity == null && (sourceComponent != null || sourceFieldPath != null)) {
+        if ((selectedEntity == null || selectedEntity.getId() == null) && (sourceComponent != null || sourceFieldPath != null)) {
             value.setEnabled(false);
+        } else {
+            value.setEnabled(true);
         }
-
-        return value;
-
     }
 
     @Override

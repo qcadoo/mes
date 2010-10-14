@@ -42,7 +42,11 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
             value = valueObject.getString("value");
         }
         if (value != null) {
-            return new ViewValue<ComboBoxValue>(new ComboBoxValue(getComboBoxValues(), value));
+            ComboBoxValue comboBoxValue = new ComboBoxValue(getComboBoxValues(), value);
+            if (!viewObject.isNull("value") && !viewObject.getJSONObject("value").isNull("required")) {
+                comboBoxValue.setRequired(viewObject.getJSONObject("value").getBoolean("required"));
+            }
+            return new ViewValue<ComboBoxValue>(comboBoxValue);
         } else {
             return new ViewValue<ComboBoxValue>();
         }
