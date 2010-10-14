@@ -32,10 +32,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("new",function(e) {
 				newClicked();
-			});
+			}, "addIcon16.png");
 			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("edit",function(e) {
 				editClicked();
-			});
+			}, "editIcon16.png");
 			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("delete",function(e) {
 				deleteClicked();
 			}, "deleteIcon16_disabled.png");

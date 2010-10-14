@@ -20,6 +20,8 @@
 .tree_content.jstree a {
 	border: solid transparent 1px;
 	padding: 2px;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size: 12px;
 }
 
 .tree_content.jstree a.jstree-hovered {

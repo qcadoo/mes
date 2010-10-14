@@ -162,7 +162,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	this.getHeaderElement = function() {
-		var headerElement = $("<div>").addClass('grid_header');
+		var headerElement = $("<div>").addClass('grid_header').addClass("elementHeader");
 		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
 		headerElement.append(entitiesNumberSpan);
@@ -180,7 +180,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 				if (headerElements.newButton.hasClass("headerButtonEnabled")) {
 					gridController.onNewButtonClicked();
 				}
-			});
+			}, "addIcon16.png");
 			headerElement.append(headerElements.newButton);
 			setEnabledButton(headerElements.newButton, false);
 		}
@@ -198,14 +198,14 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 				if (headerElements.upButton.hasClass("headerButtonEnabled")) {
 					gridController.onDownButtonClicked();
 				}
-			});
+			}, "upIcon16.png");
 			headerElement.append(headerElements.upButton);
 			setEnabledButton(headerElements.upButton, false);
 			headerElements.downButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("down", function(e) {
 				if (headerElements.downButton.hasClass("headerButtonEnabled")) {
 					gridController.onDownButtonClicked();
 				}
-			});
+			}, "downIcon16.png");
 			headerElement.append(headerElements.downButton);
 			setEnabledButton(headerElements.downButton, false);
 		}

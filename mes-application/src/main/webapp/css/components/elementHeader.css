@@ -1,11 +1,15 @@
 .elementHeader {
 	background: #f2f2f2;
-	line-height: 30px;
+	line-height: 28px;
 	border-bottom: solid #9b9b9b 1px;
 	font-family:Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	padding: 0;
+	height: 30px;
+	vertical-align: middle;
 }
 
-div.headerActionButton {
+.elementHeader div.headerActionButton {
 	padding: 0px;
 	height: 23px;
 	background-image:none;
@@ -15,7 +19,7 @@ div.headerActionButton {
 	background-repeat:repeat-x;
 	vertical-align: middle;
 }
-div.headerActionButton a {
+.elementHeader div.headerActionButton a {
 	display:block;
 	text-decoration:none;
 	color:#b7b7b7;
@@ -75,7 +79,7 @@ div.headerActionButton.headerButtonEnabled a span div.icon {
 div.headerActionButton a span div {
 	display: inline-block;
 	height: 23px;
-	line-height: 26px;
+	line-height: 23px;
 	vertical-align: middle;
 	padding: 0px 5px 0px 5px;
 }
