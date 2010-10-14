@@ -2,6 +2,13 @@
 <qcd:views plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="dictionaryGridView" model="dictionary">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" action="#{mainWindow.dictionaries}.performNew;" />
+					<smallButton name="delete" icon="icon2"
+						action="#{mainWindow.dictionaries}.performDelete;" />
+				</group>
+			</ribbon>				
 			<component type="grid" name="dictionaries">
 				<option type="column" name="name" fields="name" />
 				<option type="header" value="false" />
@@ -9,16 +16,16 @@
 				<option type="orderable" value="name" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="false" />
-				<option type="height" value="450" />
 				<option type="correspondingView" value="dictionaries/dictionaryDetailsView" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
+				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
 		</component>
 	</view>
 	<view name="dictionaryDetailsView" model="dictionary">
-		<component type="window" name="mainWindow">
+		<component type="window" name="mainWindow">		
 			<component type="grid" name="dictionaries" source="dictionaryItems">
 				<option type="column" name="name" fields="name" />
 				<option type="column" name="description" fields="description" />
@@ -34,6 +41,27 @@
 	</view>
 	<view name="dictionaryItemDetailsView" model="dictionaryItem">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save"
+						action="#{mainWindow.dictionaryItemDetailsForm}.performSave;" />
+					<bigButtons name="saveBack"
+						action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performBack">
+						<bigButton name="saveNew"
+							action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performNew;" />
+					</bigButtons>
+					<smallButton name="cancel"
+						action="#{mainWindow.dictionaryItemDetailsForm}.performCancel;" />
+					<smallButtons name="delete" icon="icon2"
+						action="#{mainWindow.dictionaryItemDetailsForm}.performDelete; #{mainWindow}.performBack">
+						<smallButton name="deleteNew"
+							action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performNew;" />
+					</smallButtons>
+				</group>
+			</ribbon>		
 			<component type="form" name="dictionaryItemDetailsForm">
 				<component type="input" name="name" field="name" />
 				<component type="input" name="description" field="description" /> <!-- type:description -->
