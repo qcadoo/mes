@@ -52,7 +52,7 @@
 				</group>
 			</ribbon>
 			<component type="form" name="productDetailsForm">
-				<component type="textarea" name="name" field="name" hasDescription="true" />
+				<component type="textarea" name="name" field="name" hasDescription="true" />					
 				<component type="input" name="number" field="number" />
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="input" name="ean" field="ean" />
@@ -209,7 +209,9 @@
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="input" name="dateFrom" field="dateFrom" />
 				<component type="input" name="dateTo" field="dateTo" />
-				<component type="textarea" name="description" field="description" />
+				<component type="textarea" name="description" field="description">
+					<option type="rows" value="5" />
+				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
