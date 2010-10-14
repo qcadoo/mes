@@ -14,6 +14,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	pagingVars.max = null;
 	pagingVars.totalNumberOfEntities = null;
 	
+	var headerElement;
 	var headerElements = new Object();
 	headerElements.filterButton = null;
 	headerElements.newButton = null;
@@ -162,9 +163,9 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	}
 	
 	this.getHeaderElement = function() {
-		var headerElement = $("<div>").addClass('grid_header').addClass("elementHeader");
-		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName'));
-		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities');
+		headerElement = $("<div>").addClass('grid_header').addClass("elementHeader").addClass("elementHeaderDisabled");
+		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName').addClass('elementHeaderTitle'));
+		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities').addClass('elementHeaderTitle');
 		headerElement.append(entitiesNumberSpan);
 		if (gridParameters.filter) {
 			headerElements.filterButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("Filtruj",function(e) {
@@ -224,6 +225,11 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	
 	this.setEnabled = function(_enabled) {
 		enabled = _enabled;
+		if (enabled) {
+			headerElement.removeClass("elementHeaderDisabled");
+		} else {
+			headerElement.addClass("elementHeaderDisabled");
+		}
 		refreshButtons();
 	}
 	

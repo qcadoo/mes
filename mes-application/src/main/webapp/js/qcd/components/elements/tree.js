@@ -9,6 +9,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var tree;
 	
+	var header;
 	var buttons = new Object();
 	
 	var contextFieldName;
@@ -27,9 +28,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function constructor(_this) {
 		
-		var header = $("<div>").addClass('tree_header').addClass('elementHeader');
+		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			var treeName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+_this.elementPath.replace(/-/g,".")+".header";
-			var title = $("<div>").addClass('tree_title').html(mainController.getTranslation(treeName));
+			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(mainController.getTranslation(treeName));
 			header.append(title);
 			
 			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("new",function(e) {
@@ -176,8 +177,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		isEnabled = _isEnabled;
 		if (isEnabled) {
 			tree.removeClass("treeDisabled");
+			header.removeClass("elementHeaderDisabled");
 		} else {
 			tree.addClass("treeDisabled");
+			header.addClass("elementHeaderDisabled");
 			buttons.newButton.removeClass("headerButtonEnabled");
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");

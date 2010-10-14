@@ -9,6 +9,10 @@
 	vertical-align: middle;
 }
 
+.elementHeader.elementHeaderDisabled .elementHeaderTitle{
+	color: #b7b7b7;
+}
+
 .elementHeader div.headerActionButton {
 	padding: 0px;
 	height: 23px;
