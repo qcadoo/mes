@@ -56,7 +56,7 @@
 		<xs:sequence>
 			<xs:element name="ribbon" type="ribbonType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="component" type="componentType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="option" type="optionsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="type" type="identifierType" use="required" />
 		<xs:attribute name="name" type="identifierType" use="required" />
@@ -64,9 +64,10 @@
 		<xs:attribute name="source" type="xs:string" />
 		<xs:attribute name="enabled" type="xs:boolean" />
 		<xs:attribute name="visible" type="xs:boolean" />
+		<xs:attribute name="hasDescription" type="xs:boolean" default="false" />
 	</xs:complexType>
 
-	<xs:complexType name="optionsType">
+	<xs:complexType name="optionType">
 		<xs:attribute name="type" type="identifierType" use="required" />
 		<xs:attribute name="value" type="xs:string" />
 		<!-- TODO - custom attributes -->
@@ -75,6 +76,7 @@
 		<xs:attribute name="aggregation" type="xs:string" />
 		<xs:attribute name="name" type="xs:string" />
 		<xs:attribute name="width" type="xs:string" />
+		<xs:attribute name="link" type="xs:string" />
 		<xs:anyAttribute/>
 	</xs:complexType>
 

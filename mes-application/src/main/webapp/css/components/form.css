@@ -9,27 +9,28 @@
 	height: 33px;
 	font: bold 13px arial;
 	color: #7d7d7d;
-	border-bottom: 1px solid #a7a7a7; 
-	padding-left: 20px;	 
-	line-height: 35px;      
+	border-bottom: 1px solid #a7a7a7;
+	padding-left: 20px;
+	line-height: 35px;
 }
 
 .component_container_form .form_components {
-    padding: 9px 20px;
-    margin: 0;	
+	padding: 9px 20px;
+	margin: 0;
 }
 
 .component_container_form .component_element {
-    padding: 10px 0 9px;	
-    margin: 0;
+	padding: 0;
+	margin: 10px 0 9px;
+	vertical-align: middle;
+	display: block;
 }
 
 .component_container_form .label {
-	display: block;
-	width: 100px;
-	float: left;	
+	width: 90px;
 	font: 11px arial;
-	height: 22px;
+	margin-right: 10px;
+	display: inline-block;
 	vertical-align: middle;
 }
 
@@ -41,20 +42,55 @@
 	color: #ec1c24;
 }
 
-.component_container_form input, .component_container_form select, .component_container_form textarea {
-    padding: 0 6px;
-    margin: 0;	
+.component_container_form input[type='text'], .component_container_form textarea, .component_container_form select
+	{
+	border-spacing: 0;
+  	margin: 0;
+  	space: 0;
 	border: 1px solid #959595;
 	color: #464646;
 	height: 20px;
-	width: 525px;
+	width: 519px;
+	line-height: normal;
+	white-space: pre;
+	font: 11px arial;
+	background: #fff;
+	-webkit-box-align: center;
+	-webkit-box-sizing: border-box;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-boder-radius: 0;
+	outline: none;
+	vertical-align: middle;
+	background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#e0e0e0), to(#fff) );
+	background: -moz-linear-gradient(top, #e0e0e0, #fff 25%, #fff);
 }
 
-.component_container_form .required input, .component_container_form .required select, .component_container_form .required textarea {
+.component_container_form input[type='text'], .component_container_form textarea {
+	padding: 0 0 0 6px;
+}
+
+.component_container_form input[type='text']:focus, .component_container_form textarea:focus, .component_container_form select:focus
+	{
+	-webkit-box-shadow: 0 0 0 #fff;
+	-moz-box-shadow: 0 0 0 #fff;
+	box-shadow: 0 0 0 #fff;
+	outline: none;
+	-moz-outline-style: none;
+}
+
+.component_container_form select {
+	// -webkit-appearance: textfield;
+	padding: 0 0 0 0;
+}
+
+.component_container_form .required input[type='text'], .component_container_form .required select, .component_container_form .required textarea
+	{
 	border: 1px solid #464646;
 }
 
-.component_container_form .error input, .component_container_form .error select, .component_container_form .error textarea {
+.component_container_form .error input[type='text'], .component_container_form .error select, .component_container_form .error textarea
+	{
 	border: 1px solid #ec1c24;
 }
 
@@ -73,35 +109,71 @@
 
 .component_container_form .error_icon {
 	display: inline-block;
-	width: 12px;
-	height: 12px;
-	background: url(../images/error.png);
+	width: 13px;
+	height: 8px;
+	background: url(../images/error.icon.png);
+	vertical-align: middle;
 }
 
 .component_container_form .error_messages {
 	position: absolute;
 	top: 15px;
-	left: 15px;	
+	left: 15px;
 }
 
 .component_container_form .error_messages div {
-  border: 1px solid #ec1c24;
-  width: 275px;
-  font: 11px arial;
-  margin-bottom: 5px;
+	border: 1px solid #ec1c24;
+	width: 275px;
+	font: 11px arial;
+	margin-bottom: 5px;
 }
 
 .component_container_form .error_messages div span {
 	background: #ec1c24;
-   	color: #fff;
-   	font-weight: bold;
-   	height: 19px;
-   	display: block;
-   	line-height: 19px;
-   	padding: 0 6px;
+	color: #fff;
+	font-weight: bold;
+	height: 19px;
+	display: block;
+	line-height: 19px;
+	padding: 0 6px;
 }
 
 .component_container_form .error_messages div p {
 	color: #464646;
-	margin: 7px 6px; 
+	margin: 7px 6px;
+}
+
+.component_container_form .description_box {
+	display: inline-block;
+	position: relative;
+}
+
+.component_container_form .description_icon {
+	display: inline-block;
+	width: 9px;
+	height: 9px;
+	background: url(../images/info.icon.png);
+	vertical-align: baseline;
+	margin-left: 3px;
+}
+
+.component_container_form .description_message {
+	border: 1px solid #005ec5;
+	width: 275px;
+	font: 11px arial;
+	padding: 5px;
+	color: #464646;
+	position: absolute;
+	top: 15px;
+	left: 15px;
+	background: #fff;
+}
+
+a,:focus {
+	outline: none;
+}
+
+button::-moz-focus-inner,input[type="reset"]::-moz-focus-inner,input[type="button"]::-moz-focus-inner,input[type="submit"]::-moz-focus-inner,select::-moz-focus-inner,input[type="file"]>input[type="button"]::-moz-focus-inner
+	{
+	border: none;
 }

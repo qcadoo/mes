@@ -65,7 +65,6 @@ public final class ValidationService {
                 continue;
             }
             for (FieldValidator fieldValidator : fieldDefinitionEntry.getValue().getValidators()) {
-                System.out.println(" 1 validate --> " + fieldDefinitionEntry.getValue().getName() + " - " + genericEntity);
                 fieldValidator.validate(dataDefinition, fieldDefinitionEntry.getValue(), genericEntity);
                 if (!genericEntity.isFieldValid(fieldDefinitionEntry.getKey())) {
                     break;

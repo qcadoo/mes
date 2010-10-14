@@ -37,7 +37,7 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 			this.input.append("<option value=''></option>");
 			for (var i in data.values) {
 				var value = data.values[i];
-				this.input.append("<option value='"+value+"'>"+value+"</option>");
+				this.input.append("<option value='"+i+"'>"+value+"</option>");
 			}
 		}
 		

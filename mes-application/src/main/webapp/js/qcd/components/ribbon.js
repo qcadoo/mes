@@ -7,16 +7,26 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	var mainController = _mainController;
 	
 	this.constructElement = function() {
-		var element = $("<div>").addClass("ribbonMenu");
 		
-		//QCD.info(ribbonModel);
+		var element = $("<div>");
+		
+		var contentWrapper = $("<div>").attr("id", "q_row3_out");
+		element.append(contentWrapper);
+		element.append($("<div>").attr("id", "q_row4_out"));
+		
+		var content = $("<div>").attr("id", "q_menu_row3");
+		contentWrapper.append(content);
 		
 		if (ribbonModel.groups) {
 			for (var groupIter in ribbonModel.groups) {
 				var groupModel = ribbonModel.groups[groupIter];
-				var groupElement = $("<div>").addClass("ribbonGroup");
 				
-				//QCD.info(groupModel);
+				var groupContent = $("<div>").addClass("ribbon_content");
+				var groupTitle = $("<div>").addClass("ribbon_title").html(groupModel.name);
+				
+				var ribbonMenu_right = $("<div>").addClass("ribbonMenu_right").append(groupTitle).append(groupContent);
+				var ribbonMenu_left = $("<div>").addClass("ribbonMenu_left").append(ribbonMenu_right);
+				var groupElement = $("<div>").addClass("ribbonMenu").append(ribbonMenu_left);
 				
 				var smallElementsGroupElement = null;
 				for (var itemsIter in groupModel.items) {
@@ -24,8 +34,6 @@ QCD.components.Ribbon = function(_model, _mainController) {
 					
 					var itemElement = null;
 					var isSmall = false;
-					
-					//QCD.info(itemModel);
 					
 					if (itemModel.type == "BIG_BUTTON") {
 						if (itemModel.items) {
@@ -48,18 +56,17 @@ QCD.components.Ribbon = function(_model, _mainController) {
 								smallElementsGroupElement.append(itemElement);
 								smallElementsGroupElement = null;
 							} else {
-								smallElementsGroupElement = $("<div>").addClass("ribbonBigElement").addClass("smallElementsGroup");
-								itemElement.addClass("ribbonSmallTopElement");
+								smallElementsGroupElement = $("<ul>").addClass("ribbon_list");
 								smallElementsGroupElement.append(itemElement);
-								groupElement.append(smallElementsGroupElement);
+								groupContent.append(smallElementsGroupElement);
 							}
 						} else {
-							groupElement.append(itemElement);
+							groupContent.append(itemElement);
 							smallElementsGroupElement = null;
 						}
 					}
 				}
-				element.append(groupElement);
+				content.append(groupElement);
 			}
 		}
 		
@@ -67,73 +74,94 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	}
 	
 	function createBigButton(itemModel) {
-		var itemElement = $("<div>").html(getItemLabel(itemModel)).addClass("ribbonBigElement").addClass("ribbonBigButton");
-		itemElement.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		
+		var aElement = $("<a href='#'>").html("<span><div"+getItemIconStyle(itemModel)+"><label>"+getItemLabel(itemModel)+"</label><div></div></div></span>");
+		var liElement = $("<li>").append(aElement);
+		var ribbonListElement = $("<ul>").addClass("ribbonListElement").append(liElement);
+		var itemElement = $("<div>").addClass("ribbonBigElement").append(ribbonListElement);
+		aElement.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
 	
 	function createBigButtonWithDropdown(itemModel) {
-		var itemElement = $("<div>").addClass("ribbonBigElement").addClass("bigButtonDropdown");
-		var itemElementButton = $("<div>").html(getItemLabel(itemModel)).addClass("bigButtonDropdownMainButton");
+		var icon = (itemModel.icon && itemModel.icon.trim() != "") ? itemModel.icon.trim() : null;
+		var style = "";
+		var className = "";
+		if (icon) {
+			style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
+			className = " hasIcon";
+		}
+		var itemElementButton = $("<a href='#'>").html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label>"+getItemLabel(itemModel)+"</label><div></div></div></span>");
+		var buttonLi = $("<li>").append(itemElementButton);
+		var itemElementDropdownButton = $("<a href='#'>").html("<span><div class='icon_btn_addB'></div></span>");
+		var buttonDropdownLi = $("<li>").addClass("addB").append(itemElementDropdownButton);
+		var ulElement = $("<ul>").append(buttonLi).append(buttonDropdownLi);
+		var divElement = $("<div>").append(ulElement);
+		var spanElement = $("<span>").append(divElement);
+		var liElement = $("<li>").append(spanElement);
+		var ribbonAddElement = $("<ul>").addClass("ribbonAddElement").append(liElement);
+		var itemElement = $("<div>").addClass("ribbonBigElement").addClass("ribbonDropdownContainer").append(ribbonAddElement);
+		
+		var dropdownMenu = createDropdownMenu(itemModel).addClass("bigButtonDropdownMenu");
+		addDropdownAction(itemElementDropdownButton);
+		itemElement.append(dropdownMenu);
+		
 		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
-		itemElement.append(itemElementButton);
-		var itemElementDropdownButton = $("<div>").addClass("bigButtonDropdownBottomButton");
-			var arrow = $("<img src='../../css/images/downArrow.png'>");
-			addDropdownAction(itemElementDropdownButton);
-			itemElementDropdownButton.append(arrow);
-		itemElement.append(itemElementDropdownButton);
-		var dropdownMenu = createDropdownMenu(itemModel);
-		dropdownMenu.addClass("bigButtonDropdownMenu");
-		itemElement.append(dropdownMenu);
-		itemElement.append(dropdownMenu);
+
 		return itemElement;
 	}
 	
 	function createSmallButton(itemModel) {
-		var itemElement = $("<div>").html(getItemLabel(itemModel)).addClass("ribbonSmallElement").addClass("ribbonSmallButton");
-		itemElement.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		var itemElementButton = $("<a href='#'>").html("<span><div"+getItemIconStyle(itemModel)+">"+getItemLabel(itemModel)+"</div></span>");
+		var itemElement = $("<li>").addClass("btnOne").append(itemElementButton);
+		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
 	
 	function createSmallButtonWithDropdown(itemModel) {
-		var itemElement = $("<div>").addClass("ribbonSmallElement").addClass("ribbonSmallButtonDropdown");
+		var itemElementButton = $("<a href='#'>").html("<span><div "+getItemIconStyle(itemModel)+">"+getItemLabel(itemModel)+"</div></span>");
+		var buttonLi = $("<li>").append(itemElementButton);
+		var itemElementDropdownButton = $("<a href='#'>").addClass("twoB_down");
+		var buttonDropdownLi = $("<li>").append(itemElementDropdownButton);
+		var ulElement = $("<ul>").append(buttonLi).append(buttonDropdownLi);
+		var divElement = $("<div>").append(ulElement);
+		var spanElement = $("<span>").append(divElement);
+		var itemElement = $("<li>").addClass("twoB").addClass("ribbonDropdownContainer").append(spanElement);
 		
-		var wrapper = $("<table cellspacing=0 cellpadding=0>").addClass("ribbonSmallButtonDropdownWrapper");
-		itemElement.append(wrapper);
-		var wrapperRow = $("<tr>").addClass("ribbonSmallButtonDropdownWrapperRow");
-		wrapper.append(wrapperRow);
+		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		
-			var itemElementButton = $("<td>").html(getItemLabel(itemModel)).addClass("smallButtonDropdownMainButton");
-			itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
-			wrapperRow.append(itemElementButton);
-			var itemElementDropdownButton = $("<td>").addClass("smallButtonDropdownBottomButton");
-				itemElementDropdownButton.append($("<img src='../../css/images/downArrow2.png'>"));
-				addDropdownAction(itemElementDropdownButton);
-				wrapperRow.append(itemElementDropdownButton);
+		var dropdownMenu = createDropdownMenu(itemModel).addClass("smallButtonDropdownMenu");
+		addDropdownAction(itemElementDropdownButton);
+		itemElement.append(dropdownMenu);
 			
-			var dropdownMenu = createDropdownMenu(itemModel);
-			dropdownMenu.addClass("smallButtonDropdownMenu");
-			itemElement.append(dropdownMenu);
 		return itemElement;
 	}
 	
 	function createDropdownMenu(itemModel) {
-		var dropdownMenu = $("<ul>").addClass("dropdownMenu");
+		var dropdownMenuContent = $("<ul>");
 		for (var menuIter in itemModel.items) {
 			var menuItemName = itemModel.items[menuIter].name;
-			var menuItem = $("<li>").html(getItemLabel(itemModel.items[menuIter]));
-			menuItem.bind('click', {itemName: itemModel.name+"."+menuItemName, clickAction: itemModel.items[menuIter].clickAction}, buttonClicked);
-			dropdownMenu.append(menuItem);
+			var icon = (itemModel.items[menuIter].icon && itemModel.items[menuIter].icon.trim() != "") ? itemModel.items[menuIter].icon.trim() : null;
+			var style = "";
+			if (icon) {
+				style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
+			}
+			var menuItemButton = $("<a href='#'>").html("<span "+style+">"+getItemLabel(itemModel.items[menuIter])+"</span>").addClass("icon");
+			menuItemButton.bind('click', {itemName: itemModel.name+"."+menuItemName, clickAction: itemModel.items[menuIter].clickAction}, buttonClicked);
+			var menuItem = $("<li>").append(menuItemButton);
+			dropdownMenuContent.append(menuItem);
 		}
+		var dropdownMenu = $("<div>").addClass("dropdownMenu").addClass("m_module").append(dropdownMenuContent);
 		return dropdownMenu;
 	}
 	
 	function addDropdownAction(dropdownTriggerButton) {
 		dropdownTriggerButton.addClass("dropdownTrigger");
 		dropdownTriggerButton.click(function() {
-			var parent = $(this).parent();
-			if (!parent.find(".dropdownMenu").is("ul")) {
-				parent = parent.parent().parent().parent();
+			var parent = $(this);
+			parent.blur();
+			while(! parent.hasClass("ribbonDropdownContainer")) {
+				parent = parent.parent();
 			}
 			if (parent.find(".dropdownMenu").is(":visible")) {
 				parent.find(".dropdownMenu").slideUp('fast');
@@ -149,8 +177,17 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	function getItemLabel(itemModel) {
 		return itemModel.label ? itemModel.label : itemModel.name;
 	}
+	function getItemIconStyle(itemModel) {
+		var icon = (itemModel.icon && itemModel.icon.trim() != "") ? itemModel.icon.trim() : null;
+		var style = "";
+		if (icon) {
+			style = " class='hasIcon' style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
+		}
+		return style;
+	}
 	
 	function buttonClicked(e) {
+		$(this).blur();
 		var action = e.data.clickAction;
 		var name = e.data.itemName;
 		mainController.performRibbonAction(action);

@@ -91,7 +91,7 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
             final Map<String, Entity> selectedEntities, final ViewValue<TreeData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
 
-        TreeNode rootNode = new TreeNode(new Long(0), "root");
+        TreeNode rootNode = new TreeNode(Long.valueOf(0), "root");
 
         String joinFieldName = null;
         Long belongsToEntityId = null;

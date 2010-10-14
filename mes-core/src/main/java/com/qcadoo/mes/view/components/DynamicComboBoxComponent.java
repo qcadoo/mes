@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
@@ -69,6 +70,16 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
         ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
         ViewValue<ComboBoxValue> newViewValue = new ViewValue<ComboBoxValue>(comboValue);
 
+        FieldDefinition fieldDefinition = getFieldDefinition();
+
+        if (fieldDefinition.isRequired() || (entity == null && fieldDefinition.isRequiredOnCreate())) {
+            newViewValue.getValue().setRequired(true);
+        }
+
+        if (fieldDefinition.isReadOnly() || (entity != null && fieldDefinition.isReadOnlyOnUpdate())) {
+            newViewValue.setEnabled(false);
+        }
+
         ErrorMessage validationError = getFieldError(entity, getFieldPath());
         if (validationError != null && validationError.getMessage() != null) {
             newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
@@ -79,7 +90,7 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
 
     private List<String> getComboBoxValues() {
         FieldType def = getDataDefinition().getField(getName()).getType();
-        // TODO mina
+        // TODO mina check
         // if (!(def instanceof DictionaryType || def instanceof EnumType)) {}
         EnumeratedType fieldDefinition = (EnumeratedType) def;
         return fieldDefinition.values();
@@ -92,5 +103,10 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
                 + ".label");
         messageCodes.add(getTranslationService().getEntityFieldMessageCode(getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
+        if (isHasDescription()) {
+            String descriptionCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".description";
+            translationsMap.put(descriptionCode, getTranslationService().translate(descriptionCode, locale));
+        }
     }
 }

@@ -15,8 +15,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	buttons.saveButton = $("#"+elementName+"_saveButton");
 	
-	var messagesSpan = $("#"+elementName+"_messagesSpan");
 	var headerSpan = $("#"+elementName+"_header");
+
 	var headerEntityIdentifierSpan = $("#"+elementName+"_headerEntityIdentifier");
 	
 	var formValue = null;
@@ -42,37 +42,16 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		//mainWindow-beanAForm_saveButton
 		//buttons.saveButton.click(performSave);
 	}
-	
-	this.setMessages = function(messages) {
-		var message = "";
-		for (var i in messages.error) {
-			if (message != "") {
-				message += ", ";
-			}
-			message += messages.error[i];
-		}
-		for (var i in messages.info) {
-			if (message != "") {
-				message += ", ";
-			}
-			message += messages.info[i];
-		}
-		for (var i in messages.success) {
-			if (message != "") {
-				message += ", ";
-			}
-			message += messages.success[i];
-		}
-		messagesSpan.html(message);
-	}
-	
+
 	this.getComponentValue = function() {
 		return formValue;
 	}
 	
 	this.setComponentValue = function(value) {
-		headerSpan.html(value.header);
-		headerEntityIdentifierSpan.html(value.headerEntityIdentifier);
+		if(value.valid) {
+			headerSpan.html(value.header);
+			headerEntityIdentifierSpan.html(value.headerEntityIdentifier);
+		}
 		formValue = value;
 		unblock();
 	}

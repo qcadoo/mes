@@ -20,8 +20,16 @@
 	</div>
 	
 	<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
+	<c:set var="headerDescription" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.description"/>
 	
-	<div class="label"><label>${translationsMap[headerLabel]}</label></div>
+	<div class="label">${translationsMap[headerLabel]}
+		<c:if test="${component.hasDescription}">
+			<div class="description_box">
+				<div id="${componentFullName}_description_icon" class="description_icon"></div>
+				<div id="${componentFullName}_description_message" class="description_message" style="display: none">${translationsMap[headerDescription]}</div>
+			</div>
+		</c:if>
+	</div>
 	
 	${componentBody}
 	

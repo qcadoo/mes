@@ -74,6 +74,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             formValue.setId(entity.getId());
             formValue.setHeader(getTranslationService().translate(messageCode + ".headerEdit", locale));
             formValue.setHeaderEntityIdentifier(ExpressionUtil.getValue(entity, expression));
+            formValue.setValid(entity.isValid());
         } else {
             formValue.setHeader(getTranslationService().translate(messageCode + ".headerNew", locale));
         }

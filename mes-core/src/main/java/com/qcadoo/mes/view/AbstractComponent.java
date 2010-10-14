@@ -61,6 +61,8 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private boolean defaultVisible = true;
 
+    private boolean hasDescription = false;
+
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
         this.name = name;
@@ -384,6 +386,11 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
 
         DataDefinition newDataDefinition = getDataDefinition();
+
+        if (getParentContainer() != null) {
+            newDataDefinition = getParentContainer().getDataDefinition();
+        }
+
         FieldDefinition newFieldDefinition = null;
 
         for (int i = 0; i < fields.length; i++) {
@@ -391,14 +398,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
             if (fieldDefinition == null) {
                 break;
             }
+            if (i == fields.length - 1) {
+                newFieldDefinition = fieldDefinition;
+                break;
+            }
             if (fieldDefinition.getType() instanceof BelongsToType) {
                 newDataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
             } else if (fieldDefinition.getType() instanceof HasManyType) {
                 newDataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
             } else {
-                if (i == fields.length - 1) {
-                    newFieldDefinition = fieldDefinition;
-                }
                 break;
             }
         }
@@ -505,6 +513,14 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     public final void setDefaultVisible(final boolean defaultVisible) {
         this.defaultVisible = defaultVisible;
+    }
+
+    public void setHasDescription(final boolean hasDescription) {
+        this.hasDescription = hasDescription;
+    }
+
+    public boolean isHasDescription() {
+        return hasDescription;
     }
 
     public final void setRibbon(final Ribbon ribbon) {

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restriction;
@@ -30,6 +31,7 @@ import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
 import com.qcadoo.mes.model.search.restrictions.internal.HibernateRestriction;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 
 @Service
@@ -210,6 +212,31 @@ public final class DataAccessServiceImpl implements DataAccessService {
         entityService.setDeleted(databaseEntity);
 
         getCurrentSession().update(databaseEntity);
+
+        Map<String, FieldDefinition> fields = dataDefinition.getFields();
+
+        for (FieldDefinition fieldDefinition : fields.values()) {
+            if (fieldDefinition.getType() instanceof HasManyType) {
+                HasManyType hasManyFieldType = (HasManyType) fieldDefinition.getType();
+                List<?> children = (List<?>) entityService.getField(databaseEntity, fieldDefinition);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Delete cascade = " + hasManyFieldType.getCascade());
+                }
+                InternalDataDefinition childDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
+                if (HasManyType.Cascade.NULLIFY.equals(hasManyFieldType.getCascade())) {
+                    for (Object child : children) {
+                        DefaultEntity defaultEntity = (DefaultEntity) child;
+                        defaultEntity.setField(hasManyFieldType.getJoinFieldName(), null);
+                        save(childDataDefinition, defaultEntity);
+                    }
+                } else {
+                    for (Object child : children) {
+                        deleteEntity(childDataDefinition, entityService.getId(child));
+                    }
+                }
+            }
+        }
+
     }
 
     private Session getCurrentSession() {

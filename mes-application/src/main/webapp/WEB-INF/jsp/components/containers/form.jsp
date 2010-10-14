@@ -23,8 +23,6 @@
 		<span id="${componentFullName}_headerEntityIdentifier" class="entity_identifier"></span>
 	</div>
 	
-	<span id="${componentFullName}_messagesSpan"></span>
-	
 	<div id="${componentFullName}_formComponents" class="form_components">
 		<c:forEach items="${component.components}" var="componentEntry">
 			<tiles:insertTemplate template="../component.jsp">

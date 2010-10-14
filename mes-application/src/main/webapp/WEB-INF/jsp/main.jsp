@@ -9,8 +9,7 @@
 	
 	<link rel="stylesheet" href="css/mainPage.css" type="text/css" />
 	<link rel="stylesheet" href="css/menuTopLevel.css" type="text/css" />
-	<link rel="stylesheet" href="css/menu.css" type="text/css" />
-	<link rel="stylesheet" href="css/menuRibbon.css" type="text/css" />
+	<link rel="stylesheet" href="css/menu/style.css" type="text/css" />
 	<link rel="stylesheet" href="css/notification.css" type="text/css" />
 
 	<script type="text/javascript" src="js/lib/jquery-1.4.2.min.js"></script>

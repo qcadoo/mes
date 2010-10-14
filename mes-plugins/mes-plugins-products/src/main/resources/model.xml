@@ -13,8 +13,8 @@
 		<string name="ean" />
 		<dictionary name="category" dictionary="categories" />
 		<string name="unit" />
-		<hasMany name="substitutes" model="substitute" joinField="product" />
-		<hasMany name="instructions" model="instruction" joinField="product" />
+		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
+		<hasMany name="instructions" model="instruction" joinField="product" cascade="delete" />
 	</model>
 	<model name="substitute">
 		<string name="number">
@@ -28,7 +28,7 @@
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
-		<hasMany name="components" model="substituteComponent" joinField="substitute" />
+		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" />
 		<priority name="priority" scope="product" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" message="products.validate.global.error.datesOrder" />
 	</model>
@@ -60,7 +60,7 @@
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
 		<text name="description" />
-		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" />
+		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" message="products.validate.global.error.default" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" message="products.validate.global.error.datesOrder" />
 	</model>
@@ -75,7 +75,7 @@
 			<validatesPresence />
 		</decimal>
 		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
-		<hasMany name="children" model="instructionBomComponent" joinField="parent" />
+		<hasMany name="children" model="instructionBomComponent" joinField="parent" cascade="delete" />
 	</model>
 	<model name="order">
 		<string name="number">

@@ -191,6 +191,7 @@ public final class ViewDefinitionParser {
             throws XMLStreamException {
         component.setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
         component.setDefaultVisible(getBooleanAttribute(reader, "visible", true));
+        component.setHasDescription(getBooleanAttribute(reader, "hasDescription", false));
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "ribbon")) {

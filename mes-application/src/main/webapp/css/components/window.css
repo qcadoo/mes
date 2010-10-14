@@ -14,7 +14,7 @@
 }
 
 .windowContainer .windowContainerRibbon {
-	height: 60px;
+	height: 76px;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -23,7 +23,7 @@
 
 .windowContainer .windowContainerContentBody {
 	position: absolute;
-	top: 61px;
+	top: 77px;
 	bottom: 0;
 	left: 0;
 	right: 0;
