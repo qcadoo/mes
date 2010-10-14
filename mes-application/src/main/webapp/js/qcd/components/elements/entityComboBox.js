@@ -8,6 +8,7 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 	var mainController = _mainController;
 	var options = this.options;
 	var elementPath = this.elementPath;
+	var input = this.input;
 	
 	function constructor(_this) {
 		_this.input.change(onChange);
@@ -15,7 +16,7 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 
 	function onChange() {
 		if (options.listeners.length > 0) {
-			mainController.getUpdate(elementPath, this.input.val(), options.listeners);
+			mainController.getUpdate(elementPath, input.val(), options.listeners);
 		}
 	}
 	
@@ -45,8 +46,8 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 		
 		if (selected != null) {
 			this.input.val(selected);
-		} else if (value.emptySelected) {
-			this.input.val('');
+		//} else if (value.emptySelected) {
+		//	this.input.val('');
 		} else {
 			this.input.val(previousSelected);
 		}

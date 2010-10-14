@@ -20,6 +20,7 @@ import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.components.SimpleValue;
 
 public final class FormComponent extends AbstractContainerComponent<FormValue> implements SaveableComponent, SelectableComponent {
 
@@ -143,8 +144,11 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
 
         if (value == null) {
             entity.setField(fieldPath, null);
+        } else if (value instanceof SimpleValue) {
+            Object fieldValue = ((SimpleValue) value).getValue();
+            entity.setField(fieldPath, fieldValue != null ? fieldValue : String.valueOf(fieldValue));
         } else {
-            entity.setField(fieldPath, value.toString());
+            throw new IllegalStateException("Value of " + fieldPath + "doesn't extends SimpleValue");
         }
         return value;
     }

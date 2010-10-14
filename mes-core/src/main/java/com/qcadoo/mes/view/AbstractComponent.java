@@ -387,10 +387,10 @@ public abstract class AbstractComponent<T> implements Component<T> {
     protected FieldDefinition getFieldDefinition() {
         String[] fields = null;
 
-        if (getSourceFieldPath() != null) {
-            fields = getSourceFieldPath().split("\\.");
-        } else {
+        if (getFieldPath() != null) {
             fields = getFieldPath().split("\\.");
+        } else {
+            fields = getSourceFieldPath().split("\\.");
         }
 
         DataDefinition newDataDefinition = getDataDefinition();
