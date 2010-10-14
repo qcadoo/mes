@@ -30,11 +30,6 @@
 	width: 20px;
 }
 
-.gridTable .grid_header {
-	background: #f2f2f2;
-	line-height: 30px;
-}
-
 .gridTable .grid_header .grid_header_gridName {
 	padding-left: 10px;
 }
@@ -57,6 +52,10 @@
 	border-top: solid #9b9b9b 1px;
 }
 
+.gridTable .ui-jqgrid-bdiv {
+	background: #fbfbfb;
+	font-family:Arial, Helvetica, sans-serif;
+}
 .gridTable a.gridLink {
 	color: #1C54C4;
 	font-weight: bold;
@@ -115,6 +114,7 @@
 }
 .gridTable .ui-jqgrid-labels {
 	height: 30px;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
 .gridTable .ui-th-column {
@@ -156,6 +156,10 @@
 	//background: red;
 }
 
+div.filterButton {
+
+}
+
 .gridTable .grid_header .headerButton,
 .gridTable .grid_footer .headerButton {
 	display: inline-block;
@@ -185,22 +189,21 @@
 
 .gridTable .grid_header .headerButton:hover,
 .gridTable .grid_footer .headerButton:hover {
-	//background: #888888;
+	background: #888888;
 	background-position: 0px -10px;
 }
 
 .gridTable .grid_header .headerButton.headerButtonDisabled,
 .gridTable .grid_footer .headerButton.headerButtonDisabled {
-	//border: solid #A9A9A9 2px;
-	//color: #A9A9A9;
-	//cursor: default;
+	border: solid #A9A9A9 2px;
+	color: #A9A9A9;
+	cursor: default;
 	background-position: 0px 0px;
 }
 
 .gridTable .grid_header .headerButtonDisabled:hover,
 .gridTable .grid_footer .headerButtonDisabled:hover {
-	//background: #cccccc;
+	background: #cccccc;
 	background-position: 0px 0px;
 }
-
 

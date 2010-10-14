@@ -21,6 +21,7 @@
 	
 	<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
 	<c:set var="headerDescription" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.description"/>
+	<c:set var="hasErrorIncluded" value="${'textArea' == componentType || 'textInput' == componentType || 'passwordInput' == componentType}"/>
 	
 	<div class="label">${translationsMap[headerLabel]}
 		<c:if test="${component.hasDescription}">
@@ -29,12 +30,26 @@
 				<div id="${componentFullName}_description_message" class="description_message" style="display: none">${translationsMap[headerDescription]}</div>
 			</div>
 		</c:if>
+		<c:if test="${!hasErrorIncluded}">
+			<div class="error_box">
+				<div id="${componentFullName}_error_icon" class="error_icon"></div>
+				<div id="${componentFullName}_error_messages" class="error_messages" style="display: none"></div>
+			</div>
+		</c:if>
 	</div>
 	
-	${componentBody}
-	
-	<div class="error_box">
-		<div id="${componentFullName}_error_icon" class="error_icon"></div>
-		<div id="${componentFullName}_error_messages" class="error_messages" style="display: none"></div>
-	</div>
+	<c:choose>
+		<c:when test="${hasErrorIncluded}">
+			<div class="component_container_form_x">
+				<div class="component_container_form_y">
+					${componentBody}
+					<div id="${componentFullName}_error_icon" class="error_icon"></div>
+					<div id="${componentFullName}_error_messages" class="error_messages" style="display: none"></div>
+				</div>
+			</div>
+		</c:when>
+		<c:otherwise>
+			${componentBody}			
+		</c:otherwise>
+	</c:choose>
 </div>

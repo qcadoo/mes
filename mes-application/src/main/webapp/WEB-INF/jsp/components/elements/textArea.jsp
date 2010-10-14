@@ -20,6 +20,10 @@
 	<tiles:putAttribute name="viewName" value="${viewName}" />
 	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
+<<<<<<< HEAD
 		<textarea id="${componentFullName}_input" name="fields[${component.name}]"></textarea>
+=======
+		<textarea id="${componentFullName}_input" name="fields[${component.name}]" rows="${component.rows}"></textarea>
+>>>>>>> 99edbda9d6dfafbb20652b814000f51a7130f540
 	</tiles:putAttribute>
 </tiles:insertTemplate>
