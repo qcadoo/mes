@@ -25,16 +25,23 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function constructor(_this) {
 		
-		var header = $("<div>").addClass('tree_header');
+		var header = $("<div>").addClass('tree_header').addClass('elementHeader');
 			var treeName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+_this.elementPath.replace(/-/g,".")+".header";
 			var title = $("<div>").addClass('tree_title').html(mainController.getTranslation(treeName));
 			header.append(title);
-		
-			buttons.newButton = $("<div>").addClass('tree_button').html("new").click(newClicked);
+			
+			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("new",function(e) {
+				newClicked();
+			});
+			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("edit",function(e) {
+				editClicked();
+			});
+			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("delete",function(e) {
+				deleteClicked();
+			}, "deleteIcon16_disabled.png");
+			
 			header.append(buttons.newButton);
-			buttons.editButton = $("<div>").addClass('tree_button').html("edit").click(editClicked);
 			header.append(buttons.editButton);
-			buttons.deleteButton = $("<div>").addClass('tree_button').html("delete").click(deleteClicked);
 			header.append(buttons.deleteButton);
 		
 		var content = $("<div>").addClass('tree_content');
@@ -62,16 +69,17 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			},
 			core : {
 				html_titles: true,
+				animation: 100
 			},
 		    cookies: false
 		}).bind("select_node.jstree", function (e, data) {
-			buttons.newButton.addClass("enabled");
+			buttons.newButton.addClass("headerButtonEnabled");
 			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
-				buttons.editButton.addClass("enabled");
-				buttons.deleteButton.addClass("enabled");
+				buttons.editButton.addClass("headerButtonEnabled");
+				buttons.deleteButton.addClass("headerButtonEnabled");
 			} else {
-				buttons.editButton.removeClass("enabled");
-				buttons.deleteButton.removeClass("enabled");
+				buttons.editButton.removeClass("headerButtonEnabled");
+				buttons.deleteButton.removeClass("headerButtonEnabled");
 			}
 		});
 		openedArrayToInstert = new Array();
@@ -138,11 +146,11 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			selectedEntityIdToInstert = null;
 		}
 		if (tree.jstree("get_selected").length > 0) {
-			buttons.editButton.addClass("enabled");
-			buttons.deleteButton.addClass("enabled");
+			buttons.editButton.addClass("headerButtonEnabled");
+			buttons.deleteButton.addClass("headerButtonEnabled");
 		} else {
-			buttons.editButton.removeClass("enabled");
-			buttons.deleteButton.removeClass("enabled");
+			buttons.editButton.removeClass("headerButtonEnabled");
+			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
 		unblock();
 	}
@@ -161,14 +169,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (isEnabled) {
 			
 		} else {
-			buttons.newButton.removeClass("enabled");
-			buttons.editButton.removeClass("enabled");
-			buttons.deleteButton.removeClass("enabled");
+			buttons.newButton.removeClass("headerButtonEnabled");
+			buttons.editButton.removeClass("headerButtonEnabled");
+			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
 	}
 	
 	function newClicked() {
-		if (buttons.newButton.hasClass("enabled")) {
+		if (buttons.newButton.hasClass("headerButtonEnabled")) {
 			QCD.info("new");
 			var contextArray = new Array();
 			var parentId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
@@ -190,7 +198,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function editClicked() {
-		if (buttons.editButton.hasClass("enabled")) {
+		if (buttons.editButton.hasClass("headerButtonEnabled")) {
 			QCD.info("edit");
 			var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
 			redirectToCorrespondingPage("entityId="+entityId);
@@ -198,7 +206,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function deleteClicked() {
-		if (buttons.deleteButton.hasClass("enabled")) {
+		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
 			if (window.confirm("delete?")) {
 				block();
 				var entityId = tree.jstree("get_selected").attr("id");
