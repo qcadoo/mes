@@ -12,14 +12,26 @@
 <tiles:useAttribute name="viewName" ignore="true"/>
 <tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
+<script type="text/javascript">
+$(function() {
+	$('#${componentFullName}_input').datepick({showOnFocus: false, showTrigger: '#calendar', dateFormat: 'yyyy-mm-dd'});
+});
+
+</script>
+
+<div style="display: none;">
+	<div class="calendar" id="calendar"></div>
+</div>
+
+
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="textArea" />
+	<tiles:putAttribute name="componentType" value="calendar" />
 	<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
 	<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
 	<tiles:putAttribute name="viewName" value="${viewName}" />
 	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
-		<textarea id="${componentFullName}_input" name="fields[${component.name}]"></textarea>
+		<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
 	</tiles:putAttribute>
 </tiles:insertTemplate>

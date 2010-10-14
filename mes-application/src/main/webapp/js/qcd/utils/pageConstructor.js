@@ -30,6 +30,8 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 				component = new QCD.components.elements.LinkButton(element, mainController);
 			} else if (element.hasClass("component_element_tree")) {
 				component = new QCD.components.elements.Tree(element, mainController);
+			} else if (element.hasClass("component_element_calendar")) {
+				component = new QCD.components.elements.Calendar(element, mainController);
 			}
 			
 			if (component) {
