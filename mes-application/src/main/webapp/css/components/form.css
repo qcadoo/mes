@@ -39,7 +39,7 @@
 }
 
 .component_container_form .error .label {
-	color: #ec1c24;
+	// color: #ec1c24;
 }
 
 .component_container_form input[type='text'], .component_container_form textarea, .component_container_form select

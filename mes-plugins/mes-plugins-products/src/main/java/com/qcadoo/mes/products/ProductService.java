@@ -15,6 +15,7 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.components.SimpleValue;
 import com.qcadoo.mes.view.components.combobox.EntityComboBoxValue;
 
 @Service
@@ -30,29 +31,23 @@ public final class ProductService {
     public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName) {
         ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
                 .lookupValue("mainWindow.orderDetailsForm.product");
-        ViewValue<String> defaultInstructionValue = (ViewValue<String>) value
+        ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
                 .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
         ViewValue<EntityComboBoxValue> instructionValue = (ViewValue<EntityComboBoxValue>) value
                 .lookupValue("mainWindow.orderDetailsForm.instruction");
-
-        System.out.println(" 1 --> ");
 
         if (defaultInstructionValue == null || productValue == null) {
             return;
         }
 
         defaultInstructionValue.setEnabled(false);
-        defaultInstructionValue.setValue("");
+        defaultInstructionValue.setValue(new SimpleValue(""));
 
-        System.out.println(" 2 --> ");
-
-        if (productValue.getValue() != null && productValue.getValue().getSelectedValue() != null) {
-            System.out.println(" 3 --> ");
+        if (productValue.getValue() != null && productValue.getValue().getValue() != null) {
             Entity defaultInstructionEntity = getDefaultInstruction(productValue);
-            System.out.println(" 4 --> " + defaultInstructionEntity);
             if (defaultInstructionEntity != null) {
                 String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
-                defaultInstructionValue.setValue(defaultInstructionName);
+                defaultInstructionValue.getValue().setValue(defaultInstructionName);
                 selectDefaultInstruction(triggerComponentName, instructionValue, defaultInstructionEntity);
             }
         }
@@ -60,19 +55,14 @@ public final class ProductService {
 
     private void selectDefaultInstruction(final String triggerComponentName,
             final ViewValue<EntityComboBoxValue> instructionValue, final Entity defaultInstructionEntity) {
-        Long selectedInstructinId = instructionValue.getValue().getSelectedValue();
-        System.out.println(" 4.1 --> " + selectedInstructinId);
-        System.out.println(" 4.2 --> " + triggerComponentName);
-        if (selectedInstructinId == null && "mainWindow.orderDsetailsForm.product".equals(triggerComponentName)) {
-            System.out.println(" 4.3 --> ");
-            instructionValue.getValue().setSelectedValue(defaultInstructionEntity.getId());
+        Long selectedInstructinId = (Long) instructionValue.getValue().getValue();
+        if (selectedInstructinId == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+            instructionValue.getValue().setValue(defaultInstructionEntity.getId());
         }
     }
 
     private Entity getDefaultInstruction(final ViewValue<EntityComboBoxValue> productValue) {
         DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
-
-        System.out.println(" 3.1 --> " + productValue.getValue().getSelectedValue());
 
         SearchCriteriaBuilder searchCriteria = instructionDD
                 .find()
@@ -82,8 +72,6 @@ public final class ProductService {
                         Restrictions.belongsTo(instructionDD.getField("product"), productValue.getValue().getSelectedValue()));
 
         SearchResult searchResult = searchCriteria.list();
-
-        System.out.println(" 3.2 --> " + searchResult.getTotalNumberOfEntities());
 
         if (searchResult.getTotalNumberOfEntities() == 1) {
             return searchResult.getEntities().get(0);
