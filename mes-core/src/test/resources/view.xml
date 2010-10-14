@@ -16,18 +16,18 @@
 				</group>
 			</ribbon>
 			<component type="form" name="beanBForm">
-				<component type="input" name="name" field="name" />
+				<component type="textarea" name="name" field="name" />
 				<component type="checkbox" name="active" field="name" enabled="false" visible="false" />
 				<component type="lookup" name="selectBeanA" field="beanA" />
-				<component type="input" name="beanM" field="name" />
-				<component type="input" name="beanB" field="beanA.name" />
+				<component type="textarea" name="beanM" field="name" />
+				<component type="textarea" name="beanB" field="beanA.name" />
 				<component type="grid" name="beansBGrig"
 					source="#{mainWindow.beanBForm.selectBeanA}.beansB">
 					<option type="column" name="name" fields="name" />
 					<option type="correspondingView" value="products/form" />
 				</component>
 				<component type="form" name="beanAForm" field="beanA">
-					<component type="input" name="name" field="name" />
+					<component type="textarea" name="name" field="name" />
 				</component>
 				<option type="header" value="false" />
 			</component>

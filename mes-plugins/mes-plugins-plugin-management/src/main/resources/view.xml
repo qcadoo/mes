@@ -44,10 +44,10 @@
 	<view name="pluginDetailsView" model="plugin">
 		<component type="window" name="mainWindow">
 			<component type="form" name="pluginDetailsForm">
-				<component type="input" name="name" field="name" enabled="false" />
+				<component type="textarea" name="name" field="name" enabled="false" />
 				<component type="input" name="version" field="version" enabled="false" />
 				<component type="input" name="vendor" field="vendor" enabled="false" />
-				<component type="input" name="description" field="description" enabled="false" />
+				<component type="textarea" name="description" field="description" enabled="false" />
 				<component type="select" name="status" field="status" enabled="false" />
 				<component type="checkbox" name="base" field="base" enabled="false" />
 				<option type="header" value="false" />

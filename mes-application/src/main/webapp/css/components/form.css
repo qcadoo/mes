@@ -68,6 +68,10 @@
 	-webkit-box-sizing: border-box;
 }
 
+.component_container_form textarea {
+	height: 70px;
+}
+
 .component_container_form input[type='text'], .component_container_form textarea {
 	padding: 0 0 0 6px;
 }
