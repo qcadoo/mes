@@ -18,6 +18,7 @@
 	<link rel="stylesheet" href="../../css/components/grid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/form.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/components/tree.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/components/elementHeader.css" type="text/css" />
 	
 	<script type="text/javascript" src="../../js/lib/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../../js/lib/json2.js"></script>
