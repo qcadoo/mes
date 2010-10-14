@@ -35,11 +35,21 @@ public final class ProductService {
         ViewValue<EntityComboBoxValue> instructionValue = (ViewValue<EntityComboBoxValue>) value
                 .lookupValue("mainWindow.orderDetailsForm.instruction");
 
+        System.out.println(" 1 --> ");
+
+        if (defaultInstructionValue == null || productValue == null) {
+            return;
+        }
+
         defaultInstructionValue.setEnabled(false);
         defaultInstructionValue.setValue("");
 
+        System.out.println(" 2 --> ");
+
         if (productValue.getValue() != null && productValue.getValue().getSelectedValue() != null) {
+            System.out.println(" 4 --> ");
             Entity defaultInstructionEntity = getDefaultInstruction(productValue);
+            System.out.println(" 4 --> " + defaultInstructionEntity);
             if (defaultInstructionEntity != null) {
                 String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
                 defaultInstructionValue.setValue(defaultInstructionName);
