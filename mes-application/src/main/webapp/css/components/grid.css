@@ -54,6 +54,7 @@
 
 .gridTable .ui-jqgrid-bdiv {
 	background: #fbfbfb;
+	font-family:Arial, Helvetica, sans-serif;
 }
 .gridTable a.gridLink {
 	color: #1C54C4;
@@ -113,6 +114,7 @@
 }
 .gridTable .ui-jqgrid-labels {
 	height: 30px;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
 .gridTable .ui-th-column {
