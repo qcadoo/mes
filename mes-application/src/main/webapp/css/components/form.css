@@ -113,7 +113,7 @@
 
 .component_container_form textarea {
 	height: auto;
-	padding: 6px;
+	padding-left: 6px;
 }
 
 .component_container_form textarea:focus, .component_container_form select:focus, .component_container_form input:focus {

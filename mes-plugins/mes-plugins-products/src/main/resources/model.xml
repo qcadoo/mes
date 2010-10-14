@@ -23,8 +23,8 @@
 		<text name="name">
 			<validatesPresence />
 		</text>
-		<datetime name="effectiveDateFrom" />
-		<datetime name="effectiveDateTo" />
+		<date name="effectiveDateFrom" />
+		<date name="effectiveDateTo" />
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
@@ -57,8 +57,8 @@
 			<validatesPresence />
 		</enum>
 		<boolean name="master" />
-		<datetime name="dateFrom" />
-		<datetime name="dateTo" />
+		<date name="dateFrom" />
+		<date name="dateTo" />
 		<text name="description" />
 		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" message="products.validate.global.error.default" />
