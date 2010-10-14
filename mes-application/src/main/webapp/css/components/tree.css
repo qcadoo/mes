@@ -17,6 +17,11 @@
 	color: #888888;
 }
 
+.tree_content.jstree.treeDisabled a {
+	color: #b7b7b7;
+	cursor: default;
+}
+
 .tree_content.jstree a {
 	border: solid transparent 1px;
 	padding: 2px;

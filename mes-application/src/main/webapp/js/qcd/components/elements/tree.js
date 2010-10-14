@@ -20,6 +20,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var root;
 	
+	var isEnabled = false;
+	
 	var openedArrayToInstert;
 	var selectedEntityIdToInstert;
 	
@@ -72,6 +74,11 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				animation: 100
 			},
 		    cookies: false
+		}).bind("before.jstree", function (e, data) {
+			if (!isEnabled && (data.func == 'select_node' || data.func == 'hover_node')) { 
+				e.stopImmediatePropagation();
+		    	return false;
+			}
 		}).bind("select_node.jstree", function (e, data) {
 			buttons.newButton.addClass("headerButtonEnabled");
 			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
@@ -165,10 +172,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		return newNode;
 	}
 	
-	this.setComponentEnabled = function(isEnabled) {
+	this.setComponentEnabled = function(_isEnabled) {
+		isEnabled = _isEnabled;
 		if (isEnabled) {
-			
+			tree.removeClass("treeDisabled");
 		} else {
+			tree.addClass("treeDisabled");
 			buttons.newButton.removeClass("headerButtonEnabled");
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
