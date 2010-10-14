@@ -253,7 +253,7 @@ public class CrudControllerTest {
         given(viewDefinition.getRoot().getName()).willReturn("root");
         given(viewDefinition.lookupComponent("trigger.component")).willReturn((Component) component);
         given(
-                viewDefinition.getValue(null, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
+                viewDefinition.getValue(entity, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
                         true, Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSaveableEntity(oldViewValue)).willReturn(entity);
         given(((Component<?>) component).getDataDefinition().save(entity)).willReturn(entity);
@@ -296,7 +296,7 @@ public class CrudControllerTest {
         given(viewDefinition.castValue(anyMap(), any(JSONObject.class))).willReturn(oldViewValue);
         given(viewDefinition.lookupComponent("trigger.component")).willReturn((Component) component);
         given(
-                viewDefinition.getValue(null, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
+                viewDefinition.getValue(entity, ImmutableMap.of("trigger.component", entity), oldViewValue, "trigger.component",
                         true, Locale.ENGLISH)).willReturn(newViewValue);
         given(component.getSaveableEntity(oldViewValue)).willReturn(entity);
         given(((Component<?>) component).getDataDefinition().save(entity)).willReturn(entity);
