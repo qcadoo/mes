@@ -164,7 +164,7 @@ public final class CrudController {
 
         selectedEntities.put(triggerComponentName, entity);
 
-        ViewValue<Long> responseViewValue = viewDefinition.getValue(null, selectedEntities, viewValue, triggerComponentName,
+        ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
 
         if (entity.isValid()) {

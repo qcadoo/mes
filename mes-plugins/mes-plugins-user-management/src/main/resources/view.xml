@@ -2,6 +2,13 @@
 <qcd:views plugin="users" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="groupGridView" model="group">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" action="#{mainWindow.groups}.performNew;" />
+					<smallButton name="delete" icon="icon2"
+						action="#{mainWindow.groups}.performDelete;" />
+				</group>
+			</ribbon>		
 			<component type="grid" name="groups">
 				<option type="column" name="name" fields="name" />
 				<option type="column" name="role" fields="role" />
@@ -9,19 +16,40 @@
 				<option type="orderable" value="name,role" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="false" />
-				<option type="height" value="450" />
 				<option type="correspondingView" value="users/groupDetailsView" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
+				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
 		</component>
 	</view>
 	<view name="groupDetailsView" model="group">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save"
+						action="#{mainWindow.groupDetailsForm}.performSave;" />
+					<bigButtons name="saveBack"
+						action="#{mainWindow.groupDetailsForm}.performSave; #{mainWindow}.performBack">
+						<bigButton name="saveNew"
+							action="#{mainWindow.groupDetailsForm}.performSave; #{mainWindow}.performNew;" />
+					</bigButtons>
+					<smallButton name="cancel"
+						action="#{mainWindow.groupDetailsForm}.performCancel;" />
+					<smallButtons name="delete" icon="icon2"
+						action="#{mainWindow.groupDetailsForm}.performDelete; #{mainWindow}.performBack">
+						<smallButton name="deleteNew"
+							action="#{mainWindow.groupDetailsForm}.performDelete; #{mainWindow}.performNew;" />
+					</smallButtons>
+				</group>
+			</ribbon>		
 			<component type="form" name="groupDetailsForm">
-				<component type="input" name="name" field="name" />
-				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="textarea" name="name" field="name" />
+				<component type="textarea" name="description" field="description" /> <!-- type:description -->
 				<component type="input" name="role" field="role" enabled="false" />
 				<option type="header" value="false" />
 			</component>
@@ -45,8 +73,8 @@
 				<option type="orderable" value="userName,email,firstName,lastName,userGroup" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="true" />
-				<option type="height" value="450" />
 				<option type="correspondingView" value="users/userDetailsView" />
+				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
 		</component>
@@ -69,7 +97,7 @@
 				<component type="input" name="email" field="email" />
 				<component type="input" name="firstName" field="firstName" />
 				<component type="input" name="lastName" field="lastName" />
-				<component type="input" name="description" field="description" /> <!-- type:description -->
+				<component type="textarea" name="description" field="description" /> <!-- type:description -->
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<option type="header" value="false" />

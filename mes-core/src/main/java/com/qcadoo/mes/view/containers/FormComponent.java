@@ -20,6 +20,7 @@ import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.components.SimpleValue;
 
 public final class FormComponent extends AbstractContainerComponent<FormValue> implements SaveableComponent, SelectableComponent {
 
@@ -59,7 +60,19 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             Long entityId = viewObject.getJSONObject("value").getLong("id");
             Entity entity = getDataDefinition().get(entityId);
             selectedEntities.put(getPath(), entity);
-            return new FormValue(entityId);
+
+            FormValue formValue = new FormValue(entityId);
+
+            if (!viewObject.getJSONObject("value").isNull("header")) {
+                formValue.setHeader(viewObject.getJSONObject("value").getString("header"));
+            }
+            if (!viewObject.getJSONObject("value").isNull("headerEntityIdentifier")) {
+                formValue.setHeaderEntityIdentifier(viewObject.getJSONObject("value").getString("headerEntityIdentifier"));
+            }
+            if (!viewObject.getJSONObject("value").isNull("valid")) {
+                formValue.setValid(viewObject.getJSONObject("value").getBoolean("valid"));
+            }
+            return formValue;
         } else {
             return null;
         }
@@ -131,8 +144,11 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
 
         if (value == null) {
             entity.setField(fieldPath, null);
+        } else if (value instanceof SimpleValue) {
+            Object fieldValue = ((SimpleValue) value).getValue();
+            entity.setField(fieldPath, fieldValue != null ? fieldValue : String.valueOf(fieldValue));
         } else {
-            entity.setField(fieldPath, value.toString());
+            throw new IllegalStateException("Value of " + fieldPath + "doesn't extends SimpleValue");
         }
         return value;
     }

@@ -20,13 +20,12 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	this.init = function(entityId, serializationObject) {
 		var parameters = new Object();
 		if (entityId && entityId.trim() != "") {
-			parameters.entityId = entityId;
 			rootEntityId = entityId;
 		}
 		if (serializationObject) {
 			setComponentState(serializationObject);
-			//parameters.entityId = null;
 		}
+		parameters.entityId = rootEntityId;
 		parameters.data = getValueData();
 		var valuesJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("data", valuesJson, function(response) {
@@ -211,6 +210,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	
 	function setComponentState(state) {
 		QCD.debug(state);
+		if (state.value) {
+			rootEntityId = state.value;
+		}
 		for (var i in state.components) {
 			var component = pageComponents[i];
 			component.setState(state.components[i]);
@@ -251,6 +253,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	
 	this.goToPage = function(url) {
 		var serializationObject = {
+			value: rootEntityId,
 			components: getValueData()
 		}
 		QCD.info(url);

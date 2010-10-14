@@ -86,7 +86,9 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
         ViewValue<Long> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate, locale));
-        callOnViewHook(value, triggerComponentName);
+        if (value != null) {
+            callOnViewHook(value, triggerComponentName);
+        }
         if (entity != null) {
             value.setValue(entity.getId());
         }

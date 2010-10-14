@@ -24,9 +24,9 @@ public final class HookDefinitionImpl implements HookDefinition {
         this.methodName = methodName;
     }
 
-    private Object call(final Object... params) {
+    private Object call(final Object[] params, final Class<?>[] paramClasses) {
         try {
-            return MethodUtils.invokeMethod(bean, methodName, params);
+            return MethodUtils.invokeMethod(bean, methodName, params, paramClasses);
         } catch (NoSuchMethodException e) {
             LOG.warn("custom validation method is not exist", e);
         } catch (IllegalAccessException e) {
@@ -41,7 +41,8 @@ public final class HookDefinitionImpl implements HookDefinition {
 
     @Override
     public boolean callWithObjectAndGetBoolean(final DataDefinition dataDefinition, final Object value) {
-        Boolean retults = (Boolean) call(dataDefinition, value);
+        Boolean retults = (Boolean) call(new Object[] { dataDefinition, value },
+                new Class[] { DataDefinition.class, Object.class });
         if (retults == null) {
             return false;
         } else {
@@ -51,7 +52,8 @@ public final class HookDefinitionImpl implements HookDefinition {
 
     @Override
     public boolean callWithEntityAndGetBoolean(final DataDefinition dataDefinition, final Entity entity) {
-        Boolean retults = (Boolean) call(dataDefinition, entity);
+        Boolean retults = (Boolean) call(new Object[] { dataDefinition, entity }, new Class[] { DataDefinition.class,
+                Entity.class });
         if (retults == null) {
             return false;
         } else {
@@ -61,12 +63,12 @@ public final class HookDefinitionImpl implements HookDefinition {
 
     @Override
     public void callWithEntity(final DataDefinition dataDefinition, final Entity entity) {
-        call(dataDefinition, entity);
+        call(new Object[] { dataDefinition, entity }, new Class[] { DataDefinition.class, Entity.class });
     }
 
     @Override
     public void callWithViewValue(final ViewValue<Long> value, final String triggerComponentName) {
-        call(value, triggerComponentName);
+        call(new Object[] { value, triggerComponentName }, new Class[] { ViewValue.class, String.class });
     }
 
 }

@@ -37,7 +37,11 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
             value = viewObject.getJSONObject("value").getString("value");
         }
         if (StringUtils.hasText(value)) {
-            return new ViewValue<SimpleValue>(new SimpleValue(convertToDatabaseValue(value.trim())));
+            SimpleValue simpleValue = new SimpleValue(convertToDatabaseValue(value.trim()));
+            if (!viewObject.isNull("value") && !viewObject.getJSONObject("value").isNull("required")) {
+                simpleValue.setRequired(viewObject.getJSONObject("value").getBoolean("required"));
+            }
+            return new ViewValue<SimpleValue>(simpleValue);
         } else {
             return new ViewValue<SimpleValue>();
         }

@@ -50,6 +50,9 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
                 Entity selectedEntity = getDataDefinition().get(selectedEntityId);
                 selectedEntities.put(getPath(), selectedEntity);
             }
+            if (!viewObject.isNull("value") && !viewObject.getJSONObject("value").isNull("required")) {
+                value.setRequired(viewObject.getJSONObject("value").getBoolean("required"));
+            }
             return new ViewValue<EntityComboBoxValue>(value);
         }
         return new ViewValue<EntityComboBoxValue>(null);
