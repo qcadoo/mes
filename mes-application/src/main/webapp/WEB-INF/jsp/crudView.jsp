@@ -43,6 +43,7 @@
 	<script type="text/javascript" src="../../js/qcd/components/elements/grid.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/grid/gridHeader.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/textInput.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/elements/textArea.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/passwordInput.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/dynamicComboBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/entityComboBox.js"></script>
