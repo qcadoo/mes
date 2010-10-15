@@ -108,6 +108,10 @@
 	// -moz-appearance:textfield;
 }
 
+.component_container_form select option .empty {
+	color: red;
+}
+	
 .component_container_form .required input[type='text'], .component_container_form .required textarea, .component_container_form .required select {
 	border: 1px solid #464646;	
 }
