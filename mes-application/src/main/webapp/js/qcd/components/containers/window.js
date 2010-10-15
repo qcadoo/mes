@@ -10,7 +10,8 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	var elementName = element.attr('id');
 	
 	function constructor(_this) {
-		var childrenElement = $("#"+elementName+" .windowComponents");
+		var childrenElement = $("#"+_this.elementPath+"_windowComponents");
+		mainController.setWindowHeaderComponent(_this);
 		_this.constructChildren(childrenElement.children());
 		if (_this.options.ribbon) {
 			var ribbon = new QCD.components.Ribbon(_this.options.ribbon, mainController);
@@ -43,10 +44,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
-		var childrenElement = $("#"+elementName+" .windowComponents");
+		var childrenElement = $("#"+this.elementPath+"_windowContent");
 		
 		var margin = Math.round(_width * 0.02);
-		//QCD.info(margin);
 		
 		width = Math.round(_width - 2 * margin);
 		childrenElement.width(width);
@@ -54,12 +54,22 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		childrenElement.css("margin-bottom", margin+"px");
 		height = null;
 		if (this.options.fixedHeight) {
-			height = Math.round(_height - 2 * margin - 80);
-			QCD.info(_height + " - " + height + " - " + margin);
-			childrenElement.height(height);
+			var containerHeight = Math.round(_height - 2 * margin - 80);
+			height = containerHeight;
+			if (this.options.header) {
+				height -= 34;
+			}
+			childrenElement.height(containerHeight);
 		}
 		for (var i in this.components) {
 			this.components[i].updateSize(width, height);
+		}
+	}
+	
+	this.setHeader = function(header) {
+		var headerElement = $("#"+this.elementPath+"_windowHeader");
+		if (headerElement) {
+			headerElement.html(header);
 		}
 	}
 	

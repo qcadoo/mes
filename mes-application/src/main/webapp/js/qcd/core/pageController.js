@@ -8,6 +8,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	var context = (_context != null && _context.trim() != "") ? JSON.parse(_context) : null; 
 	var rootEntityId = null;
 	
+	var headerComponent = null;
+	
 	function constructor(_this) {
 		QCDConnector.windowName = viewName;
 		QCDConnector.mainController = _this;
@@ -226,6 +228,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	
 	this.showMessage = function(type, content) {
 		window.parent.addMessage(type, content);
+	}
+	
+	this.setWindowHeaderComponent = function(component) {
+		headerComponent = component;
+	}
+	this.setWindowHeader = function(header) {
+		if (headerComponent) {
+			headerComponent.setHeader(header);
+		}
 	}
 	
 	function setValueData(data) {

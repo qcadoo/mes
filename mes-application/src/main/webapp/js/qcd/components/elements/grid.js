@@ -21,6 +21,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var componentEnabled = false;
 	
 	var searchEnabled = false;
+	var currentGridHeight;
 	
 	var currentState = {
 		selectedEntityId: null
@@ -329,7 +330,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	this.onFilterButtonClicked = function() {
 		grid[0].toggleToolbar();
 		searchEnabled = !searchEnabled;
-		updateFullScreenSize();
+		if (searchEnabled) {
+			currentGridHeight -= 21;
+		} else {
+			currentGridHeight += 21;
+		}
+		grid.setGridHeight(currentGridHeight);
 		if (! searchEnabled) {
 			currentState.filters = null;
 		}
@@ -355,15 +361,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
-		QCD.info(_height);
 		if (! gridParameters.height && gridParameters.fullScreen) {
 			element.height(_height - 40);
 			var HEIGHT_DIFF = 140;
+			currentGridHeight = _height - HEIGHT_DIFF;
 			if (searchEnabled) {
-				grid.setGridHeight(_height - HEIGHT_DIFF-8);	
-			} else {
-				grid.setGridHeight(_height - HEIGHT_DIFF);
+				currentGridHeight -= 21;
 			}
+			grid.setGridHeight(currentGridHeight);
 		}
 		if (! gridParameters.width && gridParameters.fullScreen) {
 			grid.setGridWidth(_width-45, true);

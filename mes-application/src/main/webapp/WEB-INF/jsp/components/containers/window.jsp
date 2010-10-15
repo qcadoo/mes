@@ -23,19 +23,25 @@
 			</div>
 		</div>
 		<div class="windowContainerContentBody">
-
-			<div class="windowComponents">
-				<c:forEach items="${component.components}" var="componentEntry">
-					<tiles:insertTemplate template="../component.jsp">
-						<tiles:putAttribute name="component" value="${componentEntry.value}" />
-						<tiles:putAttribute name="parentComponentFullName" value="${componentFullName}" />
-						<tiles:putAttribute name="parentComponentFullNameWithDots" value="${componentFullNameWithDots}" />
-						<tiles:putAttribute name="viewName" value="${viewName}" />
-						<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
-					</tiles:insertTemplate>
-				</c:forEach>
+			<div class="windowContent" id="${componentFullName}_windowContent">
+				<c:if test="${component.options['header']}">
+					<div class="windowHeader" id="${componentFullName}_windowHeader">
+						<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
+						${translationsMap[headerLabel]}
+					</div>
+				</c:if>
+				<div class="windowComponents" id="${componentFullName}_windowComponents">
+					<c:forEach items="${component.components}" var="componentEntry">
+						<tiles:insertTemplate template="../component.jsp">
+							<tiles:putAttribute name="component" value="${componentEntry.value}" />
+							<tiles:putAttribute name="parentComponentFullName" value="${componentFullName}" />
+							<tiles:putAttribute name="parentComponentFullNameWithDots" value="${componentFullNameWithDots}" />
+							<tiles:putAttribute name="viewName" value="${viewName}" />
+							<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
+						</tiles:insertTemplate>
+					</c:forEach>
+				</div>
 			</div>
-		
 		</div>
 	</div>
 	
