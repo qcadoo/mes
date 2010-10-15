@@ -31,8 +31,26 @@
 	background: #9b9b9b;
 }
 
-.windowContainer .windowComponents {
+.windowContainer .windowContent {
 	margin: auto;
 	background: white;
-	border: solid black 1px;
+	border: solid #666666 1px;
+}
+
+.windowContainer .windowContent .windowHeader {
+	background: #ebebeb;
+	height: 33px;
+	font: bold 13px arial;
+	color: #7d7d7d;
+	border-bottom: 1px solid #a7a7a7;
+	padding-left: 20px;
+	line-height: 35px;
+}
+
+.windowContainer .windowContent .windowHeader span {
+	color: #555;
+}
+
+.windowContainer .windowComponents {
+	
 }
