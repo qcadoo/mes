@@ -159,51 +159,41 @@
 div.filterButton {
 
 }
-
-.gridTable .grid_header .headerButton,
-.gridTable .grid_footer .headerButton {
+.gridTable .grid_header .headerPagingButton,
+.gridTable .grid_footer .headerPagingButton {
 	display: inline-block;
-	//border: solid black 1px;
-	//padding: 0px 5px 0px 5px;
-	//line-height: 18px;
-	cursor: pointer;
 	margin-left: 4px;
 	margin-right: 4px;
 	width:10px;
 	height:10px;
 	background-repeat:no-repeat;
+}
+
+.gridTable .grid_header .headerPagingButton.headerButtonEnabled,
+.gridTable .grid_footer .headerPagingButton.headerButtonEnabled {
+	cursor: pointer;
 	background-position: 0px -20px;
 }
-.headerButton_first {
-	background-image: url('../images/grid/arrow_first.png');
-}
-.headerButton_last {
-	background-image: url('../images/grid/arrow_last.png');
-}
-.headerButton_left {
-	background-image: url('../images/grid/arrow_left.png');
-}
-.headerButton_right {
-	background-image: url('../images/grid/arrow_right.png');
-}
-
-.gridTable .grid_header .headerButton:hover,
-.gridTable .grid_footer .headerButton:hover {
-	background: #888888;
+.gridTable .grid_header .headerPagingButton.headerButtonEnabled:hover,
+.gridTable .grid_footer .headerPagingButton.headerButtonEnabled:hover {
 	background-position: 0px -10px;
 }
-
-.gridTable .grid_header .headerButton.headerButtonDisabled,
-.gridTable .grid_footer .headerButton.headerButtonDisabled {
-	border: solid #A9A9A9 2px;
-	color: #A9A9A9;
+.gridTable .grid_header .headerPagingButton,
+.gridTable .grid_footer .headerPagingButton {
 	cursor: default;
 	background-position: 0px 0px;
 }
-
-.gridTable .grid_header .headerButtonDisabled:hover,
-.gridTable .grid_footer .headerButtonDisabled:hover {
-	background: #cccccc;
-	background-position: 0px 0px;
+.headerPagingButton.headerButton_first {
+	background-image: url('../images/grid/arrow_first.png');
 }
+.headerPagingButton.headerButton_last {
+	background-image: url('../images/grid/arrow_last.png');
+}
+.headerPagingButton.headerButton_left {
+	background-image: url('../images/grid/arrow_left.png');
+}
+.headerPagingButton.headerButton_right {
+	background-image: url('../images/grid/arrow_right.png');
+}
+
 

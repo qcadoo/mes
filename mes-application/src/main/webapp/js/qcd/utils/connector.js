@@ -25,25 +25,32 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 	$.ajax({
 		url: url,
 		type: 'GET',
-		//data: parameters,
 		dataType: 'json',
 		contentType: 'application/json; charset=utf-8',
 		complete: function(XMLHttpRequest, textStatus) {
 			if (XMLHttpRequest.status == 200) {
-				if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+				var responseText = XMLHttpRequest.responseText.trim(); 
+				if (responseText == "sessionExpired") {
 					QCDConnector.mainController.onSessionExpired();
 					return;
 				}
+				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
+					var message = responseText.substring(20, responseText.search("]]>"));
+					QCDConnector.mainController.showMessage("error", "server error: "+message);
+					if (errorFunction) {
+						errorFunction(message);
+					}
+					return;
+				}
 				if (responseFunction) {
-					if (XMLHttpRequest.responseText && XMLHttpRequest.responseText.trim != "") {
-						var response = JSON.parse(XMLHttpRequest.responseText);
+					if (responseText != "") {
+						var response = JSON.parse(responseText);
 						responseFunction(response);
 					} else {
 						responseFunction(null);
 					}
 				}
 			} else {
-				//alert(XMLHttpRequest.statusText);
 				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);
@@ -67,20 +74,28 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 		contentType: 'application/json; charset=utf-8',
 		complete: function(XMLHttpRequest, textStatus) {
 			if (XMLHttpRequest.status == 200) {
-				if (XMLHttpRequest.responseText.trim() == "sessionExpired") {
+				var responseText = XMLHttpRequest.responseText.trim(); 
+				if (responseText == "sessionExpired") {
 					QCDConnector.mainController.onSessionExpired();
 					return;
 				}
+				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
+					var message = responseText.substring(20, responseText.search("]]>"));
+					QCDConnector.mainController.showMessage("error", "server error: "+message);
+					if (errorFunction) {
+						errorFunction(message);
+					}
+					return;
+				}
 				if (responseFunction) {
-					if (XMLHttpRequest.responseText && XMLHttpRequest.responseText.trim != "") {
-						var response = JSON.parse(XMLHttpRequest.responseText);
+					if (responseText != "") {
+						var response = JSON.parse(responseText);
 						responseFunction(response);
 					} else {
 						responseFunction(null);
 					}
 				}
 			} else {
-				//alert(XMLHttpRequest.statusText);
 				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);

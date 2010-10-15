@@ -3,7 +3,7 @@ QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.grid = QCD.components.elements.grid || {};
 
-QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _gridParameters) {
+QCD.components.elements.grid.GridHeaderController = function(_gridController, _gridName, _gridParameters) {
 	
 	var gridController = _gridController;
 	var gridName = _gridName;
@@ -15,6 +15,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	pagingVars.totalNumberOfEntities = null;
 	
 	var headerElement;
+	var footerElement;
+	
 	var headerElements = new Object();
 	headerElements.filterButton = null;
 	headerElements.newButton = null;
@@ -22,8 +24,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 	headerElements.upButton = null;
 	headerElements.downButton = null;
 	
-	var header = null;
-	var footer = null;
+	var headerPagingController = null;
+	var footerPagingController = null;
 	
 	var entitiesNumberSpan;
 	
@@ -34,52 +36,39 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		pagingVars.first = 0;
 		pagingVars.max = 30;
 		pagingVars.totalNumberOfEntities = 0;
-		header = new QCD.components.elements.grid.GridHeaderElement(_this)
-		footer = new QCD.components.elements.grid.GridHeaderElement(_this)
 	}
 	
 	function paging_refresh() {
-		if (gridParameters.paging) {
+		if (gridParameters.paging && enabled) {
 			var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
 			if (pagesNo == 0) {
 				pagesNo = 1;
 			}
-			header.getPagingElements().allPagesNoSpan.html(pagesNo);
-			footer.getPagingElements().allPagesNoSpan.html(pagesNo);
 			var currPage = Math.ceil(pagingVars.first / pagingVars.max);
 			if (pagingVars.first % pagingVars.max == 0) {
 				currPage += 1;
 			}
-			header.getPagingElements().pageNo.val(currPage);
-			footer.getPagingElements().pageNo.val(currPage);
-			header.getPagingElements().recordsNoSelect.val(pagingVars.max);
-			footer.getPagingElements().recordsNoSelect.val(pagingVars.max);
+			headerPagingController.setPageData(currPage, pagesNo, pagingVars.max);
+			footerPagingController.setPageData(currPage, pagesNo, pagingVars.max);
 			if (currPage > 1) {
-				setEnabledButton(header.getPagingElements().prevButton, true);
-				setEnabledButton(header.getPagingElements().firstButton, true);
-				setEnabledButton(footer.getPagingElements().prevButton, true);
-				setEnabledButton(footer.getPagingElements().firstButton, true);
+				headerPagingController.enablePreviousButtons();
+				footerPagingController.enablePreviousButtons();
 			} else {
-				setEnabledButton(header.getPagingElements().prevButton, false);
-				setEnabledButton(header.getPagingElements().firstButton, false);
-				setEnabledButton(footer.getPagingElements().prevButton, false);
-				setEnabledButton(footer.getPagingElements().firstButton, false);
+				headerPagingController.disablePreviousButtons();
+				footerPagingController.disablePreviousButtons();
 			}
 			if (pagingVars.first + pagingVars.max < pagingVars.totalNumberOfEntities) {
-				setEnabledButton(header.getPagingElements().nextButton, true);
-				setEnabledButton(header.getPagingElements().lastButton, true);
-				setEnabledButton(footer.getPagingElements().nextButton, true);
-				setEnabledButton(footer.getPagingElements().lastButton, true);
+				headerPagingController.enableNextButtons();
+				footerPagingController.enableNextButtons();
 			} else {
-				setEnabledButton(header.getPagingElements().nextButton, false);
-				setEnabledButton(header.getPagingElements().lastButton, false);
-				setEnabledButton(footer.getPagingElements().nextButton, false);
-				setEnabledButton(footer.getPagingElements().lastButton, false);
+				headerPagingController.disableNextButtons();
+				footerPagingController.disableNextButtons();
 			}
-			header.getPagingElements().recordsNoSelect.attr("disabled", false);
-			footer.getPagingElements().recordsNoSelect.attr("disabled", false);
+			headerPagingController.enableRecordsNoSelect();
+			footerPagingController.enableRecordsNoSelect();
+			headerPagingController.enableInput();
+			footerPagingController.enableInput();
 		}
-		entitiesNumberSpan.html("("+pagingVars.totalNumberOfEntities+")");
 	}
 		
 	this.paging_prev = function() {
@@ -87,23 +76,17 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		if (pagingVars.first < 0) {
 			pagingVars.first = 0;
 		}
-		header.getPagingElements().pageNo.removeClass("inputError");
-		footer.getPagingElements().pageNo.removeClass("inputError");
-		gridController.onPagingParametersChange();
+		onPagingEvent();
 	}
 
 	this.paging_next = function() {
 		pagingVars.first += pagingVars.max;
-		header.getPagingElements().pageNo.removeClass("inputError");
-		footer.getPagingElements().pageNo.removeClass("inputError");
-		gridController.onPagingParametersChange();
+		onPagingEvent();
 	}
 	
 	this.paging_first = function() {
 		pagingVars.first = 0;
-		header.getPagingElements().pageNo.removeClass("inputError");
-		footer.getPagingElements().pageNo.removeClass("inputError");
-		gridController.onPagingParametersChange();
+		onPagingEvent();
 	}
 
 	this.paging_last = function() {
@@ -112,17 +95,13 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		} else {
 			pagingVars.first = pagingVars.totalNumberOfEntities - pagingVars.max;
 		}
-		header.getPagingElements().pageNo.removeClass("inputError");
-		footer.getPagingElements().pageNo.removeClass("inputError");
-		gridController.onPagingParametersChange();
+		onPagingEvent();
 	}
 
 	this.paging_onRecordsNoSelectChange = function(recordsNoSelectElement) {
 		var recordsNoSelectValue = recordsNoSelectElement.val();
 		pagingVars.max = parseInt(recordsNoSelectValue);
-		header.getPagingElements().pageNo.removeClass("inputError");
-		footer.getPagingElements().pageNo.removeClass("inputError");
-		gridController.onPagingParametersChange();
+		onPagingEvent();
 	}
 	
 	this.paging_setPageNo = function(pageNoElement) {
@@ -141,8 +120,12 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 			return;
 		}
 		pagingVars.first = pagingVars.max * (pageNoValue - 1);
-		header.getPagingElements().pageNo.removeClass("inputError");
-		footer.getPagingElements().pageNo.removeClass("inputError");
+		onPagingEvent();
+	}
+	
+	function onPagingEvent() {
+		headerPagingController.hideInputError();
+		footerPagingController.hideInputError();
 		gridController.onPagingParametersChange();
 	}
 	
@@ -159,6 +142,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		}
 		pagingVars.max = _pagingVars.max;
 		pagingVars.totalNumberOfEntities = _totalNumberOfEntities;
+		entitiesNumberSpan.html("("+pagingVars.totalNumberOfEntities+")");
 		paging_refresh();
 	}
 	
@@ -197,7 +181,7 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		if (gridParameters.orderable) {
 			headerElements.upButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("up",function(e) {
 				if (headerElements.upButton.hasClass("headerButtonEnabled")) {
-					gridController.onDownButtonClicked();
+					gridController.onUpButtonClicked();
 				}
 			}, "upIcon16.png");
 			headerElement.append(headerElements.upButton);
@@ -211,7 +195,8 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 			setEnabledButton(headerElements.downButton, false);
 		}
 		if (gridParameters.paging) {
-			headerElement.append(header.getHeaderElement(pagingVars));
+			headerPagingController = new QCD.components.elements.grid.GridPagingElement(this);
+			headerElement.append(headerPagingController.getPagingElement(pagingVars));
 		}
 		return headerElement;
 	}
@@ -220,15 +205,23 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 		if (!gridParameters.paging) {
 			return null;
 		}
-		return $("<div>").addClass('grid_footer').append(footer.getHeaderElement(pagingVars));
+		footerPagingController = new QCD.components.elements.grid.GridPagingElement(this);
+		footerElement = $("<div>").addClass('grid_footer').append(footerPagingController.getPagingElement(pagingVars)); 
+		return footerElement;
 	}
 	
 	this.setEnabled = function(_enabled) {
 		enabled = _enabled;
 		if (enabled) {
 			headerElement.removeClass("elementHeaderDisabled");
+			if (footerElement) {
+				footerElement.removeClass("elementHeaderDisabled");
+			}
 		} else {
 			headerElement.addClass("elementHeaderDisabled");
+			if (footerElement) {
+				footerElement.addClass("elementHeaderDisabled");
+			}
 		}
 		refreshButtons();
 	}
@@ -255,6 +248,17 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 			if (headerElements.downButton != null) {
 				setEnabledButton(headerElements.downButton, false);
 			}
+			if (gridParameters.paging) {
+				headerPagingController.disablePreviousButtons();
+				footerPagingController.disablePreviousButtons();
+				headerPagingController.disableNextButtons();
+				footerPagingController.disableNextButtons();
+				headerPagingController.disableRecordsNoSelect();
+				footerPagingController.disableRecordsNoSelect();
+				headerPagingController.disableInput();
+				footerPagingController.disableInput();
+			}
+			
 		} else {
 			if (headerElements.filterButton != null) {
 				setEnabledButton(headerElements.filterButton, true);
@@ -275,34 +279,19 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 				if (pagesNo == 0) {
 					pagesNo = 1;
 				}
-				if (headerElements.upButton != null) {
-					if (rowIndex == 1 && currPage == 1 || rowIndex == null) {
-						setEnabledButton(headerElements.upButton, false);
-					} else {
-						setEnabledButton(headerElements.upButton, true);
-					}
+			} 
+			if (headerElements.upButton != null) {
+				if (rowIndex == 1 || rowIndex == null) {
+					setEnabledButton(headerElements.upButton, false);
+				} else {
+					setEnabledButton(headerElements.upButton, true);
 				}
-				if (headerElements.downButton != null) {
-					if (rowIndex == pagingVars.totalNumberOfEntities % pagingVars.max && currPage == pagesNo || rowIndex == null) {
-						setEnabledButton(headerElements.downButton, false);
-					} else {
-						setEnabledButton(headerElements.downButton, true);
-					}
-				}
-			} else {
-				if (headerElements.upButton != null) {
-					if (rowIndex == 1 || rowIndex == null) {
-						setEnabledButton(headerElements.upButton, false);
-					} else {
-						setEnabledButton(headerElements.upButton, true);
-					}
-				}
-				if (headerElements.downButton != null) {
-					if (rowIndex == pagingVars.totalNumberOfEntities || rowIndex == null) {	
-						setEnabledButton(headerElements.downButton, false);
-					} else {
-						setEnabledButton(headerElements.downButton, true);
-					}
+			}
+			if (headerElements.downButton != null) {
+				if (rowIndex == pagingVars.totalNumberOfEntities || rowIndex == null) {	
+					setEnabledButton(headerElements.downButton, false);
+				} else {
+					setEnabledButton(headerElements.downButton, true);
 				}
 			}
 		}
@@ -331,9 +320,9 @@ QCD.components.elements.grid.GridHeader = function(_gridController, _gridName, _
 }
 
 
-QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
+QCD.components.elements.grid.GridPagingElement = function(_gridHeaderController) {
 	
-	var gridHeader = _gridHeader;
+	var gridHeaderController = _gridHeaderController;
 	
 	var pagingElements = new Object();
 	pagingElements.prevButton = null;
@@ -347,11 +336,7 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 	function constructor() {
 	}
 	
-	this.getPagingElements = function() {
-		return pagingElements;
-	}
-	
-	this.getHeaderElement = function(pagingVars) {
+	this.getPagingElement = function(pagingVars) {
 		var pagingDiv = $("<div>").addClass('grid_paging');
 		pagingDiv.append('<span>Na stronie: </span>');
 		pagingElements.recordsNoSelect = $("<select>");
@@ -363,10 +348,10 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 			pagingElements.recordsNoSelect.val(pagingVars.max);
 		pagingDiv.append(pagingElements.recordsNoSelect);
 		
-		pagingElements.firstButton =  $("<div>").addClass("headerButton").addClass("headerButton_first");
+		pagingElements.firstButton =  $("<div>").addClass("headerPagingButton").addClass("headerButton_first");
 		pagingDiv.append(pagingElements.firstButton);
 		
-		pagingElements.prevButton =  $("<div>").addClass("headerButton").addClass("headerButton_left");
+		pagingElements.prevButton =  $("<div>").addClass("headerPagingButton").addClass("headerButton_left");
 		pagingDiv.append(pagingElements.prevButton);
 
 		var pagesNo = Math.ceil(pagingVars.totalNumberOfEntities / pagingVars.max);
@@ -383,57 +368,88 @@ QCD.components.elements.grid.GridHeaderElement = function(_gridHeader) {
 			pageInfoSpan.append(pagingElements.allPagesNoSpan.html(pagesNo));
 		pagingDiv.append(pageInfoSpan);
 	
-		pagingElements.nextButton =  $("<div>").addClass("headerButton").addClass("headerButton_right");
+		pagingElements.nextButton =  $("<div>").addClass("headerPagingButton").addClass("headerButton_right");
 		pagingDiv.append(pagingElements.nextButton);
-		pagingElements.lastButton =  $("<div>").addClass("headerButton").addClass("headerButton_last");;
+		pagingElements.lastButton =  $("<div>").addClass("headerPagingButton").addClass("headerButton_last");;
 		pagingDiv.append(pagingElements.lastButton);
 		
 		pagingElements.firstButton.click(function(e) {
-			if (!$(e.target).hasClass("headerButtonDisabled")) {
-				gridHeader.paging_first();
+			if ($(e.target).hasClass("headerButtonEnabled")) {
+				gridHeaderController.paging_first();
 			}
 		});
 		pagingElements.prevButton.click(function(e) {
-			if (!$(e.target).hasClass("headerButtonDisabled")) {
-				gridHeader.paging_prev();
+			if ($(e.target).hasClass("headerButtonEnabled")) {
+				gridHeaderController.paging_prev();
 			}
 		});
 
 		pagingElements.recordsNoSelect.change(function(e) {
-			gridHeader.paging_onRecordsNoSelectChange($(this));
+			gridHeaderController.paging_onRecordsNoSelectChange($(this));
 		});
 		pagingElements.pageNo.change(function(e) {
-			gridHeader.paging_setPageNo($(this));
+			gridHeaderController.paging_setPageNo($(this));
 		});
 		
-		
 		pagingElements.nextButton.click(function(e) {
-			if (!$(e.target).hasClass("headerButtonDisabled")) {
-				gridHeader.paging_next();
+			if ($(e.target).hasClass("headerButtonEnabled")) {
+				gridHeaderController.paging_next();
 			}
 		});
 		pagingElements.lastButton.click(function(e) {
-			if (!$(e.target).hasClass("headerButtonDisabled")) {
-				gridHeader.paging_last();
+			if ($(e.target).hasClass("headerButtonEnabled")) {
+				gridHeaderController.paging_last();
 			}
 		});
-		if (pagingVars.first > 0) {
-			gridHeader.setEnabledButton(pagingElements.prevButton, true);
-			gridHeader.setEnabledButton(pagingElements.firstButton, true);
-		} else {
-			gridHeader.setEnabledButton(pagingElements.prevButton, false);
-			gridHeader.setEnabledButton(pagingElements.firstButton, false);
-		}
-		if (pagingVars.first + pagingVars.max < pagingVars.totalNumberOfEntities) {
-			gridHeader.setEnabledButton(pagingElements.nextButton, true);
-			gridHeader.setEnabledButton(pagingElements.lastButton, true);
-		} else {
-			gridHeader.setEnabledButton(pagingElements.nextButton, false);
-			gridHeader.setEnabledButton(pagingElements.lastButton, false);
-		}
-		pagingElements.recordsNoSelect.attr("disabled", false);
-
+		
+		gridHeaderController.setEnabledButton(pagingElements.prevButton, false);
+		gridHeaderController.setEnabledButton(pagingElements.firstButton, false);
+		gridHeaderController.setEnabledButton(pagingElements.nextButton, false);
+		gridHeaderController.setEnabledButton(pagingElements.lastButton, false);
+		
 		return pagingDiv;
+	}
+	
+	this.setPageData = function(currPage, pagesNo, max) {
+		pagingElements.allPagesNoSpan.html(pagesNo);
+		pagingElements.pageNo.val(currPage);
+		pagingElements.recordsNoSelect.val(max);
+	}
+	
+	this.enablePreviousButtons = function() {
+		gridHeaderController.setEnabledButton(pagingElements.prevButton, true);
+		gridHeaderController.setEnabledButton(pagingElements.firstButton, true);
+	}
+	this.disablePreviousButtons = function() {
+		gridHeaderController.setEnabledButton(pagingElements.prevButton, false);
+		gridHeaderController.setEnabledButton(pagingElements.firstButton, false);
+	}
+	this.enableNextButtons = function() {
+		gridHeaderController.setEnabledButton(pagingElements.nextButton, true);
+		gridHeaderController.setEnabledButton(pagingElements.lastButton, true);
+	}
+	this.disableNextButtons = function() {
+		gridHeaderController.setEnabledButton(pagingElements.nextButton, false);
+		gridHeaderController.setEnabledButton(pagingElements.lastButton, false);
+	}
+	this.enableRecordsNoSelect = function() {
+		pagingElements.recordsNoSelect.attr("disabled", false);
+	}
+	this.disableRecordsNoSelect = function() {
+		pagingElements.recordsNoSelect.attr("disabled", true);
+	}
+	this.enableInput = function() {
+		pagingElements.pageNo.attr("disabled", false);
+	}
+	this.disableInput = function() {
+		pagingElements.pageNo.attr("disabled", true);
+	}
+	
+	this.showInputError = function() {
+		pagingElements.pageNo.addClass("inputError");
+	}
+	this.hideInputError = function() {
+		pagingElements.pageNo.removeClass("inputError");
 	}
 	
 	constructor();

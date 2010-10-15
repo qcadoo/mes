@@ -89,6 +89,7 @@ public final class CrudController {
     public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
             final Locale locale) {
+
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();

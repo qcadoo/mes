@@ -88,6 +88,7 @@
 				<option type="height" value="150" />
 				<option type="creatable" value="true" />
 				<option type="deletable" value="true" />
+				<option type="width" value="350" />
 			</component>
 		</component>
 	</view>
