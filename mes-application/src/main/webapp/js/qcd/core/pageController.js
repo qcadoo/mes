@@ -15,6 +15,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 		var contentElement = $("body");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
 		QCD.debug(pageComponents);
+		
+		$(window).bind('resize', updateSize);
+		updateSize();
 	}
 	
 	this.init = function(entityId, serializationObject) {
@@ -272,6 +275,14 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 			//serializationObject[i] = pageElements[i].serialize();
 		//}
 		window.parent.onSessionExpired(serializationObject);
+	}
+	
+	function updateSize() {
+		var width = $(document).width();
+		var height = $(document).height();
+		for (var i in pageComponents) {
+			pageComponents[i].updateSize(width, height);
+		}
 	}
 	
 	constructor(this);

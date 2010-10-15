@@ -32,7 +32,7 @@
 				type: 'POST',
 				data: formData,
 				success: function(response) {
-					response = response.trim();
+					response = $.trim(response);
 					if (response == "loginSuccessfull") {
 						if (window.parent.goToLastPage) {
 							//window.parent.goToPage(url, serializationObject);

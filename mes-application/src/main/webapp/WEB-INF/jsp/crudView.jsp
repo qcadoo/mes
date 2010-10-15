@@ -69,6 +69,7 @@
 		var controller = null
 
 		window.init = function(serializationObject) {
+			//alert("init");
 			controller = new QCD.PageController(viewName, pluginIdentifier, context);
 			controller.init(entityId, serializationObject);
 		}

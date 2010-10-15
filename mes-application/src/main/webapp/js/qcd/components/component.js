@@ -93,6 +93,9 @@ QCD.components.Component = function(_element, _mainController) {
 		}
 	}
 	
+	this.updateSize = function(width, height) {
+	}
+	
 	this.setMessages = function(messages) {
 	}
 	
