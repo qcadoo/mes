@@ -1,6 +1,10 @@
 package com.qcadoo.mes.view.components;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.view.ContainerComponent;
 
 public final class CalendarComponent extends SimpleFieldComponent {
@@ -16,12 +20,16 @@ public final class CalendarComponent extends SimpleFieldComponent {
     }
 
     @Override
-    public String convertToViewValue(final String value) {
-        return value;
+    public String convertToViewValue(final Object value) {
+        if (value instanceof Date) {
+            return new SimpleDateFormat(DateType.DATE_FORMAT).format((Date) value);
+        } else {
+            return String.valueOf(value).trim();
+        }
     }
 
     @Override
-    public String convertToDatabaseValue(final String value) {
+    public Object convertToDatabaseValue(final String value) {
         return value;
     }
 }

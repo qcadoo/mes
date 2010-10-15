@@ -9,7 +9,7 @@ public class SimpleValue {
     public SimpleValue() {
     }
 
-    public SimpleValue(final String value) {
+    public SimpleValue(final Object value) {
         this.value = value;
     }
 

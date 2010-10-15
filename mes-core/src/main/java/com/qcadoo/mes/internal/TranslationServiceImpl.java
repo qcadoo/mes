@@ -39,7 +39,7 @@ public final class TranslationServiceImpl implements TranslationService {
 
     @Override
     public String translate(final String messageCode, final Locale locale, final Object... args) {
-        return messageSource.getMessage(messageCode, args, "TO TRANSLATE: " + messageCode, locale);
+        return messageSource.getMessage(messageCode, args, "TO TRANSLATE: " + messageCode, locale).trim();
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class TranslationServiceImpl implements TranslationService {
         for (String messageCode : messageCodes) {
             String message = translateWithError(messageCode, locale, args);
             if (message != null) {
-                return message;
+                return message.trim();
             }
         }
         return "TO TRANSLATE: " + messageCodes;

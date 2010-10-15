@@ -58,7 +58,7 @@
 				<component type="input" name="ean" field="ean" />
 				<component type="select" name="category" field="category" />
 				<component type="input" name="unit" field="unit" />
-				<option type="expression" value="#name + ' (' + #id + ')'" />
+				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 				<option type="height" value="300" />
 				<option type="fullScreen" value="true" />
@@ -207,13 +207,11 @@
 				<component type="textarea" name="name" field="name" />
 				<component type="lookup" name="product" field="product" />
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
-
 				<component type="calendar" name="dateFrom" field="dateFrom" />
 				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="textarea" name="description" field="description">
 					<option type="rows" value="5" />
 				</component>
-
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
@@ -321,6 +319,7 @@
 				<component type="input" name="endWorker" field="endWorker"
 					enabled="false" />
 				<option type="header" value="false" />
+				<option type="expression" value="#name + ' (' + #state +  ')'" />
 			</component>
 		</component>
 		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />

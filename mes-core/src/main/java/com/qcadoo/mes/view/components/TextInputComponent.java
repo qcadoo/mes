@@ -16,12 +16,12 @@ public final class TextInputComponent extends SimpleFieldComponent {
     }
 
     @Override
-    public String convertToViewValue(final String value) {
-        return value;
+    public String convertToViewValue(final Object value) {
+        return String.valueOf(value).trim();
     }
 
     @Override
-    public String convertToDatabaseValue(final String value) {
+    public Object convertToDatabaseValue(final String value) {
         return value;
     }
 }

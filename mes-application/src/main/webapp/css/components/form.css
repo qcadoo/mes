@@ -35,9 +35,9 @@
 /** labels **/
 
 .component_container_form .label {
-	width: 90px;
+	width: 88px;
 	font: 11px arial;
-	margin-right: 10px;
+	margin-right: 12px;
 	display: inline-block;
 	vertical-align: middle;
 	text-align: right;
@@ -50,6 +50,11 @@
 
 .component_container_form .error .label {
 	// color: #ec1c24;
+}
+
+.component_element_textArea .label {
+	vertical-align: top;
+	padding-top: 3px;
 }
 
 /** inputs **/
@@ -116,14 +121,8 @@
 	padding-left: 6px;
 }
 
-.component_container_form textarea:focus, .component_container_form select:focus, .component_container_form input:focus {
-	-webkit-box-shadow: 0 0 0 #fff;
-	-moz-box-shadow: 0 0 0 #fff;
-	box-shadow: 0 0 0 #fff;
-	/*outline: none;
-	-moz-outline: none;
-	-webkit-outline: none;
-*/
+.component_element_calendar input[type='text'] {
+	width: 507px;
 }
 
 /** error icons **/
@@ -157,7 +156,7 @@
 	vertical-align: baseline;
 	position: absolute;
 	top: -8px;
-	right: -12px;
+	right: -14px;
 }
 
 /** error messages **/
@@ -219,6 +218,7 @@
 	top: 15px;
 	left: 15px;
 	background: #fff;
+	z-index: 999;
 }
 
 .component_container_form .calendar {
