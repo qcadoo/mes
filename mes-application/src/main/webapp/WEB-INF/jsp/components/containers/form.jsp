@@ -18,11 +18,6 @@
 		${component.optionsAsJson}
 	</div>
 	
-	<div class="header">
-		<span id="${componentFullName}_header"></span>
-		<span id="${componentFullName}_headerEntityIdentifier" class="entity_identifier"></span>
-	</div>
-	
 	<div id="${componentFullName}_formComponents" class="form_components">
 		<c:forEach items="${component.components}" var="componentEntry">
 			<tiles:insertTemplate template="../component.jsp">

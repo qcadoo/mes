@@ -15,32 +15,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	buttons.saveButton = $("#"+elementName+"_saveButton");
 	
-	var headerSpan = $("#"+elementName+"_header");
-
-	var headerEntityIdentifierSpan = $("#"+elementName+"_headerEntityIdentifier");
-	
 	var formValue = null;
-	
-//	this.insterData = function(data) {
-//		QCD.info(this.containerComponents);
-//		for (var i in data) {
-//			var component = this.containerComponents[i];
-//			QCD.info(component);
-//			component.insterData(data[i]);
-//		}
-//	}
-//	
-//	function performCancel() {
-//		mainController.goBack();
-//	}
-	
 	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementPath+"_formComponents");
 		_this.constructChildren(childrenElement.children());
 		block();
-		//mainWindow-beanAForm_saveButton
-		//buttons.saveButton.click(performSave);
 	}
 
 	this.getComponentValue = function() {
@@ -49,16 +29,14 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		if(value.valid) {
-			headerSpan.html(value.header);
-			headerEntityIdentifierSpan.html(value.headerEntityIdentifier);
+			mainController.setWindowHeader(value.header + '<span>' + value.headerEntityIdentifier + '</span>');
 		}
 		formValue = value;
 		unblock();
 	}
 	
 	this.setComponentState = function(state) {
-		headerSpan.html(state.header);
-		headerEntityIdentifierSpan.html(state.headerEntityIdentifier);
+		mainController.setWindowHeader(value.header + '<span>' + value.headerEntityIdentifier + '</span>');
 		formValue = state;
 		unblock();
 	}
@@ -109,6 +87,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		if(width > 1380) {
 			width = 1380;
 		} 
+		
 		element.width(width);
 		for (var i in this.components) {
 			this.components[i].updateSize(width, height);

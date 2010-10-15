@@ -32,14 +32,16 @@
 	
 	<c:choose>
 		<c:when test="${isInputBox}">
-			<div class="component_container_form_x">
+			<div class="component_container_form_x component_container_form_w">
 				<div class="component_container_form_y">
 					${componentBody}
 				</div>
 			</div>
 		</c:when>
 		<c:otherwise>
-			${componentBody}			
+			<div class="component_container_form_w">
+				${componentBody}
+			</div>			
 		</c:otherwise>
 	</c:choose>
 </div>
