@@ -227,7 +227,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     for (Object child : children) {
                         DefaultEntity defaultEntity = (DefaultEntity) child;
                         defaultEntity.setField(hasManyFieldType.getJoinFieldName(), null);
-                        save(childDataDefinition, defaultEntity);
+                        Entity genericEntity = save(childDataDefinition, defaultEntity);
+                        if (!genericEntity.isValid()) {
+                            throw new IllegalStateException("Trying delete entity in use");
+                        }
                     }
                 } else {
                     for (Object child : children) {
