@@ -15,7 +15,7 @@ public final class WindowComponent extends AbstractRootComponent {
 
     private boolean header = true;
 
-    private boolean fixedHeight = true;
+    private boolean fixedHeight = false;
 
     public WindowComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition,
             final TranslationService translationService) {
