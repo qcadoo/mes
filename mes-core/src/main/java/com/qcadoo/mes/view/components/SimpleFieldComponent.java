@@ -25,9 +25,9 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
         super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
     }
 
-    public abstract String convertToViewValue(final String value);
+    public abstract String convertToViewValue(final Object value);
 
-    public abstract String convertToDatabaseValue(final String value);
+    public abstract Object convertToDatabaseValue(final String value);
 
     @Override
     public final ViewValue<SimpleValue> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
@@ -37,7 +37,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
             value = viewObject.getJSONObject("value").getString("value");
         }
         if (StringUtils.hasText(value)) {
-            SimpleValue simpleValue = new SimpleValue(convertToDatabaseValue(value.trim()));
+            SimpleValue simpleValue = new SimpleValue(convertToDatabaseValue(value));
             if (!viewObject.isNull("value") && !viewObject.getJSONObject("value").isNull("required")) {
                 simpleValue.setRequired(viewObject.getJSONObject("value").getBoolean("required"));
             }
@@ -51,9 +51,17 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
     public final ViewValue<SimpleValue> getComponentValue(final Entity entity, final Entity parentEntity,
             final Map<String, Entity> selectedEntities, final ViewValue<SimpleValue> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
-        String value = getStringValue(entity, selectedEntities);
+        Object value = getFieldValue(entity, selectedEntities);
 
-        ViewValue<SimpleValue> newViewValue = new ViewValue<SimpleValue>(new SimpleValue(convertToViewValue(value.trim())));
+        SimpleValue simpleValue = null;
+
+        if (value != null) {
+            simpleValue = new SimpleValue(convertToViewValue(value));
+        } else {
+            simpleValue = new SimpleValue(null);
+        }
+
+        ViewValue<SimpleValue> newViewValue = new ViewValue<SimpleValue>(simpleValue);
 
         FieldDefinition fieldDefinition = getFieldDefinition();
 
@@ -88,7 +96,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
         }
     }
 
-    private String getStringValue(final Entity entity, final Map<String, Entity> selectedEntities) {
+    private Object getFieldValue(final Entity entity, final Map<String, Entity> selectedEntities) {
         Object value = null;
 
         if (getSourceComponent() != null) {
@@ -99,11 +107,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
             value = getFieldValue(entity, getFieldPath());
         }
 
-        if (value == null) {
-            return "";
-        } else {
-            return String.valueOf(value);
-        }
+        return value;
     }
 
     private ErrorMessage getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {

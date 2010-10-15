@@ -16,8 +16,11 @@ public final class CheckBoxComponent extends SimpleFieldComponent {
     }
 
     @Override
-    public String convertToViewValue(final String value) {
-        if ("true".equals(value)) {
+    public String convertToViewValue(final Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value ? "1" : "0";
+        }
+        if ("true".equals(String.valueOf(value).trim())) {
             return "1";
         } else {
             return "0";
@@ -25,7 +28,7 @@ public final class CheckBoxComponent extends SimpleFieldComponent {
     }
 
     @Override
-    public String convertToDatabaseValue(final String value) {
+    public Object convertToDatabaseValue(final String value) {
         return value;
     }
 }

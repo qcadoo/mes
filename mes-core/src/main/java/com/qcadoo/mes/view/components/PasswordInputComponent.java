@@ -16,12 +16,12 @@ public final class PasswordInputComponent extends SimpleFieldComponent {
     }
 
     @Override
-    public String convertToViewValue(final String value) {
+    public String convertToViewValue(final Object value) {
         return "";
     }
 
     @Override
-    public String convertToDatabaseValue(final String value) {
+    public Object convertToDatabaseValue(final String value) {
         return value;
     }
 }
