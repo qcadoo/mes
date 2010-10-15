@@ -56,13 +56,15 @@
 	<security:http use-expressions="true" auto-config="false"
 		entry-point-ref="loginUrlAuthenticationEntryPoint">
 		<security:intercept-url pattern="/login.html"
-			filters="none" />
+			filters="none" requires-channel="any" />
+		<!--  <security:intercept-url pattern="/j_spring_security_check"
+			requires-channel="https" /> -->
 		<security:intercept-url pattern="/css/**"
-			filters="none" />
+			filters="none" requires-channel="any" />
 		<security:intercept-url pattern="/js/**"
-			filters="none" />
+			filters="none" requires-channel="any" />
 		<security:intercept-url pattern="/**"
-			access="isAuthenticated()" />
+			access="isAuthenticated()" /> <!--  requires-channel="https" -->
 
 		<security:logout logout-success-url="/login.html?logout=true" />
 
@@ -79,9 +81,13 @@
 			position="FORM_LOGIN_FILTER" />
 
 		<security:access-denied-handler ref="accessDeniedHandler" />
+		
+		<security:port-mappings>
+			<security:port-mapping http="8282" https="8443"/>
+		</security:port-mappings>
 
 	</security:http>
-
+	
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider
 			user-service-ref="userDetailsService">
