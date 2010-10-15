@@ -28,9 +28,11 @@
 	left: 0;
 	right: 0;
 	overflow: auto;
+	background: #9b9b9b;
 }
 
 .windowContainer .windowComponents {
-	height: 100%;
-	
+	margin: auto;
+	background: white;
+	border: solid black 1px;
 }

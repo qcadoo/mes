@@ -126,7 +126,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				var filter = currentState.filters[filterIndex];
 				$("#gs_"+filter.column).val(filter.value);
 			}
-			updateFullScreenSize();
+			//updateFullScreenSize();
 		}
 		if (state.sort) {
 			currentState.sort = state.sort;
@@ -258,10 +258,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			if (! gridParameters.height) {
 				element.height("100%");
 			}
-			$(window).bind('resize', function() {
-				updateFullScreenSize();
-			});
-			updateFullScreenSize();
 		} else {
 			grid.setGridWidth(gridParameters.width, true);
 			grid.setGridHeight(gridParameters.height);
@@ -358,17 +354,20 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		mainController.performChangePriority(elementPath, currentState.selectedEntityId, 1);
 	}
 	
-	function updateFullScreenSize() {
+	this.updateSize = function(_width, _height) {
+		QCD.info(_height);
 		if (! gridParameters.height && gridParameters.fullScreen) {
-			var HEIGHT_DIFF = 100;
+			element.height(_height - 40);
+			var HEIGHT_DIFF = 140;
 			if (searchEnabled) {
-				grid.setGridHeight(element.height() - HEIGHT_DIFF-8);	
+				grid.setGridHeight(_height - HEIGHT_DIFF-8);	
 			} else {
-				grid.setGridHeight(element.height() - HEIGHT_DIFF);
+				grid.setGridHeight(_height - HEIGHT_DIFF);
 			}
 		}
 		if (! gridParameters.width && gridParameters.fullScreen) {
-			grid.setGridWidth(element.width()-10, true);
+			grid.setGridWidth(_width-45, true);
+			element.width(_width - 40);
 		}
 	}
 	

@@ -101,6 +101,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		}
 	}
 	
+	this.updateSize = function(_width, _height) {
+		for (var i in this.components) {
+			this.components[i].updateSize(_width, _height);
+		}
+	}
+	
 	function block() {
 		element.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
             border: 'none', 

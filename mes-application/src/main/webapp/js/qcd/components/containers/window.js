@@ -43,12 +43,20 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
-		width = _width - 200;
-		element.width(width);
+		var childrenElement = $("#"+elementName+" .windowComponents");
+		
+		var margin = Math.round(_width * 0.02);
+		//QCD.info(margin);
+		
+		width = Math.round(_width - 2 * margin);
+		childrenElement.width(width);
+		childrenElement.css("margin-top", margin+"px");
+		childrenElement.css("margin-bottom", margin+"px");
 		height = null;
 		if (this.options.fixedHeight) {
-			height = _height - 100;
-			element.height(height);
+			height = Math.round(_height - 2 * margin - 80);
+			QCD.info(_height + " - " + height + " - " + margin);
+			childrenElement.height(height);
 		}
 		for (var i in this.components) {
 			this.components[i].updateSize(width, height);

@@ -23,30 +23,7 @@
 			</div>
 		</div>
 		<div class="windowContainerContentBody">
-			<!--<table style="height: 100%; width: 100%;">
-				<c:if test="${component.options['header']}">
-					<tr><td>
-						<div style="font-weight: bold; margin-bottom: 10px;">
-							<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.header"/>
-							${translationsMap[headerLabel]}
-						</div>
-					</td></tr>
-				</c:if>
-				<tr style="height: 100%;  width: 100%;"><td>
-					<div class="windowComponents" style="height: 100%">
-						<c:forEach items="${component.components}" var="componentEntry">
-							<tiles:insertTemplate template="../component.jsp">
-								<tiles:putAttribute name="component" value="${componentEntry.value}" />
-								<tiles:putAttribute name="parentComponentFullName" value="${componentFullName}" />
-								<tiles:putAttribute name="parentComponentFullNameWithDots" value="${componentFullNameWithDots}" />
-								<tiles:putAttribute name="viewName" value="${viewName}" />
-								<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
-							</tiles:insertTemplate>
-						</c:forEach>
-					</div>
-				</td></tr>
-			</table>
-		-->
+
 			<div class="windowComponents">
 				<c:forEach items="${component.components}" var="componentEntry">
 					<tiles:insertTemplate template="../component.jsp">
