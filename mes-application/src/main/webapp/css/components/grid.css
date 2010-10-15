@@ -4,13 +4,15 @@
 	padding-right: 2px;
 }
 
-.gridTable {
-	margin: 0px;
+.gridNotFullScreen .gridTable {
+	margin: 0;
+	border: none;
 }
+
 .gridTable {
 	border: solid #9b9b9b 1px;
 	margin: 20px;
-	background: #ccc;
+	//background: #ccc;
 }
 
 .gridTable .gridHeaderCell {
@@ -59,7 +61,6 @@
 .gridTable .ui-jqgrid-bdiv {
 	background: #fbfbfb;
 	font-family:Arial, Helvetica, sans-serif;
-	background: #ccc;
 }
 .gridTable a.gridLink {
 	color: #1C54C4;
