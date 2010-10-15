@@ -15,6 +15,8 @@ public final class WindowComponent extends AbstractRootComponent {
 
     private boolean header = true;
 
+    private boolean fixedHeight = true;
+
     public WindowComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition,
             final TranslationService translationService) {
         super(name, dataDefinition, viewDefinition, translationService);
@@ -32,10 +34,13 @@ public final class WindowComponent extends AbstractRootComponent {
                 header = Boolean.parseBoolean(option.getValue());
             } else if ("backButton".equals(option.getType())) {
                 backButton = Boolean.parseBoolean(option.getValue());
+            } else if ("fixedHeight".equals(option.getType())) {
+                fixedHeight = Boolean.parseBoolean(option.getValue());
             }
         }
 
         addOption("backButton", backButton);
+        addOption("fixedHeight", fixedHeight);
         addOption("header", header);
     }
 

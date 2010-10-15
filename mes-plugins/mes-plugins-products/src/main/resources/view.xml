@@ -26,6 +26,7 @@
 				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
 		</component>
 	</view>
 	<view name="productDetailsView" model="product">
@@ -178,6 +179,7 @@
 				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
 		</component>
 	</view>
 	<view name="instructionDetailsView" model="instruction">
@@ -273,6 +275,7 @@
 				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
 		</component>
 	</view>
 	<view name="orderDetailsView" model="order">

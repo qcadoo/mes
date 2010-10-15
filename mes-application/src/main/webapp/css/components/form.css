@@ -40,8 +40,6 @@
 	margin-right: 12px;
 	display: inline-block;
 	vertical-align: middle;
-	text-align: right;
-	position: relative;
 }
 
 .component_container_form .required .label {
@@ -135,21 +133,10 @@
   	display: none;
 }
 
-.component_container_form .error .component_container_form_y .error_icon {
-	display: inline-block;
-	width: 7px;
-	height: 7px;
-	background: url(../images/form/input_v.png);
-	vertical-align: middle;
-	left: 1px;
-	position: absolute;
-	top: 1px;
-	z-index: 999;
-}
-
 .component_container_form .error_box {
 	display: inline-block;
-	position: relative;
+	padding: 2px 0 0 1px;
+	position: absolute;
 }
 
 .component_container_form .error .error_box .error_icon {
@@ -158,9 +145,6 @@
 	height: 8px;
 	background: url(../images/error.icon.png);
 	vertical-align: baseline;
-	position: absolute;
-	top: -8px;
-	right: -14px;
 }
 
 /** error messages **/
@@ -170,7 +154,6 @@
 	top: 15px;
 	left: 15px;
 	background: #fff;
-	text-align: left;
 	z-index: 999;
 }
 
@@ -223,7 +206,6 @@
 	left: 15px;
 	background: #fff;
 	z-index: 999;
-	text-align: left;
 }
 
 .component_container_form .calendar {

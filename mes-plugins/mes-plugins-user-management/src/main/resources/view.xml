@@ -22,6 +22,7 @@
 				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
 		</component>
 	</view>
 	<view name="groupDetailsView" model="group">
@@ -77,6 +78,7 @@
 				<option type="fullScreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
 		</component>
 	</view>
 	<view name="userDetailsView" model="user">
