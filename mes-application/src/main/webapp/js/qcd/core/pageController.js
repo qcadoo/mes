@@ -30,6 +30,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 		var valuesJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("data", valuesJson, function(response) {
 			setValueData(response);
+		}, function(message) {
+			//alert(message);
 		});
 	}
 	

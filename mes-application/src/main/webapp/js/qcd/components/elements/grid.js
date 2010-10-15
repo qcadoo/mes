@@ -234,7 +234,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		parseOptions(_this.options, _this);
 		
 		var gridName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".header";
-		headerController = new QCD.components.elements.grid.GridHeader(_this, mainController.getTranslation(gridName), gridParameters);
+		headerController = new QCD.components.elements.grid.GridHeaderController(_this, mainController.getTranslation(gridName), gridParameters);
 		
 		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
 		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
