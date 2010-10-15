@@ -6,7 +6,7 @@ import com.qcadoo.mes.view.ContainerComponent;
 
 public final class TextAreaComponent extends SimpleFieldComponent {
 
-    private int rows = 2;
+    private int rows = 4;
 
     public TextAreaComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
             final String dataSource, final TranslationService translationService) {

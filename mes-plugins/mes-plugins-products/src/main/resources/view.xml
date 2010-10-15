@@ -207,14 +207,18 @@
 				<component type="textarea" name="name" field="name" />
 				<component type="lookup" name="product" field="product" />
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
-				<component type="input" name="dateFrom" field="dateFrom" />
-				<component type="input" name="dateTo" field="dateTo" />
+
+				<component type="calendar" name="dateFrom" field="dateFrom" />
+				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="textarea" name="description" field="description">
 					<option type="rows" value="5" />
 				</component>
+
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
+			
+			
 			<component type="tree" name="bomTree" source="bomComponents">
 				<option type="height" value="200" />
 				<option type="width" value="500" />
@@ -297,8 +301,8 @@
 			<component type="form" name="orderDetailsForm">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
-				<component type="input" name="dateFrom" field="dateFrom" />
-				<component type="input" name="dateTo" field="dateTo" />
+				<component type="calendar" name="dateFrom" field="dateFrom" />
+				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="select" name="state" field="state" />
 				<component type="select" name="machine" field="machine" />
 				<component type="lookup" name="product" field="product" />
@@ -308,9 +312,9 @@
 					source="#{mainWindow.orderDetailsForm.product}.instructions" />
 				<component type="input" name="plannedQuantity" field="plannedQuantity" />
 				<component type="input" name="doneQuantity" field="doneQuantity" />
-				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom"
+				<component type="calendar" name="effectiveDateFrom" field="effectiveDateFrom"
 					enabled="false" />
-				<component type="input" name="effectiveDateTo" field="effectiveDateTo"
+				<component type="calendar" name="effectiveDateTo" field="effectiveDateTo"
 					enabled="false" />
 				<component type="input" name="startWorker" field="startWorker"
 					enabled="false" />

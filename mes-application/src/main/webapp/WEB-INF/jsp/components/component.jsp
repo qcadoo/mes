@@ -57,6 +57,9 @@
 		<c:when test='${component.type == "tree"}'>
 			<c:set var="componentJsp" value="elements/tree.jsp"/>
 		</c:when>
+		<c:when test='${component.type == "calendar"}'>
+			<c:set var="componentJsp" value="elements/calendar.jsp"/>
+		</c:when>			
 		
 	</c:choose>
 	

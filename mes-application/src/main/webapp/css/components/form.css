@@ -219,6 +219,23 @@
 	top: 15px;
 	left: 15px;
 	background: #fff;
+}
+
+.component_container_form .calendar {
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+	background: url(../images/calendar.png);
+	vertical-align: middle;
+}
+
+a,:focus {
+	outline: none;
+}
+
+button::-moz-focus-inner,input[type="reset"]::-moz-focus-inner,input[type="button"]::-moz-focus-inner,input[type="submit"]::-moz-focus-inner,select::-moz-focus-inner,input[type="file"]>input[type="button"]::-moz-focus-inner
+{
+	border: none;
 	text-align: left;
 	z-index: 999;
 }

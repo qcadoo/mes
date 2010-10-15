@@ -34,6 +34,7 @@ import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.RootComponent;
 import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.view.components.CalendarComponent;
 import com.qcadoo.mes.view.components.CheckBoxComponent;
 import com.qcadoo.mes.view.components.DynamicComboBoxComponent;
 import com.qcadoo.mes.view.components.EntityComboBoxComponent;
@@ -178,6 +179,8 @@ public final class ViewDefinitionParser {
             component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("tree".equals(componentType)) {
             component = new TreeComponent(componentName, parentComponent, fieldName, dataSource, translationService);
+        } else if ("calendar".equals(componentType)) {
+            component = new CalendarComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }
