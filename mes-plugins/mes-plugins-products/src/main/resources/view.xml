@@ -209,7 +209,7 @@
 				<component type="checkbox" name="master" field="master" />
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
-				<component type="lookup" name="product" field="product" />
+				<component type="lookupFinal" name="product" field="product" />
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />
 				<component type="calendar" name="dateTo" field="dateTo" />

@@ -40,6 +40,7 @@ import com.qcadoo.mes.view.components.DynamicComboBoxComponent;
 import com.qcadoo.mes.view.components.EntityComboBoxComponent;
 import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
+import com.qcadoo.mes.view.components.LookupComponent;
 import com.qcadoo.mes.view.components.PasswordInputComponent;
 import com.qcadoo.mes.view.components.TextAreaComponent;
 import com.qcadoo.mes.view.components.TextInputComponent;
@@ -175,6 +176,8 @@ public final class ViewDefinitionParser {
             component = new DynamicComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("lookup".equals(componentType)) {
             component = new EntityComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
+        } else if ("lookupFinal".equals(componentType)) {
+            component = new LookupComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("button".equals(componentType)) {
             component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("tree".equals(componentType)) {

@@ -48,6 +48,9 @@
 		<c:when test='${component.type == "entityComboBox"}'>
 			<c:set var="componentJsp" value="elements/entityComboBox.jsp"/>
 		</c:when>
+		<c:when test='${component.type == "lookupComponent"}'>
+			<c:set var="componentJsp" value="elements/lookup.jsp"/>
+		</c:when>
 		<c:when test='${component.type == "checkBox"}'>
 			<c:set var="componentJsp" value="elements/checkBox.jsp"/>
 		</c:when>
