@@ -14,13 +14,15 @@
 
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="textInput" />
+	<tiles:putAttribute name="componentType" value="lookup" />
 	<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
 	<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
 	<tiles:putAttribute name="viewName" value="${viewName}" />
 	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
-		<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
-		<button onclick="window.open('${viewName}/lookupView.html?lookupComponent=${componentFullNameWithDots}', 'lookup', 'width=800,height=700')">search</button>
+		<div>
+			<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
+			<button id="${componentFullName}_openLookupButton">search</button>
+		</div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>
