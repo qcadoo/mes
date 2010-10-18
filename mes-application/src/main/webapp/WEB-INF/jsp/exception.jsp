@@ -7,9 +7,6 @@
         <h1>Wystąpił błąd aplikacji</h1>
         
         <div>
-        	${exception.message}	
-        </div>
-        <div>
         	${exceptionMessage}
         </div>	
     </body>
