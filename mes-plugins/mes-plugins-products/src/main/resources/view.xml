@@ -27,6 +27,7 @@
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="productDetailsView" model="product">

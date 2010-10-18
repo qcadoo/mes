@@ -22,7 +22,8 @@
 			<div id="${componentFullName}_windowContainerRibbon">
 			</div>
 		</div>
-		<div class="windowContainerContentBody">
+		<div class="windowContainerContentBody" id="${componentFullName}_windowContainerContentBody">
+			<div id="${componentFullName}_windowContainerContentBodyWidthMarker" style=" z-index: 5000;"></div>
 			<div class="windowContent" id="${componentFullName}_windowContent">
 				<c:if test="${component.options['header']}">
 					<div class="windowHeader" id="${componentFullName}_windowHeader">
@@ -42,6 +43,7 @@
 					</c:forEach>
 				</div>
 			</div>
+			
 		</div>
 	</div>
 	
