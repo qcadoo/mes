@@ -93,6 +93,15 @@
 	padding-left: 6px;
 }
 
+.component_container_form input[type='text'], .component_container_form textarea {
+	background: transparent url(../images/form/input_c.png) no-repeat 0 0;
+	padding-left: 6px;
+}
+
+.component_element_checkbox .component_container_form_w {
+	text-align: left;
+}
+
 .component_container_form select {
 	width: 100%;
 	background: #fff;
