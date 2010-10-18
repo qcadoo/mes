@@ -6,17 +6,34 @@
 
 .component_container_form .component_element {
 	padding: 0;
+	width: 31.5%;
 	margin-bottom: 19px;
 	vertical-align: middle;
 	display: block;
+	text-align: right;
 }
 
 /** labels **/
 
-.component_container_form .label {
+.component_container_form .labelbox {
 	width: 31%;
+	display: block;
+	vertical-align: middle;
+	text-align: left;
+	float: left;
+	height: 22px;
 	font: 11px arial;
-	margin-right: 3%;
+}
+
+.component_container_form .label_h {
+	vertical-align: middle;
+	height: 22px;
+	width: 0px;
+	display: inline-block;
+	vertical-align: middle;
+}
+	
+.component_container_form .label {
 	display: inline-block;
 	vertical-align: middle;
 }
@@ -35,20 +52,20 @@
 .component_container_form_w {
 	margin: 0;
 	padding: 0;
-	width: 65%;
+	width: 65.5%;
 	display: inline-block;
 }
 
 .component_container_form_x {
 	background: #fff url(../images/form/input_x.png) repeat-x 0 1px;
+	display: block;
 }
 
 .component_container_form_y {
-	width: 100%;
 	margin: 0;
 	padding: 0;
 	background: transparent url(../images/form/input_y.png) repeat-y 1px 0;
-	display: inline-block;
+	display: block;
 	position: relative;
 }
 
@@ -100,8 +117,8 @@
 	padding-left: 6px;
 }
 
-.component_element_calendar input[type='text'] {
-	width: 95%;
+.component_element_calendar .component_container_form_x {
+	margin-right: 25px;
 }
 
 /** error icons **/
@@ -187,8 +204,11 @@
 
 .component_container_form .calendar {
 	height: 20px;
-	width: 5%;
+	width: 20px;
 	display: inline-block;
+	position: absolute;
+	top: 2px;
+	right: -25px;
 	background: url(../images/calendar.png) no-repeat right center;
 	vertical-align: middle;
 }
