@@ -36,7 +36,7 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 				}
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
 					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.mainController.showMessage("error", "server error: "+message);
+					QCDConnector.mainController.showMessage("error", message);
 					if (errorFunction) {
 						errorFunction(message);
 					}
@@ -81,7 +81,7 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 				}
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
 					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.mainController.showMessage("error", "server error: "+message);
+					QCDConnector.mainController.showMessage("error", message);
 					if (errorFunction) {
 						errorFunction(message);
 					}
