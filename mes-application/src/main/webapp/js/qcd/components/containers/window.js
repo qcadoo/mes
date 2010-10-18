@@ -9,15 +9,15 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	var element = _element;
 	var elementName = element.attr('id');
 	
+	var ribbon;
+	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementPath+"_windowComponents");
 		mainController.setWindowHeaderComponent(_this);
 		_this.constructChildren(childrenElement.children());
 		if (_this.options.ribbon) {
-			var ribbon = new QCD.components.Ribbon(_this.options.ribbon, mainController);
-			
+			ribbon = new QCD.components.Ribbon(_this.options.ribbon, mainController);
 			var ribbonElement = ribbon.constructElement();
-			
 			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
 			ribbonDiv.append(ribbonElement);
 		}
@@ -44,6 +44,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
+		
 		var childrenElement = $("#"+this.elementPath+"_windowContent");
 		
 		var margin = Math.round(_width * 0.02);
@@ -61,9 +62,13 @@ QCD.components.containers.Window = function(_element, _mainController) {
 			}
 			childrenElement.height(containerHeight);
 		}
+		
 		for (var i in this.components) {
 			this.components[i].updateSize(width, height);
 		}
+		
+		var innerWidth = $("#"+this.elementPath+"_windowContainerContentBodyWidthMarker").innerWidth();
+		ribbon.updateSize(margin, innerWidth);
 	}
 	
 	this.setHeader = function(header) {

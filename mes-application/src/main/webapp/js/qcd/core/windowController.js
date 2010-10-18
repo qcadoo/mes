@@ -15,7 +15,6 @@ QCD.WindowController = function() {
 	var messagesController = new QCD.MessagesController();
 	
 	function constructor() {
-		QCD.info("init main page");
 		iframe = $("#mainPageIframe");
 		loadingIndicator = $("#loadingIndicator");
 		loadingIndicator.hide();

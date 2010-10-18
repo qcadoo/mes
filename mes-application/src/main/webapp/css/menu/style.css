@@ -25,11 +25,10 @@
 	background-repeat: repeat-x;	
 }
 #q_row4_out {
-	background-color:#fff;
 	background-image:url('images/q_row4_bg.png');
 	background-position: top;
 	background-repeat: repeat-x;
-	height: 6px;	
+	height: 6px;
 }
 #q_menu_row1 {
 	width:990px;

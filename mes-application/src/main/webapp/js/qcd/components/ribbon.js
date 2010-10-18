@@ -6,9 +6,11 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	var ribbonModel = _model;
 	var mainController = _mainController;
 	
+	var element;
+	
 	this.constructElement = function() {
 		
-		var element = $("<div>");
+		element = $("<div>");
 		
 		var contentWrapper = $("<div>").attr("id", "q_row3_out");
 		element.append(contentWrapper);
@@ -193,6 +195,9 @@ QCD.components.Ribbon = function(_model, _mainController) {
 		mainController.performRibbonAction(action);
 	}
 
-	
+	this.updateSize = function(margin, innerWidth) {
+		$("#q_menu_row3").css("margin-left", (margin)+"px");
+		$("#q_row4_out").width(innerWidth);
+	}
 	
 }
