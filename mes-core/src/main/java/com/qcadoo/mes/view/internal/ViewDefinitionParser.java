@@ -37,7 +37,6 @@ import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.CalendarComponent;
 import com.qcadoo.mes.view.components.CheckBoxComponent;
 import com.qcadoo.mes.view.components.DynamicComboBoxComponent;
-import com.qcadoo.mes.view.components.EntityComboBoxComponent;
 import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
 import com.qcadoo.mes.view.components.LookupComponent;
@@ -175,8 +174,6 @@ public final class ViewDefinitionParser {
         } else if ("select".equals(componentType)) {
             component = new DynamicComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("lookup".equals(componentType)) {
-            component = new EntityComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("lookupFinal".equals(componentType)) {
             component = new LookupComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("button".equals(componentType)) {
             component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource, translationService);

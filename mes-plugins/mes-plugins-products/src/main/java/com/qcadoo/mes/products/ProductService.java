@@ -15,7 +15,6 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ViewValue;
-import com.qcadoo.mes.view.components.SimpleValue;
 import com.qcadoo.mes.view.components.combobox.EntityComboBoxValue;
 
 @Service
@@ -29,28 +28,28 @@ public final class ProductService {
 
     @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName) {
-        ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.product");
-        ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
-        ViewValue<EntityComboBoxValue> instructionValue = (ViewValue<EntityComboBoxValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.instruction");
+        // ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
+        // .lookupValue("mainWindow.orderDetailsForm.product");
+        // ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
+        // .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
+        // ViewValue<EntityComboBoxValue> instructionValue = (ViewValue<EntityComboBoxValue>) value
+        // .lookupValue("mainWindow.orderDetailsForm.instruction");
+        //
+        // if (defaultInstructionValue == null || productValue == null) {
+        // return;
+        // }
+        //
+        // defaultInstructionValue.setEnabled(false);
+        // defaultInstructionValue.setValue(new SimpleValue(""));
 
-        if (defaultInstructionValue == null || productValue == null) {
-            return;
-        }
-
-        defaultInstructionValue.setEnabled(false);
-        defaultInstructionValue.setValue(new SimpleValue(""));
-
-        if (productValue.getValue() != null && productValue.getValue().getValue() != null) {
-            Entity defaultInstructionEntity = getDefaultInstruction(productValue);
-            if (defaultInstructionEntity != null) {
-                String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
-                defaultInstructionValue.getValue().setValue(defaultInstructionName);
-                selectDefaultInstruction(triggerComponentName, instructionValue, defaultInstructionEntity);
-            }
-        }
+        // if (productValue.getValue() != null && productValue.getValue().getValue() != null) {
+        // Entity defaultInstructionEntity = getDefaultInstruction(productValue);
+        // if (defaultInstructionEntity != null) {
+        // String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
+        // defaultInstructionValue.getValue().setValue(defaultInstructionName);
+        // // selectDefaultInstruction(triggerComponentName, instructionValue, defaultInstructionEntity);
+        // }
+        // }
     }
 
     private void selectDefaultInstruction(final String triggerComponentName,

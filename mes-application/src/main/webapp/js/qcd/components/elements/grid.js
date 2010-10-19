@@ -287,7 +287,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid.jqGrid('filterToolbar',{
 			stringResult: true
 		});
-		grid[0].toggleToolbar();
+		if (gridParameters.isLookup) {
+			headerController.setFilterActive();
+			searchEnabled = true;
+		} else {
+			grid[0].toggleToolbar();
+			searchEnabled = false;
+		}
 	}
 	
 	this.onPagingParametersChange = function() {
