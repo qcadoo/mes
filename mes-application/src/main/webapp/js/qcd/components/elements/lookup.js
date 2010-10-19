@@ -11,6 +11,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var lookupWindow;
 	
+	var inputElement = this.input;
+	
 	constructor = function(_this) {
 		$("#"+_this.elementPath+"_openLookupButton").click(openLookup);
 		$(window.document).focus(onWindowClick);
@@ -19,8 +21,18 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			lookupWindow.init();
 		}
 		window[elementName+"_onSelectFunction"] = function(entityId, entityString) {
-			//alert(entityId +" - "+ entityString);
 			QCD.info(entityId +" -> "+ entityString);
+			inputElement.val(entityString);
+		}
+	}
+	
+	this.setComponentData = function(data) {
+		inputElement.val(data.value);
+	}
+	
+	this.getComponentData = function() {
+		return {
+			value : inputElement.val()			
 		}
 	}
 	

@@ -49,12 +49,12 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		
 		var margin = Math.round(_width * 0.02);
 		width = Math.round(_width - 2 * margin);
-		if (width < 960) {
-			width = 960;
-		}
+//		if (width < 960) {
+//			width = 960;
+//		}
 		childrenElement.width(width);
 		childrenElement.css("margin-top", margin+"px");
-		childrenElement.css("margin-bottom", margin+"px");
+		
 		height = null;
 		if (this.options.fixedHeight) {
 			var containerHeight = Math.round(_height - 2 * margin - 80);
@@ -63,6 +63,8 @@ QCD.components.containers.Window = function(_element, _mainController) {
 				height -= 34;
 			}
 			childrenElement.height(containerHeight);
+		} else {
+			childrenElement.css("margin-bottom", margin+"px");
 		}
 		
 		for (var i in this.components) {

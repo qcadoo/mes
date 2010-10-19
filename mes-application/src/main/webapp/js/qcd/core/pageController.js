@@ -146,8 +146,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		});
 	}
 	
-	this.performLookupSelect = function(entityId, actionsPerformer) {
-		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, "test - "+entityId);
+	this.performLookupSelect = function(entityId, entityString, actionsPerformer) {
+		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString);
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}

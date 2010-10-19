@@ -210,7 +210,7 @@
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="lookupFinal" name="product" field="product">
-					<option type="column" name="value" fields="name" expression="#name + ' - ' + #id"
+					<option type="column" name="lookupValue" fields="name" expression="#name + ' - ' + #id"
 						hidden="true" />
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
@@ -220,8 +220,7 @@
 					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
-					<option type="height" value="600" />
-					<option type="width" value="600" />
+					<option type="fullScreen" value="true" />
 				</component>
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />

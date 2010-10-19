@@ -1,5 +1,10 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
@@ -82,6 +87,7 @@ public class LookupComponent extends SimpleFieldComponent {
 
         WindowComponent windowComponent = new WindowComponent("mainWindow", dataDefinition, lookupViewDefinition,
                 getTranslationService());
+        windowComponent.addRawOption(new ComponentOption("fullScreen", ImmutableMap.of("value", "true")));
 
         GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, fieldPath, sourceFieldPath,
                 getTranslationService());
@@ -123,5 +129,14 @@ public class LookupComponent extends SimpleFieldComponent {
         viewDefinitionService.save(lookupViewDefinition);
 
         return lookupViewDefinition;
+    }
+
+    @Override
+    public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
+        List<String> messageCodes = new LinkedList<String>();
+        messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                + ".label");
+        messageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
+        translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
     }
 }
