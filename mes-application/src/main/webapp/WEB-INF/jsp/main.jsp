@@ -28,9 +28,8 @@
 		
 		jQuery(document).ready(function(){
 			windowController = new QCD.WindowController(menuController);
-
 			var menuController = new QCD.menu.MenuController(menuStructure, windowController);
-			
+			windowController.updateSize();
 			$("#mainPageIframe").load(function() {
 				el = $('body', $('iframe').contents());
 				el.click(function() {menuController.restoreState()});
@@ -73,11 +72,11 @@
 				</div>
 				<div id="firstLevelMenu">
 				</div>
-				<div id="secondLevelMenu">
+				<div id="secondLevelMenuWrapper">
+					<div id="secondLevelMenu">
+					</div>
 				</div>
-				<!--<div id="ribbonLevelMenu">
-				</div>
-			--></td>
+			</td>
 		</tr>
 		<tr id="mainContentRow">
 			<td class="noMargin">

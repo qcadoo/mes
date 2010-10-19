@@ -48,8 +48,10 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		var childrenElement = $("#"+this.elementPath+"_windowContent");
 		
 		var margin = Math.round(_width * 0.02);
-		
 		width = Math.round(_width - 2 * margin);
+		if (width < 960) {
+			width = 960;
+		}
 		childrenElement.width(width);
 		childrenElement.css("margin-top", margin+"px");
 		childrenElement.css("margin-bottom", margin+"px");
@@ -68,7 +70,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		}
 		
 		var innerWidth = $("#"+this.elementPath+"_windowContainerContentBodyWidthMarker").innerWidth();
-		ribbon.updateSize(margin, innerWidth);
+		if (ribbon) {
+			ribbon.updateSize(margin, innerWidth);
+		}
 	}
 	
 	this.setHeader = function(header) {

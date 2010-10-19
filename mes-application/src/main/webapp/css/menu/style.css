@@ -13,10 +13,16 @@
 	background-position: top;
 	background-repeat: repeat-x;	
 }
-#q_row2_out {
+#secondLevelMenuWrapper {
 	background-image:url('images/q_row2_bg.png');
 	background-position: top;
-	background-repeat: repeat-x;	
+	background-repeat: repeat-x;
+}
+#secondLevelMenu {
+	margin: auto;
+}
+#q_row2_out {
+	
 }
 #q_row3_out {
 	background-color:#f5f5f5;
@@ -25,31 +31,29 @@
 	background-repeat: repeat-x;	
 }
 #q_row4_out {
-	background-image:url('images/q_row4_bg.png');
+	//background-image:url('images/q_row4_bg.png');
+	background-image:url('images/shadow_20.png');
 	background-position: top;
 	background-repeat: repeat-x;
-	height: 6px;
+	//height: 6px;
+	height: 20px;
 }
 #q_menu_row1 {
 	width:990px;
 	height:30px;
 	line-height: 30px;
-	margin-left: 20px;
+	margin: auto;
 }
 #q_menu_row2 {
-	width:990px;
 	height:24px;
 	line-height: 24px;
-	margin-left: 20px;
 }
 #q_menu_row3 {
-	width:990px;
 	height:70px;
 	margin-left: 20px;
 	font-family:Arial, Helvetica, sans-serif;
 }
 #q_menu_row4 {
-	width:990px;
 	min-height:34px;
 	margin:auto;
 }
