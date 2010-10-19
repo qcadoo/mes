@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
@@ -38,6 +39,8 @@ public class PdfOrderView extends AbstractPdfView {
 
         addContent(document, order, request.getLocale());
         addMetaData(document, request.getLocale());
+        writer.addJavaScript("this.print(false);", false);
+        document.add(new Chunk("Silent Auto Print"));
     }
 
     private void addMetaData(final Document document, final Locale locale) {
