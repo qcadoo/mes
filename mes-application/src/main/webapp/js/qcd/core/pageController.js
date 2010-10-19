@@ -81,7 +81,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		}
 		var parameters = {
 			componentName: componentName,
-			data: getValueData()
+			data: getValueData(),
+			entityId: rootEntityId
 		};
 		QCD.info(parameters);
 		var valuesJson = JSON.stringify(parameters);

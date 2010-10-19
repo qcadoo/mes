@@ -238,3 +238,25 @@
 	background: url(../images/calendar.png) no-repeat right center;
 	vertical-align: middle;
 }
+
+.component_container_form_w .lookupValueWrapper {
+	margin: 0;
+	padding: 0;
+	display: block;
+	position: relative;
+}
+
+.component_container_form_w .lookupValueWrapper .lookupValue {
+	position: absolute;
+	top: 4px; left: 8px;
+	font: 11px arial;
+	color: #999999;
+}
+.component_container_form_w .lookupValueWrapper .lookupLoading {
+	position: absolute;
+	top: 3px; right: 3px;
+	width: 16px;
+	height: 16px;
+	background: transparent url(../images/loading.gif) no-repeat right center;
+	display: none;
+}

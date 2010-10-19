@@ -20,7 +20,11 @@
 	<tiles:putAttribute name="viewName" value="${viewName}" />
 	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
-			<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" class="hasDatepick"/>
+			<div class=lookupValueWrapper>
+				<div class="lookupValue" id="${componentFullName}_valueDiv"></div>
+				<div class="lookupLoading" id="${componentFullName}_loadingDiv"></div>
+				<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" class="hasDatepick"/>
+			</div>
 			<div class="lookupIcon" id="${componentFullName}_openLookupButton"></div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>
