@@ -210,6 +210,23 @@
 	background: #fff;
 	z-index: 999;
 }
+.component_element_lookup .component_container_form_x {
+	margin-right: 28px;
+}
+.component_container_form .lookupIcon {
+	height: 23px;
+	width: 23px;
+	display: inline-block;
+	position: absolute;
+	top: -1px;
+	right: -28px;
+	background: url(../../images/icons/lookupIcon.png) no-repeat 0 -23px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+.component_container_form .lookupIcon:hover {
+	background-position: 0 0;
+}
 
 .component_container_form .calendar {
 	height: 20px;

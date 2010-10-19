@@ -9,13 +9,32 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	
-	function openLookup() {
-		var elementName = elementPath.replace(/-/g,".");
-		window.open(mainController.getViewName()+".html?lookupComponent="+elementName, 'lookup', 'width=800,height=700');
-	}
+	var lookupWindow;
 	
 	constructor = function(_this) {
-		$("#"+_this.elementPath+"_openLookupButton").click(openLookup)
+		$("#"+_this.elementPath+"_openLookupButton").click(openLookup);
+		$(window.document).focus(onWindowClick);
+		var elementName = elementPath.replace(/-/g,".");
+		window[elementName+"_onReadyFunction"] = function() {
+			lookupWindow.init();
+		}
+	}
+	
+	function onWindowClick() {
+		closeLookup();
+	}
+	
+	function openLookup() {
+		var elementName = elementPath.replace(/-/g,".");
+		var location = mainController.getViewName()+".html?lookupComponent="+elementName;
+		lookupWindow = window.open(location, 'lookup', 'width=800,height=700');
+	}
+	
+	function closeLookup() {
+		if (lookupWindow) {
+			lookupWindow.close();
+			lookupWindow = null;
+		}
 	}
 	
 	constructor(this);

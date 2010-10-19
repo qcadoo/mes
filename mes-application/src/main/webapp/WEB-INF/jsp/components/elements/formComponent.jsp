@@ -21,7 +21,7 @@
 	
 	<c:set var="headerLabel" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.label"/>
 	<c:set var="headerDescription" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.description"/>
-	<c:set var="isInputBox" value="${'textArea' == componentType || 'textInput' == componentType || 'passwordInput' == componentType || 'calendar' == componentType}"/>
+	<c:set var="isInputBox" value="${'textArea' == componentType || 'textInput' == componentType || 'passwordInput' == componentType || 'calendar' == componentType || 'lookup' == componentType}"/>
 	
 	<div class="labelbox"><div class="label_h"></div><div class="label">${translationsMap[headerLabel]}<c:if test="${component.hasDescription}"><div class="description_box">
 				<div id="${componentFullName}_description_icon" class="description_icon"></div>
