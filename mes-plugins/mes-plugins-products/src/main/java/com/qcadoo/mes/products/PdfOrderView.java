@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.document.AbstractPdfView;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
@@ -46,6 +47,7 @@ public class PdfOrderView extends AbstractPdfView {
 
     private void addMetaData(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("products.order.report.title", locale));
+        // TODO KRNA add to properties ?
         document.addSubject("Using iText");
         document.addKeywords("Java, PDF, iText");
         document.addAuthor("QCADOO");
@@ -54,7 +56,10 @@ public class PdfOrderView extends AbstractPdfView {
 
     private void addContent(final Document document, final DefaultEntity order, final Locale locale) throws DocumentException,
             IOException {
-        BaseFont times = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1250, BaseFont.EMBEDDED);
+        // TODO KRNA add to properties
+        String fontDir = "/Library/Fonts";
+        FontFactory.registerDirectory(fontDir);
+        BaseFont times = BaseFont.createFont(fontDir + "/Arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font t12 = new Font(times, 12);
         Font tb12 = new Font(times, 12, Font.BOLD);
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_FORMAT);
