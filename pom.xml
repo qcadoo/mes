@@ -154,6 +154,11 @@
 				<artifactId>c3p0</artifactId>
 				<version>0.9.1.2</version>
 			</dependency>
+			<dependency>
+				<groupId>com.lowagie</groupId>
+				<artifactId>itext</artifactId>
+				<version>2.1.7</version>
+    		</dependency>
 			<!-- Test -->
 			<dependency>
 				<groupId>org.springframework</groupId>

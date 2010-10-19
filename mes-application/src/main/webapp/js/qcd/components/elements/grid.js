@@ -408,5 +408,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	var performDelete = this.performDelete;
 	
+	this.performCallFunction = function(actionsPerformer) {
+			mainController.performCallFunction("print", currentState.selectedEntityId, actionsPerformer);
+	}
+	
 	constructor(this);
 }

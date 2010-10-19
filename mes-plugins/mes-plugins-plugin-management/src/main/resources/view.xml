@@ -20,7 +20,7 @@
 				<option type="fullScreen" value="true" />
 			</component>
 			<component type="button" name="download">
-				<option type="url" value="../download.html" />
+				<option type="url" value="../../download.html" />
 			</component>
 			<component type="button" name="remove" source="#{mainWindow.pluginsGrid}">
 				<option type="url" value="../remove.html" />

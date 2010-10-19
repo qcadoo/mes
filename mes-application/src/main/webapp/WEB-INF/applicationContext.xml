@@ -9,14 +9,23 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<bean class="com.qcadoo.mes.PluginResourcesResolver" />
+	
+	<bean name="pdfOrderView"
+  		class="com.qcadoo.mes.products.PdfOrderView"/>
+  		
+  	<bean
+  		class="org.springframework.web.servlet.view.BeanNameViewResolver">
+  		<property name="order" value="1"/>
+	</bean>
 
 	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="order" value="2"/>
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
-	
+
 	<bean id="multipartResolver"
     	class="org.springframework.web.multipart.commons.CommonsMultipartResolver">	
 	    <property name="maxUploadSize" value="500000"/>

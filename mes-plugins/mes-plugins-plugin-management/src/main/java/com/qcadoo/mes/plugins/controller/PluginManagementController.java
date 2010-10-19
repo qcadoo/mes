@@ -19,8 +19,9 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "download", method = RequestMethod.GET)
     public ModelAndView getDownloadPageView() {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("download");
+        // ModelAndView mav = new ModelAndView();
+        ModelAndView mav = new ModelAndView("pdfOrderView");
+        // mav.setViewName("download");
         return mav;
     }
 

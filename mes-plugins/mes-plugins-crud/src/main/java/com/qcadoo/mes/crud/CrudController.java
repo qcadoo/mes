@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.Component;
 import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
@@ -224,6 +225,33 @@ public final class CrudController {
         }
 
         return responseViewValue;
+    }
+
+    @RequestMapping(value = CONTROLLER_PATH + "/callFunction", method = RequestMethod.POST)
+    @ResponseBody
+    public Object performCallFunction(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
+            final Locale locale) throws JSONException {
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
+
+        JSONObject jsonBody = getJsonBody(body);
+
+        DataDefinition dd = viewDefinition.getDataDefinition();
+
+        String functionName = getJsonString(jsonBody, "functionName");
+
+        Entity entity = null;
+
+        String entityId = getJsonString(jsonBody, "entityId");
+
+        if (entityId != null) {
+            entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
+        }
+
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("url", "test.html");
+
+        return result;
     }
 
     @RequestMapping(value = CONTROLLER_PATH + "/move", method = RequestMethod.POST)
