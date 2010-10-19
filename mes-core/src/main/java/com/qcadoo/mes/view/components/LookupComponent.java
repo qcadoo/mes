@@ -1,5 +1,6 @@
 package com.qcadoo.mes.view.components;
 
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
@@ -89,17 +90,24 @@ public class LookupComponent extends SimpleFieldComponent {
             System.out.println(" ---> option " + rawOption.getType() + " -> " + rawOption.getValue());
             gridComponent.addRawOption(rawOption);
         }
+        gridComponent.addRawOption(new ComponentOption("isLookup", ImmutableMap.of("value", "true")));
 
         windowComponent.addComponent(gridComponent);
 
         RibbonActionItem ribbonActionItem = new RibbonActionItem();
         ribbonActionItem.setName("select");
-        ribbonActionItem.setAction("#{mainWindow.lookupGrid}.performLookupSelect");
+        ribbonActionItem.setAction("#{mainWindow.lookupGrid}.performLookupSelect; #{mainWindow}.performClose");
         ribbonActionItem.setType(Type.BIG_BUTTON);
+
+        RibbonActionItem ribbonCancelActionItem = new RibbonActionItem();
+        ribbonCancelActionItem.setName("cancel");
+        ribbonCancelActionItem.setAction("#{mainWindow}.performClose");
+        ribbonCancelActionItem.setType(Type.BIG_BUTTON);
 
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("navigation");
         ribbonGroup.addItem(ribbonActionItem);
+        ribbonGroup.addItem(ribbonCancelActionItem);
 
         Ribbon ribbon = new Ribbon();
         ribbon.addGroup(ribbonGroup);

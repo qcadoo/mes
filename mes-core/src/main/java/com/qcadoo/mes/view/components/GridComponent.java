@@ -102,6 +102,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 addOption("width", Integer.parseInt(option.getValue()));
             } else if ("fullScreen".equals(option.getType())) {
                 addOption("fullScreen", Boolean.parseBoolean(option.getValue()));
+            } else if ("isLookup".equals(option.getType())) {
+                addOption("isLookup", Boolean.parseBoolean(option.getValue()));
             } else if ("searchable".equals(option.getType())) {
                 for (FieldDefinition field : getFields(option.getValue())) {
                     searchableFields.add(field);

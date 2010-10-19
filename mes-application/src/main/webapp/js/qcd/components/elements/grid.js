@@ -67,6 +67,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.canDelete = options.canDelete;
 		gridParameters.paging = options.paginable;
 		gridParameters.filter = options.filter ? true : false;
+		gridParameters.isLookup = options.isLookup ? true : false;
 		gridParameters.orderable = options.prioritizable;
 		
 		gridParameters.fullScreen = options.fullScreen;
@@ -95,7 +96,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function linkClicked(entityId) {
-		redirectToCorrespondingPage("entityId="+entityId);
+		if (gridParameters.isLookup) {
+			performLookupSelect();
+			mainController.closeWindow();
+		} else {
+			redirectToCorrespondingPage("entityId="+entityId);	
+		}
 	}
 	
 	function redirectToCorrespondingPage(params) {
@@ -407,6 +413,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	var performDelete = this.performDelete;
+	
+	this.performLookupSelect = function(actionsPerformer) {
+		//if (currentState.selectedEntityId) {
+		//	mainController.performLookupSelect(currentState.selectedEntityId, actionsPerformer);
+		//}
+		mainController.performLookupSelect(44, actionsPerformer);
+	}
+	var performLookupSelect = this.performLookupSelect;
 	
 	constructor(this);
 }

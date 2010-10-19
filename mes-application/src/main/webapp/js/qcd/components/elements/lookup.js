@@ -18,9 +18,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		window[elementName+"_onReadyFunction"] = function() {
 			lookupWindow.init();
 		}
-		window[elementName+"_onSelectFunction"] = function() {
-			//lookupWindow.init();
-			alert("aa");
+		window[elementName+"_onSelectFunction"] = function(entityId, entityString) {
+			//alert(entityId +" - "+ entityString);
+			QCD.info(entityId +" -> "+ entityString);
 		}
 	}
 	

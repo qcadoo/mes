@@ -1,11 +1,12 @@
 var QCD = QCD || {};
 
-QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
+QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupComponentName) {
 	
 	var pageComponents;
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
 	var context = (_context != null && _context.trim() != "") ? JSON.parse(_context) : null; 
+	var lookupComponentName = _lookupComponentName;
 	var rootEntityId = null;
 	
 	var headerComponent = null;
@@ -145,6 +146,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 		});
 	}
 	
+	this.performLookupSelect = function(entityId, actionsPerformer) {
+		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, "test - "+entityId);
+		if (actionsPerformer) {
+			actionsPerformer.performNext();
+		}
+	}
+	
 	this.performRibbonAction = function(ribbonAction) {
 		var actionParts = ribbonAction.split(";");
 		var actions = new Array();
@@ -271,12 +279,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 			value: rootEntityId,
 			components: getValueData()
 		}
-		//QCD.info(url);
 		window.parent.goToPage(url, serializationObject);
 	}
 	
 	this.goBack = function() {
 		window.parent.goBack();
+	}
+	
+	this.closeWindow = function() {
+		window.close();
 	}
 	
 	this.onSessionExpired = function() {
