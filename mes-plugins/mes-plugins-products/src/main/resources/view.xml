@@ -150,7 +150,18 @@
 				</group>
 			</ribbon>
 			<component type="form" name="substitutesComponentDetailsForm">
-				<component type="lookup" name="product" field="product" />
+				<component type="lookup" name="product" field="product">
+					<option type="column" name="name" fields="name" link="true"
+						width="300" />
+					<option type="column" name="category" fields="category"
+						width="100" />
+					<option type="correspondingView" value="products/productDetailsView" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="name,category" />
+					<option type="orderable" value="name,category" />
+					<option type="fullScreen" value="true" />
+					<option type="expression" value="#name + ' - ' + #id" />
+				</component>
 				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
 			</component>
@@ -209,15 +220,26 @@
 				<component type="checkbox" name="master" field="master" />
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
-				<component type="lookupFinal" name="product" field="product" />
+				<component type="lookup" name="product" field="product">
+					<option type="column" name="name" fields="name" link="true"
+						width="300" />
+					<option type="column" name="category" fields="category"
+						width="100" />
+					<option type="correspondingView" value="products/productDetailsView" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="name,category" />
+					<option type="orderable" value="name,category" />
+					<option type="fullScreen" value="true" />
+					<option type="expression" value="#name + ' - ' + #id" />
+				</component>
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />
 				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="textarea" name="description" field="description">
 					<option type="rows" value="5" />
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#name" />
+				<option type="header" value="false" />
 			</component>
 			
 			
@@ -247,7 +269,18 @@
 				</group>
 			</ribbon>
 			<component type="form" name="detailsForm">
-				<component type="lookup" name="product" field="product" />
+				<component type="lookup" name="product" field="product">
+					<option type="column" name="name" fields="name" link="true"
+						width="300" />
+					<option type="column" name="category" fields="category"
+						width="100" />
+					<option type="correspondingView" value="products/productDetailsView" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="name,category" />
+					<option type="orderable" value="name,category" />
+					<option type="fullScreen" value="true" />
+					<option type="expression" value="#name + ' - ' + #id" />
+				</component>
 				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
 			</component>
@@ -312,11 +345,33 @@
 				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="select" name="state" field="state" />
 				<component type="select" name="machine" field="machine" />
-				<component type="lookup" name="product" field="product" />
+				<component type="lookup" name="product" field="product">
+					<option type="column" name="name" fields="name" link="true"
+						width="300" />
+					<option type="column" name="category" fields="category"
+						width="100" />
+					<option type="correspondingView" value="products/productDetailsView" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="name,category" />
+					<option type="orderable" value="name,category" />
+					<option type="fullScreen" value="true" />
+					<option type="expression" value="#name + ' - ' + #id" />
+				</component>
 				<component type="input" name="defaultInstruction" field="defaultInstruction"
 					enabled="false" />
 				<component type="lookup" name="instruction" field="instruction"
-					source="#{mainWindow.orderDetailsForm.product}.instructions" />
+					source="#{mainWindow.orderDetailsForm.product}.instructions">
+					<option type="column" name="name" fields="name" link="true"
+						width="300" />
+					<option type="column" name="number" fields="number" link="true"
+						width="100" />
+					<option type="correspondingView" value="products/productDetailsView" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
+					<option type="fullScreen" value="true" />
+					<option type="expression" value="#name + ' - ' + #number" />
+				</component>
 				<component type="input" name="plannedQuantity" field="plannedQuantity" />
 				<component type="input" name="doneQuantity" field="doneQuantity" />
 				<component type="calendar" name="effectiveDateFrom" field="effectiveDateFrom"

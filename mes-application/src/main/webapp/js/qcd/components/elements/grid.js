@@ -29,6 +29,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var columnModel = new Object();
 	
+	var hiddenColumnValues = new Object();
+	
 	var defaultOptions = {
 		paging: true,
 		fullScreen: false
@@ -51,8 +53,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 					break;
 				}
 			}
-			colNames.push(mainController.getTranslation(nameToTranslate)+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
-			colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable});
+			if (!column.hidden) {
+				colNames.push(mainController.getTranslation(nameToTranslate)+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
+				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable});
+			} else {
+				hiddenColumnValues[column.name] = new Object();
+			}
 		}
 		gridParameters.sortColumns = options.sortColumns;
 		gridParameters.element = elementPath+"_grid";
@@ -67,6 +73,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.canDelete = options.canDelete;
 		gridParameters.paging = options.paginable;
 		gridParameters.filter = options.filter ? true : false;
+		gridParameters.isLookup = options.isLookup ? true : false;
 		gridParameters.orderable = options.prioritizable;
 		
 		gridParameters.fullScreen = options.fullScreen;
@@ -95,7 +102,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function linkClicked(entityId) {
-		redirectToCorrespondingPage("entityId="+entityId);
+		if (gridParameters.isLookup) {
+			performLookupSelect(null, entityId);
+			mainController.closeWindow();
+		} else {
+			redirectToCorrespondingPage("entityId="+entityId);	
+		}
 	}
 	
 	function redirectToCorrespondingPage(params) {
@@ -155,11 +167,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var entity = value.entities[entityNo];
 			var fields = new Object();
 			for (var fieldName in entity.fields) {
-				if (columnModel[fieldName].link) {
-					fields[fieldName] = "<a href=# id='"+elementPath+"_"+fieldName+"_"+entity.id+"' class='"+elementPath+"_link gridLink'>" + entity.fields[fieldName] + "</a>";
-					
+				if (hiddenColumnValues[fieldName]) {
+					hiddenColumnValues[fieldName][entity.id] = entity.fields[fieldName];
 				} else {
-					fields[fieldName] = entity.fields[fieldName];
+					if (columnModel[fieldName].link) {
+						fields[fieldName] = "<a href=# id='"+elementPath+"_"+fieldName+"_"+entity.id+"' class='"+elementPath+"_link gridLink'>" + entity.fields[fieldName] + "</a>";
+						
+					} else {
+						fields[fieldName] = entity.fields[fieldName];
+					}
 				}
 			}
 			grid.jqGrid('addRowData', entity.id, fields);
@@ -271,7 +287,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid.jqGrid('filterToolbar',{
 			stringResult: true
 		});
-		grid[0].toggleToolbar();
+		if (gridParameters.isLookup) {
+			headerController.setFilterActive();
+			searchEnabled = true;
+		} else {
+			grid[0].toggleToolbar();
+			searchEnabled = false;
+		}
 	}
 	
 	this.onPagingParametersChange = function() {
@@ -365,6 +387,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			element.height(_height - 40);
 			var HEIGHT_DIFF = 140;
 			currentGridHeight = _height - HEIGHT_DIFF;
+			
 			if (searchEnabled) {
 				currentGridHeight -= 21;
 			}
@@ -415,6 +438,18 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			mainController.showMessage("error", mainController.getTranslation("commons.message.emptySelectedId"));
 		}
 	}
+
+	this.performLookupSelect = function(actionsPerformer, entityId) {
+		if (!entityId) {
+			entityId = currentState.selectedEntityId;
+		}
+		if (entityId) {
+			//var lookupValue = hiddenColumnValues["lookupValue"][entityId];
+			var lookupValue = hiddenColumnValues["lookupValue"][entityId];
+			mainController.performLookupSelect(entityId, lookupValue, actionsPerformer);
+		}
+	}
+	var performLookupSelect = this.performLookupSelect;
 	
 	constructor(this);
 }

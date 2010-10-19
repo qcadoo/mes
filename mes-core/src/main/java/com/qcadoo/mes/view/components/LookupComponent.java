@@ -1,19 +1,60 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.mes.view.AbstractComponent;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
+import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.containers.WindowComponent;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem.Type;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 
-public class LookupComponent extends SimpleFieldComponent {
+public class LookupComponent extends AbstractComponent<LookupData> implements SelectableComponent {
+
+    private int width;
+
+    private int height;
+
+    private String expression;
 
     public LookupComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
             final String dataSource, final TranslationService translationService) {
         super(name, parent, fieldName, dataSource, translationService);
+    }
+
+    @Override
+    public void initializeComponent() {
+        for (ComponentOption option : getRawOptions()) {
+            if ("width".equals(option.getType())) {
+                width = Integer.parseInt(option.getValue());
+                addOption("width", width);
+            } else if ("height".equals(option.getType())) {
+                height = Integer.parseInt(option.getValue());
+                addOption("height", height);
+            } else if ("expression".equals(option.getType())) {
+                expression = option.getValue();
+            }
+        }
     }
 
     @Override
@@ -22,46 +63,151 @@ public class LookupComponent extends SimpleFieldComponent {
     }
 
     @Override
-    public String convertToViewValue(final Object value) {
-        return String.valueOf(value).trim();
+    public ViewValue<LookupData> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
+        LookupData lookupData = new LookupData();
+
+        JSONObject value = viewObject.getJSONObject("value");
+
+        if (value != null) {
+            if (!value.isNull("selectedEntityId")) {
+                String selectedEntityId = value.getString("selectedEntityId");
+
+                if (selectedEntityId != null && !"null".equals(selectedEntityId)) {
+                    Entity selectedEntity = getDataDefinition().get(Long.parseLong(selectedEntityId));
+                    selectedEntities.put(getPath(), selectedEntity);
+                    lookupData.setSelectedEntityId(Long.parseLong(selectedEntityId));
+                }
+            }
+
+            if (!value.isNull("contextEntityId")) {
+                String contextEntityId = value.getString("contextEntityId");
+
+                if (contextEntityId != null && !"null".equals(contextEntityId)) {
+                    lookupData.setContextEntityId(Long.parseLong(contextEntityId));
+                }
+            }
+        }
+
+        return new ViewValue<LookupData>(lookupData);
     }
 
     @Override
-    public Object convertToDatabaseValue(final String value) {
-        return value;
+    public ViewValue<LookupData> getComponentValue(final Entity entity, final Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<LookupData> viewValue, final Set<String> pathsToUpdate,
+            final Locale locale) {
+
+        LookupData lookupData = new LookupData();
+
+        if (entity != null) {
+            Entity selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
+
+            if (selectedEntity != null) {
+                lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
+                lookupData.setSelectedEntityId(selectedEntity.getId());
+            }
+
+            lookupData.setContextEntityId(entity.getId());
+        }
+
+        return new ViewValue<LookupData>(lookupData);
     }
 
-    public ViewDefinition getLookupViewDefinition() {
-        ViewDefinitionImpl lookupViewDefinition = new ViewDefinitionImpl(getViewDefinition().getPluginIdentifier(),
-                getViewDefinition().getName() + "LookupFor" + getName());
-        WindowComponent windowComponent = new WindowComponent("mainWindow", getParentContainer().getDataDefinition(),
-                lookupViewDefinition, getTranslationService());
+    public ViewDefinition getLookupViewDefinition(final ViewDefinitionService viewDefinitionService) {
+        String viewName = getViewDefinition().getName() + ".lookup." + getPath();
 
-        GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, getFieldPath(), getSourceFieldPath(),
+        ViewDefinition existingLookupViewDefinition = viewDefinitionService.get(getViewDefinition().getPluginIdentifier(),
+                viewName);
+
+        if (existingLookupViewDefinition != null) {
+            return existingLookupViewDefinition;
+        }
+
+        ViewDefinitionImpl lookupViewDefinition = new ViewDefinitionImpl(getViewDefinition().getPluginIdentifier(), viewName);
+
+        DataDefinition dataDefinition;
+        String sourceFieldPath;
+
+        if (getSourceComponent() != null) {
+            dataDefinition = getSourceComponent().getDataDefinition();
+            sourceFieldPath = getSourceFieldPath();
+        } else {
+            dataDefinition = getDataDefinition();
+            sourceFieldPath = null;
+        }
+
+        WindowComponent windowComponent = new WindowComponent("mainWindow", dataDefinition, lookupViewDefinition,
                 getTranslationService());
+        windowComponent.addRawOption(new ComponentOption("fixedHeight", ImmutableMap.of("value", "true")));
+        windowComponent.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
+
+        GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, null, sourceFieldPath,
+                getTranslationService());
+
+        for (ComponentOption rawOption : getRawOptions()) {
+            gridComponent.addRawOption(rawOption);
+        }
+        gridComponent.addRawOption(new ComponentOption("isLookup", ImmutableMap.of("value", "true")));
+
+        addHiddenColumnToLookupGrid(gridComponent);
 
         windowComponent.addComponent(gridComponent);
 
-        RibbonActionItem ribbonActionItem = new RibbonActionItem();
-        ribbonActionItem.setName("select");
-        ribbonActionItem.setAction("#{mainWindow}.performLookupSelect");
-
-        RibbonGroup ribbonGroup = new RibbonGroup();
-        ribbonGroup.setName("navigation");
-        ribbonGroup.addItem(ribbonActionItem);
-
-        Ribbon ribbon = new Ribbon();
-        ribbon.addGroup(ribbonGroup);
-
-        windowComponent.setRibbon(ribbon);
+        addRibbonToLookupWindow(windowComponent);
 
         lookupViewDefinition.setRoot(windowComponent);
 
         windowComponent.initialize();
 
-        System.out.println(" ---> lookup window " + windowComponent.toString());
+        viewDefinitionService.save(lookupViewDefinition);
 
         return lookupViewDefinition;
     }
 
+    private void addRibbonToLookupWindow(final WindowComponent windowComponent) {
+        RibbonActionItem ribbonActionItem = new RibbonActionItem();
+        ribbonActionItem.setName("select");
+        ribbonActionItem.setAction("#{mainWindow.lookupGrid}.performLookupSelect; #{mainWindow}.performClose");
+        ribbonActionItem.setType(Type.BIG_BUTTON);
+
+        RibbonActionItem ribbonCancelActionItem = new RibbonActionItem();
+        ribbonCancelActionItem.setName("cancel");
+        ribbonCancelActionItem.setAction("#{mainWindow}.performClose");
+        ribbonCancelActionItem.setType(Type.BIG_BUTTON);
+
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("navigation");
+        ribbonGroup.addItem(ribbonActionItem);
+        ribbonGroup.addItem(ribbonCancelActionItem);
+
+        Ribbon ribbon = new Ribbon();
+        ribbon.addGroup(ribbonGroup);
+
+        windowComponent.setRibbon(ribbon);
+    }
+
+    private void addHiddenColumnToLookupGrid(final GridComponent gridComponent) {
+        Map<String, String> hiddenColumnOptions = new HashMap<String, String>();
+        hiddenColumnOptions.put("name", "lookupValue");
+        hiddenColumnOptions.put("expression", expression);
+        hiddenColumnOptions.put("hidden", "true");
+
+        gridComponent.addRawOption(new ComponentOption("column", hiddenColumnOptions));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Long getSelectedEntityId(final ViewValue<Long> viewValue) {
+        ViewValue<LookupData> value = (ViewValue<LookupData>) lookupViewValue(viewValue);
+        return value.getValue().getSelectedEntityId();
+    }
+
+    @Override
+    public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
+        List<String> messageCodes = new LinkedList<String>();
+        messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                + ".label");
+        messageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
+        translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
+    }
 }

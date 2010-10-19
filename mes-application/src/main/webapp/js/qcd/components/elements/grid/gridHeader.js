@@ -306,6 +306,10 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 		}
 		gridController.onFilterButtonClicked();
 	}
+	
+	this.setFilterActive = function() {
+		headerElements.filterButton.addClass("headerButtonActive");
+	}
 
 	this.setEnabledButton = function(button, enabled) {
 		if (enabled) {

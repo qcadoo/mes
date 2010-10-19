@@ -49,9 +49,9 @@ import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.RootComponent;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.CheckBoxComponent;
-import com.qcadoo.mes.view.components.EntityComboBoxComponent;
 import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
+import com.qcadoo.mes.view.components.LookupComponent;
 import com.qcadoo.mes.view.components.TextAreaComponent;
 import com.qcadoo.mes.view.components.grid.ColumnAggregationMode;
 import com.qcadoo.mes.view.components.grid.ColumnDefinition;
@@ -220,7 +220,7 @@ public class ViewDefinitionParserTest {
                 "textArea", "beanB", "name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
 
         Component<?> selectBeanA = root.lookupComponent("mainWindow.beanBForm.selectBeanA");
-        checkComponent(selectBeanA, EntityComboBoxComponent.class, "mainWindow.beanBForm.selectBeanA", "entityComboBox", "beanA",
+        checkComponent(selectBeanA, LookupComponent.class, "mainWindow.beanBForm.selectBeanA", "lookupComponent", "beanA",
                 "beanA", null, null, Sets.newHashSet("mainWindow.beanBForm.beansBGrig", "mainWindow.beansBGrig"), 0,
                 Maps.<String, Object> newHashMap());
 

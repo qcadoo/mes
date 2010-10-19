@@ -102,6 +102,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 addOption("width", Integer.parseInt(option.getValue()));
             } else if ("fullScreen".equals(option.getType())) {
                 addOption("fullScreen", Boolean.parseBoolean(option.getValue()));
+            } else if ("isLookup".equals(option.getType())) {
+                addOption("isLookup", Boolean.parseBoolean(option.getValue()));
             } else if ("searchable".equals(option.getType())) {
                 for (FieldDefinition field : getFields(option.getValue())) {
                     searchableFields.add(field);
@@ -125,6 +127,9 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 }
                 if (option.getAtrributeValue("link") != null) {
                     columnDefinition.setLink(Boolean.parseBoolean(option.getAtrributeValue("link")));
+                }
+                if (option.getAtrributeValue("hidden") != null) {
+                    columnDefinition.setHidden(Boolean.parseBoolean(option.getAtrributeValue("hidden")));
                 }
                 columns.put(columnDefinition.getName(), columnDefinition);
             }
@@ -155,8 +160,10 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     private Set<FieldDefinition> getFields(final String fields) {
         Set<FieldDefinition> set = new HashSet<FieldDefinition>();
-        for (String field : fields.split("\\s*,\\s*")) {
-            set.add(getDataDefinition().getField(field));
+        if (fields != null) {
+            for (String field : fields.split("\\s*,\\s*")) {
+                set.add(getDataDefinition().getField(field));
+            }
         }
         return set;
     }
