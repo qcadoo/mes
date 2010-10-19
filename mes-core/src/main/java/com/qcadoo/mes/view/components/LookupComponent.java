@@ -94,7 +94,7 @@ public class LookupComponent extends SimpleFieldComponent {
 
         RibbonActionItem ribbonActionItem = new RibbonActionItem();
         ribbonActionItem.setName("select");
-        ribbonActionItem.setAction("#{mainWindow}.performLookupSelect");
+        ribbonActionItem.setAction("#{mainWindow.lookupGrid}.performLookupSelect");
         ribbonActionItem.setType(Type.BIG_BUTTON);
 
         RibbonGroup ribbonGroup = new RibbonGroup();

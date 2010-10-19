@@ -41,6 +41,8 @@ public final class ColumnDefinition {
 
     private boolean link = false;
 
+    private boolean hidden = false;
+
     public ColumnDefinition(final String name) {
         this.name = name;
     }
@@ -111,8 +113,16 @@ public final class ColumnDefinition {
         return link;
     }
 
-    public void setLink(boolean link) {
+    public void setLink(final boolean link) {
         this.link = link;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
     }
 
     @Override
@@ -122,6 +132,7 @@ public final class ColumnDefinition {
             obj.put("name", name);
             obj.put("width", width);
             obj.put("link", link);
+            obj.put("hidden", hidden);
         } catch (JSONException e) {
             e.printStackTrace();
         }

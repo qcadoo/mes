@@ -126,6 +126,9 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 if (option.getAtrributeValue("link") != null) {
                     columnDefinition.setLink(Boolean.parseBoolean(option.getAtrributeValue("link")));
                 }
+                if (option.getAtrributeValue("hidden") != null) {
+                    columnDefinition.setHidden(Boolean.parseBoolean(option.getAtrributeValue("hidden")));
+                }
                 columns.put(columnDefinition.getName(), columnDefinition);
             }
         }
