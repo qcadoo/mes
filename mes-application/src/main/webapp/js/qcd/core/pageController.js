@@ -132,20 +132,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	}
 	
 	this.performCallFunction = function(functionName, entityId, actionsPerformer) {
-		var parameters = {
-			functionName: functionName,
-			entityId: entityId
-		};
-		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("callFunction", parametersJson, function(response) {
-			QCD.info(response);
-			
-			window.open(parametersJson.url);
-			
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-		});
+		window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
 	}
 	
 	this.performChangePriority = function(componentName, entityId, direction) {

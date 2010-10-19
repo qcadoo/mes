@@ -58,11 +58,16 @@
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>*.html</url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet-mapping>
+        <servlet-name>Qcadoo MES</servlet-name>
+        <url-pattern>*.pdf</url-pattern>
+    </servlet-mapping>
+	
 	<session-config>
 		<session-timeout>15</session-timeout>
 	</session-config>
-	<!--
+
 	<error-page>
         <error-code>400</error-code>
         <location>/error.jsp</location>
@@ -78,6 +83,6 @@
     <error-page>
         <error-code>503</error-code>
         <location>/error.jsp</location>
-    </error-page>-->
+    </error-page>
 
 </web-app>

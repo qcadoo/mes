@@ -50,9 +50,6 @@
 			<component type="button" name="update" source="#{mainWindow.pluginsGrid}">
 				<option type="url" value="../update.html" />
 			</component>
-			<component type="button" name="pdfOrderView">
-				<option type="url" value="../pdfOrderView.html" />
-			</component>
 			<option type="backButton" value="false" />
 			<option type="fullScreen" value="true" />
 		</component>
@@ -60,6 +57,9 @@
 	<view name="pluginDetailsView" model="plugin">
 		<component type="window" name="mainWindow">
 			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" action="#{mainWindow}.performBack" />
+				</group>
 			</ribbon>
 			<component type="form" name="pluginDetailsForm">
 				<component type="textarea" name="name" field="name" enabled="false" />

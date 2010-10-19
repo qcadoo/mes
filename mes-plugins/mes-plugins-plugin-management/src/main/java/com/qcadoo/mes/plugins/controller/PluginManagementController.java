@@ -23,12 +23,6 @@ public final class PluginManagementController {
         return mav;
     }
 
-    @RequestMapping(value = "pdfOrderView", method = RequestMethod.GET)
-    public ModelAndView getPdfPageView() {
-        ModelAndView mav = new ModelAndView("pdfOrderView");
-        return mav;
-    }
-
     @RequestMapping(value = "downloadError", method = RequestMethod.GET)
     public ModelAndView getDownloadErrorPageView() {
         ModelAndView mav = new ModelAndView();
