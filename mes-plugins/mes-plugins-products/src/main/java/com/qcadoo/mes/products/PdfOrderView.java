@@ -18,7 +18,6 @@ public class PdfOrderView extends AbstractPdfView {
     protected void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 
-        document.open();
         document.add(new Paragraph("First Page."));
         document.setPageSize(PageSize.A3);
         document.newPage();
