@@ -158,8 +158,10 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     private Set<FieldDefinition> getFields(final String fields) {
         Set<FieldDefinition> set = new HashSet<FieldDefinition>();
-        for (String field : fields.split("\\s*,\\s*")) {
-            set.add(getDataDefinition().getField(field));
+        if (fields != null) {
+            for (String field : fields.split("\\s*,\\s*")) {
+                set.add(getDataDefinition().getField(field));
+            }
         }
         return set;
     }
