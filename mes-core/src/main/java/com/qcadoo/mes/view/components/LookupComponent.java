@@ -97,15 +97,7 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             final Map<String, Entity> selectedEntities, final ViewValue<LookupData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
 
-        Entity selectedEntity = null;
-
-        if (getSourceComponent() != null) {
-            selectedEntity = (Entity) getFieldValue(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
-        } else if (getSourceFieldPath() != null) {
-            selectedEntity = (Entity) getFieldValue(entity, getSourceFieldPath());
-        } else {
-            selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
-        }
+        Entity selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
 
         LookupData lookupData = new LookupData();
 
