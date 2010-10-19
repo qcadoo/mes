@@ -444,9 +444,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			entityId = currentState.selectedEntityId;
 		}
 		if (entityId) {
-			//var lookupValue = hiddenColumnValues["lookupValue"][entityId];
 			var lookupValue = hiddenColumnValues["lookupValue"][entityId];
-			mainController.performLookupSelect(entityId, lookupValue, actionsPerformer);
+			var lookupCode = hiddenColumnValues["lookupCode"][entityId];
+			mainController.performLookupSelect(entityId, lookupValue, lookupCode, actionsPerformer);
 		}
 	}
 	var performLookupSelect = this.performLookupSelect;

@@ -139,7 +139,6 @@
 .component_container_form .error_box {
 	display: inline-block;
 	padding: 2px 0 0 1px;
-	position: absolute;
 }
 
 .component_container_form .error .error_box .error_icon {
@@ -250,7 +249,6 @@
 	position: absolute;
 	top: 4px; left: 8px;
 	font: 11px arial;
-	color: #999999;
 }
 .component_container_form_w .lookupValueWrapper .lookupLoading {
 	position: absolute;

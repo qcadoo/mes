@@ -23,7 +23,7 @@
 	<c:set var="headerDescription" value="${pluginIdentifier}.${viewName}.${componentFullNameWithDots}.description"/>
 	<c:set var="isInputBox" value="${'textArea' == componentType || 'textInput' == componentType || 'passwordInput' == componentType || 'calendar' == componentType || 'lookup' == componentType}"/>
 	
-	<div class="labelbox"><div class="label_h"></div><div class="label">${translationsMap[headerLabel]}<c:if test="${component.hasDescription}"><div class="description_box">
+	<div class="labelbox"><div class="label_h"></div><div class="label" ><span style="display: inline" id="${componentFullName}_labelDiv">${translationsMap[headerLabel]}</span><c:if test="${component.hasDescription}"><div class="description_box">
 				<div id="${componentFullName}_description_icon" class="description_icon"></div>
 				<div id="${componentFullName}_description_message" class="description_message" style="display: none">${translationsMap[headerDescription]}</div>
 			</div></c:if><div class="error_box">

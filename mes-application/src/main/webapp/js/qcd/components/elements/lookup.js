@@ -6,6 +6,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 	
 	var elementPath = this.elementPath;
+	var element = _element;
 	
 	var mainController = _mainController;
 	
@@ -14,6 +15,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var inputElement = this.input;
 	var valueDivElement = $("#"+this.elementPath+"_valueDiv");
 	var loadingElement = $("#"+this.elementPath+"_loadingDiv");
+	var labelElement = $("#"+this.elementPath+"_labelDiv");
+	
+	var labelNormal = labelElement.html();
+	var labelFocus = "<span style='color: #005ec5;'>Podaj kod:</span>";
 	
 	var currentData = new Object();
 	
@@ -27,10 +32,12 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		window[elementName+"_onReadyFunction"] = function() {
 			lookupWindow.init();
 		}
-		window[elementName+"_onSelectFunction"] = function(entityId, entityString) {
+		window[elementName+"_onSelectFunction"] = function(entityId, entityString, entityCode) {
 			currentData.selectedEntityId = entityId;
 			currentData.selectedEntityValue = entityString;
+			currentData.selectedEntityCode = entityCode;
 			updateData();
+			element.removeClass("error");
 			if (hasListeners) {
 				mainController.getUpdate(elementPath, entityId, listeners);
 			}
@@ -47,6 +54,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		currentData.selectedEntityCode = data.selectedEntityCode;
 		currentData.contextEntityId = data.contextEntityId;
 		updateData();
+		loadingElement.hide();
 	}
 	
 	this.getComponentData = function() {
@@ -55,13 +63,21 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	function updateData() {
 		//if (currentData.selectedEntityValue && currentData.selectedEntityValue != "") {
+		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null) {
+			
+		} else {
 			valueDivElement.html(currentData.selectedEntityValue);	
+			valueDivElement.show();
+			inputElement.val("");
+			labelElement.html(labelNormal);
+		}
 		//}
 	}
 	
 	function onInputFocus() {
 		valueDivElement.hide();
 		inputElement.val(currentData.selectedEntityCode);
+		labelElement.html(labelFocus);
 	}
 	
 	function onInputBlur() {
@@ -70,17 +86,17 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			currentData.selectedEntityCode = inputElement.val().trim();
 			currentData.selectedEntityValue = null;
 			currentData.selectedEntityId = null;
-			valueDivElement.html(currentData.selectedEntityValue);
 			if (currentData.selectedEntityCode == "") {
-				valueDivElement.show();
-				inputElement.val("");
+				updateData();
+				element.removeClass("error");
+				labelElement.html(labelNormal);
 			} else {
 				loadingElement.show();
 				mainController.getUpdate(elementPath, entityId, listeners);
 			}
 		} else {
-			valueDivElement.show();
-			inputElement.val("");
+			updateData();
+			labelElement.html(labelNormal);
 		}
 	}
 	
