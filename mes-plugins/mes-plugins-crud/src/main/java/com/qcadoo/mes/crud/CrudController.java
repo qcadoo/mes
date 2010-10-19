@@ -72,7 +72,7 @@ public final class CrudController {
         if (StringUtils.hasText(lookupComponentName)) {
             LookupComponent lookupComponent = (LookupComponent) viewDefinition.lookupComponent(arguments.get("lookupComponent"));
             checkNotNull(lookupComponent, "Cannot find lookup component " + lookupComponentName);
-            modelAndView.addObject("viewDefinition", lookupComponent.getLookupViewDefinition());
+            modelAndView.addObject("viewDefinition", lookupComponent.getLookupViewDefinition(viewDefinitionService));
             modelAndView.addObject("lookupComponentName", lookupComponentName);
         } else {
             modelAndView.addObject("viewDefinition", viewDefinition);

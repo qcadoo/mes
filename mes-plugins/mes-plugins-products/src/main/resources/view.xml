@@ -209,7 +209,18 @@
 				<component type="checkbox" name="master" field="master" />
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
-				<component type="lookupFinal" name="product" field="product" />
+				<component type="lookupFinal" name="product" field="product">
+					<option type="column" name="name" fields="name" link="true"
+						width="300" />
+					<option type="column" name="category" fields="category"
+						width="100" />
+					<option type="correspondingView" value="products/productDetailsView" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="name,category" />
+					<option type="orderable" value="name,category" />
+					<option type="height" value="600" />
+					<option type="width" value="600" />
+				</component>
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />
 				<component type="calendar" name="dateTo" field="dateTo" />
