@@ -55,7 +55,7 @@ public class LookupComponent extends SimpleFieldComponent {
 
     public ViewDefinition getLookupViewDefinition(final ViewDefinitionService viewDefinitionService) {
 
-        String viewName = getViewDefinition().getName() + "Lookup_" + getPath().replaceAll("\\.", "_");
+        String viewName = getViewDefinition().getName() + ".lookup." + getPath();
 
         ViewDefinition existingLookupViewDefinition = viewDefinitionService.get(getViewDefinition().getPluginIdentifier(),
                 viewName);
@@ -66,24 +66,24 @@ public class LookupComponent extends SimpleFieldComponent {
 
         ViewDefinitionImpl lookupViewDefinition = new ViewDefinitionImpl(getViewDefinition().getPluginIdentifier(), viewName);
 
-        DataDefinition dataDefinition = null;
-
-        System.out.println(" ---> path " + getPath());
+        DataDefinition dataDefinition;
+        String fieldPath;
+        String sourceFieldPath;
 
         if (getSourceComponent() != null) {
-            System.out.println(" ---> source component " + getSourceComponent().getName() + ", "
-                    + getSourceComponent().getDataDefinition().getName());
             dataDefinition = getSourceComponent().getDataDefinition();
+            fieldPath = null; // todo
+            sourceFieldPath = null; // todo
         } else {
-            System.out.println(" ---> parent component " + getParentContainer().getName() + ", "
-                    + getParentContainer().getDataDefinition().getName());
-            dataDefinition = getParentContainer().getDataDefinition();
+            dataDefinition = getDataDefinition();
+            fieldPath = null;
+            sourceFieldPath = null;
         }
 
         WindowComponent windowComponent = new WindowComponent("mainWindow", dataDefinition, lookupViewDefinition,
                 getTranslationService());
 
-        GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, getFieldPath(), getSourceFieldPath(),
+        GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, fieldPath, sourceFieldPath,
                 getTranslationService());
 
         for (ComponentOption rawOption : getRawOptions()) {
