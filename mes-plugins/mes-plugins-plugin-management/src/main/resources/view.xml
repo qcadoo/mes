@@ -2,8 +2,21 @@
 <qcd:views plugin="plugins" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="pluginGridView" model="plugin">
 		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="plugins">
+					<bigButton name="download" action="" />
+					<bigButton name="update" action="" />
+				</group>
+				<group name="actions">
+					<smallButton name="enable" action="" />
+					<smallButtons name="disable" action="">
+						<smallButton name="deinstall" action="" />
+						<smallButton name="remove" action="" />
+					</smallButtons>
+				</group>
+			</ribbon>
 			<component type="grid" name="pluginsGrid">
-				<option type="column" name="name" fields="name" />
+				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="description" fields="description" />
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
@@ -43,6 +56,8 @@
 	</view>
 	<view name="pluginDetailsView" model="plugin">
 		<component type="window" name="mainWindow">
+			<ribbon>
+			</ribbon>
 			<component type="form" name="pluginDetailsForm">
 				<component type="textarea" name="name" field="name" enabled="false" />
 				<component type="input" name="version" field="version" enabled="false" />

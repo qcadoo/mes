@@ -18,6 +18,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		window[elementName+"_onReadyFunction"] = function() {
 			lookupWindow.init();
 		}
+		window[elementName+"_onSelectFunction"] = function() {
+			//lookupWindow.init();
+			alert("aa");
+		}
 	}
 	
 	function onWindowClick() {
