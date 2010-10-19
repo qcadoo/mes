@@ -139,7 +139,7 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             }
         }
 
-        if (entity != null && selectedEntity == null) {
+        if (entity != null && selectedEntity == null && !error) {
             selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
         }
 
