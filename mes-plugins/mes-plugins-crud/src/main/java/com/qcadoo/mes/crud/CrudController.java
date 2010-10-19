@@ -73,7 +73,7 @@ public final class CrudController {
             LookupComponent lookupComponent = (LookupComponent) viewDefinition.lookupComponent(arguments.get("lookupComponent"));
             checkNotNull(lookupComponent, "Cannot find lookup component " + lookupComponentName);
             ViewDefinition lookupViewDefinition = lookupComponent.getLookupViewDefinition(viewDefinitionService);
-            viewDefinition.updateTranslations(translationsMap, locale);
+            lookupViewDefinition.updateTranslations(translationsMap, locale);
             modelAndView.addObject("viewDefinition", lookupViewDefinition);
             modelAndView.addObject("lookupComponentName", lookupComponentName);
         } else {
