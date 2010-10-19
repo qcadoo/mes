@@ -111,40 +111,43 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         LookupData lookupData = new LookupData();
 
         if (getSourceFieldPath() != null) {
-            Entity selectedEntity = selectedEntities.get(getSourceComponent().getPath());
+            Entity contextEntity = selectedEntities.get(getSourceComponent().getPath());
 
-            if (selectedEntity != null) {
-                lookupData.setContextEntityId(selectedEntity.getId());
+            if (contextEntity != null) {
+                lookupData.setContextEntityId(contextEntity.getId());
             }
         }
 
         boolean error = false;
 
-        if (entity != null) {
-            Entity selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
+        Entity selectedEntity = null;
 
-            if (selectedEntity != null) {
-                lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
-                lookupData.setSelectedEntityId(selectedEntity.getId());
-                lookupData.setSelectedEntityCode(String.valueOf(selectedEntity.getField(fieldCode)));
-                selectedEntities.put(getPath(), selectedEntity);
+        if (viewValue != null && viewValue.getValue() != null) {
+            if (viewValue.getValue().getSelectedEntityId() != null) {
+                selectedEntity = getDataDefinition().get(viewValue.getValue().getSelectedEntityId());
+            } else if (StringUtils.hasText(viewValue.getValue().getSelectedEntityCode())) {
+                String code = viewValue.getValue().getSelectedEntityCode();
+
+                SearchResult results = getDataDefinition().find()
+                        .restrictedWith(Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*")).list();
+
+                if (results.getTotalNumberOfEntities() == 1) {
+                    selectedEntity = results.getEntities().get(0);
+                } else {
+                    error = true;
+                }
             }
-        } else if (viewValue != null && viewValue.getValue() != null
-                && StringUtils.hasText(viewValue.getValue().getSelectedEntityCode())) {
-            String code = viewValue.getValue().getSelectedEntityCode();
+        }
 
-            SearchResult results = getDataDefinition().find()
-                    .restrictedWith(Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*")).list();
+        if (entity != null && selectedEntity == null) {
+            selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
+        }
 
-            if (results.getTotalNumberOfEntities() == 1) {
-                Entity selectedEntity = results.getEntities().get(0);
-                lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
-                lookupData.setSelectedEntityId(selectedEntity.getId());
-                lookupData.setSelectedEntityCode(String.valueOf(selectedEntity.getField(fieldCode)));
-                selectedEntities.put(getPath(), selectedEntity);
-            } else {
-
-            }
+        if (selectedEntity != null) {
+            lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
+            lookupData.setSelectedEntityId(selectedEntity.getId());
+            lookupData.setSelectedEntityCode(String.valueOf(selectedEntity.getField(fieldCode)));
+            selectedEntities.put(getPath(), selectedEntity);
         }
 
         ViewValue<LookupData> newViewValue = new ViewValue<LookupData>(lookupData);
