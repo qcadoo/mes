@@ -295,6 +295,10 @@
 					<smallButton name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.ordersGrid}.performDelete;" />
 				</group>
+				<group name="printActions">
+					<bigButton name="print"
+						action="#{mainWindow.ordersGrid}.performCallFunction;" />
+				</group>
 			</ribbon>		
 			<component type="grid" name="ordersGrid">
 				<option type="column" name="number" fields="number" link="true"/>

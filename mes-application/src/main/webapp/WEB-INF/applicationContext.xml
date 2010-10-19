@@ -9,14 +9,37 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<bean class="com.qcadoo.mes.PluginResourcesResolver" />
+	
+	<bean id="contentNegotiatingViewResolver" 
+   		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver"
+   		p:order="#{T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE}">
+      	<property name="mediaTypes">
+			<map>
+		        <entry key="html" value="text/html"/> 
+		        <entry key="pdf" value="application/pdf"/> 
+		        <entry key="xsl" value="application/vnd.ms-excel"/> 
+		        <entry key="xml" value="application/xml"/> 
+		        <entry key="json" value="application/json"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="pdfOrderView"
+  		class="com.qcadoo.mes.products.PdfOrderView"/>
+  		
+  	<bean id="beanNameViewResolver"
+  		class="org.springframework.web.servlet.view.BeanNameViewResolver">
+  		<property name="order" value="#{contentNegotiatingViewResolver.order+1}"/>
+	</bean>
 
 	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="order" value="#{beanNameViewResolver.order+1}"/>
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
-	
+
 	<bean id="multipartResolver"
     	class="org.springframework.web.multipart.commons.CommonsMultipartResolver">	
 	    <property name="maxUploadSize" value="500000"/>

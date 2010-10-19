@@ -132,6 +132,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		});
 	}
 	
+	this.performCallFunction = function(functionName, entityId, actionsPerformer) {
+		window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
+	}
+	
 	this.performChangePriority = function(componentName, entityId, direction) {
 		var parameters = {
 			componentName: componentName,

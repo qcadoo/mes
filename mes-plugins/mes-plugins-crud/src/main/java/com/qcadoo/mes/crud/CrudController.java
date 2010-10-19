@@ -240,6 +240,24 @@ public final class CrudController {
         return responseViewValue;
     }
 
+    @RequestMapping(value = CONTROLLER_PATH + "/function/print", method = RequestMethod.GET)
+    public ModelAndView getPdfPageView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam("entityId") final String entityId) {
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
+
+        Entity entity = null;
+
+        if (entityId != null) {
+            entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
+        }
+
+        ModelAndView mav = new ModelAndView("pdfOrderView");
+
+        mav.addObject("order", entity);
+
+        return mav;
+    }
+
     @RequestMapping(value = CONTROLLER_PATH + "/move", method = RequestMethod.POST)
     @ResponseBody
     public Object performMove(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,

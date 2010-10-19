@@ -18,5 +18,16 @@
 	<properties>
 		<mes.plugin.identifier>products</mes.plugin.identifier>
 	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>com.lowagie</groupId>
+		    <artifactId>itext</artifactId>
+		</dependency>
+	</dependencies>
 
 </project>
