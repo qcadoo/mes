@@ -93,6 +93,15 @@
 	padding-left: 6px;
 }
 
+.component_container_form input[type='text'], .component_container_form textarea {
+	background: transparent url(../images/form/input_c.png) no-repeat 0 0;
+	padding-left: 6px;
+}
+
+.component_element_checkbox .component_container_form_w {
+	text-align: left;
+}
+
 .component_container_form select {
 	width: 100%;
 	background: #fff;
@@ -200,6 +209,23 @@
 	left: 15px;
 	background: #fff;
 	z-index: 999;
+}
+.component_element_lookup .component_container_form_x {
+	margin-right: 28px;
+}
+.component_container_form .lookupIcon {
+	height: 23px;
+	width: 23px;
+	display: inline-block;
+	position: absolute;
+	top: -1px;
+	right: -28px;
+	background: url(../../images/icons/lookupIcon.png) no-repeat 0 -23px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+.component_container_form .lookupIcon:hover {
+	background-position: 0 0;
 }
 
 .component_container_form .calendar {

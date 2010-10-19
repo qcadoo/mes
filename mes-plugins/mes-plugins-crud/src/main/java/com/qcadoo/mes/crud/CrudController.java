@@ -1,5 +1,7 @@
 package com.qcadoo.mes.crud;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +37,7 @@ import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.components.LookupComponent;
 
 @Controller
 public final class CrudController {
@@ -64,10 +67,19 @@ public final class CrudController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("crudView");
-        modelAndView.addObject("viewDefinition", viewDefinition);
+
+        String lookupComponentName = arguments.get("lookupComponent");
+
+        if (StringUtils.hasText(lookupComponentName)) {
+            LookupComponent lookupComponent = (LookupComponent) viewDefinition.lookupComponent(arguments.get("lookupComponent"));
+            checkNotNull(lookupComponent, "Cannot find lookup component " + lookupComponentName);
+            modelAndView.addObject("viewDefinition", lookupComponent.getLookupViewDefinition());
+            modelAndView.addObject("lookupComponentName", lookupComponentName);
+        } else {
+            modelAndView.addObject("viewDefinition", viewDefinition);
+        }
+
         modelAndView.addObject("entityId", arguments.get("entityId"));
-        // modelAndView.addObject("contextEntityId", arguments.get("contextEntityId"));
-        // modelAndView.addObject("contextFieldName", arguments.get("contextFieldName"));
         modelAndView.addObject("context", arguments.get("context"));
         modelAndView.addObject("translationsMap", translationsMap);
 

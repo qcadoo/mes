@@ -84,7 +84,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 		};
 		QCD.info(parameters);
 		var valuesJson = JSON.stringify(parameters);
-		//QCD.info(valuesJson);
 		var _this = this;
 		QCDConnector.sendPost("dataUpdate", valuesJson, function(response) {
 			QCD.info(response);
@@ -106,7 +105,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 		};
 		QCD.info(parameters);
 		var parametersJson = JSON.stringify(parameters);
-		//QCD.info(parametersJson);
 		QCDConnector.sendPost("save", parametersJson, function(response) {
 			QCD.info(response);
 			setValueData(response);
@@ -196,8 +194,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 					component: component,
 					action: elementAction
 				}
-				//var func = component[elementAction]
-				
 				actions.push(actionObject);
 			}
 		}
@@ -228,7 +224,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 				values[i] = value;
 			}
 		}
-		//QCD.info(values);
 		return values;
 	}
 	
@@ -244,7 +239,11 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	}
 	
 	this.showMessage = function(type, content) {
-		window.parent.addMessage(type, content);
+		if (window.parent && window.parent.addMessage) {
+			window.parent.addMessage(type, content);
+		} else {
+			alert(type+": "+content);
+		}
 	}
 	
 	this.setWindowHeaderComponent = function(component) {
@@ -289,7 +288,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 			value: rootEntityId,
 			components: getValueData()
 		}
-		QCD.info(url);
+		//QCD.info(url);
 		window.parent.goToPage(url, serializationObject);
 	}
 	
@@ -298,10 +297,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context) {
 	}
 	
 	this.onSessionExpired = function() {
-		var serializationObject = new Object();
-		//for (var i in pageElements) {
-			//serializationObject[i] = pageElements[i].serialize();
-		//}
+		var serializationObject = {
+			value: rootEntityId,
+			components: getValueData()
+		}
 		window.parent.onSessionExpired(serializationObject);
 	}
 	

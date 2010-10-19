@@ -24,6 +24,8 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 				component = new QCD.components.elements.DynamicComboBox(element, mainController);
 			} else if (element.hasClass("component_element_entityComboBox")) {
 				component = new QCD.components.elements.EntityComboBox(element, mainController);
+			} else if (element.hasClass("component_element_lookup")) {
+				component = new QCD.components.elements.Lookup(element, mainController);
 			} else if (element.hasClass("component_element_checkbox")) {
 				component = new QCD.components.elements.CheckBox(element, mainController);
 			} else if (element.hasClass("component_element_linkButton")) {

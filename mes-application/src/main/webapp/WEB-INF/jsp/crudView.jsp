@@ -51,42 +51,43 @@
 	<script type="text/javascript" src="../../js/qcd/components/elements/passwordInput.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/dynamicComboBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/entityComboBox.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/elements/lookup.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/checkBox.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/linkButton.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/tree.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/calendar.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/ribbon.js"></script>
 	
-	<script type="text/javascript">
+	<script type="text/javascript"><!--
 
 		var viewName = "${viewDefinition.name}";
 		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
 		var entityId = "${entityId}";
-		//var contextEntityId = "${contextEntityId}";
-		//var contextFieldName = "${contextFieldName}";
 		var context = '${context}';
+
+		var lookupComponentName = '${lookupComponentName}';
 
 		var controller = null
 
 		window.init = function(serializationObject) {
-			//alert("init");
 			controller = new QCD.PageController(viewName, pluginIdentifier, context);
 			controller.init(entityId, serializationObject);
 		}
+
+		jQuery(document).ready(function(){
+			if (window.opener) {
+				window.opener[lookupComponentName+"_onReadyFunction"].call();
+		    }
+		});
 
 		window.translationsMap = new Object();
 		<c:forEach items="${translationsMap}" var="translation">
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
-	</script>
+	--></script>
 </head>
 <body>
 
-	
-		<!--<div style="color: red">
-			${message}
-		</div>-->
-	
 		<tiles:insertTemplate template="components/component.jsp">
 			<tiles:putAttribute name="component" value="${viewDefinition.root}" />
 			<tiles:putAttribute name="viewName" value="${viewDefinition.name}" />
