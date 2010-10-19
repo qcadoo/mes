@@ -1,8 +1,6 @@
 package com.qcadoo.mes.view.components;
 
-public class LookupData {
-
-    private Long selectedEntityId;
+public class LookupData extends SimpleValue {
 
     private String selectedEntityValue;
 
@@ -12,11 +10,11 @@ public class LookupData {
     }
 
     public Long getSelectedEntityId() {
-        return selectedEntityId;
+        return (Long) getValue();
     }
 
     public void setSelectedEntityId(final Long selectedEntityId) {
-        this.selectedEntityId = selectedEntityId;
+        setValue(selectedEntityId);
     }
 
     public String getSelectedEntityValue() {

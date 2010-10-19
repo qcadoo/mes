@@ -148,7 +148,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             Object fieldValue = ((SimpleValue) value).getValue();
             entity.setField(fieldPath, fieldValue != null ? String.valueOf(fieldValue) : null);
         } else {
-            throw new IllegalStateException("Value of " + fieldPath + "doesn't extends SimpleValue");
+            throw new IllegalStateException("Value of " + fieldPath + " doesn't extends SimpleValue");
         }
         return value;
     }

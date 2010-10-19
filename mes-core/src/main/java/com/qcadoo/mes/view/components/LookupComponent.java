@@ -97,13 +97,17 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             final Map<String, Entity> selectedEntities, final ViewValue<LookupData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
 
-        Entity selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
-
         LookupData lookupData = new LookupData();
 
-        if (selectedEntity != null) {
-            lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
-            lookupData.setSelectedEntityId(selectedEntity.getId());
+        if (entity != null) {
+            Entity selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
+
+            if (selectedEntity != null) {
+                lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
+                lookupData.setSelectedEntityId(selectedEntity.getId());
+            }
+
+            lookupData.setContextEntityId(entity.getId());
         }
 
         return new ViewValue<LookupData>(lookupData);
@@ -154,8 +158,6 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         lookupViewDefinition.setRoot(windowComponent);
 
         windowComponent.initialize();
-
-        System.out.println(" ---> lookup window " + windowComponent.toString());
 
         viewDefinitionService.save(lookupViewDefinition);
 
