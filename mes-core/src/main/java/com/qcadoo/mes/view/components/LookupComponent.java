@@ -99,15 +99,22 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
 
         LookupData lookupData = new LookupData();
 
+        if (getSourceFieldPath() != null) {
+            Entity selectedEntity = selectedEntities.get(getSourceComponent().getPath());
+
+            if (selectedEntity != null) {
+                lookupData.setContextEntityId(selectedEntity.getId());
+            }
+        }
+
         if (entity != null) {
             Entity selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
 
             if (selectedEntity != null) {
                 lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
                 lookupData.setSelectedEntityId(selectedEntity.getId());
+                selectedEntities.put(getPath(), selectedEntity);
             }
-
-            lookupData.setContextEntityId(entity.getId());
         }
 
         return new ViewValue<LookupData>(lookupData);
