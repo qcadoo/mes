@@ -134,7 +134,7 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             String code = viewValue.getValue().getSelectedEntityCode();
 
             SearchResult results = getDataDefinition().find()
-                    .restrictedWith(Restrictions.eq(getDataDefinition().getField(fieldCode), code)).list();
+                    .restrictedWith(Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*")).list();
 
             if (results.getTotalNumberOfEntities() == 1) {
                 Entity selectedEntity = results.getEntities().get(0);
