@@ -377,13 +377,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
+		QCD.info(_height)
 		if (! gridParameters.height && gridParameters.fullScreen) {
 			element.height(_height - 40);
 			var HEIGHT_DIFF = 140;
 			currentGridHeight = _height - HEIGHT_DIFF;
+			
 			if (searchEnabled) {
 				currentGridHeight -= 21;
 			}
+			QCD.info(currentGridHeight)
 			grid.setGridHeight(currentGridHeight);
 		}
 		if (! gridParameters.width && gridParameters.fullScreen) {
@@ -430,7 +433,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		if (entityId) {
 			//var lookupValue = hiddenColumnValues["lookupValue"][entityId];
-			var lookupValue = hiddenColumnValues["value"][entityId];
+			var lookupValue = hiddenColumnValues["lookupValue"][entityId];
 			mainController.performLookupSelect(entityId, lookupValue, actionsPerformer);
 		}
 	}

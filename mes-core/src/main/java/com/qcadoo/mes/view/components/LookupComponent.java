@@ -142,7 +142,8 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
 
         WindowComponent windowComponent = new WindowComponent("mainWindow", dataDefinition, lookupViewDefinition,
                 getTranslationService());
-        windowComponent.addRawOption(new ComponentOption("fullScreen", ImmutableMap.of("value", "true")));
+        windowComponent.addRawOption(new ComponentOption("fixedHeight", ImmutableMap.of("value", "true")));
+        windowComponent.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
 
         GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, null, sourceFieldPath,
                 getTranslationService());

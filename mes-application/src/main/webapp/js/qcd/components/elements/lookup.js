@@ -13,6 +13,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var inputElement = this.input;
 	
+	var currentData = new Object();
+	
 	constructor = function(_this) {
 		$("#"+_this.elementPath+"_openLookupButton").click(openLookup);
 		$(window.document).focus(onWindowClick);
@@ -21,18 +23,24 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			lookupWindow.init();
 		}
 		window[elementName+"_onSelectFunction"] = function(entityId, entityString) {
-			QCD.info(entityId +" -> "+ entityString);
-			inputElement.val(entityString);
+			currentData.selectedEntityId = entityId;
+			currentData.selectedEntityValue = entityString;
+			updateData();
 		}
 	}
 	
 	this.setComponentData = function(data) {
-		inputElement.val(data.value);
+		currentData = data;
+		updateData();
 	}
 	
 	this.getComponentData = function() {
-		return {
-			value : inputElement.val()			
+		return currentData;
+	}
+	
+	function updateData() {
+		if (currentData.selectedEntityValue && currentData.selectedEntityValue != "") {
+			inputElement.val(currentData.selectedEntityValue);	
 		}
 	}
 	
@@ -43,6 +51,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	function openLookup() {
 		var elementName = elementPath.replace(/-/g,".");
 		var location = mainController.getViewName()+".html?lookupComponent="+elementName;
+		if (currentData.contextEntityId) {
+			location += "&entityId="+currentData.contextEntityId;
+		}
 		lookupWindow = window.open(location, 'lookup', 'width=800,height=700');
 	}
 	
