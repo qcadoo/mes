@@ -231,12 +231,16 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
     }
 
     private void addHiddenColumnToLookupGrid(final GridComponent gridComponent) {
-        Map<String, String> hiddenColumnOptions = new HashMap<String, String>();
-        hiddenColumnOptions.put("name", "lookupValue");
-        hiddenColumnOptions.put("expression", expression);
-        hiddenColumnOptions.put("hidden", "true");
-
-        gridComponent.addRawOption(new ComponentOption("column", hiddenColumnOptions));
+        Map<String, String> valueColumnOptions = new HashMap<String, String>();
+        valueColumnOptions.put("name", "lookupValue");
+        valueColumnOptions.put("expression", expression);
+        valueColumnOptions.put("hidden", "true");
+        gridComponent.addRawOption(new ComponentOption("column", valueColumnOptions));
+        Map<String, String> codeColumnOptions = new HashMap<String, String>();
+        codeColumnOptions.put("name", "lookupCode");
+        codeColumnOptions.put("fields", fieldCode);
+        codeColumnOptions.put("hidden", "true");
+        gridComponent.addRawOption(new ComponentOption("column", codeColumnOptions));
     }
 
     @Override

@@ -155,7 +155,6 @@
 						width="300" />
 					<option type="column" name="category" fields="category"
 						width="100" />
-					<option type="correspondingView" value="products/productDetailsView" />
 					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
@@ -226,7 +225,6 @@
 						width="300" />
 					<option type="column" name="category" fields="category"
 						width="100" />
-					<option type="correspondingView" value="products/productDetailsView" />
 					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
@@ -276,7 +274,6 @@
 						width="300" />
 					<option type="column" name="category" fields="category"
 						width="100" />
-					<option type="correspondingView" value="products/productDetailsView" />
 					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
@@ -353,7 +350,6 @@
 						width="300" />
 					<option type="column" name="category" fields="category"
 						width="100" />
-					<option type="correspondingView" value="products/productDetailsView" />
 					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
@@ -369,7 +365,6 @@
 						width="300" />
 					<option type="column" name="number" fields="number" link="true"
 						width="100" />
-					<option type="correspondingView" value="products/productDetailsView" />
 					<option type="paginable" value="true" />
 					<option type="searchable" value="name,number" />
 					<option type="orderable" value="name,number" />
