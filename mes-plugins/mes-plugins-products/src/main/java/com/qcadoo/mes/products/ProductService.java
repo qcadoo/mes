@@ -15,7 +15,8 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ViewValue;
-import com.qcadoo.mes.view.components.combobox.EntityComboBoxValue;
+import com.qcadoo.mes.view.components.LookupData;
+import com.qcadoo.mes.view.components.SimpleValue;
 
 @Service
 public final class ProductService {
@@ -28,39 +29,38 @@ public final class ProductService {
 
     @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName) {
-        // ViewValue<EntityComboBoxValue> productValue = (ViewValue<EntityComboBoxValue>) value
-        // .lookupValue("mainWindow.orderDetailsForm.product");
-        // ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
-        // .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
-        // ViewValue<EntityComboBoxValue> instructionValue = (ViewValue<EntityComboBoxValue>) value
-        // .lookupValue("mainWindow.orderDetailsForm.instruction");
-        //
-        // if (defaultInstructionValue == null || productValue == null) {
-        // return;
-        // }
-        //
-        // defaultInstructionValue.setEnabled(false);
-        // defaultInstructionValue.setValue(new SimpleValue(""));
+        ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
+        ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
+                .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
+        ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
+                .lookupValue("mainWindow.orderDetailsForm.instruction");
 
-        // if (productValue.getValue() != null && productValue.getValue().getValue() != null) {
-        // Entity defaultInstructionEntity = getDefaultInstruction(productValue);
-        // if (defaultInstructionEntity != null) {
-        // String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
-        // defaultInstructionValue.getValue().setValue(defaultInstructionName);
-        // // selectDefaultInstruction(triggerComponentName, instructionValue, defaultInstructionEntity);
-        // }
-        // }
+        if (defaultInstructionValue == null || productValue == null) {
+            return;
+        }
+
+        defaultInstructionValue.setEnabled(false);
+        defaultInstructionValue.setValue(new SimpleValue(""));
+
+        if (productValue.getValue() != null && productValue.getValue().getValue() != null) {
+            Entity defaultInstructionEntity = getDefaultInstruction(productValue);
+            if (defaultInstructionEntity != null) {
+                String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
+                defaultInstructionValue.getValue().setValue(defaultInstructionName);
+                selectDefaultInstruction(triggerComponentName, instructionValue, defaultInstructionEntity);
+            }
+        }
     }
 
-    private void selectDefaultInstruction(final String triggerComponentName,
-            final ViewValue<EntityComboBoxValue> instructionValue, final Entity defaultInstructionEntity) {
-        Long selectedInstructinId = (Long) instructionValue.getValue().getValue();
+    private void selectDefaultInstruction(final String triggerComponentName, final ViewValue<LookupData> instructionValue,
+            final Entity defaultInstructionEntity) {
+        Long selectedInstructinId = instructionValue.getValue().getSelectedEntityId();
         if (selectedInstructinId == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
             instructionValue.getValue().setValue(defaultInstructionEntity.getId());
         }
     }
 
-    private Entity getDefaultInstruction(final ViewValue<EntityComboBoxValue> productValue) {
+    private Entity getDefaultInstruction(final ViewValue<LookupData> productValue) {
         DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
 
         SearchCriteriaBuilder searchCriteria = instructionDD
@@ -68,7 +68,7 @@ public final class ProductService {
                 .withMaxResults(1)
                 .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
                 .restrictedWith(
-                        Restrictions.belongsTo(instructionDD.getField("product"), productValue.getValue().getSelectedValue()));
+                        Restrictions.belongsTo(instructionDD.getField("product"), productValue.getValue().getSelectedEntityId()));
 
         SearchResult searchResult = searchCriteria.list();
 

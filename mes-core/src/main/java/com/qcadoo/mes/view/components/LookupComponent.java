@@ -9,12 +9,15 @@ import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.StringUtils;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ComponentOption;
@@ -37,6 +40,8 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
 
     private String expression;
 
+    private String fieldCode;
+
     public LookupComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
             final String dataSource, final TranslationService translationService) {
         super(name, parent, fieldName, dataSource, translationService);
@@ -53,6 +58,8 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
                 addOption("height", height);
             } else if ("expression".equals(option.getType())) {
                 expression = option.getValue();
+            } else if ("fieldCode".equals(option.getType())) {
+                fieldCode = option.getValue();
             }
         }
     }
@@ -78,6 +85,10 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
                     selectedEntities.put(getPath(), selectedEntity);
                     lookupData.setSelectedEntityId(Long.parseLong(selectedEntityId));
                 }
+            }
+
+            if (!value.isNull("selectedEntityCode")) {
+                lookupData.setSelectedEntityCode(value.getString("selectedEntityCode"));
             }
 
             if (!value.isNull("contextEntityId")) {
@@ -107,17 +118,43 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             }
         }
 
+        boolean error = false;
+
         if (entity != null) {
             Entity selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
 
             if (selectedEntity != null) {
                 lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
                 lookupData.setSelectedEntityId(selectedEntity.getId());
+                lookupData.setSelectedEntityCode(String.valueOf(selectedEntity.getField(fieldCode)));
                 selectedEntities.put(getPath(), selectedEntity);
+            }
+        } else if (viewValue != null && viewValue.getValue() != null
+                && StringUtils.hasText(viewValue.getValue().getSelectedEntityCode())) {
+            String code = viewValue.getValue().getSelectedEntityCode();
+
+            SearchResult results = getDataDefinition().find()
+                    .restrictedWith(Restrictions.eq(getDataDefinition().getField(fieldCode), code)).list();
+
+            if (results.getTotalNumberOfEntities() == 1) {
+                Entity selectedEntity = results.getEntities().get(0);
+                lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
+                lookupData.setSelectedEntityId(selectedEntity.getId());
+                lookupData.setSelectedEntityCode(String.valueOf(selectedEntity.getField(fieldCode)));
+                selectedEntities.put(getPath(), selectedEntity);
+            } else {
+
             }
         }
 
-        return new ViewValue<LookupData>(lookupData);
+        ViewValue<LookupData> newViewValue = new ViewValue<LookupData>(lookupData);
+
+        if (error) {
+            newViewValue.addErrorMessage(getTranslationService().translate("commons.validate.field.error.lookupCodeNotFound",
+                    locale));
+        }
+
+        return newViewValue;
     }
 
     public ViewDefinition getLookupViewDefinition(final ViewDefinitionService viewDefinitionService) {

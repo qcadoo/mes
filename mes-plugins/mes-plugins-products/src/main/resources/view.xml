@@ -160,7 +160,8 @@
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullScreen" value="true" />
-					<option type="expression" value="#name + ' - ' + #id" />
+					<option type="expression" value="#name + ' - ' + #number" />
+					<option type="fieldCode" value="number" />
 				</component>
 				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
@@ -230,7 +231,8 @@
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullScreen" value="true" />
-					<option type="expression" value="#name + ' - ' + #id" />
+					<option type="expression" value="#name + ' - ' + #number" />
+					<option type="fieldCode" value="number" />
 				</component>
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />
@@ -279,7 +281,8 @@
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullScreen" value="true" />
-					<option type="expression" value="#name + ' - ' + #id" />
+					<option type="expression" value="#name + ' - ' + #number" />
+					<option type="fieldCode" value="number" />
 				</component>
 				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
@@ -355,7 +358,8 @@
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullScreen" value="true" />
-					<option type="expression" value="#name + ' - ' + #id" />
+					<option type="expression" value="#name + ' - ' + #number" />
+					<option type="fieldCode" value="number" />
 				</component>
 				<component type="input" name="defaultInstruction" field="defaultInstruction"
 					enabled="false" />
@@ -371,6 +375,7 @@
 					<option type="orderable" value="name,number" />
 					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
+					<option type="fieldCode" value="number" />
 				</component>
 				<component type="input" name="plannedQuantity" field="plannedQuantity" />
 				<component type="input" name="doneQuantity" field="doneQuantity" />

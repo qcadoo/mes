@@ -4,6 +4,8 @@ public class LookupData extends SimpleValue {
 
     private String selectedEntityValue;
 
+    private String selectedEntityCode;
+
     private Long contextEntityId;
 
     public LookupData() {
@@ -31,6 +33,14 @@ public class LookupData extends SimpleValue {
 
     public Long getContextEntityId() {
         return contextEntityId;
+    }
+
+    public void setSelectedEntityCode(final String selectedEntityCode) {
+        this.selectedEntityCode = selectedEntityCode;
+    }
+
+    public String getSelectedEntityCode() {
+        return selectedEntityCode;
     }
 
 }
