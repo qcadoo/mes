@@ -21,7 +21,7 @@ QCD.WindowController = function() {
 		iframe.load(function() {
 			onIframeLoad(this);
 		});
-
+		$(window).bind('resize', updateSize);
 	}
 	
 	this.addMessage = function(type, content) {
@@ -88,6 +88,15 @@ QCD.WindowController = function() {
 		}
 		loadingIndicator.hide();
 	}
+	
+	function updateSize() {
+		var width = $(document).width();
+		var margin = Math.round(width * 0.02);
+		var innerWidth = Math.round(width - 2 * margin);
+		$("#q_menu_row1").width(innerWidth);
+		$("#secondLevelMenu").width(innerWidth);
+	}
+	this.updateSize = updateSize;
 	
 	constructor();
 	
