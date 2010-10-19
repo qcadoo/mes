@@ -134,6 +134,7 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
                 if (results.getTotalNumberOfEntities() == 1) {
                     selectedEntity = results.getEntities().get(0);
                 } else {
+                    lookupData.setSelectedEntityCode(code);
                     error = true;
                 }
             }
