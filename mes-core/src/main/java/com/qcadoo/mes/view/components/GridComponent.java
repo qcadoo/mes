@@ -224,7 +224,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         Long belongsToEntityId = null;
         SearchCriteriaBuilder searchCriteriaBuilder = null;
 
-        System.out.println(" --> " + entity + ", " + getSourceFieldPath() + ", " + getFieldPath());
+        System.out.println(" --> " + getPath() + ", " + entity + ", " + getSourceFieldPath() + ", " + getFieldPath());
 
         if (getSourceFieldPath() != null || getFieldPath() != null) {
             if (entity == null) {
