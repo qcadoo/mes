@@ -134,7 +134,11 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.performCallFunction = function(functionName, entityId, actionsPerformer) {
-		window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
+		if (functionName == "printOrder" || functionName == "printMaterialRequirementPdf") {
+			window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
+		} else if (functionName == "printMaterialRequirementCsv") {
+			window.open(viewName+"/function/"+functionName+".xsl?entityId="+entityId);
+		}
 	}
 	
 	this.performChangePriority = function(componentName, entityId, direction) {

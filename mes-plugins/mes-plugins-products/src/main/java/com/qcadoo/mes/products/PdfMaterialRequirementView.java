@@ -27,7 +27,7 @@ public final class PdfMaterialRequirementView extends ProductsPdfView {
                 getFontBold(font)));
 
         for (int i = 0; i < 5; i++) {
-            document.add(new Paragraph("<numer" + i + "><Nazwa" + i + "><ilosc><jednostka>"));
+            document.add(new Paragraph("<numer" + i + "><nazwa" + i + "><ilosc><jednostka>"));
         }
     }
 

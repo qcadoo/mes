@@ -28,6 +28,10 @@
 		    <groupId>com.lowagie</groupId>
 		    <artifactId>itext</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

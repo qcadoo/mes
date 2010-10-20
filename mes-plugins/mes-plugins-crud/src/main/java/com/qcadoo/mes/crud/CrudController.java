@@ -271,7 +271,7 @@ public final class CrudController {
         } else if ("printMaterialRequirementPdf".equals(functionName)) {
             mav.setViewName("pdfMaterialRequirementView");
         } else if ("printMaterialRequirementCsv".equals(functionName)) {
-
+            mav.setViewName("csvMaterialRequirementView");
         }
 
         mav.addObject("entity", entity);
