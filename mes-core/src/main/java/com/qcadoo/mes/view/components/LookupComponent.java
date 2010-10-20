@@ -1,5 +1,7 @@
 package com.qcadoo.mes.view.components;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,8 +18,11 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ComponentOption;
@@ -128,8 +133,18 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             } else if (StringUtils.hasText(viewValue.getValue().getSelectedEntityCode())) {
                 String code = viewValue.getValue().getSelectedEntityCode();
 
-                SearchResult results = getDataDefinition().find()
-                        .restrictedWith(Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*")).list();
+                SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find().restrictedWith(
+                        Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*"));
+
+                if (lookupData.getContextEntityId() != null) {
+                    DataDefinition gridDataDefinition = getSourceComponent().getDataDefinition();
+                    HasManyType hasManyType = getHasManyType(gridDataDefinition, getSourceFieldPath());
+
+                    searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
+                            getDataDefinition().getField(hasManyType.getJoinFieldName()), lookupData.getContextEntityId()));
+                }
+
+                SearchResult results = searchCriteriaBuilder.list();
 
                 if (results.getTotalNumberOfEntities() == 1) {
                     selectedEntity = results.getEntities().get(0);
@@ -140,8 +155,8 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             }
         }
 
-        if (entity != null && selectedEntity == null && !error) {
-            selectedEntity = (Entity) getFieldValue(entity, getFieldPath());
+        if (parentEntity != null && selectedEntity == null && !error && pathsToUpdate.isEmpty()) {
+            selectedEntity = (Entity) getFieldValue(parentEntity, getFieldPath());
         }
 
         if (selectedEntity != null) {
@@ -159,6 +174,16 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         }
 
         return newViewValue;
+    }
+
+    private HasManyType getHasManyType(final DataDefinition dataDefinition, final String fieldPath) {
+        checkState(!fieldPath.matches("\\."), "Grid doesn't support sequential path");
+        FieldDefinition fieldDefinition = dataDefinition.getField(fieldPath);
+        if (fieldDefinition != null && fieldDefinition.getType() instanceof HasManyType) {
+            return (HasManyType) fieldDefinition.getType();
+        } else {
+            throw new IllegalStateException("Grid data definition cannot be found");
+        }
     }
 
     public ViewDefinition getLookupViewDefinition(final ViewDefinitionService viewDefinitionService) {
@@ -269,5 +294,13 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
                 getName())
                 + ".focus");
         translationsMap.put(focusMessageCodes.get(0), getTranslationService().translate(focusMessageCodes, locale));
+    }
+
+    public String getFieldCode() {
+        return fieldCode;
+    }
+
+    public String getExpression() {
+        return expression;
     }
 }

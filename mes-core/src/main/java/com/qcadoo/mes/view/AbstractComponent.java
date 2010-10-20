@@ -134,7 +134,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
             selectedEntity = parentEntity;
         }
 
-        if (shouldNotBeUpdated(pathsToUpdate)) {
+        if (shouldNotBeUpdated(pathsToUpdate) && !"lookupComponent".equals(getType())) {
             if (viewValue != null) {
                 setVisibleAndEnabled(selectedEntity, (ViewValue<T>) viewValue);
             }
