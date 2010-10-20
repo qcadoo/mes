@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
 
 import com.lowagie.text.Document;
@@ -26,13 +27,15 @@ import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
 
-public class PdfOrderView extends AbstractPdfView {
+public final class PdfOrderView extends AbstractPdfView {
 
     @Autowired
     private SecurityService securityService;
 
     @Autowired
     private TranslationService translationService;
+
+    private static final String FONT_PATH = "fonts/Arial.ttf";
 
     @Override
     protected void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
@@ -56,12 +59,12 @@ public class PdfOrderView extends AbstractPdfView {
 
     private void addContent(final Document document, final DefaultEntity order, final Locale locale) throws DocumentException,
             IOException {
-        // TODO KRNA add to properties
-        String fontDir = "/Library/Fonts";
-        FontFactory.registerDirectory(fontDir);
-        BaseFont times = BaseFont.createFont(fontDir + "/Arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        Font t12 = new Font(times, 12);
-        Font tb12 = new Font(times, 12, Font.BOLD);
+
+        ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
+        FontFactory.register(classPathResource.getPath());
+        BaseFont font = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font t12 = new Font(font, 12);
+        Font tb12 = new Font(font, 12, Font.BOLD);
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_FORMAT);
         document.add(new Paragraph(df.format(new Date()), t12));
         UsersUser user = securityService.getCurrentUser();
