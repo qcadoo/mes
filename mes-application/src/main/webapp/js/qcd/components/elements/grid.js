@@ -304,7 +304,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	 function onSortColumnChange(index,iCol,sortorder) {
-		//QCD.info(index+"-"+iCol);
 		blockGrid();
 		if (currentState.sort && currentState.sort.column) {
 			$("#"+elementPath+"_grid_"+currentState.sort.column).removeClass("sortColumn");
@@ -363,10 +362,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setFilterState = function(column, filterText) {
-//		if (! searchEnabled) {
-//			grid[0].toggleToolbar();
-//			searchEnabled = true;
-//		}
+		if (! searchEnabled) {
+			grid[0].toggleToolbar();
+			searchEnabled = true;
+		}
 		if (! currentState.filters) {
 			currentState.filters = new Array();
 		}

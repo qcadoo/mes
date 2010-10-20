@@ -152,9 +152,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
-		QCD.info("lalala");
 		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
-		QCD.info("tratata");
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}

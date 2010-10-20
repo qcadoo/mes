@@ -56,12 +56,6 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 	}
 	
-//	this.setComponentsEnabled = function(isEnabled) {
-//		for (var i in components) {
-//			components[i].setEnabled(isEnabled);
-//		}
-//	}
-	
 	this.getComponent = function(componentName) {
 		if (! componentName || componentName.trim() == "") {
 			return this;
@@ -73,7 +67,6 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 	}
 	
 	function constructor(_this) {
-		//QCD.info("Container");
 	}
 	
 	constructor(this);
