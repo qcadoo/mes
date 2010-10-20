@@ -292,7 +292,12 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.closeWindow = function() {
-		window.close();
+		var serializationObject = {
+			value: rootEntityId,
+			components: getValueData()
+		}
+		QCD.info(serializationObject);
+		//window.close();
 	}
 	
 	this.onSessionExpired = function() {

@@ -18,7 +18,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var labelElement = $("#"+this.elementPath+"_labelDiv");
 	
 	var labelNormal = labelElement.html();
-	var labelFocus = "<span class='focusedLabel'>Podaj kod:</span>";
+	var labelFocus = "<span class='focusedLabel'>enter code:</span>";
 	
 	var currentData = new Object();
 	
@@ -26,10 +26,17 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
 	constructor = function(_this) {
+		
+		var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label.focus";
+		labelFocus = "<span class='focusedLabel'>"+mainController.getTranslation(nameToTranslate)+"</span>";
+		
 		$("#"+_this.elementPath+"_openLookupButton").click(openLookup);
 		$(window.document).focus(onWindowClick);
 		var elementName = elementPath.replace(/-/g,".");
 		window[elementName+"_onReadyFunction"] = function() {
+			if (currentData.selectedEntityCode) {
+				lookupWindow.getComponent("mainWindow.lookupGrid").setFilterState("lookupCode", currentData.selectedEntityCode);	
+			}
 			lookupWindow.init();
 		}
 		window[elementName+"_onSelectFunction"] = function(entityId, entityString, entityCode) {
@@ -43,6 +50,12 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			}
 		}
 		inputElement.focus(onInputFocus).blur(onInputBlur);
+		inputElement.keypress(function(e) {
+			var key=e.keyCode || e.which;
+			if (key==13) {
+				// TODO mina
+			}
+		});
 		valueDivElement.click(function() {
 			inputElement.focus();
 		});
@@ -59,6 +72,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	this.getComponentData = function() {
 		return currentData;
+	}
+	
+	this.setFormComponentEnabled = function(isEnabled) {
+		QCD.info("lookup: "+isEnabled);
 	}
 	
 	function updateData() {

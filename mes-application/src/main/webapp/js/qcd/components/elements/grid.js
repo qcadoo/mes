@@ -364,6 +364,31 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		onCurrentStateChange();
 	}
 	
+	this.setFilterState = function(column, filterText) {
+		if (! searchEnabled) {
+			grid[0].toggleToolbar();
+			searchEnabled = true;
+		}
+		if (! currentState.filters) {
+			currentState.filters = new Array();
+		}
+		var filter = {
+			column: column,
+			value: filterText
+		};
+		currentState.filters.push(filter);
+		$("#gs_"+column).val(filterText);
+		
+//			currentState.filters = state.filters;
+//			grid[0].toggleToolbar();
+//			searchEnabled = true;
+//			for (var filterIndex in currentState.filters) {
+//				var filter = currentState.filters[filterIndex];
+//				$("#gs_"+filter.column).val(filter.value);
+//			}
+			//updateFullScreenSize();
+	}
+	
 	this.onNewButtonClicked = function() {
 		performNew();
 	}
