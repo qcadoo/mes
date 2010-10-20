@@ -102,10 +102,6 @@ public final class ProductService {
                 defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
         instructionValue.getValue().setSelectedEntityValue(
                 ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
-
-        System.out.println(" Q1 ---> " + instructionValue.getValue().getSelectedEntityId());
-        System.out.println(" Q2 ---> " + instructionValue.getValue().getSelectedEntityCode());
-        System.out.println(" Q3 ---> " + instructionValue.getValue().getSelectedEntityValue());
     }
 
     private Entity getDefaultInstruction(final Long selectedProductId) {
