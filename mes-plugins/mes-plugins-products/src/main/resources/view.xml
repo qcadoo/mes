@@ -295,8 +295,8 @@
 					<smallButton name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.ordersGrid}.performDelete;" />
 				</group>
-				<group name="printActions">
-					<bigButton name="print"
+				<group name="export">
+					<smallButton name="print" icon="printIcon16.png"
 						action="#{mainWindow.ordersGrid}.performCallFunction;" />
 				</group>
 			</ribbon>		

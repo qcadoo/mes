@@ -139,6 +139,7 @@
 .component_container_form .error_box {
 	display: inline-block;
 	padding: 2px 0 0 1px;
+	position: relative;
 }
 
 .component_container_form .error .error_box .error_icon {
