@@ -46,8 +46,6 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 		
 		if (selected != null) {
 			this.input.val(selected);
-		//} else if (value.emptySelected) {
-		//	this.input.val('');
 		} else {
 			this.input.val(previousSelected);
 		}

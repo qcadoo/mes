@@ -148,28 +148,24 @@ public final class ProductService {
 
         SearchResult searchResult = searchCriteria.list();
 
-        return searchResult.getTotalNumberOfEntities() == 0;
+        if (searchResult.getTotalNumberOfEntities() == 0) {
+            return true;
+        } else {
+            entity.addError(dataDefinition.getField("master"), "products.validate.global.error.default");
+            return false;
+        }
     }
 
     public boolean checkSubstituteDates(final DataDefinition dataDefinition, final Entity entity) {
-        Date dateFrom = (Date) entity.getField("effectiveDateFrom");
-        Date dateTo = (Date) entity.getField("effectiveDateTo");
-
-        return compareDates(dateFrom, dateTo);
+        return compareDates(dataDefinition, entity, "effectiveDateFrom", "effectiveDateTo");
     }
 
     public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        Date dateFrom = (Date) entity.getField("dateFrom");
-        Date dateTo = (Date) entity.getField("dateTo");
-
-        return compareDates(dateFrom, dateTo);
+        return compareDates(dataDefinition, entity, "dateFrom", "dateTo");
     }
 
     public boolean checkInstructionDates(final DataDefinition dataDefinition, final Entity entity) {
-        Date dateFrom = (Date) entity.getField("dateFrom");
-        Date dateTo = (Date) entity.getField("dateTo");
-
-        return compareDates(dateFrom, dateTo);
+        return compareDates(dataDefinition, entity, "dateFrom", "dateTo");
     }
 
     private String getFullNameOfLoggedUser() {
@@ -201,12 +197,21 @@ public final class ProductService {
         entity.setField("worker", getFullNameOfLoggedUser());
     }
 
-    private boolean compareDates(final Date dateFrom, final Date dateTo) {
+    private boolean compareDates(final DataDefinition dataDefinition, final Entity entity, final String dateFromField,
+            final String dateToField) {
+        Date dateFrom = (Date) entity.getField(dateFromField);
+        Date dateTo = (Date) entity.getField(dateToField);
+
         if (dateFrom == null || dateTo == null) {
             return true;
         }
 
-        return !dateFrom.after(dateTo);
+        if (dateFrom.after(dateTo)) {
+            entity.addError(dataDefinition.getField(dateToField), "products.validate.global.error.datesOrder");
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

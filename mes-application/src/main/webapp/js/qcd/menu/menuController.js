@@ -44,9 +44,6 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		model.selectedItem.element.addClass("path");
 		previousActive.second = model.selectedItem.selectedItem;
 		
-		//currentActive.first = model.selectedItem
-		//currentActive.second = model.selectedItem.selectedItem;
-		
 		updateState();
 		
 		changePage(model.selectedItem.selectedItem.page);

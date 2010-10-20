@@ -147,7 +147,15 @@ public final class CrudController {
             final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
+        // System.out.println(" ------------ ");
+        // System.out.println(body.toString());
+        // System.out.println(" ------------ ");
+
         JSONObject jsonBody = getJsonBody(body);
+
+        // System.out.println(jsonBody.toString());
+        // System.out.println(" ------------ ");
+
         JSONObject jsonObject = getJsonObject(jsonBody);
 
         String triggerComponentName = getComponentName(jsonBody);

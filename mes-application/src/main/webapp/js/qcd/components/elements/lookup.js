@@ -23,6 +23,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var currentData = new Object();
 	
+	var isFocused = false;
+	
 	var listeners = this.options.listeners;
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
@@ -89,25 +91,30 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	function updateData() {
 		loadingElement.hide();
-		if (currentData.isError) {
-			
-		} else {
-			valueDivElement.html(currentData.selectedEntityValue);	
-			valueDivElement.show();
-			inputElement.val("");
-			labelElement.html(labelNormal);
+		if (! currentData.isError) {
+			valueDivElement.html(currentData.selectedEntityValue);
+			if (! isFocused) {
+				valueDivElement.show();
+				inputElement.val("");
+				labelElement.html(labelNormal);
+			} else {
+				inputElement.val(currentData.selectedEntityCode);
+			}
 		}
 	}
 	
 	function onInputFocus() {
+		isFocused = true;
 		valueDivElement.hide();
 		inputElement.val(currentData.selectedEntityCode);
 		labelElement.html(labelFocus);
 	}
 	
 	function onInputBlur() {
+		isFocused = false;
 		var newCode = inputElement.val().trim();
 		if (newCode != currentData.selectedEntityCode) {
+			QCD.info("lalala");
 			currentData.selectedEntityCode = inputElement.val().trim();
 			currentData.selectedEntityValue = null;
 			currentData.selectedEntityId = null;

@@ -109,9 +109,6 @@ QCD.components.Component = function(_element, _mainController) {
 	this.setEnabled = function(_isEnabled) {
 		isEnabled = _isEnabled;
 		this.setComponentEnabled(isEnabled);
-		//if (this.isContainer) {
-		//	this.setComponentsEnabled(isEnabled);	
-		//}
 	}
 	
 	this.isEnabled = function() {

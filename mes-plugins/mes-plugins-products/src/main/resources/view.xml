@@ -204,11 +204,11 @@
 					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.instructionDetailsForm}.performSave;" />
 					<bigButtons name="saveBack" icon="saveBackIcon32.png"
-						action="#{mainWindow.instructionDetailsForm}.performSave;">
+						action="#{mainWindow.instructionDetailsForm}.performSave;#{mainWindow}.performBack">
 						<bigButton name="saveNew" icon="saveNewIcon16.png"
 							action="#{mainWindow.instructionDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow}.performCancel;" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.instructionDetailsForm}.performCancel;" />
 					<smallButtons name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.instructionDetailsForm}.performDelete; #{mainWindow}.performBack">
 						<smallButton name="deleteNew" icon="deleteIcon16.png"

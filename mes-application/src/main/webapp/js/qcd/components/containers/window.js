@@ -49,6 +49,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		
 		var margin = Math.round(_width * 0.02);
 		width = Math.round(_width - 2 * margin);
+		// TODO mina
 //		if (width < 960) {
 //			width = 960;
 //		}

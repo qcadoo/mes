@@ -37,7 +37,6 @@ import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.model.types.internal.DecimalType;
 import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
 import com.qcadoo.mes.model.types.internal.IntegerType;
-import com.qcadoo.mes.model.validators.EntityValidator;
 import com.qcadoo.mes.model.validators.FieldValidator;
 import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
 import com.qcadoo.mes.view.internal.ViewDefinitionParser;
@@ -153,7 +152,7 @@ public final class DataDefinitionParser {
                 dataDefinition.withSaveHook(getHookDefinition(reader));
                 break;
             case VALIDATESWITH:
-                dataDefinition.withValidator(getEntityValidatorDefinition(reader));
+                dataDefinition.withValidator(validatorFactory.customEntity(getHookDefinition(reader)));
                 break;
             default:
                 dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier, modelTag));
@@ -326,15 +325,6 @@ public final class DataDefinitionParser {
         } catch (NumberFormatException e) {
             throw new IllegalStateException("Cannot parse data definition", e);
         }
-    }
-
-    private EntityValidator getEntityValidatorDefinition(final XMLStreamReader reader) {
-        EntityValidator validator = validatorFactory.customEntity(getHookDefinition(reader));
-        String customMessage = getStringAttribute(reader, "message");
-        if (StringUtils.hasText(customMessage)) {
-            validator.customErrorMessage(customMessage);
-        }
-        return validator;
     }
 
     private FieldValidator getValidatorDefinition(final XMLStreamReader reader, final FieldValidator validator) {
