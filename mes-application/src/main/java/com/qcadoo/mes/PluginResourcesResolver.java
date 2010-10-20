@@ -1,17 +1,11 @@
 package com.qcadoo.mes;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +15,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.yahoo.platform.yui.compressor.YUICompressor;
 
 public final class PluginResourcesResolver implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 
@@ -44,44 +36,6 @@ public final class PluginResourcesResolver implements ApplicationContextAware, A
         copyResources("css", "css");
         copyResources("img", "img");
         copyResources("jsp", "WEB-INF/jsp");
-        mergeResources("js");
-        mergeResources("css");
-    }
-
-    @SuppressWarnings("unchecked")
-    private void mergeResources(final String type) {
-        LOG.info("Merging resources " + type + " ...");
-
-        Collection<File> files = FileUtils.listFiles(new File(webappPath + "/" + type), new String[] { type }, true);
-
-        try {
-            FileUtils.deleteQuietly(new File(webappPath + "/" + type + "/qcd.min." + type));
-            FileUtils.deleteQuietly(new File(webappPath + "/" + type + "/qcd.all." + type));
-
-            BufferedWriter out = new BufferedWriter(new FileWriter(new File(webappPath + "/" + type + "/qcd.all." + type)));
-
-            String line = null;
-
-            for (File file : files) {
-                if (file.canRead() && !file.getName().equals("qcd.min." + type)) {
-                    LOG.debug("Merging " + file.getAbsolutePath());
-                    BufferedReader in = new BufferedReader(new FileReader(file));
-                    while ((line = in.readLine()) != null) {
-                        out.append(line).append("\n");
-                    }
-                    in.close();
-                }
-            }
-
-            out.close();
-
-            LOG.info("Compressing resources " + type + " ...");
-
-            YUICompressor.main(new String[] { webappPath + "/" + type + "/qcd.all." + type, "-o",
-                    webappPath + "/" + type + "/qcd.min." + type });
-        } catch (IOException e) {
-            throw new IllegalStateException("cannot copy resources: " + type, e);
-        }
     }
 
     private void copyResources(final String type, final String targetPath) {

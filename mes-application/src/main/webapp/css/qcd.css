@@ -60,18 +60,16 @@
 	padding-bottom: 10px;
 }
 
-input, textarea, select {
+input, textarea {
 	border: solid #777777 1px;	
 }
 
 td.fieldRequired input,
-td.fieldRequired textarea,
-td.fieldRequired select {
+td.fieldRequired textarea {
 	background: #f4f6c0;
 }
 
 input.readonly, 
-textarea.readonly, 
-select.readonly {
+textarea.readonly {
 	//background: #CCCCCC;
 }
