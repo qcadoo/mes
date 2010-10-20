@@ -362,9 +362,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setFilterState = function(column, filterText) {
-		if (! searchEnabled) {
+		if (! currentState.searchEnabled) {
 			grid[0].toggleToolbar();
-			searchEnabled = true;
+			currentState.searchEnabled = true;
 		}
 		if (! currentState.filters) {
 			currentState.filters = new Array();
