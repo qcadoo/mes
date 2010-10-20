@@ -71,7 +71,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 			}
 		});
 	}
-		
+
 	this.getUpdate = function(componentName, value, listeners) {
 		QCD.info("getUpdate "+componentName+"->"+value);
 		if (listeners) {
@@ -185,10 +185,22 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 					return;
 				}
 				elementAction = elementAction.substring(1);
+
+				var argumentsBegin = elementAction.indexOf("(");
+				var argumentsEnd = elementAction.indexOf(")");
+				var argumentsList;
 				
+				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd) {
+					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
+					argumentsList = args.split(",");
+					elementAction = elementAction.substring(0, argumentsBegin);
+				} 
+				
+
 				var actionObject = {
 					component: component,
-					action: elementAction
+					action: elementAction,
+					arguments: argumentsList
 				}
 				actions.push(actionObject);
 			}
