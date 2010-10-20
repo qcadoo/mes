@@ -232,12 +232,15 @@
 	position: absolute;
 	top: -1px;
 	right: -28px;
-	background: url(../../images/icons/lookupIcon.png) no-repeat 0 -23px;
-	cursor: pointer;
+	background: url(../../images/icons/lookupIcon.png) no-repeat 0 -46px;
 	vertical-align: middle;
 }
-.component_container_form .lookupIcon:hover {
+.component_container_form .lookupIcon.enabled {
+	cursor: pointer;
 	background-position: 0 0;
+}
+.component_container_form .lookupIcon.enabled:hover {
+	background-position: 0 -23px;
 }
 
 .component_container_form_w .lookupValueWrapper {

@@ -152,7 +152,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
+		QCD.info("lalala");
 		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
+		QCD.info("tratata");
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
@@ -292,12 +294,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.closeWindow = function() {
-		var serializationObject = {
-			value: rootEntityId,
-			components: getValueData()
-		}
-		QCD.info(serializationObject);
-		//window.close();
+		window.close();
 	}
 	
 	this.onSessionExpired = function() {

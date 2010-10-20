@@ -268,8 +268,14 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         Map<String, String> codeColumnOptions = new HashMap<String, String>();
         codeColumnOptions.put("name", "lookupCode");
         codeColumnOptions.put("fields", fieldCode);
-        codeColumnOptions.put("link", "true");
+        codeColumnOptions.put("hidden", "true");
         gridComponent.addRawOption(new ComponentOption("column", codeColumnOptions));
+        Map<String, String> codeVisibleColumnOptions = new HashMap<String, String>();
+        codeVisibleColumnOptions.put("name", "lookupCodeVisible");
+        codeVisibleColumnOptions.put("fields", fieldCode);
+        codeVisibleColumnOptions.put("hidden", "false");
+        codeVisibleColumnOptions.put("link", "true");
+        gridComponent.addRawOption(new ComponentOption("column", codeVisibleColumnOptions));
     }
 
     @Override
