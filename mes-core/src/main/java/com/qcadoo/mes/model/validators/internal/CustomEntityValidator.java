@@ -11,8 +11,6 @@ public final class CustomEntityValidator implements EntityValidator {
 
     private final HookDefinition entityValidateHook;
 
-    private String errorMessage = CUSTOM_ERROR;
-
     public CustomEntityValidator(final HookDefinition entityValidateHook) {
         this.entityValidateHook = entityValidateHook;
     }
@@ -23,14 +21,10 @@ public final class CustomEntityValidator implements EntityValidator {
         if (result) {
             return true;
         }
-        entity.addGlobalError(errorMessage);
+        if (entity.isValid()) {
+            entity.addGlobalError(CUSTOM_ERROR);
+        }
         return false;
-    }
-
-    @Override
-    public EntityValidator customErrorMessage(final String errorMessage) {
-        this.errorMessage = errorMessage;
-        return this;
     }
 
 }

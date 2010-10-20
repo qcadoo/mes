@@ -153,8 +153,6 @@ public class DataDefinitionParserTest {
 
         assertThat(validator, instanceOf(CustomEntityValidator.class));
 
-        assertEquals("Error Message", getField(validator, "errorMessage"));
-
         testHookDefinition(validator, "entityValidateHook", CustomEntityService.class, "validateEntity");
     }
 

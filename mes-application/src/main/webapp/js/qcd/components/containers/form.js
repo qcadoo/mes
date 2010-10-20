@@ -29,14 +29,22 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		if(value.valid) {
-			mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
+			if(value.headerEntityIdentifier) {
+				mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
+			} else {
+				mainController.setWindowHeader(value.header);
+			}
 		}
 		formValue = value;
 		unblock();
 	}
 	
 	this.setComponentState = function(state) {
-		mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
+		if(state.headerEntityIdentifier) {
+			mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
+		} else {
+			mainController.setWindowHeader(state.header);
+		}
 		formValue = state;
 		unblock();
 	}

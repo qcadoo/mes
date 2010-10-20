@@ -621,9 +621,6 @@ public class ValidatorTest extends DataAccessTest {
         // then
         verify(session, never()).save(any(SampleSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
-        assertTrue(entity.getErrors().isEmpty());
-        assertEquals(1, entity.getGlobalErrors().size());
-        assertEquals("commons.validate.global.error.custom", entity.getGlobalErrors().get(0).getMessage());
     }
 
     @Test

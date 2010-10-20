@@ -26,7 +26,12 @@ public class CustomEntityService {
     }
 
     public boolean hasAge18AndNameMrT(final DataDefinition dataDefinition, final Entity entity) {
-        return (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T"));
+        if (entity.getField("age").equals(18) && entity.getField("name").equals("Mr T")) {
+            return true;
+        } else {
+            entity.addError(dataDefinition.getField("name"), "xxx");
+            return false;
+        }
     }
 
 }

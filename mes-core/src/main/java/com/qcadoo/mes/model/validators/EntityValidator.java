@@ -10,5 +10,4 @@ public interface EntityValidator {
 
     boolean validate(DataDefinition dataDefinition, Entity entity);
 
-    EntityValidator customErrorMessage(String message);
 }
