@@ -33,10 +33,10 @@
 	<c:choose>
 		<c:when test="${isInputBox}">
 			<div class="component_container_form_w">
-				<div class="component_container_form_x">
-					<div class="component_container_form_y">
-						${componentBody}
-					</div>
+				<div class="component_container_form_inner">
+					<div class="component_container_form_x"></div>
+					<div class="component_container_form_y"></div>
+					${componentBody}
 				</div>
 			</div>
 		</c:when>

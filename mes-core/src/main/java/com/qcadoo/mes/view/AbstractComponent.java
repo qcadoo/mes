@@ -172,6 +172,13 @@ public abstract class AbstractComponent<T> implements Component<T> {
         } else {
             value.setEnabled(true);
         }
+
+        if (!defaultEnabled) {
+            value.setEnabled(defaultEnabled);
+        }
+        if (!defaultVisible) {
+            value.setEnabled(defaultVisible);
+        }
     }
 
     @Override
@@ -512,6 +519,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     public final void setDefaultEnabled(final boolean defaultEnabled) {
         this.defaultEnabled = defaultEnabled;
+        this.addOption("defaultEnabled", defaultEnabled);
     }
 
     @Override

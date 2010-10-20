@@ -195,6 +195,11 @@ public final class ProductService {
         }
     }
 
+    public void fillMaterialRequirementDateAndWorker(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("date", new Date());
+        entity.setField("worker", getFullNameOfLoggedUser());
+    }
+
     private boolean compareDates(final Date dateFrom, final Date dateTo) {
         if (dateFrom == null || dateTo == null) {
             return true;

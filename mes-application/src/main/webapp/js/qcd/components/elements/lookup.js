@@ -18,7 +18,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var labelElement = $("#"+this.elementPath+"_labelDiv");
 	
 	var labelNormal = labelElement.html();
-	var labelFocus = "<span style='color: #005ec5;'>Podaj kod:</span>";
+	var labelFocus = "<span class='focusedLabel'>Podaj kod:</span>";
 	
 	var currentData = new Object();
 	
@@ -87,9 +87,14 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			currentData.selectedEntityValue = null;
 			currentData.selectedEntityId = null;
 			if (currentData.selectedEntityCode == "") {
-				updateData();
-				element.removeClass("error");
-				labelElement.html(labelNormal);
+				if (hasListeners) {
+					loadingElement.show();
+					mainController.getUpdate(elementPath, entityId, listeners);
+				} else {
+					updateData();
+					element.removeClass("error");
+					labelElement.html(labelNormal);	
+				}
 			} else {
 				loadingElement.show();
 				mainController.getUpdate(elementPath, entityId, listeners);
