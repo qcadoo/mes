@@ -85,7 +85,7 @@ public final class ProductService {
                 if (defaultInstructionEntity != null) {
                     String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
                     defaultInstructionValue.getValue().setValue(defaultInstructionName);
-                    if (selectedInstruction == null) {
+                    if (selectedInstruction == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
                         selectDefaultInstruction(instructionValue, defaultInstructionEntity);
                     }
                 }
