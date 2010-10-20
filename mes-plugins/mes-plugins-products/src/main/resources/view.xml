@@ -401,9 +401,9 @@
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="" />
+						action="#{mainWindow.materialRequirementsGrid}.performCallFunctionTwo;" />
 					<smallButton name="csv" icon="printIcon16.png"
-						action="" />
+						action="#{mainWindow.materialRequirementsGrid}.performCallFunctionThree;" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirementsGrid">

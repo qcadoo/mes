@@ -7,7 +7,6 @@
 
 <html>
 <head>
-
 	<link rel="stylesheet" href="../../css/jquery-ui-1.8.4.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/jquery.datepick.css" type="text/css" /> 
 	<link rel="stylesheet" href="../../css/ui.jqgrid.css" type="text/css" />
