@@ -388,4 +388,37 @@
 		</component>
 		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
 	</view>
+	<view name="materialRequirementGridView" model="materialRequirement">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="create" icon="addIcon32.png"
+						action="#{mainWindow.ordersGrid}.performNew;" />
+					<smallButton name="preview" 
+						action="" />
+				</group>
+				<group name="export">
+					<smallButton name="pdf" icon="printIcon16.png"
+						action="" />
+					<smallButton name="csv" icon="printIcon16.png"
+						action="" />
+				</group>
+			</ribbon>		
+			<component type="grid" name="materialRequirementsGrid">
+				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="date" fields="date" />
+				<option type="column" name="worker" fields="worker" />
+				<option type="header" value="false" />
+				<option type="correspondingView" value="products/materialRequirementDetailsView" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,date,worker" />
+				<option type="orderable" value="name,date,worker" />
+				<option type="multiselect" value="true" />
+				<option type="fullScreen" value="true" />
+			</component>
+			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+	</view>
 </qcd:views>

@@ -82,6 +82,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
                 "instructionGridView"));
         productsItem.addItem(new ViewDefinitionMenuItemItem("productionOrders", "Zlecenia produkcyjne", "products",
                 "orderGridView"));
+        productsItem.addItem(new ViewDefinitionMenuItemItem("materialRequirements", "Zapotrzebowania materiałowe", "products",
+                "materialRequirementGridView"));
         baseMenuDefinition.addItem(productsItem);
 
         MenulItemsGroup administrationItem = new MenulItemsGroup("administration", "Administracja");
