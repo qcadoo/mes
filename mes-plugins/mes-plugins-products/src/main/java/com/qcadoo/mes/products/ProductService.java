@@ -58,33 +58,34 @@ public final class ProductService {
 
         Entity selectedInstruction = null;
 
-        if (instructionValue.getValue() != null && instructionValue.getValue().getSelectedEntityId() != null) {
+        if (selectedProductId != null && instructionValue.getValue() != null
+                && instructionValue.getValue().getSelectedEntityId() != null
+                && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
             selectedInstruction = dataDefinitionService.get("products", "instruction").get(
                     instructionValue.getValue().getSelectedEntityId());
+        } else {
+            instructionValue.getValue().setSelectedEntityId(null);
+            instructionValue.getValue().setSelectedEntityCode("");
+            instructionValue.getValue().setSelectedEntityValue("");
         }
 
         if (selectedProductId == null) {
             instructionValue.setEnabled(false);
-            instructionValue.getValue().setValue(null);
+            instructionValue.getValue().setSelectedEntityId(null);
             instructionValue.getValue().setSelectedEntityCode("");
             instructionValue.getValue().setSelectedEntityValue("");
         } else {
-            if (selectedInstruction != null
-                    && !((Entity) selectedInstruction.getField("product")).getId().equals(selectedProductId)) {
-                selectedInstruction = null;
+            if (!hasAnyInstructions(selectedProductId)) {
+                instructionValue.setEnabled(false);
                 instructionValue.getValue().setSelectedEntityId(null);
                 instructionValue.getValue().setSelectedEntityCode("");
                 instructionValue.getValue().setSelectedEntityValue("");
-            }
-
-            if (!hasAnyInstructions(selectedProductId)) {
-                instructionValue.setEnabled(false);
             } else {
                 Entity defaultInstructionEntity = getDefaultInstruction(selectedProductId);
                 if (defaultInstructionEntity != null) {
                     String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
                     defaultInstructionValue.getValue().setValue(defaultInstructionName);
-                    if (selectedInstruction == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+                    if (selectedInstruction == null) {
                         selectDefaultInstruction(instructionValue, defaultInstructionEntity);
                     }
                 }
@@ -101,6 +102,10 @@ public final class ProductService {
                 defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
         instructionValue.getValue().setSelectedEntityValue(
                 ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
+
+        System.out.println(" Q1 ---> " + instructionValue.getValue().getSelectedEntityId());
+        System.out.println(" Q2 ---> " + instructionValue.getValue().getSelectedEntityCode());
+        System.out.println(" Q3 ---> " + instructionValue.getValue().getSelectedEntityValue());
     }
 
     private Entity getDefaultInstruction(final Long selectedProductId) {

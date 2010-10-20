@@ -155,7 +155,7 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             }
         }
 
-        if (parentEntity != null && selectedEntity == null && !error) {
+        if (parentEntity != null && selectedEntity == null && !error && pathsToUpdate.isEmpty()) {
             selectedEntity = (Entity) getFieldValue(parentEntity, getFieldPath());
         }
 
