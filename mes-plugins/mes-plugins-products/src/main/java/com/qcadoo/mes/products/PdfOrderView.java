@@ -43,7 +43,11 @@ public final class PdfOrderView extends AbstractPdfView {
 
         DefaultEntity order = (DefaultEntity) model.get("order");
 
-        addContent(document, order, request.getLocale());
+        ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
+        FontFactory.register(classPathResource.getPath());
+        BaseFont font = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
+        addContent(document, order, request.getLocale(), font);
         addMetaData(document, request.getLocale());
         writer.addJavaScript("this.print(false);", false);
     }
@@ -57,14 +61,10 @@ public final class PdfOrderView extends AbstractPdfView {
         document.addCreator("QCADOO");
     }
 
-    private void addContent(final Document document, final DefaultEntity order, final Locale locale) throws DocumentException,
-            IOException {
-
-        ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
-        FontFactory.register(classPathResource.getPath());
-        BaseFont font = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        Font t12 = new Font(font, 12);
-        Font tb12 = new Font(font, 12, Font.BOLD);
+    private void addContent(final Document document, final DefaultEntity order, final Locale locale, final BaseFont baseFont)
+            throws DocumentException, IOException {
+        Font t12 = new Font(baseFont, 12);
+        Font tb12 = new Font(baseFont, 12, Font.BOLD);
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_FORMAT);
         document.add(new Paragraph(df.format(new Date()), t12));
         UsersUser user = securityService.getCurrentUser();
