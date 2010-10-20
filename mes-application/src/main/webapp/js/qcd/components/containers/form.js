@@ -36,7 +36,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentState = function(state) {
-		mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
+		mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
 		formValue = state;
 		unblock();
 	}

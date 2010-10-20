@@ -168,6 +168,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var entity = value.entities[entityNo];
 			var fields = new Object();
 			for (var fieldName in entity.fields) {
+				if (entity.fields[fieldName] == null) {
+					continue;
+				}
 				if (hiddenColumnValues[fieldName]) {
 					hiddenColumnValues[fieldName][entity.id] = entity.fields[fieldName];
 				} else {
