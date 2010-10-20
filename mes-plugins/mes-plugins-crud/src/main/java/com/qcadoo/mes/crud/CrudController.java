@@ -45,7 +45,11 @@ public final class CrudController {
 
     private static final String PLUGIN_IDENTIFIER_VARIABLE = "pluginIdentifier";
 
+    private static final String FUNCTION_NAME_VARIABLE = "functionName";
+
     private static final String CONTROLLER_PATH = "page/{" + PLUGIN_IDENTIFIER_VARIABLE + "}/{" + VIEW_NAME_VARIABLE + "}";
+
+    private static final String FUNCTION_PATH = "/function/{" + FUNCTION_NAME_VARIABLE + "}";
 
     private static final String JSON_BODY = "jsonBody";
 
@@ -240,9 +244,10 @@ public final class CrudController {
         return responseViewValue;
     }
 
-    @RequestMapping(value = CONTROLLER_PATH + "/function/print", method = RequestMethod.GET)
-    public ModelAndView getPdfPageView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam("entityId") final String entityId) {
+    @RequestMapping(value = CONTROLLER_PATH + FUNCTION_PATH, method = RequestMethod.GET)
+    public ModelAndView getFunctionCallPageView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName,
+            @PathVariable(FUNCTION_NAME_VARIABLE) final String functionName, @RequestParam("entityId") final String entityId) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         Entity entity = null;
@@ -251,9 +256,17 @@ public final class CrudController {
             entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
         }
 
-        ModelAndView mav = new ModelAndView("pdfOrderView");
+        ModelAndView mav = new ModelAndView();
 
-        mav.addObject("order", entity);
+        if ("printOrder".equals(functionName)) {
+            mav.setViewName("pdfOrderView");
+        } else if ("printMaterialRequirementPdf".equals(functionName)) {
+            mav.setViewName("pdfMaterialRequirementView");
+        } else if ("printMaterialRequirementCsv".equals(functionName)) {
+
+        }
+
+        mav.addObject("entity", entity);
 
         return mav;
     }
