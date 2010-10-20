@@ -107,4 +107,12 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" message="products.validate.global.error.datesOrder" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
 	</model>
+	<model name="materialRequirement">	
+		<text name="name">
+			<validatesPresence />
+		</text>
+		<date name="date" readonly="true" />
+		<text name="worker" readonly="true" />
+		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillMaterialRequirementDateAndWorker" />
+	</model>
 </qcd:models>
