@@ -217,12 +217,12 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, null, sourceFieldPath,
                 getTranslationService());
 
+        addConstantsColumnToLookupGrid(gridComponent);
+
         for (ComponentOption rawOption : getRawOptions()) {
             gridComponent.addRawOption(rawOption);
         }
         gridComponent.addRawOption(new ComponentOption("isLookup", ImmutableMap.of("value", "true")));
-
-        addHiddenColumnToLookupGrid(gridComponent);
 
         windowComponent.addComponent(gridComponent);
 
@@ -259,7 +259,7 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         windowComponent.setRibbon(ribbon);
     }
 
-    private void addHiddenColumnToLookupGrid(final GridComponent gridComponent) {
+    private void addConstantsColumnToLookupGrid(final GridComponent gridComponent) {
         Map<String, String> valueColumnOptions = new HashMap<String, String>();
         valueColumnOptions.put("name", "lookupValue");
         valueColumnOptions.put("expression", expression);
@@ -270,6 +270,12 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         codeColumnOptions.put("fields", fieldCode);
         codeColumnOptions.put("hidden", "true");
         gridComponent.addRawOption(new ComponentOption("column", codeColumnOptions));
+        Map<String, String> codeVisibleColumnOptions = new HashMap<String, String>();
+        codeVisibleColumnOptions.put("name", "lookupCodeVisible");
+        codeVisibleColumnOptions.put("fields", fieldCode);
+        codeVisibleColumnOptions.put("hidden", "false");
+        codeVisibleColumnOptions.put("link", "true");
+        gridComponent.addRawOption(new ComponentOption("column", codeVisibleColumnOptions));
     }
 
     @Override
@@ -281,11 +287,19 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
 
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
+        String codeBase = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                + ".label";
         List<String> messageCodes = new LinkedList<String>();
-        messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
-                + ".label");
+        messageCodes.add(codeBase);
         messageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
         translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
+
+        List<String> focusMessageCodes = new LinkedList<String>();
+        focusMessageCodes.add(codeBase + ".focus");
+        focusMessageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(),
+                getName())
+                + ".focus");
+        translationsMap.put(focusMessageCodes.get(0), getTranslationService().translate(focusMessageCodes, locale));
     }
 
     public String getFieldCode() {

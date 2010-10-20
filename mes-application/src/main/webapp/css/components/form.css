@@ -88,7 +88,6 @@
 }
 
 .component_container_form input[type='text'], .component_container_form textarea, .component_container_form select {
-	border: 1px solid #959595;	
 	border-spacing: 0;
   	margin: 0;
   	space: 0;
@@ -107,6 +106,7 @@
 }
 
 .component_container_form input[type='text'], .component_container_form textarea {
+	border: 1px solid #959595;	
 	background: transparent url(../images/form/input_c_transparent.png) no-repeat 0 0;
 	padding-left: 6px;
 }
@@ -117,7 +117,6 @@
 
 .component_container_form select {
 	width: 100%;
-	background: #fff;
 	vertical-align: middle;
 	padding: 0;
 }
@@ -126,11 +125,11 @@
 	color: red;
 }
 	
-.component_container_form .required input[type='text'], .component_container_form .required textarea, .component_container_form .required select {
+.component_container_form .required input[type='text'], .component_container_form .required textarea {
 	border: 1px solid #464646;	
 }
 
-.component_container_form .error input[type='text'], .component_container_form .error textarea, .component_container_form .error select {
+.component_container_form .error input[type='text'], .component_container_form .error textarea {
 	border: 1px solid #ec1c24;
 }
 
@@ -232,12 +231,15 @@
 	position: absolute;
 	top: -1px;
 	right: -28px;
-	background: url(../../images/icons/lookupIcon.png) no-repeat 0 -23px;
-	cursor: pointer;
+	background: url(../../images/icons/lookupIcon.png) no-repeat 0 -46px;
 	vertical-align: middle;
 }
-.component_container_form .lookupIcon:hover {
+.component_container_form .lookupIcon.enabled {
+	cursor: pointer;
 	background-position: 0 0;
+}
+.component_container_form .lookupIcon.enabled:hover {
+	background-position: 0 -23px;
 }
 
 .component_container_form_w .lookupValueWrapper {

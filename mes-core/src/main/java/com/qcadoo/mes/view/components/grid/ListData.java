@@ -30,6 +30,8 @@ public final class ListData {
 
     private final Long contextId;
 
+    private boolean searchEnabled = false;
+
     public ListData() {
         this.contextFieldName = null;
         this.contextId = null;
@@ -142,6 +144,14 @@ public final class ListData {
 
     public List<Map<String, String>> getFilters() {
         return filters;
+    }
+
+    public boolean isSearchEnabled() {
+        return searchEnabled;
+    }
+
+    public void setSearchEnabled(boolean searchEnabled) {
+        this.searchEnabled = searchEnabled;
     }
 
 }

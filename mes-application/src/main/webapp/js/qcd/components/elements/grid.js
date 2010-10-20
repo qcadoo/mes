@@ -20,11 +20,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var componentEnabled = false;
 	
-	var searchEnabled = false;
 	var currentGridHeight;
 	
 	var currentState = {
-		selectedEntityId: null
+		selectedEntityId: null,
+		searchEnabled: false
 	}
 	
 	var columnModel = new Object();
@@ -131,15 +131,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (state.paging && state.paging.first) {
 			currentState.paging = state.paging;
 		}
+		if (state.searchEnabled) {
+			currentState.searchEnabled = state.searchEnabled
+		}
 		if (state.filters && state.filters.length > 0) {
 			currentState.filters = state.filters;
 			grid[0].toggleToolbar();
-			searchEnabled = true;
 			for (var filterIndex in currentState.filters) {
 				var filter = currentState.filters[filterIndex];
 				$("#gs_"+filter.column).val(filter.value);
 			}
-			//updateFullScreenSize();
 		}
 		if (state.sort) {
 			currentState.sort = state.sort;
@@ -289,10 +290,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		});
 		if (gridParameters.isLookup) {
 			headerController.setFilterActive();
-			searchEnabled = true;
+			currentState.searchEnabled = true;
 		} else {
 			grid[0].toggleToolbar();
-			searchEnabled = false;
+			currentState.searchEnabled = false;
 		}
 	}
 	
@@ -332,7 +333,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function onPostDataChange(postdata) {
 		blockGrid();
-		if (searchEnabled) {
+		if (currentState.searchEnabled) {
 			var postFilters = JSON.parse(postdata.filters);
 			var filterArray = new Array();
 			for (var i in postFilters.rules) {
@@ -351,17 +352,30 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.onFilterButtonClicked = function() {
 		grid[0].toggleToolbar();
-		searchEnabled = !searchEnabled;
-		if (searchEnabled) {
+		currentState.searchEnabled = ! currentState.searchEnabled;
+		if (currentState.searchEnabled) {
 			currentGridHeight -= 21;
 		} else {
 			currentGridHeight += 21;
 		}
 		grid.setGridHeight(currentGridHeight);
-		if (! searchEnabled) {
-			currentState.filters = null;
-		}
 		onCurrentStateChange();
+	}
+	
+	this.setFilterState = function(column, filterText) {
+//		if (! searchEnabled) {
+//			grid[0].toggleToolbar();
+//			searchEnabled = true;
+//		}
+		if (! currentState.filters) {
+			currentState.filters = new Array();
+		}
+		var filter = {
+			column: column,
+			value: filterText
+		};
+		currentState.filters.push(filter);
+		$("#gs_"+column).val(filterText);
 	}
 	
 	this.onNewButtonClicked = function() {
@@ -388,7 +402,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var HEIGHT_DIFF = 140;
 			currentGridHeight = _height - HEIGHT_DIFF;
 			
-			if (searchEnabled) {
+			if (currentState.searchEnabled) {
 				currentGridHeight -= 21;
 			}
 			grid.setGridHeight(currentGridHeight);

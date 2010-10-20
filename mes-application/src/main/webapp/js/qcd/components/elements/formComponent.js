@@ -73,6 +73,9 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 			element.addClass("disabled");
 			this.input.attr('disabled', 'true');
 		}
+		if (this.setFormComponentEnabled) {
+			this.setFormComponentEnabled(isEnabled);
+		}
 	}
 
 	function setComponentRequired(isRequired) {

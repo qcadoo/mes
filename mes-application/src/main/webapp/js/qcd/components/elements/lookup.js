@@ -16,9 +16,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var valueDivElement = $("#"+this.elementPath+"_valueDiv");
 	var loadingElement = $("#"+this.elementPath+"_loadingDiv");
 	var labelElement = $("#"+this.elementPath+"_labelDiv");
+	var openLookupButtonElement = $("#"+this.elementPath+"_openLookupButton");
 	
 	var labelNormal = labelElement.html();
-	var labelFocus = "<span class='focusedLabel'>Podaj kod:</span>";
+	var labelFocus = "<span class='focusedLabel'>enter code:</span>";
 	
 	var currentData = new Object();
 	
@@ -26,23 +27,36 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
 	constructor = function(_this) {
-		$("#"+_this.elementPath+"_openLookupButton").click(openLookup);
+		
+		var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label.focus";
+		labelFocus = "<span class='focusedLabel'>"+mainController.getTranslation(nameToTranslate)+"</span>";
+		
+		openLookupButtonElement.click(openLookup);
 		$(window.document).focus(onWindowClick);
 		var elementName = elementPath.replace(/-/g,".");
 		window[elementName+"_onReadyFunction"] = function() {
+			if (currentData.selectedEntityCode) {
+				lookupWindow.getComponent("mainWindow.lookupGrid").setFilterState("lookupCodeVisible", currentData.selectedEntityCode);	
+			}
 			lookupWindow.init();
 		}
 		window[elementName+"_onSelectFunction"] = function(entityId, entityString, entityCode) {
 			currentData.selectedEntityId = entityId;
 			currentData.selectedEntityValue = entityString;
 			currentData.selectedEntityCode = entityCode;
+			currentData.isError = false;
 			updateData();
-			element.removeClass("error");
 			if (hasListeners) {
 				mainController.getUpdate(elementPath, entityId, listeners);
 			}
 		}
 		inputElement.focus(onInputFocus).blur(onInputBlur);
+		inputElement.keypress(function(e) {
+			var key=e.keyCode || e.which;
+			if (key==13) {
+				// TODO mina
+			}
+		});
 		valueDivElement.click(function() {
 			inputElement.focus();
 		});
@@ -53,17 +67,29 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		currentData.selectedEntityValue = data.selectedEntityValue;
 		currentData.selectedEntityCode = data.selectedEntityCode;
 		currentData.contextEntityId = data.contextEntityId;
+		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null && currentData.selectedEntityCode.trim() != "") {
+			currentData.isError = true;
+		} else {
+			currentData.isError = false;
+		}
 		updateData();
-		loadingElement.hide();
 	}
 	
 	this.getComponentData = function() {
 		return currentData;
 	}
 	
+	this.setFormComponentEnabled = function(isEnabled) {
+		if (isEnabled) {
+			openLookupButtonElement.addClass("enabled")
+		} else {
+			openLookupButtonElement.removeClass("enabled")
+		}
+	}
+	
 	function updateData() {
-		//if (currentData.selectedEntityValue && currentData.selectedEntityValue != "") {
-		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null) {
+		loadingElement.hide();
+		if (currentData.isError) {
 			
 		} else {
 			valueDivElement.html(currentData.selectedEntityValue);	
@@ -71,7 +97,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			inputElement.val("");
 			labelElement.html(labelNormal);
 		}
-		//}
 	}
 	
 	function onInputFocus() {
@@ -91,9 +116,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 					loadingElement.show();
 					mainController.getUpdate(elementPath, entityId, listeners);
 				} else {
+					currentData.isError = false;
 					updateData();
 					element.removeClass("error");
-					labelElement.html(labelNormal);	
 				}
 			} else {
 				loadingElement.show();
@@ -101,7 +126,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			}
 		} else {
 			updateData();
-			labelElement.html(labelNormal);
 		}
 	}
 	
@@ -110,6 +134,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	function openLookup() {
+		if (! openLookupButtonElement.hasClass("enabled")) {
+			return;
+		}
 		var elementName = elementPath.replace(/-/g,".");
 		var location = mainController.getViewName()+".html?lookupComponent="+elementName;
 		if (currentData.contextEntityId) {

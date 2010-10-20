@@ -67,14 +67,19 @@
 
 		var lookupComponentName = '${lookupComponentName}';
 
-		var controller = null
+		var controller = null;
 
 		window.init = function(serializationObject) {
-			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName);
+			//controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName);
 			controller.init(entityId, serializationObject);
 		}
 
+		window.getComponent = function(componentPath) {
+			return controller.getComponent(componentPath);
+		}
+
 		jQuery(document).ready(function(){
+			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName);
 			if (window.opener) {
 				window.opener[lookupComponentName+"_onReadyFunction"].call();
 		    }

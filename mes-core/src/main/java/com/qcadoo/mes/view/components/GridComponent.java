@@ -197,6 +197,10 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 }
             }
 
+            if (!value.isNull("searchEnabled")) {
+                listData.setSearchEnabled(value.getBoolean("searchEnabled"));
+            }
+
             if (!value.isNull("filters")) {
                 JSONArray filters = value.getJSONArray("filters");
                 for (int i = 0; i < filters.length(); i++) {
@@ -289,18 +293,19 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 searchCriteriaBuilder.orderBy(order);
             }
         }
-        for (Map<String, String> filter : listData.getFilters()) {
-            FieldDefinition field = getFieldByColumnName(filter.get("column"));
-            String value = filter.get("value");
+        if (listData.isSearchEnabled()) {
+            for (Map<String, String> filter : listData.getFilters()) {
+                FieldDefinition field = getFieldByColumnName(filter.get("column"));
+                String value = filter.get("value");
 
-            if (field != null && field.getType().isSearchable()) {
-                if (field.getType().getType().equals(String.class)) {
-                    value += "*";
+                if (field != null && field.getType().isSearchable()) {
+                    if (field.getType().getType().equals(String.class)) {
+                        value += "*";
+                    }
+                    searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value));
                 }
-                searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value));
             }
         }
-
     }
 
     private FieldDefinition getFieldByColumnName(final String column) {
@@ -318,6 +323,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         listData.setMaxResults(oldListData.getMaxResults());
         listData.setOrderColumn(oldListData.getOrderColumn());
         listData.setOrderAsc(oldListData.isOrderAsc());
+        listData.setSearchEnabled(oldListData.isSearchEnabled());
         listData.setSelectedEntityId(oldListData.getSelectedEntityId());
         for (Map<String, String> filter : oldListData.getFilters()) {
             listData.addFilter(filter.get("column"), filter.get("value"));
