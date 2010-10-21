@@ -118,7 +118,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             entityId = formValue.getValue().getId();
         }
 
-        Entity entity = new DefaultEntity(entityId);
+        Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(), entityId);
 
         for (Map.Entry<String, Component<?>> component : getComponents().entrySet()) {
             String fieldPath = component.getValue().getFieldPath();

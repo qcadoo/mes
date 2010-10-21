@@ -44,7 +44,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
 
     @Before
     public void init() {
-        entity = new DefaultEntity();
+        entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
     }
 
     @Test
@@ -210,7 +210,8 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertFalse(fieldType.isOrderable());
         assertFalse(fieldType.isAggregable());
         assertEquals(Object.class, fieldType.getType());
-        assertNotNull(fieldType.toObject(fieldDefinition, new DefaultEntity(), entity));
+        assertNotNull(fieldType.toObject(fieldDefinition,
+                new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName()), entity));
     }
 
     @Test

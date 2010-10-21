@@ -47,21 +47,23 @@ public final class PluginResourcesResolver implements ApplicationContextAware, A
             for (Resource resource : resources) {
                 copyResource(resource, type, targetPath);
             }
-
         } catch (IOException e) {
-            throw new IllegalStateException("cannot copy resources: " + type, e);
+            throw new IllegalStateException("Cannot find resources " + type + " in classpath", e);
         }
     }
 
-    private void copyResource(final Resource resource, final String type, final String targetPath) throws IOException {
+    private void copyResource(final Resource resource, final String type, final String targetPath) {
         if (!resource.isReadable()) {
             return;
         }
 
-        String path = resource.getURI().toString().split("META-INF/" + type)[1];
-        File file = new File(webappPath + "/" + targetPath + path);
-
-        copyFile(resource, path, file);
+        try {
+            String path = resource.getURI().toString().split("META-INF/" + type)[1];
+            File file = new File(webappPath + "/" + targetPath + path);
+            copyFile(resource, path, file);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot copy resource " + resource, e);
+        }
     }
 
     private void copyFile(final Resource resource, final String path, final File file) throws IOException {
