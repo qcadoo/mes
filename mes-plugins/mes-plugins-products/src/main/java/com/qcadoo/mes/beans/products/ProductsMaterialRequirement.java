@@ -1,10 +1,13 @@
 package com.qcadoo.mes.beans.products;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,6 +28,9 @@ public class ProductsMaterialRequirement {
     private String worker;
 
     private boolean deleted;
+
+    @OneToMany(mappedBy = "materialRequirement", fetch = FetchType.LAZY)
+    private List<ProductsMaterialRequirementComponent> orders;
 
     public Long getId() {
         return id;
@@ -64,6 +70,14 @@ public class ProductsMaterialRequirement {
 
     public void setWorker(final String worker) {
         this.worker = worker;
+    }
+
+    public List<ProductsMaterialRequirementComponent> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(final List<ProductsMaterialRequirementComponent> orders) {
+        this.orders = orders;
     }
 
 }
