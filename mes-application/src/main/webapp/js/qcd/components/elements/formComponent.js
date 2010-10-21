@@ -46,7 +46,9 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	}
 
 	this.setComponentData = function(data) {
-		this.input.val(data.value);
+		if (data.value) {
+			this.input.val(data.value);
+		}
 	}
 
 	this.getComponentValue = function() {

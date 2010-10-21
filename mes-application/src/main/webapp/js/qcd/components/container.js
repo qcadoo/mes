@@ -57,7 +57,7 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 	}
 	
 	this.getComponent = function(componentName) {
-		if (! componentName || componentName.trim() == "") {
+		if (! componentName || $.trim(componentName) == "") {
 			return this;
 		} else {
 			var name = componentName.split(".")[0];

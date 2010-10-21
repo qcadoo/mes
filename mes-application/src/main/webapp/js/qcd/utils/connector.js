@@ -29,7 +29,7 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 		contentType: 'application/json; charset=utf-8',
 		complete: function(XMLHttpRequest, textStatus) {
 			if (XMLHttpRequest.status == 200) {
-				var responseText = XMLHttpRequest.responseText.trim(); 
+				var responseText = $.trim(XMLHttpRequest.responseText); 
 				if (responseText == "sessionExpired") {
 					QCDConnector.mainController.onSessionExpired();
 					return;
@@ -74,7 +74,7 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 		contentType: 'application/json; charset=utf-8',
 		complete: function(XMLHttpRequest, textStatus) {
 			if (XMLHttpRequest.status == 200) {
-				var responseText = XMLHttpRequest.responseText.trim(); 
+				var responseText = $.trim(XMLHttpRequest.responseText); 
 				if (responseText == "sessionExpired") {
 					QCDConnector.mainController.onSessionExpired();
 					return;
