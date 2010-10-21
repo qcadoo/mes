@@ -21,6 +21,7 @@ import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.components.LookupComponent;
 import com.qcadoo.mes.view.components.LookupData;
 import com.qcadoo.mes.view.components.SimpleValue;
+import com.qcadoo.mes.view.containers.FormValue;
 
 @Service
 public final class ProductService {
@@ -33,6 +34,25 @@ public final class ProductService {
 
     @Autowired
     private SecurityService securityService;
+
+    public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName) {
+        if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
+                || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
+                || ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId() == null) {
+            return;
+        }
+
+        Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
+
+        if (materialRequirement == null || !(Boolean) materialRequirement.getField("generated")) {
+            return;
+        }
+
+        value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
+        value.lookupValue("mainWindow.materialRequirementDetailsForm.withoutSubstitutes").setEnabled(false);
+        value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
+    }
 
     @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName) {

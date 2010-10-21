@@ -436,7 +436,7 @@
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementPdf);" />
-					<smallButton name="csv" icon="printIcon16.png"
+					<smallButton name="xls" icon="printIcon16.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementXls);" />
 				</group>
 			</ribbon>
@@ -462,6 +462,7 @@
 				<option type="deletable" value="true" />
 			</component>
 		</component>
+		<onView bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
 	</view>	
 	<view name="materialRequirementComponentDetailsView" model="materialRequirementComponent">
 		<component type="window" name="mainWindow">
