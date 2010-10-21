@@ -29,6 +29,8 @@ public class ProductsMaterialRequirement {
 
     private boolean deleted;
 
+    private boolean onlyComponents;
+
     @OneToMany(mappedBy = "materialRequirement", fetch = FetchType.LAZY)
     private List<ProductsMaterialRequirementComponent> orders;
 
@@ -78,6 +80,14 @@ public class ProductsMaterialRequirement {
 
     public void setOrders(final List<ProductsMaterialRequirementComponent> orders) {
         this.orders = orders;
+    }
+
+    public boolean isOnlyComponents() {
+        return onlyComponents;
+    }
+
+    public void setOnlyComponents(final boolean onlyComponents) {
+        this.onlyComponents = onlyComponents;
     }
 
 }

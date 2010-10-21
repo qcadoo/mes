@@ -33,7 +33,7 @@ public final class PdfOrderView extends ProductsPdfView {
         if (product == null) {
             document.add(new Paragraph("", font));
         } else {
-            document.add(new Paragraph((String) product.getField("name"), font));
+            document.add(new Paragraph(product.getField("name").toString(), font));
         }
         document.add(new Paragraph(translationService.translate("products.order.report.state", locale) + " "
                 + entity.getField("state"), font));
