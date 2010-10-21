@@ -400,7 +400,7 @@
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
 						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementPdf);" />
-					<smallButton name="csv" icon="printIcon16.png"
+					<smallButton name="xls" icon="printIcon16.png"
 						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementXls);" />
 				</group>
 			</ribbon>		
@@ -434,7 +434,7 @@
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementPdf);" />
-					<smallButton name="csv" icon="printIcon16.png"
+					<smallButton name="xls" icon="printIcon16.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementXls);" />
 				</group>
 			</ribbon>

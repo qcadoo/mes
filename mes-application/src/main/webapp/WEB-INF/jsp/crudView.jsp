@@ -57,7 +57,7 @@
 	<script type="text/javascript" src="../../js/qcd/components/elements/calendar.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/ribbon.js"></script>
 	
-	<script type="text/javascript"><!--
+	<script type="text/javascript">
 
 		var viewName = "${viewDefinition.name}";
 		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
@@ -69,7 +69,6 @@
 		var controller = null;
 
 		window.init = function(serializationObject) {
-			//controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName);
 			controller.init(entityId, serializationObject);
 		}
 
@@ -88,7 +87,7 @@
 		<c:forEach items="${translationsMap}" var="translation">
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
-	--></script>
+	</script>
 </head>
 <body>
 

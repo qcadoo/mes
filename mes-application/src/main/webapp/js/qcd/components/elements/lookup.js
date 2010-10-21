@@ -28,7 +28,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var listeners = this.options.listeners;
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
-	constructor = function(_this) {
+	var constructor = function(_this) {
 		
 		var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label.focus";
 		labelFocus = "<span class='focusedLabel'>"+mainController.getTranslation(nameToTranslate)+"</span>";
@@ -69,7 +69,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		currentData.selectedEntityValue = data.selectedEntityValue;
 		currentData.selectedEntityCode = data.selectedEntityCode;
 		currentData.contextEntityId = data.contextEntityId;
-		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null && currentData.selectedEntityCode.trim() != "") {
+		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
 			currentData.isError = true;
 		} else {
 			currentData.isError = false;
@@ -112,10 +112,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	function onInputBlur() {
 		isFocused = false;
-		var newCode = inputElement.val().trim();
+		var newCode = $.trim(inputElement.val());
 		if (newCode != currentData.selectedEntityCode) {
 			QCD.info("lalala");
-			currentData.selectedEntityCode = inputElement.val().trim();
+			currentData.selectedEntityCode = $.trim(inputElement.val());
 			currentData.selectedEntityValue = null;
 			currentData.selectedEntityId = null;
 			if (currentData.selectedEntityCode == "") {

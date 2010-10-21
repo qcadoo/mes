@@ -25,13 +25,11 @@
 
 .windowContainer .windowContainerContentBody {
 	position: absolute;
-	//top: 77px;
 	top: 70px;
 	bottom: 0;
 	left: 0;
 	right: 0;
 	overflow: auto;
-	//z-index: 100;
 }
 
 .windowContainer .windowContentShadow {
@@ -45,10 +43,10 @@
 }
 
 .windowContainer .windowContent {
-	margin: auto;
+	margin-left: auto;
+	margin-right: auto;
 	background: white;
 	border: solid #666666 1px;
-	//z-index: -99;
 }
 
 .windowContainer .windowContent .windowHeader {

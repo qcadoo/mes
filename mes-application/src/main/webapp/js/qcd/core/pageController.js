@@ -5,7 +5,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	var pageComponents;
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
-	var context = (_context != null && _context.trim() != "") ? JSON.parse(_context) : null; 
+	var context = (_context != null && $.trim(_context) != "") ? JSON.parse(_context) : null; 
 	var lookupComponentName = _lookupComponentName;
 	var rootEntityId = null;
 	
@@ -25,7 +25,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	
 	this.init = function(entityId, serializationObject) {
 		var parameters = new Object();
-		if (entityId && entityId.trim() != "") {
+		if (entityId && $.trim(entityId) != "") {
 			rootEntityId = entityId;
 		}
 		if (serializationObject) {
@@ -166,7 +166,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		var actionParts = ribbonAction.split(";");
 		var actions = new Array();
 		for (var actionIter in actionParts) {
-			var action = actionParts[actionIter].trim();
+			var action = $.trim(actionParts[actionIter]);
 			if (action) {
 				var elementBegin = action.search("{");
 				var elementEnd = action.search("}");

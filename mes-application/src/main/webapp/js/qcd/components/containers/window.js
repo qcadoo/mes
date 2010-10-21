@@ -54,18 +54,20 @@ QCD.components.containers.Window = function(_element, _mainController) {
 //			width = 960;
 //		}
 		childrenElement.width(width);
-		childrenElement.css("margin-top", margin+"px");
+		childrenElement.css("marginTop", margin+"px");
+		if (! this.options.fixedHeight) {
+			childrenElement.css("marginBottom", margin+"px");
+			QCD.info("set bottom margin");
+		}
 		
 		height = null;
 		if (this.options.fixedHeight) {
-			var containerHeight = Math.round(_height - 2 * margin - 80);
+			var containerHeight = Math.round(_height - 2 * margin - 70);
 			height = containerHeight;
 			if (this.options.header) {
 				height -= 34;
 			}
 			childrenElement.height(containerHeight);
-		} else {
-			childrenElement.css("margin-bottom", margin+"px");
 		}
 		
 		for (var i in this.components) {

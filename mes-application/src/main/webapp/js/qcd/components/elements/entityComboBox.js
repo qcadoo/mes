@@ -22,7 +22,7 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 	
 	this.getComponentData = function() {
 		var selected = this.input.val();
-		if (!selected || selected.trim() == "") {
+		if (!selected || $.trim(selected) == "") {
 			selected = null;
 		}
 		return {

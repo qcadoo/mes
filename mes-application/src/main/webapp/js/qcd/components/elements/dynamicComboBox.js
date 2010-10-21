@@ -9,7 +9,7 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 
 	this.getComponentData = function() {
 		var selected = this.input.val();
-		if (!selected || selected.trim() == "") {
+		if (!selected || $.trim(selected) == "") {
 			selected = selectedValue;
 		}
 		return {
@@ -30,7 +30,7 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		}
 		selected = data.value;
 		
-		if (!selected || selected.trim() == "") {
+		if (!selected || $.trim(selected) == "") {
 			this.input.val(previousSelected);
 		} else {
 			this.input.val(selected);

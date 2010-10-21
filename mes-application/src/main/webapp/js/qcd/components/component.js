@@ -86,7 +86,7 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.getComponent = function(componentName) {
-		if (! componentName || componentName.trim() == "") {
+		if (! componentName || $.trim(componentName) == "") {
 			return this;
 		} else {
 			QCD.error("no component");
