@@ -1,6 +1,6 @@
 var QCD = QCD || {};
 
-QCD.WindowController = function() {
+QCD.WindowController = function(_menuStructure) {
 	
 	var iframe = null;
 	
@@ -14,7 +14,10 @@ QCD.WindowController = function() {
 	
 	var messagesController = new QCD.MessagesController();
 	
-	function constructor() {
+	var menuStructure = _menuStructure;
+	var menuController
+	
+	function constructor(_this) {
 		iframe = $("#mainPageIframe");
 		loadingIndicator = $("#loadingIndicator");
 		loadingIndicator.hide();
@@ -22,6 +25,10 @@ QCD.WindowController = function() {
 			onIframeLoad(this);
 		});
 		$(window).bind('resize', updateSize);
+		
+		menuController = new QCD.menu.MenuController(menuStructure, _this);
+		
+		updateSize();
 	}
 	
 	this.addMessage = function(type, content) {
@@ -57,6 +64,10 @@ QCD.WindowController = function() {
 	this.onSessionExpired = function(serializationObject) {
 		serializationObjectToInsert = serializationObject;
 		performGoToPage("login.html");
+	}
+	
+	this.restoreMenuState = function() {
+		menuController.restoreState();
 	}
 	
 	this.onMenuClicked = function(pageName) {
@@ -98,6 +109,6 @@ QCD.WindowController = function() {
 	}
 	this.updateSize = updateSize;
 	
-	constructor();
+	constructor(this);
 	
 }

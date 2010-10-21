@@ -5,7 +5,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	var pageComponents;
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
-	var context = (_context != null && _context.trim() != "") ? JSON.parse(_context) : null; 
+	var context = (_context != null && $.trim(_context) != "") ? JSON.parse(_context) : null; 
 	var lookupComponentName = _lookupComponentName;
 	var rootEntityId = null;
 	
@@ -25,7 +25,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	
 	this.init = function(entityId, serializationObject) {
 		var parameters = new Object();
-		if (entityId && entityId.trim() != "") {
+		if (entityId && $.trim(entityId) != "") {
 			rootEntityId = entityId;
 		}
 		if (serializationObject) {
@@ -166,7 +166,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		var actionParts = ribbonAction.split(";");
 		var actions = new Array();
 		for (var actionIter in actionParts) {
-			var action = actionParts[actionIter].trim();
+			var action = $.trim(actionParts[actionIter]);
 			if (action) {
 				var elementBegin = action.search("{");
 				var elementEnd = action.search("}");
@@ -192,13 +192,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 
 				var argumentsBegin = elementAction.indexOf("(");
 				var argumentsEnd = elementAction.indexOf(")");
-				var argumentsList = new Array(this);
+				var argumentsList = new Array();
 				
 				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
 				//and only empty parenthesis ()
 				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
 					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
-					argumentsList = argumentsList.concat(args.split(","));
+					argumentsList = args.split(",");
 					elementAction = elementAction.substring(0, argumentsBegin);
 				} else if(argumentsBegin == argumentsEnd-1) {
 					//we need to get rid of the empty parenthesis
@@ -210,6 +210,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 					action: elementAction,
 					arguments: argumentsList
 				}
+				
 				actions.push(actionObject);
 			}
 		}
@@ -226,7 +227,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 					}
 					this.actionIter++;
 					
-					func.apply(actionObject.component, actionObject.arguments);
+					var array = new Array(this);
+					array = array.concat(actionObject.arguments);
+					
+					func.apply(actionObject.component, array);
 				}
 			}
 		}

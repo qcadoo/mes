@@ -11,7 +11,7 @@
 #q_row1_out {
 	background-image:url('images/q_row1_bg.png');
 	background-position: top;
-	background-repeat: repeat-x;	
+	background-repeat: repeat-x;
 }
 #secondLevelMenuWrapper {
 	background-image:url('images/q_row2_bg.png');
@@ -39,7 +39,6 @@
 	height: 20px;
 }
 #q_menu_row1 {
-	width:990px;
 	height:30px;
 	line-height: 30px;
 	margin: auto;

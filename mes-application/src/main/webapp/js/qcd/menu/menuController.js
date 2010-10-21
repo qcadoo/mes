@@ -18,7 +18,6 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	
 	function constructor(menuStructure) {
 		model = new QCD.menu.MenuModel(menuStructure.menuItems);
-		QCD.info(model);
 		
 		var menuContentElement = $("<ul>").addClass("q_row1");
 		var q_menu_row1 = $("<div>").attr("id", "q_menu_row1");
