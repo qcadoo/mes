@@ -29,6 +29,10 @@ public class ProductsMaterialRequirement {
 
     private boolean deleted;
 
+    private boolean onlyComponents = false;
+
+    private boolean generated = false;
+
     @OneToMany(mappedBy = "materialRequirement", fetch = FetchType.LAZY)
     private List<ProductsMaterialRequirementComponent> orders;
 
@@ -78,6 +82,22 @@ public class ProductsMaterialRequirement {
 
     public void setOrders(final List<ProductsMaterialRequirementComponent> orders) {
         this.orders = orders;
+    }
+
+    public boolean isOnlyComponents() {
+        return onlyComponents;
+    }
+
+    public void setOnlyComponents(final boolean onlyComponents) {
+        this.onlyComponents = onlyComponents;
+    }
+
+    public boolean isGenerated() {
+        return generated;
+    }
+
+    public void setGenerated(final boolean generated) {
+        this.generated = generated;
     }
 
 }

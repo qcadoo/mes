@@ -55,11 +55,13 @@ public final class XlsMaterialRequirementView extends AbstractExcelView {
             List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
             for (Entity bomComponent : bomComponents) {
                 Entity product = (Entity) bomComponent.getField("product");
-                HSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue((String) product.getField("number"));
-                row.createCell(1).setCellValue((String) product.getField("name"));
-                row.createCell(2).setCellValue(bomComponent.getField("quantity").toString());
-                row.createCell(3).setCellValue((String) product.getField("unit"));
+                if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
+                    HSSFRow row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(product.getField("number").toString());
+                    row.createCell(1).setCellValue(product.getField("name").toString());
+                    row.createCell(2).setCellValue(bomComponent.getField("quantity").toString());
+                    row.createCell(3).setCellValue(product.getField("unit").toString());
+                }
             }
         }
     }

@@ -1,10 +1,15 @@
 package com.qcadoo.mes.utils;
 
+import static com.google.common.base.Preconditions.checkState;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -17,6 +22,8 @@ import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 
 public final class ExpressionUtil {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ExpressionUtil.class);
+
     private ExpressionUtil() {
     }
 
@@ -27,6 +34,7 @@ public final class ExpressionUtil {
         } else {
             value = getValueWithExpression(entity, columnDefinition.getExpression());
         }
+
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
         } else {
@@ -35,12 +43,10 @@ public final class ExpressionUtil {
     }
 
     public static String getValue(final Entity entity, final String expression) {
-        String value = null;
-        if (StringUtils.isEmpty(expression)) {
-            throw new IllegalStateException("Must have expression");
-        } else {
-            value = getValueWithExpression(entity, expression);
-        }
+        checkState(!isEmpty(expression), "Expression must be defined");
+
+        String value = getValueWithExpression(entity, expression);
+
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
         } else {
@@ -67,19 +73,33 @@ public final class ExpressionUtil {
             }
         }
 
-        return String.valueOf(exp.getValue(context));
+        String value = String.valueOf(exp.getValue(context));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Calculating value of expression \"" + expression + "\" for " + entity + " : " + value);
+        }
+
+        return value;
     }
 
     private static String getValueWithoutExpression(final Entity entity, final ColumnDefinition columnDefinition) {
+        String value = null;
+
         if (columnDefinition.getFields().size() == 1) {
-            return columnDefinition.getFields().get(0).getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
+            value = columnDefinition.getFields().get(0).getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
         } else {
             List<String> values = new ArrayList<String>();
             for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
                 values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName())));
             }
-            return StringUtils.join(values, ", ");
+            value = StringUtils.join(values, ", ");
         }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Calculating value of column " + columnDefinition.getName() + " for " + entity + " : " + value);
+        }
+
+        return value;
     }
 
 }

@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
@@ -112,8 +111,8 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("maxResults", maxResults).append("firstResult", firstResult)
-                .append("order", order).append("restrictions", restrictions).toString();
+        return "SearchCriteria[maxResults=" + maxResults + ", firstResult=" + firstResult + ", order=" + order
+                + ", restrictions=" + restrictions + "]";
     }
 
 }

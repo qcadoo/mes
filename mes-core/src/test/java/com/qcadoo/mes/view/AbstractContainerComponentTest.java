@@ -188,7 +188,7 @@ public class AbstractContainerComponentTest {
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
         Set<String> pathsToUpdate = new HashSet<String>();
 
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity("", "", 1L);
 
         ViewValue<Object> viewValue = new ViewValue<Object>();
         ViewValue<Object> viewChild1Value = new ViewValue<Object>();
@@ -236,7 +236,7 @@ public class AbstractContainerComponentTest {
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
         Set<String> pathsToUpdate = new HashSet<String>();
 
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity("", "", 1L);
 
         given(container.getContainerValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH)).willReturn(null);
         given(child1.getValue(entity, selectedEntities, null, pathsToUpdate, Locale.ENGLISH)).willReturn(
@@ -273,7 +273,7 @@ public class AbstractContainerComponentTest {
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
         Set<String> pathsToUpdate = new HashSet<String>();
 
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity("", "", 1L);
 
         ViewValue<Object> viewValue = new ViewValue<Object>();
         ViewValue<Object> viewChild1Value = new ViewValue<Object>();
