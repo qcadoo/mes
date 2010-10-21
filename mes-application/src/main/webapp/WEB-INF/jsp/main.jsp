@@ -27,12 +27,12 @@
 		var windowController;
 		
 		jQuery(document).ready(function(){
-			windowController = new QCD.WindowController(menuController);
-			var menuController = new QCD.menu.MenuController(menuStructure, windowController);
-			windowController.updateSize();
+			
+			windowController = new QCD.WindowController(menuStructure);
+			
 			$("#mainPageIframe").load(function() {
 				el = $('body', $('iframe').contents());
-				el.click(function() {menuController.restoreState()});
+				el.click(function() {windowController.restoreMenuState()});
 			});
 		});
 
@@ -61,30 +61,20 @@
 </head>
 <body>
 
-	<table id="mainStructuralTable" cellspacing="0" cellpadding="0">
-		<tr id="mainHeaderRow">
-			<td id="mainHeaderCell">
-				<div id="topLevelMenu">
-					<img id="logoImage" src="css/images/logo_small.png"></img>
-					<div id="topRightPanel">
-						<button onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</button>
-					</div>
-				</div>
-				<div id="firstLevelMenu">
-				</div>
-				<div id="secondLevelMenuWrapper">
-					<div id="secondLevelMenu">
-					</div>
-				</div>
-			</td>
-		</tr>
-		<tr id="mainContentRow">
-			<td class="noMargin">
-				<iframe id="mainPageIframe" >
-				</iframe>
-			</td>
-		</tr>
-	</table>
-
+	<div id="mainTopMenu">
+		<div id="topLevelMenu">
+			<img id="logoImage" src="css/images/logo_small.png"></img>
+			<div id="topRightPanel">
+				<button onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</button>
+			</div>
+		</div>
+		<div id="firstLevelMenu">
+		</div>
+		<div id="secondLevelMenuWrapper">
+			<div id="secondLevelMenu">
+			</div>
+			</div>
+	</div>
+	<div id="mainPageIframeWrapper"><iframe id="mainPageIframe" frameborder="0"></iframe></div>
 </body>
 </html>

@@ -71,13 +71,11 @@ QCD.components.Ribbon = function(_model, _mainController) {
 				content.append(groupElement);
 			}
 		}
-		
 		return element;
 	}
 	
 	function createBigButton(itemModel) {
-		
-		var aElement = $("<a href='#'>").html("<span><div"+getItemIconStyle(itemModel)+"><label>"+getItemLabel(itemModel)+"</label><div></div></div></span>");
+		var aElement = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"><label>"+getItemLabel(itemModel)+"</label><div></div></div></span>");
 		var liElement = $("<li>").append(aElement);
 		var ribbonListElement = $("<ul>").addClass("ribbonListElement").append(liElement);
 		var itemElement = $("<div>").addClass("ribbonBigElement").append(ribbonListElement);
@@ -86,16 +84,16 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	}
 	
 	function createBigButtonWithDropdown(itemModel) {
-		var icon = (itemModel.icon && itemModel.icon.trim() != "") ? itemModel.icon.trim() : null;
+		var icon = (itemModel.icon && $.trim(itemModel.icon) != "") ? $.trim(itemModel.icon) : null;
 		var style = "";
 		var className = "";
 		if (icon) {
 			style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
 			className = " hasIcon";
 		}
-		var itemElementButton = $("<a href='#'>").html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label>"+getItemLabel(itemModel)+"</label><div></div></div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label>"+getItemLabel(itemModel)+"</label><div></div></div></span>");
 		var buttonLi = $("<li>").append(itemElementButton);
-		var itemElementDropdownButton = $("<a href='#'>").html("<span><div class='icon_btn_addB'></div></span>");
+		var itemElementDropdownButton = $("<a>").attr('href','#').html("<span><div class='icon_btn_addB'></div></span>");
 		var buttonDropdownLi = $("<li>").addClass("addB").append(itemElementDropdownButton);
 		var ulElement = $("<ul>").append(buttonLi).append(buttonDropdownLi);
 		var divElement = $("<div>").append(ulElement);
@@ -114,16 +112,16 @@ QCD.components.Ribbon = function(_model, _mainController) {
 	}
 	
 	function createSmallButton(itemModel) {
-		var itemElementButton = $("<a href='#'>").html("<span><div"+getItemIconStyle(itemModel)+">"+getItemLabel(itemModel)+"</div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+">"+getItemLabel(itemModel)+"</div></span>");
 		var itemElement = $("<li>").addClass("btnOne").append(itemElementButton);
 		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
 	
 	function createSmallButtonWithDropdown(itemModel) {
-		var itemElementButton = $("<a href='#'>").html("<span><div "+getItemIconStyle(itemModel)+">"+getItemLabel(itemModel)+"</div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div "+getItemIconStyle(itemModel)+">"+getItemLabel(itemModel)+"</div></span>");
 		var buttonLi = $("<li>").append(itemElementButton);
-		var itemElementDropdownButton = $("<a href='#'>").addClass("twoB_down");
+		var itemElementDropdownButton = $("<a>").attr('href','#').addClass("twoB_down");
 		var buttonDropdownLi = $("<li>").append(itemElementDropdownButton);
 		var ulElement = $("<ul>").append(buttonLi).append(buttonDropdownLi);
 		var divElement = $("<div>").append(ulElement);
@@ -143,12 +141,12 @@ QCD.components.Ribbon = function(_model, _mainController) {
 		var dropdownMenuContent = $("<ul>");
 		for (var menuIter in itemModel.items) {
 			var menuItemName = itemModel.items[menuIter].name;
-			var icon = (itemModel.items[menuIter].icon && itemModel.items[menuIter].icon.trim() != "") ? itemModel.items[menuIter].icon.trim() : null;
+			var icon = (itemModel.items[menuIter].icon && $.trim(itemModel.items[menuIter].icon) != "") ? $.trim(itemModel.items[menuIter].icon) : null;
 			var style = "";
 			if (icon) {
 				style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
 			}
-			var menuItemButton = $("<a href='#'>").html("<span "+style+">"+getItemLabel(itemModel.items[menuIter])+"</span>").addClass("icon");
+			var menuItemButton = $("<a>").attr('href','#').html("<span "+style+">"+getItemLabel(itemModel.items[menuIter])+"</span>").addClass("icon");
 			menuItemButton.bind('click', {itemName: itemModel.name+"."+menuItemName, clickAction: itemModel.items[menuIter].clickAction}, buttonClicked);
 			var menuItem = $("<li>").append(menuItemButton);
 			dropdownMenuContent.append(menuItem);
@@ -180,7 +178,7 @@ QCD.components.Ribbon = function(_model, _mainController) {
 		return itemModel.label ? itemModel.label : itemModel.name;
 	}
 	function getItemIconStyle(itemModel) {
-		var icon = (itemModel.icon && itemModel.icon.trim() != "") ? itemModel.icon.trim() : null;
+		var icon = (itemModel.icon && $.trim(itemModel.icon) != "") ? $.trim(itemModel.icon) : null;
 		var style = "";
 		if (icon) {
 			style = " class='hasIcon' style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";

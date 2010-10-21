@@ -129,7 +129,7 @@ QCD.menu.Ribbon = function(menuController, _windowController) {
 		QCD.info("clicked "+name+": "+action);
 		
 		if (action) {
-			action = action.trim().toLowerCase();
+			action = $.trim(action).toLowerCase();
 			if ("gotoview:" == action.substring(0,9)) {
 				var viewName = action.substring(9);
 				QCD.info("GOTO: "+viewName);
