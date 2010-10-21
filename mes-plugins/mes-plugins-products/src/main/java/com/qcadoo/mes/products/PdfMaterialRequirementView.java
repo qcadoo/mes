@@ -2,6 +2,7 @@ package com.qcadoo.mes.products;
 
 import java.awt.Font;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,21 +22,36 @@ public final class PdfMaterialRequirementView extends ProductsPdfView {
         document.add(new Paragraph(user.getUserName(), font));
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah", locale),
                 getFontBold(font)));
-        List<Entity> orders = (List<Entity>) entity.getField("orders");
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
-            document.add(new Paragraph((String) order.getField("number") + " " + (String) order.getField("name")));
-        }
+        List<Entity> instructions = addOrderSeries(document, entity);
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah2", locale),
                 getFontBold(font)));
-
-        for (int i = 0; i < 5; i++) {
-            document.add(new Paragraph("<numer" + i + "><nazwa" + i + "><ilosc><jednostka>"));
-        }
+        addBomSeries(document, instructions);
     }
 
     @Override
     protected void addTitle(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("products.materialRequirement.report.title", locale));
+    }
+
+    private List<Entity> addOrderSeries(final Document document, final Entity entity) throws DocumentException {
+        List<Entity> orders = (List<Entity>) entity.getField("orders");
+        List<Entity> instructions = new ArrayList<Entity>();
+        for (Entity component : orders) {
+            Entity order = (Entity) component.getField("order");
+            instructions.add((Entity) order.getField("instruction"));
+            document.add(new Paragraph((String) order.getField("number") + " " + (String) order.getField("name")));
+        }
+        return instructions;
+    }
+
+    private void addBomSeries(final Document document, final List<Entity> instructions) throws DocumentException {
+        for (Entity instruction : instructions) {
+            List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
+            for (Entity bomComponent : bomComponents) {
+                Entity product = (Entity) bomComponent.getField("product");
+                document.add(new Paragraph((String) product.getField("number") + " " + (String) product.getField("name") + " "
+                        + bomComponent.getField("quantity").toString() + " " + (String) product.getField("unit")));
+            }
+        }
     }
 }
