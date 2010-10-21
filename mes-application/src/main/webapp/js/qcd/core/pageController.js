@@ -227,10 +227,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 					}
 					this.actionIter++;
 					
-					var array = new Array(this);
-					array = array.concat(actionObject.arguments);
+					var fullArgumentList = new Array(this);
+					fullArgumentList = fullArgumentList.concat(actionObject.arguments);
 					
-					func.apply(actionObject.component, array);
+					func.apply(actionObject.component, fullArgumentList);
 				}
 			}
 		}
