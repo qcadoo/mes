@@ -396,8 +396,6 @@
 				<group name="actions">
 					<bigButton name="create" icon="addIcon32.png"
 						action="#{mainWindow.materialRequirementsGrid}.performNew;" />
-					<smallButton name="preview" 
-						action="" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
@@ -407,7 +405,7 @@
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirementsGrid">
-				<option type="column" name="name" fields="name" />
+				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="date" fields="date" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="header" value="false" />
