@@ -428,7 +428,7 @@
 					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="generate"
+					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performSave;" />
 				</group>
 				<group name="export">
