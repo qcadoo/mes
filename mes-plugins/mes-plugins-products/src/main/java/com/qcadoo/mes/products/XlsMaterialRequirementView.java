@@ -12,7 +12,7 @@ import org.springframework.web.servlet.view.document.AbstractExcelView;
 
 import com.qcadoo.mes.internal.DefaultEntity;
 
-public final class CsvMaterialRequirementView extends AbstractExcelView {
+public final class XlsMaterialRequirementView extends AbstractExcelView {
 
     @Override
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
