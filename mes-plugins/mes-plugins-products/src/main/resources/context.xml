@@ -10,4 +10,13 @@
 
 	<context:component-scan base-package="com.qcadoo.mes" />
 	
+	<bean id="pdfOrderView"
+  		class="com.qcadoo.mes.products.PdfOrderView"/>
+  		
+  	<bean id="pdfMaterialRequirementView"
+  		class="com.qcadoo.mes.products.PdfMaterialRequirementView"/>
+  		
+  	<bean id="csvMaterialRequirementView"
+  		class="com.qcadoo.mes.products.CsvMaterialRequirementView"/>
+	
 </beans>

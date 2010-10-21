@@ -23,9 +23,6 @@
 			</map>
 		</property>
 	</bean>
-	
-	<bean id="pdfOrderView"
-  		class="com.qcadoo.mes.products.PdfOrderView"/>
   		
   	<bean id="beanNameViewResolver"
   		class="org.springframework.web.servlet.view.BeanNameViewResolver">

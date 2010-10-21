@@ -3,14 +3,9 @@
 	<view name="dictionaryGridView" model="dictionary">
 		<component type="window" name="mainWindow">
 			<ribbon>
-				<group name="actions">
-					<bigButton name="new" action="#{mainWindow.dictionaries}.performNew;" />
-					<smallButton name="delete" icon="icon2"
-						action="#{mainWindow.dictionaries}.performDelete;" />
-				</group>
 			</ribbon>				
 			<component type="grid" name="dictionaries">
-				<option type="column" name="name" fields="name" />
+				<option type="column" name="name" fields="name" link="true"/>
 				<option type="header" value="false" />
 				<option type="searchable" value="name" />
 				<option type="orderable" value="name" />
@@ -23,20 +18,35 @@
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="dictionaryDetailsView" model="dictionary">
-		<component type="window" name="mainWindow">		
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="newValue" icon="addIcon32.png" action="#{mainWindow.dictionaries}.performNew;" />
+					<smallButton name="deleteValue" icon="deleteIcon16.png"
+						action="#{mainWindow.dictionaries}.performDelete;" />
+				</group>
+			</ribbon>
+			<component type="form" name="dictionaryDetailsForm">
+				<option type="header" value="false" />
+				<option type="expression" value="#name" />
+			</component>		
 			<component type="grid" name="dictionaries" source="dictionaryItems">
-				<option type="column" name="name" fields="name" />
+				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="description" fields="description" />
 				<option type="header" value="false" />
 				<option type="paginable" value="false" />
 				<option type="multiselect" value="true" />
 				<option type="height" value="250" />
 				<option type="correspondingView" value="dictionaries/dictionaryItemDetailsView" />
-				<option type="deletable" value="true" />
-				<option type="creatable" value="true" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
 			</component>
 		</component>
 	</view>
@@ -44,29 +54,30 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save"
+					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performSave;" />
-					<bigButtons name="saveBack"
+					<bigButtons name="saveBack" icon="saveBackIcon32.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performBack">
-						<bigButton name="saveNew"
+						<bigButton name="saveNew" icon="saveNewIcon16.png"
 							action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel"
+					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performCancel;" />
-					<smallButtons name="delete" icon="icon2"
+					<smallButtons name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performDelete; #{mainWindow}.performBack">
-						<smallButton name="deleteNew"
+						<smallButton name="deleteNew" icon="deleteIcon16.png"
 							action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performNew;" />
 					</smallButtons>
 				</group>
 			</ribbon>		
 			<component type="form" name="dictionaryItemDetailsForm">
 				<component type="textarea" name="name" field="name" />
-				<component type="textarea" name="description" field="description" /> <!-- type:description -->
+				<component type="textarea" name="description" field="description" />
 				<option type="header" value="false" />
+				<option type="expression" value="#name + ' (' + #dictionary[name] + ')'"/>
 			</component>
 		</component>
 	</view>

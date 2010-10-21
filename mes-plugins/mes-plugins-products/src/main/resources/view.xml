@@ -80,7 +80,7 @@
 			<component type="grid" name="substitutesComponentGrid"
 				source="#{mainWindow.substitutesGrid}.components">
 				<option type="column" name="number" fields="product"
-					expression="#product['number']" />
+					expression="#product['number']" link="true" />
 				<option type="column" name="name" fields="product"
 					expression="#product['name']" link="true" />
 				<option type="column" name="quantity" fields="quantity" />
@@ -108,7 +108,7 @@
 						<bigButton name="saveNew" icon="saveNewIcon16.png"
 							action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow}.performCancel;" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.substitutesDetailsForm}.performCancel;" />
 					<smallButtons name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.substitutesDetailsForm}.performDelete; #{mainWindow}.performBack">
 						<smallButton name="deleteNew" icon="deleteIcon16.png"
@@ -135,13 +135,13 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon32.png"
-						action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performBack;" />
+						action="#{mainWindow.substitutesComponentDetailsForm}.performSave;" />
 					<bigButtons name="saveBack" icon="saveBackIcon32.png"
 						action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performBack">
 						<bigButton name="saveNew" icon="saveNewIcon16.png"
 							action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow}.performCancel;" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.substitutesComponentDetailsForm}.performCancel;" />
 					<smallButtons name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.substitutesComponentDetailsForm}.performDelete; #{mainWindow}.performBack">
 						<smallButton name="deleteNew" icon="deleteIcon16.png"
@@ -192,6 +192,7 @@
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="instructionDetailsView" model="instruction">
@@ -258,11 +259,11 @@
 					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon32.png" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack;"/>
+					<bigButton name="save" icon="saveIcon32.png" action="#{mainWindow.detailsForm}.performSave;"/>
 					<bigButtons name="saveBack" icon="saveBackIcon32.png" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack">
 						<bigButton name="saveNew" icon="saveNewIcon16.png" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow}.performCancel;" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.detailsForm}.performCancel;" />
 					<smallButtons name="delete" icon="deleteIcon16.png" action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performBack">
 						<smallButton name="deleteNew" icon="deleteIcon16.png" action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performNew;" />
 					</smallButtons>
@@ -314,6 +315,7 @@
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="orderDetailsView" model="order">
@@ -326,11 +328,11 @@
 					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.orderDetailsForm}.performSave;" />
 					<bigButtons name="saveBack" icon="saveBackIcon32.png"
-						action="#{mainWindow.orderDetailsForm}.performSave;">
+						action="#{mainWindow.orderDetailsForm}.performSave; #{mainWindow}.performBack">
 						<bigButton name="saveNew" icon="saveNewIcon16.png"
 							action="#{mainWindow.orderDetailsForm}.performSave; #{mainWindow}.performNew;" />
 					</bigButtons>
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow}.performCancel;" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.orderDetailsForm}.performCancel;" />
 					<smallButtons name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.orderDetailsForm}.performDelete; #{mainWindow}.performBack">
 						<smallButton name="deleteNew" icon="deleteIcon16.png"
@@ -399,9 +401,9 @@
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="" />
+						action="#{mainWindow.materialRequirementsGrid}.performCallFunctionTwo;" />
 					<smallButton name="csv" icon="printIcon16.png"
-						action="" />
+						action="#{mainWindow.materialRequirementsGrid}.performCallFunctionThree;" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirementsGrid">

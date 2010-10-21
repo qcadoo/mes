@@ -3,14 +3,9 @@
 	<view name="groupGridView" model="group">
 		<component type="window" name="mainWindow">
 			<ribbon>
-				<group name="actions">
-					<bigButton name="new" action="#{mainWindow.groups}.performNew;" />
-					<smallButton name="delete" icon="icon2"
-						action="#{mainWindow.groups}.performDelete;" />
-				</group>
 			</ribbon>		
 			<component type="grid" name="groups">
-				<option type="column" name="name" fields="name" />
+				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="role" fields="role" />
 				<option type="header" value="false" />
 				<option type="orderable" value="name,role" />
@@ -23,36 +18,30 @@
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="groupDetailsView" model="group">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save"
+					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.groupDetailsForm}.performSave;" />
-					<bigButtons name="saveBack"
-						action="#{mainWindow.groupDetailsForm}.performSave; #{mainWindow}.performBack">
-						<bigButton name="saveNew"
-							action="#{mainWindow.groupDetailsForm}.performSave; #{mainWindow}.performNew;" />
-					</bigButtons>
-					<smallButton name="cancel"
+					<bigButton name="saveBack" icon="saveBackIcon32.png"
+						action="#{mainWindow.groupDetailsForm}.performSave; #{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.groupDetailsForm}.performCancel;" />
-					<smallButtons name="delete" icon="icon2"
-						action="#{mainWindow.groupDetailsForm}.performDelete; #{mainWindow}.performBack">
-						<smallButton name="deleteNew"
-							action="#{mainWindow.groupDetailsForm}.performDelete; #{mainWindow}.performNew;" />
-					</smallButtons>
 				</group>
 			</ribbon>		
 			<component type="form" name="groupDetailsForm">
 				<component type="textarea" name="name" field="name" />
-				<component type="textarea" name="description" field="description" /> <!-- type:description -->
+				<component type="textarea" name="description" field="description" /> 
 				<component type="input" name="role" field="role" enabled="false" />
 				<option type="header" value="false" />
+				<option type="expression" value="#name"/>
 			</component>
 		</component>
 	</view>
@@ -60,14 +49,16 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" action="#{mainWindow.users}.performNew;" />
+					<bigButton name="new" icon="addIcon32.png" action="#{mainWindow.users}.performNew;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.users}.performDelete;" />
 				</group>
 			</ribbon>
 			<component type="grid" name="users">
 				<option type="column" name="login" fields="userName" link="true" />
 				<option type="column" name="email" fields="email" />
-				<option type="column" name="firstName" fields="firstName" />
-				<option type="column" name="lastName" fields="lastName" />
+				<option type="column" name="firstName" fields="firstName" link="true" />
+				<option type="column" name="lastName" fields="lastName" link="true" />
 				<option type="column" name="userGroup" fields="userGroup"
 					expression="#userGroup['name']" />
 				<option type="header" value="false" />
@@ -79,25 +70,35 @@
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="userDetailsView" model="user">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save"
+					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.userDetailsForm}.performSave;" />
-					<smallButton name="cancel" action="#{mainWindow}.performCancel;" />
+					<bigButtons name="saveBack" icon="saveBackIcon32.png"
+						action="#{mainWindow.userDetailsForm}.performSave; #{mainWindow}.performBack">
+						<bigButton name="saveNew" icon="saveNewIcon16.png"
+							action="#{mainWindow.userDetailsForm}.performSave; #{mainWindow}.performNew;" />
+					</bigButtons>
+					<smallButton name="cancel" icon="cancelIcon16.png"
+						action="#{mainWindow.userDetailsForm}.performCancel;" />
+					<smallButtons name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.userDetailsForm}.performDelete; #{mainWindow}.performBack">
+						<smallButton name="deleteNew" icon="deleteIcon16.png"
+							action="#{mainWindow.userDetailsForm}.performDelete; #{mainWindow}.performNew;" />
+					</smallButtons>
 				</group>
 			</ribbon>
 			<component type="form" name="userDetailsForm">
 				<component type="input" name="login" field="userName" />
 				<component type="lookup" name="userGroup" field="userGroup">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
 					<option type="paginable" value="true" />
 					<option type="searchable" value="name" />
 					<option type="orderable" value="name" />
@@ -112,6 +113,7 @@
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<option type="header" value="false" />
+				<option type="expression" value="#name"/>
 			</component>
 		</component>
 	</view>
