@@ -192,14 +192,18 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 
 				var argumentsBegin = elementAction.indexOf("(");
 				var argumentsEnd = elementAction.indexOf(")");
-				var argumentsList;
+				var argumentsList = new Array(this);
 				
-				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd) {
+				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
+				//and only empty parenthesis ()
+				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
 					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
-					argumentsList = args.split(",");
+					argumentsList = argumentsList.concat(args.split(","));
 					elementAction = elementAction.substring(0, argumentsBegin);
-				} 
-				
+				} else if(argumentsBegin == argumentsEnd-1) {
+					//we need to get rid of the empty parenthesis
+					elementAction = elementAction.substring(0, argumentsBegin);
+				}
 
 				var actionObject = {
 					component: component,
@@ -221,7 +225,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 						return;
 					}
 					this.actionIter++;
-					func.call(actionObject.component, this);
+					
+					func.apply(actionObject.component, actionObject.arguments);
 				}
 			}
 		}
