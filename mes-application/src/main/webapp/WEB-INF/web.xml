@@ -35,7 +35,7 @@
 
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>*.xsl</url-pattern>
+		<url-pattern>*.xls</url-pattern>
 	</filter-mapping>
 	
 	<filter-mapping>
@@ -98,6 +98,11 @@
 	<servlet-mapping>
 		<servlet-name>Qcadoo MES</servlet-name>
 		<url-pattern>*.pdf</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Qcadoo MES</servlet-name>
+		<url-pattern>*.xls</url-pattern>
 	</servlet-mapping>
 
 	<session-config>

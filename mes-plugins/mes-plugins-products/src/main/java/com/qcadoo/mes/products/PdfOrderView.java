@@ -25,7 +25,7 @@ public final class PdfOrderView extends ProductsPdfView {
         document.add(new Paragraph(
                 translationService.translate("products.order.report.login", locale) + " " + user.getUserName(), font));
         document.add(new Paragraph(translationService.translate("products.order.report.order", locale), getFontBold(font)));
-        document.add(new Paragraph(translationService.translate("products.ordeentityort.number", locale) + " "
+        document.add(new Paragraph(translationService.translate("products.order.report.number", locale) + " "
                 + entity.getField("number"), font));
         document.add(new Paragraph(translationService.translate("products.order.report.name", locale) + " "
                 + entity.getField("name"), font));

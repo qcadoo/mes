@@ -137,7 +137,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		if (functionName == "printOrder" || functionName == "printMaterialRequirementPdf") {
 			window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
 		} else if (functionName == "printMaterialRequirementCsv") {
-			window.open(viewName+"/function/"+functionName+".xsl?entityId="+entityId);
+			window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
 		}
 	}
 	
