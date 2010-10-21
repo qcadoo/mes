@@ -29,7 +29,7 @@ public class ProductsMaterialRequirement {
 
     private boolean deleted;
 
-    private boolean generated;
+    private boolean generated = false;
 
     @OneToMany(mappedBy = "materialRequirement", fetch = FetchType.LAZY)
     private List<ProductsMaterialRequirementComponent> orders;

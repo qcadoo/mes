@@ -9,6 +9,8 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
+import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.enums.RestrictionOperator;
 import com.qcadoo.mes.model.DataDefinition;
@@ -52,6 +54,29 @@ public final class ProductService {
         value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
         value.lookupValue("mainWindow.materialRequirementDetailsForm.withoutSubstitutes").setEnabled(false);
         value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
+    }
+
+    public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
+        // TODO masz why we get hibernate entities here?
+        ProductsOrder order = (ProductsOrder) entity.getField("order");
+        ProductsMaterialRequirement materialRequirement = (ProductsMaterialRequirement) entity.getField("materialRequirement");
+
+        if (materialRequirement == null || order == null) {
+            return false;
+        }
+
+        SearchResult searchResult = dataDefinition
+                .find()
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
+                .restrictedWith(
+                        Restrictions.belongsTo(dataDefinition.getField("materialRequirement"), materialRequirement.getId()))
+                .list();
+        if (searchResult.getTotalNumberOfEntities() == 0) {
+            return true;
+        } else {
+            entity.addError(dataDefinition.getField("order"), "products.validate.global.error.materialRequirementDuplicated");
+            return false;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -215,6 +240,7 @@ public final class ProductService {
     public void fillMaterialRequirementDateAndWorker(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", new Date());
         entity.setField("worker", getFullNameOfLoggedUser());
+        entity.setField("generated", false);
     }
 
     private boolean compareDates(final DataDefinition dataDefinition, final Entity entity, final String dateFromField,

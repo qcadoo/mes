@@ -488,7 +488,7 @@
 					<option type="fieldCode" value="number" />
 				</component>
 				<option type="header" value="false" />
-				<option type="expression" value="#order['name']" />
+				<option type="expression" value="#name" />
 			</component>
 		</component>
 		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
