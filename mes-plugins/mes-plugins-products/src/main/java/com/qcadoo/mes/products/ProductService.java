@@ -71,6 +71,7 @@ public final class ProductService {
                 .restrictedWith(
                         Restrictions.belongsTo(dataDefinition.getField("materialRequirement"), materialRequirement.getId()))
                 .list();
+
         if (searchResult.getTotalNumberOfEntities() == 0) {
             return true;
         } else {
