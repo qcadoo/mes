@@ -147,20 +147,10 @@ public final class CrudController {
             final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
-        // System.out.println(" ------------ ");
-        // System.out.println(body.toString());
-        // System.out.println(" ------------ ");
-
         JSONObject jsonBody = getJsonBody(body);
-
-        // System.out.println(jsonBody.toString());
-        // System.out.println(" ------------ ");
-
         JSONObject jsonObject = getJsonObject(jsonBody);
 
         String triggerComponentName = getComponentName(jsonBody);
-        // String contextFieldName = getJsonString(jsonBody, "contextFieldName");
-        // String contextEntityId = getJsonString(jsonBody, "contextEntityId");
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
@@ -400,7 +390,7 @@ public final class CrudController {
         try {
             InputStream inputStream = request.getInputStream();
             if (inputStream != null) {
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream, request.getCharacterEncoding()));
                 char[] charBuffer = new char[128];
                 int bytesRead = -1;
                 while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {

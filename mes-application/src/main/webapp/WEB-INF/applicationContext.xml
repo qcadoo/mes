@@ -17,7 +17,7 @@
 			<map>
 		        <entry key="html" value="text/html"/> 
 		        <entry key="pdf" value="application/pdf"/> 
-		        <entry key="xsl" value="application/vnd.ms-excel"/> 
+		        <entry key="xls" value="application/vnd.ms-excel"/> 
 		        <entry key="xml" value="application/xml"/> 
 		        <entry key="json" value="application/json"/>
 			</map>
