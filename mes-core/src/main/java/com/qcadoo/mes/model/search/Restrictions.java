@@ -21,7 +21,7 @@ public final class Restrictions {
     }
 
     public static Restriction eq(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity();
+        Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -51,7 +51,7 @@ public final class Restrictions {
     }
 
     public static Restriction ge(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity();
+        Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -60,7 +60,7 @@ public final class Restrictions {
     }
 
     public static Restriction gt(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity();
+        Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -77,7 +77,7 @@ public final class Restrictions {
     }
 
     public static Restriction le(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity();
+        Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -86,7 +86,7 @@ public final class Restrictions {
     }
 
     public static Restriction lt(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity();
+        Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
@@ -95,7 +95,7 @@ public final class Restrictions {
     }
 
     public static Restriction ne(final FieldDefinition fieldDefinition, final Object expectedValue) {
-        Entity validatedEntity = new DefaultEntity();
+        Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;

@@ -2,7 +2,6 @@ package com.qcadoo.mes.model.search;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 public final class Order {
 
@@ -53,7 +52,7 @@ public final class Order {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("fieldName", fieldName).append("asc", asc).toString();
+        return fieldName + (asc ? " asc" : " desc");
     }
 
 }

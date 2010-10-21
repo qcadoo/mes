@@ -2,7 +2,6 @@ package com.qcadoo.mes.model.search.restrictions.internal;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
@@ -39,7 +38,7 @@ public final class IsNotNullRestriction extends BaseRestriction {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("fieldName", getFieldName()).toString();
+        return getFieldName() + " is not null";
     }
 
 }

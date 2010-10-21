@@ -16,23 +16,29 @@ public final class DefaultEntity implements Entity {
 
     private Long id;
 
+    private final String pluginIdentifier;
+
+    private final String name;
+
     private final Map<String, Object> fields;
 
     private final List<ErrorMessage> globalErrors = new ArrayList<ErrorMessage>();
 
     private final Map<String, ErrorMessage> errors = new HashMap<String, ErrorMessage>();
 
-    public DefaultEntity(final Long id, final Map<String, Object> fields) {
+    public DefaultEntity(final String pluginIdentifier, final String name, final Long id, final Map<String, Object> fields) {
+        this.pluginIdentifier = pluginIdentifier;
+        this.name = name;
         this.id = id;
         this.fields = fields;
     }
 
-    public DefaultEntity(final Long id) {
-        this(id, new HashMap<String, Object>());
+    public DefaultEntity(final String pluginIdentifier, final String name, final Long id) {
+        this(pluginIdentifier, name, id, new HashMap<String, Object>());
     }
 
-    public DefaultEntity() {
-        this(null, new HashMap<String, Object>());
+    public DefaultEntity(final String pluginIdentifier, final String name) {
+        this(pluginIdentifier, name, null, new HashMap<String, Object>());
     }
 
     @Override
@@ -92,7 +98,8 @@ public final class DefaultEntity implements Entity {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 41).append(id).append(fields).append(globalErrors).append(errors).toHashCode();
+        return new HashCodeBuilder(23, 41).append(id).append(name).append(pluginIdentifier).append(fields).append(globalErrors)
+                .append(errors).toHashCode();
     }
 
     @Override
@@ -107,13 +114,13 @@ public final class DefaultEntity implements Entity {
             return false;
         }
         DefaultEntity other = (DefaultEntity) obj;
-        return new EqualsBuilder().append(id, other.id).append(fields, other.fields).append(fields, other.fields)
-                .append(globalErrors, this.globalErrors).isEquals();
+        return new EqualsBuilder().append(id, other.id).append(name, other.name).append(pluginIdentifier, other.pluginIdentifier)
+                .append(fields, other.fields).append(fields, other.fields).append(globalErrors, this.globalErrors).isEquals();
     }
 
     @Override
     public DefaultEntity copy() {
-        DefaultEntity entity = new DefaultEntity(id);
+        DefaultEntity entity = new DefaultEntity(pluginIdentifier, name, id);
         for (Map.Entry<String, Object> field : fields.entrySet()) {
             if (field.getValue() instanceof Entity) {
                 entity.setField(field.getKey(), ((Entity) field.getValue()).copy());
@@ -122,11 +129,6 @@ public final class DefaultEntity implements Entity {
             }
         }
         return entity;
-    }
-
-    @Override
-    public String toString() {
-        return "Entity #" + id;
     }
 
     @Override
@@ -147,6 +149,21 @@ public final class DefaultEntity implements Entity {
     @Override
     public Entity getBelongsToField(final String fieldName) {
         return (Entity) getField(fieldName);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getPluginIdentifier() {
+        return pluginIdentifier;
+    }
+
+    @Override
+    public String toString() {
+        return "Entity[" + pluginIdentifier + "." + name + "][id=" + id + ", " + getFields() + "]";
     }
 
 }

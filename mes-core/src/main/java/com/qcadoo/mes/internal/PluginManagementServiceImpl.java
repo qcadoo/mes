@@ -26,6 +26,7 @@ import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.enums.PluginStatus;
 import com.qcadoo.mes.exceptions.PluginException;
+import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.utils.PluginUtil;
 
 @Service
@@ -64,6 +65,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     @Transactional
+    @Monitorable
     public String downloadPlugin(final MultipartFile file) {
         if (!file.isEmpty()) {
             File pluginFile = null;
@@ -125,6 +127,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     @Transactional
+    @Monitorable
     public String removePlugin(final String entityId) {
         PluginsPlugin databasePlugin = getByEntityId(entityId);
         if (databasePlugin.isBase()) {
@@ -150,6 +153,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     @Transactional
+    @Monitorable
     public String enablePlugin(final String entityId) {
         PluginsPlugin plugin = getByEntityId(entityId);
         if (plugin.isBase()) {
@@ -178,6 +182,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Monitorable
     public String restartServer() {
         try {
             PluginUtil.restartServer(webappPath);
@@ -190,6 +195,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     @Transactional
+    @Monitorable
     public String disablePlugin(final String entityId) {
         PluginsPlugin plugin = getByEntityId(entityId);
         if (plugin.isBase()) {
@@ -206,6 +212,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     @Transactional
+    @Monitorable
     public String deinstallPlugin(final String entityId) {
         PluginsPlugin databasePlugin = getByEntityId(entityId);
         if (databasePlugin.isBase()) {
@@ -232,6 +239,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     @Override
     @Transactional
+    @Monitorable
     public String updatePlugin(final MultipartFile file) {
         if (!file.isEmpty()) {
             File pluginFile = null;

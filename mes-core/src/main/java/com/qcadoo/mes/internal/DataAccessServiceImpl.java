@@ -5,7 +5,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restriction;
@@ -53,9 +53,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     @Transactional
+    @Monitorable
     public Entity save(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkNotNull(genericEntity, "entity must be given");
+        checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkNotNull(genericEntity, "Entity must be given");
 
         Entity genericEntityToSave = genericEntity.copy();
 
@@ -74,6 +75,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
             if (existingGenericEntity != null) {
                 copyMissingFields(genericEntityToSave, existingGenericEntity);
             }
+
+            LOG.info(genericEntityToSave + " hasn't been saved, bacause of validation errors");
+
             return genericEntityToSave;
         }
 
@@ -85,57 +89,60 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         getCurrentSession().save(databaseEntity);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("entity " + dataDefinition.getName() + "#" + genericEntity.getId() + " has been saved");
-        }
+        Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
 
-        return entityService.convertToGenericEntity(dataDefinition, databaseEntity);
+        LOG.info(savedEntity + " has been saved");
+
+        return savedEntity;
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     public Entity get(final InternalDataDefinition dataDefinition, final Long entityId) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkNotNull(entityId, "entityId must be given");
+        checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkNotNull(entityId, "EntityId must be given");
 
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
 
         if (databaseEntity == null) {
+            LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
+                    + "] hasn't been retrieved, because it doesn't exist");
             return null;
         }
 
-        return entityService.convertToGenericEntity(dataDefinition, databaseEntity);
+        Entity entity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
+
+        LOG.info(entity + " has been retrieved");
+
+        return entity;
     }
 
     @Override
     @Transactional
+    @Monitorable
     public void delete(final InternalDataDefinition dataDefinition, final Long... entityIds) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkState(dataDefinition.isDeletable(), "entity must be deletable");
-        checkState(entityIds.length > 0, "entityIds must be given");
+        checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkState(dataDefinition.isDeletable(), "Entity must be deletable");
+        checkState(entityIds.length > 0, "EntityIds must be given");
 
         for (Long entityId : entityIds) {
             deleteEntity(dataDefinition, entityId);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("entities " + dataDefinition.getName() + "#" + Arrays.toString(entityIds) + " marked as deleted");
         }
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     public SearchResult find(final SearchCriteria searchCriteria) {
-        checkArgument(searchCriteria != null, "searchCriteria must be given");
+        checkArgument(searchCriteria != null, "SearchCriteria must be given");
 
         InternalDataDefinition dataDefinition = (InternalDataDefinition) searchCriteria.getDataDefinition();
 
         int totalNumberOfEntities = getTotalNumberOfEntities(getCriteria(searchCriteria));
 
         if (totalNumberOfEntities == 0 || searchCriteria.getRestrictions().contains(null)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("find 0 elements");
-            }
+            LOG.info("There is no entity matching criteria " + searchCriteria);
             return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, Collections.emptyList());
         }
 
@@ -144,51 +151,57 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         addOrderToCriteria(searchCriteria.getOrder(), criteria);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("searching with criteria " + searchCriteria);
-        }
-
         List<?> results = criteria.list();
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("find " + results.size() + " elements");
-        }
+        LOG.info("There are " + totalNumberOfEntities + " entities matching criteria " + searchCriteria);
 
         return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, results);
     }
 
     @Override
     @Transactional
+    @Monitorable
     public void moveTo(final InternalDataDefinition dataDefinition, final Long entityId, final int position) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
-        checkNotNull(entityId, "entityId must be given");
-        checkState(position > 0, "position must be greaten than 0");
+        checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkState(dataDefinition.isPrioritizable(), "Entity must be prioritizable");
+        checkNotNull(entityId, "EntityId must be given");
+        checkState(position > 0, "Position must be greaten than 0");
 
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
 
         if (databaseEntity == null) {
+            LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
+                    + "] hasn't been prioritized, because it doesn't exist");
             return;
         }
 
         priorityService.move(dataDefinition, databaseEntity, position, 0);
+
+        LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
+                + "] has been prioritized");
     }
 
     @Override
     @Transactional
+    @Monitorable
     public void move(final InternalDataDefinition dataDefinition, final Long entityId, final int offset) {
-        checkNotNull(dataDefinition, "dataDefinition must be given");
-        checkState(dataDefinition.isPrioritizable(), "entity must be prioritizable");
-        checkNotNull(entityId, "entityId must be given");
-        checkState(offset != 0, "offset must be different than 0");
+        checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkState(dataDefinition.isPrioritizable(), "Entity must be prioritizable");
+        checkNotNull(entityId, "EntityId must be given");
+        checkState(offset != 0, "Offset must be different than 0");
 
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
 
         if (databaseEntity == null) {
+            LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
+                    + "] hasn't been prioritized, because it doesn't exist");
             return;
         }
 
         priorityService.move(dataDefinition, databaseEntity, 0, offset);
+
+        LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
+                + "] has been prioritized");
     }
 
     private Object getExistingDatabaseEntity(final InternalDataDefinition dataDefinition, final Entity entity) {
@@ -196,7 +209,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         if (entity.getId() != null) {
             existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId(), false);
-            checkState(existingDatabaseEntity != null, "entity %s#%s cannot be found", dataDefinition.getName(), entity.getId());
+            checkState(existingDatabaseEntity != null, "Entity[%s][id=%s] cannot be found", dataDefinition.getPluginIdentifier()
+                    + "." + dataDefinition.getName(), entity.getId());
         }
 
         return existingDatabaseEntity;
@@ -205,7 +219,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private void deleteEntity(final InternalDataDefinition dataDefinition, final Long entityId) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
 
-        checkNotNull(databaseEntity, "entity %s#%s cannot be found", dataDefinition.getName(), entityId);
+        checkNotNull(databaseEntity, "Entity[%s][id=%s] cannot be found", dataDefinition.getPluginIdentifier() + "."
+                + dataDefinition.getName(), entityId);
 
         priorityService.deprioritizeEntity(dataDefinition, databaseEntity);
 
@@ -219,9 +234,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
             if (fieldDefinition.getType() instanceof HasManyType) {
                 HasManyType hasManyFieldType = (HasManyType) fieldDefinition.getType();
                 List<?> children = (List<?>) entityService.getField(databaseEntity, fieldDefinition);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Delete cascade = " + hasManyFieldType.getCascade());
-                }
                 InternalDataDefinition childDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
                 if (HasManyType.Cascade.NULLIFY.equals(hasManyFieldType.getCascade())) {
                     for (Object child : children) {
@@ -240,6 +252,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             }
         }
 
+        LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
+                + "] has been deleted");
     }
 
     private Session getCurrentSession() {

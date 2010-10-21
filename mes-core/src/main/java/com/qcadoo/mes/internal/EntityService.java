@@ -64,7 +64,8 @@ public final class EntityService {
     }
 
     public Entity convertToGenericEntity(final InternalDataDefinition dataDefinition, final Object databaseEntity) {
-        Entity genericEntity = new DefaultEntity(getId(databaseEntity));
+        Entity genericEntity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(),
+                getId(databaseEntity));
 
         for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
             if (fieldDefinitionEntry.getValue().isPersistent()) {

@@ -20,6 +20,10 @@ public interface Entity {
 
     Long getId();
 
+    String getName();
+
+    String getPluginIdentifier();
+
     Object getField(String fieldName);
 
     String getStringField(String fieldName);

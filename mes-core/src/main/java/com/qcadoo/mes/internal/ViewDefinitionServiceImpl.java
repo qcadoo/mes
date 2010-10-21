@@ -13,6 +13,7 @@ import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.enums.PluginStatus;
+import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
 import com.qcadoo.mes.view.menu.MenuItem;
@@ -30,6 +31,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     public ViewDefinition get(final String pluginIdentifier, final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(pluginIdentifier + "." + viewName);
         if (viewDefinition != null && belongsToActivePlugin(viewDefinition.getPluginIdentifier())) {
@@ -49,24 +51,28 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     public List<ViewDefinition> list() {
         return new ArrayList<ViewDefinition>(viewDefinitions.values());
     }
 
     @Override
     @Transactional
+    @Monitorable
     public void save(final ViewDefinition viewDefinition) {
         viewDefinitions.put(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName(), viewDefinition);
     }
 
     @Override
     @Transactional
+    @Monitorable
     public void delete(final String pluginIdentifier, final String viewName) {
         viewDefinitions.remove(pluginIdentifier + "." + viewName);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     public MenuDefinition getMenu() {
 
         MenuDefinition baseMenuDefinition = new MenuDefinition();
