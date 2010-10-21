@@ -466,7 +466,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.performCallFunctionThree = function(actionsPerformer) {
 		if (currentState.selectedEntityId) {
-			mainController.performCallFunction("printMaterialRequirementCsv", currentState.selectedEntityId, actionsPerformer);
+			mainController.performCallFunction("printMaterialRequirementXls", currentState.selectedEntityId, actionsPerformer);
 		} else {
 			mainController.showMessage("error", mainController.getTranslation("commons.message.emptySelectedId"));
 		}
