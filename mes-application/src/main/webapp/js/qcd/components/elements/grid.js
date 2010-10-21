@@ -431,27 +431,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	var performDelete = this.performDelete;
 	
-	this.performCallFunction = function(actionsPerformer) {
+	this.performCallFunction = function(actionsPerformer, functionName) {
 		if (currentState.selectedEntityId) {
-			mainController.performCallFunction("print", currentState.selectedEntityId, actionsPerformer);
-			mainController.performCallFunction("printOrder", currentState.selectedEntityId, actionsPerformer);
-		} else {
-			mainController.showMessage("error", mainController.getTranslation("commons.message.emptySelectedId"));
-		}
-	}
-	
-	//TODO KRNA remove after pass parameter task end
-	this.performCallFunctionTwo = function(actionsPerformer) {
-		if (currentState.selectedEntityId) {
-			mainController.performCallFunction("printMaterialRequirementPdf", currentState.selectedEntityId, actionsPerformer);
-		} else {
-			mainController.showMessage("error", mainController.getTranslation("commons.message.emptySelectedId"));
-		}
-	}
-	
-	this.performCallFunctionThree = function(actionsPerformer) {
-		if (currentState.selectedEntityId) {
-			mainController.performCallFunction("printMaterialRequirementXls", currentState.selectedEntityId, actionsPerformer);
+			mainController.performCallFunction(functionName, currentState.selectedEntityId, actionsPerformer);
 		} else {
 			mainController.showMessage("error", mainController.getTranslation("commons.message.emptySelectedId"));
 		}

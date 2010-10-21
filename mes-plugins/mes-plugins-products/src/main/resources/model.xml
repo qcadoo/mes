@@ -104,6 +104,7 @@
 		<date name="effectiveDateTo" readonly="true" />
 		<text name="startWorker" readonly="true" />
 		<text name="endWorker" readonly="true" />
+		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
 	</model>
@@ -113,6 +114,16 @@
 		</text>
 		<date name="date" readonly="true" />
 		<text name="worker" readonly="true" />
+		<boolean name="withoutSubstitutes" persistent="false" />
+		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillMaterialRequirementDateAndWorker" />
+	</model>
+	<model name="materialRequirementComponent">	
+		<belongsTo name="materialRequirement" model="materialRequirement" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="order" model="order" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
 	</model>
 </qcd:models>
