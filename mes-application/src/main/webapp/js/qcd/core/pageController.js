@@ -136,8 +136,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	this.performCallFunction = function(functionName, entityId, actionsPerformer) {
 		if (functionName == "printOrder" || functionName == "printMaterialRequirementPdf") {
 			window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
-		} else if (functionName == "printMaterialRequirementCsv") {
-			window.open(viewName+"/function/"+functionName+".xsl?entityId="+entityId);
+		} else if (functionName == "printMaterialRequirementXls") {
+			window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
 		}
 	}
 	
@@ -192,20 +192,25 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 
 				var argumentsBegin = elementAction.indexOf("(");
 				var argumentsEnd = elementAction.indexOf(")");
-				var argumentsList;
+				var argumentsList = new Array();
 				
-				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd) {
+				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
+				//and only empty parenthesis ()
+				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
 					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
 					argumentsList = args.split(",");
 					elementAction = elementAction.substring(0, argumentsBegin);
-				} 
-				
+				} else if(argumentsBegin == argumentsEnd-1) {
+					//we need to get rid of the empty parenthesis
+					elementAction = elementAction.substring(0, argumentsBegin);
+				}
 
 				var actionObject = {
 					component: component,
 					action: elementAction,
 					arguments: argumentsList
 				}
+				
 				actions.push(actionObject);
 			}
 		}
@@ -221,7 +226,11 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 						return;
 					}
 					this.actionIter++;
-					func.call(actionObject.component, this);
+					
+					var array = new Array(this);
+					array = array.concat(actionObject.arguments);
+					
+					func.apply(actionObject.component, array);
 				}
 			}
 		}

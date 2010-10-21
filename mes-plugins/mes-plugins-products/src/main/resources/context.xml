@@ -16,7 +16,7 @@
   	<bean id="pdfMaterialRequirementView"
   		class="com.qcadoo.mes.products.PdfMaterialRequirementView"/>
   		
-  	<bean id="csvMaterialRequirementView"
-  		class="com.qcadoo.mes.products.CsvMaterialRequirementView"/>
+  	<bean id="xlsMaterialRequirementView"
+  		class="com.qcadoo.mes.products.XlsMaterialRequirementView"/>
 	
 </beans>
