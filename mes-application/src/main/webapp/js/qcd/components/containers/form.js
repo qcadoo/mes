@@ -87,6 +87,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		}
 	}
 	
+	this.callUpdateFunction = function(actionsPerformer, functionTriggerName) {
+		mainController.performCallUpdateFunction(functionTriggerName, actionsPerformer);
+	}
+	
 	this.updateSize = function(_width, _height) {
 		width = _width - 40;
 		if(width > 1380) {

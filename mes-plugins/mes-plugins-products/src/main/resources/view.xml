@@ -430,6 +430,7 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performSave;" />
+					<bigButton name="generate" action="#{mainWindow.materialRequirementDetailsForm}.callUpdateFunction(generate);" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"

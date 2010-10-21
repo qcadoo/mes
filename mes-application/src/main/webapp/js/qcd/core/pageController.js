@@ -62,6 +62,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.performNew = function(actionsPerformer) {
+		QCD.info("performNew");
 		var parameters = new Object();
 		var valuesJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("data", valuesJson, function(response) {
@@ -125,6 +126,24 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		};
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost("delete", parametersJson, function(response) {
+			QCD.info(response);
+			setValueData(response);
+			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
+				actionsPerformer.performNext();
+			}
+		});
+	}
+	
+	this.performCallUpdateFunction = function(functionTriggerName, actionsPerformer) {
+		QCD.info("performCallUpdateFunction " +functionTriggerName);
+		var parameters = {
+			triggerName: functionTriggerName,
+			data: getValueData(),
+			entityId: rootEntityId
+		};
+		QCD.info(parameters);
+		var parametersJson = JSON.stringify(parameters);
+		QCDConnector.sendPost("callUpdateFunction", parametersJson, function(response) {
 			QCD.info(response);
 			setValueData(response);
 			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
