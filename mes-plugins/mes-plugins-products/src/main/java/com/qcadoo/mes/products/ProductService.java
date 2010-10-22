@@ -87,8 +87,14 @@ public final class ProductService {
                 .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
         ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
                 .lookupValue("mainWindow.orderDetailsForm.instruction");
+        ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
+        ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
 
-        if (defaultInstructionValue == null || productValue == null) {
+        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue().equals("done")) {
+            formValue.setEnabled(false);
+        }
+
+        if (defaultInstructionValue == null || productValue == null || instructionValue == null) {
             return;
         }
 
