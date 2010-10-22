@@ -94,7 +94,7 @@
 		<enum name="state" values="pending,done">
 			<validatesPresence />
 		</enum>
-		<enum name="machine" values="machine1,machine2" />
+		<dictionary name="machine" dictionary="machines" />
 		<belongsTo name="product" model="product" lookupField="name" />
 		<belongsTo name="defaultInstruction" model="instruction" lookupField="name" readonly="true" />
 		<belongsTo name="instruction" model="instruction" lookupField="name" />
