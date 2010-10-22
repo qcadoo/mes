@@ -1,13 +1,14 @@
 package com.qcadoo.mes.products;
 
-import java.awt.Font;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.dom4j.DocumentException;
-
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
