@@ -3,6 +3,7 @@ package com.qcadoo.mes.beans.products;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,8 +22,10 @@ public class ProductsInstruction {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String number;
 
+    @Column(nullable = false)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -34,6 +37,7 @@ public class ProductsInstruction {
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsProduct product;
 
+    @Column(nullable = false)
     private String typeOfMaterial;
 
     private String description;

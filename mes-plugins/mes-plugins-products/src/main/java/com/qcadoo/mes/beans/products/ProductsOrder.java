@@ -23,10 +23,13 @@ public class ProductsOrder {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String number;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String state;
 
     private boolean deleted;
@@ -37,9 +40,11 @@ public class ProductsOrder {
     @Temporal(TemporalType.DATE)
     private Date effectiveDateTo;
 
+    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateFrom;
 
+    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateTo;
 
