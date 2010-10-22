@@ -2,6 +2,7 @@ package com.qcadoo.mes.beans.dictionaries;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,7 @@ public class DictionariesDictionary {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     public Long getId() {

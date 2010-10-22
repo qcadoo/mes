@@ -1,5 +1,6 @@
 package com.qcadoo.mes.beans.users;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,12 +14,15 @@ public class UsersGroup {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     private String description;
 
+    @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
     private boolean deleted;
 
     public Long getId() {
