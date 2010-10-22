@@ -10,7 +10,7 @@
 	margin-bottom: 19px;
 	vertical-align: middle;
 	display: block;
-	text-align: right;
+	text-align: left;
 }
 
 /** labels **/
@@ -168,12 +168,13 @@
 	position: absolute;
 	top: 15px;
 	left: 15px;
-	background: #fff;
+	background: transparent;
 	z-index: 999;
 }
 
 .component_container_form .error_messages div {
 	border: 1px solid #ec1c24;
+	background: #fff;
 	width: 275px;
 	font: 11px arial;
 	margin-bottom: 5px;
@@ -259,6 +260,8 @@
 	position: absolute;
 	top: 4px; left: 8px;
 	font: 11px arial;
+	height: 15px;
+	overflow: hidden;
 }
 .component_container_form_w .lookupValueWrapper .lookupLoading {
 	position: absolute;
