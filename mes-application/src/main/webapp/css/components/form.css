@@ -10,7 +10,7 @@
 	margin-bottom: 19px;
 	vertical-align: middle;
 	display: block;
-	text-align: right;
+	text-align: left;
 }
 
 /** labels **/
@@ -260,6 +260,8 @@
 	position: absolute;
 	top: 4px; left: 8px;
 	font: 11px arial;
+	height: 15px;
+	overflow: hidden;
 }
 .component_container_form_w .lookupValueWrapper .lookupLoading {
 	position: absolute;

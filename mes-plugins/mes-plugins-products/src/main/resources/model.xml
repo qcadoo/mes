@@ -114,7 +114,7 @@
 		</text>
 		<date name="date" readonly="true" />
 		<text name="worker" readonly="true" />
-		<boolean name="withoutSubstitutes" persistent="false" />
+		<boolean name="onlyComponents" />
 		<boolean name="generated" readonly="true" />
 		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillMaterialRequirementDateAndWorker" />

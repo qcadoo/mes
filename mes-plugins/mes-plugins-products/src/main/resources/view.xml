@@ -430,6 +430,7 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performSave;" />
+					<bigButton name="generate" action="#{mainWindow.materialRequirementDetailsForm}.callUpdateFunction(generate);" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
@@ -444,7 +445,7 @@
 				<component type="input" name="worker" field="worker"
 					enabled="false" />
 				<component type="textarea" name="name" field="name" />
-				<component type="checkbox" name="withoutSubstitutes" field="withoutSubstitutes" />
+				<component type="checkbox" name="onlyComponents" field="onlyComponents" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>

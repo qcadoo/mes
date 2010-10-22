@@ -24,6 +24,10 @@ QCD.components.Component = function(_element, _mainController) {
 		_this.options = options;
 	}
 	
+	this.changeUpdateModeToUpdate = function() {
+		QCD.error("TODO");
+	}
+	
 	this.getValue = function() {
 		var mode = updateMode;
 		if (this.getUpdateMode) {
