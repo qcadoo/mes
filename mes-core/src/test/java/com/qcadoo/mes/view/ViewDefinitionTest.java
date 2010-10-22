@@ -90,11 +90,11 @@ public class ViewDefinitionTest {
     @Test
     public void shouldGetVauleFromRootComponent() throws Exception {
         // given
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity("", "", 1L);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
-        selectedEntities.put("removeIt", new DefaultEntity(2L));
-        selectedEntities.put("keepIt", new DefaultEntity(3L));
+        selectedEntities.put("removeIt", new DefaultEntity("", "", 2L));
+        selectedEntities.put("keepIt", new DefaultEntity("", "", 3L));
 
         String triggerComponentName = "trigger";
         Set<String> pathsToUpdate = new HashSet<String>();
@@ -121,7 +121,7 @@ public class ViewDefinitionTest {
         assertEquals(2, pathsToUpdate.size());
         assertThat(pathsToUpdate, JUnitMatchers.hasItems(triggerComponentName, "removeIt"));
         assertEquals(1, selectedEntities.size());
-        assertEquals(new DefaultEntity(3L), selectedEntities.get("keepIt"));
+        assertEquals(new DefaultEntity("", "", 3L), selectedEntities.get("keepIt"));
         assertEquals("test", value.getComponent("rootName").getValue());
         verify(root).getValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH);
     }
@@ -152,7 +152,7 @@ public class ViewDefinitionTest {
     @Test
     public void shouldCallHook() throws Exception {
         // given
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity("", "", 1L);
         ViewValue<Long> globalViewValue = new ViewValue<Long>();
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
         String triggerComponentName = "trigger";
@@ -179,7 +179,7 @@ public class ViewDefinitionTest {
     @Test
     public void shouldNotLookupListenersIfThereIsNotTriggerComponent() throws Exception {
         // given
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity("", "", 1L);
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 

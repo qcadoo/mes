@@ -24,7 +24,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldNotCallAnyHookIfNotDefined() throws Exception {
         // given
-        Entity entity = new DefaultEntity();
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -39,7 +39,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnCreateHook() throws Exception {
         // given
-        Entity entity = new DefaultEntity();
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -56,7 +56,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnUpdateHook() throws Exception {
         // given
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -80,7 +80,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallAllDefinedHooksWhileCreating() throws Exception {
         // given
-        Entity entity = new DefaultEntity();
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -98,7 +98,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnSaveHookWhileUpdating() throws Exception {
         // given
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -122,7 +122,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallAllDefinedHooksWhileUpdating() throws Exception {
         // given
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
         entity.setField("name", null);
         entity.setField("age", null);
 
@@ -147,7 +147,7 @@ public class HookTest extends DataAccessTest {
     @Test
     public void shouldCallOnSaveHookWhileCreating() throws Exception {
         // given
-        Entity entity = new DefaultEntity();
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("name", null);
         entity.setField("age", null);
 

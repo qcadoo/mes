@@ -31,6 +31,8 @@ public final class TranslationServiceImpl implements TranslationService {
 
     private static final Set<String> SECURITY_MESSAGES = new HashSet<String>();
 
+    private static final boolean DISPLAY_MISSING_TRANSLATIONS = true;
+
     @Autowired
     private MessageSource messageSource;
 
@@ -39,7 +41,18 @@ public final class TranslationServiceImpl implements TranslationService {
 
     @Override
     public String translate(final String messageCode, final Locale locale, final Object... args) {
-        return messageSource.getMessage(messageCode, args, "TO TRANSLATE: " + messageCode, locale).trim();
+        String message = translateWithError(messageCode, locale, args);
+        if (message != null) {
+            return message.trim();
+        }
+
+        LOG.warn("Missing translation " + messageCode + " for locale " + locale);
+
+        if (DISPLAY_MISSING_TRANSLATIONS) {
+            return messageCode;
+        } else {
+            return "";
+        }
     }
 
     @Override
@@ -50,7 +63,14 @@ public final class TranslationServiceImpl implements TranslationService {
                 return message.trim();
             }
         }
-        return "TO TRANSLATE: " + messageCodes;
+
+        LOG.warn("Missing translation " + messageCodes + " for locale " + locale);
+
+        if (DISPLAY_MISSING_TRANSLATIONS) {
+            return messageCodes.toString();
+        } else {
+            return "";
+        }
     }
 
     private String translateWithError(final String messageCode, final Locale locale, final Object[] args) {

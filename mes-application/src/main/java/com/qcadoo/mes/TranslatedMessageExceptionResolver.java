@@ -19,7 +19,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     private static final String OBJECT_IN_USE = "Trying delete entity in use";
 
-    private String exceptionMessageAttribute = DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE;
+    private final String exceptionMessageAttribute = DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE;
 
     @Autowired
     private TranslationService translationService;
@@ -29,19 +29,15 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             final Object handler, final Exception ex) {
         ModelAndView mv = super.doResolveException(request, response, handler, ex);
         if (mv != null) {
+            String exceptionMessage = ex.getMessage();
             if (OBJECT_IN_USE.equals(ex.getMessage())) {
-                String message = translationService.translate("commons.exception.illegalStateException.objectInUse",
+                exceptionMessage = translationService.translate("commons.exception.illegalStateException.objectInUse",
                         request.getLocale());
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Adding exception message to view: " + message);
-                }
-                mv.addObject(this.exceptionMessageAttribute, message);
-            } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Adding exception message to view: " + ex.getMessage());
-                }
-                mv.addObject(this.exceptionMessageAttribute, ex.getMessage());
             }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Adding exception message to view: " + exceptionMessage);
+            }
+            mv.addObject(this.exceptionMessageAttribute, exceptionMessage);
         }
         return mv;
     }

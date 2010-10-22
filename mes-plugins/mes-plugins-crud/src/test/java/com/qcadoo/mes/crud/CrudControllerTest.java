@@ -186,7 +186,7 @@ public class CrudControllerTest {
         JSONObject json = new JSONObject();
         json.put("entityId", "11");
 
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity("", "", 1L);
 
         ViewValue<Long> expectedViewValue = new ViewValue<Long>(117L);
 
@@ -339,7 +339,7 @@ public class CrudControllerTest {
             @Override
             public ViewValue<Long> answer(final InvocationOnMock invocation) throws Throwable {
                 Map<String, Entity> selectedEntities = (Map<String, Entity>) invocation.getArguments()[0];
-                selectedEntities.put("trigger", new DefaultEntity(11L));
+                selectedEntities.put("trigger", new DefaultEntity("", "", 11L));
                 return oldViewValue;
             }
 

@@ -23,6 +23,7 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ComponentOption;
@@ -173,6 +174,22 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
                     locale));
         }
 
+        FieldDefinition fieldDefinition = getFieldDefinition();
+
+        if (fieldDefinition.isRequired() || (entity == null && fieldDefinition.isRequiredOnCreate())) {
+            newViewValue.getValue().setRequired(true);
+        }
+
+        if (fieldDefinition.isReadOnly() || (entity != null && fieldDefinition.isReadOnlyOnUpdate())) {
+            newViewValue.setEnabled(false);
+        }
+
+        ErrorMessage validationError = getErrorMessage(entity, selectedEntities);
+
+        if (validationError != null) {
+            newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
+        }
+
         return newViewValue;
     }
 
@@ -310,5 +327,16 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
 
     public String getExpression() {
         return expression;
+    }
+
+    private ErrorMessage getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {
+
+        if (getSourceComponent() != null) {
+            return getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
+        } else if (getSourceFieldPath() != null) {
+            return getFieldError(entity, getSourceFieldPath());
+        } else {
+            return getFieldError(entity, getFieldPath());
+        }
     }
 }

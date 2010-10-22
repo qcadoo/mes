@@ -368,7 +368,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         List<Entity> gridEntities = new LinkedList<Entity>();
 
         for (Entity entity : entities) {
-            Entity gridEntity = new DefaultEntity(entity.getId());
+            Entity gridEntity = new DefaultEntity(entity.getPluginIdentifier(), entity.getName(), entity.getId());
             for (ColumnDefinition column : columns.values()) {
                 gridEntity.setField(column.getName(), column.getValue(entity));
             }

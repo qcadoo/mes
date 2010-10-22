@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
-import com.qcadoo.mes.internal.DefaultEntity;
 
 public class PriorityTest extends DataAccessTest {
 
@@ -38,7 +37,7 @@ public class PriorityTest extends DataAccessTest {
     @Test
     public void shouldAddPriorityToEntityOnCreate() throws Exception {
         // given
-        Entity entity = new DefaultEntity();
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("priority", 13);
         entity.setField("belongsTo", 1L);
 
@@ -54,7 +53,7 @@ public class PriorityTest extends DataAccessTest {
     @Test
     public void shouldNotChangePriorityOnUpdate() throws Exception {
         // given
-        Entity entity = new DefaultEntity(1L);
+        Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName(), 1L);
         entity.setField("priority", 13);
         entity.setField("belongsTo", 2L);
 

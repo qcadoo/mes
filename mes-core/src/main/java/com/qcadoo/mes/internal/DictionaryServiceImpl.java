@@ -1,6 +1,7 @@
 package com.qcadoo.mes.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.springframework.util.StringUtils.hasText;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,11 +14,11 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.DictionaryService;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
+import com.qcadoo.mes.model.aop.internal.Monitorable;
 
 @Service
 public final class DictionaryServiceImpl implements DictionaryService {
@@ -27,9 +28,10 @@ public final class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     @SuppressWarnings("unchecked")
     public List<String> values(final String dictionaryName) {
-        checkArgument(StringUtils.hasText(dictionaryName), "dictionary name must be given");
+        checkArgument(hasText(dictionaryName), "dictionary name must be given");
         List<DictionariesDictionaryItem> items = sessionFactory.getCurrentSession()
                 .createCriteria(DictionariesDictionaryItem.class).createAlias("dictionary", "dc")
                 .add(Restrictions.eq("dc.name", dictionaryName)).addOrder(Order.asc("name")).list();
@@ -45,6 +47,7 @@ public final class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     @SuppressWarnings("unchecked")
     public Set<String> dictionaries() {
         List<DictionariesDictionary> dictionaries = sessionFactory.getCurrentSession().createQuery("from Dictionary").list();

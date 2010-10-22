@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
+import com.qcadoo.mes.model.aop.internal.Monitorable;
 
 @Service
 public final class SecurityServiceImpl implements SecurityService {
@@ -20,6 +21,7 @@ public final class SecurityServiceImpl implements SecurityService {
 
     @Override
     @Transactional(readOnly = true)
+    @Monitorable
     public UsersUser getCurrentUser() {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         UsersUser user = (UsersUser) sessionFactory.getCurrentSession().createCriteria(UsersUser.class)

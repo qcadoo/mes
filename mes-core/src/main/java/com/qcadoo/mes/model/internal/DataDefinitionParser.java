@@ -39,7 +39,6 @@ import com.qcadoo.mes.model.types.internal.FieldTypeFactory;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.validators.FieldValidator;
 import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
-import com.qcadoo.mes.view.internal.ViewDefinitionParser;
 
 @Service
 public final class DataDefinitionParser {
@@ -75,9 +74,6 @@ public final class DataDefinitionParser {
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Autowired
-    private ViewDefinitionParser viewDefinitionParser;
 
     public void parse() {
         LOG.info("Reading model definitions ...");

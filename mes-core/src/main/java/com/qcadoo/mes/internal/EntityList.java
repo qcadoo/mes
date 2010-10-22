@@ -51,4 +51,10 @@ public final class EntityList extends AbstractList<Entity> {
         return entities.size();
     }
 
+    @Override
+    public String toString() {
+        return "EntityList[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "]["
+                + joinFieldDefinition.getName() + "=" + parentId + "]";
+    }
+
 }
