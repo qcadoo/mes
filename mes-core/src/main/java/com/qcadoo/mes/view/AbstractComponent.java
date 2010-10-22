@@ -118,20 +118,27 @@ public abstract class AbstractComponent<T> implements Component<T> {
         Entity parentEntity = null;
         ViewValue<T> value = null;
 
+        System.out.println(" 1 ---> " + getPath() + " - " + entity);
+
         parentEntity = entity;
         if (parentEntity == null) {
             parentEntity = selectedEntities.get(getPath());
+            System.out.println(" 2.1 ---> " + getPath() + " - " + parentEntity);
         } else if (this instanceof ContainerComponent && fieldPath != null) {
             parentEntity = getFieldEntityValue(entity, fieldPath);
+            System.out.println(" 2.2 ---> " + getPath() + " - " + parentEntity);
         }
 
         if (sourceComponent != null) {
             selectedEntity = selectedEntities.get(sourceComponent.getPath());
+            System.out.println(" 3.1 ---> " + getPath() + " - " + sourceComponent.getPath() + " - " + selectedEntity);
             if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
+                System.out.println(" 3.2 ---> " + getPath() + " - " + selectedEntity);
             }
         } else {
             selectedEntity = parentEntity;
+            System.out.println(" 3.3 ---> " + getPath() + " - " + selectedEntity);
         }
 
         if (shouldNotBeUpdated(pathsToUpdate) && !"lookupComponent".equals(getType())) {
@@ -146,6 +153,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 && viewValue.isIgnoreMode()) {
             return null;
         }
+
+        System.out.println(" 4 ---> " + getPath() + " - " + selectedEntity);
+        System.out.println(" 5 ---> " + getPath() + " - " + parentEntity);
 
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate, locale);
 

@@ -37,7 +37,7 @@
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>		
-			<component type="grid" name="dictionaries" source="dictionaryItems">
+			<component type="grid" name="dictionaries" source="#{mainWindow.dictionaryDetailsForm}.dictionaryItems">
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="description" fields="description" />
 				<option type="header" value="false" />
