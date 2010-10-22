@@ -22,24 +22,28 @@
 	
 	<xs:complexType name="ribbonType">
 		<xs:sequence>
-			<xs:element name="group" type="ribbonGroupType" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="group" type="ribbonGroupType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	
 	<xs:complexType name="ribbonGroupType">
-		<xs:all>
-			<xs:element name="bigButton" type="ribbonActionType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="bigButtons" type="ribbonComboType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="smallButton" type="ribbonActionType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="smallButtons" type="ribbonComboType" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:all>
+		<xs:sequence>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element name="bigButton" type="ribbonActionType" />
+				<xs:element name="bigButtons" type="ribbonComboType" />
+				<xs:element name="smallButton" type="ribbonActionType" />
+				<xs:element name="smallButtons" type="ribbonComboType" />
+			</xs:choice>
+		</xs:sequence>
 		<xs:attribute name="name" type="identifierType" use="required" />
 	</xs:complexType>
 
 	<xs:complexType name="ribbonComboType">
 		<xs:sequence>
-			<xs:element name="bigButton" type="ribbonActionType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="smallButton" type="ribbonActionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element name="bigButton" type="ribbonActionType" />
+				<xs:element name="smallButton" type="ribbonActionType" />
+			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="identifierType" use="required" />
 		<xs:attribute name="icon" type="xs:string" />

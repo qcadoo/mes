@@ -214,20 +214,20 @@ public final class ProductService {
         return compareDates(dataDefinition, entity, "dateFrom", "dateTo");
     }
 
-    private String getFullNameOfLoggedUser() {
+    private String getLoginOfLoggedUser() {
         UsersUser user = securityService.getCurrentUser();
-        return user.getFirstName() + " " + user.getLastName();
+        return user.getUserName();
     }
 
     public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
         if (("pending".equals(entity.getField("state")) || "done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
-            entity.setField("startWorker", getFullNameOfLoggedUser());
+            entity.setField("startWorker", getLoginOfLoggedUser());
         }
         if ("done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
-            entity.setField("endWorker", getFullNameOfLoggedUser());
+            entity.setField("endWorker", getLoginOfLoggedUser());
 
         }
 
@@ -240,7 +240,7 @@ public final class ProductService {
 
     public void fillMaterialRequirementDateAndWorker(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", new Date());
-        entity.setField("worker", getFullNameOfLoggedUser());
+        entity.setField("worker", getLoginOfLoggedUser());
         entity.setField("generated", false);
     }
 

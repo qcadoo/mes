@@ -228,14 +228,24 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             final Map<String, Entity> selectedEntities, final ViewValue<ListData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
 
+        Entity relatedEntity = entity;
         String joinFieldName = null;
         Long belongsToEntityId = null;
         SearchCriteriaBuilder searchCriteriaBuilder = null;
 
         if (getSourceFieldPath() != null || getFieldPath() != null) {
-            if (entity == null) {
+            if (getSourceComponent() != null && relatedEntity == null) {
+                relatedEntity = selectedEntities.get(getSourceComponent().getPath());
+            }
+
+            if (parentEntity != null && relatedEntity == null) {
+                relatedEntity = parentEntity;
+            }
+
+            if (relatedEntity == null || relatedEntity.getId() == null) {
                 return new ViewValue<ListData>(new ListData(0, Collections.<Entity> emptyList()));
             }
+
             DataDefinition gridDataDefinition = getParentContainer().getDataDefinition();
             if (getSourceComponent() != null) {
                 gridDataDefinition = getSourceComponent().getDataDefinition();
@@ -250,9 +260,9 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                     "Grid and hasMany relation have different data definitions");
             searchCriteriaBuilder = getDataDefinition().find();
             searchCriteriaBuilder = searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(
-                    getDataDefinition().getField(hasManyType.getJoinFieldName()), entity.getId()));
+                    getDataDefinition().getField(hasManyType.getJoinFieldName()), relatedEntity.getId()));
             joinFieldName = hasManyType.getJoinFieldName();
-            belongsToEntityId = entity.getId();
+            belongsToEntityId = relatedEntity.getId();
         } else {
             searchCriteriaBuilder = getDataDefinition().find();
         }

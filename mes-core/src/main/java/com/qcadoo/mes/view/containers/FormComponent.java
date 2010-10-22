@@ -59,6 +59,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
                 && !viewObject.getJSONObject("value").isNull("id")) {
             Long entityId = viewObject.getJSONObject("value").getLong("id");
             Entity entity = getDataDefinition().get(entityId);
+
             selectedEntities.put(getPath(), entity);
 
             FormValue formValue = new FormValue(entityId);
@@ -84,6 +85,9 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
         FormValue formValue = new FormValue();
         String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
         if (entity != null) {
+            if (entity.isValid()) {
+                selectedEntities.put(getPath(), entity);
+            }
             formValue.setId(entity.getId());
             formValue.setHeader(getTranslationService().translate(messageCode + ".headerEdit", locale));
             formValue.setHeaderEntityIdentifier(ExpressionUtil.getValue(entity, expression));
