@@ -164,11 +164,15 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
         if (header) {
             translationsMap.put(messagePath + ".header", getTranslationService().translate(messagePath + ".header", locale));
         }
-        translationsMap.put(
-                messagePath + ".confirmDeleteMessage",
-                getTranslationService().translate(
-                        Arrays.asList(new String[] { messagePath + ".confirmDeleteMessage", "core.form.confirmDeleteMessage" }),
-                        locale));
+
+        String[] formMessages = new String[] { "confirmCancelMessage", "confirmDeleteMessage" };
+
+        for (String formMessage : formMessages) {
+            translationsMap.put(
+                    messagePath + "." + formMessage,
+                    getTranslationService().translate(
+                            Arrays.asList(new String[] { messagePath + "." + formMessage, "core.form." + formMessage }), locale));
+        }
     }
 
     @Override

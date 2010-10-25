@@ -38,7 +38,7 @@ QCD.MessagesController.split = function(message, type) {
 		text = contents.splice(1).join("\n")
 	} else {
 		key = 'commons.notification.' + type;
-		title = window.translationsMap[key] ? window.translationsMap[key] : "TT: " + key;
+		title = window.translationsMap[key] ? window.translationsMap[key] : key;
 		text = contents[0];
 	}
 

@@ -82,7 +82,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-		if (window.confirm("cancel?")) {
+		var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
+		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
 			block();
 			mainController.performCancel(formValue ? formValue.id : null, actionsPerformer);
 		}

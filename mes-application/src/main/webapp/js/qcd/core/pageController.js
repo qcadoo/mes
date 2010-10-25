@@ -319,7 +319,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.getTranslation = function(key) {
-		return window.translationsMap[key] ? window.translationsMap[key] : "TT: "+key;
+		return window.translationsMap[key] ? window.translationsMap[key] : key;
 	}
 	var getTranslation = this.getTranslation;
 	

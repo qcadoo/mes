@@ -5,6 +5,8 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 
+	var mainController = _mainController;
+	var elementPath = this.elementPath;
 	var selectedValue = null;
 
 	this.getComponentData = function() {
@@ -23,7 +25,8 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		}
 		var previousSelected = this.input.val();
 		this.input.children().remove();
-		this.input.append("<option value=''></option>");
+		var blankValue = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".blankValue";
+		this.input.append("<option value=''>"+mainController.getTranslation(blankValue)+"</option>");
 		for (var i in data.values) {
 			var value = data.values[i];
 			this.input.append("<option value='"+value+"'>"+value+"</option>");
