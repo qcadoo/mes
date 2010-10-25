@@ -37,7 +37,8 @@ QCD.MessagesController.split = function(message, type) {
 		title = contents[0];
 		text = contents.splice(1).join("\n")
 	} else {
-		title = type == 'error' ? 'Wystąpił błąd' : (type == 'notice' ? 'Ważna informacja' : 'Operacja zakończona pomyślnie'); // TODO masz i18n
+		key = 'commons.notification.' + type;
+		title = window.translationsMap[key] ? window.translationsMap[key] : "TT: " + key;
 		text = contents[0];
 	}
 

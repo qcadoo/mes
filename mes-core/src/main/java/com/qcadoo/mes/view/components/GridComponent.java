@@ -3,6 +3,7 @@ package com.qcadoo.mes.view.components;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -377,9 +378,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
-        String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
-                + ".header";
-        translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
+        String messagePath = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
+        translationsMap.put(messagePath + ".header", getTranslationService().translate(messagePath + ".header", locale));
         for (ColumnDefinition column : columns.values()) {
             List<String> messageCodes = new LinkedList<String>();
             messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
@@ -388,6 +388,14 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
         }
 
+        String[] gridMessages = new String[] { "addFilter", "perPage", "new", "delete", "up", "down" };
+
+        for (String gridMessage : gridMessages) {
+            translationsMap.put(
+                    messagePath + "." + gridMessage,
+                    getTranslationService().translate(
+                            Arrays.asList(new String[] { messagePath + "." + gridMessage, "core.grid." + gridMessage }), locale));
+        }
     }
 
     private Object getFieldsForOptions(final Map<String, FieldDefinition> fields) {

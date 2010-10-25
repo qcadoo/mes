@@ -3,6 +3,7 @@ package com.qcadoo.mes.internal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.PluginManagementService;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.enums.PluginStatus;
@@ -26,6 +28,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Autowired
     private PluginManagementService pluginManagementService;
+
+    @Autowired
+    private TranslationService translationService;
 
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
 
@@ -73,31 +78,38 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Override
     @Transactional(readOnly = true)
     @Monitorable
-    public MenuDefinition getMenu() {
+    public MenuDefinition getMenu(final Locale locale) {
 
         MenuDefinition baseMenuDefinition = new MenuDefinition();
 
-        MenulItemsGroup homeItem = new MenulItemsGroup("home", "start");
-        homeItem.addItem(new UrlMenuItem("home", "start", null, "homePage.html"));
-        homeItem.addItem(new UrlMenuItem("google", "google", null, "http://www.google.pl"));
+        MenulItemsGroup homeItem = new MenulItemsGroup("home", translationService.translate("core.menu.home", locale));
+        homeItem.addItem(new UrlMenuItem("home", translationService.translate("core.menu.home", locale), null, "homePage.html"));
+        homeItem.addItem(new UrlMenuItem("about", translationService.translate("core.menu.about", locale), null,
+                "http://qcadoo.com/"));
         baseMenuDefinition.addItem(homeItem);
 
-        MenulItemsGroup productsItem = new MenulItemsGroup("products", "Zarządzanie Produktami");
-        productsItem.addItem(new ViewDefinitionMenuItemItem("products", "Produkty", "products", "productGridView"));
-        productsItem.addItem(new ViewDefinitionMenuItemItem("instructions", "Instrukcje materiałowe", "products",
-                "instructionGridView"));
-        productsItem.addItem(new ViewDefinitionMenuItemItem("productionOrders", "Zlecenia produkcyjne", "products",
-                "orderGridView"));
-        productsItem.addItem(new ViewDefinitionMenuItemItem("materialRequirements", "Zapotrzebowania materiałowe", "products",
-                "materialRequirementGridView"));
+        MenulItemsGroup productsItem = new MenulItemsGroup("products", translationService.translate("core.menu.products", locale));
+
+        productsItem.addItem(new ViewDefinitionMenuItemItem("products", translationService.translate(
+                "products.menu.products.products", locale), "products", "productGridView"));
+        productsItem.addItem(new ViewDefinitionMenuItemItem("instructions", translationService.translate(
+                "products.menu.products.instructions", locale), "products", "instructionGridView"));
+        productsItem.addItem(new ViewDefinitionMenuItemItem("productionOrders", translationService.translate(
+                "products.menu.products.productionOrders", locale), "products", "orderGridView"));
+        productsItem.addItem(new ViewDefinitionMenuItemItem("materialRequirements", translationService.translate(
+                "products.menu.products.materialRequirements", locale), "products", "materialRequirementGridView"));
         baseMenuDefinition.addItem(productsItem);
 
-        MenulItemsGroup administrationItem = new MenulItemsGroup("administration", "Administracja");
-        administrationItem.addItem(new ViewDefinitionMenuItemItem("dictionaries", "Słowniki", "dictionaries",
-                "dictionaryGridView"));
-        administrationItem.addItem(new ViewDefinitionMenuItemItem("users", "Użytkownicy", "users", "userGridView"));
-        administrationItem.addItem(new ViewDefinitionMenuItemItem("groups", "Grupy", "users", "groupGridView"));
-        administrationItem.addItem(new ViewDefinitionMenuItemItem("plugins", "Pluginy", "plugins", "pluginGridView"));
+        MenulItemsGroup administrationItem = new MenulItemsGroup("administration", translationService.translate(
+                "core.menu.administration", locale));
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("dictionaries", translationService.translate(
+                "dictionaries.menu.administration.dictionaries", locale), "dictionaries", "dictionaryGridView"));
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("users", translationService.translate(
+                "users.menu.administration.users.", locale), "users", "userGridView"));
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("groups", translationService.translate(
+                "users.menu.administration.users", locale), "users", "groupGridView"));
+        administrationItem.addItem(new ViewDefinitionMenuItemItem("plugins", translationService.translate(
+                "plugins.menu.administration.plugins", locale), "plugins", "pluginGridView"));
         baseMenuDefinition.addItem(administrationItem);
 
         MenuDefinition menuDef = new MenuDefinition();

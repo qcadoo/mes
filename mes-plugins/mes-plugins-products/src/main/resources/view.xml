@@ -54,8 +54,8 @@
 				</group>
 			</ribbon>
 			<component type="form" name="productDetailsForm">
-				<component type="textarea" name="name" field="name" hasDescription="true" />					
 				<component type="input" name="number" field="number" />
+				<component type="textarea" name="name" field="name" hasDescription="true" />					
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="input" name="ean" field="ean" />
 				<component type="select" name="category" field="category" />

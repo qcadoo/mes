@@ -27,19 +27,20 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var selectedEntityIdToInstert;
 	
 	function constructor(_this) {
+		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
 		
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			var treeName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+_this.elementPath.replace(/-/g,".")+".header";
 			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(mainController.getTranslation(treeName));
 			header.append(title);
 			
-			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("new",function(e) {
+			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.new') ,function(e) {
 				newClicked();
 			}, "addIcon16.png");
-			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("edit",function(e) {
+			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.edit') ,function(e) {
 				editClicked();
 			}, "editIcon16.png");
-			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("delete",function(e) {
+			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.delete'),function(e) {
 				deleteClicked();
 			}, "deleteIcon16_disabled.png");
 			
@@ -247,7 +248,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function block() {
 		if (tree) {
-			tree.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+			tree.block({ message: mainController.getTranslation("commons.loading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 

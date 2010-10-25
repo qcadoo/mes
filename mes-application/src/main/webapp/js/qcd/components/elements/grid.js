@@ -230,7 +230,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function blockGrid() {
 		if (grid) {
-			grid.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+			grid.block({ message: mainController.getTranslation("commons.loading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 
@@ -251,11 +251,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		parseOptions(_this.options, _this);
 		
-		var gridName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".header";
-		headerController = new QCD.components.elements.grid.GridHeaderController(_this, mainController.getTranslation(gridName), gridParameters);
+		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
+		
+		headerController = new QCD.components.elements.grid.GridHeaderController(_this, mainController, gridParameters, messagesPath);
 		
 		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
 		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
+		
 		currentState.paging = headerController.getPagingParameters();
 		
 		gridParameters.onSelectRow = function(id){

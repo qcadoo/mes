@@ -2,6 +2,7 @@ package com.qcadoo.mes.view.components;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -91,7 +92,12 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
             final Map<String, Entity> selectedEntities, final ViewValue<TreeData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
 
-        TreeNode rootNode = new TreeNode(Long.valueOf(0), "root");
+        String rootLabel = getTranslationService().translate(
+                Arrays.asList(new String[] {
+                        getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                                + ".root", "core.tree.root" }), locale);
+
+        TreeNode rootNode = new TreeNode(Long.valueOf(0), rootLabel);
 
         String joinFieldName = null;
         Long belongsToEntityId = null;
@@ -160,9 +166,17 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
 
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
-        String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
-                + ".header";
-        translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
+        String messagePath = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
+        translationsMap.put(messagePath + ".header", getTranslationService().translate(messagePath + ".header", locale));
+
+        String[] gridMessages = new String[] { "new", "delete", "edit", "root" };
+
+        for (String gridMessage : gridMessages) {
+            translationsMap.put(
+                    messagePath + "." + gridMessage,
+                    getTranslationService().translate(
+                            Arrays.asList(new String[] { messagePath + "." + gridMessage, "core.tree." + gridMessage }), locale));
+        }
     }
 
     @Override
