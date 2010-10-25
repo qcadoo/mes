@@ -105,9 +105,9 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         administrationItem.addItem(new ViewDefinitionMenuItemItem("dictionaries", translationService.translate(
                 "dictionaries.menu.administration.dictionaries", locale), "dictionaries", "dictionaryGridView"));
         administrationItem.addItem(new ViewDefinitionMenuItemItem("users", translationService.translate(
-                "users.menu.administration.users.", locale), "users", "userGridView"));
+                "users.menu.administration.users", locale), "users", "userGridView"));
         administrationItem.addItem(new ViewDefinitionMenuItemItem("groups", translationService.translate(
-                "users.menu.administration.users", locale), "users", "groupGridView"));
+                "users.menu.administration.groups", locale), "users", "groupGridView"));
         administrationItem.addItem(new ViewDefinitionMenuItemItem("plugins", translationService.translate(
                 "plugins.menu.administration.plugins", locale), "plugins", "pluginGridView"));
         baseMenuDefinition.addItem(administrationItem);
