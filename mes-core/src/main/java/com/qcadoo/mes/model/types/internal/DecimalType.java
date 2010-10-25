@@ -38,12 +38,12 @@ public final class DecimalType implements FieldType {
             try {
                 decimal = new BigDecimal(String.valueOf(value));
             } catch (NumberFormatException e) {
-                validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
+                validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidNumericFormat");
                 return null;
             }
         }
         if (decimal.precision() > 7 || decimal.scale() > 3) {
-            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
+            validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidNumericFormat");
             return null;
         }
         return decimal;

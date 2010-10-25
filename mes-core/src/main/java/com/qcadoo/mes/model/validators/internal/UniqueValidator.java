@@ -11,7 +11,7 @@ import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class UniqueValidator implements FieldValidator {
 
-    private static final String UNIQUE_ERROR = "commons.validate.field.error.duplicated";
+    private static final String UNIQUE_ERROR = "core.validate.field.error.duplicated";
 
     private String errorMessage = UNIQUE_ERROR;
 

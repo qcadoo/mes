@@ -185,9 +185,9 @@ public final class CrudController {
                 true, locale);
 
         if (entity.isValid()) {
-            responseViewValue.addSuccessMessage(translationService.translate("commons.message.save", locale));
+            responseViewValue.addSuccessMessage(translationService.translate("core.message.save", locale));
         } else {
-            responseViewValue.addErrorMessage(translationService.translate("commons.message.saveFailed", locale));
+            responseViewValue.addErrorMessage(translationService.translate("core.message.saveFailed", locale));
         }
 
         if (((Component<?>) component).isRelatedToMainEntity()) {
@@ -234,9 +234,9 @@ public final class CrudController {
                 true, locale);
 
         if (id != null) {
-            responseViewValue.addSuccessMessage(translationService.translate("commons.message.delete", locale));
+            responseViewValue.addSuccessMessage(translationService.translate("core.message.delete", locale));
         } else {
-            responseViewValue.addErrorMessage(translationService.translate("commons.message.deleteFailed", locale));
+            responseViewValue.addErrorMessage(translationService.translate("core.message.deleteFailed", locale));
         }
 
         return responseViewValue;
@@ -311,9 +311,9 @@ public final class CrudController {
                 true, locale);
 
         if (id != null) {
-            responseViewValue.addSuccessMessage(translationService.translate("commons.message.move", locale));
+            responseViewValue.addSuccessMessage(translationService.translate("core.message.move", locale));
         } else {
-            responseViewValue.addErrorMessage(translationService.translate("commons.message.moveFailed", locale));
+            responseViewValue.addErrorMessage(translationService.translate("core.message.moveFailed", locale));
         }
 
         return responseViewValue;

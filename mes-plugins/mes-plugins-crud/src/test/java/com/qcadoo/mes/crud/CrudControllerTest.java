@@ -68,9 +68,9 @@ public class CrudControllerTest {
         translations.put("commons.message2", "test2");
 
         given(translationService.getCommonsMessages(Locale.ENGLISH)).willReturn(translations);
-        given(translationService.translate("commons.message.save", Locale.ENGLISH)).willReturn("saved");
-        given(translationService.translate("commons.message.delete", Locale.ENGLISH)).willReturn("deleted");
-        given(translationService.translate("commons.message.move", Locale.ENGLISH)).willReturn("moved");
+        given(translationService.translate("core.message.save", Locale.ENGLISH)).willReturn("saved");
+        given(translationService.translate("core.message.delete", Locale.ENGLISH)).willReturn("deleted");
+        given(translationService.translate("core.message.move", Locale.ENGLISH)).willReturn("moved");
         given(viewDefinitionService.get("pluginName", "viewName")).willReturn(viewDefinition);
 
         doAnswer(new Answer<Object>() {

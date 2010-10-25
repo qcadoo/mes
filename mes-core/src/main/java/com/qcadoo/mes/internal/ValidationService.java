@@ -106,7 +106,7 @@ public final class ValidationService {
                 try {
                     referencedEntityId = Long.valueOf((String) value);
                 } catch (NumberFormatException e) {
-                    validatedEntity.addError(fieldDefinition, "commons.validate.field.error.wrongType", value.getClass()
+                    validatedEntity.addError(fieldDefinition, "core.validate.field.error.wrongType", value.getClass()
                             .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
                 }
             } else if (value instanceof Long) {
@@ -114,8 +114,8 @@ public final class ValidationService {
             } else if (value instanceof Entity) {
                 referencedEntityId = ((Entity) value).getId();
             } else {
-                validatedEntity.addError(fieldDefinition, "commons.validate.field.error.wrongType", value.getClass()
-                        .getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
+                validatedEntity.addError(fieldDefinition, "core.validate.field.error.wrongType",
+                        value.getClass().getSimpleName(), fieldDefinition.getType().getType().getSimpleName());
             }
             if (referencedEntityId == null) {
                 referencedEntity = null;

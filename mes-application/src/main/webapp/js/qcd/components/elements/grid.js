@@ -439,7 +439,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	
 	this.performDelete = function(actionsPerformer) {
-		if (window.confirm(mainController.getTranslation("commons.confirm.deleteMessage"))) {
+		confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
+		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 			blockGrid();
 			mainController.performDelete(elementPath, currentState.selectedEntityId, actionsPerformer);
 		}
@@ -450,7 +451,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (currentState.selectedEntityId) {
 			mainController.performCallFunction(functionName, currentState.selectedEntityId, actionsPerformer);
 		} else {
-			mainController.showMessage("error", mainController.getTranslation("commons.message.emptySelectedId"));
+			noRowSelectedError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".noRowSelectedError";
+			mainController.showMessage("error", mainController.getTranslation(noRowSelectedError));
 		}
 	}
 
