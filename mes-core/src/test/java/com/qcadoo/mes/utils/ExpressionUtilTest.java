@@ -27,7 +27,7 @@ public class ExpressionUtilTest {
         columnDefinition.addField(fieldDefinition);
 
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition);
+        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
 
         // then
         assertEquals("Mr T", value);
@@ -51,7 +51,7 @@ public class ExpressionUtilTest {
         columnDefinition.addField(fieldDefinitionSex);
 
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition);
+        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
 
         // then
         assertEquals("Mr T, 33, F", value);
@@ -70,7 +70,7 @@ public class ExpressionUtilTest {
         columnDefinition.setExpression("#name.toUpperCase()");
 
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition);
+        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
 
         // then
         assertEquals("MR T", value);
@@ -89,7 +89,7 @@ public class ExpressionUtilTest {
         columnDefinition.setExpression("#name");
 
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition);
+        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
 
         // then
         assertNull(value);
@@ -114,7 +114,7 @@ public class ExpressionUtilTest {
         columnDefinition.setExpression("#name + \" -> (\" + (#age+1) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")");
 
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition);
+        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
 
         // then
         assertEquals("Mr T -> (34) -> female", value);
@@ -136,7 +136,7 @@ public class ExpressionUtilTest {
         columnDefinition.setExpression("#product['name']");
 
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition);
+        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
 
         // then
         assertEquals("P1", value);

@@ -5,32 +5,45 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 
+@Component
 public final class ExpressionUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExpressionUtil.class);
 
-    private ExpressionUtil() {
+    private static TranslationService translationService;
+
+    public ExpressionUtil() {
     }
 
-    public static String getValue(final Entity entity, final ColumnDefinition columnDefinition) {
+    @Autowired
+    public void setTranslationService(TranslationService translationService) {
+        ExpressionUtil.translationService = translationService;
+    }
+
+    public static String getValue(final Entity entity, final ColumnDefinition columnDefinition, final Locale locale) {
         String value = null;
         if (StringUtils.isEmpty(columnDefinition.getExpression())) {
-            value = getValueWithoutExpression(entity, columnDefinition);
+            value = getValueWithoutExpression(entity, columnDefinition, locale);
         } else {
             value = getValueWithExpression(entity, columnDefinition.getExpression());
         }
@@ -82,11 +95,19 @@ public final class ExpressionUtil {
         return value;
     }
 
-    private static String getValueWithoutExpression(final Entity entity, final ColumnDefinition columnDefinition) {
+    private static String getValueWithoutExpression(final Entity entity, final ColumnDefinition columnDefinition,
+            final Locale locale) {
         String value = null;
 
         if (columnDefinition.getFields().size() == 1) {
             value = columnDefinition.getFields().get(0).getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
+            if (columnDefinition.getFields().get(0).getType() instanceof BooleanType) {
+                if ("0".equals(value)) {
+                    value = translationService.translate("commons.grid.value.false", locale);
+                } else {
+                    value = translationService.translate("commons.grid.value.true", locale);
+                }
+            }
         } else {
             List<String> values = new ArrayList<String>();
             for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
@@ -101,5 +122,4 @@ public final class ExpressionUtil {
 
         return value;
     }
-
 }

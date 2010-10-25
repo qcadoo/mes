@@ -403,9 +403,10 @@
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirementsGrid">
-				<option type="column" name="name" fields="name" link="true"/>
-				<option type="column" name="date" fields="date" />
-				<option type="column" name="worker" fields="worker" />
+				<option type="column" name="name" fields="name" link="true" width="300" />
+				<option type="column" name="generated" fields="generated" link="false" width="100" />
+				<option type="column" name="date" fields="date" width="200" />
+				<option type="column" name="worker" fields="worker" width="300" />
 				<option type="header" value="false" />
 				<option type="correspondingView" value="products/materialRequirementDetailsView" />
 				<option type="paginable" value="true" />
@@ -428,7 +429,7 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performSave;" />
-					<bigButton name="generate" action="#{mainWindow.materialRequirementDetailsForm}.callUpdateFunction(generate);" />
+					<bigButton name="generate" action="#{mainWindow.materialRequirementDetailsForm.generated}.setSelected(true); #{mainWindow.materialRequirementDetailsForm}.performSave;" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
@@ -438,6 +439,7 @@
 				</group>
 			</ribbon>
 			<component type="form" name="materialRequirementDetailsForm">
+			<component type="checkbox" name="generated" field="generated" enabled="false" />
 				<component type="calendar" name="date" field="date" 
 					enabled="false" />
 				<component type="input" name="worker" field="worker"
@@ -468,7 +470,7 @@
 					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButtons name="save" icon="saveIcon32.png"
+					<bigButtons name="save" icon="saveBackIcon32.png"
 						action="#{mainWindow.form}.performSave; #{mainWindow}.performBack">
 						<bigButton name="saveNew" icon="saveNewIcon16.png"
 							action="#{mainWindow.form}.performSave; #{mainWindow}.performNew;" />
