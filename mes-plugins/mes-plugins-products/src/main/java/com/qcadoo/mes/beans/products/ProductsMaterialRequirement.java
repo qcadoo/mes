@@ -33,6 +33,8 @@ public class ProductsMaterialRequirement {
 
     private boolean generated = false;
 
+    private String fileName;
+
     @OneToMany(mappedBy = "materialRequirement", fetch = FetchType.LAZY)
     private List<ProductsMaterialRequirementComponent> orders;
 
@@ -98,6 +100,14 @@ public class ProductsMaterialRequirement {
 
     public void setGenerated(final boolean generated) {
         this.generated = generated;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
 }

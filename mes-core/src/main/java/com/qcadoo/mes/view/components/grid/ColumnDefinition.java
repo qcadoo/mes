@@ -2,6 +2,7 @@ package com.qcadoo.mes.view.components.grid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -75,8 +76,8 @@ public final class ColumnDefinition {
         this.expression = expression;
     }
 
-    public String getValue(final Entity entity) {
-        return ExpressionUtil.getValue(entity, this);
+    public String getValue(final Entity entity, final Locale locale) {
+        return ExpressionUtil.getValue(entity, this, locale);
     }
 
     public Integer getWidth() {

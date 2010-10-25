@@ -276,7 +276,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
         }
 
-        ListData listData = generateListData(searchCriteriaBuilder.list(), joinFieldName, belongsToEntityId);
+        ListData listData = generateListData(searchCriteriaBuilder.list(), joinFieldName, belongsToEntityId, locale);
 
         if (viewValue != null) {
             copyRestrictionsOrderPagingAndSelectedEntityId(listData, viewValue.getValue());
@@ -416,14 +416,15 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         }
     }
 
-    private ListData generateListData(final SearchResult rs, final String contextFieldName, final Long contextId) {
+    private ListData generateListData(final SearchResult rs, final String contextFieldName, final Long contextId,
+            final Locale locale) {
         List<Entity> entities = rs.getEntities();
         List<Entity> gridEntities = new LinkedList<Entity>();
 
         for (Entity entity : entities) {
             Entity gridEntity = new DefaultEntity(entity.getPluginIdentifier(), entity.getName(), entity.getId());
             for (ColumnDefinition column : columns.values()) {
-                gridEntity.setField(column.getName(), column.getValue(entity));
+                gridEntity.setField(column.getName(), column.getValue(entity, locale));
             }
             gridEntities.add(gridEntity);
         }
