@@ -39,7 +39,10 @@ public final class PdfMaterialRequirementView extends ProductsPdfView {
         List<Entity> instructions = new ArrayList<Entity>();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
-            instructions.add((Entity) order.getField("instruction"));
+            Entity instruction = (Entity) order.getField("instruction");
+            if (instruction != null) {
+                instructions.add(instruction);
+            }
             document.add(new Paragraph(order.getField("number") + " " + order.getField("name"), font));
         }
         return instructions;

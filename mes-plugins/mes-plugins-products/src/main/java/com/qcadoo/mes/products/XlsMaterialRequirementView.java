@@ -49,7 +49,10 @@ public final class XlsMaterialRequirementView extends AbstractExcelView {
         List<Entity> instructions = new ArrayList<Entity>();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
-            instructions.add((Entity) order.getField("instruction"));
+            Entity instruction = (Entity) order.getField("instruction");
+            if (instruction != null) {
+                instructions.add(instruction);
+            }
         }
         for (Entity instruction : instructions) {
             List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
