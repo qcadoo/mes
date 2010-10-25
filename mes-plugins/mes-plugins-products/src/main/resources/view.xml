@@ -186,7 +186,7 @@
 				<option type="correspondingView" value="products/instructionDetailsView" />
 				<option type="paginable" value="true" />
 				<option type="searchable" value="name,number,product" />
-				<option type="orderable" value="name,number" />
+				<option type="orderable" value="name,number,product" />
 				<option type="multiselect" value="true" />
 				<option type="fullScreen" value="true" />
 			</component>
