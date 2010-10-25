@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -185,9 +186,14 @@ public final class CrudController {
                 true, locale);
 
         if (entity.isValid()) {
-            responseViewValue.addSuccessMessage(translationService.translate("core.message.save", locale));
+            responseViewValue.addSuccessMessage(translationService.translate(
+                    Arrays.asList(new String[] { pluginIdentifier + "." + viewName + "." + triggerComponentName + ".saveMessage",
+                            "core.message.save" }), locale));
         } else {
-            responseViewValue.addErrorMessage(translationService.translate("core.message.saveFailed", locale));
+            responseViewValue.addErrorMessage(translationService.translate(
+                    Arrays.asList(new String[] {
+                            pluginIdentifier + "." + viewName + "." + triggerComponentName + ".saveFailedMessage",
+                            "core.message.saveFailed" }), locale));
         }
 
         if (((Component<?>) component).isRelatedToMainEntity()) {
@@ -234,9 +240,15 @@ public final class CrudController {
                 true, locale);
 
         if (id != null) {
-            responseViewValue.addSuccessMessage(translationService.translate("core.message.delete", locale));
+            responseViewValue.addSuccessMessage(translationService.translate(
+                    Arrays.asList(new String[] {
+                            pluginIdentifier + "." + viewName + "." + triggerComponentName + ".deleteMessage",
+                            "core.message.delete" }), locale));
         } else {
-            responseViewValue.addErrorMessage(translationService.translate("core.message.deleteFailed", locale));
+            responseViewValue.addErrorMessage(translationService.translate(
+                    Arrays.asList(new String[] {
+                            pluginIdentifier + "." + viewName + "." + triggerComponentName + ".deleteFailedMessage",
+                            "core.message.deleteFailed" }), locale));
         }
 
         return responseViewValue;
@@ -311,9 +323,14 @@ public final class CrudController {
                 true, locale);
 
         if (id != null) {
-            responseViewValue.addSuccessMessage(translationService.translate("core.message.move", locale));
+            responseViewValue.addSuccessMessage(translationService.translate(
+                    Arrays.asList(new String[] { pluginIdentifier + "." + viewName + "." + triggerComponentName + ".moveMessage",
+                            "core.message.move" }), locale));
         } else {
-            responseViewValue.addErrorMessage(translationService.translate("core.message.moveFailed", locale));
+            responseViewValue.addErrorMessage(translationService.translate(
+                    Arrays.asList(new String[] {
+                            pluginIdentifier + "." + viewName + "." + triggerComponentName + ".moveFailedMessage",
+                            "core.message.moveFailed" }), locale));
         }
 
         return responseViewValue;

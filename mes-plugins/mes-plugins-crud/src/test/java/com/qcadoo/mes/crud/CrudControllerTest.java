@@ -15,6 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -68,9 +69,18 @@ public class CrudControllerTest {
         translations.put("commons.message2", "test2");
 
         given(translationService.getCommonsMessages(Locale.ENGLISH)).willReturn(translations);
-        given(translationService.translate("core.message.save", Locale.ENGLISH)).willReturn("saved");
-        given(translationService.translate("core.message.delete", Locale.ENGLISH)).willReturn("deleted");
-        given(translationService.translate("core.message.move", Locale.ENGLISH)).willReturn("moved");
+        given(
+                translationService.translate(
+                        Arrays.asList(new String[] { "pluginName.viewName.trigger.component.saveMessage", "core.message.save" }),
+                        Locale.ENGLISH)).willReturn("saved");
+        given(
+                translationService.translate(
+                        Arrays.asList(new String[] { "pluginName.viewName.trigger.deleteMessage", "core.message.delete" }),
+                        Locale.ENGLISH)).willReturn("deleted");
+        given(
+                translationService.translate(
+                        Arrays.asList(new String[] { "pluginName.viewName.trigger.moveMessage", "core.message.move" }),
+                        Locale.ENGLISH)).willReturn("moved");
         given(viewDefinitionService.get("pluginName", "viewName")).willReturn(viewDefinition);
 
         doAnswer(new Answer<Object>() {
