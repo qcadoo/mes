@@ -1,9 +1,13 @@
-package com.qcadoo.mes.products;
+package com.qcadoo.mes.products.print.pdf;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.collections.map.HashedMap;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -12,6 +16,7 @@ import com.lowagie.text.Paragraph;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.internal.ProxyEntity;
 
 public final class PdfMaterialRequirementView extends ProductsPdfView {
 
@@ -50,15 +55,25 @@ public final class PdfMaterialRequirementView extends ProductsPdfView {
 
     private void addBomSeries(final Document document, final DefaultEntity entity, final List<Entity> instructions,
             final Font font) throws DocumentException {
+        Map<ProxyEntity, BigDecimal> products = new HashedMap();
         for (Entity instruction : instructions) {
             List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
             for (Entity bomComponent : bomComponents) {
-                Entity product = (Entity) bomComponent.getField("product");
+                ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
                 if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
-                    document.add(new Paragraph(product.getField("number") + " " + product.getField("name") + " "
-                            + bomComponent.getField("quantity").toString() + " " + product.getField("unit"), font));
+                    if (products.containsKey(product)) {
+                        BigDecimal quantity = products.get(product);
+                        quantity = ((BigDecimal) bomComponent.getField("quantity")).add(quantity);
+                        products.put(product, quantity);
+                    } else {
+                        products.put(product, (BigDecimal) bomComponent.getField("quantity"));
+                    }
                 }
             }
+        }
+        for (Entity product : products.keySet()) {
+            document.add(new Paragraph(product.getField("number") + " " + product.getField("name") + " " + products.get(product)
+                    + " " + product.getField("unit"), font));
         }
     }
 }
