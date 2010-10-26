@@ -347,8 +347,9 @@ QCD.components.elements.grid.GridPagingElement = function(_gridHeaderController,
 	
 	this.getPagingElement = function(pagingVars) {
 		var pagingDiv = $("<div>").addClass('grid_paging');
-		pagingDiv.append('<span>' + mainController.getTranslation(messagesPath + ".perPage") + ' </span>');
-		pagingElements.recordsNoSelect = $("<select>");
+		var onPageSpan = $("<span>").html(mainController.getTranslation(messagesPath + ".perPage")).addClass('onPageSpan');
+		pagingDiv.append(onPageSpan);
+		pagingElements.recordsNoSelect = $("<select>").addClass('recordsNoSelect');
 			pagingElements.recordsNoSelect.append("<option value=10>10</option>");
 			pagingElements.recordsNoSelect.append("<option value=20>20</option>");
 			pagingElements.recordsNoSelect.append("<option value=30>30</option>");
@@ -370,11 +371,27 @@ QCD.components.elements.grid.GridPagingElement = function(_gridHeaderController,
 		var currPage = Math.ceil(pagingVars.first / pagingVars.max) + 1;
 		
 		var pageInfoSpan = $("<span>").addClass('grid_paging_pageInfo');
+		
+//		<div class="component_container_form_w">
+//			<div class="component_container_form_inner">
+//				<div class="component_container_form_x"></div>
+//				<div class="component_container_form_y"></div>
+//				<input type='text' id="usernameInput" name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/>
+//			</div>
+//		</div>
+		
 			pagingElements.pageNo = $("<input type='text'></input>").addClass('pageInput');
-			pageInfoSpan.append(pagingElements.pageNo.val(currPage));
-			pageInfoSpan.append('<span> z </span>');
+				var component_container_form_inner = $("<div>").addClass("component_container_form_inner");
+				component_container_form_inner.append('<div class="component_container_form_x"></div>');
+				component_container_form_inner.append('<div class="component_container_form_y"></div>');
+				component_container_form_inner.append(pagingElements.pageNo.val(currPage));
+				var component_container_form_w = $("<div>").addClass('component_container_form_w').append(component_container_form_inner);
+			pageInfoSpan.append(component_container_form_w);
+			var ofPagesInfoSpan = $("<span>").addClass("ofPagesSpan");
+			ofPagesInfoSpan.append('<span> z </span>'); // TODO masz translate
 			pagingElements.allPagesNoSpan = $("<span>");
-			pageInfoSpan.append(pagingElements.allPagesNoSpan.html(pagesNo));
+			ofPagesInfoSpan.append(pagingElements.allPagesNoSpan.html(pagesNo));
+			pageInfoSpan.append(ofPagesInfoSpan);
 		pagingDiv.append(pageInfoSpan);
 	
 		pagingElements.nextButton =  $("<div>").addClass("headerPagingButton").addClass("headerButton_right");

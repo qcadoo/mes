@@ -119,6 +119,7 @@
 </head>
 <body>
 
+	<div id="contentWrapperOuter">
 	<div id="contentWrapper">
 	
 		<div id="messagePanel" style="display: none;">
@@ -177,6 +178,7 @@
 				<div id="loginFooterLogo"></div>
 			</div>
 	 	</div>
+ 	</div>
  	</div>
 </body>
 </html>
