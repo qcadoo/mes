@@ -118,7 +118,7 @@
 						</div>
 					</div>
 				</div>
-		 		<div><input id="rememberMeCheckbox" type="checkbox" name="" /><label id="rememberMeLabel">Zapamiętaj mnie na tym komputerze</label></div>
+		 		<div><input id="rememberMeCheckbox" type="checkbox" name="_spring_security_remember_me" /><label id="rememberMeLabel">Zapamiętaj mnie na tym komputerze</label></div>
 				<div id="loginButtonWrapper">
 		 			<!--<input type="submit" value="${translation['security.form.button.logIn']}" onclick="ajaxLogin(); return false;" />-->
 		 			<a href="#" id="loginButton" onclick="ajaxLogin(); return false;"></a>
