@@ -24,7 +24,7 @@ public class ProductsSubstituteComponent {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsSubstitute substitute;
 
-    @Column(scale = 3, precision = 10)
+    @Column(scale = 3, precision = 10, nullable = false)
     private BigDecimal quantity;
 
     private boolean deleted;

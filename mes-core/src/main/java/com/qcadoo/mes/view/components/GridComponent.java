@@ -388,8 +388,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
         }
 
-        String[] gridMessages = new String[] { "addFilter", "perPage", "new", "delete", "up", "down", "noRowSelectedError",
-                "confirmDeleteMessage" };
+        String[] gridMessages = new String[] { "addFilter", "removeFilter", "perPage", "new", "delete", "up", "down",
+                "noRowSelectedError", "confirmDeleteMessage" };
 
         for (String gridMessage : gridMessages) {
             translationsMap.put(

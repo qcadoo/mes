@@ -35,6 +35,7 @@ public class ProductsInstructionBomComponent {
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<ProductsInstructionBomComponent> children;
 
+    @Column(nullable = false)
     private boolean deleted;
 
     public Long getId() {

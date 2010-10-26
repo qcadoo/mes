@@ -33,7 +33,11 @@ public final class CustomAuthenticationFilter extends UsernamePasswordAuthentica
 
         super.unsuccessfulAuthentication(request, redirectResponseWrapper, failed);
 
-        response.getOutputStream().println("loginUnsuccessfull:" + failed.getMessage());
+        if (failed.getExtraInformation() == null) {
+            response.getOutputStream().println("loginUnsuccessfull:login");
+        } else {
+            response.getOutputStream().println("loginUnsuccessfull:password");
+        }
 
     }
 

@@ -32,6 +32,8 @@ import com.qcadoo.mes.view.components.tree.TreeNode;
 
 public class TreeComponent extends AbstractComponent<TreeData> implements SelectableComponent {
 
+    private String rootExpression;
+
     private String expression;
 
     public TreeComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
@@ -49,6 +51,8 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
         for (ComponentOption option : getRawOptions()) {
             if ("expression".equals(option.getType())) {
                 expression = option.getValue();
+            } else if ("rootExpression".equals(option.getType())) {
+                rootExpression = option.getValue();
             } else if ("correspondingView".equals(option.getType())) {
                 addOption("correspondingView", option.getValue());
             } else if ("height".equals(option.getType())) {
@@ -92,20 +96,14 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
             final Map<String, Entity> selectedEntities, final ViewValue<TreeData> viewValue, final Set<String> pathsToUpdate,
             final Locale locale) {
 
-        String rootLabel = getTranslationService().translate(
-                Arrays.asList(new String[] {
-                        getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
-                                + ".root", "core.tree.root" }), locale);
-
-        TreeNode rootNode = new TreeNode(Long.valueOf(0), rootLabel);
-
         String joinFieldName = null;
         Long belongsToEntityId = null;
         SearchCriteriaBuilder searchCriteriaBuilder = null;
 
         if (getSourceFieldPath() != null || getFieldPath() != null) {
-            if (entity == null) {
-                return new ViewValue<TreeData>(new TreeData(rootNode, null, null));
+            if (entity == null || entity.getId() == null) {
+                return new ViewValue<TreeData>(
+                        new TreeData(new TreeNode(Long.valueOf(0), getRootLabel(locale, null)), null, null));
             }
             DataDefinition gridDataDefinition = getParentContainer().getDataDefinition();
             if (getSourceComponent() != null) {
@@ -129,6 +127,8 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
         }
 
         List<Entity> instructionComponents = searchCriteriaBuilder.list().getEntities();
+
+        TreeNode rootNode = new TreeNode(Long.valueOf(0), getRootLabel(locale, entity));
 
         Map<Long, TreeNode> createdNodes = new HashMap<Long, TreeNode>();
         while (instructionComponents.size() > 0) {
@@ -162,6 +162,20 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
         }
 
         return new ViewValue<TreeData>(data);
+    }
+
+    private String getRootLabel(final Locale locale, final Entity entity) {
+        String suffix = entity != null ? "rootFor" : "root";
+        String rootLabel = getTranslationService().translate(
+                Arrays.asList(new String[] {
+                        getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath() + "."
+                                + suffix, "core.tree." + suffix }), locale);
+
+        if (entity != null) {
+            rootLabel += " " + ExpressionUtil.getValue(entity, rootExpression);
+        }
+
+        return rootLabel;
     }
 
     @Override

@@ -93,6 +93,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		loadingElement.hide();
 		if (! currentData.isError) {
 			valueDivElement.html(currentData.selectedEntityValue);
+			valueDivElement.attr('title', currentData.selectedEntityValue);
+			inputElement.attr('title', currentData.selectedEntityValue);
 			if (! isFocused) {
 				valueDivElement.show();
 				inputElement.val("");
@@ -108,6 +110,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		valueDivElement.hide();
 		inputElement.val(currentData.selectedEntityCode);
 		labelElement.html(labelFocus);
+		inputElement.title(currentData.selectedEntityCode);
 	}
 	
 	function onInputBlur() {
