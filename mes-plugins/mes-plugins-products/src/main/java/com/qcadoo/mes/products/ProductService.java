@@ -1,11 +1,13 @@
 package com.qcadoo.mes.products;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -18,6 +20,8 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.products.print.service.pdf.MaterialRequirementPdfService;
+import com.qcadoo.mes.products.print.service.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewValue;
@@ -38,8 +42,14 @@ public final class ProductService {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    MaterialRequirementPdfService materialRequirementPdfService;
+
+    @Autowired
+    MaterialRequirementXlsService materialRequirementXlsService;
+
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
-            final Locale locale) {
+            final Locale locale) throws IOException, DocumentException {
 
         if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
                 || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
@@ -63,7 +73,8 @@ public final class ProductService {
             Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                     ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
 
-            // TODO krna method to generate files and update fileName in database
+            materialRequirementPdfService.generateDocument(materialRequirement, locale);
+            materialRequirementXlsService.generateDocument(materialRequirement, locale);
 
         }
     }
