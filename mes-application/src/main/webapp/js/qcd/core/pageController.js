@@ -117,7 +117,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		});
 	}
 	
-	this.performDelete = function(componentName, entityId, actionsPerformer) {
+	this.performDelete = function(componentName, entityId, actionsPerformer, callback) {
 		QCD.info("delete " +componentName+" - "+entityId);
 		var parameters = {
 			componentName: componentName,
@@ -130,6 +130,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 			setValueData(response);
 			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 				actionsPerformer.performNext();
+			}
+			if(callback) {
+				callback();
+			}
+		}, function(response) {
+			if(callback) {
+				callback();
 			}
 		});
 	}
@@ -152,10 +159,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 			});
 		}
 	
-	this.performCallFunction = function(functionName, entityId, actionsPerformer) {
-		if (functionName == "printOrder" || functionName == "printMaterialRequirementPdf") {
+	this.performCallFunction = function(functionName, additionalAttribute, entityId, actionsPerformer) {
+		if (additionalAttribute == "pdf") {
 			window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
-		} else if (functionName == "printMaterialRequirementXls") {
+		} else if (additionalAttribute == "xls") {
 			window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
 		}
 	}

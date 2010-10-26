@@ -17,6 +17,9 @@
 	<logger name="org.qcadoo.mes">
 		<level value="debug" />
 	</logger>
+	<logger name="org.qcadoo.mes.utils">
+		<level value="info" />
+	</logger>
 	<logger name="org.springframework">
 		<level value="info" />
 	</logger>

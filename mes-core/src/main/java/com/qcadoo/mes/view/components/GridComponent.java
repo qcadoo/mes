@@ -298,7 +298,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         }
         if (listData.isSearchEnabled()) {
             for (Map<String, String> filter : listData.getFilters()) {
-                addRestriction(searchCriteriaBuilder, filter, columns.get(listData.getOrderColumn()),
+                addRestriction(searchCriteriaBuilder, filter, columns.get(filter.get("column")),
                         getFieldByColumnName(filter.get("column")));
             }
         }

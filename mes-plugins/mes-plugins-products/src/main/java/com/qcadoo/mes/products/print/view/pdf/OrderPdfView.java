@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.pdf;
+package com.qcadoo.mes.products.print.view.pdf;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -14,7 +14,7 @@ import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
 
-public final class PdfOrderView extends ProductsPdfView {
+public final class OrderPdfView extends ProductsPdfView {
 
     @Override
     protected void addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
