@@ -172,7 +172,10 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
                                 + suffix, "core.tree." + suffix }), locale);
 
         if (entity != null) {
-            rootLabel += " " + ExpressionUtil.getValue(entity, rootExpression);
+            String rootExpressionValue = ExpressionUtil.getValue(entity, rootExpression);
+            if ("null".equals(rootExpressionValue)) {
+                rootLabel += " " + rootExpressionValue;
+            }
         }
 
         return rootLabel;

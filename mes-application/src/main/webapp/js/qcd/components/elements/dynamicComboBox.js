@@ -11,9 +11,6 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 
 	this.getComponentData = function() {
 		var selected = this.input.val();
-		if (!selected || $.trim(selected) == "") {
-			selected = selectedValue;
-		}
 		return {
 			value: selected
 		}

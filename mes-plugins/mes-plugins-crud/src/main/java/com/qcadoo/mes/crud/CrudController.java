@@ -94,16 +94,7 @@ public final class CrudController {
         return modelAndView;
     }
 
-    @RequestMapping(value = CONTROLLER_PATH + "/dataUpdate", method = RequestMethod.POST)
-    @ResponseBody
-    public Object getDataUpdate(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
-            final Locale locale) {
-        // TODO masz remove me
-        return getData(pluginIdentifier, viewName, body, locale);
-    }
-
-    @RequestMapping(value = CONTROLLER_PATH + "/data", method = RequestMethod.POST)
+    @RequestMapping(value = { CONTROLLER_PATH + "/data", CONTROLLER_PATH + "/dataUpdate" }, method = RequestMethod.POST)
     @ResponseBody
     public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
@@ -268,12 +259,12 @@ public final class CrudController {
 
         ModelAndView mav = new ModelAndView();
 
-        if ("printOrder".equals(functionName)) {
-            mav.setViewName("pdfOrderView");
-        } else if ("printMaterialRequirementPdf".equals(functionName)) {
-            mav.setViewName("pdfMaterialRequirementView");
-        } else if ("printMaterialRequirementXls".equals(functionName)) {
-            mav.setViewName("xlsMaterialRequirementView");
+        if ("Order".equals(functionName)) {
+            mav.setViewName("orderPdfView");
+        } else if ("MaterialRequirementPdf".equals(functionName)) {
+            mav.setViewName("materialRequirementPdfView");
+        } else if ("MaterialRequirementXls".equals(functionName)) {
+            mav.setViewName("materialRequirementXlsView");
         }
 
         mav.addObject("entity", entity);

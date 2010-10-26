@@ -14,10 +14,10 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
 	</appender>
-	<logger name="org.qcadoo.mes">
+	<logger name="com.qcadoo.mes">
 		<level value="debug" />
 	</logger>
-	<logger name="org.qcadoo.mes.utils">
+	<logger name="com.qcadoo.mes.utils">
 		<level value="info" />
 	</logger>
 	<logger name="org.springframework">

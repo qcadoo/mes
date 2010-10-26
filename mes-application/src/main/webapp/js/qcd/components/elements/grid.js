@@ -462,9 +462,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	var performDelete = this.performDelete;
 	
-	this.performCallFunction = function(actionsPerformer, functionName) {
+	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
 		if (currentState.selectedEntityId) {
-			mainController.performCallFunction(functionName, currentState.selectedEntityId, actionsPerformer);
+			mainController.performCallFunction(functionName, additionalAttribute, currentState.selectedEntityId, actionsPerformer);
 		} else {
 			noRowSelectedError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".noRowSelectedError";
 			mainController.showMessage("error", mainController.getTranslation(noRowSelectedError));

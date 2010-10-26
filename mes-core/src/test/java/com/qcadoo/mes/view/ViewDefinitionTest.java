@@ -172,7 +172,7 @@ public class ViewDefinitionTest {
                 Locale.ENGLISH);
 
         // then
-        assertEquals(0, pathsToUpdate.size());
+        assertEquals(1, pathsToUpdate.size());
         verify(hookDefinition).callWithViewValue(value, triggerComponentName, Locale.ENGLISH);
     }
 

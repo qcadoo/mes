@@ -1,40 +1,36 @@
-package com.qcadoo.mes.products.print.xls;
+package com.qcadoo.mes.products.print.service.xls;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.view.document.AbstractExcelView;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
+import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
 
-public final class XlsMaterialRequirementView extends AbstractExcelView {
+@Service
+public final class MaterialRequirementXlsService extends MaterialRequirementDocumentService {
 
-    @Autowired
-    private TranslationService translationService;
+    private static final String XLS_EXTENSION = ".xls";
 
+    // TODO KRNA check method
     @Override
-    protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
-            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        DefaultEntity entity = (DefaultEntity) model.get("entity");
-
-        HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title",
-                request.getLocale()));
-        addHeader(sheet, request.getLocale());
+    public void generateDocument(final Entity entity, final Locale locale) throws IOException {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title", locale));
+        addHeader(sheet, locale);
         addSeries(sheet, entity);
+        workbook.write(new FileOutputStream(getFileName() + XLS_EXTENSION));
+        updateFileName(entity, getFileName());
     }
 
     private void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -62,7 +58,6 @@ public final class XlsMaterialRequirementView extends AbstractExcelView {
     private Map<ProxyEntity, BigDecimal> getProductsSeries(final Entity entity) {
         List<Entity> orders = (List<Entity>) entity.getField("orders");
         List<Entity> instructions = new ArrayList<Entity>();
-        Map<ProxyEntity, BigDecimal> products = new HashedMap();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity instruction = (Entity) order.getField("instruction");
@@ -70,21 +65,7 @@ public final class XlsMaterialRequirementView extends AbstractExcelView {
                 instructions.add(instruction);
             }
         }
-        for (Entity instruction : instructions) {
-            List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
-            for (Entity bomComponent : bomComponents) {
-                ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
-                if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
-                    if (products.containsKey(product)) {
-                        BigDecimal quantity = products.get(product);
-                        quantity = ((BigDecimal) bomComponent.getField("quantity")).add(quantity);
-                        products.put(product, quantity);
-                    } else {
-                        products.put(product, (BigDecimal) bomComponent.getField("quantity"));
-                    }
-                }
-            }
-        }
-        return products;
+        return getBomSeries(entity, instructions);
     }
+
 }

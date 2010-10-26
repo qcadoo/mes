@@ -165,7 +165,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             translationsMap.put(messagePath + ".header", getTranslationService().translate(messagePath + ".header", locale));
         }
 
-        String[] formMessages = new String[] { "confirmCancelMessage", "confirmDeleteMessage" };
+        String[] formMessages = new String[] { "confirmCancelMessage", "confirmDeleteMessage", "entityWithoutIdentifier" };
 
         for (String formMessage : formMessages) {
             translationsMap.put(

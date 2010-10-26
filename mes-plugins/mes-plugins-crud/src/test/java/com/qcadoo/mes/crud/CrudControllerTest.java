@@ -229,8 +229,7 @@ public class CrudControllerTest {
                         Locale.ENGLISH)).willReturn(newViewValue);
 
         // when
-        Object viewValue = crudController.getDataUpdate("pluginName", "viewName", new StringBuilder(json.toString()),
-                Locale.ENGLISH);
+        Object viewValue = crudController.getData("pluginName", "viewName", new StringBuilder(json.toString()), Locale.ENGLISH);
 
         // then
         assertEquals(newViewValue, viewValue);
@@ -239,7 +238,7 @@ public class CrudControllerTest {
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfJsonIsInvalid() throws Exception {
         // when
-        crudController.getDataUpdate("pluginName", "viewName", new StringBuilder("{ sss"), Locale.ENGLISH);
+        crudController.getData("pluginName", "viewName", new StringBuilder("{ sss"), Locale.ENGLISH);
     }
 
     @Test
