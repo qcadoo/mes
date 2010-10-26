@@ -18,9 +18,12 @@ public final class RangeValidator implements FieldValidator {
 
     private final Object to;
 
-    public RangeValidator(final Object from, final Object to) {
+    private final boolean inclusive;
+
+    public RangeValidator(final Object from, final Object to, final boolean inclusive) {
         this.from = from;
         this.to = to;
+        this.inclusive = inclusive;
     }
 
     @Override
@@ -44,11 +47,11 @@ public final class RangeValidator implements FieldValidator {
     }
 
     private boolean validateDateRange(final FieldDefinition fieldDefinition, final Date value, final Entity validatedEntity) {
-        if (from != null && value.before((Date) from)) {
+        if (from != null && ((!inclusive && !value.after((Date) from)) || (inclusive && value.before((Date) from)))) {
             addError(fieldDefinition, validatedEntity);
             return false;
         }
-        if (to != null && value.after((Date) to)) {
+        if (to != null && ((!inclusive && !value.before((Date) to)) || (inclusive && value.after((Date) to)))) {
             addError(fieldDefinition, validatedEntity);
             return false;
         }
@@ -56,11 +59,15 @@ public final class RangeValidator implements FieldValidator {
     }
 
     private boolean validateNumberRange(final FieldDefinition fieldDefinition, final Number value, final Entity validatedEntity) {
-        if (from != null && value.doubleValue() < ((Number) from).doubleValue()) {
+        if (from != null
+                && ((!inclusive && value.doubleValue() <= ((Number) from).doubleValue()) || (inclusive && value.doubleValue() < ((Number) from)
+                        .doubleValue()))) {
             addError(fieldDefinition, validatedEntity);
             return false;
         }
-        if (to != null && value.doubleValue() > ((Number) to).doubleValue()) {
+        if (to != null
+                && ((!inclusive && value.doubleValue() >= ((Number) to).doubleValue()) || (inclusive && value.doubleValue() > ((Number) to)
+                        .doubleValue()))) {
             addError(fieldDefinition, validatedEntity);
             return false;
         }
@@ -68,11 +75,12 @@ public final class RangeValidator implements FieldValidator {
     }
 
     private boolean validateStringRange(final FieldDefinition fieldDefinition, final String value, final Entity validatedEntity) {
-        if (from != null && value.compareTo((String) from) < 0) {
+        if (from != null
+                && ((!inclusive && value.compareTo((String) from) < 0) || (inclusive && value.compareTo((String) from) <= 0))) {
             addError(fieldDefinition, validatedEntity);
             return false;
         }
-        if (to != null && value.compareTo((String) to) > 0) {
+        if (to != null && ((!inclusive && value.compareTo((String) to) > 0) || (inclusive && value.compareTo((String) to) >= 0))) {
             addError(fieldDefinition, validatedEntity);
             return false;
         }

@@ -7,12 +7,24 @@ QCD.components.elements.utils.HeaderUtils = {};
 
 QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, clickAction, icon) {
 	var elementIcon = (icon && $.trim(icon) != "") ? $.trim(icon) : null;
+	
+	var itemElementLabel = $('<div>');
+	itemElementLabel.html(label);
+	
+	var itemElementSpan = $('<span>');
+	
+	var itemElementButton = $("<a>").attr('href','#').append(itemElementSpan);
+	
 	if (icon && $.trim(icon) != "") {
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='icon' style=\"background-image:url(\'../../images/icons/"+elementIcon+"\')\"></div><div class='hasIcon'>"+label+"</div></span>");	
-	} else {
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div>"+label+"</div></span>");
+		itemElementLabel.addClass('hasIcon');
+		itemElementSpan.append($('<div>').addClass('icon').css('background', 'url(\'../../images/icons/'+elementIcon+'\')'));
 	}
+
+	itemElementSpan.append(itemElementLabel);
 	itemElementButton.click(clickAction);
+	
 	var itemElementButtonWrapper = $("<div>").addClass("headerActionButton").append(itemElementButton);
+	itemElementButtonWrapper.label = itemElementLabel;
+	
 	return itemElementButtonWrapper;
 }

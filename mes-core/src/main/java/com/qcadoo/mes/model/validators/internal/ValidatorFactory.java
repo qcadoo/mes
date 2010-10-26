@@ -22,7 +22,7 @@ public interface ValidatorFactory {
 
     FieldValidator precision(Integer min, Integer is, Integer max);
 
-    FieldValidator range(Object from, Object to);
+    FieldValidator range(Object from, Object to, boolean inclusive);
 
     FieldValidator custom(HookDefinition validateHook);
 

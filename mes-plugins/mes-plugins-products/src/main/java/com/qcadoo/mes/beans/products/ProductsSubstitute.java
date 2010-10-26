@@ -3,6 +3,7 @@ package com.qcadoo.mes.beans.products;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,8 +27,10 @@ public class ProductsSubstitute {
 
     private Integer priority;
 
+    @Column(nullable = false)
     private String number;
 
+    @Column(nullable = false)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
