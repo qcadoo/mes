@@ -302,8 +302,10 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	function filterClicked() {
 		if (headerElements.filterButton.hasClass("headerButtonActive")) {
 			headerElements.filterButton.removeClass("headerButtonActive");
+			headerElements.filterButton.label.html(mainController.getTranslation(messagesPath + ".addFilter"));
 		} else {
 			headerElements.filterButton.addClass("headerButtonActive");
+			headerElements.filterButton.label.html(mainController.getTranslation(messagesPath + ".removeFilter"));
 		}
 		gridController.onFilterButtonClicked();
 	}

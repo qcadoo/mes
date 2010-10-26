@@ -170,13 +170,13 @@
 	left: 15px;
 	background: #fff;
 	z-index: 999;
+	margin-bottom: 5px
 }
 
 .component_container_form .error_messages div {
 	border: 1px solid #ec1c24;
 	width: 275px;
 	font: 11px arial;
-	margin-bottom: 5px;
 }
 
 .component_container_form .error_messages div span {

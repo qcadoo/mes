@@ -101,7 +101,7 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
         SearchCriteriaBuilder searchCriteriaBuilder = null;
 
         if (getSourceFieldPath() != null || getFieldPath() != null) {
-            if (entity == null) {
+            if (entity == null || entity.getId() == null) {
                 return new ViewValue<TreeData>(
                         new TreeData(new TreeNode(Long.valueOf(0), getRootLabel(locale, null)), null, null));
             }
