@@ -36,6 +36,7 @@
 .component_container_form .label {
 	display: inline-block;
 	vertical-align: middle;
+	margin-right: 10px;
 }
 
 .component_container_form .required .label {
