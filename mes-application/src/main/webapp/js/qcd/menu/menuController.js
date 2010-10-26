@@ -82,6 +82,23 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		changePage(model.selectedItem.selectedItem.page);
 	}
 	
+	this.goToMenuPosition = function(position) {
+		var menuParts = position.split(".");
+		
+		var topItem = model.itemsMap[menuParts[0]];
+		var bottomItem = topItem.itemsMap[menuParts[0]+"_"+menuParts[1]];
+		
+		model.selectedItem.element.removeClass("path");
+		
+		topItem.selectedItem = bottomItem;
+		previousActive.first = topItem;
+		previousActive.second = bottomItem;
+		model.selectedItem = topItem;
+		
+		updateState();
+		changePage(model.selectedItem.selectedItem.page);
+	}
+	
 	this.restoreState = function() {
 		model.selectedItem = previousActive.first;
 		if (previousActive.second) {

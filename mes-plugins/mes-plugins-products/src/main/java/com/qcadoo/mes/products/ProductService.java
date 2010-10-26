@@ -1,6 +1,7 @@
 package com.qcadoo.mes.products;
 
 import java.util.Date;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,8 @@ public final class ProductService {
     @Autowired
     private SecurityService securityService;
 
-    public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName) {
+    public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
+            final Locale locale) {
 
         if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
                 || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
@@ -91,7 +93,7 @@ public final class ProductService {
     }
 
     @SuppressWarnings("unchecked")
-    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName) {
+    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
         ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
         ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
                 .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
