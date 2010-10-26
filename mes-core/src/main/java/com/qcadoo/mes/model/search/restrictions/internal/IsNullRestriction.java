@@ -12,7 +12,7 @@ public final class IsNullRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criteria addToHibernateCriteria(final Criteria criteria) {
+    public Criteria addRestrictionToHibernateCriteria(final Criteria criteria) {
         return criteria.add(Restrictions.isNull(getFieldName()));
     }
 

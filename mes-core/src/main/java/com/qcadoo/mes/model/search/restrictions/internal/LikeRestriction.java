@@ -12,7 +12,7 @@ public final class LikeRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criteria addToHibernateCriteria(final Criteria criteria) {
+    public Criteria addRestrictionToHibernateCriteria(final Criteria criteria) {
         return criteria.add(Restrictions.like(getFieldName(), getValue()));
     }
 

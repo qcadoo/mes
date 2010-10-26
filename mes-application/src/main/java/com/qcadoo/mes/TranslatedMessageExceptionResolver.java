@@ -31,7 +31,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
         if (mv != null) {
             String exceptionMessage = ex.getMessage();
             if (OBJECT_IN_USE.equals(ex.getMessage())) {
-                exceptionMessage = translationService.translate("commons.exception.illegalStateException.objectInUse",
+                exceptionMessage = translationService.translate("core.exception.illegalStateException.objectInUse",
                         request.getLocale());
             }
             if (LOG.isDebugEnabled()) {

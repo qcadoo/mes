@@ -44,8 +44,8 @@ public final class EnumType implements EnumeratedType {
     public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
         String stringValue = String.valueOf(value);
         if (!values().contains(stringValue)) {
-            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidDictionaryItem",
-                    String.valueOf(values()));
+            validatedEntity
+                    .addError(fieldDefinition, "core.validate.field.error.invalidDictionaryItem", String.valueOf(values()));
             return null;
         }
         return stringValue;

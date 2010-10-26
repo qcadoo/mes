@@ -3,6 +3,7 @@ package com.qcadoo.mes.view.components;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,10 +13,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
@@ -289,32 +293,64 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             searchCriteriaBuilder.withMaxResults(listData.getMaxResults());
         }
         if (listData.getOrderColumn() != null) {
-            FieldDefinition field = getFieldByColumnName(listData.getOrderColumn());
+            addOrder(searchCriteriaBuilder, listData, columns.get(listData.getOrderColumn()),
+                    getFieldByColumnName(listData.getOrderColumn()));
+        }
+        if (listData.isSearchEnabled()) {
+            for (Map<String, String> filter : listData.getFilters()) {
+                addRestriction(searchCriteriaBuilder, filter, columns.get(listData.getOrderColumn()),
+                        getFieldByColumnName(filter.get("column")));
+            }
+        }
+    }
 
-            if (field != null && field.getType().isOrderable()) {
+    private void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder, final Map<String, String> filter,
+            final ColumnDefinition column, final FieldDefinition field) {
+        if (field == null || column == null) {
+            return;
+        }
+
+        String value = filter.get("value");
+
+        if (StringUtils.hasText(column.getExpression())) {
+            Matcher matcher = Pattern.compile("#(\\w+)\\['(\\w+)'\\]").matcher(column.getExpression());
+            if (matcher.matches()) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq(matcher.group(1) + "." + matcher.group(2), value + "*"));
+            }
+        } else if (field.getType().isSearchable()) {
+            searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value + "*"));
+        }
+    }
+
+    private void addOrder(final SearchCriteriaBuilder searchCriteriaBuilder, final ListData listData,
+            final ColumnDefinition column, final FieldDefinition field) {
+        if (field == null || column == null) {
+            return;
+        }
+
+        if (StringUtils.hasText(column.getExpression())) {
+            Matcher matcher = Pattern.compile("#(\\w+)\\['(\\w+)'\\]").matcher(column.getExpression());
+            if (matcher.matches()) {
                 Order order = null;
 
                 if (listData.isOrderAsc()) {
-                    order = Order.asc(field.getName());
+                    order = Order.asc(matcher.group(1) + "." + matcher.group(2));
                 } else {
-                    order = Order.desc(field.getName());
+                    order = Order.desc(matcher.group(1) + "." + matcher.group(2));
                 }
 
                 searchCriteriaBuilder.orderBy(order);
             }
-        }
-        if (listData.isSearchEnabled()) {
-            for (Map<String, String> filter : listData.getFilters()) {
-                FieldDefinition field = getFieldByColumnName(filter.get("column"));
-                String value = filter.get("value");
+        } else if (field.getType().isOrderable()) {
+            Order order = null;
 
-                if (field != null && field.getType().isSearchable()) {
-                    if (field.getType().getType().equals(String.class)) {
-                        value += "*";
-                    }
-                    searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value));
-                }
+            if (listData.isOrderAsc()) {
+                order = Order.asc(field.getName());
+            } else {
+                order = Order.desc(field.getName());
             }
+
+            searchCriteriaBuilder.orderBy(order);
         }
     }
 
@@ -342,9 +378,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
 
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
-        String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
-                + ".header";
-        translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
+        String messagePath = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
+        translationsMap.put(messagePath + ".header", getTranslationService().translate(messagePath + ".header", locale));
         for (ColumnDefinition column : columns.values()) {
             List<String> messageCodes = new LinkedList<String>();
             messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
@@ -353,6 +388,15 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
         }
 
+        String[] gridMessages = new String[] { "addFilter", "perPage", "new", "delete", "up", "down", "noRowSelectedError",
+                "confirmDeleteMessage" };
+
+        for (String gridMessage : gridMessages) {
+            translationsMap.put(
+                    messagePath + "." + gridMessage,
+                    getTranslationService().translate(
+                            Arrays.asList(new String[] { messagePath + "." + gridMessage, "core.grid." + gridMessage }), locale));
+        }
     }
 
     private Object getFieldsForOptions(final Map<String, FieldDefinition> fields) {

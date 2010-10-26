@@ -62,7 +62,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
 
         assertNotNull(fieldType.toObject(fieldDefinition, "val1", entity));
         assertNull(fieldType.toObject(fieldDefinition, "val4", entity));
-        assertEquals("commons.validate.field.error.invalidDictionaryItem", entity.getError("aa").getMessage());
+        assertEquals("core.validate.field.error.invalidDictionaryItem", entity.getError("aa").getMessage());
         assertEquals("[val1, val2, val3]", entity.getError("aa").getVars()[0]);
     }
 
@@ -83,7 +83,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertEquals(String.class, fieldType.getType());
         assertNotNull(fieldType.toObject(fieldDefinition, "val1", entity));
         assertNull(fieldType.toObject(fieldDefinition, "val4", entity));
-        assertEquals("commons.validate.field.error.invalidDictionaryItem", entity.getError("aa").getMessage());
+        assertEquals("core.validate.field.error.invalidDictionaryItem", entity.getError("aa").getMessage());
         assertEquals("[val1, val2, val3]", entity.getError("aa").getVars()[0]);
     }
 
@@ -145,7 +145,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), entity));
         assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1234567), entity));
         assertNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(12345678), entity));
-        assertEquals("commons.validate.field.error.invalidNumericFormat", entity.getError("aa").getMessage());
+        assertEquals("core.validate.field.error.invalidNumericFormat", entity.getError("aa").getMessage());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
         assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 255), entity));
         assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 256), entity));
-        assertEquals("commons.validate.field.error.invalidLength", entity.getError("aa").getMessage());
+        assertEquals("core.validate.field.error.invalidLength", entity.getError("aa").getMessage());
         assertEquals("255", entity.getError("aa").getVars()[0]);
     }
 
@@ -195,7 +195,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertNotNull(fieldType.toObject(fieldDefinition, "test", entity));
         assertNotNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2048), entity));
         assertNull(fieldType.toObject(fieldDefinition, StringUtils.repeat("a", 2049), entity));
-        assertEquals("commons.validate.field.error.invalidLength", entity.getError("aa").getMessage());
+        assertEquals("core.validate.field.error.invalidLength", entity.getError("aa").getMessage());
         assertEquals("2048", entity.getError("aa").getVars()[0]);
     }
 

@@ -74,14 +74,16 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performDelete = function(actionsPerformer) {
-		if (window.confirm(mainController.getTranslation("commons.confirm.deleteMessage"))) {
+		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
+		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 			block();
 			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer);
 		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-		if (window.confirm("cancel?")) {
+		var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
+		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
 			block();
 			mainController.performCancel(formValue ? formValue.id : null, actionsPerformer);
 		}
@@ -103,7 +105,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	function block() {
-		element.block({ message: mainController.getTranslation("commons.loading.gridLoading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+		element.block({ message: mainController.getTranslation("commons.loading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
             border: 'none', 
             padding: '15px', 
             backgroundColor: '#000', 

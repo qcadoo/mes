@@ -8,7 +8,7 @@ import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class CustomValidator implements FieldValidator {
 
-    private static final String CUSTOM_ERROR = "commons.validate.field.error.custom";
+    private static final String CUSTOM_ERROR = "core.validate.field.error.custom";
 
     private final HookDefinition validateHook;
 

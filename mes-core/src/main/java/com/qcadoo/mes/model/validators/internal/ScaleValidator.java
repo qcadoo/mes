@@ -9,7 +9,7 @@ import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class ScaleValidator implements FieldValidator {
 
-    private static final String INVALID_SCALE_ERROR = "commons.validate.field.error.invalidScale";
+    private static final String INVALID_SCALE_ERROR = "core.validate.field.error.invalidScale";
 
     private final Integer max;
 

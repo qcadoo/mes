@@ -26,11 +26,19 @@ public final class Restrictions {
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
         }
-        if (value instanceof String && ((String) value).matches(".*[\\*%\\?_].*")) {
-            String preperadValue = ((String) value).replace('*', '%').replace('?', '_');
-            return new LikeRestriction(fieldDefinition.getName(), preperadValue);
+        return createEqRestriction(fieldDefinition.getName(), value);
+    }
+
+    public static Restriction eq(final String fieldName, final String expectedValue) {
+        return createEqRestriction(fieldName, expectedValue);
+    }
+
+    private static Restriction createEqRestriction(final String fieldName, final Object expectedValue) {
+        if (expectedValue instanceof String && ((String) expectedValue).matches(".*[\\*%\\?_].*")) {
+            String preperadValue = ((String) expectedValue).replace('*', '%').replace('?', '_');
+            return new LikeRestriction(fieldName, preperadValue);
         }
-        return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.EQ);
+        return new SimpleRestriction(fieldName, expectedValue, RestrictionOperator.EQ);
     }
 
     public static Restriction belongsTo(final FieldDefinition fieldDefinition, final Object entityOrId) {

@@ -54,8 +54,8 @@
 				</group>
 			</ribbon>
 			<component type="form" name="productDetailsForm">
-				<component type="textarea" name="name" field="name" hasDescription="true" />					
 				<component type="input" name="number" field="number" />
+				<component type="textarea" name="name" field="name" hasDescription="true" />					
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="input" name="ean" field="ean" />
 				<component type="select" name="category" field="category" />
@@ -186,7 +186,7 @@
 				<option type="correspondingView" value="products/instructionDetailsView" />
 				<option type="paginable" value="true" />
 				<option type="searchable" value="name,number,product" />
-				<option type="orderable" value="name,number" />
+				<option type="orderable" value="name,number,product" />
 				<option type="multiselect" value="true" />
 				<option type="fullScreen" value="true" />
 			</component>
@@ -392,7 +392,7 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="create" icon="addIcon32.png"
+					<bigButton name="new" icon="addIcon32.png"
 						action="#{mainWindow.materialRequirementsGrid}.performNew;" />
 				</group>
 				<group name="export">

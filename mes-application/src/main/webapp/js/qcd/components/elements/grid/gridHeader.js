@@ -3,11 +3,12 @@ QCD.components = QCD.components || {};
 QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.grid = QCD.components.elements.grid || {};
 
-QCD.components.elements.grid.GridHeaderController = function(_gridController, _gridName, _gridParameters) {
+QCD.components.elements.grid.GridHeaderController = function(_gridController, _mainController, _gridParameters, _messagesPath) {
 	
 	var gridController = _gridController;
-	var gridName = _gridName;
+	var mainController = _mainController;
 	var gridParameters = _gridParameters;
+	var messagesPath = _messagesPath;
 	
 	var pagingVars = new Object();
 	pagingVars.first = null;
@@ -148,11 +149,11 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 	
 	this.getHeaderElement = function() {
 		headerElement = $("<div>").addClass('grid_header').addClass("elementHeader").addClass("elementHeaderDisabled");
-		headerElement.append($("<span>").html(gridName).addClass('grid_header_gridName').addClass('elementHeaderTitle'));
+		headerElement.append($("<span>").html(mainController.getTranslation(messagesPath + ".header")).addClass('grid_header_gridName').addClass('elementHeaderTitle'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities').addClass('elementHeaderTitle');
 		headerElement.append(entitiesNumberSpan);
 		if (gridParameters.filter) {
-			headerElements.filterButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("Filtruj",function(e) {
+			headerElements.filterButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + ".addFilter"), function(e) {
 				if (headerElements.filterButton.hasClass("headerButtonEnabled")) {
 					filterClicked();
 				}
@@ -161,7 +162,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 			setEnabledButton(headerElements.filterButton, false);
 		}
 		if (gridParameters.canNew) {
-			headerElements.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("new",function(e) {
+			headerElements.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + ".new"),function(e) {
 				if (headerElements.newButton.hasClass("headerButtonEnabled")) {
 					gridController.onNewButtonClicked();
 				}
@@ -170,7 +171,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 			setEnabledButton(headerElements.newButton, false);
 		}
 		if (gridParameters.canDelete) {
-			headerElements.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("delete", function(e) {
+			headerElements.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + ".delete"), function(e) {
 				if (headerElements.deleteButton.hasClass("headerButtonEnabled")) {
 					gridController.onDeleteButtonClicked();
 				}
@@ -179,14 +180,14 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 			setEnabledButton(headerElements.deleteButton, false);
 		}
 		if (gridParameters.orderable) {
-			headerElements.upButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("up",function(e) {
+			headerElements.upButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + ".up"),function(e) {
 				if (headerElements.upButton.hasClass("headerButtonEnabled")) {
 					gridController.onUpButtonClicked();
 				}
 			}, "upIcon16.png");
 			headerElement.append(headerElements.upButton);
 			setEnabledButton(headerElements.upButton, false);
-			headerElements.downButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("down", function(e) {
+			headerElements.downButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + ".down"), function(e) {
 				if (headerElements.downButton.hasClass("headerButtonEnabled")) {
 					gridController.onDownButtonClicked();
 				}
@@ -195,7 +196,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 			setEnabledButton(headerElements.downButton, false);
 		}
 		if (gridParameters.paging) {
-			headerPagingController = new QCD.components.elements.grid.GridPagingElement(this);
+			headerPagingController = new QCD.components.elements.grid.GridPagingElement(this, mainController, messagesPath);
 			headerElement.append(headerPagingController.getPagingElement(pagingVars));
 		}
 		return headerElement;
@@ -205,7 +206,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 		if (!gridParameters.paging) {
 			return null;
 		}
-		footerPagingController = new QCD.components.elements.grid.GridPagingElement(this);
+		footerPagingController = new QCD.components.elements.grid.GridPagingElement(this, mainController, messagesPath);
 		footerElement = $("<div>").addClass('grid_footer').append(footerPagingController.getPagingElement(pagingVars)); 
 		return footerElement;
 	}
@@ -324,9 +325,11 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _g
 }
 
 
-QCD.components.elements.grid.GridPagingElement = function(_gridHeaderController) {
+QCD.components.elements.grid.GridPagingElement = function(_gridHeaderController, _mainController, _messagesPath) {
 	
 	var gridHeaderController = _gridHeaderController;
+	var mainController = _mainController;
+	var messagesPath = _messagesPath;
 	
 	var pagingElements = new Object();
 	pagingElements.prevButton = null;
@@ -342,7 +345,7 @@ QCD.components.elements.grid.GridPagingElement = function(_gridHeaderController)
 	
 	this.getPagingElement = function(pagingVars) {
 		var pagingDiv = $("<div>").addClass('grid_paging');
-		pagingDiv.append('<span>Na stronie: </span>');
+		pagingDiv.append('<span>' + mainController.getTranslation(messagesPath + ".perPage") + ' </span>');
 		pagingElements.recordsNoSelect = $("<select>");
 			pagingElements.recordsNoSelect.append("<option value=10>10</option>");
 			pagingElements.recordsNoSelect.append("<option value=20>20</option>");
