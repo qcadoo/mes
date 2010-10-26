@@ -50,7 +50,6 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Override
     protected void buildPdfMetadata(final Map<String, Object> model, final Document document, final HttpServletRequest request) {
         addTitle(document, request.getLocale());
-        // TODO KRNA add to properties ?
         document.addSubject("Using iText");
         document.addKeywords("Java, PDF, iText");
         document.addAuthor("QCADOO");

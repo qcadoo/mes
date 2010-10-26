@@ -1,17 +1,13 @@
 package com.qcadoo.mes.products.print.service.pdf;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,71 +22,49 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.DataAccessService;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
+import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
 
 @Service
-public final class MaterialRequirementPdfService {
+public final class MaterialRequirementPdfService extends MaterialRequirementDocumentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementPdfService.class);
 
     @Autowired
-    protected TranslationService translationService;
-
-    @Autowired
-    protected SecurityService securityService;
-
-    @Autowired
-    DataAccessService dataAccessService;
-
-    @Autowired
-    DataDefinitionService dataDefinitionService;
+    private SecurityService securityService;
 
     private static final String FONT_PATH = "fonts/Arial.ttf";
 
-    private static final String FILE_DIR = "/Users/krna/Documents/workspace/";
+    private static final String PDF_EXTENSION = ".pdf";
 
-    private static final String FILE_NAME = "MaterialRequirement";
-
-    private static final String FILE_EXTENSION = ".pdf";
-
-    private static final String DATE_FORMAT = "yyyy_MM_dd_HH_mm";
-
-    public void generateDocument(final Entity entity, final Locale locale) {
+    // TODO KRNA check method
+    @Override
+    public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
         try {
-            SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
-            String fileName = FILE_DIR + FILE_NAME + df.format(new Date()) + FILE_EXTENSION;
-            entity.setField("fileName", fileName);
-            DataDefinition dataDefinition = dataDefinitionService.get("products", "materialRequirement");
-            dataAccessService.save((InternalDataDefinition) dataDefinition, entity);
+            String fileName = getFileName() + PDF_EXTENSION;
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
             document.open();
-            ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
-            FontFactory.register(classPathResource.getPath());
-            BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            Font font12 = new Font(baseFont, 12);
-            buildPdfContent(document, entity, locale, font12);
+            buildPdfContent(document, entity, locale, prepareFont());
             buildPdfMetadata(document, locale);
-            writer.flush(); // ?
+            writer.flush();
             document.close();
-        } catch (FileNotFoundException e) {
-            LOG.error("Problem with generating document - " + e.getMessage());
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
             document.close();
-        } catch (IOException e) {
-            LOG.error("Problem with generating document - " + e.getMessage());
-            document.close();
+            throw e;
         }
+    }
+
+    private Font prepareFont() throws DocumentException, IOException {
+        ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
+        FontFactory.register(classPathResource.getPath());
+        BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        return new Font(baseFont, 12);
     }
 
     private void buildPdfContent(final Document document, final Entity entity, final Locale locale, final Font font)
@@ -108,7 +82,6 @@ public final class MaterialRequirementPdfService {
 
     private void buildPdfMetadata(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("products.materialRequirement.report.title", locale));
-        // TODO KRNA add to properties ?
         document.addSubject("Using iText");
         document.addKeywords("Java, PDF, iText");
         document.addAuthor("QCADOO");
@@ -137,22 +110,7 @@ public final class MaterialRequirementPdfService {
 
     private void addBomSeries(final Document document, final DefaultEntity entity, final List<Entity> instructions,
             final Font font) throws DocumentException {
-        Map<ProxyEntity, BigDecimal> products = new HashedMap();
-        for (Entity instruction : instructions) {
-            List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
-            for (Entity bomComponent : bomComponents) {
-                ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
-                if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
-                    if (products.containsKey(product)) {
-                        BigDecimal quantity = products.get(product);
-                        quantity = ((BigDecimal) bomComponent.getField("quantity")).add(quantity);
-                        products.put(product, quantity);
-                    } else {
-                        products.put(product, (BigDecimal) bomComponent.getField("quantity"));
-                    }
-                }
-            }
-        }
+        Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, instructions);
         for (Entity product : products.keySet()) {
             document.add(new Paragraph(product.getField("number") + " " + product.getField("name") + " " + products.get(product)
                     + " " + product.getField("unit"), font));

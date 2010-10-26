@@ -1,33 +1,36 @@
 package com.qcadoo.mes.products.print.service.xls;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.ProxyEntity;
+import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
 
 @Service
-public final class MaterialRequirementXlsService {
+public final class MaterialRequirementXlsService extends MaterialRequirementDocumentService {
 
-    @Autowired
-    protected TranslationService translationService;
+    private static final String XLS_EXTENSION = ".xls";
 
-    public void generateDocument(final Entity entity, final Locale locale) {
-        /*
-         * HSSFSheet sheet = workbook.createSheet(""//
-         * translationService.translate("products.materialRequirement.report.title",request.getLocale()) ); addHeader(sheet,
-         * null// request.getLocale() ); addSeries(sheet, entity);
-         */
+    // TODO KRNA check method
+    @Override
+    public void generateDocument(final Entity entity, final Locale locale) throws IOException {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title", locale));
+        addHeader(sheet, locale);
+        addSeries(sheet, entity);
+        workbook.write(new FileOutputStream(getFileName() + XLS_EXTENSION));
+        updateFileName(entity, getFileName());
     }
 
     private void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -55,7 +58,6 @@ public final class MaterialRequirementXlsService {
     private Map<ProxyEntity, BigDecimal> getProductsSeries(final Entity entity) {
         List<Entity> orders = (List<Entity>) entity.getField("orders");
         List<Entity> instructions = new ArrayList<Entity>();
-        Map<ProxyEntity, BigDecimal> products = new HashedMap();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity instruction = (Entity) order.getField("instruction");
@@ -63,22 +65,7 @@ public final class MaterialRequirementXlsService {
                 instructions.add(instruction);
             }
         }
-        for (Entity instruction : instructions) {
-            List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
-            for (Entity bomComponent : bomComponents) {
-                ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
-                if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
-                    if (products.containsKey(product)) {
-                        BigDecimal quantity = products.get(product);
-                        quantity = ((BigDecimal) bomComponent.getField("quantity")).add(quantity);
-                        products.put(product, quantity);
-                    } else {
-                        products.put(product, (BigDecimal) bomComponent.getField("quantity"));
-                    }
-                }
-            }
-        }
-        return products;
+        return getBomSeries(entity, instructions);
     }
 
 }

@@ -1,11 +1,13 @@
 package com.qcadoo.mes.products;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -47,7 +49,7 @@ public final class ProductService {
     MaterialRequirementXlsService materialRequirementXlsService;
 
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
-            final Locale locale) {
+            final Locale locale) throws IOException, DocumentException {
 
         if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
                 || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
@@ -71,7 +73,6 @@ public final class ProductService {
             Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                     ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
 
-            // TODO krna method to generate files and update fileName in database
             materialRequirementPdfService.generateDocument(materialRequirement, locale);
             materialRequirementXlsService.generateDocument(materialRequirement, locale);
 

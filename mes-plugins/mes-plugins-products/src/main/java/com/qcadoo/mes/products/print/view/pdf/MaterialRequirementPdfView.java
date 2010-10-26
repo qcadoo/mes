@@ -12,11 +12,13 @@ import com.qcadoo.mes.internal.DefaultEntity;
 
 public final class MaterialRequirementPdfView {
 
+    private static final String PDF_EXTENSION = ".pdf";
+
     protected void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         DefaultEntity entity = (DefaultEntity) model.get("entity");
-        PdfReader reader = new PdfReader((String) entity.getField("fileName"));
-
+        PdfReader reader = new PdfReader((String) entity.getField("fileName") + PDF_EXTENSION);
+        writer.freeReader(reader);
     }
 
 }
