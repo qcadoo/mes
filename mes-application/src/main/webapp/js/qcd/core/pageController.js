@@ -152,10 +152,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 			});
 		}
 	
-	this.performCallFunction = function(functionName, entityId, actionsPerformer) {
-		if (functionName == "printOrder" || functionName == "printMaterialRequirementPdf") {
+	this.performCallFunction = function(functionName, additionalAttribute, entityId, actionsPerformer) {
+		if (additionalAttribute == "pdf") {
 			window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
-		} else if (functionName == "printMaterialRequirementXls") {
+		} else if (additionalAttribute == "xls") {
 			window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
 		}
 	}

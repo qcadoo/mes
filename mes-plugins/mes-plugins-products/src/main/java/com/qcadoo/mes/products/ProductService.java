@@ -17,6 +17,8 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.products.print.service.pdf.MaterialRequirementPdfService;
+import com.qcadoo.mes.products.print.service.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewValue;
@@ -36,6 +38,12 @@ public final class ProductService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    MaterialRequirementPdfService materialRequirementPdfService;
+
+    @Autowired
+    MaterialRequirementXlsService materialRequirementXlsService;
 
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName) {
 
@@ -62,6 +70,8 @@ public final class ProductService {
                     ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
 
             // TODO krna method to generate files and update fileName in database
+            materialRequirementPdfService.generatePdfDocument(materialRequirement);
+            materialRequirementXlsService.generateExcelDocument(materialRequirement);
 
         }
     }

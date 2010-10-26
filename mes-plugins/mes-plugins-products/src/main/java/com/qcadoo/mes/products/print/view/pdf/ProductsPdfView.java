@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.pdf;
+package com.qcadoo.mes.products.print.view.pdf;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -42,15 +42,14 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         FontFactory.register(classPathResource.getPath());
         BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font font12 = new Font(baseFont, 12);
-
         addContent(document, entity, request.getLocale(), font12);
-        addTitle(document, request.getLocale());
-        addMetaData(document, request.getLocale());
         writer.addJavaScript("this.print(false);", false);
 
     }
 
-    private void addMetaData(final Document document, final Locale locale) {
+    @Override
+    protected void buildPdfMetadata(final Map<String, Object> model, final Document document, final HttpServletRequest request) {
+        addTitle(document, request.getLocale());
         // TODO KRNA add to properties ?
         document.addSubject("Using iText");
         document.addKeywords("Java, PDF, iText");
@@ -58,7 +57,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         document.addCreator("QCADOO");
     }
 
-    protected void addContent(final Document document, final DefaultEntity order, final Locale locale, final Font font)
+    protected void addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
             throws DocumentException, IOException {
         document.add(new Paragraph("", font));
     }

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.xls;
+package com.qcadoo.mes.products.print.service.xls;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -6,44 +6,36 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.view.document.AbstractExcelView;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
 
-public final class XlsMaterialRequirementView extends AbstractExcelView {
+@Service
+public final class MaterialRequirementXlsService {
 
-    @Autowired
-    private TranslationService translationService;
-
-    @Override
-    protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
-            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        DefaultEntity entity = (DefaultEntity) model.get("entity");
-
-        HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title",
-                request.getLocale()));
-        addHeader(sheet, request.getLocale());
-        addSeries(sheet, entity);
+    public void generateExcelDocument(final Entity entity) {
+        /*
+         * HSSFSheet sheet = workbook.createSheet(""//
+         * translationService.translate("products.materialRequirement.report.title",request.getLocale()) ); addHeader(sheet,
+         * null// request.getLocale() ); addSeries(sheet, entity);
+         */
     }
 
     private void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
-        header.createCell(0).setCellValue(translationService.translate("products.product.number.label", locale));
-        header.createCell(1).setCellValue(translationService.translate("products.product.name.label", locale));
-        header.createCell(2)
-                .setCellValue(translationService.translate("products.instructionBomComponent.quantity.label", locale));
-        header.createCell(3).setCellValue(translationService.translate("products.product.unit.label", locale));
+        header.createCell(0).setCellValue(""// translationService.translate("products.product.number.label", locale)
+        );
+        header.createCell(1).setCellValue(""// translationService.translate("products.product.name.label", locale)
+        );
+        header.createCell(2).setCellValue(""// translationService.translate("products.instructionBomComponent.quantity.label",
+                                            // locale)
+        );
+        header.createCell(3).setCellValue(""// translationService.translate("products.product.unit.label", locale)
+        );
     }
 
     private void addSeries(final HSSFSheet sheet, final Entity entity) {
@@ -87,4 +79,5 @@ public final class XlsMaterialRequirementView extends AbstractExcelView {
         }
         return products;
     }
+
 }

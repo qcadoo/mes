@@ -256,12 +256,12 @@ public final class CrudController {
 
         ModelAndView mav = new ModelAndView();
 
-        if ("printOrder".equals(functionName)) {
-            mav.setViewName("pdfOrderView");
-        } else if ("printMaterialRequirementPdf".equals(functionName)) {
-            mav.setViewName("pdfMaterialRequirementView");
-        } else if ("printMaterialRequirementXls".equals(functionName)) {
-            mav.setViewName("xlsMaterialRequirementView");
+        if ("Order".equals(functionName)) {
+            mav.setViewName("orderPdfView");
+        } else if ("MaterialRequirementPdf".equals(functionName)) {
+            mav.setViewName("materialRequirementPdfView");
+        } else if ("MaterialRequirementXls".equals(functionName)) {
+            mav.setViewName("materialRequirementXlsView");
         }
 
         mav.addObject("entity", entity);

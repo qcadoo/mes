@@ -296,7 +296,7 @@
 				</group>
 				<group name="export">
 					<smallButton name="print" icon="printIcon16.png"
-						action="#{mainWindow.ordersGrid}.performCallFunction(printOrder);" />
+						action="#{mainWindow.ordersGrid}.performCallFunction(Order, pdf);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="ordersGrid">
@@ -397,9 +397,9 @@
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementPdf);" />
+						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(MaterialRequirementPdf, pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementXls);" />
+						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(MaterialRequirementXls, xls);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirementsGrid">
@@ -433,9 +433,9 @@
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementPdf);" />
+						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(MaterialRequirementPdf, pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementXls);" />
+						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(MaterialRequirementXls, xls);" />
 				</group>
 			</ribbon>
 			<component type="form" name="materialRequirementDetailsForm">
