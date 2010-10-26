@@ -65,6 +65,9 @@
 		ajaxLogin = function() {
 			var formData = QCDSerializator.serializeForm($("#loginForm"));
 			var url = "j_spring_security_check";
+
+			// TODO mady - remove error labels
+			
 			$.ajax({
 				url: url,
 				type: 'POST',
@@ -80,14 +83,13 @@
 					} else {
 						if (response == "loginUnsuccessfull:login") {
 							hideMessageBox();
-							alert("login");
+							alert("login"); // TODO mady - add login error label
 						} else if (response == "loginUnsuccessfull:password") {
 							hideMessageBox();
-							alert("password");
+							alert("password"); // TODO mady - add pessword error label
 						} else {
-							
+							showMessageBox("error", "aa", "bbb");
 						} 
-						showMessageBox("error", "aa", "bbb");
 					}
 				},
 				error: function(xhr, textStatus, errorThrown){
