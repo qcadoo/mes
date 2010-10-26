@@ -245,6 +245,7 @@
 				<option type="height" value="200" />
 				<option type="width" value="500" />
 				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #quantity + ' x &lt;/span&gt;' + #product['name']" />
+				<option type="rootExpression" value="#number" />
 				<option type="correspondingView" value="products/instructionComponentDetailsView" />
 			</component>
 		</component>
