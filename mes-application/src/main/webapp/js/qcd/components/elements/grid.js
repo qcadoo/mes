@@ -132,11 +132,18 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			currentState.paging = state.paging;
 		}
 		if (state.searchEnabled) {
-			currentState.searchEnabled = state.searchEnabled
+			currentState.searchEnabled = state.searchEnabled;
+			headerController.setFilterActive();
+			grid[0].toggleToolbar();
+			if (currentState.searchEnabled) {
+				currentGridHeight -= 21;
+			} else {
+				currentGridHeight += 21;
+			}
+			grid.setGridHeight(currentGridHeight);
 		}
 		if (state.filters && state.filters.length > 0) {
 			currentState.filters = state.filters;
-			grid[0].toggleToolbar();
 			for (var filterIndex in currentState.filters) {
 				var filter = currentState.filters[filterIndex];
 				$("#gs_"+filter.column).val(filter.value);
