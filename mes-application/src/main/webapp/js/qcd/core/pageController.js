@@ -117,7 +117,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		});
 	}
 	
-	this.performDelete = function(componentName, entityId, actionsPerformer) {
+	this.performDelete = function(componentName, entityId, actionsPerformer, callback) {
 		QCD.info("delete " +componentName+" - "+entityId);
 		var parameters = {
 			componentName: componentName,
@@ -130,6 +130,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 			setValueData(response);
 			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 				actionsPerformer.performNext();
+			}
+			if(callback) {
+				callback();
+			}
+		}, function(response) {
+			if(callback) {
+				callback();
 			}
 		});
 	}
