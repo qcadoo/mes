@@ -309,9 +309,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         if (order.isAsc()) {
-            return criteria.addOrder(org.hibernate.criterion.Order.asc(order.getFieldName()));
+            return criteria.addOrder(org.hibernate.criterion.Order.asc(order.getFieldName()).ignoreCase());
         } else {
-            return criteria.addOrder(org.hibernate.criterion.Order.desc(order.getFieldName()));
+            return criteria.addOrder(org.hibernate.criterion.Order.desc(order.getFieldName()).ignoreCase());
         }
     }
 
