@@ -208,7 +208,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("name", "ddd");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c", false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -224,7 +224,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("name", "bbb");
 
-        fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c"));
+        fieldDefinitionName.withValidator(fieldValidatorFactory.range("a", "c", false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -240,7 +240,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("age", "11");
 
-        fieldDefinitionAge.withValidator(fieldValidatorFactory.range(null, 10));
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.range(null, 10, false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -256,7 +256,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("age", 5);
 
-        fieldDefinitionAge.withValidator(fieldValidatorFactory.range(4, null));
+        fieldDefinitionAge.withValidator(fieldValidatorFactory.range(4, null, false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -272,7 +272,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("money", "31.22");
 
-        fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(40, 50));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(40, 50, false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -288,7 +288,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("money", "31.22");
 
-        fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(30, 40));
+        fieldDefinitionMoney.withValidator(fieldValidatorFactory.range(30, 40, false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -304,7 +304,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("birthDate", "2010-01-01");
 
-        fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(new Date(), new Date()));
+        fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(new Date(), new Date(), false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -320,7 +320,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("birthDate", "2010-01-01");
 
-        fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(null, new Date()));
+        fieldDefinitionBirthDate.withValidator(fieldValidatorFactory.range(null, new Date(), false));
 
         // when
         entity = dataDefinition.save(entity);
@@ -336,7 +336,7 @@ public class ValidatorTest extends DataAccessTest {
         Entity entity = new DefaultEntity(dataDefinition.getPluginIdentifier(), dataDefinition.getName());
         entity.setField("retired", "false");
 
-        fieldDefinitionRetired.withValidator(fieldValidatorFactory.range(true, true));
+        fieldDefinitionRetired.withValidator(fieldValidatorFactory.range(true, true, false));
 
         // when
         entity = dataDefinition.save(entity);

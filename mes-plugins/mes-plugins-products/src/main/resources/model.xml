@@ -41,6 +41,7 @@
 		</belongsTo>
 		<decimal name="quantity">
 			<validatesPresence />
+			<validatesRange from="0" inclusive="false" />
 		</decimal>
 	</model>
 	<model name="instruction">
@@ -70,6 +71,7 @@
 		</belongsTo>
 		<decimal name="quantity">
 			<validatesPresence />
+			<validatesRange from="0" inclusive="false" />
 		</decimal>
 		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
 		<hasMany name="children" model="instructionBomComponent" joinField="parent" cascade="delete" />

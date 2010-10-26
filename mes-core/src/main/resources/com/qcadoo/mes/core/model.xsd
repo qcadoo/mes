@@ -70,6 +70,7 @@
 			<xs:extension base="validatesType">
 				<xs:attribute name="from" type="xs:string" />
 				<xs:attribute name="to" type="xs:string" />
+				<xs:attribute name="inclusive" type="xs:boolean" default="true" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

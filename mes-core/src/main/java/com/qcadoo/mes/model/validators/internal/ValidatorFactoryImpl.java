@@ -40,8 +40,8 @@ public final class ValidatorFactoryImpl implements ValidatorFactory {
     }
 
     @Override
-    public FieldValidator range(final Object from, final Object to) {
-        return new RangeValidator(from, to);
+    public FieldValidator range(final Object from, final Object to, final boolean inclusive) {
+        return new RangeValidator(from, to, inclusive);
     }
 
     @Override

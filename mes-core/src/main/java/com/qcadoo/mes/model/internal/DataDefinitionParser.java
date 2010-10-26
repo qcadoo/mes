@@ -256,7 +256,8 @@ public final class DataDefinitionParser {
             case VALIDATESRANGE:
                 Object from = getRangeForType(getStringAttribute(reader, "from"), type);
                 Object to = getRangeForType(getStringAttribute(reader, "to"), type);
-                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.range(from, to)));
+                boolean inclusive = getBooleanAttribute(reader, "inclusive", true);
+                fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.range(from, to, inclusive)));
                 break;
             case VALIDATESUNIQUENESS:
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.unique()));
