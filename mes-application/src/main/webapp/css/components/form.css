@@ -54,6 +54,7 @@
 	padding: 0;
 	width: 65.5%;
 	display: inline-block;
+	position: relative;
 }
 
 .component_container_form_inner {
@@ -160,6 +161,28 @@
 	height: 8px;
 	background: url(../images/error.icon.png);
 	vertical-align: baseline;
+}
+
+.login_failed {
+	width: 13px;
+	height: 8px;
+	background: url(../images/error.icon.png);
+	vertical-align: baseline;
+	position: absolute;
+	top: 25px;
+}
+
+.login_failed_message {
+	font-size: 11px;
+	font-weight: normal;
+	color: #ec1c24;
+	position: absolute;
+	left: 15px;
+	top: 23px;
+}
+
+.loginErrorMessagePanel {
+	top: 5px;
 }
 
 /** error messages **/
