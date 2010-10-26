@@ -241,7 +241,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 				if (actionObject) {
 					var func = actionObject.component[actionObject.action];
 					if (!func) {
-						QCD.error("no function in "+actionObject.component.elementName+": "+actionObject.action);
+						QCD.error("no function in "+actionObject.component.elementPath+": "+actionObject.action);
 						return;
 					}
 					this.actionIter++;
@@ -319,7 +319,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.getTranslation = function(key) {
-		return window.translationsMap[key] ? window.translationsMap[key] : "TT: "+key;
+		return window.translationsMap[key] ? window.translationsMap[key] : key;
 	}
 	var getTranslation = this.getTranslation;
 	

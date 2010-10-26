@@ -19,7 +19,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var openLookupButtonElement = $("#"+this.elementPath+"_openLookupButton");
 	
 	var labelNormal = labelElement.html();
-	var labelFocus = "<span class='focusedLabel'>enter code:</span>";
+	var labelFocus = "";
 	
 	var currentData = new Object();
 	

@@ -1,5 +1,6 @@
 package com.qcadoo.mes.view.containers;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -103,7 +104,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
     public void addContainerMessages(final Entity entity, final ViewValue<FormValue> viewValue, final Locale locale) {
         if (entity != null) {
             if (!entity.isValid()) {
-                viewValue.addErrorMessage(getTranslationService().translate("commons.validate.global.error", locale));
+                viewValue.addErrorMessage(getTranslationService().translate("core.validate.global.error", locale));
             }
             for (ErrorMessage validationError : entity.getGlobalErrors()) {
                 viewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
@@ -159,10 +160,18 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
 
     @Override
     public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
+        String messagePath = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
         if (header) {
-            String messageCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
-                    + getPath() + ".header";
-            translationsMap.put(messageCode, getTranslationService().translate(messageCode, locale));
+            translationsMap.put(messagePath + ".header", getTranslationService().translate(messagePath + ".header", locale));
+        }
+
+        String[] formMessages = new String[] { "confirmCancelMessage", "confirmDeleteMessage" };
+
+        for (String formMessage : formMessages) {
+            translationsMap.put(
+                    messagePath + "." + formMessage,
+                    getTranslationService().translate(
+                            Arrays.asList(new String[] { messagePath + "." + formMessage, "core.form." + formMessage }), locale));
         }
     }
 

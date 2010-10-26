@@ -19,5 +19,12 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 			this.input.attr('checked', false);
 		}
 	}
+	
+	this.setSelected = function(actionsPerformer, isSelected) {
+		this.input.attr('checked', isSelected);
+		if (actionsPerformer) {
+			actionsPerformer.performNext();
+		}
+	}
 
 }

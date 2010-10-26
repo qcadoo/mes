@@ -7,7 +7,7 @@ import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class RequiredOnCreateValidator implements FieldValidator {
 
-    private static final String MISSING_ERROR = "commons.validate.field.error.missing";
+    private static final String MISSING_ERROR = "core.validate.field.error.missing";
 
     private String errorMessage = MISSING_ERROR;
 

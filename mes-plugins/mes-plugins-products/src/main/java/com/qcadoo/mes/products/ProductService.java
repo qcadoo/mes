@@ -38,22 +38,32 @@ public final class ProductService {
     private SecurityService securityService;
 
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName) {
+
         if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
                 || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
                 || ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId() == null) {
             return;
         }
 
-        Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
-                ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
+        String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.materialRequirementDetailsForm.generated")
+                .getValue()).getValue().toString();
 
-        if (materialRequirement == null || !(Boolean) materialRequirement.getField("generated")) {
-            return;
+        boolean isGenerated = true;
+        if ("0".equals(generatedStringValue)) {
+            isGenerated = false;
         }
 
-        value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
-        value.lookupValue("mainWindow.materialRequirementDetailsForm.withoutSubstitutes").setEnabled(false);
-        value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
+        if (isGenerated) {
+            value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
+            value.lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents").setEnabled(false);
+            value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
+
+            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                    ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
+
+            // TODO krna method to generate files and update fileName in database
+
+        }
     }
 
     public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
@@ -87,8 +97,14 @@ public final class ProductService {
                 .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
         ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
                 .lookupValue("mainWindow.orderDetailsForm.instruction");
+        ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
+        ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
 
-        if (defaultInstructionValue == null || productValue == null) {
+        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue().equals("done")) {
+            formValue.setEnabled(false);
+        }
+
+        if (defaultInstructionValue == null || productValue == null || instructionValue == null) {
             return;
         }
 
@@ -241,7 +257,9 @@ public final class ProductService {
     public void fillMaterialRequirementDateAndWorker(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", new Date());
         entity.setField("worker", getLoginOfLoggedUser());
-        entity.setField("generated", false);
+        if (entity.getField("fileName") != null && !"".equals(entity.getField("fileName").toString().trim())) {
+            entity.setField("generated", true);
+        }
     }
 
     private boolean compareDates(final DataDefinition dataDefinition, final Entity entity, final String dateFromField,

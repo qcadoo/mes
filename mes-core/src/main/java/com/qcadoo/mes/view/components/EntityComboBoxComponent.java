@@ -2,6 +2,7 @@ package com.qcadoo.mes.view.components;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -157,6 +158,13 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
                     + getPath() + ".description";
             translationsMap.put(descriptionCode, getTranslationService().translate(descriptionCode, locale));
         }
+        translationsMap
+                .put(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                        + ".blankValue",
+                        getTranslationService().translate(
+                                Arrays.asList(new String[] {
+                                        getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                                                + getPath() + ".blankValue", "core.form.blankComboBoxValue" }), locale));
     }
 
     private BelongsToType getBelongsToType(final DataDefinition dataDefinition, final String fieldPath) {

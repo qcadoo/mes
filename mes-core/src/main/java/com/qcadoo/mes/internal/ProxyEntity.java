@@ -5,6 +5,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
@@ -174,4 +177,23 @@ public final class ProxyEntity implements Entity {
         return "EntityProxy[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + id + "]";
     }
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(23, 41).append(id).toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ProxyEntity)) {
+            return false;
+        }
+        ProxyEntity other = (ProxyEntity) obj;
+        return new EqualsBuilder().append(id, other.id).isEquals();
+    }
 }

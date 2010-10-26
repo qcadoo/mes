@@ -3,6 +3,7 @@ package com.qcadoo.mes.view;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,9 @@ import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
+import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
+import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 
 public abstract class AbstractComponent<T> implements Component<T> {
 
@@ -118,27 +122,20 @@ public abstract class AbstractComponent<T> implements Component<T> {
         Entity parentEntity = null;
         ViewValue<T> value = null;
 
-        System.out.println(" 1 ---> " + getPath() + " - " + entity);
-
         parentEntity = entity;
         if (parentEntity == null) {
             parentEntity = selectedEntities.get(getPath());
-            System.out.println(" 2.1 ---> " + getPath() + " - " + parentEntity);
         } else if (this instanceof ContainerComponent && fieldPath != null) {
             parentEntity = getFieldEntityValue(entity, fieldPath);
-            System.out.println(" 2.2 ---> " + getPath() + " - " + parentEntity);
         }
 
         if (sourceComponent != null) {
             selectedEntity = selectedEntities.get(sourceComponent.getPath());
-            System.out.println(" 3.1 ---> " + getPath() + " - " + sourceComponent.getPath() + " - " + selectedEntity);
             if (this instanceof ContainerComponent && selectedEntity != null && sourceFieldPath != null) {
                 selectedEntity = getFieldEntityValue(selectedEntity, sourceFieldPath);
-                System.out.println(" 3.2 ---> " + getPath() + " - " + selectedEntity);
             }
         } else {
             selectedEntity = parentEntity;
-            System.out.println(" 3.3 ---> " + getPath() + " - " + selectedEntity);
         }
 
         if (shouldNotBeUpdated(pathsToUpdate) && !"lookupComponent".equals(getType())) {
@@ -153,9 +150,6 @@ public abstract class AbstractComponent<T> implements Component<T> {
                 && viewValue.isIgnoreMode()) {
             return null;
         }
-
-        System.out.println(" 4 ---> " + getPath() + " - " + selectedEntity);
-        System.out.println(" 5 ---> " + getPath() + " - " + parentEntity);
 
         value = getComponentValue(selectedEntity, parentEntity, selectedEntities, (ViewValue<T>) viewValue, pathsToUpdate, locale);
 
@@ -333,6 +327,38 @@ public abstract class AbstractComponent<T> implements Component<T> {
         if (this.isContainer()) {
             AbstractContainerComponent<?> container = (AbstractContainerComponent<?>) this;
             container.updateComponentsTranslations(translationsMap, locale);
+        }
+        addRibbonTranslations(translationsMap, locale);
+    }
+
+    private void addRibbonTranslations(final Map<String, String> translationsMap, final Locale locale) {
+        if (ribbon != null) {
+            for (RibbonGroup group : ribbon.getGroups()) {
+                String path = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
+                List<String> messages = Arrays.asList(new String[] { path + ".ribbon." + group.getName(),
+                        "core.ribbon." + group.getName() });
+                String groupTranslation = translationService.translate(messages, locale);
+                translationsMap.put(path + ".ribbon." + group.getName(), groupTranslation);
+
+                for (RibbonActionItem item : group.getItems()) {
+                    addRibbonItemTranslations(translationsMap, locale, item, group.getName());
+                }
+            }
+        }
+    }
+
+    private void addRibbonItemTranslations(final Map<String, String> translationsMap, final Locale locale,
+            final RibbonActionItem item, final String ribbonPath) {
+        String path = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
+        List<String> messages = Arrays.asList(new String[] { path + ".ribbon." + ribbonPath + "." + item.getName(),
+                "core.ribbon." + ribbonPath + "." + item.getName() });
+        String groupTranslation = translationService.translate(messages, locale);
+        translationsMap.put(path + ".ribbon." + ribbonPath + "." + item.getName(), groupTranslation);
+
+        if (item instanceof RibbonComboItem) {
+            for (RibbonActionItem subitem : ((RibbonComboItem) item).getItems()) {
+                addRibbonItemTranslations(translationsMap, locale, subitem, ribbonPath + "." + item.getName());
+            }
         }
     }
 

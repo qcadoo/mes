@@ -55,7 +55,11 @@
 		window.addMessage = function(type, content) {
 			windowController.addMessage(type, content);
 		}
-	
+
+		window.translationsMap = new Object();
+		<c:forEach items="${commonTranslations}" var="translation">
+			window.translationsMap["${translation.key}"] = "${translation.value}";
+		</c:forEach>
 		</script>
 
 </head>

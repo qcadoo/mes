@@ -34,7 +34,7 @@ public final class IntegerType implements FieldType {
         try {
             return Integer.parseInt(String.valueOf(value));
         } catch (NumberFormatException e) {
-            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidNumericFormat");
+            validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidNumericFormat");
             return null;
         }
     }

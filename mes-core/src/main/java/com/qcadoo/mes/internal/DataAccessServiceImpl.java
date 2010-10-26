@@ -300,6 +300,14 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     private Criteria addOrderToCriteria(final Order order, final Criteria criteria) {
+        String[] path = order.getFieldName().split("\\.");
+
+        if (path.length > 2) {
+            throw new IllegalStateException("Cannot order using multiple assosiations - " + order.getFieldName());
+        } else if (path.length == 2 && !criteria.toString().matches(".*Subcriteria\\(" + path[0] + ":" + path[0] + "\\).*")) {
+            criteria.createAlias(path[0], path[0]);
+        }
+
         if (order.isAsc()) {
             return criteria.addOrder(org.hibernate.criterion.Order.asc(order.getFieldName()));
         } else {

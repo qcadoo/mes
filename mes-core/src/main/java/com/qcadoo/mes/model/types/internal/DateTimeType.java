@@ -40,7 +40,7 @@ public final class DateTimeType implements FieldType {
         try {
             return new SimpleDateFormat(DATE_TIME_FORMAT).parse(String.valueOf(value));
         } catch (ParseException e) {
-            validatedEntity.addError(fieldDefinition, "commons.validate.field.error.invalidDateTimeFormat");
+            validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidDateTimeFormat");
         }
         return null;
     }

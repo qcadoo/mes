@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products;
+package com.qcadoo.mes.products.print.pdf;
 
 import java.io.IOException;
 import java.util.Locale;
