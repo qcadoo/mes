@@ -31,6 +31,8 @@ public final class TranslationServiceImpl implements TranslationService {
 
     private static final Set<String> SECURITY_MESSAGES = new HashSet<String>();
 
+    private static final Set<String> DASHBOARD_MESSAGES = new HashSet<String>();
+
     private static final boolean DISPLAY_MISSING_TRANSLATIONS = true;
 
     @Autowired
@@ -96,6 +98,15 @@ public final class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
+    public Map<String, String> getDashboardMessages(final Locale locale) {
+        Map<String, String> dashboardTranslations = new HashMap<String, String>();
+        for (String loginMessage : DASHBOARD_MESSAGES) {
+            dashboardTranslations.put(loginMessage, translate(loginMessage, locale));
+        }
+        return dashboardTranslations;
+    }
+
+    @Override
     public String getEntityFieldMessageCode(final DataDefinition dataDefinition, final String fieldName) {
         return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName + ".label";
     }
@@ -103,6 +114,7 @@ public final class TranslationServiceImpl implements TranslationService {
     public void init() {
         getMessagesByPrefix("commons", COMMONS_MESSAGES);
         getMessagesByPrefix("security", SECURITY_MESSAGES);
+        getMessagesByPrefix("core.dashboard", DASHBOARD_MESSAGES);
     }
 
     private void getMessagesByPrefix(final String prefix, final Set<String> messages) {

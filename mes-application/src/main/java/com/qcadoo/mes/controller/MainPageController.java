@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 
@@ -21,6 +22,9 @@ public final class MainPageController {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private SecurityService securityService;
 
     @RequestMapping(value = "mainPage", method = RequestMethod.GET)
     public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
@@ -44,8 +48,12 @@ public final class MainPageController {
     @RequestMapping(value = "homePage", method = RequestMethod.GET)
     public ModelAndView getHomePageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
+
+        mav.addObject("userLogin", securityService.getCurrentUser().getUserName());
+
+        mav.addObject("translationsMap", translationService.getDashboardMessages(locale));
+
         mav.setViewName("dashboard");
         return mav;
     }
-
 }
