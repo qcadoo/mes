@@ -8,6 +8,7 @@ body {
 #contentWrapper {
 	width: 600px;
 	margin: auto;
+	margin-top: 20px;
 }
 
 #messagePanel {
@@ -155,29 +156,4 @@ body {
 	background-repeat: no-repeat;
 	margin-top: 6px;
 	margin-bottom: 16px;
-}
-
-.errorBox {
-	color: red;	
-	margin-bottom: 10px;
-	margin-top: 10px;
-	text-align: center;
-}
-
-.successBox {
-	color: green;
-	margin-bottom: 10px;
-	text-align: center;
-}
-
-.errorMessageHeader {
-	color: red;	
-	margin: 20px;
-	font-weight: bold;
-	font-size: large;
-}
-
-.errorMessageContent {
-	margin: 10px;
-	width: 500px;
 }

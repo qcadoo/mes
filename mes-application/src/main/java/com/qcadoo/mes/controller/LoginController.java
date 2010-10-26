@@ -30,13 +30,17 @@ public final class LoginController {
         mav.addObject("iframe", iframe);
 
         if (logout) {
-            mav.addObject("successMessage", "security.message.logout");
-        } else if (timeout) {
-            mav.addObject("errorMessage", "security.message.timeout");
+            mav.addObject("messageType", "success");
+            mav.addObject("messageHeader", "security.message.logoutHeader");
+            mav.addObject("messageContent", "security.message.logoutContent");
+        } else if (timeout || iframe) {
+            mav.addObject("messageType", "info");
+            mav.addObject("messageHeader", "security.message.timeoutHeader");
+            mav.addObject("messageContent", "security.message.timeoutContent");
         } else if (loginError != null) {
-            mav.addObject("errorMessage", "security.message.error");
-        } else if (iframe) {
-            mav.addObject("errorMessage", "security.message.timeout");
+            mav.addObject("messageType", "error");
+            mav.addObject("messageHeader", "security.message.errorHeader");
+            mav.addObject("messageContent", "security.message.errorContent");
         }
 
         return mav;

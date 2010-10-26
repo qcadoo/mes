@@ -14,33 +14,35 @@
 		
 	<script type="text/javascript">
 
-		var successMessage;
-		var errorMessage;
+		var serverMessageType;
+		var serverMessageHeader;
+		var serverMessageContent;
 
 		var messagePanel;
 		var messagePanelHeader;
 		var messagePanelContent;
+
+		var wrongLoginText = '${translation["security.message.wrongLogin"]}';
+		var wrongPasswordText = '${translation["security.message.wrongPassword"]}';
+
+		var errorHeaderText = '${translation["security.message.errorHeader"]}';
+		var errorContentText = '${translation["security.message.errorContent"]}';
 	
-		<c:if test="${translation[successMessage] != null }">
-			successMessage = '<c:out value="${translation[successMessage]}"/>';
+		<c:if test="${messageType != null }">
+			serverMessageType = '<c:out value="${messageType}"/>';
+			serverMessageHeader = '<c:out value="${translation[messageHeader]}"/>';
+			serverMessageContent = '<c:out value="${translation[messageContent]}"/>';
 		</c:if>
-		<c:if test="${translation[errorMessage] != null }">
-			errorMessage = '<c:out value="${translation[errorMessage]}"/>';
-		</c:if>
-	
+
 		jQuery(document).ready(function(){
 
 			messagePanel = $("#messagePanel");
 			messagePanelHeader = $("#messageHeader");
 			messagePanelContent = $("#messageContent");
 			
-			if (successMessage) {
-				showMessageBox("success", "aa", successMessage);
+			if (serverMessageType) {
+				showMessageBox(serverMessageType, serverMessageHeader, serverMessageContent);
 			}
-			if (errorMessage) {
-				showMessageBox("info", "aa", errorMessage);
-			}
-	
 			
 			$("#languageSelect").val("${currentLanguage}");
 			$("#usernameInput").focus();
@@ -83,17 +85,17 @@
 					} else {
 						if (response == "loginUnsuccessfull:login") {
 							hideMessageBox();
-							alert("login"); // TODO mady - add login error label
+							alert(wrongLoginText); // TODO mady - add login error label
 						} else if (response == "loginUnsuccessfull:password") {
 							hideMessageBox();
-							alert("password"); // TODO mady - add pessword error label
+							alert(wrongPasswordText); // TODO mady - add pessword error label
 						} else {
-							showMessageBox("error", "aa", "bbb");
+							showMessageBox("error", errorHeaderText, errorContentText);
 						} 
 					}
 				},
 				error: function(xhr, textStatus, errorThrown){
-					showMessageBox("error", "aa", errorMessage);
+					showMessageBox("error", errorHeaderText, errorMessage);
 				}
 
 			});
@@ -127,7 +129,7 @@
 		<div id="loginContentWrapper">
 		
 			<div id="loginHeader">
-				Logowanie do systemu
+				${translation["security.form.header"]}
 				<c:if test="${! iframe}">
 					<div id="languageDiv">
 				 		<select id="languageSelect" onchange="changeLanguage(this.value)">
@@ -161,7 +163,7 @@
 						</div>
 					</div>
 			 		<div id="rememberMeRow">
-			 			<label></label><input id="rememberMeCheckbox" type="checkbox" name="_spring_security_remember_me" /><label id="rememberMeLabel">Zapamiętaj mnie na tym komputerze</label>
+			 			<label></label><input id="rememberMeCheckbox" type="checkbox" name="_spring_security_remember_me" /><label id="rememberMeLabel">${translation["security.form.label.rememberMe"]}</label>
 			 		</div>
 					<div id="loginButtonWrapper">
 			 			<!--<input type="submit" value="${translation['security.form.button.logIn']}" onclick="ajaxLogin(); return false;" />-->
