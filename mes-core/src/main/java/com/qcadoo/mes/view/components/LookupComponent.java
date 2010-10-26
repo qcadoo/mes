@@ -170,8 +170,8 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
         ViewValue<LookupData> newViewValue = new ViewValue<LookupData>(lookupData);
 
         if (error) {
-            newViewValue.addErrorMessage(getTranslationService().translate("commons.validate.field.error.lookupCodeNotFound",
-                    locale));
+            newViewValue.addErrorMessage(getTranslationService()
+                    .translate("core.validate.field.error.lookupCodeNotFound", locale));
         }
 
         FieldDefinition fieldDefinition = getFieldDefinition();

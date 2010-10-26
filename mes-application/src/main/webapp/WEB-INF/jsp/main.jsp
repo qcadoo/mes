@@ -60,7 +60,11 @@
 			windowController.goToMenuPosition(position);
 		}
 	
-		</script>
+		window.translationsMap = new Object();
+		<c:forEach items="${commonTranslations}" var="translation">
+			window.translationsMap["${translation.key}"] = "${translation.value}";
+		</c:forEach>
+	</script>
 
 </head>
 <body>

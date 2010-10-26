@@ -16,7 +16,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		mainController.setWindowHeaderComponent(_this);
 		_this.constructChildren(childrenElement.children());
 		if (_this.options.ribbon) {
-			ribbon = new QCD.components.Ribbon(_this.options.ribbon, mainController);
+			ribbon = new QCD.components.Ribbon(_this.options.ribbon, elementName, mainController);
 			var ribbonElement = ribbon.constructElement();
 			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
 			ribbonDiv.append(ribbonElement);

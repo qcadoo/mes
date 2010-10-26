@@ -59,7 +59,7 @@ public class ValidatorTest extends DataAccessTest {
         verify(session, never()).save(any(SampleSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
         assertEquals(1, entity.getErrors().size());
-        assertEquals("commons.validate.field.error.missing", entity.getError("age").getMessage());
+        assertEquals("core.validate.field.error.missing", entity.getError("age").getMessage());
         assertEquals(0, entity.getGlobalErrors().size());
     }
 
@@ -565,7 +565,7 @@ public class ValidatorTest extends DataAccessTest {
         verify(session, never()).save(any(SampleSimpleDatabaseObject.class));
         assertFalse(entity.isValid());
         assertEquals(1, entity.getErrors().size());
-        assertEquals("commons.validate.field.error.custom", entity.getError("name").getMessage());
+        assertEquals("core.validate.field.error.custom", entity.getError("name").getMessage());
         assertEquals(0, entity.getGlobalErrors().size());
     }
 

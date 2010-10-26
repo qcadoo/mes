@@ -36,7 +36,7 @@ public final class ExpressionUtil {
     }
 
     @Autowired
-    public void setTranslationService(TranslationService translationService) {
+    public void setTranslationService(final TranslationService translationService) {
         ExpressionUtil.translationService = translationService;
     }
 
@@ -103,9 +103,9 @@ public final class ExpressionUtil {
             value = columnDefinition.getFields().get(0).getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
             if (columnDefinition.getFields().get(0).getType() instanceof BooleanType) {
                 if ("0".equals(value)) {
-                    value = translationService.translate("commons.grid.value.false", locale);
+                    value = translationService.translate("commons.false", locale);
                 } else {
-                    value = translationService.translate("commons.grid.value.true", locale);
+                    value = translationService.translate("commons.true", locale);
                 }
             }
         } else {

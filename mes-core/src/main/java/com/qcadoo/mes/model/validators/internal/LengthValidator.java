@@ -9,7 +9,7 @@ import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class LengthValidator implements FieldValidator {
 
-    private static final String INVALID_LENGTH_ERROR = "commons.validate.field.error.invalidLength";
+    private static final String INVALID_LENGTH_ERROR = "core.validate.field.error.invalidLength";
 
     private final Integer max;
 

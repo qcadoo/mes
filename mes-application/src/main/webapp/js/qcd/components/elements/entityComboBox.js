@@ -35,7 +35,8 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 		
 		if(data.values != null) {
 			this.input.children().remove();
-			this.input.append("<option value=''></option>");
+			var blankValue = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".blankValue";
+			this.input.append("<option value=''>"+mainController.getTranslation(blankValue)+"</option>");
 			for (var i in data.values) {
 				var value = data.values[i];
 				this.input.append("<option value='"+i+"'>"+value+"</option>");

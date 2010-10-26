@@ -1,6 +1,7 @@
 package com.qcadoo.mes.api;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -19,6 +20,6 @@ public interface ViewDefinitionService {
 
     void delete(String pluginIdentifier, String viewName);
 
-    MenuDefinition getMenu();
+    MenuDefinition getMenu(Locale locale);
 
 }

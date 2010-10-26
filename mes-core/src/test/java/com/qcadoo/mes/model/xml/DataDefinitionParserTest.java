@@ -228,7 +228,7 @@ public class DataDefinitionParserTest {
         assertThat(validators.get(0), instanceOf(RequiredValidator.class));
         assertEquals("Error Message", getField(validators.get(0), "errorMessage"));
         assertThat(validators.get(1), instanceOf(RequiredOnCreateValidator.class));
-        assertEquals("commons.validate.field.error.missing", getField(validators.get(1), "errorMessage"));
+        assertEquals("core.validate.field.error.missing", getField(validators.get(1), "errorMessage"));
         assertThat(validators.get(2), instanceOf(UniqueValidator.class));
         assertThat(validators.get(3), instanceOf(CustomValidator.class));
         testHookDefinition(validators.get(3), "validateHook", CustomEntityService.class, "validateField");

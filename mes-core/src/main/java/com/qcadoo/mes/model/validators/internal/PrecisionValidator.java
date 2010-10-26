@@ -9,7 +9,7 @@ import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class PrecisionValidator implements FieldValidator {
 
-    private static final String INVALID_PRECISION_ERROR = "commons.validate.field.error.invalidPrecision";
+    private static final String INVALID_PRECISION_ERROR = "core.validate.field.error.invalidPrecision";
 
     private final Integer max;
 

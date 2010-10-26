@@ -115,7 +115,7 @@ public final class DefaultEntity implements Entity {
         }
         DefaultEntity other = (DefaultEntity) obj;
         return new EqualsBuilder().append(id, other.id).append(name, other.name).append(pluginIdentifier, other.pluginIdentifier)
-                .append(fields, other.fields).append(fields, other.fields).append(globalErrors, this.globalErrors).isEquals();
+                .append(fields, other.fields).append(globalErrors, other.globalErrors).append(errors, this.errors).isEquals();
     }
 
     @Override
