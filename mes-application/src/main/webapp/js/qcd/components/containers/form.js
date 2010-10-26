@@ -93,6 +93,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		mainController.performCallUpdateFunction(functionTriggerName, actionsPerformer);
 	}
 	
+	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
+		if (formValue && formValue.id) {
+			mainController.performCallFunction(functionName, additionalAttribute, formValue.id, actionsPerformer);
+		} else {
+			entityWithoutIdentifier = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".entityWithoutIdentifier";
+			mainController.showMessage("error", mainController.getTranslation(entityWithoutIdentifier)); 
+		}
+	}
+	
 	this.updateSize = function(_width, _height) {
 		width = _width - 40;
 		if(width > 1380) {
