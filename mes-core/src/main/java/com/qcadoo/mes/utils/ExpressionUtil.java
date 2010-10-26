@@ -37,6 +37,10 @@ public final class ExpressionUtil {
 
     @Autowired
     public void setTranslationService(final TranslationService translationService) {
+        ExpressionUtil.setStaticTranslationService(translationService);
+    }
+
+    private static void setStaticTranslationService(final TranslationService translationService) {
         ExpressionUtil.translationService = translationService;
     }
 

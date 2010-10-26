@@ -79,7 +79,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 			this.setFormComponentEnabled(isEnabled);
 		}
 	}
-
+	
 	function setComponentRequired(isRequired) {
 		if (isRequired) {
 			component.addClass("required");
