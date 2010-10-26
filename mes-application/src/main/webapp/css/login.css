@@ -1,11 +1,124 @@
+body {
+	background: #9B9B9B;
+	font-family:Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+#loginContentWrapper {
+	background-color: #ffffff;
+	width: 600px;
+	margin: auto;
+	border: solid #777 1px;
+}
+
+#loginContentWrapper #loginHeader {
+	background-color: #EBEBEB;
+	border-bottom: solid #999 1px;
+	height: 35px;
+	line-height: 35px;
+	padding-left: 20px;
+	font-size: 15px;
+	color: #666;
+}
+
+#loginContentWrapper #loginHeader #languageDiv {
+	float: right;
+	margin-right: 10px;
+	margin-top: 8px;
+}
+
+#loginForm {
+	margin: auto;
+	width: 400px;
+}
+#loginForm > div {
+	margin-top: 20px;
+}
+#loginForm div label {
+	display: inline-block;
+	width: 130px;
+	text-align: right;
+	padding-right: 20px;
+	font-size: 12px;
+	font-weight: bold;
+}
+#loginForm div .component_container_form_w {
+	width: 180px;
+	margin-top: 0;
+}
+#loginForm div input[type='text'],
+#loginForm div input[type='password'] {
+	border-spacing: 0;
+  	margin: 0;
+  	space: 0;
+	color: #464646;
+	height: 22px;
+	width: 100%;
+	max-width: 100%;
+	font: 11px arial;
+	vertical-align: middle;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-boder-radius: 0;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	border: 1px solid #959595;	
+	background: transparent url(images/form/input_c_transparent.png) no-repeat 0 0;
+	padding-left: 6px;
+}
+
+#loginForm div input#rememberMeCheckbox {
+	margin-left: 150px;
+}
+#loginForm div label#rememberMeLabel {
+	font-size: 12px;
+	font-weight: normal;
+	width: 200px;
+}
+
+#loginForm #loginButtonWrapper #loginButton {
+	margin: auto;
+	display: block;
+	width: 108px;
+	height: 41px;
+	background-color: red;
+	background-image: url('images/login/loginButton.png');
+	background-repeat: no-repeat;
+}
+#loginForm #loginButtonWrapper #loginButton:hover {
+	
+}
+
+
+#loginContentWrapper #loginFooter #loginFooterLine {
+	width: 589px;
+	height: 26px;
+	margin: auto;
+	background-image: url('images/login/loginScreenLine.png');
+	background-repeat: no-repeat;
+	//background: red;
+}
+#loginContentWrapper #loginFooter #loginFooterLogo {
+	width: 100px;
+	height: 40px;
+	margin: auto;
+	background-image: url('images/logo_small.png');
+	background-repeat: no-repeat;
+}
+
 .errorBox {
 	color: red;	
 	margin-bottom: 10px;
+	margin-top: 10px;
+	text-align: center;
 }
 
 .successBox {
 	color: green;
-	margin-bottom: 10px;	
+	margin-bottom: 10px;
+	text-align: center;
 }
 
 .errorMessageHeader {

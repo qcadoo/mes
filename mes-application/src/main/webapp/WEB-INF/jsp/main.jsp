@@ -55,6 +55,10 @@
 		window.addMessage = function(type, content) {
 			windowController.addMessage(type, content);
 		}
+
+		window.goToMenuPosition = function(position) {
+			windowController.goToMenuPosition(position);
+		}
 	
 		</script>
 

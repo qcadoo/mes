@@ -6,6 +6,7 @@
 <head>
 	
 	<link rel="stylesheet" href="css/login.css" type="text/css" />
+	<link rel="stylesheet" href="css/components/form.css" type="text/css" />
 	
 	<script type="text/javascript" src="js/lib/jquery-1.4.2.min.js"></script>
 	
@@ -16,6 +17,18 @@
 		jQuery(document).ready(function(){
 			$("#languageSelect").val("${currentLanguage}");
 			$("#usernameInput").focus();
+			$("#usernameInput").keypress(function(e) {
+				var key=e.keyCode || e.which;
+				if (key==13) {
+					ajaxLogin();
+				}
+			});
+			$("#passwordInput").keypress(function(e) {
+				var key=e.keyCode || e.which;
+				if (key==13) {
+					ajaxLogin();
+				}
+			});
 		});
 	
 		changeLanguage = function(language) {
@@ -25,8 +38,8 @@
 		ajaxLogin = function() {
 			var formData = QCDSerializator.serializeForm($("#loginForm"));
 			var url = "j_spring_security_check";
-			$(".errorBox").hide();
-			$(".successBox").hide();
+			//$(".errorBox").hide();
+			//$(".successBox").hide();
 			$.ajax({
 				url: url,
 				type: 'POST',
@@ -41,6 +54,7 @@
 							window.location = "main.html"
 						}
 					} else {
+						$(".successBox").hide();
 						showLoginError(response);
 					}
 				},
@@ -59,36 +73,63 @@
 	
 </head>
 <body>
-	<c:if test="${! iframe}">
-		<div><img src="css/images/global.logo.png"></img></div>
-	</c:if>
-	
-	<div class="errorBox">
-		<c:out value="${translation[errorMessage]}"/>
-	</div>
-	
- 	<div class="successBox">
-		<c:out value="${translation[successMessage]}"/>
-	</div>
 
-	<c:if test="${! iframe}">
-		<div class="langiageDiv">
-			${translation["security.form.label.language"]}
-	 		<select id="languageSelect" onchange="changeLanguage(this.value)">
-	 			<option value="pl">polski</option>
-	 			<option value="en">english</option>
-	 		</select>
-	 	</div>
- 	</c:if>
- 		
-	<form id="loginForm" name="loginForm" action="<c:url value='j_spring_security_check'/>" method="POST">
- 		<table>
-        	<tr><td>${translation["security.form.label.login"]}</td><td><input type='text' id="usernameInput" name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
- 	       <tr><td>${translation["security.form.label.password"]}</td><td><input type='password' name='j_password'></td></tr>
-		</table>
-		<div>
- 			<input type="submit" value="${translation['security.form.button.logIn']}" onclick="ajaxLogin(); return false;" />
+	<div id="loginContentWrapper">
+	
+		<div id="loginHeader">
+			Logowanie do systemu
+			<c:if test="${! iframe}">
+				<div id="languageDiv">
+			 		<select id="languageSelect" onchange="changeLanguage(this.value)">
+			 			<option value="pl">polski</option>
+			 			<option value="en">english</option>
+			 		</select>
+			 	</div>
+		 	</c:if>
 		</div>
-    </form>
+		
+		<div class="errorBox">
+			<c:out value="${translation[errorMessage]}"/>
+		</div>
+		
+	 	<div class="successBox">
+			<c:out value="${translation[successMessage]}"/>
+		</div>
+
+		<div id="loginFormWrapper">
+			<form id="loginForm" name="loginForm" action="<c:url value='j_spring_security_check'/>" method="POST">
+		 		<div>
+		 			<label>${translation["security.form.label.login"]}</label>
+		 			<div class="component_container_form_w">
+						<div class="component_container_form_inner">
+							<div class="component_container_form_x"></div>
+							<div class="component_container_form_y"></div>
+		 					<input type='text' id="usernameInput" name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/>
+			 			</div>
+					</div>
+		 		</div>
+		 		<div>
+		 			<label>${translation["security.form.label.password"]}</label>
+		 			<div class="component_container_form_w">
+						<div class="component_container_form_inner">
+							<div class="component_container_form_x"></div>
+							<div class="component_container_form_y"></div>
+							<input type='password' id="passwordInput" name='j_password'>
+						</div>
+					</div>
+				</div>
+		 		<div><input id="rememberMeCheckbox" type="checkbox" name="" /><label id="rememberMeLabel">Zapamiętaj mnie na tym komputerze</label></div>
+				<div id="loginButtonWrapper">
+		 			<!--<input type="submit" value="${translation['security.form.button.logIn']}" onclick="ajaxLogin(); return false;" />-->
+		 			<a href="#" id="loginButton" onclick="ajaxLogin(); return false;"></a>
+				</div>
+		    </form>
+	 	</div>
+ 
+ 		<div id="loginFooter">
+			<div id="loginFooterLine"></div>
+			<div id="loginFooterLogo"></div>
+		</div>
+ 	</div>
 </body>
 </html>

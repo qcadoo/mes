@@ -46,7 +46,7 @@ public final class MainPageController {
     @RequestMapping(value = "homePage", method = RequestMethod.GET)
     public ModelAndView getHomePageView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("testPage");
+        mav.setViewName("dashboard");
         return mav;
     }
 

@@ -1,0 +1,179 @@
+ html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+	background-color: #ababab;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+#dashboardContentWrapper {
+	width: 940px;
+	background-image: url('../images/dashboard/logo_text_smaller.png');
+	//background-image: url('../images/dashboard/dashboardTest.png');
+	background-position: right 30px;
+	//background-position: -35px top;
+	background-repeat: no-repeat;
+	margin: auto;
+	//border: solid white 1px;
+}
+
+#dashboardContentWrapper #userElement {
+	color: #6a6a6a;
+	font-size: 11px;
+	margin-left: 10px;
+}
+
+#dashboardContentWrapper #userElement #userLogin {
+	font-weight: bold;
+}
+
+#dashboardContentWrapper #descriptionElement {
+	width: 600px;
+	height: 130px;
+	color: white;
+	overflow: hidden;
+	margin-top: 23px;
+	margin-left: 10px;
+}
+
+#dashboardContentWrapper #descriptionElement #descriptionHeader {
+	font-size: 23px;	
+}
+
+#dashboardContentWrapper #descriptionElement #descriptionContent {
+	margin-top: 15px;
+	
+}
+
+#dashboardContentWrapper #buttonsElement {
+	margin-top: 20px;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton {
+	display: inline-block;
+	width: 305px;
+	margin-left: 5px;
+	margin-right: 0px;
+	vertical-align: middle;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_Top,
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_Bottom {
+	height: 10px;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_Middle {
+	height: 140px;
+	width: 100%;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_W ,
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_E{
+	display: inline-block;
+	width: 10px;
+	height: 100%;
+	vertical-align: middle;
+	background-repeat: repeat-y;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_NW,
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_SW {
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_N,
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_S {
+	width: 285px;
+	height: 10px;
+	display: inline-block;
+	background-repeat: repeat-x;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_NE,
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_SE {
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_N {
+	background-image: url('../images/dashboard/bg_N.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_S {
+	background-image: url('../images/dashboard/bg_S.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_W {
+	background-image: url('../images/dashboard/bg_W.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_E {
+	background-image: url('../images/dashboard/bg_E.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_NW {
+	background-image: url('../images/dashboard/bg_NW.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_SW {
+	background-image: url('../images/dashboard/bg_SW.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_NE {
+	background-image: url('../images/dashboard/bg_NE.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonBg_SE {
+	background-image: url('../images/dashboard/bg_SE.png');
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon {
+	display: inline-block;
+	width: 65px;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+	background-position: 3px 15px;
+	background-repeat: no-repeat;
+	background-color: #F8F8F8;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon1 {
+	background-image: url('../images/dashboard/icon1.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon2 {
+	background-image: url('../images/dashboard/icon2.png');
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon3 {
+	background-image: url('../images/dashboard/icon3.png');
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent {
+	display: inline-block;
+	width: 210px;
+	padding-right: 10px;
+	height: 100%;
+	vertical-align: middle;
+	background-color: #F8F8F8;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentHeader {
+	color: #FF9A29;
+	margin-top: 15px;
+	padding-bottom: 8px;
+	font-size: 20px;
+	border-bottom: solid #b1b1b1 1px;
+	width: 200px;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentText {
+	margin-top: 10px;
+	font-size: 11px;
+	color: #818181;
+	height: 45px;
+}
+
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentLink {
+	margin-top: 5px;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentLink a {
+	font-size: 11px;
+	text-decoration: none;
+	color: #549BD8;
+}
+#dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent .dashboardButtonContentLink a:hover {
+	text-decoration: underline;
+}
