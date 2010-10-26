@@ -1,14 +1,28 @@
-body {
+html, body {
 	background: #9B9B9B;
 	font-family:Arial, Helvetica, sans-serif;
 	margin: 0;
 	padding: 0;
+	height: 100%;
+}
+
+#contentWrapperOuter {
+	display: table;
+	position: static;
+	height: 100%;
+	width: 100%;
+}
+
+#contentWrapperMiddle {
+	display: table-cell;
+	vertical-align: middle;
+	width: 100%;
 }
 
 #contentWrapper {
+	clear: both;
 	width: 600px;
 	margin: auto;
-	margin-top: 20px;
 }
 
 #messagePanel {

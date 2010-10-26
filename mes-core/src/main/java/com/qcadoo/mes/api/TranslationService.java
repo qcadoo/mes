@@ -13,6 +13,8 @@ public interface TranslationService {
 
     Map<String, String> getSecurityMessages(Locale locale);
 
+    Map<String, String> getDashboardMessages(final Locale locale);
+
     String translate(final String messageCode, final Locale locale, final Object... args);
 
     String translate(final List<String> messageCodes, final Locale locale, final Object... args);
