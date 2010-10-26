@@ -233,7 +233,6 @@
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
-				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />
 				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="textarea" name="description" field="description">
@@ -246,6 +245,7 @@
 				<option type="height" value="200" />
 				<option type="width" value="500" />
 				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #quantity + ' x &lt;/span&gt;' + #product['name']" />
+				<option type="rootExpression" value="#number" />
 				<option type="correspondingView" value="products/instructionComponentDetailsView" />
 			</component>
 		</component>
@@ -383,7 +383,7 @@
 				<component type="input" name="endWorker" field="endWorker"
 					enabled="false" />
 				<option type="header" value="false" />
-				<option type="expression" value="#name + ' (' + #state +  ')'" />
+				<option type="expression" value="#name + ' - ' + #number + ' (' + #state +  ')'" />
 			</component>
 		</component>
 		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />

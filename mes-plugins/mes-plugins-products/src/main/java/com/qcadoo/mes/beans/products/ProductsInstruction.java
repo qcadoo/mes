@@ -37,9 +37,6 @@ public class ProductsInstruction {
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsProduct product;
 
-    @Column(nullable = false)
-    private String typeOfMaterial;
-
     private String description;
 
     private Boolean master;
@@ -97,14 +94,6 @@ public class ProductsInstruction {
         this.product = product;
     }
 
-    public String getTypeOfMaterial() {
-        return typeOfMaterial;
-    }
-
-    public void setTypeOfMaterial(final String typeOfMaterial) {
-        this.typeOfMaterial = typeOfMaterial;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -133,7 +122,7 @@ public class ProductsInstruction {
         return bomComponents;
     }
 
-    public void setBomComponents(List<ProductsInstructionBomComponent> bomComponents) {
+    public void setBomComponents(final List<ProductsInstructionBomComponent> bomComponents) {
         this.bomComponents = bomComponents;
     }
 
