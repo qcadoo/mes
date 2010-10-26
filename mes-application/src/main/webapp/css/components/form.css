@@ -288,3 +288,6 @@
 	cursor: pointer;
 }
 
+.component_container_form .datepick-trigger.disabled {
+	display: none;
+}

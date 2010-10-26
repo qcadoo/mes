@@ -92,6 +92,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	function updateData() {
 		loadingElement.hide();
 		if (! currentData.isError) {
+			element.removeClass("error");
 			valueDivElement.html(currentData.selectedEntityValue);
 			valueDivElement.attr('title', currentData.selectedEntityValue);
 			inputElement.attr('title', currentData.selectedEntityValue);
@@ -117,7 +118,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		isFocused = false;
 		var newCode = $.trim(inputElement.val());
 		if (newCode != currentData.selectedEntityCode) {
-			QCD.info("lalala");
 			currentData.selectedEntityCode = $.trim(inputElement.val());
 			currentData.selectedEntityValue = null;
 			currentData.selectedEntityId = null;

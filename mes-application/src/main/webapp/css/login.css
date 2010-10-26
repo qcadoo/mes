@@ -5,21 +5,58 @@ body {
 	padding: 0;
 }
 
-#loginContentWrapper {
-	background-color: #ffffff;
+#contentWrapper {
 	width: 600px;
 	margin: auto;
+	margin-top: 20px;
+}
+
+#messagePanel {
+	height: 45px;
+	margin-bottom: 10px;
+	border: solid black 1px;
+	background-color: white;
+	font-size: 12px;
+	padding-left: 10px;
+}
+#messagePanel #messageHeader {
+	font-weight: bold;
+	margin-top: 8px;
+}
+#messagePanel #messageContent {
+	
+}
+#messagePanel.success {
+	border-color: #2aaa00;
+	background-color: #e6ffe2;
+	color: #2aaa00;
+}
+#messagePanel.info {
+	border-color: #ff9d00;
+	background-color: #fff2c8;
+	color: #ff9d00;
+}
+#messagePanel.error {
+	border-color: #ec1c24;
+	background-color: #ffe2e2;
+	color: #ec1c24;
+}
+
+#loginContentWrapper {
+	background-color: white;
 	border: solid #777 1px;
 }
 
 #loginContentWrapper #loginHeader {
-	background-color: #EBEBEB;
-	border-bottom: solid #999 1px;
+	background-color: #ebebeb;
+	border-bottom: solid #a7a7a7 1px;
 	height: 35px;
 	line-height: 35px;
 	padding-left: 20px;
-	font-size: 15px;
-	color: #666;
+	font-size: 14px;
+	font-weight: bold;
+	color: #7d7d7d;
+	margin-bottom: 30px;
 }
 
 #loginContentWrapper #loginHeader #languageDiv {
@@ -40,7 +77,7 @@ body {
 	width: 130px;
 	text-align: right;
 	padding-right: 20px;
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: bold;
 }
 #loginForm div .component_container_form_w {
@@ -69,66 +106,54 @@ body {
 	padding-left: 6px;
 }
 
+#loginForm div#rememberMeRow {
+	margin-top: 10px;
+}
+
 #loginForm div input#rememberMeCheckbox {
-	margin-left: 150px;
+	//margin-left: 150px;
+	margin-left: 3px;
 }
 #loginForm div label#rememberMeLabel {
-	font-size: 12px;
 	font-weight: normal;
+	text-align: left;
+	margin-left: 3px;
 	width: 200px;
 }
 
 #loginForm #loginButtonWrapper #loginButton {
 	margin: auto;
 	display: block;
-	width: 108px;
-	height: 41px;
-	background-color: red;
+	width: 103px;
+	height: 37px;
 	background-image: url('images/login/loginButton.png');
 	background-repeat: no-repeat;
+	text-decoration: none;
 }
 #loginForm #loginButtonWrapper #loginButton:hover {
-	
+	background-position: 0 -37px;
 }
-
+#loginForm #loginButtonWrapper #loginButton span {
+	line-height: 37px;
+	color: white;
+	text-decoraton: none;
+	margin-left: 40px;
+	font-size: 14px;
+}
 
 #loginContentWrapper #loginFooter #loginFooterLine {
-	width: 589px;
-	height: 26px;
+	width: 571px;
+	height: 10px;
 	margin: auto;
-	background-image: url('images/login/loginScreenLine.png');
+	background-image: url('images/login/cien.png');
 	background-repeat: no-repeat;
-	//background: red;
 }
 #loginContentWrapper #loginFooter #loginFooterLogo {
-	width: 100px;
-	height: 40px;
+	width: 81px;
+	height: 24px;
 	margin: auto;
-	background-image: url('images/logo_small.png');
+	background-image: url('images/login/qcadoo_logo.png');
 	background-repeat: no-repeat;
-}
-
-.errorBox {
-	color: red;	
-	margin-bottom: 10px;
-	margin-top: 10px;
-	text-align: center;
-}
-
-.successBox {
-	color: green;
-	margin-bottom: 10px;
-	text-align: center;
-}
-
-.errorMessageHeader {
-	color: red;	
-	margin: 20px;
-	font-weight: bold;
-	font-size: large;
-}
-
-.errorMessageContent {
-	margin: 10px;
-	width: 500px;
+	margin-top: 6px;
+	margin-bottom: 16px;
 }

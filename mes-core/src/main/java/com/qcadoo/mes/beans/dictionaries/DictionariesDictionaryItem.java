@@ -1,5 +1,6 @@
 package com.qcadoo.mes.beans.dictionaries;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,10 +16,12 @@ public class DictionariesDictionaryItem {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     private String description;
 
+    @Column(nullable = false)
     private boolean deleted;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
