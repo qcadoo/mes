@@ -139,11 +139,7 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
 
         if (shouldNotBeUpdated(pathsToUpdate) && !"lookupComponent".equals(getType())) {
-            if (viewValue != null) {
-                setVisibleAndEnabled(selectedEntity, (ViewValue<T>) viewValue);
-            }
-
-            return (ViewValue<T>) viewValue;
+            return null;
         }
 
         if (!("dynamicComboBox".equals(getType()) || "entityComboBox".equals(getType())) && !isContainer() && viewValue != null

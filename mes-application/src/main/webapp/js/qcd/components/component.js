@@ -30,6 +30,7 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.getValue = function() {
 		var mode = updateMode;
+		updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
 		if (this.getUpdateMode) {
 			mode = this.getUpdateMode();
 		}

@@ -74,10 +74,11 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             final Locale locale) {
 
         Set<String> pathsToUpdate = null;
+
         if (triggerComponentName != null) {
             pathsToUpdate = root.lookupListeners(triggerComponentName);
             cleanSelectedEntities(selectedEntities, pathsToUpdate);
-            if (saveOrDelete) {
+            if (saveOrDelete || pathsToUpdate.isEmpty()) {
                 pathsToUpdate.add(triggerComponentName);
             }
         } else {

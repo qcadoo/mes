@@ -122,13 +122,18 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
             if (contextEntity != null) {
                 lookupData.setContextEntityId(contextEntity.getId());
             }
+
+            System.out.println(" @ " + getPath() + " - " + contextEntity);
         }
+
+        System.out.println(" @ " + getPath() + " - " + getSourceFieldPath());
 
         boolean error = false;
 
         Entity selectedEntity = null;
 
-        if (viewValue != null && viewValue.getValue() != null) {
+        if ((getSourceFieldPath() == null || lookupData.getContextEntityId() != null) && viewValue != null
+                && viewValue.getValue() != null) {
             if (viewValue.getValue().getSelectedEntityId() != null) {
                 selectedEntity = getDataDefinition().get(viewValue.getValue().getSelectedEntityId());
             } else if (StringUtils.hasText(viewValue.getValue().getSelectedEntityCode())) {
