@@ -5,6 +5,8 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.CheckBox = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 	
+	var currentValue;
+	
 	this.getComponentData = function() {
 		if (this.input.attr('checked')) {
 			return { value: "1" };
@@ -25,6 +27,14 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
+	}
+	
+	this.setCurrentValue = function(data) {
+		currentValue = this.input.attr('checked');
+	} 
+	
+	this.isChanged = function() {
+		return currentValue != this.input.attr('checked');
 	}
 
 }

@@ -339,7 +339,22 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	this.goBack = function() {
-		window.parent.goBack();
+		changed = false;
+		for (var i in pageComponents) {
+			if(pageComponents[i].isChanged()) {
+				changed = true;
+			}
+		}
+		
+		goBackConfirmation = true;
+		
+		if(changed) {
+			goBackConfirmation = window.confirm(getTranslation('commons.backWithChangesConfirmation'));
+		}
+		
+		if(goBackConfirmation) {		
+			window.parent.goBack();
+		}
 	}
 	
 	this.closeWindow = function() {
