@@ -64,7 +64,7 @@ public final class MaterialRequirementPdfService {
 
     private static final String DATE_FORMAT = "yyyy_MM_dd_HH_mm";
 
-    public void generatePdfDocument(final Entity entity) {
+    public void generateDocument(final Entity entity, final Locale locale) {
         Document document = new Document(PageSize.A4);
         try {
             SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
@@ -73,16 +73,13 @@ public final class MaterialRequirementPdfService {
             DataDefinition dataDefinition = dataDefinitionService.get("products", "materialRequirement");
             dataAccessService.save((InternalDataDefinition) dataDefinition, entity);
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
-            // Build PDF document.
             document.open();
             ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
             FontFactory.register(classPathResource.getPath());
             BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             Font font12 = new Font(baseFont, 12);
-            buildPdfContent(document, entity, null // request.getLocale()
-                    , font12);
-            buildPdfMetadata(document, null// request.getLocale()
-            );
+            buildPdfContent(document, entity, locale, font12);
+            buildPdfMetadata(document, locale);
             writer.flush(); // ?
             document.close();
         } catch (FileNotFoundException e) {
@@ -101,17 +98,16 @@ public final class MaterialRequirementPdfService {
         UsersUser user = securityService.getCurrentUser();
         document.add(new Paragraph(entity.getField("date").toString(), font));
         document.add(new Paragraph(user.getUserName(), font));
-        document.add(new Paragraph(""// translationService.translate("products.materialRequirement.report.paragrah", locale)
-                , getFontBold(font)));
+        document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah", locale),
+                getFontBold(font)));
         List<Entity> instructions = addOrderSeries(document, entity, font);
-        document.add(new Paragraph(""// translationService.translate("products.materialRequirement.report.paragrah2", locale)
-                , getFontBold(font)));
+        document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah2", locale),
+                getFontBold(font)));
         addBomSeries(document, (DefaultEntity) entity, instructions, font);
     }
 
     private void buildPdfMetadata(final Document document, final Locale locale) {
-        document.addTitle(""// translationService.translate("products.materialRequirement.report.title", locale)
-        );
+        document.addTitle(translationService.translate("products.materialRequirement.report.title", locale));
         // TODO KRNA add to properties ?
         document.addSubject("Using iText");
         document.addKeywords("Java, PDF, iText");

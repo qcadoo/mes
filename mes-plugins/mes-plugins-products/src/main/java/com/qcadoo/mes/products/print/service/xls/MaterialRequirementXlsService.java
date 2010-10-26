@@ -9,15 +9,20 @@ import java.util.Map;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.ProxyEntity;
 
 @Service
 public final class MaterialRequirementXlsService {
 
-    public void generateExcelDocument(final Entity entity) {
+    @Autowired
+    protected TranslationService translationService;
+
+    public void generateDocument(final Entity entity, final Locale locale) {
         /*
          * HSSFSheet sheet = workbook.createSheet(""//
          * translationService.translate("products.materialRequirement.report.title",request.getLocale()) ); addHeader(sheet,
@@ -27,15 +32,11 @@ public final class MaterialRequirementXlsService {
 
     private void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
-        header.createCell(0).setCellValue(""// translationService.translate("products.product.number.label", locale)
-        );
-        header.createCell(1).setCellValue(""// translationService.translate("products.product.name.label", locale)
-        );
-        header.createCell(2).setCellValue(""// translationService.translate("products.instructionBomComponent.quantity.label",
-                                            // locale)
-        );
-        header.createCell(3).setCellValue(""// translationService.translate("products.product.unit.label", locale)
-        );
+        header.createCell(0).setCellValue(translationService.translate("products.product.number.label", locale));
+        header.createCell(1).setCellValue(translationService.translate("products.product.name.label", locale));
+        header.createCell(2)
+                .setCellValue(translationService.translate("products.instructionBomComponent.quantity.label", locale));
+        header.createCell(3).setCellValue(translationService.translate("products.product.unit.label", locale));
     }
 
     private void addSeries(final HSSFSheet sheet, final Entity entity) {

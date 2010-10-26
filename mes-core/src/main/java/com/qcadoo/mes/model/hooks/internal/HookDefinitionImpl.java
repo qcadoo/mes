@@ -1,6 +1,7 @@
 package com.qcadoo.mes.model.hooks.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.slf4j.Logger;
@@ -67,8 +68,8 @@ public final class HookDefinitionImpl implements HookDefinition {
     }
 
     @Override
-    public void callWithViewValue(final ViewValue<Long> value, final String triggerComponentName) {
-        call(new Object[] { value, triggerComponentName }, new Class[] { ViewValue.class, String.class });
+    public void callWithViewValue(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
+        call(new Object[] { value, triggerComponentName, locale }, new Class[] { ViewValue.class, String.class, Locale.class });
     }
 
 }
