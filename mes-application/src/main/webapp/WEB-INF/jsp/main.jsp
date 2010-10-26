@@ -56,11 +56,15 @@
 			windowController.addMessage(type, content);
 		}
 
+		window.goToMenuPosition = function(position) {
+			windowController.goToMenuPosition(position);
+		}
+	
 		window.translationsMap = new Object();
 		<c:forEach items="${commonTranslations}" var="translation">
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
-		</script>
+	</script>
 
 </head>
 <body>
