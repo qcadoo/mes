@@ -60,7 +60,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			}
 		});
 		valueDivElement.click(function() {
-			inputElement.focus();
+			if (openLookupButtonElement.hasClass("enabled")) {
+				inputElement.focus();
+			}
 		});
 	}
 	
