@@ -443,7 +443,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
 			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 				blockGrid();
-				mainController.performDelete(elementPath, currentState.selectedEntityId, actionsPerformer);
+				mainController.performDelete(elementPath, currentState.selectedEntityId, actionsPerformer, function(response) {
+					unblockGrid();
+				});
 			}
 		} else {
 			noRowSelectedError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".noRowSelectedError";
