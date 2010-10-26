@@ -53,9 +53,6 @@
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
-		<enum name="typeOfMaterial" values="product,intermediate,component">
-			<validatesPresence />
-		</enum>
 		<boolean name="master" />
 		<date name="dateFrom" />
 		<date name="dateTo" />
