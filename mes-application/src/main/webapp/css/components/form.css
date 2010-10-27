@@ -308,6 +308,10 @@
 	padding-right: 25px;
 }
 
+.component_element_calendar button {
+	display: none;	
+}
+
 .component_container_form .calendar {
 	height: 20px;
 	width: 20px;
@@ -324,9 +328,11 @@
 	cursor: pointer;
 	background-position: 0 -20px;
 }
+
 .component_container_form .component_container_form_w:hover .calendar.enabled {
 	background-position: -40px -20px;
 }
+
 .component_container_form .component_container_form_w:hover .calendar.enabled:hover {
 	background-position: -60px -20px;
 }

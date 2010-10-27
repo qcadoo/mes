@@ -12,13 +12,6 @@
 <tiles:useAttribute name="viewName" ignore="true"/>
 <tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
-<script type="text/javascript">
-$(function() {
-	$('#${componentFullName}_input').datepick({showOnFocus: false, showTrigger: '#calendar', dateFormat: 'yyyy-mm-dd'});
-});
-
-</script>
-
 <div style="display: none;">
 	<div class="calendar" id="calendar"></div>
 </div>
@@ -33,5 +26,6 @@ $(function() {
 	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
 		<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
+		<div id="${componentFullName}_calendar" class="calendar"></div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>
