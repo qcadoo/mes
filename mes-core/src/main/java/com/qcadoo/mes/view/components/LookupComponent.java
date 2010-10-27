@@ -235,6 +235,7 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
                 getTranslationService());
         windowComponent.addRawOption(new ComponentOption("fixedHeight", ImmutableMap.of("value", "true")));
         windowComponent.addRawOption(new ComponentOption("header", ImmutableMap.of("value", "false")));
+        windowComponent.addRawOption(new ComponentOption("minWidth", ImmutableMap.of("value", "false")));
 
         GridComponent gridComponent = new GridComponent("lookupGrid", windowComponent, null, sourceFieldPath,
                 getTranslationService());

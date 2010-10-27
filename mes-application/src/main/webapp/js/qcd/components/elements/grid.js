@@ -33,7 +33,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var defaultOptions = {
 		paging: true,
-		fullScreen: false
+		fullScreen: false,
+		shrinkToFit: false
 	};
 	
 	function parseOptions(options) {
@@ -60,6 +61,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				hiddenColumnValues[column.name] = new Object();
 			}
 		}
+		
+		colNames.push("");
+		colModel.push({name:"empty", index:"empty", width:800, sortable: false});
+		
 		gridParameters.sortColumns = options.sortColumns;
 		gridParameters.element = elementPath+"_grid";
 		gridParameters.colNames = colNames;
@@ -67,6 +72,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.datatype = function(postdata) {
 			onPostDataChange(postdata);
 		}
+		gridParameters.multiselect = true;
+		gridParameters.shrinkToFit = false;
 		
 		gridParameters.listeners = options.listeners;
 		gridParameters.canNew = options.canNew;
@@ -93,9 +100,20 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 	};
 	function rowClicked(rowId) {
-		var rowIndex = grid.jqGrid('getInd', rowId);
+		if (currentState.selectedEntityId == rowId) {
+			currentState.selectedEntityId = null;
+		} else {
+			if (currentState.selectedEntityId) {
+				grid.setSelection(currentState.selectedEntityId, false);
+			}
+			currentState.selectedEntityId = rowId;
+		}
+		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
+		if (rowIndex == false) {
+			rowIndex = null;
+		}
 		headerController.onRowClicked(rowIndex);
-		currentState.selectedEntityId = rowId;
+		
 		if (gridParameters.listeners.length > 0) {
 			mainController.getUpdate(elementPath, rowId, gridParameters.listeners);
 		}
@@ -200,19 +218,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			linkClicked(entityId);
 		});
 		
-		if (currentState.selectedEntityId) {
-			grid.setSelection(currentState.selectedEntityId);
-			var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
-			if (rowIndex != false) {
-				headerController.onRowClicked(rowIndex);	
-			} else {
-				headerController.onRowClicked(null);
-			}
-		} else {
-			headerController.onRowClicked(null);
-		}
-		
 		headerController.updatePagingParameters(currentState.paging, value.totalNumberOfEntities);
+		
+		grid.setSelection(currentState.selectedEntityId, false);
+		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
+		if (rowIndex == false) {
+			rowIndex = null;
+		}
+		headerController.onRowClicked(rowIndex);
 		
 		unblockGrid();
 	}
@@ -273,6 +286,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.onSortCol = onSortColumnChange;
 		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
+		
+		$("#cb_"+gridParameters.element).hide(); // hide 'select add' checkbox
 		
 		for (var i in gridParameters.sortColumns) {
 			$("#"+elementPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");

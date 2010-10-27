@@ -68,7 +68,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.setComponentState = function(state) {
 		this.setComponentData(state);
 		setComponentRequired(state.required);
-		this.setCurrentValue(value);
+		this.setCurrentValue(state);
 	}
 	
 	this.setCurrentValue = function(data) {
