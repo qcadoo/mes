@@ -49,10 +49,11 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         Document document = new Document(PageSize.A4);
         try {
             String fileName = getFileName((Date) entity.getField("date")) + PDF_EXTENSION;
-            PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            buildPdfMetadata(document, locale);
+            writer.createXmpMetadata();
             document.open();
             buildPdfContent(document, entity, locale, prepareFont());
-            buildPdfMetadata(document, locale);
             document.close();
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
