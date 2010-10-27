@@ -70,12 +70,15 @@ public final class ProductService {
             value.lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents").setEnabled(false);
             value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
 
-            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
-                    ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
-
-            materialRequirementPdfService.generateDocument(materialRequirement, locale);
-            materialRequirementXlsService.generateDocument(materialRequirement, locale);
-
+            if ("mainWindow.materialRequirementDetailsForm".equals(triggerComponentName)) {
+                Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                        ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
+                if (materialRequirement.getField("fileName") == null
+                        || "".equals(materialRequirement.getField("fileName").toString().trim())) {
+                    materialRequirementPdfService.generateDocument(materialRequirement, locale);
+                    materialRequirementXlsService.generateDocument(materialRequirement, locale);
+                }
+            }
         }
     }
 
