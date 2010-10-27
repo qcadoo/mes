@@ -717,10 +717,13 @@ ul.ribbon_list li.activ_list a span {
 	background-repeat:repeat-x;
 }
 /* [LIST twoB] */
+ul.ribbon_list > li.twoB {
+	display: inline-block;
+}
 ul.ribbon_list > li.twoB:hover {
 	background-image:url('images/lt_twoB_c.png') !important;
 	background-repeat:repeat-x;
-}
+ }
 ul.ribbon_list li.twoB:hover > span {
 	display:block;
 	height: 23px;
