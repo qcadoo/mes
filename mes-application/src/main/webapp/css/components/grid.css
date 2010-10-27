@@ -56,13 +56,17 @@
 .gridTable .ui-jqgrid-bdiv {
 	background: #fbfbfb;
 	font-family:Tahoma, Arial, Helvetica, sans-serif;
-	
 	font-size: 12px;
 }
 .gridTable .ui-widget-content {
 	color: #555555;
 	font-family:Tahoma Bold, Tahoma, Arial, Helvetica, sans-serif;
 }
+
+.gridTable .ui-widget-content {
+	border-color: #DDDDDD;
+}
+
 .gridTable a.gridLink {
 	color: #005ec5;
 	font-size: 11px;
@@ -81,12 +85,12 @@
 }
 .gridTable .lightRow.ui-state-hover {
 	background: #cccccc;
-	border-color: #cccccc;
+	//border-color: #cccccc;
 	
 }
 .gridTable .darkRow.ui-state-hover {
 	background: #bbbbbb;
-	border-color: #bbbbbb;
+	//border-color: #987654;
 }
 .gridTable .lightRow.ui-state-highlight,
 .gridTable .darkRow.ui-state-highlight {
@@ -131,6 +135,14 @@
 	font-size: 11px;
 	color: #e8e8e8;
 	font-weight: normal;
+}
+.gridTable .ui-jqgrid-labels .ui-th-column {
+	margin: 0;
+	padding: 0;
+}
+.gridTable .ui-th-ltr {
+	margin: 0;
+	padding: 0;
 }
 .gridTable .ui-th-column:hover {
 	border-color: #bbbbbb;
@@ -185,6 +197,7 @@ div.filterButton {
 .grid_paging .component_container_form_w {
 	width: 30px;
 	margin-top: 0;
+	background: white;
 }
 .grid_paging input[type='text'] {
 	border-spacing: 0;
