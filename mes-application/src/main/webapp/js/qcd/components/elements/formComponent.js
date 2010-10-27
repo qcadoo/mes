@@ -8,7 +8,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	var mainController = _mainController;
 
 	var element = _element;
-
+	
 	var component = $("#" + element.attr('id'));
 
 	var errorIcon = $("#" + element.attr('id') + "_error_icon");
@@ -18,6 +18,8 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	var descriptionIcon = $("#" + element.attr('id') + "_description_icon");
 
 	var descriptionMessage = $("#" + element.attr('id') + "_description_message");
+	
+	var currentValue;
 	
 	this.input = $("#" + element.attr('id') + "_input");
 
@@ -41,7 +43,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	
 	this.getComponentData = function() {
 		return {
-			value : this.input.val()			
+			value : this.input.val()
 		}
 	}
 
@@ -60,11 +62,21 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.setComponentValue = function(value) {
 		this.setComponentData(value);
 		setComponentRequired(value.required);
+		this.setCurrentValue(value);
 	}
 
 	this.setComponentState = function(state) {
 		this.setComponentData(state);
 		setComponentRequired(state.required);
+		this.setCurrentValue(value);
+	}
+	
+	this.setCurrentValue = function(data) {
+		currentValue = data.value ? data.value : "";
+	} 
+	
+	this.isChanged = function() {
+		return currentValue != this.input.val();
 	}
 
 	this.setComponentEnabled = function(isEnabled) {
@@ -79,7 +91,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 			this.setFormComponentEnabled(isEnabled);
 		}
 	}
-
+	
 	function setComponentRequired(isRequired) {
 		if (isRequired) {
 			component.addClass("required");

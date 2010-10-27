@@ -139,6 +139,8 @@
 </head>
 <body>
 
+	<div id="contentWrapperOuter">
+	<div id="contentWrapperMiddle">
 	<div id="contentWrapper">
 	
 		<div id="messagePanel" style="display: none;">
@@ -194,8 +196,7 @@
 			 			<label></label><input id="rememberMeCheckbox" type="checkbox" name="_spring_security_remember_me" /><label id="rememberMeLabel">${translation["security.form.label.rememberMe"]}</label>
 			 		</div>
 					<div id="loginButtonWrapper">
-			 			<!--<input type="submit" value="${translation['security.form.button.logIn']}" onclick="ajaxLogin(); return false;" />-->
-			 			<a href="#" id="loginButton" onclick="ajaxLogin(); return false;"><span>Zaloguj</span></a>
+			 			<a href="#" id="loginButton" onclick="ajaxLogin(); return false;"><span>${translation['security.form.button.logIn']}</span></a>
 					</div>
 			    </form>
 		 	</div>
@@ -205,6 +206,8 @@
 				<div id="loginFooterLogo"></div>
 			</div>
 	 	</div>
+ 	</div>
+ 	</div>
  	</div>
 </body>
 </html>

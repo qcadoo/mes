@@ -12,7 +12,7 @@
 .gridTable {
 	border: solid #9b9b9b 1px;
 	margin: 20px;
-	//background: #ccc;
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
 }
 
 .gridTable .gridHeaderCell {
@@ -24,16 +24,9 @@
 	
 }
 
-.gridTable .grid_header .pageInput,
-.gridTable .grid_footer .pageInput {
-	border: solid black 1px;
-	width: 20px;
-}
-
 .gridTable .grid_header .pageInput.inputError,
 .gridTable .grid_footer .pageInput.inputError {
 	border: solid red 1px;
-	width: 20px;
 }
 
 .gridTable .grid_header .grid_header_gridName {
@@ -41,7 +34,9 @@
 }
 
 .gridTable .grid_header .grid_header_totalNumberOfEntities {
-	color: #666666;
+	color: #9b9b9b;
+	font-size: 12px;
+	font-weight: normal;
 	padding-left: 5px;
 	margin-right: 10px;
 }
@@ -60,15 +55,22 @@
 
 .gridTable .ui-jqgrid-bdiv {
 	background: #fbfbfb;
-	font-family:Arial, Helvetica, sans-serif;
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	
+	font-size: 12px;
+}
+.gridTable .ui-widget-content {
+	color: #555555;
+	font-family:Tahoma Bold, Tahoma, Arial, Helvetica, sans-serif;
 }
 .gridTable a.gridLink {
-	color: #1C54C4;
-	font-weight: bold;
-	text-decoration: underline;
+	color: #005ec5;
+	font-size: 11px;
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	text-decoration: none;
 }
 .gridTable a.gridLink:hover {
-	color: #5289f9;
+	text-decoration: underline;
 }
 
 .gridTable .lightRow {
@@ -80,13 +82,11 @@
 .gridTable .lightRow.ui-state-hover {
 	background: #cccccc;
 	border-color: #cccccc;
-	color: black;
 	
 }
 .gridTable .darkRow.ui-state-hover {
 	background: #bbbbbb;
 	border-color: #bbbbbb;
-	color: black;
 }
 .gridTable .lightRow.ui-state-highlight,
 .gridTable .darkRow.ui-state-highlight {
@@ -123,9 +123,14 @@
 	font-family:Arial, Helvetica, sans-serif;
 }
 
-.gridTable .ui-th-column {
-	background: transparent url('../images/grid/gradient_header.png') repeat-x 0 0;
-	color: white;
+.gridTable .ui-th-column,
+.gridTable .ui-jqgrid-hdiv {
+	//background: transparent url('../images/grid/gradient_header.png') repeat-x 0 0;
+	background: #8e8e8e;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #e8e8e8;
+	font-weight: normal;
 }
 .gridTable .ui-th-column:hover {
 	border-color: #bbbbbb;
@@ -141,30 +146,66 @@
 	cursor: pointer;
 }
 .gridTable .ui-th-column.sortableColumn:hover {
-	//background-image: url('../images/grid/gradient_header_over.png');
-	background: #555555
+	background: #808080
 }
 .gridTable .ui-th-column.sortColumn {
-	//background: #a28a41;
-	//background: red;
-	//border-color: #bbbbbb;
+	background: #ae6600;
 }
 .gridTable .ui-th-column.sortColumn:hover {
-	//background: #c7aa50;
-	//background: red;
-	border-color: #bbbbbb;
+	background: red;
 }
 .gridTable .ui-search-toolbar {
 	border-color: #555555;
 }
 .gridTable .ui-search-toolbar th:hover {
-	//background: #555555;
-	//background: red;
 }
 
 div.filterButton {
 
 }
+
+.grid_paging .onPageSpan {
+	color: #9b9b9b;
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	margin-right: 10px;
+}
+
+.grid_paging .recordsNoSelect {
+	margin-right: 10px;
+}
+
+.grid_paging .ofPagesSpan {
+	color: #686868;
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.grid_paging .component_container_form_w {
+	width: 30px;
+	margin-top: 0;
+}
+.grid_paging input[type='text'] {
+	border-spacing: 0;
+  	margin: 0;
+  	space: 0;
+	color: #464646;
+	height: 22px;
+	width: 30px;
+	font: 11px arial;
+	vertical-align: middle;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-boder-radius: 0;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	border: 1px solid #959595;	
+	background: transparent url(../images/form/input_c_transparent.png) no-repeat 0 0;
+	padding-left: 6px;
+}
+
 .gridTable .grid_header .headerPagingButton,
 .gridTable .grid_footer .headerPagingButton {
 	display: inline-block;

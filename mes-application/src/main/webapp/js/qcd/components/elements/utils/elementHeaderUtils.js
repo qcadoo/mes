@@ -21,7 +21,10 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 	}
 
 	itemElementSpan.append(itemElementLabel);
-	itemElementButton.click(clickAction);
+	itemElementButton.click(function() {
+		itemElementButton.blur();
+		clickAction.call();
+	});
 	
 	var itemElementButtonWrapper = $("<div>").addClass("headerActionButton").append(itemElementButton);
 	itemElementButtonWrapper.label = itemElementLabel;

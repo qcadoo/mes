@@ -138,6 +138,10 @@ QCD.components.Component = function(_element, _mainController) {
 		return isVisible;
 	}
 	
+	this.isChanged = function() {
+		return false;
+	}
+	
 	constructor(this);
 	
 }

@@ -25,6 +25,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var isFocused = false;
 	
+	var currentValue;
+	
 	var listeners = this.options.listeners;
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
@@ -60,7 +62,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			}
 		});
 		valueDivElement.click(function() {
-			inputElement.focus();
+			if (openLookupButtonElement.hasClass("enabled")) {
+				inputElement.focus();
+			}
 		});
 	}
 	
@@ -81,12 +85,24 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		return currentData;
 	}
 	
+	this.isChanged = function() {
+		return false; // TODO
+	}
+	
 	this.setFormComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
 			openLookupButtonElement.addClass("enabled")
 		} else {
 			openLookupButtonElement.removeClass("enabled")
 		}
+	}
+	
+	this.setCurrentValue = function(data) {
+		currentValue = currentData.selectedEntityCode;
+	} 
+	
+	this.isChanged = function() {
+		return currentValue != currentData.selectedEntityCode;
 	}
 	
 	function updateData() {
@@ -103,7 +119,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			} else {
 				inputElement.val(currentData.selectedEntityCode);
 			}
-		}
+		}		
 	}
 	
 	function onInputFocus() {
@@ -111,7 +127,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		valueDivElement.hide();
 		inputElement.val(currentData.selectedEntityCode);
 		labelElement.html(labelFocus);
-		inputElement.title(currentData.selectedEntityCode);
+		inputElement.attr('title', currentData.selectedEntityCode);
 	}
 	
 	function onInputBlur() {

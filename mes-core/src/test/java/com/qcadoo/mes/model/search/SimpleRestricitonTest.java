@@ -7,6 +7,7 @@ import java.util.Iterator;
 import junit.framework.Assert;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.IlikeExpression;
 import org.hibernate.criterion.NotNullExpression;
 import org.hibernate.criterion.NullExpression;
 import org.hibernate.criterion.SimpleExpression;
@@ -16,8 +17,6 @@ import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.internal.DataAccessTest;
-import com.qcadoo.mes.model.search.Restriction;
-import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.restrictions.internal.HibernateRestriction;
 
 public final class SimpleRestricitonTest extends DataAccessTest {
@@ -176,8 +175,8 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
                 .hasNext();) {
             CriteriaImpl.CriterionEntry entry = criterionIterator.next();
-            SimpleExpression simpleExpression = (SimpleExpression) entry.getCriterion();
-            assertEquals(simpleExpression.toString(), "name like " + "%Mr__" + "%");
+            IlikeExpression simpleExpression = (IlikeExpression) entry.getCriterion();
+            assertEquals(simpleExpression.toString(), "name ilike " + "%Mr__" + "%");
         }
     }
 

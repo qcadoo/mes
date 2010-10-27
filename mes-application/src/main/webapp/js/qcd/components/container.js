@@ -66,6 +66,16 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 	}
 	
+	this.isChanged = function() {
+		changed = false;
+		for (var i in components) {
+			if(components[i].isChanged()) {
+				changed = true;
+			}
+		}
+		return changed;
+	}
+	
 	function constructor(_this) {
 	}
 	
