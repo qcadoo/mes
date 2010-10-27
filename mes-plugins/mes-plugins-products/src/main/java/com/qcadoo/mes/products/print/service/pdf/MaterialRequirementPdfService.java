@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,9 +115,9 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
     private void addBomSeries(final Document document, final DefaultEntity entity, final List<Entity> instructions,
             final Font font) throws DocumentException {
         Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, instructions);
-        for (Entity product : products.keySet()) {
-            document.add(new Paragraph(product.getField("number") + " " + product.getField("name") + " " + products.get(product)
-                    + " " + product.getField("unit"), font));
+        for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
+            document.add(new Paragraph(entry.getKey().getField("number") + " " + entry.getKey().getField("name") + " "
+                    + entry.getValue() + " " + entry.getKey().getField("unit"), font));
         }
     }
 }

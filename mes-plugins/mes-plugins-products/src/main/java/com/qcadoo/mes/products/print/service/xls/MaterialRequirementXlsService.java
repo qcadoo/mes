@@ -8,10 +8,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
@@ -21,6 +24,8 @@ import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
 @Service
 public final class MaterialRequirementXlsService extends MaterialRequirementDocumentService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementXlsService.class);
+
     private static final String XLS_EXTENSION = ".xls";
 
     @Override
@@ -29,8 +34,17 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
         HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title", locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
-        FileOutputStream outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XLS_EXTENSION);
-        workbook.write(outputStream);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XLS_EXTENSION);
+            workbook.write(outputStream);
+        } catch (IOException e) {
+            LOG.error("Problem with generating document - " + e.getMessage());
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            throw e;
+        }
         outputStream.close();
         updateFileName(entity, getFileName((Date) entity.getField("date")));
     }
@@ -47,12 +61,12 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
     private void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         Map<ProxyEntity, BigDecimal> products = getProductsSeries(entity);
-        for (Entity product : products.keySet()) {
+        for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(product.getField("number").toString());
-            row.createCell(1).setCellValue(product.getField("name").toString());
-            row.createCell(2).setCellValue(products.get(product).longValueExact());
-            row.createCell(3).setCellValue(product.getField("unit").toString());
+            row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
+            row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
+            row.createCell(2).setCellValue(entry.getValue().longValueExact());
+            row.createCell(3).setCellValue(entry.getKey().getField("unit").toString());
 
         }
     }
