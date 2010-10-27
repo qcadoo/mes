@@ -11,19 +11,37 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	
 	var datepicker;
 	
+	var opened = false;
+	
 	var constructor = function(_this) {
-		datepicker = input.datepicker({
-			changeMonth: true,
-			changeYear: true,
-			showOn: 'button',
-			dateFormat: 'yyyy-mm-dd',
-		});
+		options = $.datepicker.regional['pl'];
+		
+		if(!options) {
+			options = $.datepicker.regional[''];
+		}
+		
+		options.changeMonth = true;
+		options.changeYear = true;
+		options.showOn = 'button';
+		options.dateFormat = 'yy-mm-dd';
+		options.showAnim = 'show';
+		options.onClose = function() {
+			opened = false;
+		}
+		
+		input.datepicker(options);
 		
 		calendar.click(function() {
 			if(calendar.hasClass("enabled")) {
-				input.datepicker("show");
+				if(!opened) {
+					input.datepicker("show");
+					opened = true;
+				} else {
+					input.datepicker("hide");
+					opened = false;
+				}
 			}
-		})
+		});
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {

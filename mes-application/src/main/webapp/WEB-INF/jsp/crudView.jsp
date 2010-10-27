@@ -28,6 +28,7 @@
 	<script type="text/javascript" src="../../js/lib/jquery.jstree.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery.cookie.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery-ui-1.8.5.custom.min.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery-ui-i18n.js"></script>
 	<script type="text/javascript" src="../../js/lib/encoder.js"></script>
 	
 	<script type="text/javascript" src="../../js/qcd/utils/logger.js"></script>

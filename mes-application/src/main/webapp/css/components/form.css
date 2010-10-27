@@ -304,6 +304,10 @@
 
 /** calendar **/
 
+.ui-widget {
+	font-size: 0.7em;
+}
+
 .component_element_calendar input[type='text'] {
 	padding-right: 25px;
 }
@@ -321,7 +325,6 @@
 	right: 1px;
 	background: url(../images/form/input_icon.png) no-repeat -20px -20px;
 	vertical-align: middle;
-	cursor: pointer;
 }
 
 .component_container_form .calendar.enabled {
