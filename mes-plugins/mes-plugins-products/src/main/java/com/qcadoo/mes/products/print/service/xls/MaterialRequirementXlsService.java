@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -60,12 +61,12 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
     private void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         Map<ProxyEntity, BigDecimal> products = getProductsSeries(entity);
-        for (Entity product : products.keySet()) {
+        for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(product.getField("number").toString());
-            row.createCell(1).setCellValue(product.getField("name").toString());
-            row.createCell(2).setCellValue(products.get(product).longValueExact());
-            row.createCell(3).setCellValue(product.getField("unit").toString());
+            row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
+            row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
+            row.createCell(2).setCellValue(entry.getValue().longValueExact());
+            row.createCell(3).setCellValue(entry.getKey().getField("unit").toString());
 
         }
     }
