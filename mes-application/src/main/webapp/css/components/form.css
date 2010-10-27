@@ -249,25 +249,32 @@
 
 /** lookup **/
 
-.component_element_lookup .component_container_form_inner {
-	margin-right: 28px;
+.component_element_lookup input[type='text'] {
+	padding-right: 25px;
 }
+
 .component_container_form .lookupIcon {
-	height: 23px;
-	width: 23px;
+	height: 20px;
+	width: 20px;
 	display: inline-block;
 	position: absolute;
-	top: -1px;
-	right: -28px;
-	background: url(../../images/icons/lookupIcon.png) no-repeat 0 -46px;
+	top: 1px;
+	right: 1px;
+	background: url(../images/form/input_icon.png) no-repeat -20px 0;
 	vertical-align: middle;
 }
+
 .component_container_form .lookupIcon.enabled {
 	cursor: pointer;
 	background-position: 0 0;
 }
-.component_container_form .lookupIcon.enabled:hover {
-	background-position: 0 -23px;
+
+.component_container_form .component_container_form_w:hover .lookupIcon.enabled {
+	background-position: -40px 0;
+}
+
+.component_container_form .component_container_form_w:hover .lookupIcon.enabled:hover {
+	background-position: -60px 0;
 }
 
 .component_container_form_w .lookupValueWrapper {
@@ -297,19 +304,31 @@
 
 /** calendar **/
 
-.component_element_calendar .component_container_form_inner {
-	margin-right: 25px;
+.component_element_calendar input[type='text'] {
+	padding-right: 25px;
 }
+
 .component_container_form .calendar {
 	height: 20px;
 	width: 20px;
 	display: inline-block;
 	position: absolute;
-	top: 2px;
-	right: -25px;
-	background: url(../images/calendar.png) no-repeat right center;
+	top: 1px;
+	right: 1px;
+	background: url(../images/form/input_icon.png) no-repeat -20px -20px;
 	vertical-align: middle;
 	cursor: pointer;
+}
+
+.component_container_form .calendar.enabled {
+	cursor: pointer;
+	background-position: 0 -20px;
+}
+.component_container_form .component_container_form_w:hover .calendar.enabled {
+	background-position: -40px -20px;
+}
+.component_container_form .component_container_form_w:hover .calendar.enabled:hover {
+	background-position: -60px -20px;
 }
 
 .component_container_form .datepick-trigger.disabled {

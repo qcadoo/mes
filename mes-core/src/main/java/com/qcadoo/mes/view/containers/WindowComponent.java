@@ -17,6 +17,8 @@ public final class WindowComponent extends AbstractRootComponent {
 
     private boolean fixedHeight = false;
 
+    private boolean minWidth = true;
+
     public WindowComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition,
             final TranslationService translationService) {
         super(name, dataDefinition, viewDefinition, translationService);
@@ -36,12 +38,15 @@ public final class WindowComponent extends AbstractRootComponent {
                 backButton = Boolean.parseBoolean(option.getValue());
             } else if ("fixedHeight".equals(option.getType())) {
                 fixedHeight = Boolean.parseBoolean(option.getValue());
+            } else if ("minWidth".equals(option.getType())) {
+                minWidth = Boolean.parseBoolean(option.getValue());
             }
         }
 
         addOption("backButton", backButton);
         addOption("fixedHeight", fixedHeight);
         addOption("header", header);
+        addOption("minWidth", minWidth);
     }
 
     @Override

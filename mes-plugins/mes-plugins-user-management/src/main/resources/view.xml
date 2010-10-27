@@ -82,18 +82,12 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.userDetailsForm}.performSave;" />
-					<bigButtons name="saveBack" icon="saveBackIcon32.png"
-						action="#{mainWindow.userDetailsForm}.performSave; #{mainWindow}.performBack">
-						<bigButton name="saveNew" icon="saveNewIcon16.png"
-							action="#{mainWindow.userDetailsForm}.performSave; #{mainWindow}.performNew;" />
-					</bigButtons>
+					<bigButton name="saveBack" icon="saveBackIcon32.png"
+						action="#{mainWindow.userDetailsForm}.performSave; #{mainWindow}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.userDetailsForm}.performCancel;" />
-					<smallButtons name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.userDetailsForm}.performDelete; #{mainWindow}.performBack">
-						<smallButton name="deleteNew" icon="deleteIcon16.png"
-							action="#{mainWindow.userDetailsForm}.performDelete; #{mainWindow}.performNew;" />
-					</smallButtons>
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.userDetailsForm}.performDelete; #{mainWindow}.performBack" />
 				</group>
 			</ribbon>
 			<component type="form" name="userDetailsForm">

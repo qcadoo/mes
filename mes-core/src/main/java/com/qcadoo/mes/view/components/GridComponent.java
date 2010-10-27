@@ -242,7 +242,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 relatedEntity = selectedEntities.get(getSourceComponent().getPath());
             }
 
-            if (parentEntity != null && relatedEntity == null) {
+            if (parentEntity != null && relatedEntity == null && getSourceFieldPath() == null) {
                 relatedEntity = parentEntity;
             }
 

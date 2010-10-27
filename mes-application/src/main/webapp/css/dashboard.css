@@ -5,8 +5,33 @@
 }
 
 body {
-	background-color: #ababab;
+	background-color: #9B9B9B;
 	font-family:Arial, Helvetica, sans-serif;
+}
+
+#windowContainer {
+	height: 100%;
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+#windowContainer #windowContainerRibbon {
+	height: 76px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+}
+
+#windowContainer #windowContainerContentBody {
+	position: absolute;
+	top: 70px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	overflow: auto;
 }
 
 #contentWrapperOuter {
@@ -14,6 +39,9 @@ body {
 	position: static;
 	height: 100%;
 	width: 100%;
+	background: url(../images/dashboard/startowa_pattern_grey.png);
+	background-position: top center;
+	background-repeat: no-repeat;
 }
 
 #contentWrapperMiddle {
@@ -31,7 +59,10 @@ body {
 	//background-position: -35px top;
 	background-repeat: no-repeat;
 	margin: auto;
+	margin-top: 20px;
+	margin-bottom: 20px;
 	//border: solid white 1px;
+	
 }
 
 #dashboardContentWrapper #userElement {
