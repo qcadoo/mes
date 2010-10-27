@@ -3,6 +3,7 @@
 	<model name="product">
 		<string name="number">
 			<validatesPresence />
+			<validatesUniqueness />
 		</string>
 		<text name="name">
 			<validatesPresence />
@@ -19,6 +20,7 @@
 	<model name="substitute">
 		<string name="number">
 			<validatesPresence />
+			<validatesUniqueness />
 		</string>
 		<text name="name">
 			<validatesPresence />
@@ -47,6 +49,7 @@
 	<model name="instruction">
 		<string name="number">
 			<validatesPresence />
+			<validatesUniqueness />
 		</string>
 		<text name="name">
 			<validatesPresence />
