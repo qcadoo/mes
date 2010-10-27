@@ -7,7 +7,7 @@
 
 <html>
 <head>
-	<link rel="stylesheet" href="../../css/jquery-ui-1.8.4.custom.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/jquery-ui-1.8.5.custom.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/jquery.datepick.css" type="text/css" /> 
 	<link rel="stylesheet" href="../../css/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/jstree/style.css" type="text/css" />
@@ -27,7 +27,7 @@
 	<script type="text/javascript" src="../../js/lib/jquery.jqGrid.min.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery.jstree.js"></script>
 	<script type="text/javascript" src="../../js/lib/jquery.cookie.js"></script>
-	<script type="text/javascript" src="../../js/lib/jquery.datepick.js"></script>
+	<script type="text/javascript" src="../../js/lib/jquery-ui-1.8.5.custom.min.js"></script>
 	<script type="text/javascript" src="../../js/lib/encoder.js"></script>
 	
 	<script type="text/javascript" src="../../js/qcd/utils/logger.js"></script>
