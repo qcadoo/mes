@@ -41,17 +41,15 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
 
     private static final String PDF_EXTENSION = ".pdf";
 
-    // TODO KRNA check method
     @Override
     public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
         try {
             String fileName = getFileName() + PDF_EXTENSION;
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            PdfWriter.getInstance(document, new FileOutputStream(fileName));
             document.open();
             buildPdfContent(document, entity, locale, prepareFont());
             buildPdfMetadata(document, locale);
-            writer.flush();
             document.close();
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
