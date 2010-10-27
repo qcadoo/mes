@@ -27,6 +27,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		searchEnabled: false
 	}
 	
+	var RESIZE_COLUMNS_ON_UPDATE_SIZE = true;
+	
 	var columnModel = new Object();
 	
 	var hiddenColumnValues = new Object();
@@ -56,14 +58,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			if (!column.hidden) {
 				colNames.push(mainController.getTranslation(nameToTranslate)+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
-				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable});
+				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true});
 			} else {
 				hiddenColumnValues[column.name] = new Object();
 			}
 		}
 		
-		colNames.push("");
-		colModel.push({name:"empty", index:"empty", width:800, sortable: false});
+		//colNames.push("");
+		//colModel.push({name:"empty", index:"empty", width:1020, sortable: false});
 		
 		gridParameters.sortColumns = options.sortColumns;
 		gridParameters.element = elementPath+"_grid";
@@ -73,7 +75,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			onPostDataChange(postdata);
 		}
 		gridParameters.multiselect = true;
-		gridParameters.shrinkToFit = false;
+		gridParameters.shrinkToFit = true;
 		
 		gridParameters.listeners = options.listeners;
 		gridParameters.canNew = options.canNew;
@@ -288,6 +290,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
 		
 		$("#cb_"+gridParameters.element).hide(); // hide 'select add' checkbox
+		$("#jqgh_cb").hide();
+		
 		
 		for (var i in gridParameters.sortColumns) {
 			$("#"+elementPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
@@ -350,7 +354,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 					order: "asc"
 				}
 		}
-		onCurrentStateChange();
+		//onCurrentStateChange();
 		return 'stop';
 	}
 	
@@ -431,7 +435,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			grid.setGridHeight(currentGridHeight);
 		}
 		if (! gridParameters.width && gridParameters.fullScreen) {
-			grid.setGridWidth(_width-45, true);
+			grid.setGridWidth(_width-45, RESIZE_COLUMNS_ON_UPDATE_SIZE);
 			element.width(_width - 40);
 		}
 	}
