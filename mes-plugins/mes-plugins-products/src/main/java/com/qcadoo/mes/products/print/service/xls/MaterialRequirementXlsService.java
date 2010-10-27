@@ -12,6 +12,8 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
@@ -21,6 +23,8 @@ import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
 @Service
 public final class MaterialRequirementXlsService extends MaterialRequirementDocumentService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementXlsService.class);
+
     private static final String XLS_EXTENSION = ".xls";
 
     @Override
@@ -29,8 +33,17 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
         HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title", locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
-        FileOutputStream outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XLS_EXTENSION);
-        workbook.write(outputStream);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XLS_EXTENSION);
+            workbook.write(outputStream);
+        } catch (IOException e) {
+            LOG.error("Problem with generating document - " + e.getMessage());
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            throw e;
+        }
         outputStream.close();
         updateFileName(entity, getFileName((Date) entity.getField("date")));
     }
