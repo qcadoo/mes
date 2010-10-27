@@ -1,5 +1,6 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -93,6 +94,12 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
             String descriptionCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
                     + getPath() + ".description";
             translationsMap.put(descriptionCode, getTranslationService().translate(descriptionCode, locale));
+            String descriptionHeaderCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".descriptionHeader";
+            translationsMap.put(
+                    descriptionHeaderCode,
+                    getTranslationService().translate(
+                            Arrays.asList(new String[] { descriptionHeaderCode, "core.form.descriptionHeader" }), locale));
         }
     }
 

@@ -112,6 +112,12 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
             String descriptionCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
                     + getPath() + ".description";
             translationsMap.put(descriptionCode, getTranslationService().translate(descriptionCode, locale));
+            String descriptionHeaderCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
+                    + getPath() + ".descriptionHeader";
+            translationsMap.put(
+                    descriptionHeaderCode,
+                    getTranslationService().translate(
+                            Arrays.asList(new String[] { descriptionHeaderCode, "core.form.descriptionHeader" }), locale));
         }
         translationsMap
                 .put(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
