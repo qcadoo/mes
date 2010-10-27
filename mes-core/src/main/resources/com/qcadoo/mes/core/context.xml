@@ -20,9 +20,7 @@
 
 	<aop:aspectj-autoproxy />
 
-	<context:property-placeholder location="WEB-INF/db.properties"/>
-	
-	<context:property-placeholder location="WEB-INF/report.properties"/>
+	<context:property-placeholder  location="WEB-INF/db.properties,WEB-INF/report.properties"/>
 
 	<context:component-scan base-package="com.qcadoo.mes" />
 

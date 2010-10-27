@@ -22,14 +22,15 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
 
     private static final String XLS_EXTENSION = ".xls";
 
-    // TODO KRNA check method
     @Override
     public void generateDocument(final Entity entity, final Locale locale) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title", locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
-        workbook.write(new FileOutputStream(getFileName() + XLS_EXTENSION));
+        FileOutputStream outputStream = new FileOutputStream(getFileName() + XLS_EXTENSION);
+        workbook.write(outputStream);
+        outputStream.close();
         updateFileName(entity, getFileName());
     }
 

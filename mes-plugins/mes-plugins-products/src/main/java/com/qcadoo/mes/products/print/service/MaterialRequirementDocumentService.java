@@ -38,7 +38,7 @@ public abstract class MaterialRequirementDocumentService {
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DATE_FORMAT);
 
     // TODO KRNA properties
-    // @Value("${report.reportPath}")
+    // @Value("#{systemProperties.reportPath}")
     private String reportPath = "/tmp/";
 
     private String fileName = reportPath + FILE_NAME + "_" + D_F.format(new Date());
