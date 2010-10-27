@@ -19,7 +19,7 @@ public final class OrderPdfView extends ProductsPdfView {
     @Override
     protected void addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
             throws DocumentException, IOException {
-        SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_FORMAT);
+        SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
         UsersUser user = securityService.getCurrentUser();
         document.add(new Paragraph(df.format(new Date()), font));
         document.add(new Paragraph(
