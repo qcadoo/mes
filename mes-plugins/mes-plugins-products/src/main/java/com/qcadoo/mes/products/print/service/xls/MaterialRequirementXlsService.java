@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -28,10 +29,10 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
         HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title", locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
-        FileOutputStream outputStream = new FileOutputStream(getFileName() + XLS_EXTENSION);
+        FileOutputStream outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XLS_EXTENSION);
         workbook.write(outputStream);
         outputStream.close();
-        updateFileName(entity, getFileName());
+        updateFileName(entity, getFileName((Date) entity.getField("date")));
     }
 
     private void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -68,5 +69,4 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
         }
         return getBomSeries(entity, instructions);
     }
-
 }

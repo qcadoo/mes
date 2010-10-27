@@ -24,7 +24,7 @@ public class ProductsMaterialRequirement {
     @Column(nullable = false)
     private String name;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     private String worker;
@@ -108,7 +108,7 @@ public class ProductsMaterialRequirement {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 

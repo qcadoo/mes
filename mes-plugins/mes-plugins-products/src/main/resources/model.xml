@@ -111,7 +111,7 @@
 		<text name="name">
 			<validatesPresence />
 		</text>
-		<date name="date" readonly="true" />
+		<datetime name="date" readonly="true" />
 		<text name="worker" readonly="true" />
 		<boolean name="onlyComponents" />
 		<boolean name="generated" />

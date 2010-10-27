@@ -10,15 +10,14 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DataAccessService;
 import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.internal.InternalDataDefinition;
+import com.qcadoo.mes.model.types.internal.DateType;
 
 public abstract class MaterialRequirementDocumentService {
 
@@ -26,31 +25,22 @@ public abstract class MaterialRequirementDocumentService {
     protected TranslationService translationService;
 
     @Autowired
-    protected DataAccessService dataAccessService;
-
-    @Autowired
     protected DataDefinitionService dataDefinitionService;
 
     private static final String FILE_NAME = "MaterialRequirement";
 
-    private static final String DATE_FORMAT = "yyyy_MM_dd_HH_mm";
+    private static final SimpleDateFormat D_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
 
-    private static final SimpleDateFormat D_F = new SimpleDateFormat(DATE_FORMAT);
+    @Value("${reportPath}")
+    private String path;
 
-    // TODO KRNA properties
-    // @Value("#{systemProperties.reportPath}")
-    private String reportPath = "/tmp/";
-
-    private String fileName = reportPath + FILE_NAME + "_" + D_F.format(new Date());
-
-    protected final String getFileName() {
-        return fileName;
+    protected final String getFileName(final Date date) {
+        return path + FILE_NAME + "_" + D_F.format(date);
     }
 
     protected final void updateFileName(final Entity entity, final String fileName) {
         entity.setField("fileName", fileName);
-        DataDefinition dataDefinition = dataDefinitionService.get("products", "materialRequirement");
-        dataAccessService.save((InternalDataDefinition) dataDefinition, entity);
+        dataDefinitionService.get("products", "materialRequirement").save(entity);
     }
 
     protected final Map<ProxyEntity, BigDecimal> getBomSeries(final Entity entity, final List<Entity> instructions) {
