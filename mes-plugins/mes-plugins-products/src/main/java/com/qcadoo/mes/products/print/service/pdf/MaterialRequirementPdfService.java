@@ -3,7 +3,9 @@ package com.qcadoo.mes.products.print.service.pdf;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +29,7 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
+import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
 
 @Service
@@ -45,7 +48,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
     public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
         try {
-            String fileName = getFileName() + PDF_EXTENSION;
+            String fileName = getFileName((Date) entity.getField("date")) + PDF_EXTENSION;
             PdfWriter.getInstance(document, new FileOutputStream(fileName));
             document.open();
             buildPdfContent(document, entity, locale, prepareFont());
@@ -68,7 +71,8 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
     private void buildPdfContent(final Document document, final Entity entity, final Locale locale, final Font font)
             throws DocumentException {
         UsersUser user = securityService.getCurrentUser();
-        document.add(new Paragraph(entity.getField("date").toString(), font));
+        SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
+        document.add(new Paragraph(df.format(entity.getField("date")), font));
         document.add(new Paragraph(user.getUserName(), font));
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah", locale),
                 getFontBold(font)));
@@ -114,5 +118,4 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
                     + " " + product.getField("unit"), font));
         }
     }
-
 }

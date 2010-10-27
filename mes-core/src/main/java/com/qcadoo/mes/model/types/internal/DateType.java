@@ -12,6 +12,10 @@ public final class DateType implements FieldType {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static final String REPORT_DATE_TIME_FORMAT = "yyyy_MM_dd_HH_mm_ss";
+
     @Override
     public boolean isSearchable() {
         return true;
