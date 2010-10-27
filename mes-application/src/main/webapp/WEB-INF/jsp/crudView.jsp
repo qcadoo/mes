@@ -64,6 +64,7 @@
 		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
 		var entityId = "${entityId}";
 		var context = '${context}';
+		var locale = '${locale}';
 
 		var lookupComponentName = '${lookupComponentName}';
 
