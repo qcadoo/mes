@@ -59,18 +59,12 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon32.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performSave;" />
-					<bigButtons name="saveBack" icon="saveBackIcon32.png"
-						action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performBack">
-						<bigButton name="saveNew" icon="saveNewIcon16.png"
-							action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performNew;" />
-					</bigButtons>
+					<bigButton name="saveBack" icon="saveBackIcon32.png"
+						action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performCancel;" />
-					<smallButtons name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.dictionaryItemDetailsForm}.performDelete; #{mainWindow}.performBack">
-						<smallButton name="deleteNew" icon="deleteIcon16.png"
-							action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performNew;" />
-					</smallButtons>
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.dictionaryItemDetailsForm}.performDelete; #{mainWindow}.performBack" />
 				</group>
 			</ribbon>		
 			<component type="form" name="dictionaryItemDetailsForm">

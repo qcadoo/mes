@@ -11,6 +11,11 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	var ribbon;
 	
+	var isMinWidth = this.options.minWidth;
+	
+	QCD.info("WINDOW:");
+	QCD.info(this.options);
+	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementPath+"_windowComponents");
 		mainController.setWindowHeaderComponent(_this);
@@ -48,16 +53,24 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		var childrenElement = $("#"+this.elementPath+"_windowContent");
 		
 		var margin = Math.round(_width * 0.02);
+		if (margin < 20 && isMinWidth) {
+			margin = 20;
+		}
 		width = Math.round(_width - 2 * margin);
+		
 		// TODO mina
-//		if (width < 960) {
-//			width = 960;
-//		}
+		if (width < 960 && isMinWidth) {
+			width = 960;
+			childrenElement.css("marginLeft", margin+"px");
+			childrenElement.css("marginRight", margin+"px");
+		} else {
+			childrenElement.css("marginLeft", "auto");
+			childrenElement.css("marginRight", "auto");
+		}
 		childrenElement.width(width);
 		childrenElement.css("marginTop", margin+"px");
 		if (! this.options.fixedHeight) {
 			childrenElement.css("marginBottom", margin+"px");
-			QCD.info("set bottom margin");
 		}
 		
 		height = null;
