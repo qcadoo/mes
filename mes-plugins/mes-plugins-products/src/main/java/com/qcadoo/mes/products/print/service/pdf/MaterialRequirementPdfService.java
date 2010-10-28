@@ -1,5 +1,6 @@
 package com.qcadoo.mes.products.print.service.pdf;
 
+import java.awt.Color;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -17,15 +18,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.MultiColumnText;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.draw.DottedLineSeparator;
+import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
@@ -75,14 +83,47 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             throws DocumentException {
         UsersUser user = securityService.getCurrentUser();
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
-        document.add(new Paragraph(df.format(entity.getField("date")), font));
-        document.add(new Paragraph(user.getUserName(), font));
+        Font font20 = new Font(font);
+        font20.setSize(20);
+        font20.setColor(new Color(70, 70, 70));
+        LineSeparator line = new LineSeparator(3, 90f, new Color(102, 102, 102), Element.ALIGN_CENTER, 0);
+        DottedLineSeparator dottedLine = new DottedLineSeparator();
+        dottedLine.setGap(10f);
+        dottedLine.setPercentage(90f);
+        document.add(dottedLine);
+        document.add(Chunk.NEWLINE);
+        Paragraph title = new Paragraph(translationService.translate("products.materialRequirement.report.title", locale) + " "
+                + entity.getField("name"), getFontBold(font20));
+        document.add(title);
+        document.add(line);
+        MultiColumnText userAndDate = new MultiColumnText();
+        userAndDate.addRegularColumns(document.left(), document.right(), 5f, 2);
+        Paragraph userParagraph = new Paragraph(
+                translationService.translate("products.materialRequirement.report.author", locale) + " " + user.getUserName(),
+                font);
+        Paragraph dateParagraph = new Paragraph(df.format(entity.getField("date")), font);
+        dateParagraph.setAlignment(Element.ALIGN_RIGHT);
+        userAndDate.addElement(userParagraph);
+        userAndDate.addElement(dateParagraph);
+        document.add(userAndDate);
+        document.add(Chunk.NEWLINE);
+        document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah", locale),
                 getFontBold(font)));
-        List<Entity> instructions = addOrderSeries(document, entity, font);
+        List<String> orderHeader = new ArrayList<String>();
+        orderHeader.add(translationService.translate("products.order.number.label", locale));
+        orderHeader.add(translationService.translate("products.order.name.label", locale));
+        orderHeader.add(translationService.translate("products.order.product.label", locale));
+        List<Entity> instructions = addOrderSeries(document, entity, font, orderHeader);
+        document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah2", locale),
                 getFontBold(font)));
-        addBomSeries(document, (DefaultEntity) entity, instructions, font);
+        List<String> productHeader = new ArrayList<String>();
+        productHeader.add(translationService.translate("products.product.number.label", locale));
+        productHeader.add(translationService.translate("products.product.name.label", locale));
+        productHeader.add(translationService.translate("products.product.unit.label", locale));
+        productHeader.add(translationService.translate("products.instructionBomComponent.quantity.label", locale));
+        addBomSeries(document, (DefaultEntity) entity, instructions, font, productHeader);
     }
 
     private void buildPdfMetadata(final Document document, final Locale locale) {
@@ -99,30 +140,64 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         return fontBold;
     }
 
-    private List<Entity> addOrderSeries(final Document document, final Entity entity, final Font font) throws DocumentException {
+    private List<Entity> addOrderSeries(final Document document, final Entity entity, final Font font,
+            final List<String> orderHeader) throws DocumentException {
         List<Entity> orders = (List<Entity>) entity.getField("orders");
         List<Entity> instructions = new ArrayList<Entity>();
+        PdfPTable table = createTableWithHeader(3, orderHeader, font);
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity instruction = (Entity) order.getField("instruction");
             if (instruction != null) {
                 instructions.add(instruction);
             }
-            document.add(new Paragraph(order.getField("number") + " " + order.getField("name"), font));
+            table.addCell(new Phrase(order.getField("number").toString(), font));
+            table.addCell(new Phrase(order.getField("name").toString(), font));
+            Entity product = (Entity) order.getField("product");
+            if (product != null) {
+                table.addCell(new Phrase(product.getField("name").toString(), font));
+            } else {
+                table.addCell(new Phrase("", font));
+            }
         }
+        document.add(table);
         return instructions;
     }
 
+    private PdfPTable createTableWithHeader(final int numOfColumns, final List<String> orderHeader, final Font font) {
+        PdfPTable table = new PdfPTable(numOfColumns);
+        table.setWidthPercentage(90f);
+        table.setHorizontalAlignment(Element.ALIGN_LEFT);
+        table.setSpacingBefore(10.0f);
+        table.getDefaultCell().setBackgroundColor(new Color(230, 230, 230));
+        table.getDefaultCell().setBorderColor(new Color(153, 153, 153));
+        table.getDefaultCell().setPadding(5.0f);
+        table.getDefaultCell().disableBorderSide(Rectangle.RIGHT);
+        int i = 0;
+        for (String element : orderHeader) {
+            i++;
+            if (i == orderHeader.size()) {
+                table.getDefaultCell().enableBorderSide(Rectangle.RIGHT);
+            }
+            table.addCell(new Phrase(element, font));
+            if (i == 1) {
+                table.getDefaultCell().disableBorderSide(Rectangle.LEFT);
+            }
+        }
+        table.getDefaultCell().setBackgroundColor(null);
+        table.getDefaultCell().disableBorderSide(Rectangle.RIGHT);
+        return table;
+    }
+
     private void addBomSeries(final Document document, final DefaultEntity entity, final List<Entity> instructions,
-            final Font font) throws DocumentException {
+            final Font font, final List<String> productHeader) throws DocumentException {
         Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, instructions);
-        PdfPTable table = new PdfPTable(4);
+        PdfPTable table = createTableWithHeader(4, productHeader, font);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(entry.getKey().getField("number").toString());
-            table.addCell(entry.getKey().getField("name").toString());
-            table.addCell(entry.getValue().toString());
-            table.addCell(entry.getKey().getField("unit").toString());
-            // font
+            table.addCell(new Phrase(entry.getKey().getField("number").toString(), font));
+            table.addCell(new Phrase(entry.getKey().getField("name").toString(), font));
+            table.addCell(new Phrase(entry.getKey().getField("unit").toString(), font));
+            table.addCell(new Phrase(entry.getValue().toEngineeringString(), getFontBold(font)));
         }
         document.add(table);
     }
