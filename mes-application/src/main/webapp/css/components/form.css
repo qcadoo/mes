@@ -48,6 +48,16 @@
 	padding-top: 3px;
 }
 
+.component_container_form .component_container_form_textRepresentation {
+	vertical-align: middle;
+	font: 11px arial;
+}
+
+.component_container_form .component_container_form_textHeight {
+	height: 22px;
+	display: inline-block;
+}
+
 /** inputs **/
 
 .component_container_form_w {
