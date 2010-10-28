@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -120,7 +121,44 @@ public final class ProductService {
     }
 
     @SuppressWarnings("unchecked")
+    private void generateOrderNumber(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
+        ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
+        ViewValue<SimpleValue> numberValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.number");
+
+        if (formValue == null || numberValue == null) {
+            return;
+        }
+
+        if (formValue.getValue() != null && formValue.getValue().getId() != null) {
+            // form is already saved
+            return;
+        }
+
+        if (numberValue.getValue() != null && StringUtils.hasText((String) numberValue.getValue().getValue())) {
+            // number is already choosen
+            return;
+        }
+
+        if (numberValue.getMessages().size() > 0) {
+            // there is a validation message for that field
+            return;
+        }
+
+        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).includeDeleted().list();
+
+        String number = String.format("%06d", results.getTotalNumberOfEntities() + 1);
+
+        if (numberValue.getValue() == null) {
+            numberValue.setValue(new SimpleValue(number));
+        } else {
+            numberValue.getValue().setValue(number);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
+        generateOrderNumber(value, triggerComponentName, locale);
+
         ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
         ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
                 .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
@@ -129,7 +167,8 @@ public final class ProductService {
         ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
         ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
 
-        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue().equals("done")) {
+        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
+                && stateValue.getValue().getValue().equals("done")) {
             formValue.setEnabled(false);
         }
 
