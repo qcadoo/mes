@@ -88,6 +88,7 @@ public final class CrudController {
         modelAndView.addObject("entityId", arguments.get("entityId"));
         modelAndView.addObject("context", arguments.get("context"));
         modelAndView.addObject("translationsMap", translationsMap);
+        modelAndView.addObject("locale", locale.getLanguage());
 
         addMessageToModel(arguments, modelAndView);
 
@@ -256,19 +257,20 @@ public final class CrudController {
         if (entityId != null) {
             entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
         }
-
         ModelAndView mav = new ModelAndView();
-
-        if ("Order".equals(functionName)) {
-            mav.setViewName("orderPdfView");
-        } else if ("MaterialRequirementPdf".equals(functionName)) {
-            mav.setViewName("materialRequirementPdfView");
-        } else if ("MaterialRequirementXls".equals(functionName)) {
-            mav.setViewName("materialRequirementXlsView");
+        if (!"printOrder".equals(functionName)
+                && (entity.getField("fileName") == null || "".equals(entity.getField("fileName").toString().trim()))) {
+            mav.setViewName("printError");
+        } else {
+            if ("printOrder".equals(functionName)) {
+                mav.setViewName("orderPdfView");
+            } else if ("printMaterialRequirementPdf".equals(functionName)) {
+                mav.setViewName("materialRequirementPdfView");
+            } else if ("printMaterialRequirementXls".equals(functionName)) {
+                mav.setViewName("materialRequirementXlsView");
+            }
+            mav.addObject("entity", entity);
         }
-
-        mav.addObject("entity", entity);
-
         return mav;
     }
 

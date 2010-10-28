@@ -264,7 +264,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         InternalDataDefinition dataDefinition = (InternalDataDefinition) searchCriteria.getDataDefinition();
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
 
-        if (dataDefinition.isDeletable()) {
+        if (dataDefinition.isDeletable() && !searchCriteria.isIncludeDeleted()) {
             entityService.addDeletedRestriction(criteria);
         }
 

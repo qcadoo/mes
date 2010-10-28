@@ -22,17 +22,21 @@ public final class MaterialRequirementXlsView extends AbstractExcelView {
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         DefaultEntity entity = (DefaultEntity) model.get("entity");
-        FileInputStream fileInputStream = new FileInputStream((String) entity.getField("fileName") + XLS_EXTENSION);
-        POIFSFileSystem fs = new POIFSFileSystem(fileInputStream);
-        HSSFWorkbook existingWorkbook = new HSSFWorkbook(fs);
-        fileInputStream.close();
+        Object fileName = entity.getField("fileName");
+        if (fileName != null && !"".equals(fileName.toString().trim())) {
+            FileInputStream fileInputStream = new FileInputStream((String) fileName + XLS_EXTENSION);
+            POIFSFileSystem fs = new POIFSFileSystem(fileInputStream);
+            HSSFWorkbook existingWorkbook = new HSSFWorkbook(fs);
+            fileInputStream.close();
 
-        int n = existingWorkbook.getNumberOfSheets();
-        for (int i = 0; i < n; i++) {
-            HSSFSheet existingSheet = existingWorkbook.getSheetAt(i);
-            HSSFSheet sheet = workbook.createSheet(existingSheet.getSheetName());
-            ExcelUtil.copySheets(sheet, existingSheet);
+            int n = existingWorkbook.getNumberOfSheets();
+            for (int i = 0; i < n; i++) {
+                HSSFSheet existingSheet = existingWorkbook.getSheetAt(i);
+                HSSFSheet sheet = workbook.createSheet(existingSheet.getSheetName());
+                ExcelUtil.copySheets(sheet, existingSheet);
+            }
+            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XLS_EXTENSION);
         }
     }
-
 }
