@@ -305,8 +305,25 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	function setValueData(data) {
 		QCD.debug(data);
 		if (data.messages) {
+			var messagesToShow = new Array();
+			var isOvverideMode = false;
 			for (var i in data.messages) {
 				var message = data.messages[i];
+				if (message.message.substring(0,9) == "override:") {
+					message.message = message.message.substring(9);
+					if (!isOvverideMode) {
+						isOvverideMode= true;
+						messagesToShow = new Array();
+					}
+					messagesToShow.push(message);	
+				} else {
+					if (!isOvverideMode) {
+						messagesToShow.push(message);
+					}
+				}
+			}
+			for (var i in messagesToShow) {
+				var message = messagesToShow[i];
 				window.parent.addMessage(message.type, message.message);
 			}
 		}
