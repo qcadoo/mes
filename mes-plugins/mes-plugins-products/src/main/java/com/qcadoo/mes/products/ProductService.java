@@ -137,7 +137,20 @@ public final class ProductService {
             return;
         }
 
-        numberValue.setValue(new SimpleValue("123456"));
+        if (numberValue.getMessages().size() > 0) {
+            // there is a validation message for that field
+            return;
+        }
+
+        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).includeDeleted().list();
+
+        String number = String.format("%06d", results.getTotalNumberOfEntities() + 1);
+
+        if (numberValue.getValue() == null) {
+            numberValue.setValue(new SimpleValue(number));
+        } else {
+            numberValue.getValue().setValue(number);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -152,7 +165,8 @@ public final class ProductService {
         ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
         ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
 
-        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue().equals("done")) {
+        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
+                && stateValue.getValue().getValue().equals("done")) {
             formValue.setEnabled(false);
         }
 
