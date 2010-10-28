@@ -24,6 +24,7 @@ import com.lowagie.text.FontFactory;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -115,9 +116,14 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
     private void addBomSeries(final Document document, final DefaultEntity entity, final List<Entity> instructions,
             final Font font) throws DocumentException {
         Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, instructions);
+        PdfPTable table = new PdfPTable(4);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
-            document.add(new Paragraph(entry.getKey().getField("number") + " " + entry.getKey().getField("name") + " "
-                    + entry.getValue() + " " + entry.getKey().getField("unit"), font));
+            table.addCell(entry.getKey().getField("number").toString());
+            table.addCell(entry.getKey().getField("name").toString());
+            table.addCell(entry.getValue().toString());
+            table.addCell(entry.getKey().getField("unit").toString());
+            // font
         }
+        document.add(table);
     }
 }
