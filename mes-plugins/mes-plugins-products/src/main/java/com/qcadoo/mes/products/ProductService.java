@@ -323,10 +323,14 @@ public final class ProductService {
     }
 
     public void fillMaterialRequirementDateAndWorker(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("date", new Date());
-        entity.setField("worker", getLoginOfLoggedUser());
         if (entity.getField("fileName") != null && !"".equals(entity.getField("fileName").toString().trim())) {
             entity.setField("generated", true);
+        }
+        if ((Boolean) entity.getField("generated") && entity.getField("date") == null) {
+            entity.setField("date", new Date());
+        }
+        if ((Boolean) entity.getField("generated") && entity.getField("worker") == null) {
+            entity.setField("worker", getLoginOfLoggedUser());
         }
     }
 
