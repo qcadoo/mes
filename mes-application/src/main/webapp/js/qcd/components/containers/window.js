@@ -13,9 +13,6 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	var isMinWidth = this.options.minWidth;
 	
-	QCD.info("WINDOW:");
-	QCD.info(this.options);
-	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementPath+"_windowComponents");
 		mainController.setWindowHeaderComponent(_this);
@@ -58,7 +55,6 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		}
 		width = Math.round(_width - 2 * margin);
 		
-		// TODO mina
 		if (width < 960 && isMinWidth) {
 			width = 960;
 			childrenElement.css("marginLeft", margin+"px");
