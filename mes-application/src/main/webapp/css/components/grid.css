@@ -84,13 +84,13 @@
 	background: #f5f5f5;
 }
 .gridTable .lightRow.ui-state-hover {
-	background: #cccccc;
-	//border-color: #cccccc;
-	
+	//background: #cccccc;
+	background: #dcdcdc;
 }
 .gridTable .darkRow.ui-state-hover {
-	background: #bbbbbb;
+	//background: #bbbbbb;
 	//border-color: #987654;
+	background: #dcdcdc;
 }
 .gridTable .lightRow.ui-state-highlight,
 .gridTable .darkRow.ui-state-highlight {
@@ -130,7 +130,8 @@
 .gridTable .ui-th-column,
 .gridTable .ui-jqgrid-hdiv {
 	//background: transparent url('../images/grid/gradient_header.png') repeat-x 0 0;
-	background: #8e8e8e;
+	background: transparent url('../images/grid/gradientygrid/gradient_header.png') repeat-x 0 0;
+	//background: #8e8e8e;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	color: #e8e8e8;
@@ -158,13 +159,17 @@
 	cursor: pointer;
 }
 .gridTable .ui-th-column.sortableColumn:hover {
-	background: #808080
+	background: #808080;
+	//background: transparent url('../images/grid/gradientygrid/gradient_header_over.png') repeat-x 0 0;
 }
 .gridTable .ui-th-column.sortColumn {
-	background: #ae6600;
+	background: #454545;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #ffffff;
 }
 .gridTable .ui-th-column.sortColumn:hover {
-	background: red;
+	background: #323232;
 }
 .gridTable .ui-search-toolbar {
 	border-color: #555555;
@@ -224,19 +229,20 @@ div.filterButton {
 	display: inline-block;
 	margin-left: 4px;
 	margin-right: 4px;
-	width:10px;
-	height:10px;
+	vertical-align: middle;
+	width:13px;
+	height:13px;
 	background-repeat:no-repeat;
 }
 
 .gridTable .grid_header .headerPagingButton.headerButtonEnabled,
 .gridTable .grid_footer .headerPagingButton.headerButtonEnabled {
 	cursor: pointer;
-	background-position: 0px -20px;
+	background-position: 0px -26px;
 }
 .gridTable .grid_header .headerPagingButton.headerButtonEnabled:hover,
 .gridTable .grid_footer .headerPagingButton.headerButtonEnabled:hover {
-	background-position: 0px -10px;
+	background-position: 0px -13px;
 }
 .gridTable .grid_header .headerPagingButton,
 .gridTable .grid_footer .headerPagingButton {
@@ -244,16 +250,16 @@ div.filterButton {
 	background-position: 0px 0px;
 }
 .headerPagingButton.headerButton_first {
-	background-image: url('../images/grid/arrow_first.png');
+	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_first.png');
 }
 .headerPagingButton.headerButton_last {
-	background-image: url('../images/grid/arrow_last.png');
+	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_last.png');
 }
 .headerPagingButton.headerButton_left {
-	background-image: url('../images/grid/arrow_left.png');
+	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_left.png');
 }
 .headerPagingButton.headerButton_right {
-	background-image: url('../images/grid/arrow_right.png');
+	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_right.png');
 }
 
 
