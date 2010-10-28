@@ -15,6 +15,8 @@ public final class TextAreaComponent extends SimpleFieldComponent {
 
     @Override
     public void initializeComponent() {
+        super.initializeComponent();
+
         for (ComponentOption option : getRawOptions()) {
             if ("rows".equals(option.getType())) {
                 rows = Integer.parseInt(option.getValue());

@@ -405,7 +405,9 @@
 				</group>
 			</ribbon>
 			<component type="form" name="materialRequirementDetailsForm">
-			<component type="checkbox" name="generated" field="generated" enabled="false" />
+				<component type="checkbox" name="generated" field="generated" enabled="false">
+					<option type="textRepresentationOnDisabled" value="true" />
+				</component>
 				<component type="calendar" name="date" field="date" 
 					enabled="false" />
 				<component type="input" name="worker" field="worker"
