@@ -260,7 +260,7 @@ public final class CrudController {
         ModelAndView mav = new ModelAndView();
         if (!"printOrder".equals(functionName)
                 && (entity.getField("fileName") == null || "".equals(entity.getField("fileName").toString().trim()))) {
-            mav.setViewName("error");
+            mav.setViewName("printError");
         } else {
             if ("printOrder".equals(functionName)) {
                 mav.setViewName("orderPdfView");
