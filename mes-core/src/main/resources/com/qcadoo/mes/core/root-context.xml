@@ -18,7 +18,7 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<context:property-placeholder  location="WEB-INF/db.properties,WEB-INF/report.properties"/>
+	<context:property-placeholder location="WEB-INF/db.properties"/>
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
