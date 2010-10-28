@@ -13,8 +13,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			classpath:com/qcadoo/mes/core/context.xml
-			classpath*:context.xml
+			classpath:com/qcadoo/mes/core/root-context.xml
 		</param-value>
 	</context-param>
 
@@ -45,15 +44,15 @@
     </filter-mapping>
 
 	<listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	
+	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
 	<listener>
 		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
-	</listener>
-
-	<listener>
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
 
 	<servlet>
@@ -62,8 +61,8 @@
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>
-				/WEB-INF/applicationContext.xml
-				classpath:com/qcadoo/mes/core/context.xml
+				/WEB-INF/web-context.xml
+				classpath:com/qcadoo/mes/core/web-context.xml
 				classpath*:context.xml
 			</param-value>
 		</init-param>
