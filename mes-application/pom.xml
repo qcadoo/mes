@@ -64,6 +64,17 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
+				<configuration>
+					<webAppConfig>
+						<contextPath>/</contextPath>
+			            <baseResource implementation="org.mortbay.resource.ResourceCollection">
+							<resourcesAsCSV>
+								${basedir}/src/main/webapp;
+								${basedir}/../mes-plugins/mes-plugins-crud/src/main/webapp
+							</resourcesAsCSV>
+			            </baseResource>
+					</webAppConfig>
+		        </configuration>
 			</plugin>
 		</plugins>
 	</build>
