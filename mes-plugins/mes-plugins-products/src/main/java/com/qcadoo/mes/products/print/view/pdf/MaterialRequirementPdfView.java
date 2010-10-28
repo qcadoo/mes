@@ -27,14 +27,16 @@ public final class MaterialRequirementPdfView extends AbstractPdfView {
     protected void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         DefaultEntity entity = (DefaultEntity) model.get("entity");
-
-        PdfReader reader = new PdfReader((String) entity.getField("fileName") + PDF_EXTENSION);
-        int n = reader.getNumberOfPages();
-        PdfImportedPage page;
-        for (int i = 1; i <= n; i++) {
-            page = writer.getImportedPage(reader, i);
-            Image instance = Image.getInstance(page);
-            document.add(instance);
+        Object fileName = entity.getField("fileName");
+        if (fileName != null) {
+            PdfReader reader = new PdfReader((String) fileName + PDF_EXTENSION);
+            int n = reader.getNumberOfPages();
+            PdfImportedPage page;
+            for (int i = 1; i <= n; i++) {
+                page = writer.getImportedPage(reader, i);
+                Image instance = Image.getInstance(page);
+                document.add(instance);
+            }
         }
     }
 

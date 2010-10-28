@@ -12,6 +12,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
@@ -49,6 +50,9 @@ public final class ProductService {
     @Autowired
     MaterialRequirementXlsService materialRequirementXlsService;
 
+    @Autowired
+    private TranslationService translationService;
+
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
             final Locale locale) throws IOException, DocumentException {
 
@@ -74,11 +78,18 @@ public final class ProductService {
             if ("mainWindow.materialRequirementDetailsForm".equals(triggerComponentName)) {
                 Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                         ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
+
                 if (materialRequirement.getField("fileName") == null
                         || "".equals(materialRequirement.getField("fileName").toString().trim())) {
                     materialRequirementPdfService.generateDocument(materialRequirement, locale);
                     materialRequirementXlsService.generateDocument(materialRequirement, locale);
+                } else {
+                    value.addInfoMessage(translationService
+                            .translate(
+                                    "products.materialRequirementDetailsView.mainWindow.materialRequirementDetailsForm.documentsWasGenerated",
+                                    locale));
                 }
+
             }
         }
     }
