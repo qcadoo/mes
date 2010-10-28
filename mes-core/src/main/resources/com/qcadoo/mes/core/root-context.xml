@@ -18,11 +18,7 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<aop:aspectj-autoproxy />
-
 	<context:property-placeholder  location="WEB-INF/db.properties,WEB-INF/report.properties"/>
-
-	<context:component-scan base-package="com.qcadoo.mes" />
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -49,8 +45,6 @@
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-
-	<tx:annotation-driven />
 
 	<security:global-method-security
 		pre-post-annotations="enabled">
