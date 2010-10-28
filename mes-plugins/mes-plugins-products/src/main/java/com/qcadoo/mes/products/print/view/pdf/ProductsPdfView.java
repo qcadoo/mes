@@ -41,8 +41,8 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
         FontFactory.register(classPathResource.getPath());
         BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        Font font12 = new Font(baseFont, 12);
-        String fileName = addContent(document, entity, request.getLocale(), font12);
+        Font font10 = new Font(baseFont, 10);
+        String fileName = addContent(document, entity, request.getLocale(), font10);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".pdf");
         writer.addJavaScript("this.print(false);", false);
 

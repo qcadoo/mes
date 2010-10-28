@@ -29,7 +29,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.MultiColumnText;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.DottedLineSeparator;
@@ -76,37 +75,42 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
         FontFactory.register(classPathResource.getPath());
         BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        return new Font(baseFont, 12);
+        Font font = new Font(baseFont, 10);
+        font.setColor(70, 70, 70);
+        return font;
     }
 
     private void buildPdfContent(final Document document, final Entity entity, final Locale locale, final Font font)
             throws DocumentException {
         UsersUser user = securityService.getCurrentUser();
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
-        Font font20 = new Font(font);
-        font20.setSize(20);
-        font20.setColor(new Color(70, 70, 70));
-        LineSeparator line = new LineSeparator(3, 90f, new Color(102, 102, 102), Element.ALIGN_CENTER, 0);
+        Font font18 = new Font(font);
+        font18.setSize(18);
+        font18.setColor(new Color(70, 70, 70));
+        LineSeparator line = new LineSeparator(3, 90f, new Color(102, 102, 102), Element.ALIGN_LEFT, 0);
         DottedLineSeparator dottedLine = new DottedLineSeparator();
-        dottedLine.setGap(10f);
+        dottedLine.setGap(2f);
         dottedLine.setPercentage(90f);
+        dottedLine.setAlignment(Element.ALIGN_LEFT);
         document.add(dottedLine);
         document.add(Chunk.NEWLINE);
         Paragraph title = new Paragraph(translationService.translate("products.materialRequirement.report.title", locale) + " "
-                + entity.getField("name"), getFontBold(font20));
+                + entity.getField("name"), getFontBold(font18));
+        title.setSpacingAfter(10f);
         document.add(title);
         document.add(line);
-        MultiColumnText userAndDate = new MultiColumnText();
-        userAndDate.addRegularColumns(document.left(), document.right(), 5f, 2);
+        PdfPTable userAndDate = new PdfPTable(2);
+        userAndDate.setWidthPercentage(90f);
+        userAndDate.setHorizontalAlignment(Element.ALIGN_LEFT);
+        userAndDate.getDefaultCell().setBorderWidth(0);
         Paragraph userParagraph = new Paragraph(
                 translationService.translate("products.materialRequirement.report.author", locale) + " " + user.getUserName(),
                 font);
         Paragraph dateParagraph = new Paragraph(df.format(entity.getField("date")), font);
-        dateParagraph.setAlignment(Element.ALIGN_RIGHT);
-        userAndDate.addElement(userParagraph);
-        userAndDate.addElement(dateParagraph);
+        userAndDate.addCell(userParagraph);
+        userAndDate.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+        userAndDate.addCell(dateParagraph);
         document.add(userAndDate);
-        document.add(Chunk.NEWLINE);
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah", locale),
                 getFontBold(font)));
