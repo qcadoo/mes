@@ -160,10 +160,24 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		}
 	
 	this.performCallFunction = function(functionName, additionalAttribute, entityId, actionsPerformer) {
-		if (additionalAttribute == "pdf") {
-			window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
-		} else if (additionalAttribute == "xls") {
-			window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
+		if (functionName == "goToUrl") {
+			var url = additionalAttribute;
+			QCD.info(entityId);
+			if (entityId) {
+				url += "?entityId="+entityId;
+			}
+			goToPage(url);
+		} else if (functionName == "updatePlugin") {
+			alert("updatePlugin");
+		} else {
+			if (additionalAttribute == "pdf") {
+				window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
+			} else if (additionalAttribute == "xls") {
+				window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
+			}
+		}
+		if (actionsPerformer) {
+			actionsPerformer.performNext();
 		}
 	}
 	
@@ -354,6 +368,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		}
 		window.parent.goToPage(url, serializationObject);
 	}
+	var goToPage = this.goToPage;
 	
 	this.goBack = function() {
 		changed = false;

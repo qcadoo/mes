@@ -4,14 +4,14 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" action="" />
-					<bigButton name="update" action="" />
+					<bigButton name="download" action="#{mainWindow}.performCallFunction(goToUrl,../download.html);" />
+					<bigButton name="update" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../update.html);" />
 				</group>
 				<group name="actions">
-					<smallButton name="enable" action="" />
-					<smallButtons name="disable" action="">
-						<smallButton name="deinstall" action="" />
-						<smallButton name="remove" action="" />
+					<smallButton name="enable" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../enable.html);" />
+					<smallButtons name="disable" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../disable.html);">
+						<smallButton name="deinstall" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../deinstall.html);" />
+						<smallButton name="remove" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../remove.html);" />
 					</smallButtons>
 				</group>
 			</ribbon>
