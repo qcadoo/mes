@@ -27,7 +27,6 @@
 				<option type="searchable" value="name,vendor,status" />
 				<option type="orderable" value="name" />
 				<option type="multiselect" value="false" />
-				<option type="height" value="450" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullScreen" value="true" />
@@ -52,6 +51,7 @@
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fullScreen" value="true" />
+			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>

@@ -408,10 +408,12 @@
 				<component type="checkbox" name="generated" field="generated" enabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
-				<component type="calendar" name="date" field="date" 
-					enabled="false" />
-				<component type="input" name="worker" field="worker"
-					enabled="false" />
+				<component type="input" name="date" field="date" enabled="false">
+					<option type="textRepresentationOnDisabled" value="true" />
+				</component>
+				<component type="input" name="worker" field="worker" enabled="false">
+					<option type="textRepresentationOnDisabled" value="true" />
+				</component>
 				<component type="textarea" name="name" field="name" />
 				<component type="checkbox" name="onlyComponents" field="onlyComponents" />
 				<option type="header" value="false" />
