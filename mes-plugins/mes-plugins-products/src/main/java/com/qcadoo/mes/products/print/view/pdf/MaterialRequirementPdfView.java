@@ -28,7 +28,7 @@ public final class MaterialRequirementPdfView extends AbstractPdfView {
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         DefaultEntity entity = (DefaultEntity) model.get("entity");
         Object fileName = entity.getField("fileName");
-        if (fileName != null) {
+        if (fileName != null && !"".equals(fileName.toString().trim())) {
             PdfReader reader = new PdfReader((String) fileName + PDF_EXTENSION);
             int n = reader.getNumberOfPages();
             PdfImportedPage page;
@@ -37,6 +37,8 @@ public final class MaterialRequirementPdfView extends AbstractPdfView {
                 Image instance = Image.getInstance(page);
                 document.add(instance);
             }
+            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + PDF_EXTENSION);
         }
     }
 

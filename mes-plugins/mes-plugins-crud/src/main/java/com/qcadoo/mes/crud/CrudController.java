@@ -257,19 +257,20 @@ public final class CrudController {
         if (entityId != null) {
             entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
         }
-
         ModelAndView mav = new ModelAndView();
-
-        if ("Order".equals(functionName)) {
-            mav.setViewName("orderPdfView");
-        } else if ("MaterialRequirementPdf".equals(functionName)) {
-            mav.setViewName("materialRequirementPdfView");
-        } else if ("MaterialRequirementXls".equals(functionName)) {
-            mav.setViewName("materialRequirementXlsView");
+        if (!"printOrder".equals(functionName)
+                && (entity.getField("fileName") == null || "".equals(entity.getField("fileName").toString().trim()))) {
+            mav.setViewName("error");
+        } else {
+            if ("printOrder".equals(functionName)) {
+                mav.setViewName("orderPdfView");
+            } else if ("printMaterialRequirementPdf".equals(functionName)) {
+                mav.setViewName("materialRequirementPdfView");
+            } else if ("printMaterialRequirementXls".equals(functionName)) {
+                mav.setViewName("materialRequirementXlsView");
+            }
+            mav.addObject("entity", entity);
         }
-
-        mav.addObject("entity", entity);
-
         return mav;
     }
 

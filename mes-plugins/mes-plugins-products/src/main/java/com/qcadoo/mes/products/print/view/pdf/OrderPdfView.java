@@ -17,7 +17,7 @@ import com.qcadoo.mes.model.types.internal.DateType;
 public final class OrderPdfView extends ProductsPdfView {
 
     @Override
-    protected void addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
+    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
             throws DocumentException, IOException {
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
         UsersUser user = securityService.getCurrentUser();
@@ -37,6 +37,7 @@ public final class OrderPdfView extends ProductsPdfView {
         }
         document.add(new Paragraph(translationService.translate("products.order.report.state", locale) + " "
                 + entity.getField("state"), font));
+        return "Order" + entity.getField("number");
     }
 
     @Override

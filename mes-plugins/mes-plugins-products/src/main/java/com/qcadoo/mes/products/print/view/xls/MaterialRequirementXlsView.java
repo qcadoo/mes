@@ -23,7 +23,7 @@ public final class MaterialRequirementXlsView extends AbstractExcelView {
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         DefaultEntity entity = (DefaultEntity) model.get("entity");
         Object fileName = entity.getField("fileName");
-        if (fileName != null) {
+        if (fileName != null && !"".equals(fileName.toString().trim())) {
             FileInputStream fileInputStream = new FileInputStream((String) fileName + XLS_EXTENSION);
             POIFSFileSystem fs = new POIFSFileSystem(fileInputStream);
             HSSFWorkbook existingWorkbook = new HSSFWorkbook(fs);
@@ -35,7 +35,8 @@ public final class MaterialRequirementXlsView extends AbstractExcelView {
                 HSSFSheet sheet = workbook.createSheet(existingSheet.getSheetName());
                 ExcelUtil.copySheets(sheet, existingSheet);
             }
+            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XLS_EXTENSION);
         }
     }
-
 }
