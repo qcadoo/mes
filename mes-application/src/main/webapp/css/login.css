@@ -150,9 +150,10 @@ html, body {
 #loginForm #loginButtonWrapper #loginButton span {
 	line-height: 37px;
 	color: white;
+	font-family: Arial bold, Arial, Helvetica, sans-serif;
+	font-size: 13px;
 	text-decoraton: none;
-	margin-left: 40px;
-	font-size: 14px;
+	margin-left: 46px;
 }
 
 #loginContentWrapper #loginFooter #loginFooterLine {

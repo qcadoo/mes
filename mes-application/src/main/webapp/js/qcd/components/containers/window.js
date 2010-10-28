@@ -112,5 +112,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		mainController.performNew(actionsPerformer);
 	}
 	
+	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
+		mainController.performCallFunction(functionName, additionalAttribute, null, actionsPerformer);
+	}
+	
 	constructor(this);
 }

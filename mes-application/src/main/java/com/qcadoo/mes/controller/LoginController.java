@@ -27,6 +27,7 @@ public final class LoginController {
         mav.setViewName("login");
         mav.addObject("translation", translationService.getSecurityMessages(locale));
         mav.addObject("currentLanguage", locale.getLanguage());
+
         mav.addObject("iframe", iframe);
 
         if (logout) {

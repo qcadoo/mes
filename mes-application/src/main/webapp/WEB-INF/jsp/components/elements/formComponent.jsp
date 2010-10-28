@@ -32,7 +32,7 @@
 				<div id="${componentFullName}_error_messages" class="error_messages" style="display: none"></div></div></div></div>
 	
 	<c:choose>
-		<c:when test="${isInputBox}">
+		<c:when test="${isInputBox && !component.options['textRepresentationOnDisabled']}">
 			<div class="component_container_form_w">
 				<div class="component_container_form_inner">
 					<div class="component_container_form_x"></div>

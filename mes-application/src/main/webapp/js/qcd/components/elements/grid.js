@@ -252,7 +252,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function blockGrid() {
 		if (grid) {
-			grid.block({ message: mainController.getTranslation("commons.loading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+			element.block({ message: mainController.getTranslation("commons.loading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 
@@ -265,7 +265,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function unblockGrid() {
 		if (grid) {
-			grid.unblock();
+			element.unblock();
 		}
 	}
 
@@ -354,7 +354,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 					order: "asc"
 				}
 		}
-		//onCurrentStateChange();
+		onCurrentStateChange();
 		return 'stop';
 	}
 	
