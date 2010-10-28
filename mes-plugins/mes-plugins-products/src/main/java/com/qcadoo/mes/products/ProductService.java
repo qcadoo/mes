@@ -84,6 +84,7 @@ public final class ProductService {
                     materialRequirementPdfService.generateDocument(materialRequirement, locale);
                     materialRequirementXlsService.generateDocument(materialRequirement, locale);
                 } else {
+                    // FIXME KRNA remove override
                     value.addInfoMessage("override:"
                             + translationService
                                     .translate(

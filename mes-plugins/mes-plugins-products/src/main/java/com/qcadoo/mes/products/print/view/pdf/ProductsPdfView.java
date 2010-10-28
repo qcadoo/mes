@@ -42,7 +42,8 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         FontFactory.register(classPathResource.getPath());
         BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font font12 = new Font(baseFont, 12);
-        addContent(document, entity, request.getLocale(), font12);
+        String fileName = addContent(document, entity, request.getLocale(), font12);
+        response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".pdf");
         writer.addJavaScript("this.print(false);", false);
 
     }
@@ -56,9 +57,10 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         document.addCreator("QCADOO");
     }
 
-    protected void addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
+    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
             throws DocumentException, IOException {
         document.add(new Paragraph("", font));
+        return "document";
     }
 
     protected Font getFontBold(final Font font) {
