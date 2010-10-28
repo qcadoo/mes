@@ -83,10 +83,11 @@ public final class ProductService {
                     materialRequirementPdfService.generateDocument(materialRequirement, locale);
                     materialRequirementXlsService.generateDocument(materialRequirement, locale);
                 } else {
-                    value.addInfoMessage(translationService
-                            .translate(
-                                    "products.materialRequirementDetailsView.mainWindow.materialRequirementDetailsForm.documentsWasGenerated",
-                                    locale));
+                    value.addInfoMessage("override:"
+                            + translationService
+                                    .translate(
+                                            "products.materialRequirementDetailsView.mainWindow.materialRequirementDetailsForm.documentsWasGenerated",
+                                            locale));
                 }
 
             }
