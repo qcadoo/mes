@@ -1,6 +1,10 @@
 package com.qcadoo.mes.view.components;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 
@@ -31,7 +35,11 @@ public final class TextInputComponent extends SimpleFieldComponent {
 
     @Override
     public String convertToViewValue(final Object value) {
-        return String.valueOf(value).trim();
+        if (value instanceof Date) {
+            return new SimpleDateFormat(DateType.DATE_FORMAT).format((Date) value);
+        } else {
+            return String.valueOf(value).trim();
+        }
     }
 
     @Override

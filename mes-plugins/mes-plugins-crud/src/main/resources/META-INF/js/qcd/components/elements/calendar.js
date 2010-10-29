@@ -49,6 +49,8 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 		
 		datepickerElement.datepicker(options);
 		
+		input.val("");
+		
 		$(document).mousedown(function(event) {
 			if(!opened) {
 				return;
