@@ -32,10 +32,17 @@ public final class PluginResourcesResolver implements ApplicationContextAware, A
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        copyResources("js", "js");
-        copyResources("css", "css");
-        copyResources("img", "img");
-        copyResources("jsp", "WEB-INF/jsp");
+        boolean copyResources = true;
+        String copyResorcesProperty = System.getProperty("com.qcadoo.mes.application.copyResources");
+        if (copyResorcesProperty != null) {
+            copyResources = Boolean.parseBoolean(copyResorcesProperty);
+        }
+        if (copyResources) {
+            copyResources("js", "js");
+            copyResources("css", "css");
+            copyResources("img", "img");
+            copyResources("WEB-INF/jsp", "WEB-INF/jsp");
+        }
     }
 
     private void copyResources(final String type, final String targetPath) {
