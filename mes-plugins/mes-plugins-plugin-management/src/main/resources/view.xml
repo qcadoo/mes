@@ -31,24 +31,6 @@
 				<option type="creatable" value="false" />
 				<option type="fullScreen" value="true" />
 			</component>
-			<component type="button" name="download">
-				<option type="url" value="../download.html" />
-			</component>
-			<component type="button" name="remove" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../remove.html" />
-			</component>
-			<component type="button" name="enable" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../enable.html" />
-			</component>
-			<component type="button" name="disable" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../disable.html" />
-			</component>
-			<component type="button" name="deinstall" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../deinstall.html" />
-			</component>
-			<component type="button" name="update" source="#{mainWindow.pluginsGrid}">
-				<option type="url" value="../update.html" />
-			</component>
 			<option type="backButton" value="false" />
 			<option type="fullScreen" value="true" />
 			<option type="fixedHeight" value="true" />
