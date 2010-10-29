@@ -66,8 +66,12 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
             row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
             row.createCell(2).setCellValue(entry.getValue().longValueExact());
-            row.createCell(3).setCellValue(entry.getKey().getField("unit").toString());
-
+            Object unit = entry.getKey().getField("unit");
+            if (unit != null) {
+                row.createCell(3).setCellValue(unit.toString());
+            } else {
+                row.createCell(3).setCellValue("");
+            }
         }
     }
 

@@ -200,7 +200,12 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), font));
             table.addCell(new Phrase(entry.getKey().getField("name").toString(), font));
-            table.addCell(new Phrase(entry.getKey().getField("unit").toString(), font));
+            Object unit = entry.getKey().getField("unit");
+            if (unit != null) {
+                table.addCell(new Phrase(unit.toString(), font));
+            } else {
+                table.addCell(new Phrase("", font));
+            }
             table.addCell(new Phrase(entry.getValue().toEngineeringString(), getFontBold(font)));
         }
         document.add(table);
