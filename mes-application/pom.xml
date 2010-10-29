@@ -70,7 +70,7 @@
 			            <baseResource implementation="org.mortbay.resource.ResourceCollection">
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
-								${basedir}/../mes-plugins/mes-plugins-crud/src/main/webapp
+								${basedir}/../mes-plugins/mes-plugins-crud/src/main/resources/META-INF
 							</resourcesAsCSV>
 			            </baseResource>
 					</webAppConfig>

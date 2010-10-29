@@ -152,7 +152,6 @@
 		
 			<div id="loginHeader">
 				${translation["security.form.header"]}
-				${iframe}
 				<c:if test="${! iframe}">
 					<div id="languageDiv">
 				 		<select id="languageSelect" onchange="changeLanguage(this.value)">

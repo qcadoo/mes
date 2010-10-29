@@ -14,19 +14,12 @@
 
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="textInput" />
+	<tiles:putAttribute name="componentType" value="passwordInput" />
 	<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
 	<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
 	<tiles:putAttribute name="viewName" value="${viewName}" />
 	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
-		<c:if test="${component.options['textRepresentationOnDisabled']}">
-			<c:set var="displayHiddenIfTextRepresentationOnDisabled" value="display: none" />
-		</c:if>
-		<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" style="${displayHiddenIfTextRepresentationOnDisabled}" />
-		<c:if test="${component.options['textRepresentationOnDisabled']}">
-			<span id="${componentFullName}_text" class="component_container_form_textRepresentation">&nbsp;</span>
-		</c:if>
-		<span id="${componentFullName}_textHeight">&nbsp;</span>
+		<input type="password" id="${componentFullName}_input" name="fields[${component.name}]" />
 	</tiles:putAttribute>
 </tiles:insertTemplate>
