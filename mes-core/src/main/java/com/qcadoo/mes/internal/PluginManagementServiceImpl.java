@@ -39,8 +39,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     private static final String TMP_PATH = "WEB-INF/tmp/";
 
-    private static final String PLUGIN_VIEW = "redirect:page/plugins/pluginGridView.html?iframe=true";
-
     public static final String FIELD_DELETED = "deleted";
 
     @Autowired
@@ -79,43 +77,36 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                     deleteFile = true;
                     // LOG.info("Plugin with identifier existed");
                     return new PluginManagementOperationStatus(true, "plugins.messages.error.pluginExists");
-                    // return PLUGIN_VIEW + "&message=Istnieje plugin z podanym identyfikatorem";
                 }
                 PluginsPlugin databasePlugin = getByNameAndVendor(plugin.getName(), plugin.getVendor());
                 if (databasePlugin != null) {
                     deleteFile = true;
                     LOG.info("Plugin was installed");
                     return new PluginManagementOperationStatus(true, "plugins.messages.error.pluginAlreadyInstalled");
-                    // return PLUGIN_VIEW + "&message=Plugin jest zainstalowany";
                 } else {
                     plugin.setDeleted(false);
                     plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
                     plugin.setBase(false);
                     plugin.setFileName(file.getOriginalFilename());
                     save(plugin);
-                    // return PLUGIN_VIEW;
                     return new PluginManagementOperationStatus(false, "plugins.messages.success.downloadSuccess");
                 }
             } catch (IllegalStateException e) {
                 deleteFile = true;
                 LOG.error("Problem with installing file - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.fileError");
-                // return PLUGIN_VIEW + "&message=Blad instalacji pliku";
             } catch (IOException e) {
                 deleteFile = true;
                 LOG.error("Problem with installing file - " + e.getMessage());
-                // return PLUGIN_VIEW + "&message=Blad instalacji pliku";
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.fileError");
             } catch (ParserConfigurationException e) {
                 deleteFile = true;
                 LOG.error("Problem with parsing descriptor - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.descriptorError");
-                // return PLUGIN_VIEW + "&message=Blad odczytu deskryptora";
             } catch (SAXException e) {
                 deleteFile = true;
                 LOG.error("Problem with parsing descriptor - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.descriptorError");
-                // return PLUGIN_VIEW + "&message=Blad odczytu deskryptora";
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     boolean success = pluginFile.delete();
@@ -130,7 +121,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         } else {
             LOG.info("Chosen file is empty");
             return new PluginManagementOperationStatus(true, "plugins.messages.error.emptyFile");
-            // return PLUGIN_VIEW + "&message=Plik jest pusty";
         }
     }
 
@@ -141,12 +131,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         PluginsPlugin databasePlugin = getByEntityId(entityId);
         if (databasePlugin.isBase()) {
             LOG.info("Plugin is base");
-            // return PLUGIN_VIEW + "&message=Plugin jest bazowy";
             return new PluginManagementOperationStatus(true, "plugins.messages.error.isBase");
         } else if (!databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
             LOG.info("Plugin hasn't apropriate status");
             return new PluginManagementOperationStatus(true, "plugins.messages.error.wrongStatusToRemove");
-            // return PLUGIN_VIEW + "&message=Niepoprawny status do usuwania";
         }
         try {
             databasePlugin.setDeleted(true);
@@ -157,11 +145,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file - " + e.getMessage());
             return new PluginManagementOperationStatus(true, "plugins.messages.error.fileRemoveError");
-            // return PLUGIN_VIEW + "&message=Blad usuwania pliku";
         }
 
         return new PluginManagementOperationStatus(false, "plugins.messages.success.removeSuccess");
-        // return "redirect:removePage.html";
     }
 
     @Override
@@ -172,18 +158,14 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         if (plugin.isBase()) {
             LOG.info("Plugin is base");
             return new PluginManagementOperationStatus(true, "plugins.messages.error.isBase");
-            // return "redirect:page/plugins/errorEnableView.html?iframe=true";
-            // return PLUGIN_VIEW + "&message=Plugin jest bazowy";
         } else if (plugin.getStatus().equals(PluginStatus.ACTIVE.getValue())) {
             LOG.info("Plugin hasn't apropriate status");
-            // return PLUGIN_VIEW + "&message=Niepoprawny status do włączania";
             return new PluginManagementOperationStatus(true, "plugins.messages.error.wrongStatusToEnable");
         }
         String pluginStatus = plugin.getStatus();
         plugin.setStatus(PluginStatus.ACTIVE.getValue());
         save(plugin);
         if (pluginStatus.equals(PluginStatus.INSTALLED.getValue())) {
-            // return PLUGIN_VIEW;
             return new PluginManagementOperationStatus(false, "plugins.messages.success.enableSuccess");
         } else {
             try {
@@ -192,7 +174,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
                 save(plugin);
                 LOG.error("Problem with moving plugin file - " + e.getMessage());
-                // return PLUGIN_VIEW + "&message=Blad przenoszenia pliku";
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.fileMoveError");
             }
 
@@ -200,7 +181,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                     "plugins.messages.success.enableSuccess");
             status.setRestartRequired(true);
             return status;
-            // return "redirect:enablePage.html";
         }
     }
 
@@ -211,10 +191,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             PluginUtil.restartServer(webappPath);
         } catch (PluginException e) {
             LOG.error("Problem with restart server - " + e.getMessage());
-
-            // TODO mina
-
-            return PLUGIN_VIEW + "&message=TODO: Blad restartu serwera";
         }
         return "ok";
     }
@@ -226,17 +202,14 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         PluginsPlugin plugin = getByEntityId(entityId);
         if (plugin.isBase()) {
             LOG.info("Plugin is base");
-            // return PLUGIN_VIEW + "&message=Plugin jest bazowy";
             return new PluginManagementOperationStatus(true, "plugins.messages.error.isBase");
         } else if (!plugin.getStatus().equals(PluginStatus.ACTIVE.getValue())) {
             LOG.info("Plugin hasn't apropriate status");
-            // return PLUGIN_VIEW + "&message=Niepoprawny status do wyłączania";
             return new PluginManagementOperationStatus(true, "plugins.messages.error.wrongStatusToDisable");
         }
         plugin.setStatus(PluginStatus.INSTALLED.getValue());
         save(plugin);
         return new PluginManagementOperationStatus(false, "plugins.messages.success.disableSuccess");
-        // return PLUGIN_VIEW;
     }
 
     @Override
@@ -247,11 +220,9 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         if (databasePlugin.isBase()) {
             LOG.info("Plugin is base");
             return new PluginManagementOperationStatus(true, "plugins.messages.error.isBase");
-            // return PLUGIN_VIEW + "&message=Plugin jest bazowy";
         } else if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
             LOG.info("Plugin hasn't apropriate status");
             return new PluginManagementOperationStatus(true, "plugins.messages.error.wrongStatusToUninstall");
-            // return PLUGIN_VIEW + "&message=Niepoprawny status do odinstalowania";
         }
         try {
             databasePlugin.setDeleted(true);
@@ -260,7 +231,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file - " + e.getMessage());
             return new PluginManagementOperationStatus(true, "plugins.messages.error.fileRemoveError");
-            // return PLUGIN_VIEW + "&message=Blad usuwania pliku";
         }
         PluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
         PluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
@@ -271,7 +241,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 "plugins.messages.success.deinstallSuccess");
         status.setRestartRequired(true);
         return status;
-        // return "redirect:deinstallPage.html";
     }
 
     @Override
@@ -289,22 +258,18 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                     deleteFile = true;
                     LOG.info("Plugin not found in database");
                     return new PluginManagementOperationStatus(true, "plugins.messages.error.noPlugin");
-                    // return PLUGIN_VIEW + "&message=Brak pluginu";
                 } else if (databasePlugin.isBase()) {
                     deleteFile = true;
                     LOG.info("Plugin is base");
                     return new PluginManagementOperationStatus(true, "plugins.messages.error.isBase");
-                    // return PLUGIN_VIEW + "&message=Plugin jest bazowy";
                 } else if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
                     deleteFile = true;
                     LOG.info("Plugin hasn't apropriate status");
                     return new PluginManagementOperationStatus(true, "plugins.messages.error.wrongStatusToUpdate");
-                    // return PLUGIN_VIEW + "&message=Niepoprawny status do aktualizacji";
                 } else if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
                     deleteFile = true;
                     LOG.info("Plugin has actual version");
                     return new PluginManagementOperationStatus(true, "plugins.messages.error.noPlugin");
-                    // return PLUGIN_VIEW + "&message=Brak pluginu";
                 } else {
                     plugin.setFileName(file.getOriginalFilename());
                     movePlugin(plugin, databasePlugin);
@@ -312,33 +277,27 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                             "plugins.messages.success.updateSuccess");
                     status.setRestartRequired(true);
                     return status;
-                    // return "redirect:enablePage.html";
                 }
             } catch (IllegalStateException e) {
                 deleteFile = true;
                 LOG.error("Problem with installing file - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.fileError");
-                // return PLUGIN_VIEW + "&message=Blad instalacji pliku";
             } catch (IOException e) {
                 deleteFile = true;
                 LOG.error("Problem with installing file - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.fileError");
-                // return PLUGIN_VIEW + "&message=Blad instalacji pliku";
             } catch (ParserConfigurationException e) {
                 deleteFile = true;
                 LOG.error("Problem with parsing descriptor - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.descriptorError");
-                // return PLUGIN_VIEW + "&message=Blad odczytu deskryptora";
             } catch (SAXException e) {
                 deleteFile = true;
                 LOG.error("Problem with parsing descriptor - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.descriptorError");
-                // return PLUGIN_VIEW + "&message=Blad odczytu deskryptora";
             } catch (PluginException e) {
                 deleteFile = true;
                 LOG.error("Problem with moving/removing plugin file - " + e.getMessage());
                 return new PluginManagementOperationStatus(true, "plugins.messages.error.fileRemoveMoveError");
-                // return PLUGIN_VIEW + "&message=Blad usuwania/przenoszenia pliku";
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     boolean success = pluginFile.delete();
@@ -353,7 +312,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         } else {
             LOG.info("Chosen file is empty");
             return new PluginManagementOperationStatus(true, "plugins.messages.error.emptyFile");
-            // return PLUGIN_VIEW + "&message=Plik jest pusty";
         }
     }
 

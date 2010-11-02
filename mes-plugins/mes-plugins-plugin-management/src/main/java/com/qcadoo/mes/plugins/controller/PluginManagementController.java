@@ -77,12 +77,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "update", method = RequestMethod.GET)
     public ModelAndView getUpdatePageView(final Locale locale) {
-        // return getDownloadPageView("update.html", locale);
-
-        PluginManagementOperationStatus operationStatus = new PluginManagementOperationStatus(false, "lalala");
-        operationStatus.setRestartRequired(true);
-
-        return getInfoMessageView(operationStatus, locale);
+        return getDownloadPageView("update.html", locale);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
