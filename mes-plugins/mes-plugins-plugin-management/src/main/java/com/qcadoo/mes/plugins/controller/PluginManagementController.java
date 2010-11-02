@@ -30,18 +30,18 @@ public final class PluginManagementController {
     private CrudController crudController;
 
     @RequestMapping(value = "download", method = RequestMethod.GET)
-    public String getDownloadPageView(final Locale locale) {
-        return getDownloadPageRedirect("download.html", locale);
+    public ModelAndView getDownloadPageView(final Locale locale) {
+        return getDownloadPageView("download.html", locale);
     }
 
     @RequestMapping(value = "download", method = RequestMethod.POST)
     public ModelAndView handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
-        return getInfoMessageRedirect(pluginManagementService.downloadPlugin(file), locale);
+        return getInfoMessageView(pluginManagementService.downloadPlugin(file), locale);
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageRedirect(pluginManagementService.removePlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.removePlugin(entityId), locale);
     }
 
     @RequestMapping(value = "restartPage", method = RequestMethod.GET)
@@ -56,7 +56,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "enable", method = RequestMethod.GET)
     public ModelAndView handleEnable(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageRedirect(pluginManagementService.enablePlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.enablePlugin(entityId), locale);
     }
 
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
@@ -67,37 +67,49 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "disable", method = RequestMethod.GET)
     public ModelAndView getDisablePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageRedirect(pluginManagementService.disablePlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.disablePlugin(entityId), locale);
     }
 
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
     public ModelAndView handleDeinstall(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageRedirect(pluginManagementService.deinstallPlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.deinstallPlugin(entityId), locale);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.GET)
-    public String getUpdatePageView(final Locale locale) {
-        return getDownloadPageRedirect("update.html", locale);
+    public ModelAndView getUpdatePageView(final Locale locale) {
+        // return getDownloadPageView("update.html", locale);
+
+        PluginManagementOperationStatus operationStatus = new PluginManagementOperationStatus(false, "lalala");
+        operationStatus.setRestartRequired(true);
+
+        return getInfoMessageView(operationStatus, locale);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public ModelAndView handleUpdate(@RequestParam("file") final MultipartFile file, final Locale locale) {
-        return getInfoMessageRedirect(pluginManagementService.updatePlugin(file), locale);
+        return getInfoMessageView(pluginManagementService.updatePlugin(file), locale);
     }
 
     @RequestMapping(value = "restartInfoView", method = RequestMethod.GET)
     public ModelAndView getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
-        return getInfoMessageRedirect(new PluginManagementOperationStatus(false, message), locale);
+        return getInfoMessageView(new PluginManagementOperationStatus(false, message), locale);
     }
 
-    private String getDownloadPageRedirect(final String downloadAction, final Locale locale) {
+    private ModelAndView getDownloadPageView(final String downloadAction, final Locale locale) {
         String headerLabel = translationService.translate("plugins.downloadView.header", locale);
         String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
-        return "redirect:page/plugins/pluginDownloadView.html?iframe=true&downloadAction=" + downloadAction + "&headerLabel="
-                + headerLabel + "&buttonLabel=" + buttonLabel;
+
+        ModelAndView mav = crudController.getView("plugins", "pluginDownloadView", new HashMap<String, String>(), locale);
+
+        mav.addObject("headerLabel", headerLabel);
+        mav.addObject("buttonLabel", buttonLabel);
+
+        mav.addObject("downloadAction", downloadAction);
+
+        return mav;
     }
 
-    private ModelAndView getInfoMessageRedirect(PluginManagementOperationStatus operationStatus, final Locale locale) {
+    private ModelAndView getInfoMessageView(PluginManagementOperationStatus operationStatus, final Locale locale) {
 
         ModelAndView mav = crudController.getView("plugins", "pluginInfoView", new HashMap<String, String>(), locale);
 

@@ -25,11 +25,11 @@
 
 		function checkStatus() {
 			$.ajax({
-				url: "restartPage.html&message=noMessage",
+				url: "restartPage.html?message=noMessage",
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
-						window.location = "page/plugins/pluginInfoView.html?iframe=true&pluginStatusError=false&pluginStatusMessageHeader=${message}&pluginStatusMessage=${message}";
+						window.location = "page/plugins/pluginInfoView.html?iframe=true&pluginStatusError=false&pluginStatusMessageHeader=${messageHeader}&pluginStatusMessage=${message}";
 						return;
 					} else {
 						setTimeout("checkStatus();",1000);

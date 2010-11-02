@@ -6,14 +6,14 @@ String ctx = request.getContextPath();
 %>
 <html>
     <head>
-        <title>${arguments['headerLabel']}</title>
+        <title>${headerLabel}</title>
     </head>
     <body>
     	<div style="margin: 20px;">
-	        <h1>${arguments['headerLabel']}</h1>
-	        <form method="post" action="<%=ctx%>/${arguments['downloadAction']}" enctype="multipart/form-data">
+	        <h1>${headerLabel}</h1>
+	        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
 	            <input type="file" name="file"/>
-	            <input type="submit" value="${arguments['buttonLabel']}"/>
+	            <input type="submit" value="${buttonLabel}"/>
 	        </form>
         </div>
     </body>
