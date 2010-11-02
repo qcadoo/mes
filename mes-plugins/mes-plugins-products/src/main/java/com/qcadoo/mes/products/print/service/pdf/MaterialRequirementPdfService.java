@@ -1,5 +1,6 @@
 package com.qcadoo.mes.products.print.service.pdf;
 
+import java.awt.Color;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -85,7 +86,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         FontFactory.register(classPathResource.getPath());
         BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font font = new Font(baseFont, 10);
-        // font.setColor(new Color(70, 70, 70));
+        font.setColor(new Color(70, 70, 70));
         return font;
     }
 
@@ -95,9 +96,8 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
         Font font18 = new Font(font);
         font18.setSize(18);
-        // font18.setColor(new Color(70, 70, 70));
-        LineSeparator line = new LineSeparator(3, 90f, // new Color(102, 102, 102)
-                font18.getColor(), Element.ALIGN_LEFT, 0);
+        font18.setColor(new Color(70, 70, 70));
+        LineSeparator line = new LineSeparator(3, 90f, new Color(102, 102, 102), Element.ALIGN_LEFT, 0);
         document.add(Chunk.NEWLINE);
         Paragraph title = new Paragraph(translationService.translate("products.materialRequirement.report.title", locale) + " "
                 + entity.getField("name"), getFontBold(font18));
@@ -178,8 +178,8 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         table.setWidthPercentage(90f);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         table.setSpacingBefore(10.0f);
-        // table.getDefaultCell().setBackgroundColor(new Color(230, 230, 230));
-        // table.getDefaultCell().setBorderColor(new Color(153, 153, 153));
+        table.getDefaultCell().setBackgroundColor(new Color(230, 230, 230));
+        table.getDefaultCell().setBorderColor(new Color(153, 153, 153));
         table.getDefaultCell().setPadding(5.0f);
         table.getDefaultCell().disableBorderSide(Rectangle.RIGHT);
         int i = 0;

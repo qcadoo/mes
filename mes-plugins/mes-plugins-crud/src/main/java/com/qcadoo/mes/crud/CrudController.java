@@ -89,6 +89,7 @@ public final class CrudController {
         modelAndView.addObject("context", arguments.get("context"));
         modelAndView.addObject("translationsMap", translationsMap);
         modelAndView.addObject("locale", locale.getLanguage());
+        modelAndView.addObject("arguments", arguments);
 
         addMessageToModel(arguments, modelAndView);
 

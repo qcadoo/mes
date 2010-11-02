@@ -6,13 +6,15 @@ String ctx = request.getContextPath();
 %>
 <html>
     <head>
-        <title>Pobieranie modułów</title>
+        <title>${headerLabel}</title>
     </head>
     <body>
-        <h1>Pobierz moduł</h1>
-        <form method="post" action="<%=ctx%>/download.html" enctype="multipart/form-data">
-            <input type="file" name="file"/>
-            <input type="submit" value="Pobierz"/>
-        </form>
+    	<div style="margin: 20px;">
+	        <h1>${headerLabel}</h1>
+	        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
+	            <input type="file" name="file"/>
+	            <input type="submit" value="${buttonLabel}"/>
+	        </form>
+        </div>
     </body>
 </html>

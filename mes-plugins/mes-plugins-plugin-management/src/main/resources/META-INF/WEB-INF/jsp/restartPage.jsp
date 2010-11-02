@@ -25,11 +25,12 @@
 
 		function checkStatus() {
 			$.ajax({
-				url: "enablePage.html",
+				url: "restartPage.html?message=noMessage",
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
-						window.location = "page/plugins/pluginGridView.html?iframe=true";
+						//window.location = "page/plugins/pluginInfoView.html?iframe=true&pluginStatusError=false&pluginStatusMessageHeader=${messageHeader}&pluginStatusMessage=${message}";
+						window.location = "restartInfoView.html?message=${message}";
 						return;
 					} else {
 						setTimeout("checkStatus();",1000);
@@ -43,7 +44,7 @@
 </head>
 <body>
 
-	System jest restartowany...
+	${restartMessage}
 
 </body>
 </html>

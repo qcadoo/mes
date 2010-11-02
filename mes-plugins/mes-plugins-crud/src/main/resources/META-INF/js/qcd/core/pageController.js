@@ -1,12 +1,13 @@
 var QCD = QCD || {};
 
-QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupComponentName) {
+QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupComponentName, _hasDataDefinition) {
 	
 	var pageComponents;
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
 	var context = (_context != null && $.trim(_context) != "") ? JSON.parse(_context) : null; 
 	var lookupComponentName = _lookupComponentName;
+	var hasDataDefinition = _hasDataDefinition;
 	var rootEntityId = null;
 	
 	var headerComponent = null;
@@ -31,14 +32,16 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		if (serializationObject) {
 			setComponentState(serializationObject);
 		}
-		parameters.entityId = rootEntityId;
-		parameters.data = getValueData();
-		var valuesJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("data", valuesJson, function(response) {
-			setValueData(response);
-		}, function(message) {
-			//alert(message);
-		});
+		if (hasDataDefinition) {
+			parameters.entityId = rootEntityId;
+			parameters.data = getValueData();
+			var valuesJson = JSON.stringify(parameters);
+			QCDConnector.sendPost("data", valuesJson, function(response) {
+				setValueData(response);
+			}, function(message) {
+				//alert(message);
+			});
+		}
 	}
 	
 	this.getViewName = function() {
@@ -162,7 +165,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	this.performCallFunction = function(functionName, additionalAttribute, entityId, actionsPerformer) {
 		if (functionName == "goToUrl") {
 			var url = additionalAttribute;
-			QCD.info(entityId);
 			if (entityId) {
 				url += "?entityId="+entityId;
 			}

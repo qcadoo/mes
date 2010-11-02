@@ -62,7 +62,10 @@
 		</c:when>
 		<c:when test='${component.type == "calendar"}'>
 			<c:set var="componentJsp" value="elements/calendar.jsp"/>
-		</c:when>			
+		</c:when>
+		<c:when test='${component.type == "staticPage"}'>
+			<c:set var="componentJsp" value="elements/staticPage.jsp"/>
+		</c:when>
 		
 	</c:choose>
 	

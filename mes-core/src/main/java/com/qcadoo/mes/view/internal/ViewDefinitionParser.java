@@ -41,6 +41,7 @@ import com.qcadoo.mes.view.components.GridComponent;
 import com.qcadoo.mes.view.components.LinkButtonComponent;
 import com.qcadoo.mes.view.components.LookupComponent;
 import com.qcadoo.mes.view.components.PasswordInputComponent;
+import com.qcadoo.mes.view.components.StaticPageComponent;
 import com.qcadoo.mes.view.components.TextAreaComponent;
 import com.qcadoo.mes.view.components.TextInputComponent;
 import com.qcadoo.mes.view.components.TreeComponent;
@@ -113,7 +114,11 @@ public final class ViewDefinitionParser {
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(pluginIdentifier, viewName);
 
-        DataDefinition dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
+        DataDefinition dataDefinition = null;
+        if (getStringAttribute(reader, "model") != null) {
+            dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
+        }
+
         RootComponent root = null;
 
         while (reader.hasNext() && reader.next() > 0) {
@@ -181,6 +186,8 @@ public final class ViewDefinitionParser {
             component = new TreeComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else if ("calendar".equals(componentType)) {
             component = new CalendarComponent(componentName, parentComponent, fieldName, dataSource, translationService);
+        } else if ("staticPage".equals(componentType)) {
+            component = new StaticPageComponent(componentName, parentComponent, fieldName, dataSource, translationService);
         } else {
             throw new IllegalStateException("Unsupported component: " + componentType);
         }

@@ -24,6 +24,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>mes-plugins-crud</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>

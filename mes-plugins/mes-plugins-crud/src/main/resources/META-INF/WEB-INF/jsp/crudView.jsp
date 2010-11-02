@@ -56,6 +56,7 @@
 	<script type="text/javascript" src="../../js/qcd/components/elements/linkButton.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/tree.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/calendar.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/elements/staticComponent.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/ribbon.js"></script>
 	
 	<script type="text/javascript">
@@ -65,6 +66,8 @@
 		var entityId = "${entityId}";
 		var context = '${context}';
 		var locale = '${locale}';
+
+		var hasDataDefinition = '${viewDefinition.dataDefinition}' == '' ? false : true;
 
 		var lookupComponentName = '${lookupComponentName}';
 
@@ -79,7 +82,7 @@
 		}
 
 		jQuery(document).ready(function(){
-			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName);
+			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName, hasDataDefinition);
 			if (window.opener) {
 				window.opener[lookupComponentName+"_onReadyFunction"].call();
 		    }

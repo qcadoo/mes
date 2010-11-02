@@ -16,18 +16,18 @@ public interface PluginManagementService {
 
     void save(PluginsPlugin plugin);
 
-    String downloadPlugin(final MultipartFile file);
+    PluginManagementOperationStatus downloadPlugin(final MultipartFile file);
 
-    String removePlugin(final String entityId);
+    PluginManagementOperationStatus removePlugin(final String entityId);
 
-    String enablePlugin(final String entityId);
+    PluginManagementOperationStatus enablePlugin(final String entityId);
 
     String restartServer();
 
-    String disablePlugin(final String entityId);
+    PluginManagementOperationStatus disablePlugin(final String entityId);
 
-    String deinstallPlugin(final String entityId);
+    PluginManagementOperationStatus deinstallPlugin(final String entityId);
 
-    String updatePlugin(final MultipartFile file);
+    PluginManagementOperationStatus updatePlugin(final MultipartFile file);
 
 }

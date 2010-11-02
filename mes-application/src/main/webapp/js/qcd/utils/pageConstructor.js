@@ -36,9 +36,11 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 				component = new QCD.components.elements.Calendar(element, mainController);
 			}
 			
-			if (component) {
-				components[elementName] = component;
+			if (! component) {
+				component = new QCD.components.elements.StaticComponent(element, mainController);
 			}
+			
+			components[elementName] = component;
 		}
 	});
 	return components;
