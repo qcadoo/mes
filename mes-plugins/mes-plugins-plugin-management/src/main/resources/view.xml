@@ -57,7 +57,7 @@
 		</component>
 	</view>
 	
-	<view name="pluginDownloadView" model="plugin">
+	<view name="pluginDownloadView">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
@@ -68,12 +68,13 @@
 				<option type="page" value="download.jsp" />
 			</component>
 			<option type="header" value="false" />
+			<option type="static" value="true" />
 		</component>
 	</view>
 	
 	<!-- ERROR PAGES -->
 	
-	<view name="pluginInfoView" model="plugin">
+	<view name="pluginInfoView">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
@@ -84,6 +85,7 @@
 				<option type="page" value="pluginInfo.jsp" />
 			</component>
 			<option type="header" value="false" />
+			<option type="static" value="true" />
 		</component>
 	</view>
 	

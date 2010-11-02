@@ -1,5 +1,6 @@
 package com.qcadoo.mes.plugins.controller;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.api.PluginManagementOperationStatus;
 import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.crud.CrudController;
 
 @Controller
 public final class PluginManagementController {
@@ -24,18 +26,21 @@ public final class PluginManagementController {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private CrudController crudController;
+
     @RequestMapping(value = "download", method = RequestMethod.GET)
     public String getDownloadPageView(final Locale locale) {
         return getDownloadPageRedirect("download.html", locale);
     }
 
     @RequestMapping(value = "download", method = RequestMethod.POST)
-    public String handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
+    public ModelAndView handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
         return getInfoMessageRedirect(pluginManagementService.downloadPlugin(file), locale);
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.GET)
-    public String getRemovePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
+    public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
         return getInfoMessageRedirect(pluginManagementService.removePlugin(entityId), locale);
     }
 
@@ -49,13 +54,8 @@ public final class PluginManagementController {
         return mav;
     }
 
-    @RequestMapping(value = "restartPagePing", method = RequestMethod.GET)
-    public String getRestartPagePagePing() {
-        return "ok";
-    }
-
     @RequestMapping(value = "enable", method = RequestMethod.GET)
-    public String handleEnable(@RequestParam("entityId") final String entityId, final Locale locale) {
+    public ModelAndView handleEnable(@RequestParam("entityId") final String entityId, final Locale locale) {
         return getInfoMessageRedirect(pluginManagementService.enablePlugin(entityId), locale);
     }
 
@@ -66,12 +66,12 @@ public final class PluginManagementController {
     }
 
     @RequestMapping(value = "disable", method = RequestMethod.GET)
-    public String getDisablePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
+    public ModelAndView getDisablePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
         return getInfoMessageRedirect(pluginManagementService.disablePlugin(entityId), locale);
     }
 
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
-    public String handleDeinstall(@RequestParam("entityId") final String entityId, final Locale locale) {
+    public ModelAndView handleDeinstall(@RequestParam("entityId") final String entityId, final Locale locale) {
         return getInfoMessageRedirect(pluginManagementService.deinstallPlugin(entityId), locale);
     }
 
@@ -81,12 +81,12 @@ public final class PluginManagementController {
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    public String handleUpdate(@RequestParam("file") final MultipartFile file, final Locale locale) {
+    public ModelAndView handleUpdate(@RequestParam("file") final MultipartFile file, final Locale locale) {
         return getInfoMessageRedirect(pluginManagementService.updatePlugin(file), locale);
     }
 
     @RequestMapping(value = "restartInfoView", method = RequestMethod.GET)
-    public String getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
+    public ModelAndView getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
         return getInfoMessageRedirect(new PluginManagementOperationStatus(false, message), locale);
     }
 
@@ -97,22 +97,24 @@ public final class PluginManagementController {
                 + headerLabel + "&buttonLabel=" + buttonLabel;
     }
 
-    private String getInfoMessageRedirect(PluginManagementOperationStatus operationStatus, final Locale locale) {
+    private ModelAndView getInfoMessageRedirect(PluginManagementOperationStatus operationStatus, final Locale locale) {
+
+        ModelAndView mav = crudController.getView("plugins", "pluginInfoView", new HashMap<String, String>(), locale);
 
         String message = translationService.translate(operationStatus.getMessage(), locale);
+        mav.addObject("pluginStatusMessage", message);
 
         if (operationStatus.isRestartRequired()) {
-            return "redirect:restartPage.html?message=" + message;
+            return getRestartPagePageView(message, locale);
         }
-        String arguments = "";
         if (operationStatus.isError()) {
-            String messageHeader = translationService.translate("plugins.messages.error.header", locale);
-            arguments += "pluginStatusError=true&pluginStatusMessageHeader=" + messageHeader + "&pluginStatusMessage=" + message;
+            mav.addObject("pluginStatusError", true);
+            mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.error.header", locale));
         } else {
-            String messageHeader = translationService.translate("plugins.messages.success.header", locale);
-            arguments += "pluginStatusError=false&pluginStatusMessageHeader=" + messageHeader + "&pluginStatusMessage=" + message;
+            mav.addObject("pluginStatusError", false);
+            mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.success.header", locale));
         }
 
-        return "redirect:page/plugins/pluginInfoView.html?iframe=true&" + arguments;
+        return mav;
     }
 }

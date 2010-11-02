@@ -7,7 +7,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 		<c:choose>
-			<c:when test="${arguments['pluginStatusError'] == 'true'}">
+			<c:when test="${pluginStatusError}">
 				<c:set var="infoStyle" value="color: red;"/>
 			</c:when>
 			<c:otherwise>
@@ -17,10 +17,10 @@
 	
 	<div style='margin: 20px; ${infoStyle}'>
 		<div style="margin-bottom: 10px; font-weight: bold;">
-			${arguments['pluginStatusMessageHeader']}
+			${pluginStatusMessageHeader}
 		</div>
 		<div>
-			${arguments['pluginStatusMessage']}
+			${pluginStatusMessage}
 		</div>
 	</div>
 

@@ -67,6 +67,8 @@
 		var context = '${context}';
 		var locale = '${locale}';
 
+		var hasDataDefinition = '${viewDefinition.dataDefinition}' == '' ? false : true;
+
 		var lookupComponentName = '${lookupComponentName}';
 
 		var controller = null;
@@ -80,7 +82,7 @@
 		}
 
 		jQuery(document).ready(function(){
-			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName);
+			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName, hasDataDefinition);
 			if (window.opener) {
 				window.opener[lookupComponentName+"_onReadyFunction"].call();
 		    }

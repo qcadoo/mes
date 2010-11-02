@@ -114,7 +114,11 @@ public final class ViewDefinitionParser {
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(pluginIdentifier, viewName);
 
-        DataDefinition dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
+        DataDefinition dataDefinition = null;
+        if (getStringAttribute(reader, "model") != null) {
+            dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
+        }
+
         RootComponent root = null;
 
         while (reader.hasNext() && reader.next() > 0) {
