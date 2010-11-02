@@ -49,6 +49,11 @@ public final class PluginManagementController {
         return mav;
     }
 
+    @RequestMapping(value = "restartPagePing", method = RequestMethod.GET)
+    public String getRestartPagePagePing() {
+        return "ok";
+    }
+
     @RequestMapping(value = "enable", method = RequestMethod.GET)
     public String handleEnable(@RequestParam("entityId") final String entityId, final Locale locale) {
         return getInfoMessageRedirect(pluginManagementService.enablePlugin(entityId), locale);

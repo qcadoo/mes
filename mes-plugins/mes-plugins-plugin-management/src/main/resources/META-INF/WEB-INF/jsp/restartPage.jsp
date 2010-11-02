@@ -25,7 +25,7 @@
 
 		function checkStatus() {
 			$.ajax({
-				url: "restartPage.html",
+				url: "restartPagePing.html",
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
