@@ -165,18 +165,11 @@ public class TreeComponent extends AbstractComponent<TreeData> implements Select
     }
 
     private String getRootLabel(final Locale locale, final Entity entity) {
-        String suffix = entity != null ? "rootFor" : "root";
+        // String suffix = entity != null ? "rootFor" : "root";
         String rootLabel = getTranslationService().translate(
                 Arrays.asList(new String[] {
-                        getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath() + "."
-                                + suffix, "core.tree." + suffix }), locale);
-
-        if (entity != null) {
-            String rootExpressionValue = ExpressionUtil.getValue(entity, rootExpression);
-            if ("null".equals(rootExpressionValue)) {
-                rootLabel += " " + rootExpressionValue;
-            }
-        }
+                        getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
+                                + ".root", "core.tree.root" }), locale);
 
         return rootLabel;
     }
