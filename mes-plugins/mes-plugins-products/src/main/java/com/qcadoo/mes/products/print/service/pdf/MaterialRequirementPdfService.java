@@ -31,7 +31,6 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.draw.DottedLineSeparator;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -58,12 +57,23 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         Document document = new Document(PageSize.A4);
         try {
             String fileName = getFileName((Date) entity.getField("date")) + PDF_EXTENSION;
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+            PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             buildPdfMetadata(document, locale);
             writer.createXmpMetadata();
             document.open();
             buildPdfContent(document, entity, locale, prepareFont());
             document.close();
+            /*
+             * PdfReader reader = new PdfReader(fileName); int n = reader.getNumberOfPages(); PdfStamper stamper = new
+             * PdfStamper(reader, fileOutputStream); PdfContentByte page; Rectangle rect; BaseFont bf = BaseFont.createFont(); for
+             * (int i = 1; i < n + 1; i++) { page = stamper.getOverContent(i); rect = reader.getPageSizeWithRotation(i);
+             * page.beginText(); page.setFontAndSize(bf, 10); page.showTextAligned(Element.ALIGN_RIGHT, "Strona " + i + " z " + n,
+             * rect.getRight(36), rect.getTop(32), 0); DottedLineSeparator dottedLine = new DottedLineSeparator();
+             * dottedLine.setGap(2f); dottedLine.setPercentage(90f); dottedLine.setAlignment(Element.ALIGN_LEFT);
+             * page.setLineDash(6f); // document.add(dottedLine); page.endText(); } stamper.close();
+             */
+
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
             document.close();
@@ -88,11 +98,6 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         font18.setSize(18);
         font18.setColor(new Color(70, 70, 70));
         LineSeparator line = new LineSeparator(3, 90f, new Color(102, 102, 102), Element.ALIGN_LEFT, 0);
-        DottedLineSeparator dottedLine = new DottedLineSeparator();
-        dottedLine.setGap(2f);
-        dottedLine.setPercentage(90f);
-        dottedLine.setAlignment(Element.ALIGN_LEFT);
-        document.add(dottedLine);
         document.add(Chunk.NEWLINE);
         Paragraph title = new Paragraph(translationService.translate("products.materialRequirement.report.title", locale) + " "
                 + entity.getField("name"), getFontBold(font18));
