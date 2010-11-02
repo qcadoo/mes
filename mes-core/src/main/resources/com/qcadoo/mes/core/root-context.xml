@@ -18,7 +18,21 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<context:property-placeholder location="WEB-INF/db.properties"/>
+	<context:property-placeholder location="file:${MES_CONF}/db.properties" />
+
+	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass">
+			<value>org.springframework.util.Log4jConfigurer</value>
+		</property>
+		<property name="targetMethod">
+			<value>initLogging</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>file:${MES_CONF}/log4j.xml</value>
+			</list>
+		</property>
+	</bean>
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -55,14 +69,14 @@
 		entry-point-ref="loginUrlAuthenticationEntryPoint">
 		<security:intercept-url pattern="/login.html"
 			filters="none" requires-channel="any" />
-		<!--  <security:intercept-url pattern="/j_spring_security_check"
-			requires-channel="https" /> -->
+		<!-- <security:intercept-url pattern="/j_spring_security_check" requires-channel="https" 
+			/> -->
 		<security:intercept-url pattern="/css/**"
 			filters="none" requires-channel="any" />
 		<security:intercept-url pattern="/js/**"
 			filters="none" requires-channel="any" />
 		<security:intercept-url pattern="/**"
-			access="isAuthenticated()" /> <!--  requires-channel="https" -->
+			access="isAuthenticated()" /> <!-- requires-channel="https" -->
 
 		<security:logout logout-success-url="/login.html?logout=true" />
 
@@ -79,13 +93,13 @@
 			position="FORM_LOGIN_FILTER" />
 
 		<security:access-denied-handler ref="accessDeniedHandler" />
-		
+
 		<security:port-mappings>
-			<security:port-mapping http="8282" https="8443"/>
+			<security:port-mapping http="8282" https="8443" />
 		</security:port-mappings>
 
 	</security:http>
-	
+
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider
 			user-service-ref="userDetailsService">

@@ -21,7 +21,7 @@
 		<level value="info" />
 	</logger>
 	<logger name="org.springframework">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 	<logger name="org.hibernate">
 		<level value="info" />

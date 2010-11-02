@@ -23,6 +23,7 @@
 		<module>mes-core</module>
 		<module>mes-plugins</module>
 		<module>mes-application</module>
+		<module>mes-tomcat</module>
 	</modules>
 
 	<properties>
