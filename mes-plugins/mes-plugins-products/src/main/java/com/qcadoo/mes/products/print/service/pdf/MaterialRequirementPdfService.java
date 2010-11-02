@@ -1,6 +1,5 @@
 package com.qcadoo.mes.products.print.service.pdf;
 
-import java.awt.Color;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -29,9 +28,11 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.draw.DottedLineSeparator;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -58,12 +59,35 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         Document document = new Document(PageSize.A4);
         try {
             String fileName = getFileName((Date) entity.getField("date")) + PDF_EXTENSION;
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+            PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             buildPdfMetadata(document, locale);
             writer.createXmpMetadata();
             document.open();
             buildPdfContent(document, entity, locale, prepareFont());
             document.close();
+            PdfReader reader = new PdfReader(fileName);
+            int n = reader.getNumberOfPages();
+            PdfStamper stamper = new PdfStamper(reader, fileOutputStream);
+            PdfContentByte page;
+            Rectangle rect;
+            BaseFont bf = BaseFont.createFont();
+            for (int i = 1; i < n + 1; i++) {
+                page = stamper.getOverContent(i);
+                rect = reader.getPageSizeWithRotation(i);
+                page.beginText();
+                page.setFontAndSize(bf, 10);
+                page.showTextAligned(Element.ALIGN_RIGHT, "Strona " + i + " z " + n, rect.getRight(36), rect.getTop(32), 0);
+                /*
+                 * DottedLineSeparator dottedLine = new DottedLineSeparator(); dottedLine.setGap(2f);
+                 * dottedLine.setPercentage(90f); dottedLine.setAlignment(Element.ALIGN_LEFT);
+                 */
+                page.setLineDash(6f);
+                // document.add(dottedLine);
+                page.endText();
+            }
+            stamper.close();
+
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
             document.close();
@@ -76,7 +100,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         FontFactory.register(classPathResource.getPath());
         BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font font = new Font(baseFont, 10);
-        font.setColor(new Color(70, 70, 70));
+        // font.setColor(new Color(70, 70, 70));
         return font;
     }
 
@@ -86,13 +110,9 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
         Font font18 = new Font(font);
         font18.setSize(18);
-        font18.setColor(new Color(70, 70, 70));
-        LineSeparator line = new LineSeparator(3, 90f, new Color(102, 102, 102), Element.ALIGN_LEFT, 0);
-        DottedLineSeparator dottedLine = new DottedLineSeparator();
-        dottedLine.setGap(2f);
-        dottedLine.setPercentage(90f);
-        dottedLine.setAlignment(Element.ALIGN_LEFT);
-        document.add(dottedLine);
+        // font18.setColor(new Color(70, 70, 70));
+        LineSeparator line = new LineSeparator(3, 90f, // new Color(102, 102, 102)
+                font18.getColor(), Element.ALIGN_LEFT, 0);
         document.add(Chunk.NEWLINE);
         Paragraph title = new Paragraph(translationService.translate("products.materialRequirement.report.title", locale) + " "
                 + entity.getField("name"), getFontBold(font18));
@@ -173,8 +193,8 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         table.setWidthPercentage(90f);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         table.setSpacingBefore(10.0f);
-        table.getDefaultCell().setBackgroundColor(new Color(230, 230, 230));
-        table.getDefaultCell().setBorderColor(new Color(153, 153, 153));
+        // table.getDefaultCell().setBackgroundColor(new Color(230, 230, 230));
+        // table.getDefaultCell().setBorderColor(new Color(153, 153, 153));
         table.getDefaultCell().setPadding(5.0f);
         table.getDefaultCell().disableBorderSide(Rectangle.RIGHT);
         int i = 0;
