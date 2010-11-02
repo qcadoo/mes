@@ -105,15 +105,12 @@ public final class PluginManagementController {
     }
 
     private ModelAndView getInfoMessageView(PluginManagementOperationStatus operationStatus, final Locale locale) {
-
-        ModelAndView mav = crudController.getView("plugins", "pluginInfoView", new HashMap<String, String>(), locale);
-
-        String message = translationService.translate(operationStatus.getMessage(), locale);
-        mav.addObject("pluginStatusMessage", message);
-
         if (operationStatus.isRestartRequired()) {
             return getRestartPagePageView(operationStatus.getMessage(), locale);
         }
+        ModelAndView mav = crudController.getView("plugins", "pluginInfoView", new HashMap<String, String>(), locale);
+        String message = translationService.translate(operationStatus.getMessage(), locale);
+        mav.addObject("pluginStatusMessage", message);
         if (operationStatus.isError()) {
             mav.addObject("pluginStatusError", true);
             mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.error.header", locale));
