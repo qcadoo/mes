@@ -90,8 +90,10 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
         MenulItemsGroup productsItem = new MenulItemsGroup("products", translationService.translate("core.menu.products", locale));
 
-        productsItem.addItem(new ViewDefinitionMenuItemItem("instructions", translationService.translate(
+        productsItem.addItem(new ViewDefinitionMenuItemItem("products", translationService.translate(
                 "products.menu.products.instructions", locale), "products", "instructionGridView"));
+        productsItem.addItem(new ViewDefinitionMenuItemItem("instructions", translationService.translate(
+                "products.menu.products.products", locale), "products", "productGridView"));
         productsItem.addItem(new ViewDefinitionMenuItemItem("productionOrders", translationService.translate(
                 "products.menu.products.productionOrders", locale), "products", "orderGridView"));
         productsItem.addItem(new ViewDefinitionMenuItemItem("materialRequirements", translationService.translate(
@@ -109,14 +111,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
         administrationItem.addItem(new ViewDefinitionMenuItemItem("plugins", translationService.translate(
                 "plugins.menu.administration.plugins", locale), "plugins", "pluginGridView"));
         baseMenuDefinition.addItem(administrationItem);
-
-        MenulItemsGroup masterDataItem = new MenulItemsGroup("masterData", translationService.translate("core.menu.masterData",
-                locale));
-        masterDataItem.addItem(new ViewDefinitionMenuItemItem("products", translationService.translate(
-                "products.menu.products.products", locale), "products", "productGridView"));
-        masterDataItem.addItem(new ViewDefinitionMenuItemItem("machines", translationService.translate(
-                "machines.menu.machines.machines", locale), "machines", "machinesGrid"));
-        baseMenuDefinition.addItem(masterDataItem);
 
         MenuDefinition menuDef = new MenuDefinition();
         for (MenulItemsGroup baseGroup : baseMenuDefinition.getItems()) {
