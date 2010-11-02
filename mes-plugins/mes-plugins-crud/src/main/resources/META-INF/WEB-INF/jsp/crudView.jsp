@@ -56,6 +56,7 @@
 	<script type="text/javascript" src="../../js/qcd/components/elements/linkButton.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/tree.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/elements/calendar.js"></script>
+	<script type="text/javascript" src="../../js/qcd/components/elements/staticComponent.js"></script>
 	<script type="text/javascript" src="../../js/qcd/components/ribbon.js"></script>
 	
 	<script type="text/javascript">

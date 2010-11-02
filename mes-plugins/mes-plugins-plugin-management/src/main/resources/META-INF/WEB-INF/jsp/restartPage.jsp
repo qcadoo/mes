@@ -25,11 +25,11 @@
 
 		function checkStatus() {
 			$.ajax({
-				url: "enablePage.html",
+				url: "restartPage.html",
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
-						window.location = "page/plugins/pluginGridView.html?iframe=true";
+						window.location = "page/plugins/pluginGridView.html?iframe=true&message=${message}";
 						return;
 					} else {
 						setTimeout("checkStatus();",1000);

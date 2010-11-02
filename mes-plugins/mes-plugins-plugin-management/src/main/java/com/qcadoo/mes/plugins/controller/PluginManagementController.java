@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.qcadoo.mes.api.PluginManagementOperationStatus;
 import com.qcadoo.mes.api.PluginManagementService;
 
 @Controller
@@ -18,45 +19,40 @@ public final class PluginManagementController {
     private PluginManagementService pluginManagementService;
 
     @RequestMapping(value = "download", method = RequestMethod.GET)
-    public ModelAndView getDownloadPageView() {
-        ModelAndView mav = new ModelAndView("download");
-        return mav;
-    }
+    public String getDownloadPageView() {
 
-    @RequestMapping(value = "downloadError", method = RequestMethod.GET)
-    public ModelAndView getDownloadErrorPageView() {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("downloadError");
-        return mav;
+        // TODO mina translate
+
+        // ModelAndView mav = new ModelAndView("download");
+        // return mav;
+
+        return "redirect:page/plugins/pluginDownloadView.html?iframe=true&downloadAction=download.html";
     }
 
     @RequestMapping(value = "download", method = RequestMethod.POST)
     public String handleDownload(@RequestParam("file") final MultipartFile file) {
-        return pluginManagementService.downloadPlugin(file);
-    }
-
-    @RequestMapping(value = "removePage", method = RequestMethod.GET)
-    public ModelAndView getRemovePageView() {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("remove");
-        return mav;
+        return getInfoMessageRedirect(pluginManagementService.downloadPlugin(file));
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     public String getRemovePageView(@RequestParam("entityId") final String entityId) {
-        return pluginManagementService.removePlugin(entityId);
+        return getInfoMessageRedirect(pluginManagementService.removePlugin(entityId));
     }
 
-    @RequestMapping(value = "enablePage", method = RequestMethod.GET)
-    public ModelAndView getEnablePageView() {
+    @RequestMapping(value = "restartPage", method = RequestMethod.GET)
+    public ModelAndView getRestartPagePageView(@RequestParam("message") final String message) {
+
+        // TODO mina translate
+
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("enable");
+        mav.setViewName("restartPage");
+        mav.addObject("message", message);
         return mav;
     }
 
     @RequestMapping(value = "enable", method = RequestMethod.GET)
     public String handleEnable(@RequestParam("entityId") final String entityId) {
-        return pluginManagementService.enablePlugin(entityId);
+        return getInfoMessageRedirect(pluginManagementService.enablePlugin(entityId));
     }
 
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
@@ -67,30 +63,52 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "disable", method = RequestMethod.GET)
     public String getDisablePageView(@RequestParam("entityId") final String entityId) {
-        return pluginManagementService.disablePlugin(entityId);
-    }
-
-    @RequestMapping(value = "deinstallPage", method = RequestMethod.GET)
-    public ModelAndView getDeinstallPageView() {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("enable");
-        return mav;
+        return getInfoMessageRedirect(pluginManagementService.disablePlugin(entityId));
     }
 
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
     public String handleDeinstall(@RequestParam("entityId") final String entityId) {
-        return pluginManagementService.deinstallPlugin(entityId);
+        return getInfoMessageRedirect(pluginManagementService.deinstallPlugin(entityId));
     }
 
     @RequestMapping(value = "update", method = RequestMethod.GET)
-    public ModelAndView getUpdatePageView() {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("update");
-        return mav;
+    public String getUpdatePageView() {
+
+        // TODO mina translate
+
+        return "redirect:page/plugins/pluginDownloadView.html?iframe=true&downloadAction=update.html";
+
+        // ModelAndView mav = new ModelAndView();
+        // mav.setViewName("update");
+        // return mav;
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public String handleUpdate(@RequestParam("file") final MultipartFile file) {
-        return pluginManagementService.updatePlugin(file);
+        return getInfoMessageRedirect(pluginManagementService.updatePlugin(file));
+    }
+
+    @RequestMapping(value = "restartInfoView", method = RequestMethod.GET)
+    public String getRestartInfoView(@RequestParam("message") final String message) {
+        return getInfoMessageRedirect(new PluginManagementOperationStatus(false, message));
+    }
+
+    private String getInfoMessageRedirect(PluginManagementOperationStatus operationStatus) {
+
+        // TODO mina translate
+
+        if (operationStatus.isRestartRequired()) {
+            return "redirect:restartPage.html?message=" + operationStatus.getMessage();
+        }
+        String arguments = "";
+        if (operationStatus.isError()) {
+            arguments += "pluginStatusError=true&pluginStatusMessageHeader=GLUPCZE!!!&pluginStatusMessage="
+                    + operationStatus.getMessage();
+        } else {
+            arguments += "pluginStatusError=false&pluginStatusMessageHeader=OK&pluginStatusMessage="
+                    + operationStatus.getMessage();
+        }
+
+        return "redirect:page/plugins/pluginInfoView.html?iframe=true&" + arguments;
     }
 }

@@ -1,0 +1,50 @@
+package com.qcadoo.mes.view.components;
+
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.view.AbstractComponent;
+import com.qcadoo.mes.view.ComponentOption;
+import com.qcadoo.mes.view.ContainerComponent;
+import com.qcadoo.mes.view.ViewValue;
+
+public class StaticPageComponent extends AbstractComponent<Object> {
+
+    public StaticPageComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
+            final String sourceFieldPath, final TranslationService translationService) {
+        super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
+    }
+
+    @Override
+    public String getType() {
+        return "staticPage";
+    }
+
+    @Override
+    public void initializeComponent() {
+        for (ComponentOption option : getRawOptions()) {
+            if ("page".equals(option.getType())) {
+                addOption("page", option.getValue());
+            }
+        }
+    }
+
+    @Override
+    public final ViewValue<Object> castComponentValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
+            throws JSONException {
+        return new ViewValue<Object>(null);
+    }
+
+    @Override
+    public final ViewValue<Object> getComponentValue(final Entity entity, final Entity parentEntity,
+            final Map<String, Entity> selectedEntities, final ViewValue<Object> viewValue, final Set<String> pathsToUpdate,
+            final Locale locale) {
+        return new ViewValue<Object>(null);
+    }
+}

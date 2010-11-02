@@ -9,10 +9,12 @@ String ctx = request.getContextPath();
         <title>Pobieranie modułów</title>
     </head>
     <body>
-        <h1>Pobierz moduł</h1>
-        <form method="post" action="<%=ctx%>/download.html" enctype="multipart/form-data">
-            <input type="file" name="file"/>
-            <input type="submit" value="Pobierz"/>
-        </form>
+    	<div style="margin: 20px;">
+	        <h1>Pobierz moduł</h1>
+	        <form method="post" action="<%=ctx%>/${arguments['downloadAction']}" enctype="multipart/form-data">
+	            <input type="file" name="file"/>
+	            <input type="submit" value="Pobierz"/>
+	        </form>
+        </div>
     </body>
 </html>
