@@ -44,6 +44,7 @@ public final class PluginManagementController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("restartPage");
         mav.addObject("message", message);
+        mav.addObject("messageHeader", translationService.translate("plugins.messages.success.header", locale));
         mav.addObject("restartMessage", translationService.translate("plugins.restartView.message", locale));
         return mav;
     }
