@@ -112,7 +112,7 @@ public final class PluginManagementController {
         mav.addObject("pluginStatusMessage", message);
 
         if (operationStatus.isRestartRequired()) {
-            return getRestartPagePageView(message, locale);
+            return getRestartPagePageView(operationStatus.getMessage(), locale);
         }
         if (operationStatus.isError()) {
             mav.addObject("pluginStatusError", true);
