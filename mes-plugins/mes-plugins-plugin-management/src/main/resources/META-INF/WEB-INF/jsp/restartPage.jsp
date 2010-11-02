@@ -43,7 +43,7 @@
 </head>
 <body>
 
-	System jest restartowany...
+	${restartMessage}
 
 </body>
 </html>
