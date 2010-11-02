@@ -66,23 +66,27 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<configuration>
 					<systemProperties>
-            			<systemProperty>
-              				<name>com.qcadoo.mes.application.copyResources</name>
-               				<value>false</value>
-            			</systemProperty>
+						<systemProperty>
+							<name>com.qcadoo.mes.application.copyResources</name>
+							<value>false</value>
+						</systemProperty>
+						<systemProperty>
+							<name>MES_CONF</name>
+							<value>${basedir}/conf/jetty</value>
+						</systemProperty>
 					</systemProperties>
 					<webAppConfig>
 						<contextPath>/</contextPath>
-			            <baseResource implementation="org.mortbay.resource.ResourceCollection">
+						<baseResource implementation="org.mortbay.resource.ResourceCollection">
 							<resourcesAsCSV>
 								${basedir}/src/main/webapp;
 								${basedir}/../mes-plugins/mes-plugins-crud/src/main/resources/META-INF;
 								${basedir}/../mes-plugins/mes-plugins-plugin-management/src/main/resources/META-INF;
 								${basedir}/../mes-plugins/mes-plugins-products/src/main/resources/META-INF
 							</resourcesAsCSV>
-			            </baseResource>
+						</baseResource>
 					</webAppConfig>
-		        </configuration>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
