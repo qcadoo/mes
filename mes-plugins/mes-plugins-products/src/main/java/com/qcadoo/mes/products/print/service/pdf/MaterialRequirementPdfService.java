@@ -28,10 +28,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.mes.api.Entity;
@@ -66,27 +63,15 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             document.open();
             buildPdfContent(document, entity, locale, prepareFont());
             document.close();
-            PdfReader reader = new PdfReader(fileName);
-            int n = reader.getNumberOfPages();
-            PdfStamper stamper = new PdfStamper(reader, fileOutputStream);
-            PdfContentByte page;
-            Rectangle rect;
-            BaseFont bf = BaseFont.createFont();
-            for (int i = 1; i < n + 1; i++) {
-                page = stamper.getOverContent(i);
-                rect = reader.getPageSizeWithRotation(i);
-                page.beginText();
-                page.setFontAndSize(bf, 10);
-                page.showTextAligned(Element.ALIGN_RIGHT, "Strona " + i + " z " + n, rect.getRight(36), rect.getTop(32), 0);
-                /*
-                 * DottedLineSeparator dottedLine = new DottedLineSeparator(); dottedLine.setGap(2f);
-                 * dottedLine.setPercentage(90f); dottedLine.setAlignment(Element.ALIGN_LEFT);
-                 */
-                page.setLineDash(6f);
-                // document.add(dottedLine);
-                page.endText();
-            }
-            stamper.close();
+            /*
+             * PdfReader reader = new PdfReader(fileName); int n = reader.getNumberOfPages(); PdfStamper stamper = new
+             * PdfStamper(reader, fileOutputStream); PdfContentByte page; Rectangle rect; BaseFont bf = BaseFont.createFont(); for
+             * (int i = 1; i < n + 1; i++) { page = stamper.getOverContent(i); rect = reader.getPageSizeWithRotation(i);
+             * page.beginText(); page.setFontAndSize(bf, 10); page.showTextAligned(Element.ALIGN_RIGHT, "Strona " + i + " z " + n,
+             * rect.getRight(36), rect.getTop(32), 0); DottedLineSeparator dottedLine = new DottedLineSeparator();
+             * dottedLine.setGap(2f); dottedLine.setPercentage(90f); dottedLine.setAlignment(Element.ALIGN_LEFT);
+             * page.setLineDash(6f); // document.add(dottedLine); page.endText(); } stamper.close();
+             */
 
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
