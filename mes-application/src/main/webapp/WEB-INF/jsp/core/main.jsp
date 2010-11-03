@@ -71,7 +71,7 @@
 
 	<div id="mainTopMenu">
 		<div id="topLevelMenu">
-			<img id="logoImage" src="css/images/logo_small.png"></img>
+			<img id="logoImage" src="css/core/images/logo_small.png"></img>
 			<div id="topRightPanel">
 				<button onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</button>
 			</div>

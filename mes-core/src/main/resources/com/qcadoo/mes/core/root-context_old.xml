@@ -18,7 +18,7 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<context:property-placeholder location="file:${MES_CONF}/db.properties" />
+	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties" />
 
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetClass">
@@ -29,7 +29,7 @@
 		</property>
 		<property name="arguments">
 			<list>
-				<value>file:${MES_CONF}/log4j.xml</value>
+				<value>file:${QCADOO_CONF}/log4j.xml</value>
 			</list>
 		</property>
 	</bean>
@@ -59,7 +59,7 @@
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	
+
 	<security:global-method-security
 		pre-post-annotations="enabled">
 		<security:expression-handler ref="methodSecurityExpressionHandler" />
@@ -77,7 +77,7 @@
 			filters="none" requires-channel="any" />
 		<security:intercept-url pattern="/**"
 			access="isAuthenticated()" /> <!-- requires-channel="https" -->
-			
+
 		<security:logout logout-success-url="/login.html?logout=true" />
 
 		<security:session-management
@@ -97,9 +97,7 @@
 		<security:port-mappings>
 			<security:port-mapping http="8282" https="8443" />
 		</security:port-mappings>
-		
-		<security:remember-me user-service-ref="userDetailsService" services-alias="_rememberMeServices" key="qcd01" data-source-ref="dataSource" />
-		
+
 	</security:http>
 
 	<security:authentication-manager alias="authenticationManager">
@@ -163,7 +161,6 @@
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="authenticationFailureHandler" ref="failureHandler" />
 		<property name="authenticationSuccessHandler" ref="successHandler" />
-		<property name="rememberMeServices" ref="_rememberMeServices" />
 	</bean>
 
 	<bean id="successHandler"
