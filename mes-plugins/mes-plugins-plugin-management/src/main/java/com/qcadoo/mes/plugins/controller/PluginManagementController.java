@@ -47,7 +47,7 @@ public final class PluginManagementController {
     @RequestMapping(value = "restartPage", method = RequestMethod.GET)
     public ModelAndView getRestartPagePageView(@RequestParam("message") final String message, final Locale locale) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("restartPage");
+        mav.setViewName("plugins/restartPage");
         mav.addObject("message", message);
         mav.addObject("messageHeader", translationService.translate("plugins.messages.success.header", locale));
         mav.addObject("restartMessage", translationService.translate("plugins.restartView.message", locale));

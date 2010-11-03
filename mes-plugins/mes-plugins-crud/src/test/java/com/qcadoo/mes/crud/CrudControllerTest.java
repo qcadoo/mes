@@ -110,7 +110,7 @@ public class CrudControllerTest {
         ModelAndView modelAndView = crudController.getView("pluginName", "viewName", arguments, Locale.ENGLISH);
 
         // then
-        assertEquals("crudView", modelAndView.getViewName());
+        assertEquals("crud/crudView", modelAndView.getViewName());
         assertEquals(viewDefinition, modelAndView.getModel().get("viewDefinition"));
         assertEquals("1", modelAndView.getModel().get("entityId"));
         assertEquals("test", modelAndView.getModel().get("context"));
@@ -134,7 +134,7 @@ public class CrudControllerTest {
         ModelAndView modelAndView = crudController.getView("pluginName", "viewName", arguments, Locale.ENGLISH);
 
         // then
-        assertEquals("crudView", modelAndView.getViewName());
+        assertEquals("crud/crudView", modelAndView.getViewName());
         assertEquals(viewDefinition, modelAndView.getModel().get("viewDefinition"));
         assertNull(modelAndView.getModel().get("entityId"));
         assertNull(modelAndView.getModel().get("contextEntityId"));
@@ -160,7 +160,7 @@ public class CrudControllerTest {
         ModelAndView modelAndView = crudController.getView("pluginName", "viewName", arguments, Locale.ENGLISH);
 
         // then
-        assertEquals("crudView", modelAndView.getViewName());
+        assertEquals("crud/crudView", modelAndView.getViewName());
         assertEquals(viewDefinition, modelAndView.getModel().get("viewDefinition"));
         assertNull(modelAndView.getModel().get("entityId"));
         assertNull(modelAndView.getModel().get("contextEntityId"));

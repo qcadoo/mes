@@ -26,19 +26,19 @@ public final class MainPageController {
     @Autowired
     private SecurityService securityService;
 
-    @RequestMapping(value = "mainPage", method = RequestMethod.GET)
-    public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("mainPage");
-        mav.addObject("viewsList", viewDefinitionService.list());
-        mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
-        return mav;
-    }
+    // @RequestMapping(value = "mainPage", method = RequestMethod.GET)
+    // public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
+    // ModelAndView mav = new ModelAndView();
+    // mav.setViewName("mainPage");
+    // mav.addObject("viewsList", viewDefinitionService.list());
+    // mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
+    // return mav;
+    // }
 
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getMainView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("main");
+        mav.setViewName("core/main");
         mav.addObject("viewsList", viewDefinitionService.list());
         mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
         mav.addObject("menuStructure", viewDefinitionService.getMenu(locale).getAsJson());
@@ -53,7 +53,7 @@ public final class MainPageController {
 
         mav.addObject("translationsMap", translationService.getDashboardMessages(locale));
 
-        mav.setViewName("dashboard");
+        mav.setViewName("core/dashboard");
         return mav;
     }
 }

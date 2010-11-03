@@ -38,10 +38,10 @@ public final class PluginResourcesResolver implements ApplicationContextAware, A
             copyResources = Boolean.parseBoolean(copyResorcesProperty);
         }
         if (copyResources) {
-            copyResources("js", "js");
-            copyResources("css", "css");
-            copyResources("img", "img");
-            copyResources("WEB-INF/jsp", "WEB-INF/jsp");
+            copyResources("js", "test/js");
+            copyResources("css", "test/css");
+            copyResources("img", "test/img");
+            copyResources("WEB-INF/jsp", "test/WEB-INF/jsp");
         }
     }
 

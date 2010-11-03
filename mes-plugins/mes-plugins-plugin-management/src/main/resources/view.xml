@@ -65,7 +65,7 @@
 				</group>
 			</ribbon>
 			<component type="staticPage" name="infoPage">
-				<option type="page" value="download.jsp" />
+				<option type="page" value="plugins/download.jsp" />
 			</component>
 			<option type="header" value="false" />
 			<option type="static" value="true" />
@@ -82,7 +82,7 @@
 				</group>
 			</ribbon>
 			<component type="staticPage" name="infoPage">
-				<option type="page" value="pluginInfo.jsp" />
+				<option type="page" value="plugins/pluginInfo.jsp" />
 			</component>
 			<option type="header" value="false" />
 			<option type="static" value="true" />

@@ -70,7 +70,7 @@ public final class CrudController {
         viewDefinition.updateTranslations(translationsMap, locale);
 
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("crudView");
+        modelAndView.setViewName("crud/crudView");
 
         String lookupComponentName = arguments.get("lookupComponent");
 
@@ -261,7 +261,7 @@ public final class CrudController {
         ModelAndView mav = new ModelAndView();
         if (!"printOrder".equals(functionName)
                 && (entity.getField("fileName") == null || "".equals(entity.getField("fileName").toString().trim()))) {
-            mav.setViewName("printError");
+            mav.setViewName("products/printError");
         } else {
             if ("printOrder".equals(functionName)) {
                 mav.setViewName("orderPdfView");

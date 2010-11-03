@@ -108,12 +108,7 @@
 	
 	<bean id="exceptionResolver"  
 		class="com.qcadoo.mes.TranslatedMessageExceptionResolver">  
-    	<property name="exceptionMappings">  
- 			<props>  
-    			<prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">downloadError</prop>  
-			</props>  
-  		</property>  
-  		<property name="defaultErrorView" value="exception" />
+  		<property name="defaultErrorView" value="core/exception" />
   		<property name="warnLogCategory" value="com.qcadoo.mes.Application" />
  	</bean>  
 

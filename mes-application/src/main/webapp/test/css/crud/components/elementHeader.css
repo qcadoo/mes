@@ -1,0 +1,108 @@
+.elementHeader {
+	background: #f2f2f2;
+	line-height: 28px;
+	border-bottom: solid #9b9b9b 1px;
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 0;
+	height: 30px;
+	vertical-align: middle;
+}
+
+.elementHeader .elementHeaderTitle {
+	color: #555555;
+	font-size: 12px;
+	font-weight: bold;
+}
+.elementHeader.elementHeaderDisabled .elementHeaderTitle {
+	color: #b7b7b7;
+}
+
+.elementHeader div.headerActionButton {
+	padding: 0px;
+	height: 23px;
+	background-image:none;
+	display:inline-block;
+	margin-left: 5px;
+	background-image:url('/css/core/menu/images/lt_twoB_c.png');
+	background-repeat:repeat-x;
+	vertical-align: middle;
+}
+.elementHeader div.headerActionButton a {
+	display:block;
+	text-decoration:none;
+	color:#b7b7b7;
+	font-size:11px;
+	height: 23px;
+	width: auto;
+	background-image:url('/css/core/menu/images/lt_twoB_l.png');
+	background-repeat:no-repeat;
+	background-position: left; 
+	cursor: default;
+}
+div.headerActionButton.headerButtonEnabled a {
+	color:#464646;
+	cursor: pointer;
+}
+div.headerActionButton.headerButtonEnabled.headerButtonActive {
+	background-image:url('/css/core/menu/images/lt_activ_c.png');
+}
+div.headerActionButton.headerButtonEnabled.headerButtonActive a {
+	background-image:url('/css/core/menu/images/lt_activ_l.png');
+}
+div.headerActionButton.headerButtonEnabled.headerButtonActive a span {
+	background-image:url('/css/core/menu/images/lt_activ_r.png');
+}
+div.headerActionButton.headerButtonEnabled.headerButtonActive:hover {
+	background-image:url('/css/core/menu/images/lt_activ_c.png');
+}
+div.headerActionButton.headerButtonEnabled.headerButtonActive:hover a {
+	background-image:url('/css/core/menu/images/lt_activ_l.png');
+	background-position: 0px 0px;
+	color: red;
+}
+div.headerActionButton.headerButtonEnabled.headerButtonActive:hover a span {
+	background-image:url('/css/core/menu/images/lt_activ_r.png');
+}
+div.headerActionButton a span {
+	display:block;
+	padding:0px;
+	background-image:url('/css/core/menu/images/lt_twoB_r_noArrow.png');
+	background-repeat:no-repeat;
+	background-position: right; 
+}
+div.headerActionButton a span div.icon {
+	border: none;
+	margin-top: 1px;
+	margin-left: 3px;
+	padding: 0;
+	width: 16px;
+	height: 16px;
+	line-height: 0;
+	background-repeat:no-repeat;
+	background-position: 0 -16px;
+}
+div.headerActionButton.headerButtonEnabled a span div.icon {
+	background-position: 0 0;
+}
+div.headerActionButton a span div {
+	display: inline-block;
+	height: 23px;
+	line-height: 23px;
+	vertical-align: middle;
+	padding: 0px 5px 0px 5px;
+}
+div.headerActionButton a span div.hasIcon {
+	padding-left: 2px;
+}
+div.headerActionButton.headerButtonEnabled:hover {
+	background-image:url('/css/core/menu/images/lt_hover_c.png');
+}
+div.headerActionButton.headerButtonEnabled:hover a {
+	background-image:url('/css/core/menu/images/lt_hover_l.png');
+	background-position: -1px 0px;
+}
+
+div.headerActionButton.headerButtonEnabled:hover a span {
+	background-image:url('/css/core/menu/images/lt_1Up.png');
+}

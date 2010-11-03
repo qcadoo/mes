@@ -68,7 +68,7 @@
 					<systemProperties>
 						<systemProperty>
 							<name>com.qcadoo.mes.application.copyResources</name>
-							<value>false</value>
+							<value>true</value>
 						</systemProperty>
 						<systemProperty>
 							<name>MES_CONF</name>

@@ -24,7 +24,7 @@ public final class LoginController {
             @RequestParam(required = false, defaultValue = "false") final Boolean timeout, final Locale locale) {
 
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("login");
+        mav.setViewName("core/login");
         mav.addObject("translation", translationService.getSecurityMessages(locale));
         mav.addObject("currentLanguage", locale.getLanguage());
 
@@ -50,7 +50,7 @@ public final class LoginController {
     @RequestMapping(value = "accessDenied", method = RequestMethod.GET)
     public ModelAndView getAccessDeniedPageView(final Locale locale) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("accessDenied");
+        mav.setViewName("core/accessDenied");
 
         mav.addObject("translation", translationService.getSecurityMessages(locale));
 
