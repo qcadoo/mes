@@ -10,6 +10,17 @@
 		<fileSet>
 			<directory>src/main/resources/</directory>
 			<outputDirectory>/</outputDirectory>
+			<excludes>
+				<exclude>bin/*.sh</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/bin/</directory>
+			<outputDirectory>/bin</outputDirectory>
+			<includes>
+				<include>*.sh</include>
+			</includes>
+			<fileMode>0754</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>../mes-application/conf/default/</directory>
