@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # -----------------------------------------------------------------------------
 # Restart Script for the CATALINA Server
 # -----------------------------------------------------------------------------
@@ -42,5 +44,5 @@ else
   fi
 fi 
 
-exec "$PRGDIR"/"$EXECUTABLE" stop 5 -force
-exec "$PRGDIR"/"$EXECUTABLE" start
+sh "$PRGDIR"/"$EXECUTABLE" stop 5 -force
+sh "$PRGDIR"/"$EXECUTABLE" start
