@@ -18,7 +18,7 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<context:property-placeholder location="file:${MES_CONF}/db.properties" />
+	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties" />
 
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetClass">
@@ -29,7 +29,7 @@
 		</property>
 		<property name="arguments">
 			<list>
-				<value>file:${MES_CONF}/log4j.xml</value>
+				<value>file:${QCADOO_CONF}/log4j.xml</value>
 			</list>
 		</property>
 	</bean>

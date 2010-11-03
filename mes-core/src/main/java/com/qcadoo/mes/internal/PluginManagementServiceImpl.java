@@ -15,10 +15,9 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
@@ -35,31 +34,28 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementServiceImpl.class);
 
-    private static final String LIB_PATH = "WEB-INF/lib/";
-
-    private static final String TMP_PATH = "WEB-INF/tmp/";
-
     public static final String FIELD_DELETED = "deleted";
+
+    @Value("${QCADOO_PLUGINS_PATH}")
+    private String pluginsPath;
+
+    @Value("${QCADOO_PLUGINS_TMP_PATH}")
+    private String pluginsTmpPath;
+
+    @Value("${QCADOO_WEBAPP_PATH}")
+    private String webappPath;
 
     @Autowired
     private SessionFactory sessionFactory;
 
     @Autowired
-    private ApplicationContext applicationContext;
-
-    private String webappPath;
+    private PluginUtil pluginUtil;
 
     @PostConstruct
     public void init() {
-        // TOMCAT
-        webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
-        if (!webappPath.endsWith("/")) {
-            // JETTY
-            webappPath = webappPath + "/";
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(webappPath);
-        }
+        LOG.info("Plugins path: " + pluginsPath);
+        LOG.info("Plugins tmpPath: " + pluginsTmpPath);
+        LOG.info("Webapp path: " + webappPath);
     }
 
     @Override
@@ -70,8 +66,8 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             File pluginFile = null;
             boolean deleteFile = false;
             try {
-                pluginFile = PluginUtil.transferFileToTmp(file, webappPath + TMP_PATH);
-                PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
+                pluginFile = pluginUtil.transferFileToTmp(file, pluginsTmpPath);
+                PluginsPlugin plugin = pluginUtil.readDescriptor(pluginFile);
                 PluginsPlugin pluginWithIdentifier = getByIdentifier(plugin.getIdentifier());
                 if (pluginWithIdentifier != null) {
                     deleteFile = true;
@@ -141,7 +137,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
             save(databasePlugin);
 
-            PluginUtil.removePluginFile(webappPath + TMP_PATH + databasePlugin.getFileName());
+            pluginUtil.removePluginFile(pluginsTmpPath + "/" + databasePlugin.getFileName());
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file - " + e.getMessage());
             return new PluginManagementOperationStatus(true, "plugins.messages.error.fileRemoveError");
@@ -169,7 +165,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             return new PluginManagementOperationStatus(false, "plugins.messages.success.enableSuccess");
         } else {
             try {
-                PluginUtil.movePluginFile(webappPath + TMP_PATH + plugin.getFileName(), webappPath + LIB_PATH);
+                pluginUtil.movePluginFile(pluginsTmpPath + "/" + plugin.getFileName(), pluginsPath);
             } catch (PluginException e) {
                 plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
                 save(plugin);
@@ -188,7 +184,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Monitorable
     public String restartServer() {
         try {
-            PluginUtil.restartServer(webappPath);
+            pluginUtil.restartServer();
         } catch (PluginException e) {
             LOG.error("Problem with restart server - " + e.getMessage());
         }
@@ -227,15 +223,15 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         try {
             databasePlugin.setDeleted(true);
             save(databasePlugin);
-            PluginUtil.removePluginFile(webappPath + LIB_PATH + databasePlugin.getFileName());
+            pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName());
         } catch (PluginException e) {
             LOG.error("Problem with removing plugin file - " + e.getMessage());
             return new PluginManagementOperationStatus(true, "plugins.messages.error.fileRemoveError");
         }
-        PluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
-        PluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
-        PluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
-        PluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
 
         PluginManagementOperationStatus status = new PluginManagementOperationStatus(false,
                 "plugins.messages.success.deinstallSuccess");
@@ -251,8 +247,8 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             File pluginFile = null;
             boolean deleteFile = false;
             try {
-                pluginFile = PluginUtil.transferFileToTmp(file, webappPath + TMP_PATH);
-                PluginsPlugin plugin = PluginUtil.readDescriptor(pluginFile);
+                pluginFile = pluginUtil.transferFileToTmp(file, pluginsTmpPath);
+                PluginsPlugin plugin = pluginUtil.readDescriptor(pluginFile);
                 PluginsPlugin databasePlugin = getByNameAndVendor(plugin.getName(), plugin.getVendor());
                 if (databasePlugin == null) {
                     deleteFile = true;
@@ -378,14 +374,14 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
         save(plugin);
 
-        PluginUtil.removePluginFile(webappPath + LIB_PATH + databasePlugin.getFileName());
+        pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName());
 
-        PluginUtil.movePluginFile(webappPath + TMP_PATH + plugin.getFileName(), webappPath + LIB_PATH);
+        pluginUtil.movePluginFile(pluginsTmpPath + "/" + plugin.getFileName(), pluginsPath);
 
-        PluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
-        PluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
-        PluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
-        PluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
+        pluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
     }
 
     private Session getCurrentSession() {

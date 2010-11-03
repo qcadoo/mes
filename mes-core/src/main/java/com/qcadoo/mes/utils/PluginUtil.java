@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.JarFile;
 
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,22 +24,22 @@ import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.enums.PluginDescriptorProperties;
 import com.qcadoo.mes.exceptions.PluginException;
 
+@Component
 public final class PluginUtil {
-
-    private static final String BIN_PATH = "bin/";
-
-    private static final String WEBAPPS_REGEX = "webapps/\\S*/";
-
-    private static final int RESTART_INTERVAL = 1000;
-
-    private static final String DESCRIPTOR = "plugin.xml";
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginUtil.class);
 
-    private PluginUtil() {
+    private static final String DESCRIPTOR = "plugin.xml";
+
+    @Value("${QCADOO_RESTART_CMD}")
+    private String restartCommand;
+
+    @PostConstruct
+    public void init() {
+        LOG.info("Restart command: " + restartCommand);
     }
 
-    public static File transferFileToTmp(final MultipartFile file, final String tmpPath) throws IOException {
+    public File transferFileToTmp(final MultipartFile file, final String tmpPath) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Transfering file: " + file.getOriginalFilename() + " to tmp");
         }
@@ -48,13 +51,13 @@ public final class PluginUtil {
                 throw new IOException("Error with creating directory");
             }
         }
-        File pluginFile = new File(tmpPath + file.getOriginalFilename());
+        File pluginFile = new File(tmpDir, file.getOriginalFilename());
         file.transferTo(pluginFile);
 
         return pluginFile;
     }
 
-    public static void removePluginFile(final String fileName) throws PluginException {
+    public void removePluginFile(final String fileName) throws PluginException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Removing file: " + fileName);
         }
@@ -80,7 +83,7 @@ public final class PluginUtil {
         }
     }
 
-    public static void movePluginFile(final String filePath, final String dirPath) throws PluginException {
+    public void movePluginFile(final String filePath, final String dirPath) throws PluginException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Moving file: " + filePath + " to: " + dirPath);
         }
@@ -89,13 +92,18 @@ public final class PluginUtil {
         // Destination directory
         File dir = new File(dirPath);
         // Move file to new directory
+
+        System.out.println(" -----> " + dir.getAbsolutePath());
+        System.out.println(" -----> " + file.getAbsolutePath());
+        System.out.println(" -----> " + file.getName());
+
         boolean success = file.renameTo(new File(dir, file.getName()));
         if (!success) {
             throw new PluginException("Move: move failed");
         }
     }
 
-    public static PluginsPlugin readDescriptor(final File file) throws IOException, ParserConfigurationException, SAXException {
+    public PluginsPlugin readDescriptor(final File file) throws IOException, ParserConfigurationException, SAXException {
 
         PluginsPlugin plugin = new PluginsPlugin();
         JarFile jarFile = new JarFile(file);
@@ -144,31 +152,17 @@ public final class PluginUtil {
         return plugin;
     }
 
-    public static void restartServer(final String webappPath) throws PluginException {
-        String[] commandsStop = { "./shutdown.sh" };
-        String[] commandsStart = { "./startup.sh" };
-        String commandPath = webappPath.replaceAll(WEBAPPS_REGEX, BIN_PATH);
+    public void restartServer() throws PluginException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Command path: " + commandPath);
+            LOG.debug("Command path: " + restartCommand);
         }
         try {
-            File dir = new File(commandPath);
-            Runtime runtime = Runtime.getRuntime();
-
-            Process shutdownProcess = runtime.exec(commandsStop, null, dir);
+            Process shutdownProcess = Runtime.getRuntime().exec(restartCommand);
             shutdownProcess.waitFor();
+
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Shutdown exit value: " + shutdownProcess.exitValue());
             }
-
-            Thread.sleep(RESTART_INTERVAL);
-
-            Process startupProcess = runtime.exec(commandsStart, null, dir);
-            startupProcess.waitFor();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Startup exit value: " + startupProcess.exitValue());
-            }
-
         } catch (IOException e) {
             throw new PluginException("Restart failed - " + e.getMessage(), e);
         } catch (InterruptedException e) {
@@ -177,13 +171,13 @@ public final class PluginUtil {
 
     }
 
-    public static void removeResources(final String type, final String targetPath) {
+    public void removeResources(final String type, final String targetPath) {
         LOG.info("Removing resources " + type + " ...");
 
         deleteDirectory(new File(targetPath));
     }
 
-    private static boolean deleteDirectory(final File path) {
+    private boolean deleteDirectory(final File path) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Recursive removing directory: " + path);
         }
