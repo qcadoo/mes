@@ -56,6 +56,8 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<scope>system</scope>
+			<systemPath>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</systemPath>
 		</dependency>
 	</dependencies>
 
@@ -71,8 +73,28 @@
 							<value>false</value>
 						</systemProperty>
 						<systemProperty>
-							<name>MES_CONF</name>
+							<name>QCADOO_CONF</name>
 							<value>${basedir}/conf/jetty</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_LOG</name>
+							<value>${basedir}/target/logs</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_PLUGINS_TMP_PATH</name>
+							<value>${basedir}/target/tmp</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_PLUGINS_PATH</name>
+							<value>${basedir}/target/lib</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_WEBAPP_PATH</name>
+							<value>${basedir}/src/main/webapp</value>
+						</systemProperty>
+						<systemProperty>
+							<name>QCADOO_RESTART_CMD</name>
+							<value>${basedir}/restart.sh</value>
 						</systemProperty>
 					</systemProperties>
 					<webAppConfig>

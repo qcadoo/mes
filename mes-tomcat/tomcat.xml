@@ -10,26 +10,19 @@
 		<fileSet>
 			<directory>src/main/resources/</directory>
 			<outputDirectory>/</outputDirectory>
-			<includes>
-				<include>**</include>
-			</includes>
 		</fileSet>
 		<fileSet>
 			<directory>../mes-application/conf/default/</directory>
 			<outputDirectory>/qcadoo</outputDirectory>
-			<includes>
-				<include>**</include>
-			</includes>
 		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>/webapps</outputDirectory>
-			<unpack>false</unpack>
+			<outputDirectory>/webapps/ROOT</outputDirectory>
+			<unpack>true</unpack>
 			<includes>
 				<include>*:mes-application</include>
 			</includes>
-			<outputFileNameMapping>ROOT.war</outputFileNameMapping>
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>/bin</outputDirectory>
@@ -48,13 +41,6 @@
 			<outputFileNameMapping>commons-daemon.jar</outputFileNameMapping>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>/driver</outputDirectory>
-			<unpack>false</unpack>
-			<includes>
-				<include>*:postgresql</include>
-			</includes>
-		</dependencySet>
-		<dependencySet>
 			<outputDirectory>/lib</outputDirectory>
 			<unpack>false</unpack>
 			<excludes>
@@ -70,7 +56,6 @@
 				<exclude>*:slf4j-log4j12</exclude>
 				<exclude>*:juli</exclude>
 				<exclude>*:commons-daemon</exclude>
-				<exclude>*:postgresql</exclude>
 			</excludes>
 		</dependencySet>
 	</dependencySets>
