@@ -12,8 +12,12 @@ String ctx = request.getContextPath();
     	<div style="margin: 20px;">
 	        <h1>${headerLabel}</h1>
 	        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
-	            <input type="file" name="file"/>
-	            <input type="submit" value="${buttonLabel}"/>
+	        	<div>
+	            	<input type="file" name="file" size="50"/>
+	            </div>
+	            <div style="margin-top: 10px; margin-left: 130px;">
+	            	<input type="submit" value="${buttonLabel}" style="width: 200px; cursor: pointer;"/>
+	            </div>
 	        </form>
         </div>
     </body>
