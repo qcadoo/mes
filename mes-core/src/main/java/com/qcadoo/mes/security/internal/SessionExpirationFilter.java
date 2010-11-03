@@ -69,7 +69,6 @@ public final class SessionExpirationFilter implements Filter {
 
         @Override
         public void sendRedirect(final String string) throws IOException {
-            System.out.println(" ------------------------------------------------------------------- IS REDIRECT to " + string);
             redirect = string;
         }
 
