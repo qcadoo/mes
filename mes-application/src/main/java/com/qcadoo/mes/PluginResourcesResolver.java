@@ -6,15 +6,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
-import org.springframework.web.context.WebApplicationContext;
 
 public final class PluginResourcesResolver implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 
@@ -22,12 +24,17 @@ public final class PluginResourcesResolver implements ApplicationContextAware, A
 
     private ApplicationContext applicationContext;
 
+    @Value("${QCADOO_WEBAPP_PATH}")
     private String webappPath;
 
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        this.webappPath = ((WebApplicationContext) applicationContext).getServletContext().getRealPath("/");
+    }
+
+    @PostConstruct
+    public void init() {
+        LOG.info("Webapp path: " + webappPath);
     }
 
     @Override

@@ -118,6 +118,7 @@
 				<configuration>
 					<descriptor>tomcat.xml</descriptor>
 					<finalName>qcadoo</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -16,7 +16,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>../mes-application/conf/default/</directory>
-			<outputDirectory>/mes</outputDirectory>
+			<outputDirectory>/qcadoo</outputDirectory>
 			<includes>
 				<include>**</include>
 			</includes>
