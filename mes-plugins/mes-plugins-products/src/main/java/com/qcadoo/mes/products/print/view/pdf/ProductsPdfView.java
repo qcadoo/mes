@@ -1,5 +1,6 @@
 package com.qcadoo.mes.products.print.view.pdf;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.products.print.service.pdf.PdfPageNumbering;
 
 public abstract class ProductsPdfView extends AbstractPdfView {
 
@@ -32,20 +34,37 @@ public abstract class ProductsPdfView extends AbstractPdfView {
 
     private static final String FONT_PATH = "fonts/Arial.ttf";
 
+    protected Font arialBold19Light;
+
+    protected Font arialBold19Dark;
+
+    protected Font arialRegular9Light;
+
+    protected Font arialRegular9Dark;
+
+    protected Font arialBold9Dark;
+
+    protected Color lineDarkColor;
+
+    protected Color backgroundColor;
+
     @Override
     protected void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-
         DefaultEntity entity = (DefaultEntity) model.get("entity");
-
-        ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
-        FontFactory.register(classPathResource.getPath());
-        BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        Font font10 = new Font(baseFont, 10);
-        String fileName = addContent(document, entity, request.getLocale(), font10);
+        prepareFontsAndColors();
+        String fileName = addContent(document, entity, request.getLocale());
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".pdf");
         writer.addJavaScript("this.print(false);", false);
 
+    }
+
+    @Override
+    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+            throws DocumentException {
+        super.prepareWriter(model, writer, request);
+        writer.setMargins(8, 80, 60, 120);
+        writer.setPageEvent(new PdfPageNumbering());
     }
 
     @Override
@@ -57,17 +76,35 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         document.addCreator("QCADOO");
     }
 
-    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final Font font)
+    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale)
             throws DocumentException, IOException {
-        document.add(new Paragraph("", font));
+        document.add(new Paragraph("", arialRegular9Light));
         return "document";
     }
 
-    protected Font getFontBold(final Font font) {
-        Font fontBold = new Font(font);
-        fontBold.setStyle(Font.BOLD);
-        return fontBold;
-    }
-
     protected abstract void addTitle(final Document document, final Locale locale);
+
+    private void prepareFontsAndColors() throws DocumentException, IOException {
+        ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
+        FontFactory.register(classPathResource.getPath());
+        BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Color light = new Color(77, 77, 77);
+        Color dark = new Color(26, 26, 26);
+        lineDarkColor = new Color(102, 102, 102);
+        // lineLightColor = new Color(153, 153, 153);
+        backgroundColor = new Color(230, 230, 230);
+        arialBold19Light = new Font(baseFont, 19);
+        arialBold19Light.setStyle(Font.BOLD);
+        arialBold19Light.setColor(light);
+        arialBold19Dark = new Font(arialBold19Light);
+        arialBold19Dark.setColor(dark);
+        arialRegular9Light = new Font(baseFont, 9);
+        arialRegular9Light.setColor(light);
+        arialRegular9Dark = new Font(baseFont, 9);
+        arialRegular9Dark.setColor(dark);
+        arialBold9Dark = new Font(arialRegular9Dark);
+        arialBold9Dark.setStyle(Font.BOLD);
+        // arialBold11Dark = new Font(arialBold19Dark);
+        // arialBold11Dark.setSize(11);
+    }
 }
