@@ -11,6 +11,8 @@
 	<script type="text/javascript" src="js/core/lib/jquery-1.4.2.min.js"></script>
 
 	<script type="text/javascript" src="js/core/qcd/utils/serializator.js"></script>
+	
+	<link rel="shortcut icon" href="/img/core/icons/favicon.png">
 		
 	<script type="text/javascript">
 

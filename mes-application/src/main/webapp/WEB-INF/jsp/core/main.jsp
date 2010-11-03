@@ -20,6 +20,8 @@
 	<script type="text/javascript" src="js/core/qcd/core/windowController.js"></script>
 	<script type="text/javascript" src="js/core/qcd/core/messagesController.js"></script>
 	
+	<link rel="shortcut icon" href="/img/core/icons/favicon.png">
+	
 	<script type="text/javascript">
 
 		var menuStructure = ${menuStructure}
