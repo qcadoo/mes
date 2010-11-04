@@ -24,6 +24,16 @@ public class PdfPageNumbering extends PdfPageEventHelper {
 
     private Color lightColor;
 
+    private String page;
+
+    private String in;
+
+    public PdfPageNumbering(final String page, final String in) {
+        super();
+        this.page = page;
+        this.in = in;
+    }
+
     /**
      * @see com.lowagie.text.pdf.PdfPageEvent#onOpenDocument(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
      */
@@ -48,7 +58,7 @@ public class PdfPageNumbering extends PdfPageEventHelper {
     public void onStartPage(final PdfWriter writer, final Document document) {
         PdfContentByte cb = writer.getDirectContent();
         cb.saveState();
-        String text = "STRONA " + writer.getPageNumber() + " z ";
+        String text = page + " " + writer.getPageNumber() + " " + in + " ";
         float textBase = document.top() + 22;
         float textSize = arial.getWidthPoint(text, 7);
         cb.setColorFill(lightColor);
@@ -75,7 +85,7 @@ public class PdfPageNumbering extends PdfPageEventHelper {
     public void onEndPage(final PdfWriter writer, final Document document) {
         PdfContentByte cb = writer.getDirectContent();
         cb.saveState();
-        String text = "STRONA " + writer.getPageNumber() + " z ";
+        String text = page + " " + writer.getPageNumber() + " " + in + " ";
         float textBase = document.bottom() - 25;
         float textSize = arial.getWidthPoint(text, 7);
         cb.setColorFill(lightColor);

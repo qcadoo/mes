@@ -29,6 +29,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
@@ -70,6 +71,10 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
 
     private Color backgroundColor;
 
+    private Color lightColor;
+
+    private BaseFont arial;
+
     @Override
     public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
@@ -77,13 +82,26 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             String fileName = getFileName((Date) entity.getField("date")) + PDF_EXTENSION;
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
-            writer.setPageEvent(new PdfPageNumbering());
+            writer.setPageEvent(new PdfPageNumbering(translationService.translate("products.report.page", locale),
+                    translationService.translate("products.report.in", locale)));
             document.setMargins(8, 80, 40, 100);
             buildPdfMetadata(document, locale);
             prepareFontsAndColors();
             writer.createXmpMetadata();
             document.open();
             buildPdfContent(document, entity, locale);
+            PdfContentByte cb = writer.getDirectContent();
+            cb.saveState();
+            cb.setColorFill(lightColor);
+            String text = translationService.translate("products.report.endOfReport", locale);
+            float textBase = document.bottom() - 35;
+            float textSize = arial.getWidthPoint(text, 7);
+            cb.beginText();
+            cb.setFontAndSize(arial, 7);
+            cb.setTextMatrix(document.right() - textSize, textBase);
+            cb.showText(text);
+            cb.endText();
+            cb.restoreState();
             document.close();
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
@@ -95,25 +113,29 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
     private void prepareFontsAndColors() throws DocumentException, IOException {
         ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
         FontFactory.register(classPathResource.getPath());
-        BaseFont baseFont = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        arial = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Color light = new Color(77, 77, 77);
         Color dark = new Color(26, 26, 26);
         lineDarkColor = new Color(102, 102, 102);
         lineLightColor = new Color(153, 153, 153);
+        lightColor = new Color(77, 77, 77);
         backgroundColor = new Color(230, 230, 230);
-        arialBold19Light = new Font(baseFont, 19);
+        arialBold19Light = new Font(arial, 19);
         arialBold19Light.setStyle(Font.BOLD);
         arialBold19Light.setColor(light);
-        arialBold19Dark = new Font(arialBold19Light);
+        arialBold19Dark = new Font(arial, 19);
+        arialBold19Dark.setStyle(Font.BOLD);
         arialBold19Dark.setColor(dark);
-        arialRegular9Light = new Font(baseFont, 9);
+        arialRegular9Light = new Font(arial, 9);
         arialRegular9Light.setColor(light);
-        arialRegular9Dark = new Font(baseFont, 9);
+        arialRegular9Dark = new Font(arial, 9);
         arialRegular9Dark.setColor(dark);
-        arialBold9Dark = new Font(arialRegular9Dark);
+        arialBold9Dark = new Font(arial, 9);
+        arialBold9Dark.setColor(dark);
         arialBold9Dark.setStyle(Font.BOLD);
-        arialBold11Dark = new Font(arialBold19Dark);
-        arialBold11Dark.setSize(11);
+        arialBold11Dark = new Font(arial, 11);
+        arialBold11Dark.setColor(dark);
+        arialBold11Dark.setStyle(Font.BOLD);
     }
 
     private void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
