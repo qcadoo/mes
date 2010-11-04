@@ -11,10 +11,6 @@
 
 	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/report.properties" />
 
-	<bean class="com.qcadoo.mes.PluginResourcesResolver" />
-
-	<bean class="com.qcadoo.mes.DatabasePreparationService" />
-	
 	<bean id="contentNegotiatingViewResolver" 
    		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver"
    		p:order="#{T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE}">

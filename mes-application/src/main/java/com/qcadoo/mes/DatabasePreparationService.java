@@ -1,13 +1,13 @@
 package com.qcadoo.mes;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
@@ -15,6 +15,7 @@ import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
+@Component
 public final class DatabasePreparationService implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabasePreparationService.class);
@@ -22,16 +23,21 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     @Autowired
     private SessionFactory sessionFactory;
 
+    @Autowired
+    private TestDataConverter testDataConverter;
+
     @Value("${loadTestData}")
     private boolean addTestData;
+
+    private UsersGroup adminGroup;
 
     @Override
     @Transactional
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-
         if (databaseHasToBePrepared()) {
             LOG.info("Database has to be prepared ...");
 
+            addMenus();
             addGroups();
             addUsers();
             // TODO masz plugins should be added automatically using plugin.xml
@@ -46,42 +52,47 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         }
     }
 
+    private void addMenus() {
+        // TODO Auto-generated method stub
+    }
+
     private void addGroups() {
-        addGroup("Admins", "ROLE_ADMIN");
+        adminGroup = addGroup("Admins", "ROLE_ADMIN");
         addGroup("Supervisors", "ROLE_SUPERVISOR");
         addGroup("Users", "ROLE_USER");
     }
 
-    private void addGroup(final String name, final String role) {
+    private UsersGroup addGroup(final String name, final String role) {
         LOG.info("Adding group \"" + name + "\" with role \"" + role + "\"");
         UsersGroup group = new UsersGroup();
         group.setName(name);
         group.setRole(role);
         group.setDescription("");
         sessionFactory.getCurrentSession().save(group);
+        return group;
     }
 
     private void addUsers() {
-        LOG.info("Adding \"admin\" user");
+        addUser("admin", "", "", "", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", adminGroup);
+    }
 
-        UsersGroup adminGroup = (UsersGroup) sessionFactory.getCurrentSession().createCriteria(UsersGroup.class)
-                .add(Restrictions.eq("role", "ROLE_ADMIN")).uniqueResult();
-
-        UsersUser admin = new UsersUser();
-        admin.setUserName("admin");
-        admin.setUserGroup(adminGroup);
-        admin.setDescription("");
-        admin.setEmail("");
-        admin.setFirstName("");
-        admin.setLastName("");
-        admin.setDescription("");
-        admin.setPassword("8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918");
-        sessionFactory.getCurrentSession().save(admin);
+    private void addUser(final String login, final String email, final String firstName, final String lastName,
+            final String password, final UsersGroup group) {
+        LOG.info("Adding \"" + login + "\" user");
+        UsersUser user = new UsersUser();
+        user.setUserName(login);
+        user.setUserGroup(group);
+        user.setDescription("");
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setDescription("");
+        user.setPassword(password);
+        sessionFactory.getCurrentSession().save(user);
     }
 
     private void addDictionaries() {
         addDictionary("categories");
-
     }
 
     private void addDictionary(final String name) {
@@ -95,8 +106,9 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         addPlugin("users", "Qcadoo MES :: Plugins :: User Management", true);
         addPlugin("dictionaries", "Qcadoo MES :: Plugins :: Dictionary Management", true);
         addPlugin("plugins", "Qcadoo MES :: Plugins :: Plugin Management", true);
+        addPlugin("menu", "Qcadoo MES :: Plugins :: Menu Management", true);
         addPlugin("crud", "Qcadoo MES :: Plugins :: CRUD", true);
-        addPlugin("products", "Qcadoo MES :: Plugins :: Products", true);
+        addPlugin("products", "Qcadoo MES :: Plugins :: Products", false);
     }
 
     private void addPlugin(final String identifier, final String name, final boolean base) {
@@ -115,8 +127,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addTestData() {
-        LOG.info("Adding test data ...");
-        // TODO Auto-generated method stub
+        testDataConverter.loadTestData();
     }
 
     private boolean databaseHasToBePrepared() {
