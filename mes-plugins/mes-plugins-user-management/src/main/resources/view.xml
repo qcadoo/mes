@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <qcd:views plugin="users" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="groupGridView" model="group">
+	<view name="groupGridView" model="group" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 			</ribbon>		
@@ -45,7 +45,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="userGridView" model="user">
+	<view name="userGridView" model="user" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="productGridView" model="product">
+	<view name="productGridView" model="product" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
@@ -149,7 +149,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="instructionGridView" model="instruction">
+	<view name="instructionGridView" model="instruction" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
@@ -257,7 +257,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="orderGridView" model="order">
+	<view name="orderGridView" model="order" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
@@ -354,7 +354,7 @@
 		</component>
 		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
 	</view>
-	<view name="materialRequirementGridView" model="materialRequirement">
+	<view name="materialRequirementGridView" model="materialRequirement" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">

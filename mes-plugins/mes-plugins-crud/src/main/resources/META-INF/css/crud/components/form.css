@@ -171,14 +171,14 @@
 	display: inline-block;
 	width: 13px;
 	height: 8px;
-	background: url(../images/error.icon.png);
+	background: url(/css/core/images/error.icon.png);
 	vertical-align: baseline;
 }
 
 .login_failed {
 	width: 13px;
 	height: 8px;
-	background: url(../images/error.icon.png);
+	background: url(/css/core/images/error.icon.png);
 	vertical-align: baseline;
 	position: absolute;
 	top: 25px;
@@ -243,7 +243,7 @@
 	display: inline-block;
 	width: 9px;
 	height: 9px;
-	background: url(../images/info.icon.png);
+	background: url(/css/core/images/info.icon.png);
 	vertical-align: baseline;
 	margin-left: 3px;
 }
@@ -328,7 +328,7 @@
 	top: 3px; right: 3px;
 	width: 16px;
 	height: 16px;
-	background: transparent url(../images/loading.gif) no-repeat right center;
+	background: transparent url(/css/core/images/loading.gif) no-repeat right center;
 	display: none;
 }
 

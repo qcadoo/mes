@@ -80,6 +80,11 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
+    public void deleteHard(final Long id) {
+        dataAccessService.deleteHard(this, id);
+    }
+
+    @Override
     public Entity save(final Entity entity) {
         return dataAccessService.save(this, entity);
     }

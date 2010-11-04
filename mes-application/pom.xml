@@ -38,6 +38,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-menu-management</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-products</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>

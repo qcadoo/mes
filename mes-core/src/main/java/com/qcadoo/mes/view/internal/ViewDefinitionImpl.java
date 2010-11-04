@@ -26,6 +26,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     private RootComponent root;
 
+    private boolean menuable = false;
+
     public ViewDefinitionImpl(final String pluginIdentifier, final String name) {
         this.name = name;
         this.pluginIdentifier = pluginIdentifier;
@@ -126,6 +128,14 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     @Override
     public RootComponent getRoot() {
         return root;
+    }
+
+    public boolean isMenuable() {
+        return menuable;
+    }
+
+    public void setMenuable(boolean menuable) {
+        this.menuable = menuable;
     }
 
 }

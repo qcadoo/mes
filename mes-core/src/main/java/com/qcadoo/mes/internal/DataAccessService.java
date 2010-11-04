@@ -18,6 +18,8 @@ public interface DataAccessService {
 
     void delete(InternalDataDefinition dataDefinition, Long... entityId);
 
+    void deleteHard(InternalDataDefinition dataDefinition, Long... entityId);
+
     SearchResult find(SearchCriteria searchCriteria);
 
     void moveTo(InternalDataDefinition dataDefinition, Long entityId, int position);

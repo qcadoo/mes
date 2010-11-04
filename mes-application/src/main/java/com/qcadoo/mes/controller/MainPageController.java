@@ -13,12 +13,16 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.internal.MenuService;
 
 @Controller
 public final class MainPageController {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
+
+    @Autowired
+    private MenuService menuService;
 
     @Autowired
     private TranslationService translationService;
@@ -41,7 +45,7 @@ public final class MainPageController {
         mav.setViewName("core/main");
         mav.addObject("viewsList", viewDefinitionService.list());
         mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
-        mav.addObject("menuStructure", viewDefinitionService.getMenu(locale).getAsJson());
+        mav.addObject("menuStructure", menuService.getMenu(locale).getAsJson());
         return mav;
     }
 

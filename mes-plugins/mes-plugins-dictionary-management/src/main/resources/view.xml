@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <qcd:views plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="dictionaryGridView" model="dictionary">
+	<view name="dictionaryGridView" model="dictionary" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 			</ribbon>				
