@@ -99,6 +99,19 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		changePage(model.selectedItem.selectedItem.page);
 	}
 	
+	this.hasMenuPosition = function(position) {
+		var menuParts = position.split(".");
+		var topItem = model.itemsMap[menuParts[0]];
+		if (topItem == null) {
+			return false;
+		}
+		var bottomItem = topItem.itemsMap[menuParts[0]+"_"+menuParts[1]];
+		if (bottomItem == null) {
+			return false;
+		}
+		return true;
+	}
+	
 	this.restoreState = function() {
 		model.selectedItem = previousActive.first;
 		if (previousActive.second) {
@@ -116,11 +129,7 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 			currentActive.first = model.selectedItem;
 			currentActive.first.element.addClass("activ");
 			
-			if (model.selectedItem.items.length > 0) {
-				updateSecondLevel();
-			} else {
-				secondLevelElement.hide();
-			}
+			updateSecondLevel();
 			
 		} else {
 			if (currentActive.second != model.selectedItem.selectedItem) {
@@ -136,35 +145,30 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	}
 	
 	function updateSecondLevel() {
-		if (model.selectedItem.items.length > 0) {
-			secondLevelElement.children().remove();
-			
-			var menuContentElement = $("<ul>").addClass("q_row2");
-			var q_menu_row2 = $("<div>").attr("id", "q_menu_row2");
-				q_menu_row2.append(menuContentElement);
-			var q_row2_out = $("<div>").attr("id", "q_row2_out");
-				q_row2_out.append(q_menu_row2);
-			secondLevelElement.append(q_row2_out);
-			
-			for (var i in model.selectedItem.items) {
-				var secondLevelItem = model.selectedItem.items[i];
-				var secondLevelButton = $("<li>").html("<a href='#'><span>"+secondLevelItem.label+"</span></a>").attr("id", "secondLevelButton_"+secondLevelItem.name);
-				menuContentElement.append(secondLevelButton);
-				secondLevelItem.element = secondLevelButton;
+		secondLevelElement.children().remove();
+		
+		var menuContentElement = $("<ul>").addClass("q_row2");
+		var q_menu_row2 = $("<div>").attr("id", "q_menu_row2");
+			q_menu_row2.append(menuContentElement);
+		var q_row2_out = $("<div>").attr("id", "q_row2_out");
+			q_row2_out.append(q_menu_row2);
+		secondLevelElement.append(q_row2_out);
+		
+		for (var i in model.selectedItem.items) {
+			var secondLevelItem = model.selectedItem.items[i];
+			var secondLevelButton = $("<li>").html("<a href='#'><span>"+secondLevelItem.label+"</span></a>").attr("id", "secondLevelButton_"+secondLevelItem.name);
+			menuContentElement.append(secondLevelButton);
+			secondLevelItem.element = secondLevelButton;
 
-				secondLevelButton.click(function() {
-					onBottomItemClick($(this));
-				});
-				
-				if (previousActive.second && previousActive.second.name == secondLevelItem.name) {
-					secondLevelItem.element.addClass("activ");
-					currentActive.second = secondLevelItem;
-				}
-				
+			secondLevelButton.click(function() {
+				onBottomItemClick($(this));
+			});
+			
+			if (previousActive.second && previousActive.second.name == secondLevelItem.name) {
+				secondLevelItem.element.addClass("activ");
+				currentActive.second = secondLevelItem;
 			}
-			secondLevelElement.show();
-		} else {
-			secondLevelElement.hide();
+			
 		}
 	} 
 	

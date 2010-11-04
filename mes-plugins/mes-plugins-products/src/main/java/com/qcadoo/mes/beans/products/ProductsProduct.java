@@ -27,8 +27,6 @@ public class ProductsProduct {
     @Column(nullable = false)
     private String typeOfMaterial;
 
-    private String type;
-
     private String ean;
 
     private String category;
@@ -97,14 +95,6 @@ public class ProductsProduct {
 
     public void setUnit(final String unit) {
         this.unit = unit;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(final String type) {
-        this.type = type;
     }
 
     public boolean isDeleted() {

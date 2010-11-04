@@ -127,7 +127,20 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkState(entityIds.length > 0, "EntityIds must be given");
 
         for (Long entityId : entityIds) {
-            deleteEntity(dataDefinition, entityId);
+            deleteEntity(dataDefinition, entityId, false);
+        }
+    }
+
+    @Override
+    @Transactional
+    @Monitorable
+    public void deleteHard(final InternalDataDefinition dataDefinition, final Long... entityIds) {
+        checkNotNull(dataDefinition, "DataDefinition must be given");
+        checkState(dataDefinition.isDeletable(), "Entity must be deletable");
+        checkState(entityIds.length > 0, "EntityIds must be given");
+
+        for (Long entityId : entityIds) {
+            deleteEntity(dataDefinition, entityId, true);
         }
     }
 
@@ -216,17 +229,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return existingDatabaseEntity;
     }
 
-    private void deleteEntity(final InternalDataDefinition dataDefinition, final Long entityId) {
+    private void deleteEntity(final InternalDataDefinition dataDefinition, final Long entityId, final boolean hardDelete) {
         Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
 
         checkNotNull(databaseEntity, "Entity[%s][id=%s] cannot be found", dataDefinition.getPluginIdentifier() + "."
                 + dataDefinition.getName(), entityId);
 
         priorityService.deprioritizeEntity(dataDefinition, databaseEntity);
-
-        entityService.setDeleted(databaseEntity);
-
-        getCurrentSession().update(databaseEntity);
 
         Map<String, FieldDefinition> fields = dataDefinition.getFields();
 
@@ -246,10 +255,17 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     }
                 } else {
                     for (Object child : children) {
-                        deleteEntity(childDataDefinition, entityService.getId(child));
+                        deleteEntity(childDataDefinition, entityService.getId(child), hardDelete);
                     }
                 }
             }
+        }
+
+        if (hardDelete) {
+            getCurrentSession().delete(databaseEntity);
+        } else {
+            entityService.setDeleted(databaseEntity);
+            getCurrentSession().update(databaseEntity);
         }
 
         LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId

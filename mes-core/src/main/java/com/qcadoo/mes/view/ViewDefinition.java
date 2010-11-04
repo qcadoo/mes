@@ -26,4 +26,6 @@ public interface ViewDefinition {
     void updateTranslations(final Map<String, String> translations, final Locale locale);
 
     RootComponent getRoot();
+
+    boolean isMenuable();
 }
