@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <categories>
-	<row LOGIN="john.ford" EMAIL="john.ford@email.com" FIRSTNAME="John" LASTNAME="Form" ROLE="ROLE_ADMIN" />
+	<row LOGIN="adam" EMAIL="adam.rataj@email.com" FIRSTNAME="Adam" LASTNAME="Rataj" ROLE="ROLE_ADMIN" />
+	<row LOGIN="john.ford" EMAIL="john.ford@email.com" FIRSTNAME="John" LASTNAME="Ford" ROLE="ROLE_ADMIN" />
 	<row LOGIN="hans.mercedes" EMAIL="hans.mercedes@email.com" FIRSTNAME="Hans" LASTNAME="Mercedes" ROLE="ROLE_ADMIN" />
 	<row LOGIN="alberto.fiat" EMAIL="alberto.fiat@email.com" FIRSTNAME="Alberto" LASTNAME="Fiat" ROLE="ROLE_ADMIN" />
 	<row LOGIN="steve.green" EMAIL="steve.green@email.com" FIRSTNAME="Steve" LASTNAME="Green" ROLE="ROLE_SUPERVISOR" />
