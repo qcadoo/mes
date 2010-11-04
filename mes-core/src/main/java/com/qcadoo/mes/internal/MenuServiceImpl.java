@@ -129,7 +129,13 @@ public class MenuServiceImpl implements MenuService {
         if (translationName == null) {
             return name;
         } else {
-            return translationService.translate(translationName, locale);
+            String[] translationNameParts = translationName.split("\\.");
+            String lastPart = translationNameParts[translationNameParts.length - 1];
+            if (name.equals(lastPart)) {
+                return translationService.translate(translationName, locale);
+            } else {
+                return name;
+            }
         }
     }
 

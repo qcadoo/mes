@@ -20,7 +20,7 @@
 				<option type="fullScreen" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
-			<option type="width" value="300" />
+			
 			<option type="header" value="false" />
 		</component>
 	</view>
@@ -82,7 +82,7 @@
 				<component type="input" name="name" field="name" hasDescription="false" />
 				<component type="lookup" name="viewDefinition" field="viewDefinition">
 					<option type="column" name="pluginIdentifier" fields="pluginIdentifier"
-						width="300" />
+						width="100" />
 					<option type="paginable" value="true" />
 					<option type="searchable" value="menuName,pluginIdentifier" />
 					<option type="orderable" value="menuName,pluginIdentifier" />
