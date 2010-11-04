@@ -16,6 +16,9 @@
 		<string name="unit" />
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
 		<hasMany name="instructions" model="instruction" joinField="product" cascade="nullify" />
+		<!--TODO zlecenia-->
+		<!--TODO drzewo bom instrukcji-->
+		<!--TODO substytuty-->
 	</model>
 	<model name="substitute">
 		<string name="number">
@@ -62,6 +65,7 @@
 		<date name="dateTo" />
 		<text name="description" />
 		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
+		<!--  TODO zlecenia-->
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" />
 	</model>
@@ -100,7 +104,9 @@
 		<belongsTo name="product" model="product" lookupField="name" />
 		<belongsTo name="defaultInstruction" model="instruction" lookupField="name" readonly="true" />
 		<belongsTo name="instruction" model="instruction" lookupField="name" />
-		<decimal name="plannedQuantity" />
+		<decimal name="plannedQuantity">
+			<validatesPresence />
+		</decimal>
 		<decimal name="doneQuantity" />
 		<date name="effectiveDateFrom" readonly="true" />
 		<date name="effectiveDateTo" readonly="true" />

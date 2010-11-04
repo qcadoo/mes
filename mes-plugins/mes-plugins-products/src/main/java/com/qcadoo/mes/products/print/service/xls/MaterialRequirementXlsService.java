@@ -3,7 +3,6 @@ package com.qcadoo.mes.products.print.service.xls;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -77,14 +76,6 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
 
     private Map<ProxyEntity, BigDecimal> getProductsSeries(final Entity entity) {
         List<Entity> orders = (List<Entity>) entity.getField("orders");
-        List<Entity> instructions = new ArrayList<Entity>();
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
-            Entity instruction = (Entity) order.getField("instruction");
-            if (instruction != null) {
-                instructions.add(instruction);
-            }
-        }
-        return getBomSeries(entity, instructions);
+        return getBomSeries(entity, orders);
     }
 }

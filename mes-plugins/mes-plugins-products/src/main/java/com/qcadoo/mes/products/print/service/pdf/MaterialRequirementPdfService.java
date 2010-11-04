@@ -168,7 +168,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         orderHeader.add(translationService.translate("products.order.number.label", locale));
         orderHeader.add(translationService.translate("products.order.name.label", locale));
         orderHeader.add(translationService.translate("products.order.product.label", locale));
-        List<Entity> instructions = addOrderSeries(document, entity, orderHeader);
+        addOrderSeries(document, entity, orderHeader);
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah2", locale),
                 arialBold11Dark));
@@ -177,7 +177,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         productHeader.add(translationService.translate("products.product.name.label", locale));
         productHeader.add(translationService.translate("products.product.unit.label", locale));
         productHeader.add(translationService.translate("products.instructionBomComponent.quantity.label", locale));
-        addBomSeries(document, (DefaultEntity) entity, instructions, productHeader);
+        addBomSeries(document, (DefaultEntity) entity, productHeader);
     }
 
     private void buildPdfMetadata(final Document document, final Locale locale) {
@@ -188,17 +188,13 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         document.addCreator("QCADOO");
     }
 
-    private List<Entity> addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
+    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
         List<Entity> orders = (List<Entity>) entity.getField("orders");
-        List<Entity> instructions = new ArrayList<Entity>();
         PdfPTable table = createTableWithHeader(3, orderHeader, arialRegular9Dark);
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity instruction = (Entity) order.getField("instruction");
-            if (instruction != null) {
-                instructions.add(instruction);
-            }
             table.addCell(new Phrase(order.getField("number").toString(), arialRegular9Dark));
             table.addCell(new Phrase(order.getField("name").toString(), arialRegular9Dark));
             Entity product = (Entity) order.getField("product");
@@ -209,7 +205,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             }
         }
         document.add(table);
-        return instructions;
+
     }
 
     private PdfPTable createTableWithHeader(final int numOfColumns, final List<String> orderHeader, final Font font) {
@@ -239,9 +235,10 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         return table;
     }
 
-    private void addBomSeries(final Document document, final DefaultEntity entity, final List<Entity> instructions,
-            final List<String> productHeader) throws DocumentException {
-        Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, instructions);
+    private void addBomSeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
+            throws DocumentException {
+        List<Entity> orders = (List<Entity>) entity.getField("orders");
+        Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, orders);
         PdfPTable table = createTableWithHeader(4, productHeader, arialRegular9Dark);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), arialRegular9Dark));
