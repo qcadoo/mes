@@ -17,6 +17,8 @@ public interface DataDefinition {
 
     void delete(final Long id);
 
+    void deleteHard(final Long id);
+
     Entity save(final Entity entity);
 
     SearchCriteriaBuilder find();

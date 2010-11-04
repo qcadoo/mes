@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:models plugin="menu" xmlns:qcd="http://www.qcadoo.com/model">
+	<model name="menuCategory">
+		<string name="name" >
+			<validatesPresence />
+			<validatesUniqueness />
+		</string>
+		<string name="translationName" />
+		<hasMany name="viewDefinitionItems" model="menuViewDefinitionItem" joinField="menuCategory" cascade="delete" />
+	</model>
+	
+	<model name="menuViewDefinitionItem">
+		<string name="name" >
+			<validatesPresence />
+			<validatesUniqueness />
+		</string>
+		<string name="translationName" />
+		<belongsTo name="menuCategory" model="menuCategory" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="viewDefinition" model="viewDefinition" lookupField="viewName" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<priority name="itemOrder" scope="menuCategory" />
+	</model>
+	
+	<model name="viewDefinition">
+		<string name="menuName" >
+			<validatesPresence />
+		</string>
+		<string name="viewName" >
+			<validatesPresence />
+		</string>
+		<string name="pluginIdentifier" >
+			<validatesPresence />
+		</string>
+		<hasMany name="menuViewDefinitionItems" model="menuViewDefinitionItem" joinField="viewDefinition" cascade="delete" />
+	</model>
+	
+</qcd:models>

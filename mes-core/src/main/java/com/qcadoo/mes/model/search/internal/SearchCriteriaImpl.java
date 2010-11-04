@@ -19,7 +19,7 @@ import com.qcadoo.mes.model.search.SearchResult;
 
 public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaBuilder {
 
-    private static final int DEFAULT_MAX_RESULTS = 25;
+    private static final int DEFAULT_MAX_RESULTS = Integer.MAX_VALUE;
 
     private static final int MAX_RESTRICTIONS = 5;
 

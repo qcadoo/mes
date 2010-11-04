@@ -114,6 +114,8 @@ public final class ViewDefinitionParser {
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(pluginIdentifier, viewName);
 
+        viewDefinition.setMenuable(getBooleanAttribute(reader, "menuable", false));
+
         DataDefinition dataDefinition = null;
         if (getStringAttribute(reader, "model") != null) {
             dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));

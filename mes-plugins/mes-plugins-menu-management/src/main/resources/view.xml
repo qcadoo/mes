@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:views plugin="menu" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="menuCategoryGridView" model="menuCategory" menuable="true">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" icon="addIcon32.png" action="#{mainWindow.mainGrid}.performNew;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.mainGrid}.performDelete;" />
+				</group>
+			</ribbon>
+			<component type="grid" name="mainGrid">
+				<option type="column" name="name" fields="name" link="true" />
+				<option type="header" value="false" />
+				<option type="orderable" value="name" />
+				<option type="paginable" value="true" />
+				<option type="multiselect" value="true" />
+				<option type="correspondingView" value="menu/menuCategoryDetailsView" />
+				<option type="fullScreen" value="true" />
+			</component>
+			<option type="fixedHeight" value="true" />
+			<option type="width" value="300" />
+			<option type="header" value="false" />
+		</component>
+	</view>
+	<view name="menuCategoryDetailsView" model="menuCategory">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon32.png"
+						action="#{mainWindow.detailsForm}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon32.png"
+						action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png"
+						action="#{mainWindow.detailsForm}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="detailsForm">
+				<component type="input" name="name" field="name" hasDescription="false" />
+				<option type="expression" value="#name" />
+				<option type="header" value="false" />
+				<option type="height" value="300" />
+				<option type="fullScreen" value="true" />
+			</component>
+			<component type="grid" name="itemsGrid" source="#{mainWindow.detailsForm}.viewDefinitionItems">
+				<option type="column" name="itemOrder" fields="itemOrder" width="100"/>
+				<option type="column" name="name" fields="name" link="true" width="300"/>
+				<option type="correspondingView" value="menu/menuViewDefinitionItemDetailsView" />
+				<option type="paginable" value="false" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="200" />
+				<option type="width" value="400" />
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
+			</component>
+		</component>
+	</view>
+	<view name="menuViewDefinitionItemDetailsView" model="menuViewDefinitionItem">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon32.png"
+						action="#{mainWindow.detailsForm}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon32.png"
+						action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png"
+						action="#{mainWindow.detailsForm}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="detailsForm">
+				<component type="input" name="name" field="name" hasDescription="false" />
+				<component type="lookup" name="viewDefinition" field="viewDefinition">
+					<option type="column" name="pluginIdentifier" fields="pluginIdentifier"
+						width="300" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="menuName,pluginIdentifier" />
+					<option type="orderable" value="menuName,pluginIdentifier" />
+					<option type="fullScreen" value="true" />
+					<option type="expression" value="#menuName + ' (' + #pluginIdentifier + ')'"/>
+					<option type="fieldCode" value="menuName" />
+				</component>
+				<option type="expression" value="#name + ' - ' + #menuCategory['name'] + '[' + #itemOrder + ']'" />
+				<option type="header" value="false" />
+				<option type="height" value="300" />
+				<option type="fullScreen" value="true" />
+			</component>
+		</component>
+	</view>
+</qcd:views>

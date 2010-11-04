@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.qcadoo.mes.internal.DataAccessTest;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteria;
 
 public final class SearchCriteriaBuilderTest extends DataAccessTest {
 
@@ -18,7 +16,7 @@ public final class SearchCriteriaBuilderTest extends DataAccessTest {
 
         // then
         assertEquals(0, searchCriteria.getFirstResult());
-        assertEquals(25, searchCriteria.getMaxResults());
+        assertEquals(Integer.MAX_VALUE, searchCriteria.getMaxResults());
         assertEquals(dataDefinition, searchCriteria.getDataDefinition());
         assertEquals("id", searchCriteria.getOrder().getFieldName());
         assertTrue(searchCriteria.getOrder().isAsc());

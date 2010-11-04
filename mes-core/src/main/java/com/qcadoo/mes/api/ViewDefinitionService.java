@@ -1,12 +1,10 @@
 package com.qcadoo.mes.api;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.menu.MenuDefinition;
 
 public interface ViewDefinitionService {
 
@@ -18,8 +16,10 @@ public interface ViewDefinitionService {
             + "and (#viewName != 'orderGridView' and #viewName != 'orderDetailsView' or hasRole('ROLE_SUPERVISOR')))")
     ViewDefinition get(String pluginIdentifier, String viewName);
 
-    void delete(String pluginIdentifier, String viewName);
+    ViewDefinition getWithoutSession(String pluginIdentifier, String viewName);
 
-    MenuDefinition getMenu(Locale locale);
+    List<ViewDefinition> getMenuableViews();
+
+    void delete(String pluginIdentifier, String viewName);
 
 }

@@ -26,6 +26,7 @@
 		<module>mes-plugins-user-management</module>
 		<module>mes-plugins-dictionary-management</module>
 		<module>mes-plugins-plugin-management</module>
+		<module>mes-plugins-menu-management</module>
 		<module>mes-plugins-products</module>
 	</modules>
 
