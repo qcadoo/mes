@@ -122,33 +122,6 @@ public class MenuServiceImpl implements MenuService {
                     "menuCategoryGridView", "menu.menu.administration.menu", locale), "menu", "menuCategoryGridView"));
         }
 
-        //
-        // MenulItemsGroup productsItem = new MenulItemsGroup("products", translationService.translate("core.menu.products",
-        // locale));
-        //
-        // productsItem.addItem(new ViewDefinitionMenuItemItem("products", translationService.translate(
-        // "products.menu.products.instructions", locale), "products", "instructionGridView"));
-        // productsItem.addItem(new ViewDefinitionMenuItemItem("instructions", translationService.translate(
-        // "products.menu.products.products", locale), "products", "productGridView"));
-        // productsItem.addItem(new ViewDefinitionMenuItemItem("productionOrders", translationService.translate(
-        // "products.menu.products.productionOrders", locale), "products", "orderGridView"));
-        // productsItem.addItem(new ViewDefinitionMenuItemItem("materialRequirements", translationService.translate(
-        // "products.menu.products.materialRequirements", locale), "products", "materialRequirementGridView"));
-        // baseMenuDefinition.addItem(productsItem);
-        //
-        // MenulItemsGroup administrationItem = new MenulItemsGroup("administration", translationService.translate(
-        // "core.menu.administration", locale));
-        // administrationItem.addItem(new ViewDefinitionMenuItemItem("dictionaries", translationService.translate(
-        // "dictionaries.menu.administration.dictionaries", locale), "dictionaries", "dictionaryGridView"));
-        // administrationItem.addItem(new ViewDefinitionMenuItemItem("users", translationService.translate(
-        // "users.menu.administration.users", locale), "users", "userGridView"));
-        // administrationItem.addItem(new ViewDefinitionMenuItemItem("groups", translationService.translate(
-        // "users.menu.administration.groups", locale), "users", "groupGridView"));
-        // administrationItem.addItem(new ViewDefinitionMenuItemItem("plugins", translationService.translate(
-        // "plugins.menu.administration.plugins", locale), "plugins", "pluginGridView"));
-        // administrationItem.addItem(new ViewDefinitionMenuItemItem("menu", "Menu", "menu", "menuCategoryGridView"));
-        // baseMenuDefinition.addItem(administrationItem);
-
         return menuDef;
     }
 

@@ -51,7 +51,8 @@ public final class PriorityService {
         return ((PriorityType) fieldDefinition.getType()).getScopeFieldDefinition();
     }
 
-    public void move(final InternalDataDefinition dataDefinition, final Object databaseEntity, final int position, final int offset) {
+    public void move(final InternalDataDefinition dataDefinition, final Object databaseEntity, final int position,
+            final int offset) {
         FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         int currentPriority = (Integer) entityService.getField(databaseEntity, fieldDefinition);
@@ -134,8 +135,6 @@ public final class PriorityService {
 
     private Criteria getCriteria(final InternalDataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object databaseEntity) {
-        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
-        Object scopeValue = entityService.getField(databaseEntity, scopeFieldDefinition);
 
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
 
@@ -143,11 +142,18 @@ public final class PriorityService {
             entityService.addDeletedRestriction(criteria);
         }
 
-        if (scopeValue instanceof Entity) {
-            return criteria.add(Restrictions.eq(scopeFieldDefinition.getName() + ".id", ((Entity) scopeValue).getId()));
-        } else {
-            return criteria.add(Restrictions.eq(scopeFieldDefinition.getName(), scopeValue));
-        }
-    }
+        FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
 
+        if (scopeFieldDefinition != null) {
+            Object scopeValue = entityService.getField(databaseEntity, scopeFieldDefinition);
+
+            if (scopeValue instanceof Entity) {
+                criteria.add(Restrictions.eq(scopeFieldDefinition.getName() + ".id", ((Entity) scopeValue).getId()));
+            } else {
+                criteria.add(Restrictions.eq(scopeFieldDefinition.getName(), scopeValue));
+            }
+        }
+
+        return criteria;
+    }
 }
