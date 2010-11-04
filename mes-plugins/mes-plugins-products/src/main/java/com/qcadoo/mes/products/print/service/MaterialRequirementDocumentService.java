@@ -43,19 +43,24 @@ public abstract class MaterialRequirementDocumentService {
         dataDefinitionService.get("products", "materialRequirement").save(entity);
     }
 
-    protected final Map<ProxyEntity, BigDecimal> getBomSeries(final Entity entity, final List<Entity> instructions) {
+    protected final Map<ProxyEntity, BigDecimal> getBomSeries(final Entity entity, final List<Entity> orders) {
         Map<ProxyEntity, BigDecimal> products = new HashedMap();
-        for (Entity instruction : instructions) {
-            List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
-            for (Entity bomComponent : bomComponents) {
-                ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
-                if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
-                    if (products.containsKey(product)) {
-                        BigDecimal quantity = products.get(product);
-                        quantity = ((BigDecimal) bomComponent.getField("quantity")).add(quantity);
-                        products.put(product, quantity);
-                    } else {
-                        products.put(product, (BigDecimal) bomComponent.getField("quantity"));
+        for (Entity component : orders) {
+            Entity order = (Entity) component.getField("order");
+            Entity instruction = (Entity) order.getField("instruction");
+            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            if (instruction != null && plannedQuantity != null && plannedQuantity.compareTo(new BigDecimal(0)) > 0) {
+                List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
+                for (Entity bomComponent : bomComponents) {
+                    ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
+                    if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
+                        if (products.containsKey(product)) {
+                            BigDecimal quantity = products.get(product);
+                            quantity = ((BigDecimal) bomComponent.getField("quantity")).multiply(plannedQuantity).add(quantity);
+                            products.put(product, quantity);
+                        } else {
+                            products.put(product, ((BigDecimal) bomComponent.getField("quantity")).multiply(plannedQuantity));
+                        }
                     }
                 }
             }
