@@ -65,6 +65,10 @@ QCD.WindowController = function(_menuStructure) {
 		menuController.goToMenuPosition(position);
 	}
 	
+	this.hasMenuPosition = function(position) {
+		return menuController.hasMenuPosition(position);
+	}
+	
 	this.onSessionExpired = function(serializationObject) {
 		serializationObjectToInsert = serializationObject;
 		performGoToPage("login.html");

@@ -99,6 +99,19 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 		changePage(model.selectedItem.selectedItem.page);
 	}
 	
+	this.hasMenuPosition = function(position) {
+		var menuParts = position.split(".");
+		var topItem = model.itemsMap[menuParts[0]];
+		if (topItem == null) {
+			return false;
+		}
+		var bottomItem = topItem.itemsMap[menuParts[0]+"_"+menuParts[1]];
+		if (bottomItem == null) {
+			return false;
+		}
+		return true;
+	}
+	
 	this.restoreState = function() {
 		model.selectedItem = previousActive.first;
 		if (previousActive.second) {
