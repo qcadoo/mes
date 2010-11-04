@@ -1,6 +1,5 @@
 package com.qcadoo.mes.model.internal;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -341,8 +340,11 @@ public final class DataDefinitionParser {
     }
 
     private FieldDefinition getPriorityFieldDefinition(final XMLStreamReader reader, final DataDefinitionImpl dataDefinition) {
-        FieldDefinition scopedField = dataDefinition.getField(getStringAttribute(reader, "scope"));
-        checkNotNull(scopedField, "Scoped field for priority is required");
+        String scopeAttribute = getStringAttribute(reader, "scope");
+        FieldDefinition scopedField = null;
+        if (scopeAttribute != null) {
+            scopedField = dataDefinition.getField(scopeAttribute);
+        }
         return new FieldDefinitionImpl(getStringAttribute(reader, "name")).withType(fieldTypeFactory.priorityType(scopedField))
                 .withReadOnly(true);
     }

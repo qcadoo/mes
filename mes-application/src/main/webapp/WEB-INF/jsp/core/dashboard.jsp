@@ -8,6 +8,23 @@
 	<link rel="stylesheet" href="css/core/dashboard.css" type="text/css" />
 	<link rel="stylesheet" href="css/core/menu/style.css" type="text/css" />
 	
+	<script type="text/javascript" src="js/core/lib/jquery-1.4.2.min.js"></script>
+	
+	<script type="text/javascript">
+
+		jQuery(document).ready(function(){
+			if (window.parent.hasMenuPosition('products.productionOrders')) {
+				$("#productionOrdersLink").show();
+			}
+			if (window.parent.hasMenuPosition('products.instructions')) {
+				$("#instructionsLink").show();
+			}
+			if (window.parent.hasMenuPosition('products.materialRequirements')) {
+				$("#materialRequirementsLink").show();
+			}
+		});
+		
+	</script>
 </head>
 <body>
 
@@ -45,7 +62,7 @@
 					<div class="dashboardButtonContentText">
 					 	${translationsMap['core.dashboard.organize.content']}
 					</div>
-					<div class="dashboardButtonContentLink">
+					<div class="dashboardButtonContentLink" id="productionOrdersLink" style="display: none;">
 						<a href="#" onclick="window.parent.goToMenuPosition('products.productionOrders')">${translationsMap['core.dashboard.organize.link']}</a>
 					</div>
 				</div>
@@ -59,7 +76,7 @@
 					<div class="dashboardButtonContentText">
 					 	${translationsMap['core.dashboard.define.content']}
 					</div>
-					<div class="dashboardButtonContentLink">
+					<div class="dashboardButtonContentLink" id="instructionsLink" style="display: none;">
 						<a href="#" onclick="window.parent.goToMenuPosition('products.instructions')">${translationsMap['core.dashboard.define.link']}</a>
 					</div>
 				</div>
@@ -73,7 +90,7 @@
 					<div class="dashboardButtonContentText">
 					 	${translationsMap['core.dashboard.react.content']}
 					</div>
-					<div class="dashboardButtonContentLink">
+					<div class="dashboardButtonContentLink" id="materialRequirementsLink" style="display: none;">
 						<a href="#" onclick="window.parent.goToMenuPosition('products.materialRequirements')">${translationsMap['core.dashboard.react.link']}</a>
 					</div>
 				</div>
