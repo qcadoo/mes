@@ -42,9 +42,9 @@ import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
 @Component
-public class TestDataConverter {
+public class TestDataLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestDataConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestDataLoader.class);
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -163,8 +163,8 @@ public class TestDataConverter {
             long endDate = startDate + (MILLIS_IN_DAY * RANDOM.nextInt(50));
             Date effectiveDateFrom = RANDOM.nextDouble() > 0.3 ? new Date(startDate) : null;
             Date effectiveDateTo = RANDOM.nextDouble() > 0.3 ? new Date(endDate) : null;
-            addSubstitute(values.get("name") + " (substitute)", values.get("product_nr") + " (substitute)", product,
-                    effectiveDateFrom, effectiveDateTo, i + 1);
+            addSubstitute(values.get("name") + "*", values.get("product_nr") + "*", product, effectiveDateFrom, effectiveDateTo,
+                    i + 1);
         }
     }
 

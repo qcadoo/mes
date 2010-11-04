@@ -1,6 +1,7 @@
 package com.qcadoo.mes;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
+import com.qcadoo.mes.beans.menu.MenuMenuCategory;
+import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
+import com.qcadoo.mes.beans.menu.MenuViewDefinition;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
@@ -24,7 +28,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     private SessionFactory sessionFactory;
 
     @Autowired
-    private TestDataConverter testDataConverter;
+    private TestDataLoader testDataLoader;
 
     @Value("${loadTestData}")
     private boolean addTestData;
@@ -53,7 +57,60 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addMenus() {
-        // TODO Auto-generated method stub
+        MenuViewDefinition menuCategoryGridView = getMenuViewDefinition("menuCategoryGridView");
+        MenuViewDefinition instructionGridView = getMenuViewDefinition("instructionGridView");
+        MenuViewDefinition orderGridView = getMenuViewDefinition("orderGridView");
+        MenuViewDefinition pluginGridView = getMenuViewDefinition("pluginGridView");
+        MenuViewDefinition userGridView = getMenuViewDefinition("userGridView");
+        MenuViewDefinition dictionaryGridView = getMenuViewDefinition("dictionaryGridView");
+        MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirementGridView");
+        MenuViewDefinition productGridView = getMenuViewDefinition("productGridView");
+        MenuViewDefinition groupGridView = getMenuViewDefinition("groupGridView");
+
+        MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
+        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 2);
+
+        addMenuViewDefinitionItem("instructions", "products.menu.products.instructions", menuCategoryProducts,
+                instructionGridView, 1);
+        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryProducts, productGridView, 2);
+        addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryProducts,
+                orderGridView, 3);
+        addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryProducts,
+                materialRequirementGridView, 4);
+
+        addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryAdministration,
+                dictionaryGridView, 1);
+        addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
+        addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
+        addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration, pluginGridView, 4);
+        addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView, 5);
+    }
+
+    private void addMenuViewDefinitionItem(final String name, final String translation, final MenuMenuCategory menuCategory,
+            final MenuViewDefinition menuViewDefinition, final int order) {
+        LOG.info("Adding menu view item \"" + name + "\"");
+        MenuMenuViewDefinitionItem menuItem = new MenuMenuViewDefinitionItem();
+        menuItem.setItemOrder(order);
+        menuItem.setMenuCategory(menuCategory);
+        menuItem.setName(name);
+        menuItem.setTranslationName(translation);
+        menuItem.setViewDefinition(menuViewDefinition);
+        sessionFactory.getCurrentSession().save(menuItem);
+    }
+
+    private MenuViewDefinition getMenuViewDefinition(final String name) {
+        return (MenuViewDefinition) sessionFactory.getCurrentSession().createCriteria(MenuViewDefinition.class)
+                .add(Restrictions.eq("menuName", name)).setMaxResults(1).uniqueResult();
+    }
+
+    private MenuMenuCategory addMenuCategory(final String name, final String translation, final int order) {
+        LOG.info("Adding menu category \"" + name + "\"");
+        MenuMenuCategory category = new MenuMenuCategory();
+        category.setName(name);
+        category.setTranslationName(translation);
+        category.setCategoryOrder(order);
+        sessionFactory.getCurrentSession().save(category);
+        return category;
     }
 
     private void addGroups() {
@@ -73,7 +130,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addUsers() {
-        addUser("admin", "", "", "", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", adminGroup);
+        addUser("admin", "admin@email.com", "Admin", "Admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+                adminGroup);
     }
 
     private void addUser(final String login, final String email, final String firstName, final String lastName,
@@ -127,7 +185,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addTestData() {
-        testDataConverter.loadTestData();
+        testDataLoader.loadTestData();
     }
 
     private boolean databaseHasToBePrepared() {
