@@ -41,6 +41,10 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 				skipButtonClick = true;
 			}
 		}
+		options.onSelect = function(dateText, inst) {
+			datepickerElement.slideUp(ANIMATION_LENGTH);
+			opened = false;
+		}
 		
 		datepickerElement = $("<div>").css("position", "absolute").css("zIndex", 100).css("right", "15px");
 		containerElement.css("position", "relative");
@@ -88,7 +92,6 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 					}
 					
 					datepickerElement.slideDown(ANIMATION_LENGTH).show();
-					
 					opened = true;
 				} else {
 					datepickerElement.slideUp(ANIMATION_LENGTH)
