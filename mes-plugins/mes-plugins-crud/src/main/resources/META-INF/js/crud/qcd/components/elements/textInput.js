@@ -16,7 +16,7 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		if (data.value) {
+		if (data.value != undefined && data.value != null) {
 			input.val(data.value);
 			textRepresentation.html(data.value);
 		}

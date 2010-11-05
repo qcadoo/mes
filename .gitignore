@@ -2,7 +2,6 @@
 .project
 .settings
 target
-bin
 mes.log*
 mes-application/src/main/java/HibernateTest.java
 mes-application/src/main/webapp/css/qcd.min.css
