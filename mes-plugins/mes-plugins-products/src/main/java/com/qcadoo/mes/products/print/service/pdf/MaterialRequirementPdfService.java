@@ -194,7 +194,6 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         PdfPTable table = createTableWithHeader(3, orderHeader, arialRegular9Dark);
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
-            Entity instruction = (Entity) order.getField("instruction");
             table.addCell(new Phrase(order.getField("number").toString(), arialRegular9Dark));
             table.addCell(new Phrase(order.getField("name").toString(), arialRegular9Dark));
             Entity product = (Entity) order.getField("product");

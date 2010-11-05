@@ -140,7 +140,7 @@
 								<configuration>
 									<target>
 										<copy file="${basedir}/target/qcadoo.zip"
-											tofile="/Users/tomcat/deploy/qcadoo.zip" />
+											tofile="/Users/tomcat/deploy/${profile}.zip" />
 									</target>
 								</configuration>
 								<goals>
