@@ -41,6 +41,15 @@ public class ProductsProduct {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsInstruction> instructions;
 
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<ProductsOrder> orders;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<ProductsInstructionBomComponent> instructionBomComponents;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<ProductsSubstituteComponent> substituteComponents;
+
     public Long getId() {
         return id;
     }
@@ -119,6 +128,30 @@ public class ProductsProduct {
 
     public void setInstructions(final List<ProductsInstruction> instructions) {
         this.instructions = instructions;
+    }
+
+    public List<ProductsOrder> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(final List<ProductsOrder> orders) {
+        this.orders = orders;
+    }
+
+    public List<ProductsInstructionBomComponent> getInstructionBomComponents() {
+        return instructionBomComponents;
+    }
+
+    public void setInstructionBomComponents(final List<ProductsInstructionBomComponent> instructionBomComponents) {
+        this.instructionBomComponents = instructionBomComponents;
+    }
+
+    public List<ProductsSubstituteComponent> getSubstituteComponents() {
+        return substituteComponents;
+    }
+
+    public void setSubstituteComponents(final List<ProductsSubstituteComponent> substituteComponents) {
+        this.substituteComponents = substituteComponents;
     }
 
 }

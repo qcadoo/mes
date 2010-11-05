@@ -16,9 +16,9 @@
 		<string name="unit" />
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
 		<hasMany name="instructions" model="instruction" joinField="product" cascade="nullify" />
-		<!--TODO zlecenia-->
-		<!--TODO drzewo bom instrukcji-->
-		<!--TODO substytuty-->
+		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
+		<hasMany name="instructionBomComponents" model="instructionBomComponent" joinField="product" cascade="nullify"/>
+		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
 	</model>
 	<model name="substitute">
 		<string name="number">
@@ -65,7 +65,7 @@
 		<date name="dateTo" />
 		<text name="description" />
 		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
-		<!--  TODO zlecenia-->
+		<hasMany name="orders" model="order" joinField="instruction" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" />
 	</model>

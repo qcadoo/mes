@@ -44,6 +44,9 @@ public class ProductsInstruction {
     @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
     private List<ProductsInstructionBomComponent> bomComponents;
 
+    @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
+    private List<ProductsOrder> orders;
+
     private boolean deleted;
 
     public Long getId() {
@@ -124,6 +127,14 @@ public class ProductsInstruction {
 
     public void setBomComponents(final List<ProductsInstructionBomComponent> bomComponents) {
         this.bomComponents = bomComponents;
+    }
+
+    public List<ProductsOrder> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(final List<ProductsOrder> orders) {
+        this.orders = orders;
     }
 
 }
