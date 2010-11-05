@@ -5,6 +5,9 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
+		<boolean name="active" readonly="false">
+			<validatesPresence />
+		</boolean>
 		<string name="translationName" />
 		<hasMany name="viewDefinitionItems" model="menuViewDefinitionItem" joinField="menuCategory" cascade="delete" />
 		<priority name="categoryOrder" />
@@ -15,6 +18,9 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
+		<boolean name="active" readonly="false">
+			<validatesPresence />
+		</boolean>
 		<string name="translationName" />
 		<belongsTo name="menuCategory" model="menuCategory" lookupField="name" lazy="false">
 			<validatesPresence /> 

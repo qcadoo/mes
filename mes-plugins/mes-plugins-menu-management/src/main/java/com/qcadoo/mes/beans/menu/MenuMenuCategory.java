@@ -23,6 +23,8 @@ public class MenuMenuCategory {
 
     private String translationName;
 
+    private boolean active;
+
     @Column(nullable = false)
     private boolean deleted;
 
@@ -77,6 +79,14 @@ public class MenuMenuCategory {
 
     public void setTranslationName(String translationName) {
         this.translationName = translationName;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }

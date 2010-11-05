@@ -21,6 +21,8 @@ public class MenuMenuViewDefinitionItem {
 
     private String translationName;
 
+    private boolean active;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private MenuMenuCategory menuCategory;
 
@@ -86,6 +88,14 @@ public class MenuMenuViewDefinitionItem {
 
     public void setTranslationName(String translationName) {
         this.translationName = translationName;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }

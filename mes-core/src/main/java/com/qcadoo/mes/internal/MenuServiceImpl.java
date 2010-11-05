@@ -86,6 +86,9 @@ public class MenuServiceImpl implements MenuService {
         boolean hasMenuCategoryGridView = false;
 
         for (Entity categoryEntity : categories) {
+            if (!(Boolean) categoryEntity.getField("active")) {
+                continue;
+            }
             String categoryName = categoryEntity.getStringField("name");
             String categoryTranslationName = categoryEntity.getStringField("translationName");
 
@@ -95,6 +98,9 @@ public class MenuServiceImpl implements MenuService {
             }
 
             for (Entity itemEntity : categoryEntity.getHasManyField("viewDefinitionItems")) {
+                if (!(Boolean) itemEntity.getField("active")) {
+                    continue;
+                }
                 String itemName = itemEntity.getStringField("name");
                 Entity viewDefinitionEntity = itemEntity.getBelongsToField("viewDefinition");
                 String viewName = viewDefinitionEntity.getStringField("viewName");

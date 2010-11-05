@@ -93,6 +93,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         menuItem.setItemOrder(order);
         menuItem.setMenuCategory(menuCategory);
         menuItem.setName(name);
+        menuItem.setActive(true);
         menuItem.setTranslationName(translation);
         menuItem.setViewDefinition(menuViewDefinition);
         sessionFactory.getCurrentSession().save(menuItem);
@@ -107,6 +108,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         LOG.info("Adding menu category \"" + name + "\"");
         MenuMenuCategory category = new MenuMenuCategory();
         category.setName(name);
+        category.setActive(true);
         category.setTranslationName(translation);
         category.setCategoryOrder(order);
         sessionFactory.getCurrentSession().save(category);

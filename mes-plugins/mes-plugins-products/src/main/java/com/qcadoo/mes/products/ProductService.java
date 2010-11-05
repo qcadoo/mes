@@ -64,12 +64,11 @@ public final class ProductService {
 
             ViewValue<SimpleValue> onlyComponentsValue = (ViewValue<SimpleValue>) value
                     .lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents");
-            onlyComponentsValue.getValue().setValue("1");
+            if (onlyComponentsValue != null && onlyComponentsValue.getValue() != null) {
+                onlyComponentsValue.getValue().setValue("1");
+            }
             return;
         }
-
-        System.out.println("GHI");
-        System.out.println(value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue());
 
         String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.materialRequirementDetailsForm.generated")
                 .getValue()).getValue().toString();
@@ -181,6 +180,10 @@ public final class ProductService {
         if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
                 && stateValue.getValue().getValue().equals("done")) {
             formValue.setEnabled(false);
+        }
+
+        if (formValue == null) {
+            return;
         }
 
         if (defaultInstructionValue == null) {
