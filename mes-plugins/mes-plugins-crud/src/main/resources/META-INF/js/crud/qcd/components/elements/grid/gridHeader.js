@@ -312,6 +312,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	
 	this.setFilterActive = function() {
 		headerElements.filterButton.addClass("headerButtonActive");
+		headerElements.filterButton.label.html(mainController.getTranslation(messagesPath + ".removeFilter"));
 	}
 
 	this.setEnabledButton = function(button, enabled) {
