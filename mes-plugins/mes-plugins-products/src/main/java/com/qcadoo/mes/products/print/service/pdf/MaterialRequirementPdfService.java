@@ -168,6 +168,8 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         orderHeader.add(translationService.translate("products.order.number.label", locale));
         orderHeader.add(translationService.translate("products.order.name.label", locale));
         orderHeader.add(translationService.translate("products.order.product.label", locale));
+        orderHeader.add(translationService.translate("products.product.unit.label", locale));
+        orderHeader.add(translationService.translate("products.order.plannedQuantity.label", locale));
         addOrderSeries(document, entity, orderHeader);
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah2", locale),
@@ -191,7 +193,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
         List<Entity> orders = (List<Entity>) entity.getField("orders");
-        PdfPTable table = createTableWithHeader(3, orderHeader, arialRegular9Dark);
+        PdfPTable table = createTableWithHeader(5, orderHeader, arialRegular9Dark);
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             table.addCell(new Phrase(order.getField("number").toString(), arialRegular9Dark));
@@ -202,6 +204,17 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             } else {
                 table.addCell(new Phrase("", arialRegular9Dark));
             }
+            if (product != null) {
+                Object unit = product.getField("unit");
+                if (unit != null) {
+                    table.addCell(new Phrase(unit.toString(), arialRegular9Dark));
+                } else {
+                    table.addCell(new Phrase("", arialRegular9Dark));
+                }
+            } else {
+                table.addCell(new Phrase("", arialRegular9Dark));
+            }
+            table.addCell(new Phrase(order.getField("plannedQuantity").toString(), arialRegular9Dark));
         }
         document.add(table);
 
