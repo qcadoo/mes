@@ -54,14 +54,22 @@ public final class ProductService {
     @Autowired
     private TranslationService translationService;
 
+    @SuppressWarnings("unchecked")
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
             final Locale locale) throws IOException, DocumentException {
 
         if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
                 || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
                 || ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId() == null) {
+
+            ViewValue<SimpleValue> onlyComponentsValue = (ViewValue<SimpleValue>) value
+                    .lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents");
+            onlyComponentsValue.getValue().setValue("1");
             return;
         }
+
+        System.out.println("GHI");
+        System.out.println(value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue());
 
         String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.materialRequirementDetailsForm.generated")
                 .getValue()).getValue().toString();

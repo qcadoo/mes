@@ -83,7 +83,7 @@
 		<security:session-management
 			invalid-session-url="/login.html?timeout=true">
 			<security:concurrency-control
-				max-sessions="1" error-if-maximum-exceeded="true" />
+				max-sessions="5" error-if-maximum-exceeded="true" />
 		</security:session-management>
 
 		<security:custom-filter ref="mySessionExpirationFilter"
