@@ -44,5 +44,10 @@ else
   fi
 fi 
 
-sh "$PRGDIR"/"$EXECUTABLE" stop 5 -force
+. "$PRGDIR"/setenv.sh
+
+if [ -f "$CATALINA_PID" ]; then
+  sh "$PRGDIR"/"$EXECUTABLE" stop 5 -force
+fi
+
 sh "$PRGDIR"/"$EXECUTABLE" start
