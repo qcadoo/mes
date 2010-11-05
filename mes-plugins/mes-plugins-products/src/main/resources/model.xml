@@ -105,15 +105,19 @@
 		<belongsTo name="defaultInstruction" model="instruction" lookupField="name" readonly="true" />
 		<belongsTo name="instruction" model="instruction" lookupField="name" />
 		<decimal name="plannedQuantity">
-			<validatesPresence />
+			<validatesRange from="0" inclusive="false" />
 		</decimal>
-		<decimal name="doneQuantity" />
+		<decimal name="doneQuantity">
+			<validatesRange from="0" inclusive="false" />
+		</decimal>
 		<date name="effectiveDateFrom" readonly="true" />
 		<date name="effectiveDateTo" readonly="true" />
 		<text name="startWorker" readonly="true" />
 		<text name="endWorker" readonly="true" />
 		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderPlannedQuantity" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderInstruction" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
 	</model>
 	<model name="materialRequirement">	

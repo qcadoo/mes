@@ -16,6 +16,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
+import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.enums.RestrictionOperator;
 import com.qcadoo.mes.model.DataDefinition;
@@ -166,14 +167,24 @@ public final class ProductService {
                 .lookupValue("mainWindow.orderDetailsForm.instruction");
         ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
         ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
+        ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
+                .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
 
         if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
                 && stateValue.getValue().getValue().equals("done")) {
             formValue.setEnabled(false);
         }
 
-        if (defaultInstructionValue == null || productValue == null || instructionValue == null) {
-            return;
+        if (defaultInstructionValue == null) {
+            defaultInstructionValue = new ViewValue<SimpleValue>(new SimpleValue(""));
+            defaultInstructionValue.setVisible(true);
+            formValue.addComponent("defaultInstruction", defaultInstructionValue);
+        }
+        if (plannedQuantityValue == null) {
+            plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
+            plannedQuantityValue.setVisible(true);
+            plannedQuantityValue.setEnabled(true);
+            formValue.addComponent("plannedQuantity", plannedQuantityValue);
         }
 
         defaultInstructionValue.setEnabled(false);
@@ -204,13 +215,18 @@ public final class ProductService {
             instructionValue.getValue().setSelectedEntityId(null);
             instructionValue.getValue().setSelectedEntityCode("");
             instructionValue.getValue().setSelectedEntityValue("");
+            instructionValue.getValue().setRequired(false);
+            plannedQuantityValue.getValue().setRequired(false);
         } else {
+            plannedQuantityValue.getValue().setRequired(true);
             if (!hasAnyInstructions(selectedProductId)) {
                 instructionValue.setEnabled(false);
+                instructionValue.getValue().setRequired(false);
                 instructionValue.getValue().setSelectedEntityId(null);
                 instructionValue.getValue().setSelectedEntityCode("");
                 instructionValue.getValue().setSelectedEntityValue("");
             } else {
+                instructionValue.getValue().setRequired(true);
                 Entity defaultInstructionEntity = getDefaultInstruction(selectedProductId);
                 if (defaultInstructionEntity != null) {
                     String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
@@ -284,6 +300,35 @@ public final class ProductService {
             entity.addError(dataDefinition.getField("master"), "products.validate.global.error.default");
             return false;
         }
+    }
+
+    public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {
+        ProductsProduct product = (ProductsProduct) entity.getField("product");
+        if (product == null) {
+            return true;
+        }
+        Object o = entity.getField("plannedQuantity");
+        if (o == null) {
+            entity.addError(dataDefinition.getField("plannedQuantity"), "products.validate.global.error.plannedQuantityError");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkOrderInstruction(final DataDefinition dataDefinition, final Entity entity) {
+        ProductsProduct product = (ProductsProduct) entity.getField("product");
+        if (product == null) {
+            return true;
+        }
+        if (entity.getField("instruction") == null) {
+            if (hasAnyInstructions(product.getId())) {
+                entity.addError(dataDefinition.getField("instruction"), "products.validate.global.error.instructionError");
+                return false;
+            } else {
+            }
+        }
+        return true;
     }
 
     public boolean checkSubstituteDates(final DataDefinition dataDefinition, final Entity entity) {
