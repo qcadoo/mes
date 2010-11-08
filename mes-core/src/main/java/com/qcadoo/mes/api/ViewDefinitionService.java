@@ -13,7 +13,8 @@ public interface ViewDefinitionService {
     void save(ViewDefinition viewDefinition);
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#pluginIdentifier == 'dictionaries') or (#pluginIdentifier == 'products' "
-            + "and (#viewName != 'orderGridView' and #viewName != 'orderDetailsView' or hasRole('ROLE_SUPERVISOR')))")
+            + "and (#viewName != 'orderGridView' and #viewName != 'orderDetailsView' or hasRole('ROLE_SUPERVISOR'))) or "
+            + "(#pluginIdentifier == 'users' and #viewName == 'userProfileView')")
     ViewDefinition get(String pluginIdentifier, String viewName);
 
     ViewDefinition getWithoutSession(String pluginIdentifier, String viewName);

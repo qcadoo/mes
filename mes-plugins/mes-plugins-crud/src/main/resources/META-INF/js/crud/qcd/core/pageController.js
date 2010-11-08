@@ -13,7 +13,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	var headerComponent = null;
 	
 	function constructor(_this) {
-		QCDConnector.windowName = viewName;
+		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
 		
 		var contentElement = $("body");
