@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class MonitorableAdvice {
+public final class MonitorableAdvice {
 
     private static final Logger LOG = LoggerFactory.getLogger(MonitorableAdvice.class);
 

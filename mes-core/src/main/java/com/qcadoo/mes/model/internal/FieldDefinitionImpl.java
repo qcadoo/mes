@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.validators.FieldValidator;
@@ -13,16 +14,6 @@ import com.qcadoo.mes.model.validators.internal.RequiredOnCreateValidator;
 import com.qcadoo.mes.model.validators.internal.RequiredValidator;
 import com.qcadoo.mes.model.validators.internal.UniqueValidator;
 
-/**
- * Field defines database field or custom field (according to {@link FieldDefinition#isCustomField()}).
- * 
- * Not editable field can't be changed after entity creation.
- * 
- * Definition of database field can't be modified using RAD.
- * 
- * @apiviz.has com.qcadoo.mes.core.data.definition.FieldType
- * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldValidator
- */
 public final class FieldDefinitionImpl implements FieldDefinition {
 
     private final String name;
@@ -47,7 +38,10 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     private Object defaultValue;
 
-    public FieldDefinitionImpl(final String name) {
+    private final DataDefinition dataDefinition;
+
+    public FieldDefinitionImpl(final DataDefinition dataDefinition, final String name) {
+        this.dataDefinition = dataDefinition;
         this.name = name;
     }
 
@@ -78,6 +72,11 @@ public final class FieldDefinitionImpl implements FieldDefinition {
     @Override
     public List<FieldValidator> getValidators() {
         return validators;
+    }
+
+    @Override
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
     public FieldDefinitionImpl withValidator(final FieldValidator validator) {

@@ -26,7 +26,7 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		this.input.append("<option value=''>"+mainController.getTranslation(blankValue)+"</option>");
 		for (var i in data.values) {
 			var value = data.values[i];
-			this.input.append("<option value='"+value+"'>"+value+"</option>");
+			this.input.append("<option value='"+value.key+"'>"+value.value+"</option>");
 		}
 		selected = data.value;
 		

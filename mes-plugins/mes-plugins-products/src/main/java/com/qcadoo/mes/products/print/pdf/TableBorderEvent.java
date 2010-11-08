@@ -6,9 +6,9 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPTableEvent;
 
-public class TableBorderEvent implements PdfPTableEvent {
+public final class TableBorderEvent implements PdfPTableEvent {
 
-    protected Color lineDarkColor;
+    private Color lineDarkColor;
 
     @Override
     public void tableLayout(final PdfPTable table, final float[][] widths, final float[] heights, final int headerRows,

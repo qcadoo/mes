@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -46,13 +46,13 @@ public abstract class MaterialRequirementDocumentService {
     }
 
     protected final Map<ProxyEntity, BigDecimal> getBomSeries(final Entity entity, final List<Entity> orders) {
-        Map<ProxyEntity, BigDecimal> products = new HashedMap();
+        Map<ProxyEntity, BigDecimal> products = new HashMap<ProxyEntity, BigDecimal>();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity instruction = (Entity) order.getField("instruction");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            if (instruction != null && plannedQuantity != null && plannedQuantity.compareTo(new BigDecimal(0)) > 0) {
-                List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
+            if (instruction != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                List<Entity> bomComponents = instruction.getHasManyField("bomComponents");
                 for (Entity bomComponent : bomComponents) {
                     ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
                     if (!(Boolean) entity.getField("onlyComponents")

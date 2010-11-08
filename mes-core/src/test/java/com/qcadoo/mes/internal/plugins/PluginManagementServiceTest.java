@@ -84,7 +84,7 @@ public final class PluginManagementServiceTest {
                         .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
-        PluginsPlugin databasePlugin = pluginManagementService.getByEntityId("1");
+        PluginsPlugin databasePlugin = pluginManagementService.get(1L);
 
         // then
         assertEquals("plugins", databasePlugin.getName());
@@ -174,7 +174,7 @@ public final class PluginManagementServiceTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginIdIsNull() {
         // when
-        pluginManagementService.getByEntityId(null);
+        pluginManagementService.get(null);
     }
 
     @Test(expected = NullPointerException.class)

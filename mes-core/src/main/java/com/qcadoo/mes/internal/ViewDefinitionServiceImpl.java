@@ -6,22 +6,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.beans.plugins.PluginsPlugin;
-import com.qcadoo.mes.enums.PluginStatus;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.view.ViewDefinition;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
-
-    @Autowired
-    private PluginManagementService pluginManagementService;
 
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
 
@@ -36,18 +29,13 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     @Monitorable
     public ViewDefinition getWithoutSession(final String pluginIdentifier, final String viewName) {
-        ViewDefinition viewDefinition = viewDefinitions.get(pluginIdentifier + "." + viewName);
-        if (viewDefinition != null && belongsToActivePlugin(viewDefinition.getPluginIdentifier())) {
-            return viewDefinition;
-        } else {
-            return viewDefinition;
-        }
+        return viewDefinitions.get(pluginIdentifier + "." + viewName);
     }
 
     @Override
     @Transactional(readOnly = true)
     @Monitorable
-    public List<ViewDefinition> getMenuableViews() {
+    public List<ViewDefinition> listForMenu() {
         List<ViewDefinition> menuableViews = new LinkedList<ViewDefinition>();
         for (ViewDefinition viewDefinition : viewDefinitions.values()) {
             if (viewDefinition.isMenuable()) {
@@ -55,14 +43,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
             }
         }
         return menuableViews;
-    }
-
-    private boolean belongsToActivePlugin(final String pluginIdentifier) {
-        if (pluginIdentifier == null) {
-            return true;
-        }
-        PluginsPlugin plugin = pluginManagementService.getByIdentifierAndStatus(pluginIdentifier, PluginStatus.ACTIVE.getValue());
-        return (plugin != null);
     }
 
     @Override
@@ -82,8 +62,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Override
     @Transactional
     @Monitorable
-    public void delete(final String pluginIdentifier, final String viewName) {
-        viewDefinitions.remove(pluginIdentifier + "." + viewName);
+    public void delete(final ViewDefinition viewDefinition) {
+        viewDefinitions.remove(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName());
     }
 
 }

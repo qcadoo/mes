@@ -166,7 +166,7 @@ public final class CrudController {
                         entity.setField(contextFieldName, Long.parseLong(contextEntityId));
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    throw new IllegalStateException(e.getMessage(), e);
                 }
             }
         }

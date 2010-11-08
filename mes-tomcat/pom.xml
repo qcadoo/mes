@@ -126,7 +126,7 @@
 	
 	<profiles>
 		<profile>
-			<id>tomcat</id>
+			<id>emhyr</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -135,7 +135,7 @@
 						<version>1.5</version>
 						<executions>
 							<execution>
-								<id>deploy-to-tomcat</id>
+								<id>deploy-to-emhyr</id>
 								<phase>install</phase>
 								<configuration>
 									<target>

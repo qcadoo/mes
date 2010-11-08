@@ -23,7 +23,7 @@ import com.qcadoo.mes.view.menu.items.UrlMenuItem;
 import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
 
 @Service
-public class MenuServiceImpl implements MenuService {
+public final class MenuServiceImpl implements MenuService {
 
     @Autowired
     private TranslationService translationService;
@@ -43,7 +43,7 @@ public class MenuServiceImpl implements MenuService {
     public void updateViewDefinitionDatabase() {
         DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
 
-        List<ViewDefinition> menuableViews = viewDefinitionService.getMenuableViews();
+        List<ViewDefinition> menuableViews = viewDefinitionService.listForMenu();
         for (ViewDefinition view : menuableViews) {
             int existingViewsNumber = viewDefinitionDD.find()
                     .restrictedWith(Restrictions.eq("pluginIdentifier", view.getPluginIdentifier()))

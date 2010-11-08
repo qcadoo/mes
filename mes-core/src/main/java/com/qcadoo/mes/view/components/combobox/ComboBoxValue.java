@@ -2,30 +2,31 @@ package com.qcadoo.mes.view.components.combobox;
 
 import java.util.List;
 
+import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.components.SimpleValue;
 
 public final class ComboBoxValue extends SimpleValue {
 
-    private List<String> values;
+    private List<Pair<String, String>> values;
 
-    public ComboBoxValue(final List<String> values, final String selectedValue) {
+    public ComboBoxValue(final List<Pair<String, String>> values, final String selectedValue) {
         super(selectedValue);
         this.values = values;
     }
 
     public String getSelectedValue() {
-        return (String)getValue();
+        return (String) getValue();
     }
 
     public void setSelectedValue(final String selectedValue) {
         setValue(selectedValue);
     }
 
-    public List<String> getValues() {
+    public List<Pair<String, String>> getValues() {
         return values;
     }
 
-    public void setValues(final List<String> values) {
+    public void setValues(final List<Pair<String, String>> values) {
         this.values = values;
     }
 

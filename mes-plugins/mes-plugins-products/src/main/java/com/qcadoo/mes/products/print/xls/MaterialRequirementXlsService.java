@@ -59,13 +59,13 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
 
     private void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
-        List<Entity> orders = (List<Entity>) entity.getField("orders");
+        List<Entity> orders = entity.getHasManyField("orders");
         Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, orders);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
             row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
-            row.createCell(2).setCellValue(entry.getValue().longValueExact());
+            row.createCell(2).setCellValue(entry.getValue().doubleValue());
             Object unit = entry.getKey().getField("unit");
             if (unit != null) {
                 row.createCell(3).setCellValue(unit.toString());

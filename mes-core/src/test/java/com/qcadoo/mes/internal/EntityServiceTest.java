@@ -41,7 +41,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject(1L);
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("unknown");
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "unknown");
 
         // when
         entityService.getField(databaseEntity, fieldDefinition);
@@ -97,7 +97,7 @@ public class EntityServiceTest extends DataAccessTest {
         SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject(1L);
         databaseEntity.setName("Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("name").withType(fieldTypeFactory.integerType());
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(fieldTypeFactory.integerType());
 
         // when
         entityService.getField(databaseEntity, fieldDefinition);
@@ -172,7 +172,7 @@ public class EntityServiceTest extends DataAccessTest {
         // given
         SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject(1L);
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("unknown").withType(fieldTypeFactory.stringType());
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "unknown").withType(fieldTypeFactory.stringType());
 
         // when
         entityService.setField(databaseEntity, fieldDefinition, "XXX");

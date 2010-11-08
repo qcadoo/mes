@@ -38,7 +38,7 @@ import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem.Type;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 
-public class LookupComponent extends AbstractComponent<LookupData> implements SelectableComponent {
+public final class LookupComponent extends AbstractComponent<LookupData> implements SelectableComponent {
 
     private int width;
 
@@ -318,14 +318,16 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
                 + ".label";
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(codeBase);
-        messageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
+        messageCodes.add(getTranslationService().getEntityFieldBaseMessageCode(getParentContainer().getDataDefinition(),
+                getName())
+                + ".label");
         translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
 
         List<String> focusMessageCodes = new LinkedList<String>();
         focusMessageCodes.add(codeBase + ".focus");
-        focusMessageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(),
+        focusMessageCodes.add(getTranslationService().getEntityFieldBaseMessageCode(getParentContainer().getDataDefinition(),
                 getName())
-                + ".focus");
+                + ".label.focus");
         translationsMap.put(focusMessageCodes.get(0), getTranslationService().translate(focusMessageCodes, locale));
     }
 

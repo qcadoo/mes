@@ -3,7 +3,7 @@ package com.qcadoo.mes.view.components.tree;
 import java.util.LinkedList;
 import java.util.List;
 
-public class TreeNode {
+public final class TreeNode {
 
     private Long id;
 
@@ -15,7 +15,7 @@ public class TreeNode {
 
     }
 
-    public TreeNode(Long id, String label) {
+    public TreeNode(final Long id, final String label) {
         this();
         this.id = id;
         this.label = label;
@@ -25,7 +25,7 @@ public class TreeNode {
         return label;
     }
 
-    public void setLabel(String label) {
+    public void setLabel(final String label) {
         this.label = label;
     }
 
@@ -33,11 +33,11 @@ public class TreeNode {
         return children;
     }
 
-    public void setChildren(List<TreeNode> children) {
+    public void setChildren(final List<TreeNode> children) {
         this.children = children;
     }
 
-    public void addChild(TreeNode child) {
+    public void addChild(final TreeNode child) {
         if (children == null) {
             children = new LinkedList<TreeNode>();
         }
@@ -48,7 +48,7 @@ public class TreeNode {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

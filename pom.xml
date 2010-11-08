@@ -23,7 +23,6 @@
 		<module>mes-core</module>
 		<module>mes-plugins</module>
 		<module>mes-application</module>
-		<module>mes-tomcat</module>
 	</modules>
 
 	<properties>
@@ -160,8 +159,8 @@
 				<groupId>com.lowagie</groupId>
 				<artifactId>itext</artifactId>
 				<version>2.1.7</version>
-    		</dependency>
-    		<dependency>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi</artifactId>
 				<version>3.6</version>
@@ -256,7 +255,6 @@
 		</plugins>
 	</build>
 
-
 	<reporting>
 		<plugins>
 			<plugin>
@@ -318,5 +316,47 @@
 		<connection>scm:git://emhyr.qcadoo.private/Users/git/mes.git</connection>
 		<developerConnection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
 	</scm>
+
+	<profiles>
+		<profile>
+			<id>emhyr</id>
+			<modules>
+				<module>mes-tomcat</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>installer</id>
+			<modules>
+				<module>mes-tomcat</module>
+			</modules>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

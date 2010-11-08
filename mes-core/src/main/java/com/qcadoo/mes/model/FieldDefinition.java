@@ -5,6 +5,16 @@ import java.util.List;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
+/**
+ * Field defines database field or custom field (according to {@link FieldDefinition#isCustomField()}).
+ * 
+ * Not editable field can't be changed after entity creation.
+ * 
+ * Definition of database field can't be modified using RAD.
+ * 
+ * @apiviz.has com.qcadoo.mes.core.data.definition.FieldType
+ * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldValidator
+ */
 public interface FieldDefinition {
 
     String getName();
@@ -30,5 +40,7 @@ public interface FieldDefinition {
     boolean isUnique();
 
     boolean isPersistent();
+
+    DataDefinition getDataDefinition();
 
 }

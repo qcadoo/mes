@@ -21,7 +21,7 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("name", "Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("name").withType(new StringType());
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(new StringType());
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.addField(fieldDefinition);
@@ -41,9 +41,9 @@ public class ExpressionUtilTest {
         entity.setField("age", 33);
         entity.setField("sex", "F");
 
-        FieldDefinition fieldDefinitionName = new FieldDefinitionImpl("name").withType(new StringType());
-        FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl("age").withType(new IntegerType());
-        FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl("sex").withType(new StringType());
+        FieldDefinition fieldDefinitionName = new FieldDefinitionImpl(null, "name").withType(new StringType());
+        FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl(null, "age").withType(new IntegerType());
+        FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex").withType(new StringType());
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.addField(fieldDefinitionName);
@@ -63,7 +63,7 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("name", "Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("name");
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.addField(fieldDefinition);
@@ -82,7 +82,7 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("name", null);
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("name");
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.addField(fieldDefinition);
@@ -103,9 +103,9 @@ public class ExpressionUtilTest {
         entity.setField("age", 33);
         entity.setField("sex", "F");
 
-        FieldDefinition fieldDefinitionName = new FieldDefinitionImpl("name");
-        FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl("age");
-        FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl("sex");
+        FieldDefinition fieldDefinitionName = new FieldDefinitionImpl(null, "name");
+        FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl(null, "age");
+        FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.addField(fieldDefinitionName);
@@ -129,7 +129,7 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("product", product);
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("product");
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "product");
 
         ColumnDefinition columnDefinition = new ColumnDefinition("col");
         columnDefinition.addField(fieldDefinition);

@@ -150,7 +150,7 @@ public final class DataDefinitionParser {
                 dataDefinition.withValidator(validatorFactory.customEntity(getHookDefinition(reader)));
                 break;
             default:
-                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier, modelTag));
+                dataDefinition.withField(getFieldDefinition(reader, pluginIdentifier, dataDefinition, modelTag));
                 break;
         }
     }
@@ -201,9 +201,9 @@ public final class DataDefinitionParser {
     }
 
     private FieldDefinition getFieldDefinition(final XMLStreamReader reader, final String pluginIdentifier,
-            final ModelTag modelTag) throws XMLStreamException {
+            final DataDefinitionImpl dataDefinition, final ModelTag modelTag) throws XMLStreamException {
         String fieldType = reader.getLocalName();
-        FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(getStringAttribute(reader, "name"));
+        FieldDefinitionImpl fieldDefinition = new FieldDefinitionImpl(dataDefinition, getStringAttribute(reader, "name"));
         fieldDefinition.withReadOnly(getBooleanAttribute(reader, "readonly", false));
         fieldDefinition.withReadOnlyOnUpdate(getBooleanAttribute(reader, "readonlyOnCreate", false));
         fieldDefinition.withDefaultValue(getStringAttribute(reader, "default"));
@@ -345,8 +345,8 @@ public final class DataDefinitionParser {
         if (scopeAttribute != null) {
             scopedField = dataDefinition.getField(scopeAttribute);
         }
-        return new FieldDefinitionImpl(getStringAttribute(reader, "name")).withType(fieldTypeFactory.priorityType(scopedField))
-                .withReadOnly(true);
+        return new FieldDefinitionImpl(dataDefinition, getStringAttribute(reader, "name")).withType(
+                fieldTypeFactory.priorityType(scopedField)).withReadOnly(true);
     }
 
     private String getPluginIdentifier(final XMLStreamReader reader) {

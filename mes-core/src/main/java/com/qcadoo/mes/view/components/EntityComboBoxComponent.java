@@ -151,7 +151,9 @@ public final class EntityComboBoxComponent extends AbstractComponent<EntityCombo
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                 + ".label");
-        messageCodes.add(getTranslationService().getEntityFieldMessageCode(getParentContainer().getDataDefinition(), getName()));
+        messageCodes.add(getTranslationService().getEntityFieldBaseMessageCode(getParentContainer().getDataDefinition(),
+                getName())
+                + ".label");
         translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
         if (isHasDescription()) {
             String descriptionCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
