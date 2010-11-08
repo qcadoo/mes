@@ -124,8 +124,9 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
 
     @Override
     public String toString() {
-        return "SearchCriteria[maxResults=" + maxResults + ", firstResult=" + firstResult + ", order=" + order
-                + ", includeDeleted=" + includeDeleted + ", restrictions=" + restrictions + "]";
+        return "SearchCriteria[dataDefinition=" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName()
+                + ", maxResults=" + maxResults + ", firstResult=" + firstResult + ", order=" + order + ", includeDeleted="
+                + includeDeleted + ", restrictions=" + restrictions + "]";
     }
 
 }

@@ -189,6 +189,12 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
 
         if (validationError != null) {
             newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
+        } else {
+            validationError = getErrorMessage(parentEntity, selectedEntities);
+
+            if (validationError != null) {
+                newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
+            }
         }
 
         return newViewValue;
@@ -332,13 +338,18 @@ public class LookupComponent extends AbstractComponent<LookupData> implements Se
     }
 
     private ErrorMessage getErrorMessage(final Entity entity, final Map<String, Entity> selectedEntities) {
+        ErrorMessage message = null;
 
-        if (getSourceComponent() != null) {
-            return getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
-        } else if (getSourceFieldPath() != null) {
-            return getFieldError(entity, getSourceFieldPath());
-        } else {
-            return getFieldError(entity, getFieldPath());
+        if (getSourceComponent() != null && selectedEntities != null) {
+            message = getFieldError(selectedEntities.get(getSourceComponent().getPath()), getSourceFieldPath());
         }
+        if (message == null && getSourceFieldPath() != null) {
+            message = getFieldError(entity, getSourceFieldPath());
+        }
+        if (message == null) {
+            message = getFieldError(entity, getFieldPath());
+        }
+
+        return message;
     }
 }

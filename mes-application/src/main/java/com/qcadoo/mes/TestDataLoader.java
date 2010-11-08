@@ -34,6 +34,8 @@ import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.beans.products.ProductsInstruction;
 import com.qcadoo.mes.beans.products.ProductsInstructionBomComponent;
+import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
+import com.qcadoo.mes.beans.products.ProductsMaterialRequirementComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
@@ -87,6 +89,7 @@ public class TestDataLoader {
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
         readDataFromXML("instructions", INSTRUCTION_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
+        addMaterialRequirements();
     }
 
     private File getXmlFile(final String type) throws IOException {
@@ -406,6 +409,42 @@ public class TestDataLoader {
         }
     }
 
+    private void addMaterialRequirements() {
+        for (int i = 0; i < 50; i++) {
+            addMaterialRequirement();
+        }
+    }
+
+    private void addMaterialRequirement() {
+        ProductsMaterialRequirement requirement = new ProductsMaterialRequirement();
+        requirement.setName(getRandomProduct().getName());
+        requirement.setGenerated(false);
+        requirement.setDate(new Date(System.currentTimeMillis() - MILLIS_IN_DAY * RANDOM.nextInt(50)));
+        requirement.setOnlyComponents(RANDOM.nextBoolean());
+        requirement.setWorker(getRandomUser().getUserName());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test material requirement {name=" + requirement.getName() + ", date=" + requirement.getDate()
+                    + ", worker=" + requirement.getWorker() + ", onlyComponents=" + requirement.isOnlyComponents()
+                    + ", generated=" + requirement.isGenerated() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(requirement);
+
+        for (int i = 0; i < RANDOM.nextInt(8) + 2; i++) {
+            ProductsMaterialRequirementComponent component = new ProductsMaterialRequirementComponent();
+            component.setMaterialRequirement(requirement);
+            component.setOrder(getRandomOrder());
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Add test material requirement component {requirement=" + component.getMaterialRequirement().getName()
+                        + ", order=" + component.getOrder().getNumber() + "}");
+            }
+
+            sessionFactory.getCurrentSession().save(component);
+        }
+    }
+
     private ProductsInstruction getInstructionByName(final String name) {
         return (ProductsInstruction) sessionFactory.getCurrentSession().createCriteria(ProductsInstruction.class)
                 .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
@@ -443,6 +482,13 @@ public class TestDataLoader {
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsProduct.class)
                 .setProjection(Projections.rowCount()).uniqueResult();
         return (ProductsProduct) sessionFactory.getCurrentSession().createCriteria(ProductsProduct.class)
+                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
+    }
+
+    private ProductsOrder getRandomOrder() {
+        Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsOrder.class)
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return (ProductsOrder) sessionFactory.getCurrentSession().createCriteria(ProductsOrder.class)
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
 
