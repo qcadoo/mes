@@ -59,6 +59,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			var key=e.keyCode || e.which;
 			if (key==13) {
 				// TODO mina
+				performSearch();
 			}
 		});
 		valueDivElement.click(function() {
@@ -132,6 +133,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	function onInputBlur() {
 		isFocused = false;
+		performSearch();
+	}
+	
+	function performSearch() {
 		var newCode = $.trim(inputElement.val());
 		if (newCode != currentData.selectedEntityCode) {
 			currentData.selectedEntityCode = $.trim(inputElement.val());

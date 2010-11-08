@@ -325,7 +325,7 @@
 }
 .component_container_form_w .lookupValueWrapper .lookupLoading {
 	position: absolute;
-	top: 3px; right: 3px;
+	top: 3px; right: 23px;
 	width: 16px;
 	height: 16px;
 	background: transparent url(/css/core/images/loading.gif) no-repeat right center;
