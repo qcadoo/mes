@@ -3,7 +3,6 @@ package com.qcadoo.mes.api;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
-import com.qcadoo.mes.exceptions.PluginException;
 
 /**
  * Service for manipulating plugins.
@@ -65,7 +64,7 @@ public interface PluginManagementService {
      * 
      * @param file
      *            file to upload
-     * @throws PluginException
+     * @throws com.qcadoo.mes.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -76,7 +75,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws PluginException
+     * @throws com.qcadoo.mes.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -87,7 +86,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws PluginException
+     * @throws com.qcadoo.mes.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -98,7 +97,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws PluginException
+     * @throws com.qcadoo.mes.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -109,7 +108,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws PluginException
+     * @throws com.qcadoo.mes.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -120,7 +119,7 @@ public interface PluginManagementService {
      * 
      * @param file
      *            file to upload
-     * @throws PluginException
+     * @throws com.qcadoo.mes.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -129,7 +128,7 @@ public interface PluginManagementService {
     /**
      * Restart the server.
      * 
-     * @throws PluginException
+     * @throws com.qcadoo.mes.exceptions.PluginException
      *             if restart cannot be executed
      */
     void restartServer();

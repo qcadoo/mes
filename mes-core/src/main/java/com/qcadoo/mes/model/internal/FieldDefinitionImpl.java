@@ -14,16 +14,6 @@ import com.qcadoo.mes.model.validators.internal.RequiredOnCreateValidator;
 import com.qcadoo.mes.model.validators.internal.RequiredValidator;
 import com.qcadoo.mes.model.validators.internal.UniqueValidator;
 
-/**
- * Field defines database field or custom field (according to {@link FieldDefinition#isCustomField()}).
- * 
- * Not editable field can't be changed after entity creation.
- * 
- * Definition of database field can't be modified using RAD.
- * 
- * @apiviz.has com.qcadoo.mes.core.data.definition.FieldType
- * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldValidator
- */
 public final class FieldDefinitionImpl implements FieldDefinition {
 
     private final String name;

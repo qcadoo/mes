@@ -18,19 +18,6 @@ import com.qcadoo.mes.model.search.internal.SearchCriteriaImpl;
 import com.qcadoo.mes.model.types.internal.PriorityType;
 import com.qcadoo.mes.model.validators.EntityValidator;
 
-/**
- * Object defines database structure and its representation on grids and forms. The {@link DataDefinitionImpl#getName()} points to
- * virtual table ("virtual.tablename"), plugin table ("pluginname.tablename") or core table ("core.tablename").
- * 
- * The method {@link DataDefinitionImpl#getFullyQualifiedClassName()} returns the full name of the class that is used for mapping
- * table.
- * 
- * The method {@link DataDefinitionImpl#getDiscriminator()} returns value of the column that discriminate which virtual table is
- * used.
- * 
- * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
- * @apiviz.owns com.qcadoo.mes.core.data.definition.GridDefinition
- */
 public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private final DataAccessService dataAccessService;

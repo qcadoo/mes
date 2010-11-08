@@ -47,7 +47,7 @@ public final class ValidationService {
             if (field.getValue().isReadOnlyOnUpdate() && genericEntity.getId() != null) {
                 genericEntity.setField(field.getKey(), value);
             }
-            if (!genericEntity.getFields().containsKey(field.getKey()) && genericEntity.getId() != null) {
+            if (!genericEntity.getFields().containsKey(field.getKey()) && genericEntity.getId() != null && value != null) {
                 genericEntity.setField(field.getKey(), value);
             }
         }
