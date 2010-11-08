@@ -20,6 +20,7 @@
 			<validatesPresenceOnCreate />
 		</password>
 		<password name="oldPassword" persistent="false" />
+		<string name="viewIdentifier" persistent="false" />
 		<validatesWith bean="com.qcadoo.mes.users.UserService" method="checkPassword" />
 	</model>
 	<model name="group">

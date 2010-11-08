@@ -105,9 +105,34 @@
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<option type="header" value="false" />
-				<option type="expression" value="#name"/>
+				<option type="expression" value="#login"/>
+			</component>
+			<component type="button" name="changePasswordButton" source="#{mainWindow.userDetailsForm}">
+				<option type="url" value="users/userDetailsChangePasswordView.html" />
 			</component>
 		</component>
+		<onView bean="com.qcadoo.mes.users.UserService" method="onUserDetailsViewView" />
+	</view>
+	<view name="userDetailsChangePasswordView" model="user">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon32.png"
+						action="#{mainWindow.userDetailsForm}.performSave;" />
+				</group>
+			</ribbon>
+			<component type="form" name="userDetailsForm">
+				<component type="password" name="password" field="password" />
+				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
+				<component type="input" name="viewIdentifier" field="viewIdentifier" visible="false"/>
+				<option type="header" value="false" />
+				<option type="expression" value="#login"/>
+			</component>
+		</component>
+		<onView bean="com.qcadoo.mes.users.UserService" method="onUserDetailsChangePasswordView" />
 	</view>
 	<view name="userProfileView" model="user">
 		<component type="window" name="mainWindow">
@@ -131,11 +156,8 @@
 				<component type="input" name="firstName" field="firstName" />
 				<component type="input" name="lastName" field="lastName" />
 				<component type="textarea" name="description" field="description" /> <!-- type:description -->
-				<component type="password" name="password" field="password" visible="false" />
-				<!--<component type="password" name="passwordConfirmation" field="passwordConfirmation" />-->
-				
 				<option type="header" value="false" />
-				<option type="expression" value="#name"/>
+				<option type="expression" value="#login"/>
 			</component>
 			<component type="button" name="changePasswordButton" source="#{mainWindow.userDetailsForm}">
 				<option type="url" value="users/userProfileChangePasswordView.html" />
@@ -157,9 +179,11 @@
 				<component type="password" name="oldPassword" field="oldPassword" />
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
+				<component type="input" name="viewIdentifier" field="viewIdentifier" visible="false"/>
 				<option type="header" value="false" />
-				<option type="expression" value="#name"/>
+				<option type="expression" value="#login"/>
 			</component>
 		</component>
+		<onView bean="com.qcadoo.mes.users.UserService" method="onUserProfileChangePasswordView" />
 	</view>
 </qcd:views>
