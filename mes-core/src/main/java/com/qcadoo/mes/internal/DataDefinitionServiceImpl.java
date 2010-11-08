@@ -34,8 +34,8 @@ public final class DataDefinitionServiceImpl implements DataDefinitionService {
 
     @Override
     @Monitorable
-    public void delete(final String pluginIdentifier, final String modelName) {
-        dataDefinitions.remove(pluginIdentifier + "." + modelName);
+    public void delete(final DataDefinition dataDefinition) {
+        dataDefinitions.remove(dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName());
     }
 
     @Override

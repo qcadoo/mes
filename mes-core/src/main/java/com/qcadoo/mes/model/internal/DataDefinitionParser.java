@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.internal.DataAccessService;
+import com.qcadoo.mes.internal.DataDefinitionServiceImpl;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;

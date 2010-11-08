@@ -336,7 +336,6 @@ public final class ProductService {
             if (hasAnyInstructions(product.getId())) {
                 entity.addError(dataDefinition.getField("instruction"), "products.validate.global.error.instructionError");
                 return false;
-            } else {
             }
         }
         return true;

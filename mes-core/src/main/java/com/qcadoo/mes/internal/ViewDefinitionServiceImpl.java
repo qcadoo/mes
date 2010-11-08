@@ -1,5 +1,8 @@
 package com.qcadoo.mes.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,17 +40,16 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Monitorable
     public ViewDefinition getWithoutSession(final String pluginIdentifier, final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(pluginIdentifier + "." + viewName);
-        if (viewDefinition != null && belongsToActivePlugin(viewDefinition.getPluginIdentifier())) {
-            return viewDefinition;
-        } else {
-            return viewDefinition;
-        }
+        checkNotNull(viewDefinition, "view definition for %s#%s cannot be found", pluginIdentifier, viewName);
+        checkState(belongsToActivePlugin(viewDefinition.getPluginIdentifier()),
+                "view definition %s belongs to inactive plugin %s", viewName, pluginIdentifier);
+        return viewDefinition;
     }
 
     @Override
     @Transactional(readOnly = true)
     @Monitorable
-    public List<ViewDefinition> getMenuableViews() {
+    public List<ViewDefinition> listForMenu() {
         List<ViewDefinition> menuableViews = new LinkedList<ViewDefinition>();
         for (ViewDefinition viewDefinition : viewDefinitions.values()) {
             if (viewDefinition.isMenuable()) {
@@ -82,8 +84,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Override
     @Transactional
     @Monitorable
-    public void delete(final String pluginIdentifier, final String viewName) {
-        viewDefinitions.remove(pluginIdentifier + "." + viewName);
+    public void delete(final ViewDefinition viewDefinition) {
+        viewDefinitions.remove(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName());
     }
 
 }

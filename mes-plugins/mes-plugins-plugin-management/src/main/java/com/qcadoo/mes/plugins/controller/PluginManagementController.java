@@ -16,6 +16,7 @@ import com.qcadoo.mes.api.PluginManagementOperationStatus;
 import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.crud.CrudController;
+import com.qcadoo.mes.internal.PluginManagementOperationStatusImpl;
 
 @Controller
 public final class PluginManagementController {
@@ -41,7 +42,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.removePlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.removePlugin(Long.parseLong(entityId)), locale);
     }
 
     @RequestMapping(value = "restartPage", method = RequestMethod.GET)
@@ -56,23 +57,24 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "enable", method = RequestMethod.GET)
     public ModelAndView handleEnable(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.enablePlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.enablePlugin(Long.parseLong(entityId)), locale);
     }
 
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
     @ResponseBody
     public String handleRestart() {
-        return pluginManagementService.restartServer();
+        pluginManagementService.restartServer();
+        return "ok";
     }
 
     @RequestMapping(value = "disable", method = RequestMethod.GET)
     public ModelAndView getDisablePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.disablePlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.disablePlugin(Long.parseLong(entityId)), locale);
     }
 
     @RequestMapping(value = "deinstall", method = RequestMethod.GET)
     public ModelAndView handleDeinstall(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.deinstallPlugin(entityId), locale);
+        return getInfoMessageView(pluginManagementService.deinstallPlugin(Long.parseLong(entityId)), locale);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.GET)
@@ -87,7 +89,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "restartInfoView", method = RequestMethod.GET)
     public ModelAndView getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
-        return getInfoMessageView(new PluginManagementOperationStatus(false, message), locale);
+        return getInfoMessageView(new PluginManagementOperationStatusImpl(false, message), locale);
     }
 
     private ModelAndView getDownloadPageView(final String downloadAction, final Locale locale) {
@@ -104,7 +106,7 @@ public final class PluginManagementController {
         return mav;
     }
 
-    private ModelAndView getInfoMessageView(PluginManagementOperationStatus operationStatus, final Locale locale) {
+    private ModelAndView getInfoMessageView(final PluginManagementOperationStatus operationStatus, final Locale locale) {
         if (operationStatus.isRestartRequired()) {
             return getRestartPagePageView(operationStatus.getMessage(), locale);
         }
