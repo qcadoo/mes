@@ -6,7 +6,6 @@
 			</ribbon>		
 			<component type="grid" name="groups">
 				<option type="column" name="name" fields="name" link="true"/>
-				<option type="column" name="role" fields="role" />
 				<option type="header" value="false" />
 				<option type="orderable" value="name,role" />
 				<option type="paginable" value="true" />
@@ -39,7 +38,6 @@
 			<component type="form" name="groupDetailsForm">
 				<component type="textarea" name="name" field="name" />
 				<component type="textarea" name="description" field="description" /> 
-				<component type="input" name="role" field="role" enabled="false" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name"/>
 			</component>
