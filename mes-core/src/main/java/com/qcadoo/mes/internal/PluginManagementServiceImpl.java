@@ -34,7 +34,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementServiceImpl.class);
 
-    public static final String FIELD_DELETED = "deleted";
+    private static final String FIELD_DELETED = "deleted";
 
     @Value("${QCADOO_PLUGINS_PATH}")
     private String pluginsPath;
@@ -71,7 +71,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 PluginsPlugin pluginWithIdentifier = getByIdentifier(plugin.getIdentifier());
                 if (pluginWithIdentifier != null) {
                     deleteFile = true;
-                    // LOG.info("Plugin with identifier existed");
+                    LOG.info("Plugin with identifier existed");
                     return new PluginManagementOperationStatus(true, "plugins.messages.error.pluginExists");
                 }
                 PluginsPlugin databasePlugin = getByNameAndVendor(plugin.getName(), plugin.getVendor());
