@@ -47,7 +47,7 @@ public final class ValidationService {
             if (field.getValue().isReadOnlyOnUpdate() && genericEntity.getId() != null) {
                 genericEntity.setField(field.getKey(), value);
             }
-            if (!genericEntity.getFields().containsKey(field.getKey()) && genericEntity.getId() != null && value != null) {
+            if (!genericEntity.getFields().containsKey(field.getKey()) && genericEntity.getId() != null) {
                 genericEntity.setField(field.getKey(), value);
             }
         }
@@ -134,9 +134,7 @@ public final class ValidationService {
 
     private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
-        if (fieldDefinition.isCustomField()) {
-            throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToEntityType) {
+        if (fieldDefinition.getType() instanceof BelongsToEntityType) {
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         } else {
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);

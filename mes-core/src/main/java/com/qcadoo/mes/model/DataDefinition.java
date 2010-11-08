@@ -13,6 +13,7 @@ import com.qcadoo.mes.model.validators.EntityValidator;
  * @apiviz.owns com.qcadoo.mes.model.FieldDefinition
  * @apiviz.owns com.qcadoo.mes.model.validators.EntityValidator
  * @apiviz.uses com.qcadoo.mes.model.search.SearchCriteriaBuilder
+ * @apiviz.uses com.qcadoo.mes.internal.DataAccessService
  */
 public interface DataDefinition {
 
@@ -67,14 +68,41 @@ public interface DataDefinition {
      */
     void moveTo(final Long id, final int position);
 
+    /**
+     * Return all defined fields' definitions.
+     * 
+     * @return fields' definitions
+     */
     Map<String, FieldDefinition> getFields();
 
+    /**
+     * Return field definition by its name.
+     * 
+     * @param fieldName
+     *            field's name
+     * @return field's definition
+     */
     FieldDefinition getField(final String fieldName);
 
+    /**
+     * Return priority field's definition.
+     * 
+     * @return priority field's definion, null if entity is not prioritizable
+     */
     FieldDefinition getPriorityField();
 
+    /**
+     * Return all defined entity's validators.
+     * 
+     * @return entity's validators
+     */
     List<EntityValidator> getValidators();
 
+    /**
+     * Return true if entity is prioritizable.
+     * 
+     * @return true if entity is prioritizable
+     */
     boolean isPrioritizable();
 
 }

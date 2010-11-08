@@ -4,7 +4,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -136,9 +135,6 @@ public class DataDefinitionParserTest {
         assertTrue(dataDefinition.isDeletable());
         assertFalse(dataDefinition.isCreatable());
         assertTrue(dataDefinition.isUpdatable());
-        assertFalse(dataDefinition.isVirtualTable());
-        assertFalse(dataDefinition.isCoreTable());
-        assertTrue(dataDefinition.isPluginTable());
     }
 
     @Test
@@ -197,11 +193,9 @@ public class DataDefinitionParserTest {
         assertEquals("categories", getField(dataDefinition.getField("category").getType(), "dictionaryName"));
         assertThat(dataDefinition.getField("password").getType(), instanceOf(PasswordType.class));
 
-        assertNull(dataDefinition.getField("age").getDefaultValue());
         assertFalse(dataDefinition.getField("age").isReadOnly());
         assertFalse(dataDefinition.getField("age").isReadOnlyOnUpdate());
 
-        assertEquals("ala", dataDefinition.getField("lastname").getDefaultValue());
         assertTrue(dataDefinition.getField("lastname").isReadOnly());
         assertTrue(dataDefinition.getField("lastname").isReadOnlyOnUpdate());
 
