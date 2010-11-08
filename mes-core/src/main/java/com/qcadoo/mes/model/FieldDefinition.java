@@ -31,4 +31,6 @@ public interface FieldDefinition {
 
     boolean isPersistent();
 
+    DataDefinition getDataDefinition();
+
 }

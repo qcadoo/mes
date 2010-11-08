@@ -21,6 +21,8 @@ public interface TranslationService {
 
     String getEntityFieldMessageCode(DataDefinition dataDefinition, String fieldName);
 
+    String getEntityFieldBaseMessageCode(final DataDefinition dataDefinition, final String fieldName);
+
     String translateErrorMessage(ErrorMessage validationError, Locale locale);
 
 }

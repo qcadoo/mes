@@ -15,7 +15,9 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;
@@ -43,7 +45,7 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
             value = valueObject.getString("value");
         }
         if (value != null) {
-            ComboBoxValue comboBoxValue = new ComboBoxValue(getComboBoxValues(), value);
+            ComboBoxValue comboBoxValue = new ComboBoxValue(getComboBoxValues(null), value);
             if (!viewObject.isNull("value") && !viewObject.getJSONObject("value").isNull("required")) {
                 comboBoxValue.setRequired(viewObject.getJSONObject("value").getBoolean("required"));
             }
@@ -72,7 +74,7 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
             }
         }
 
-        ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(), strValue);
+        ComboBoxValue comboValue = new ComboBoxValue(getComboBoxValues(locale), strValue);
         ViewValue<ComboBoxValue> newViewValue = new ViewValue<ComboBoxValue>(comboValue);
 
         FieldDefinition fieldDefinition = getFieldDefinition();
@@ -93,12 +95,26 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
         return newViewValue;
     }
 
-    private List<String> getComboBoxValues() {
+    private List<Pair<String, String>> getComboBoxValues(final Locale locale) {
         FieldType def = getDataDefinition().getField(getName()).getType();
         // TODO mina check
         // if (!(def instanceof DictionaryType || def instanceof EnumType)) {}
         EnumeratedType fieldDefinition = (EnumeratedType) def;
-        return fieldDefinition.values();
+        List<Pair<String, String>> values = new LinkedList<Pair<String, String>>();
+        for (String valueKey : fieldDefinition.values()) {
+            if (def instanceof EnumType && locale != null) {
+                values.add(Pair.of(valueKey, translateComboBoxValue(valueKey, locale)));
+            } else {
+                values.add(Pair.of(valueKey, valueKey));
+            }
+        }
+        return values;
+    }
+
+    private String translateComboBoxValue(final String valueKey, final Locale locale) {
+        String messageCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getName()) + ".value."
+                + valueKey;
+        return getTranslationService().translate(messageCode, locale);
     }
 
     @Override
@@ -126,5 +142,6 @@ public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxVa
                                 Arrays.asList(new String[] {
                                         getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
                                                 + getPath() + ".blankValue", "core.form.blankComboBoxValue" }), locale));
+
     }
 }
