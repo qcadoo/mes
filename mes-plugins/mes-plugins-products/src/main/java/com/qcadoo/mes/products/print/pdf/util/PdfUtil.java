@@ -58,7 +58,11 @@ public final class PdfUtil {
 
     private static BaseFont arial;
 
-    private PdfUtil() throws DocumentException, IOException {
+    private PdfUtil() {
+
+    }
+
+    public static void prepareFontsAndColors() throws DocumentException, IOException {
         ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
         FontFactory.register(classPathResource.getPath());
         arial = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);

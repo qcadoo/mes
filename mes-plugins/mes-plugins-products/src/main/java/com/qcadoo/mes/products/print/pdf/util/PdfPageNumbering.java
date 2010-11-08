@@ -1,6 +1,7 @@
 package com.qcadoo.mes.products.print.pdf.util;
 
 import com.lowagie.text.Document;
+import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPageEventHelper;
@@ -29,6 +30,11 @@ public final class PdfPageNumbering extends PdfPageEventHelper {
     public void onOpenDocument(final PdfWriter writer, final Document document) {
         total = writer.getDirectContent().createTemplate(100, 100);
         total.setBoundingBox(new Rectangle(-20, -20, 100, 100));
+        try {
+            PdfUtil.prepareFontsAndColors();
+        } catch (Exception e) {
+            throw new ExceptionConverter(e);
+        }
     }
 
     /**
