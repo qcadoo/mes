@@ -160,8 +160,8 @@
 				<groupId>com.lowagie</groupId>
 				<artifactId>itext</artifactId>
 				<version>2.1.7</version>
-    		</dependency>
-    		<dependency>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi</artifactId>
 				<version>3.6</version>
@@ -253,9 +253,31 @@
 					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
 
 	<reporting>
 		<plugins>

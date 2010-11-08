@@ -1,7 +1,6 @@
 package com.qcadoo.mes.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,8 +40,6 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     public ViewDefinition getWithoutSession(final String pluginIdentifier, final String viewName) {
         ViewDefinition viewDefinition = viewDefinitions.get(pluginIdentifier + "." + viewName);
         checkNotNull(viewDefinition, "view definition for %s#%s cannot be found", pluginIdentifier, viewName);
-        checkState(belongsToActivePlugin(viewDefinition.getPluginIdentifier()),
-                "view definition %s belongs to inactive plugin %s", viewName, pluginIdentifier);
         return viewDefinition;
     }
 

@@ -54,8 +54,6 @@ public class TestDataLoader {
 
     private static final String[] TYPE_OF_MATERIALS = new String[] { "product", "component", "intermediate" };
 
-    private static final List<String> MACHINES = new ArrayList<String>();
-
     private static final List<String> UNITS = new ArrayList<String>();
 
     private static final String[] PRODUCT_ATTRIBUTES = new String[] { "product_id", "ean", "name", "product_nr" };
@@ -83,7 +81,6 @@ public class TestDataLoader {
 
     public void loadTestData() {
         readDataFromXML("units", new String[] { "name" });
-        readDataFromXML("machines", new String[] { "name" });
         readDataFromXML("users", USER_ATTRIBUTES);
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
@@ -139,15 +136,13 @@ public class TestDataLoader {
             addUser(values);
         } else if ("units".equals(type)) {
             UNITS.add(values.get("name"));
-        } else if ("machines".equals(type)) {
-            MACHINES.add(values.get("name"));
         }
     }
 
     private void addProduct(final Map<String, String> values) {
         ProductsProduct product = new ProductsProduct();
         product.setId(Long.valueOf(values.get("product_id")));
-        product.setCategory(getRandomCategory());
+        product.setCategory(getRandomDictionaryItem("categories"));
         product.setEan(values.get("ean"));
         product.setName(values.get("name"));
         product.setNumber(values.get("product_nr"));
@@ -270,7 +265,7 @@ public class TestDataLoader {
         order.setEffectiveDateTo(new Date(effectiveEndDate));
         order.setEndWorker(getRandomUser().getUserName());
         order.setInstruction(getInstructionByName(values.get("bom_name")));
-        order.setMachine(getRandomMachine());
+        order.setMachine(getRandomDictionaryItem("machines"));
         order.setName((values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setNumber(values.get("order_nr"));
         order.setPlannedQuantity(values.get("quantity_scheduled").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
@@ -468,8 +463,8 @@ public class TestDataLoader {
                 .add(Restrictions.eq("role", role)).setMaxResults(1).uniqueResult();
     }
 
-    private String getRandomCategory() {
-        DictionariesDictionary dictionary = getDictionaryByName("categories");
+    private String getRandomDictionaryItem(final String dictionaryName) {
+        DictionariesDictionary dictionary = getDictionaryByName(dictionaryName);
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(DictionariesDictionaryItem.class)
                 .add(Restrictions.eq("dictionary", dictionary)).setProjection(Projections.rowCount()).uniqueResult();
         DictionariesDictionaryItem item = (DictionariesDictionaryItem) sessionFactory.getCurrentSession()
@@ -502,10 +497,6 @@ public class TestDataLoader {
     private DictionariesDictionary getDictionaryByName(final String name) {
         return (DictionariesDictionary) sessionFactory.getCurrentSession().createCriteria(DictionariesDictionary.class)
                 .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
-    }
-
-    private String getRandomMachine() {
-        return MACHINES.get(RANDOM.nextInt(MACHINES.size()));
     }
 
     private String getRandomTypeOfMaterial() {

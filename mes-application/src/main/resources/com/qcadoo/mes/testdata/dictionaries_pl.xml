@@ -4,4 +4,7 @@
 	<row NAME="categories" ITEM="kategoria 2" />
 	<row NAME="categories" ITEM="kategoria 3" />
 	<row NAME="categories" ITEM="kategoria 4" />
+	<row NAME="machines" ITEM="tokarka" />
+	<row NAME="machines" ITEM="gilotyna" />
+	<row NAME="machines" ITEM="obrabiarka" />
 </users>
