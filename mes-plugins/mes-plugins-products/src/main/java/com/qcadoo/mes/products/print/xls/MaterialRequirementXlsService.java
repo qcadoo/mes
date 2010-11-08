@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.service.xls;
+package com.qcadoo.mes.products.print.xls;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,24 +18,24 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
+import com.qcadoo.mes.products.print.MaterialRequirementDocumentService;
+import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
 @Service
 public final class MaterialRequirementXlsService extends MaterialRequirementDocumentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementXlsService.class);
 
-    private static final String XLS_EXTENSION = ".xls";
-
     @Override
     public void generateDocument(final Entity entity, final Locale locale) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(translationService.translate("products.materialRequirement.report.title", locale));
+        HSSFSheet sheet = workbook.createSheet(getTranslationService().translate("products.materialRequirement.report.title",
+                locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XLS_EXTENSION);
+            outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XlsCopyUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
@@ -50,16 +50,17 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
 
     private void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
-        header.createCell(0).setCellValue(translationService.translate("products.product.number.label", locale));
-        header.createCell(1).setCellValue(translationService.translate("products.product.name.label", locale));
-        header.createCell(2)
-                .setCellValue(translationService.translate("products.instructionBomComponent.quantity.label", locale));
-        header.createCell(3).setCellValue(translationService.translate("products.product.unit.label", locale));
+        header.createCell(0).setCellValue(getTranslationService().translate("products.product.number.label", locale));
+        header.createCell(1).setCellValue(getTranslationService().translate("products.product.name.label", locale));
+        header.createCell(2).setCellValue(
+                getTranslationService().translate("products.instructionBomComponent.quantity.label", locale));
+        header.createCell(3).setCellValue(getTranslationService().translate("products.product.unit.label", locale));
     }
 
     private void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
-        Map<ProxyEntity, BigDecimal> products = getProductsSeries(entity);
+        List<Entity> orders = (List<Entity>) entity.getField("orders");
+        Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, orders);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
@@ -72,10 +73,5 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
                 row.createCell(3).setCellValue("");
             }
         }
-    }
-
-    private Map<ProxyEntity, BigDecimal> getProductsSeries(final Entity entity) {
-        List<Entity> orders = (List<Entity>) entity.getField("orders");
-        return getBomSeries(entity, orders);
     }
 }

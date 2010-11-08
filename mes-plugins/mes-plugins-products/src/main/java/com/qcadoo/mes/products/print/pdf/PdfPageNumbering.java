@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.service.pdf;
+package com.qcadoo.mes.products.print.pdf;
 
 import java.awt.Color;
 

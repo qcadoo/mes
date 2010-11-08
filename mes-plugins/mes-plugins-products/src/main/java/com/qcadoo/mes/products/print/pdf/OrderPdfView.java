@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.view.pdf;
+package com.qcadoo.mes.products.print.pdf;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

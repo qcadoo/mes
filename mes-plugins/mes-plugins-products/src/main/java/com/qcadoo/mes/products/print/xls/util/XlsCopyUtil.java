@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.view.xls.util;
+package com.qcadoo.mes.products.print.xls.util;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,7 +12,12 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-public class ExcelUtil {
+public final class XlsCopyUtil {
+
+    public static final String XLS_EXTENSION = ".xls";
+
+    private XlsCopyUtil() {
+    }
 
     public static void copySheets(final HSSFSheet newSheet, final HSSFSheet sheet) {
         copySheets(newSheet, sheet, true);
@@ -25,7 +30,7 @@ public class ExcelUtil {
             HSSFRow srcRow = sheet.getRow(i);
             HSSFRow destRow = newSheet.createRow(i);
             if (srcRow != null) {
-                ExcelUtil.copyRow(sheet, newSheet, srcRow, destRow, styleMap);
+                XlsCopyUtil.copyRow(sheet, newSheet, srcRow, destRow, styleMap);
                 if (srcRow.getLastCellNum() > maxColumnNum) {
                     maxColumnNum = srcRow.getLastCellNum();
                 }

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.service;
+package com.qcadoo.mes.products.print;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -22,10 +22,10 @@ import com.qcadoo.mes.model.types.internal.DateType;
 public abstract class MaterialRequirementDocumentService {
 
     @Autowired
-    protected TranslationService translationService;
+    private TranslationService translationService;
 
     @Autowired
-    protected DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     private static final String FILE_NAME = "MaterialRequirement";
 
@@ -72,5 +72,13 @@ public abstract class MaterialRequirementDocumentService {
     }
 
     public abstract void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException;
+
+    protected final TranslationService getTranslationService() {
+        return translationService;
+    }
+
+    protected final DataDefinitionService getDataDefinitionService() {
+        return dataDefinitionService;
+    }
 
 }

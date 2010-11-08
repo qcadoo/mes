@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.service.pdf;
+package com.qcadoo.mes.products.print.pdf;
 
 import java.awt.Color;
 import java.io.FileOutputStream;
@@ -39,7 +39,7 @@ import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
-import com.qcadoo.mes.products.print.service.MaterialRequirementDocumentService;
+import com.qcadoo.mes.products.print.MaterialRequirementDocumentService;
 
 @Service
 public final class MaterialRequirementPdfService extends MaterialRequirementDocumentService {
@@ -82,8 +82,8 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             String fileName = getFileName((Date) entity.getField("date")) + PDF_EXTENSION;
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
-            writer.setPageEvent(new PdfPageNumbering(translationService.translate("products.report.page", locale),
-                    translationService.translate("products.report.in", locale)));
+            writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
+                    getTranslationService().translate("products.report.in", locale)));
             document.setMargins(8, 80, 40, 100);
             buildPdfMetadata(document, locale);
             prepareFontsAndColors();
@@ -93,7 +93,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             PdfContentByte cb = writer.getDirectContent();
             cb.saveState();
             cb.setColorFill(lightColor);
-            String text = translationService.translate("products.report.endOfReport", locale);
+            String text = getTranslationService().translate("products.report.endOfReport", locale);
             float textBase = document.bottom() - 35;
             float textSize = arial.getWidthPoint(text, 7);
             cb.beginText();
@@ -143,7 +143,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         SimpleDateFormat df = new SimpleDateFormat(DateType.DATE_TIME_FORMAT);
         LineSeparator line = new LineSeparator(3, 100f, lineDarkColor, Element.ALIGN_LEFT, 0);
         document.add(Chunk.NEWLINE);
-        Paragraph title = new Paragraph(new Phrase(translationService.translate("products.materialRequirement.report.title",
+        Paragraph title = new Paragraph(new Phrase(getTranslationService().translate("products.materialRequirement.report.title",
                 locale), arialBold19Light));
         title.add(new Phrase(" " + entity.getField("name"), arialBold19Dark));
         title.setSpacingAfter(7f);
@@ -153,7 +153,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         userAndDate.setWidthPercentage(100f);
         userAndDate.setHorizontalAlignment(Element.ALIGN_LEFT);
         userAndDate.getDefaultCell().setBorderWidth(0);
-        Paragraph userParagraph = new Paragraph(new Phrase(translationService.translate(
+        Paragraph userParagraph = new Paragraph(new Phrase(getTranslationService().translate(
                 "products.materialRequirement.report.author", locale), arialRegular9Light));
         userParagraph.add(new Phrase(" " + user.getUserName(), arialRegular9Dark));
         Paragraph dateParagraph = new Paragraph(df.format(entity.getField("date")), arialRegular9Light);
@@ -162,28 +162,28 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         userAndDate.addCell(dateParagraph);
         document.add(userAndDate);
         document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah", locale),
+        document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah", locale),
                 arialBold11Dark));
         List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(translationService.translate("products.order.number.label", locale));
-        orderHeader.add(translationService.translate("products.order.name.label", locale));
-        orderHeader.add(translationService.translate("products.order.product.label", locale));
-        orderHeader.add(translationService.translate("products.product.unit.label", locale));
-        orderHeader.add(translationService.translate("products.order.plannedQuantity.label", locale));
+        orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
+        orderHeader.add(getTranslationService().translate("products.order.name.label", locale));
+        orderHeader.add(getTranslationService().translate("products.order.product.label", locale));
+        orderHeader.add(getTranslationService().translate("products.product.unit.label", locale));
+        orderHeader.add(getTranslationService().translate("products.order.plannedQuantity.label", locale));
         addOrderSeries(document, entity, orderHeader);
         document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(translationService.translate("products.materialRequirement.report.paragrah2", locale),
+        document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah2", locale),
                 arialBold11Dark));
         List<String> productHeader = new ArrayList<String>();
-        productHeader.add(translationService.translate("products.product.number.label", locale));
-        productHeader.add(translationService.translate("products.product.name.label", locale));
-        productHeader.add(translationService.translate("products.product.unit.label", locale));
-        productHeader.add(translationService.translate("products.instructionBomComponent.quantity.label", locale));
+        productHeader.add(getTranslationService().translate("products.product.number.label", locale));
+        productHeader.add(getTranslationService().translate("products.product.name.label", locale));
+        productHeader.add(getTranslationService().translate("products.product.unit.label", locale));
+        productHeader.add(getTranslationService().translate("products.instructionBomComponent.quantity.label", locale));
         addBomSeries(document, (DefaultEntity) entity, productHeader);
     }
 
     private void buildPdfMetadata(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("products.materialRequirement.report.title", locale));
+        document.addTitle(getTranslationService().translate("products.materialRequirement.report.title", locale));
         document.addSubject("Using iText");
         document.addKeywords("Java, PDF, iText");
         document.addAuthor("QCADOO");
