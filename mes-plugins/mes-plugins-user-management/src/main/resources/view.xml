@@ -105,7 +105,7 @@
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<option type="header" value="false" />
-				<option type="expression" value="#login"/>
+				<option type="expression" value="#userName"/>
 			</component>
 			<component type="button" name="changePasswordButton" source="#{mainWindow.userDetailsForm}">
 				<option type="url" value="users/userDetailsChangePasswordView.html" />
@@ -129,7 +129,7 @@
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<component type="input" name="viewIdentifier" field="viewIdentifier" visible="false"/>
 				<option type="header" value="false" />
-				<option type="expression" value="#login"/>
+				<option type="expression" value="#userName"/>
 			</component>
 		</component>
 		<onView bean="com.qcadoo.mes.users.UserService" method="onUserDetailsChangePasswordView" />
@@ -157,7 +157,7 @@
 				<component type="input" name="lastName" field="lastName" />
 				<component type="textarea" name="description" field="description" /> <!-- type:description -->
 				<option type="header" value="false" />
-				<option type="expression" value="#login"/>
+				<option type="expression" value="' '"/>
 			</component>
 			<component type="button" name="changePasswordButton" source="#{mainWindow.userDetailsForm}">
 				<option type="url" value="users/userProfileChangePasswordView.html" />
@@ -181,7 +181,7 @@
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<component type="input" name="viewIdentifier" field="viewIdentifier" visible="false"/>
 				<option type="header" value="false" />
-				<option type="expression" value="#login"/>
+				<option type="expression" value="' '"/>
 			</component>
 		</component>
 		<onView bean="com.qcadoo.mes.users.UserService" method="onUserProfileChangePasswordView" />
