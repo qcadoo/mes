@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
 import com.qcadoo.mes.internal.DataAccessTest;
-import com.qcadoo.mes.model.search.restrictions.internal.HibernateRestriction;
 
 public final class SimpleRestricitonTest extends DataAccessTest {
 
@@ -41,7 +40,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.eq(fieldDefinitionName, simpleDatabaseObject.getName());
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
@@ -59,7 +58,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.ge(fieldDefinitionName, simpleDatabaseObject.getName());
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
@@ -77,7 +76,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.gt(fieldDefinitionName, simpleDatabaseObject.getName());
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
@@ -95,7 +94,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.le(fieldDefinitionName, simpleDatabaseObject.getName());
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
@@ -113,7 +112,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.lt(fieldDefinitionName, simpleDatabaseObject.getName());
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
@@ -131,7 +130,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.isNull(fieldDefinitionName);
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
@@ -150,7 +149,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.isNotNull(fieldDefinitionName);
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
@@ -169,7 +168,7 @@ public final class SimpleRestricitonTest extends DataAccessTest {
         Restriction restriction = Restrictions.eq(fieldDefinitionName, "%Mr_?" + "*");
 
         // when
-        criteria = ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        criteria = restriction.addToHibernateCriteria(criteria);
 
         // then
         for (Iterator<CriteriaImpl.CriterionEntry> criterionIterator = ((CriteriaImpl) criteria).iterateExpressionEntries(); criterionIterator
