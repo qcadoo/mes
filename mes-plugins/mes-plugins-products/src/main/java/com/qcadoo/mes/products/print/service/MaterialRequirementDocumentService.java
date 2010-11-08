@@ -29,6 +29,8 @@ public abstract class MaterialRequirementDocumentService {
 
     private static final String FILE_NAME = "MaterialRequirement";
 
+    private static final String MATERIAL_COMPONENT = "component";
+
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
 
     @Value("${reportPath}")
@@ -53,7 +55,8 @@ public abstract class MaterialRequirementDocumentService {
                 List<Entity> bomComponents = (List<Entity>) instruction.getField("bomComponents");
                 for (Entity bomComponent : bomComponents) {
                     ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
-                    if (!(Boolean) entity.getField("onlyComponents") || "component".equals(product.getField("typeOfMaterial"))) {
+                    if (!(Boolean) entity.getField("onlyComponents")
+                            || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
                         if (products.containsKey(product)) {
                             BigDecimal quantity = products.get(product);
                             quantity = ((BigDecimal) bomComponent.getField("quantity")).multiply(plannedQuantity).add(quantity);
