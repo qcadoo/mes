@@ -14,19 +14,19 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
-public class PdfPageNumbering extends PdfPageEventHelper {
+public final class PdfPageNumbering extends PdfPageEventHelper {
 
     /** The PdfTemplate that contains the total number of pages. */
-    protected PdfTemplate total;
+    private PdfTemplate total;
 
     /** The font that will be used. */
-    protected BaseFont arial;
+    private BaseFont arial;
 
     private Color lightColor;
 
-    private String page;
+    private final String page;
 
-    private String in;
+    private final String in;
 
     public PdfPageNumbering(final String page, final String in) {
         super();

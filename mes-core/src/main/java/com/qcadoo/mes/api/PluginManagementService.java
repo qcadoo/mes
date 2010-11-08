@@ -4,30 +4,133 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 
+/**
+ * Service for manipulating plugins.
+ * 
+ * @apiviz.uses com.qcadoo.mes.api.PluginManagementOperationStatus
+ */
 public interface PluginManagementService {
 
-    PluginsPlugin getByIdentifier(final String identifier);
+    /**
+     * Return plugin with given identifier.
+     * 
+     * @param pluginIdentifier
+     *            plugin's identifier
+     * @return the plugin, or null if not found
+     */
+    PluginsPlugin getByIdentifier(final String pluginIdentifier);
 
-    PluginsPlugin getByIdentifierAndStatus(String identifier, String status);
+    /**
+     * Return plugin with given identifier and status.
+     * 
+     * @param pluginIdentifier
+     *            plugin's identifier
+     * @param status
+     *            status
+     * @return the plugin, or null if not found
+     */
+    PluginsPlugin getByIdentifierAndStatus(String pluginIdentifier, String status);
 
-    PluginsPlugin getByEntityId(String entityId);
+    /**
+     * Return plugin with given id.
+     * 
+     * @param id
+     *            id
+     * @return the plugin, or null if not found
+     */
+    PluginsPlugin get(Long id);
 
+    /**
+     * Return plugin with given name and vendor.
+     * 
+     * @param name
+     *            name
+     * @param vendor
+     *            vendor
+     * @return the plugin, or null if not found
+     */
     PluginsPlugin getByNameAndVendor(final String name, final String vendor);
 
+    /**
+     * Save given plugin.
+     * 
+     * @param plugin
+     *            plugin to save
+     */
     void save(PluginsPlugin plugin);
 
+    /**
+     * Download the plugin and save it into the database with status "downloaded".
+     * 
+     * @param file
+     *            file to upload
+     * @throws com.qcadoo.mes.exceptions.PluginException
+     *             if operation cannot be executed
+     * @return the operation's status
+     */
     PluginManagementOperationStatus downloadPlugin(final MultipartFile file);
 
-    PluginManagementOperationStatus removePlugin(final String entityId);
+    /**
+     * Remove the "downloaded" plugin.
+     * 
+     * @param id
+     *            id
+     * @throws com.qcadoo.mes.exceptions.PluginException
+     *             if operation cannot be executed
+     * @return the operation's status
+     */
+    PluginManagementOperationStatus removePlugin(final Long id);
 
-    PluginManagementOperationStatus enablePlugin(final String entityId);
+    /**
+     * Change the plugin's status to "active".
+     * 
+     * @param id
+     *            id
+     * @throws com.qcadoo.mes.exceptions.PluginException
+     *             if operation cannot be executed
+     * @return the operation's status
+     */
+    PluginManagementOperationStatus enablePlugin(final Long id);
 
-    String restartServer();
+    /**
+     * Change the plugin's status to "installed".
+     * 
+     * @param id
+     *            id
+     * @throws com.qcadoo.mes.exceptions.PluginException
+     *             if operation cannot be executed
+     * @return the operation's status
+     */
+    PluginManagementOperationStatus disablePlugin(final Long id);
 
-    PluginManagementOperationStatus disablePlugin(final String entityId);
+    /**
+     * Remove the "installed" plugin and restart the server.
+     * 
+     * @param id
+     *            id
+     * @throws com.qcadoo.mes.exceptions.PluginException
+     *             if operation cannot be executed
+     * @return the operation's status
+     */
+    PluginManagementOperationStatus deinstallPlugin(final Long id);
 
-    PluginManagementOperationStatus deinstallPlugin(final String entityId);
-
+    /**
+     * Download new plugin's version and restart the server.
+     * 
+     * @param file
+     *            file to upload
+     * @throws com.qcadoo.mes.exceptions.PluginException
+     *             if operation cannot be executed
+     * @return the operation's status
+     */
     PluginManagementOperationStatus updatePlugin(final MultipartFile file);
+
+    /**
+     * Restart the server.
+     * 
+     * @throws com.qcadoo.mes.exceptions.PluginException
+     *             if restart cannot be executed
+     */
+    void restartServer();
 
 }

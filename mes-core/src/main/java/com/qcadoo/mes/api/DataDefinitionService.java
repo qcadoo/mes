@@ -5,16 +5,47 @@ import java.util.List;
 import com.qcadoo.mes.model.DataDefinition;
 
 /**
- * @apiviz.uses com.qcadoo.mes.core.data.definition.DataDefinition
+ * Service for manipulating data definitions.
+ * 
+ * @see com.qcadoo.mes.model.internal.DataDefinitionParser
+ * @apiviz.uses com.qcadoo.mes.model.DataDefinition
  */
 public interface DataDefinitionService {
 
-    void save(DataDefinition dataDefinition);
-
+    /**
+     * Return the data definition matching the given plugin's identifier and model's name.
+     * 
+     * @param pluginIdentifier
+     *            plugin's identifier
+     * @param modelName
+     *            model's name
+     * @return the data definition
+     * @throws NullPointerException
+     *             if data definition is not found
+     */
     DataDefinition get(String pluginIdentifier, String modelName);
 
-    void delete(String pluginIdentifier, String modelName);
-
+    /**
+     * Return all defined data definitions.
+     * 
+     * @return the data definitions
+     */
     List<DataDefinition> list();
+
+    /**
+     * Save the data definition.
+     * 
+     * @param dataDefinition
+     *            data definition
+     */
+    void save(DataDefinition dataDefinition);
+
+    /**
+     * Delete the data definition.
+     * 
+     * @param dataDefinition
+     *            data definition
+     */
+    void delete(DataDefinition dataDefinition);
 
 }

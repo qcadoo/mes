@@ -192,7 +192,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
 
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
-        List<Entity> orders = (List<Entity>) entity.getField("orders");
+        List<Entity> orders = entity.getHasManyField("orders");
         PdfPTable table = createTableWithHeader(5, orderHeader, arialRegular9Dark);
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
@@ -249,7 +249,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
 
     private void addBomSeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
             throws DocumentException {
-        List<Entity> orders = (List<Entity>) entity.getField("orders");
+        List<Entity> orders = entity.getHasManyField("orders");
         Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, orders);
         PdfPTable table = createTableWithHeader(4, productHeader, arialRegular9Dark);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {

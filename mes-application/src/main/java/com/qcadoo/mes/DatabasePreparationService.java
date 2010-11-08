@@ -153,6 +153,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
     private void addDictionaries() {
         addDictionary("categories");
+        addDictionary("machines");
     }
 
     private void addDictionary(final String name) {

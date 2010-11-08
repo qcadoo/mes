@@ -46,10 +46,10 @@ public final class ProductService {
     private SecurityService securityService;
 
     @Autowired
-    MaterialRequirementPdfService materialRequirementPdfService;
+    private MaterialRequirementPdfService materialRequirementPdfService;
 
     @Autowired
-    MaterialRequirementXlsService materialRequirementXlsService;
+    private MaterialRequirementXlsService materialRequirementXlsService;
 
     @Autowired
     private TranslationService translationService;
@@ -336,7 +336,6 @@ public final class ProductService {
             if (hasAnyInstructions(product.getId())) {
                 entity.addError(dataDefinition.getField("instruction"), "products.validate.global.error.instructionError");
                 return false;
-            } else {
             }
         }
         return true;

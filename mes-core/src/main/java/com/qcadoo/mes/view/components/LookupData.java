@@ -1,6 +1,6 @@
 package com.qcadoo.mes.view.components;
 
-public class LookupData extends SimpleValue {
+public final class LookupData extends SimpleValue {
 
     private String selectedEntityValue;
 

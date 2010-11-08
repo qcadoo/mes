@@ -93,10 +93,6 @@ public final class PluginUtil {
         File dir = new File(dirPath);
         // Move file to new directory
 
-        System.out.println(" -----> " + dir.getAbsolutePath());
-        System.out.println(" -----> " + file.getAbsolutePath());
-        System.out.println(" -----> " + file.getName());
-
         boolean success = file.renameTo(new File(dir, file.getName()));
         if (!success) {
             throw new PluginException("Move: move failed");

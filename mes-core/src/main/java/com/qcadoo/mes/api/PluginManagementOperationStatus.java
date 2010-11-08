@@ -1,41 +1,31 @@
 package com.qcadoo.mes.api;
 
-public class PluginManagementOperationStatus {
+/**
+ * Status of the service operation.
+ * 
+ * @see com.qcadoo.mes.api.PluginManagementService
+ */
+public interface PluginManagementOperationStatus {
 
-    private boolean restartRequired = false;
+    /**
+     * Return true if the plugin service operation has finished with error.
+     * 
+     * @return true if error exists
+     */
+    boolean isError();
 
-    private boolean error;
+    /**
+     * Return error message for the plugin service operation.
+     * 
+     * @return error message
+     */
+    String getMessage();
 
-    private String message;
-
-    public PluginManagementOperationStatus(boolean error, String message) {
-        super();
-        this.error = error;
-        this.message = message;
-    }
-
-    public boolean isError() {
-        return error;
-    }
-
-    public void setError(boolean error) {
-        this.error = error;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public boolean isRestartRequired() {
-        return restartRequired;
-    }
-
-    public void setRestartRequired(boolean restartRequired) {
-        this.restartRequired = restartRequired;
-    }
+    /**
+     * Return true if the plugin service operation requires server's restart.
+     * 
+     * @return true if restart is required
+     */
+    boolean isRestartRequired();
 
 }

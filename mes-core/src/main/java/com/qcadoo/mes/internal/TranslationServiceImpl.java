@@ -107,11 +107,6 @@ public final class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public String getEntityFieldMessageCode(final DataDefinition dataDefinition, final String fieldName) {
-        return getEntityFieldBaseMessageCode(dataDefinition, fieldName) + ".label";
-    }
-
-    @Override
     public String getEntityFieldBaseMessageCode(final DataDefinition dataDefinition, final String fieldName) {
         return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName;
     }

@@ -14,48 +14,48 @@ import javax.persistence.TemporalType;
 public class Persistent {
 
     @Column(nullable = false)
-    String username;
+    private String username;
 
     @Id
-    String series;
+    private String series;
 
     @Column(nullable = false)
-    String token;
+    private String token;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    Date last_used;
+    private Date lastUsed;
 
-    public String getUsername() {
+    public final String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public final void setUsername(final String username) {
         this.username = username;
     }
 
-    public String getSeries() {
+    public final String getSeries() {
         return series;
     }
 
-    public void setSeries(String series) {
+    public final void setSeries(final String series) {
         this.series = series;
     }
 
-    public String getToken() {
+    public final String getToken() {
         return token;
     }
 
-    public void setToken(String token) {
+    public final void setToken(final String token) {
         this.token = token;
     }
 
-    public Date getLast_used() {
-        return last_used;
+    public final Date getLastUsed() {
+        return lastUsed;
     }
 
-    public void setLast_used(Date last_used) {
-        this.last_used = last_used;
+    public final void setLastUsed(final Date lastUsed) {
+        this.lastUsed = lastUsed;
     }
 
 }
