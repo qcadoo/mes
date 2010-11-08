@@ -23,6 +23,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.BooleanType;
+import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 
 @Component
@@ -104,13 +105,18 @@ public final class ExpressionUtil {
         String value = null;
 
         if (columnDefinition.getFields().size() == 1) {
-            value = columnDefinition.getFields().get(0).getValue(entity.getField(columnDefinition.getFields().get(0).getName()));
-            if (columnDefinition.getFields().get(0).getType() instanceof BooleanType) {
+            FieldDefinition field = columnDefinition.getFields().get(0);
+            value = field.getValue(entity.getField(field.getName()));
+            if (field.getType() instanceof BooleanType) {
                 if ("0".equals(value)) {
                     value = translationService.translate("commons.false", locale);
                 } else {
                     value = translationService.translate("commons.true", locale);
                 }
+            } else if (field.getType() instanceof EnumType) {
+                String messageCode = translationService.getEntityFieldBaseMessageCode(field.getDataDefinition(), field.getName())
+                        + ".value." + value;
+                value = translationService.translate(messageCode, locale);
             }
         } else {
             List<String> values = new ArrayList<String>();

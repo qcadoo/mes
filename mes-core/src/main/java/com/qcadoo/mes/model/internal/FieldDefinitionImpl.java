@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.validators.FieldValidator;
@@ -47,7 +48,10 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     private Object defaultValue;
 
-    public FieldDefinitionImpl(final String name) {
+    private final DataDefinition dataDefinition;
+
+    public FieldDefinitionImpl(final DataDefinition dataDefinition, final String name) {
+        this.dataDefinition = dataDefinition;
         this.name = name;
     }
 
@@ -78,6 +82,11 @@ public final class FieldDefinitionImpl implements FieldDefinition {
     @Override
     public List<FieldValidator> getValidators() {
         return validators;
+    }
+
+    @Override
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 
     public FieldDefinitionImpl withValidator(final FieldValidator validator) {

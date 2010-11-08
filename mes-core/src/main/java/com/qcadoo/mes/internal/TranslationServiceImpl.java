@@ -107,8 +107,8 @@ public final class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public String getEntityFieldMessageCode(final DataDefinition dataDefinition, final String fieldName) {
-        return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName + ".label";
+    public String getEntityFieldBaseMessageCode(final DataDefinition dataDefinition, final String fieldName) {
+        return dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "." + fieldName;
     }
 
     public void init() {

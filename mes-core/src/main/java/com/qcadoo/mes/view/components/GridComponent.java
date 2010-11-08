@@ -384,7 +384,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             List<String> messageCodes = new LinkedList<String>();
             messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                     + ".column." + column.getName());
-            messageCodes.add(getTranslationService().getEntityFieldMessageCode(getDataDefinition(), column.getName()));
+            messageCodes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), column.getName())
+                    + ".label");
             translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
         }
 

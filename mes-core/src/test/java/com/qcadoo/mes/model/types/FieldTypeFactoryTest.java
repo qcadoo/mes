@@ -40,7 +40,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
 
     private Entity entity = null;
 
-    private final FieldDefinition fieldDefinition = new FieldDefinitionImpl("aa");
+    private final FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "aa");
 
     @Before
     public void init() {
@@ -230,7 +230,7 @@ public class FieldTypeFactoryTest extends DataAccessTest {
     @Test
     public void shouldReturnPriorityType() throws Exception {
         // given
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl("aaa");
+        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "aaa");
 
         // when
         FieldType fieldType = fieldTypeFactory.priorityType(fieldDefinition);

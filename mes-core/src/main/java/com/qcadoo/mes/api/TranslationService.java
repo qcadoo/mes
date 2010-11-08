@@ -37,7 +37,7 @@ public interface TranslationService {
      *            locale
      * @return the dashboard translations
      */
-    Map<String, String> getDashboardMessages(final Locale locale);
+    Map<String, String> getDashboardMessages(Locale locale);
 
     /**
      * Translate given code into the locale using the args.
@@ -50,7 +50,7 @@ public interface TranslationService {
      *            message's args
      * @return the translation
      */
-    String translate(final String messageCode, final Locale locale, final Object... args);
+    String translate(String messageCode, Locale locale, Object... args);
 
     /**
      * Translate given codes into the locale using the args. First translated code will be returned.
@@ -63,7 +63,7 @@ public interface TranslationService {
      *            message's args
      * @return the translation
      */
-    String translate(final List<String> messageCodes, final Locale locale, final Object... args);
+    String translate(List<String> messageCodes, Locale locale, Object... args);
 
     /**
      * Construct code for given data definition and field name.
@@ -74,7 +74,7 @@ public interface TranslationService {
      *            field name
      * @return the message's code
      */
-    String getEntityFieldMessageCode(DataDefinition dataDefinition, String fieldName);
+    String getEntityFieldBaseMessageCode(DataDefinition dataDefinition, String fieldName);
 
     /**
      * Translate the validation error into the locale.

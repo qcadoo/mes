@@ -88,7 +88,7 @@ public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue
         List<String> messageCodes = new LinkedList<String>();
         messageCodes.add(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath()
                 + ".label");
-        messageCodes.add(getTranslationService().getEntityFieldMessageCode(getDataDefinition(), getName()));
+        messageCodes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getName()) + ".label");
         translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
         if (isHasDescription()) {
             String descriptionCode = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "."
