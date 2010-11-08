@@ -13,12 +13,12 @@
 	<context:component-scan base-package="com.qcadoo.mes.products" />
 	
 	<bean id="orderPdfView"
-  		class="com.qcadoo.mes.products.print.view.pdf.OrderPdfView"/>
+  		class="com.qcadoo.mes.products.print.pdf.OrderPdfView"/>
   		
   	<bean id="materialRequirementPdfView"
-  		class="com.qcadoo.mes.products.print.view.pdf.MaterialRequirementPdfView"/>
+  		class="com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfView"/>
   		
   	<bean id="materialRequirementXlsView"
-  		class="com.qcadoo.mes.products.print.view.xls.MaterialRequirementXlsView"/>
+  		class="com.qcadoo.mes.products.print.xls.MaterialRequirementXlsView"/>
 	
 </beans>

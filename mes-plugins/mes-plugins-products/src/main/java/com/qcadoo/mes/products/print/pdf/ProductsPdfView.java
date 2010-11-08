@@ -1,4 +1,4 @@
-package com.qcadoo.mes.products.print.view.pdf;
+package com.qcadoo.mes.products.print.pdf;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -23,7 +23,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.products.print.service.pdf.PdfPageNumbering;
 
 public abstract class ProductsPdfView extends AbstractPdfView {
 

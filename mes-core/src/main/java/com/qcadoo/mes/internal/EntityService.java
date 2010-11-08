@@ -44,17 +44,13 @@ public final class EntityService {
     }
 
     public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {
-        if (fieldDefinition.isCustomField()) {
-            throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (!(fieldDefinition.getType() instanceof PasswordType && value == null)) {
+        if (!(fieldDefinition.getType() instanceof PasswordType && value == null)) {
             setField(databaseEntity, fieldDefinition.getName(), value);
         }
     }
 
     public Object getField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
-        if (fieldDefinition.isCustomField()) {
-            throw new UnsupportedOperationException("custom fields are not supported");
-        } else if (fieldDefinition.getType() instanceof BelongsToType) {
+        if (fieldDefinition.getType() instanceof BelongsToType) {
             return getBelongsToField(databaseEntity, fieldDefinition);
         } else if (fieldDefinition.getType() instanceof HasManyType) {
             return getHasManyField(databaseEntity, fieldDefinition);
