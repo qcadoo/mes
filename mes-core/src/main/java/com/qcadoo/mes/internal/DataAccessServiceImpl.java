@@ -30,7 +30,6 @@ import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
-import com.qcadoo.mes.model.search.restrictions.internal.HibernateRestriction;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 
@@ -312,7 +311,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     }
 
     private Criteria addRestrictionToCriteria(final Restriction restriction, final Criteria criteria) {
-        return ((HibernateRestriction) restriction).addToHibernateCriteria(criteria);
+        return restriction.addToHibernateCriteria(criteria);
     }
 
     private Criteria addOrderToCriteria(final Order order, final Criteria criteria) {

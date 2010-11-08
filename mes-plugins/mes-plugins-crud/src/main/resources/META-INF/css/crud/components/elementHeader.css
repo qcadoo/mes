@@ -18,7 +18,7 @@
 	color: #b7b7b7;
 }
 
-.elementHeader div.headerActionButton {
+div.headerActionButton {
 	padding: 0px;
 	height: 23px;
 	background-image:none;
@@ -28,7 +28,7 @@
 	background-repeat:repeat-x;
 	vertical-align: middle;
 }
-.elementHeader div.headerActionButton a {
+div.headerActionButton a {
 	display:block;
 	text-decoration:none;
 	color:#b7b7b7;

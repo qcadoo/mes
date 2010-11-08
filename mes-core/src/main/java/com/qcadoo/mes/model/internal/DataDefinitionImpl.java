@@ -136,21 +136,6 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
-    public boolean isVirtualTable() {
-        return name.startsWith("virtual.");
-    }
-
-    @Override
-    public boolean isCoreTable() {
-        return name.startsWith("core.");
-    }
-
-    @Override
-    public boolean isPluginTable() {
-        return !isCoreTable() && !isVirtualTable();
-    }
-
-    @Override
     public List<EntityValidator> getValidators() {
         return validators;
     }
@@ -215,7 +200,6 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     public void withPriorityField(final FieldDefinition priorityField) {
         checkState(priorityField.getType() instanceof PriorityType, "priority field has wrong type");
-        checkState(!priorityField.isCustomField(), "priority field cannot be custom field");
         this.priorityField = priorityField;
     }
 
@@ -252,14 +236,10 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     private Class<?> loadClassForEntity() {
-        if (isVirtualTable()) {
-            throw new UnsupportedOperationException("virtual tables are not supported");
-        } else {
-            try {
-                return getClass().getClassLoader().loadClass(getFullyQualifiedClassName());
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
-            }
+        try {
+            return getClass().getClassLoader().loadClass(getFullyQualifiedClassName());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("cannot find mapping class for definition: " + getFullyQualifiedClassName(), e);
         }
     }
 

@@ -3,9 +3,14 @@ package com.qcadoo.mes.model.types;
 import java.util.List;
 
 /**
- * Method is {@link EnumeratedType#values()} returns all possible values.
+ * Object represents "enum" field type.
  */
 public interface EnumeratedType extends FieldType {
 
+    /**
+     * Return all possible field values.
+     * 
+     * @return values
+     */
     List<String> values();
 }

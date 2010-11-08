@@ -198,7 +198,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				if (hiddenColumnValues[fieldName]) {
 					hiddenColumnValues[fieldName][entity.id] = entity.fields[fieldName];
 				} else {
-					if (columnModel[fieldName].link) {
+					if (columnModel[fieldName].link && entity.fields[fieldName] && entity.fields[fieldName] != "") {
 						fields[fieldName] = "<a href=# id='"+elementPath+"_"+fieldName+"_"+entity.id+"' class='"+elementPath+"_link gridLink'>" + entity.fields[fieldName] + "</a>";
 						
 					} else {

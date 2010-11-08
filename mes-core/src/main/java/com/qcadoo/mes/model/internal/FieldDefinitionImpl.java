@@ -123,11 +123,6 @@ public final class FieldDefinitionImpl implements FieldDefinition {
         return requiredOnCreate;
     }
 
-    @Override
-    public boolean isCustomField() {
-        return customField;
-    }
-
     public void setCustomField(final boolean customField) {
         this.customField = customField;
     }

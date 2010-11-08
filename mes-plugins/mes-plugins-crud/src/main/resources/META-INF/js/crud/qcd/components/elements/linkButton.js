@@ -9,16 +9,20 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	
 	var element = _element;
 	
-	var button = $("#"+element.attr('id')+"_button");
+	var elementPath = this.elementPath;
+	var elementName = this.elementName;
+	
+	var pageUrl;
+	
+	//var button = $("#"+element.attr('id')+"_button");
+	var button;
 	
 	this.getComponentValue = function() {
 		return null;
 	}
 	
 	this.setComponentValue = function(value) {
-		button.click(function() {
-			mainController.goToPage(value);
-		});
+		insertValue(value);
 	}
 	
 	this.setComponentState = function(state) {
@@ -26,16 +30,14 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	}
 	
 	function insertValue(value) {
-		button.click(function() {
-			mainController.goToPage(value);
-		});
+		pageUrl = value;
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
-			button.removeAttr('disabled');
+			button.addClass('headerButtonEnabled');
 		} else {
-			button.attr('disabled', 'true');
+			button.removeClass('headerButtonEnabled');
 		}
 	}
 	
@@ -43,10 +45,17 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 
 	}
 	
+	function onButtonClick() {
+		if (button.hasClass('headerButtonEnabled')) {
+			mainController.goToPage(pageUrl);
+		}
+	}
+	
 	function constructor(_this) {
-		button.click(function() {
-			mainController.goToPage(_this.options.pageUrl);
-		});
+		var labelToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label";
+		button = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(labelToTranslate), onButtonClick);
+		button.addClass("linkButton");
+		element.append(button);
 	}
 	
 	constructor(this);

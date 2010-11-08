@@ -373,3 +373,11 @@
 .component_container_form .datepick-trigger.disabled {
 	display: none;
 }
+
+
+.linkButton.headerActionButton {
+	width: 300px;
+	margin-left: 20px;
+	margin-bottom: 20px;
+	text-align: center;
+}

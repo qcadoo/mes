@@ -79,6 +79,7 @@
 		<div id="topLevelMenu">
 			<img id="logoImage" src="css/core/images/logo_small.png"></img>
 			<div id="topRightPanel">
+				<button onclick="windowController.goToMenuPosition('home.profile')">${commonTranslations["commons.button.userProfile"] }</button>
 				<button onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</button>
 			</div>
 		</div>
