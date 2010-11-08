@@ -41,8 +41,6 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private String fullyQualifiedClassName;
 
-    private String discriminator;
-
     private final Map<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
 
     private FieldDefinition priorityField;

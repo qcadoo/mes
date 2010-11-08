@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -44,7 +45,7 @@ import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
 @Component
-public class TestDataLoader {
+public final class TestDataLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestDataLoader.class);
 
@@ -121,7 +122,7 @@ public class TestDataLoader {
         Node fstNode = nodeLst.item(s);
 
         for (String attribute : attributes) {
-            values.put(attribute, fstNode.getAttributes().getNamedItem(attribute.toUpperCase()).getNodeValue());
+            values.put(attribute, fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue());
         }
 
         if ("products".equals(type)) {

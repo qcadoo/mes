@@ -135,7 +135,7 @@ public final class ColumnDefinition {
             obj.put("link", link);
             obj.put("hidden", hidden);
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e.getMessage(), e);
         }
         return obj.toString();
     }

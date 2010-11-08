@@ -1,10 +1,10 @@
 package com.qcadoo.mes.utils;
 
-public class Pair<A, B> {
+public final class Pair<A, B> {
 
-    public final A key;
+    private final A key;
 
-    public final B value;
+    private final B value;
 
     public Pair(final A key, final B value) {
         this.key = key;
@@ -19,13 +19,13 @@ public class Pair<A, B> {
         return value;
     }
 
-    public static <A, B> Pair<A, B> of(A key, B value) {
+    public static <A, B> Pair<A, B> of(final A key, final B value) {
         return new Pair<A, B>(key, value);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }

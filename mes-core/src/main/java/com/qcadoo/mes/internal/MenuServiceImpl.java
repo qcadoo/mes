@@ -23,7 +23,7 @@ import com.qcadoo.mes.view.menu.items.UrlMenuItem;
 import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
 
 @Service
-public class MenuServiceImpl implements MenuService {
+public final class MenuServiceImpl implements MenuService {
 
     @Autowired
     private TranslationService translationService;

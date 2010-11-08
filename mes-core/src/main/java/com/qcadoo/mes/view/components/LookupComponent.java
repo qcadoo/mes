@@ -38,7 +38,7 @@ import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem.Type;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 
-public class LookupComponent extends AbstractComponent<LookupData> implements SelectableComponent {
+public final class LookupComponent extends AbstractComponent<LookupData> implements SelectableComponent {
 
     private int width;
 

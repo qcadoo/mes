@@ -22,9 +22,7 @@ public interface ViewDefinitionService {
      *            plugin's identifier
      * @param viewName
      *            view's name
-     * @return the view definition
-     * @throws NullPointerException
-     *             if view definition is not found
+     * @return the view definition, null if not found
      */
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#pluginIdentifier == 'dictionaries') or (#pluginIdentifier == 'products' "
             + "and (#viewName != 'orderGridView' and #viewName != 'orderDetailsView' or hasRole('ROLE_SUPERVISOR')))")
@@ -37,9 +35,7 @@ public interface ViewDefinitionService {
      *            plugin's identifier
      * @param viewName
      *            view's name
-     * @return the view definition
-     * @exception NullPointerException
-     *                if view definition is not found
+     * @return the view definition, null if not found
      */
     ViewDefinition getWithoutSession(String pluginIdentifier, String viewName);
 

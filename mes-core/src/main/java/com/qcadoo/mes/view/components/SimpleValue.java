@@ -21,11 +21,11 @@ public class SimpleValue {
         this.required = required;
     }
 
-    public Object getValue() {
+    public final Object getValue() {
         return value;
     }
 
-    public void setValue(final Object value) {
+    public final void setValue(final Object value) {
         this.value = value;
     }
 

@@ -90,7 +90,6 @@ public class ViewDefinitionParserTest {
         pluginManagementService = mock(PluginManagementService.class);
 
         viewDefinitionService = new ViewDefinitionServiceImpl();
-        setField(viewDefinitionService, "pluginManagementService", pluginManagementService);
 
         hookFactory = new HookFactory();
         setField(hookFactory, "applicationContext", applicationContext);

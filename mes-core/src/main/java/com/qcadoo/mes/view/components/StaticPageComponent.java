@@ -14,7 +14,7 @@ import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;
 
-public class StaticPageComponent extends AbstractComponent<Object> {
+public final class StaticPageComponent extends AbstractComponent<Object> {
 
     public StaticPageComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {

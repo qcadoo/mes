@@ -14,6 +14,9 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 public class ExcelUtil {
 
+    private ExcelUtil() {
+    }
+
     public static void copySheets(final HSSFSheet newSheet, final HSSFSheet sheet) {
         copySheets(newSheet, sheet, true);
     }

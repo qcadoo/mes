@@ -46,10 +46,10 @@ public final class ProductService {
     private SecurityService securityService;
 
     @Autowired
-    MaterialRequirementPdfService materialRequirementPdfService;
+    private MaterialRequirementPdfService materialRequirementPdfService;
 
     @Autowired
-    MaterialRequirementXlsService materialRequirementXlsService;
+    private MaterialRequirementXlsService materialRequirementXlsService;
 
     @Autowired
     private TranslationService translationService;
