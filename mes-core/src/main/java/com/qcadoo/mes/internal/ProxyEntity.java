@@ -155,7 +155,7 @@ public final class ProxyEntity implements Entity {
     }
 
     @Override
-    public EntityList getHasManyField(final String fieldName) {
+    public List<Entity> getHasManyField(final String fieldName) {
         if (entity == null) {
             loadEntity();
         }

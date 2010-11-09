@@ -31,6 +31,9 @@ import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 
+/**
+ * Abstract implementation of {@link Component}.
+ */
 public abstract class AbstractComponent<T> implements Component<T> {
 
     private final String name;
@@ -67,6 +70,20 @@ public abstract class AbstractComponent<T> implements Component<T> {
 
     private boolean hasDescription = false;
 
+    /**
+     * Create new {@link Component}.
+     * 
+     * @param name
+     *            component's name
+     * @param parentContainer
+     *            component's parent
+     * @param fieldPath
+     *            field's path
+     * @param sourceFieldPath
+     *            sourceField's path
+     * @param translationService
+     *            translation service
+     */
     public AbstractComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
         this.name = name;
@@ -84,9 +101,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
         this.sourceFieldPath = sourceFieldPath;
     }
 
+    /**
+     * @see Component#castValue(Map, JSONObject)
+     */
     public abstract ViewValue<T> castComponentValue(Map<String, Entity> selectedEntities, JSONObject viewObject)
             throws JSONException;
 
+    /**
+     * @see Component#getValue(Entity, Map, ViewValue, Set, Locale)
+     */
     public abstract ViewValue<T> getComponentValue(Entity entity, Entity parentEntity, Map<String, Entity> selectedEntities,
             ViewValue<T> viewValue, final Set<String> pathsToUpdate, final Locale locale);
 
@@ -219,6 +242,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return true;
     }
 
+    /**
+     * Initialize component.
+     */
     public void initializeComponent() {
         // can be implemented
     }
@@ -248,6 +274,9 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return dataDefinition;
     }
 
+    /**
+     * Register given path as this component listener.
+     */
     public final void registerListener(final String path) {
         listeners.add(path);
     }
@@ -262,32 +291,70 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return initialized;
     }
 
+    /**
+     * Return true if this component can holds children components.
+     */
     public boolean isContainer() {
         return false;
     }
 
+    /**
+     * Set data definition related with this component.
+     * 
+     * @param dataDefinition
+     *            data definition
+     */
     public final void setDataDefinition(final DataDefinition dataDefinition) {
         this.dataDefinition = dataDefinition;
     }
 
+    /**
+     * Add component's option.
+     * 
+     * @param option
+     *            option
+     */
     public final void addRawOption(final ComponentOption option) {
         rawOptions.add(option);
     }
 
+    /**
+     * Return component's options.
+     * 
+     * @return options
+     */
     protected final List<ComponentOption> getRawOptions() {
         return rawOptions;
     }
 
+    /**
+     * Add component's option.
+     * 
+     * @param name
+     *            name
+     * @param value
+     *            value
+     */
     protected final void addOption(final String name, final Object value) {
         options.put(name, value);
     }
 
+    /**
+     * Return component's options.
+     * 
+     * @return options
+     */
     public final Map<String, Object> getOptions() {
         options.put("name", name);
         options.put("listeners", listeners);
         return options;
     }
 
+    /**
+     * Return component's options as json.
+     * 
+     * @return options
+     */
     public final String getOptionsAsJson() {
         JSONObject jsonOptions = new JSONObject();
         try {
@@ -358,18 +425,46 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
     }
 
+    /**
+     * Add translations for component.
+     * 
+     * @param translationsMap
+     *            translations
+     * @param locale
+     *            locale
+     */
     public void addComponentTranslations(final Map<String, String> translationsMap, final Locale locale) {
         // can be implemented
     }
 
+    /**
+     * Return source component.
+     * 
+     * @return source component
+     * @see AbstractComponent#AbstractComponent(String, ContainerComponent, String, String, TranslationService)
+     */
     protected final Component<?> getSourceComponent() {
         return sourceComponent;
     }
 
+    /**
+     * Return parent component
+     * 
+     * @return parent component
+     */
     protected final ContainerComponent<?> getParentContainer() {
         return parentContainer;
     }
 
+    /**
+     * Return value of the entity's field with given path. Path can contain associations.
+     * 
+     * @param entity
+     *            entity
+     * @param path
+     *            path
+     * @return value
+     */
     protected final Object getFieldValue(final Entity entity, final String path) {
         if (entity == null || path == null) {
             return null;
@@ -389,6 +484,15 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return value;
     }
 
+    /**
+     * Return error related with the entity's field with given path. Path can contain associations.
+     * 
+     * @param entity
+     *            entity
+     * @param path
+     *            path
+     * @return error or null
+     */
     protected final ErrorMessage getFieldError(final Entity entity, final String path) {
         if (entity == null || path == null) {
             return null;
@@ -411,6 +515,16 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
     }
 
+    /**
+     * Return value of the entity's field with given path. Path can contain associations. Value has to be entity type (belongsTo
+     * relation).
+     * 
+     * @param entity
+     *            entity
+     * @param path
+     *            path
+     * @return entity
+     */
     private Entity getFieldEntityValue(final Entity entity, final String path) {
         Object value = getFieldValue(entity, path);
 
@@ -423,6 +537,14 @@ public abstract class AbstractComponent<T> implements Component<T> {
         }
     }
 
+    /**
+     * Return field definition. Field definition is taken using {@link #getFieldPath()} or {@link #getSourceFieldPath()}. Note
+     * that not all component has associated field definitions.
+     * 
+     * @return field definition
+     * @throws NullPointerException
+     *             if component has no field definition
+     */
     protected FieldDefinition getFieldDefinition() {
         String[] fields = null;
 
@@ -463,6 +585,16 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return newFieldDefinition;
     }
 
+    /**
+     * Return data definition for given path, starting from given data definition. It is used for getting data definition of the
+     * associations.
+     * 
+     * @param dataDefinition
+     *            data definition
+     * @param fieldPath
+     *            field's path
+     * @return data definition
+     */
     private DataDefinition getDataDefinitionBasedOnFieldPath(final DataDefinition dataDefinition, final String fieldPath) {
         String[] fields = fieldPath.split("\\.");
 
@@ -540,6 +672,12 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return viewDefinition;
     }
 
+    /**
+     * Set view definition which owns this component.
+     * 
+     * @param viewDefinition
+     *            view definition
+     */
     public final void setViewDefinition(final ViewDefinition viewDefinition) {
         this.viewDefinition = viewDefinition;
     }
@@ -549,6 +687,12 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return defaultEnabled;
     }
 
+    /**
+     * Set if component should be enabled by default.
+     * 
+     * @param defaultEnabled
+     *            default enabled
+     */
     public final void setDefaultEnabled(final boolean defaultEnabled) {
         this.defaultEnabled = defaultEnabled;
         this.addOption("defaultEnabled", defaultEnabled);
@@ -559,26 +703,61 @@ public abstract class AbstractComponent<T> implements Component<T> {
         return defaultVisible;
     }
 
+    /**
+     * Set if component should be visible by default.
+     * 
+     * @param defaultVisible
+     *            default visible
+     */
     public final void setDefaultVisible(final boolean defaultVisible) {
         this.defaultVisible = defaultVisible;
     }
 
+    /**
+     * Set if component has description.
+     * 
+     * @param hasDescription
+     *            has description
+     */
     public void setHasDescription(final boolean hasDescription) {
         this.hasDescription = hasDescription;
     }
 
+    /**
+     * Return true if component has description. It will be displayed close to the component label.
+     * 
+     * @return has description
+     */
     public boolean isHasDescription() {
         return hasDescription;
     }
 
+    /**
+     * Set ribbon related with this component.
+     * 
+     * @param ribbon
+     *            ribbon
+     */
     public final void setRibbon(final Ribbon ribbon) {
         this.ribbon = ribbon;
     }
 
+    /**
+     * Return translation service.
+     * 
+     * @return translation service
+     */
     protected final TranslationService getTranslationService() {
         return translationService;
     }
 
+    /**
+     * Find value of the component with {@link #getPath()} starting with given value.
+     * 
+     * @param viewValue
+     *            starting view value
+     * @return value
+     */
     protected ViewValue<?> lookupViewValue(final ViewValue<Long> viewValue) {
         ViewValue<?> lookupedViewValue = viewValue;
         String[] fields = getPath().split("\\.");

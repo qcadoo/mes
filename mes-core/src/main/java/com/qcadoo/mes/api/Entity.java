@@ -3,13 +3,15 @@ package com.qcadoo.mes.api;
 import java.util.List;
 import java.util.Map;
 
-import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 
 /**
  * Object represents data from the database tables. All fields are aggregated into key-value map. The key is the name of the field
  * from its definition - {@link com.qcadoo.mes.model.FieldDefinition#getName()}.
+ * 
+ * @apiviz.uses com.qcadoo.mes.model.FieldDefinition
+ * @apiviz.uses com.qcadoo.mes.model.validators.ErrorMessage
  */
 public interface Entity {
 
@@ -76,7 +78,7 @@ public interface Entity {
      *            field's name
      * @return the field's value
      */
-    EntityList getHasManyField(String fieldName);
+    List<Entity> getHasManyField(String fieldName);
 
     /**
      * Set the value of the field with given name.

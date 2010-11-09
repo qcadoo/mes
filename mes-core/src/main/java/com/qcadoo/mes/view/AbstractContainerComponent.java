@@ -11,18 +11,38 @@ import org.json.JSONObject;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 
+/**
+ * Abstract implementation of {@link ContainerComponent}.
+ * 
+ * @param <T>
+ *            class of the component's value
+ */
 public abstract class AbstractContainerComponent<T> extends AbstractComponent<T> implements ContainerComponent<T> {
 
     private final Map<String, Component<?>> components = new LinkedHashMap<String, Component<?>>();
 
+    /**
+     * @see Component#castValue(Map, JSONObject)
+     */
     public abstract T castContainerValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject)
             throws JSONException;
 
+    /**
+     * @see Component#getValue(Entity, Map, ViewValue, Set, Locale)
+     */
     public abstract T getContainerValue(final Entity entity, final Map<String, Entity> selectedEntities,
             final ViewValue<T> viewValue, final Set<String> pathsToUpdate, final Locale locale);
 
+    /**
+     * @see Component#castValue(Map, JSONObject)
+     */
     public abstract void addContainerMessages(final Entity entity, final ViewValue<T> viewValue, final Locale locale);
 
+    /**
+     * Create new {@link ContainerComponent}.
+     * 
+     * @see AbstractComponent#AbstractComponent(String, ContainerComponent, String, String, TranslationService)
+     */
     public AbstractContainerComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
         super(name, parentContainer, fieldPath, sourceFieldPath, translationService);
@@ -33,6 +53,12 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
         return components;
     }
 
+    /**
+     * Add child component.
+     * 
+     * @param component
+     *            component.
+     */
     public final void addComponent(final Component<?> component) {
         components.put(component.getName(), component);
     }
@@ -85,6 +111,9 @@ public abstract class AbstractContainerComponent<T> extends AbstractComponent<T>
         }
     }
 
+    /**
+     * @see Component#updateTranslations(Map, Locale)
+     */
     protected final void updateComponentsTranslations(final Map<String, String> translations, final Locale locale) {
         for (Component<?> component : components.values()) {
             component.updateTranslations(translations, locale);

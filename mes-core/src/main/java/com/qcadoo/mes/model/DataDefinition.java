@@ -13,7 +13,6 @@ import com.qcadoo.mes.model.validators.EntityValidator;
  * @apiviz.owns com.qcadoo.mes.model.FieldDefinition
  * @apiviz.owns com.qcadoo.mes.model.validators.EntityValidator
  * @apiviz.uses com.qcadoo.mes.model.search.SearchCriteriaBuilder
- * @apiviz.uses com.qcadoo.mes.internal.DataAccessService
  */
 public interface DataDefinition {
 
@@ -32,22 +31,36 @@ public interface DataDefinition {
     String getPluginIdentifier();
 
     /**
-     * {@link com.qcadoo.mes.internal.DataAccessService#get(com.qcadoo.mes.model.internal.InternalDataDefinition, Long)}
+     * Return the entity related with this data definition, by its id.
+     * 
+     * @param id
+     *            id
+     * @return entity
      */
     Entity get(final Long id);
 
     /**
-     * {@link com.qcadoo.mes.internal.DataAccessService#delete(com.qcadoo.mes.model.internal.InternalDataDefinition, Long...)}
+     * Mark as deleted the entity related with this data definition, by its id.
+     * 
+     * @param id
+     *            id
      */
     void delete(final Long id);
 
     /**
-     * {@link com.qcadoo.mes.internal.DataAccessService#deleteHard(com.qcadoo.mes.model.internal.InternalDataDefinition, Long...)}
+     * Delete the entity related with this data definition, by its id.
+     * 
+     * @param id
+     *            id
      */
     void deleteHard(final Long id);
 
     /**
-     * {@link com.qcadoo.mes.internal.DataAccessService#save(com.qcadoo.mes.model.internal.InternalDataDefinition, Entity)}
+     * Save the entity related with this data definition.
+     * 
+     * @param entity
+     *            entity to save
+     * @return saved entity
      */
     Entity save(final Entity entity);
 
@@ -59,12 +72,22 @@ public interface DataDefinition {
     SearchCriteriaBuilder find();
 
     /**
-     * {@link com.qcadoo.mes.internal.DataAccessService#move(com.qcadoo.mes.model.internal.InternalDataDefinition, Long, int)}
+     * Move the prioritizable entity by offset.
+     * 
+     * @param id
+     *            id
+     * @param offset
+     *            offset
      */
     void move(final Long id, final int offset);
 
     /**
-     * {@link com.qcadoo.mes.internal.DataAccessService#moveTo(com.qcadoo.mes.model.internal.InternalDataDefinition, Long, int)}
+     * Move the prioritizable entity to the target position.
+     * 
+     * @param id
+     *            id
+     * @param position
+     *            position
      */
     void moveTo(final Long id, final int position);
 

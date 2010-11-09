@@ -280,7 +280,7 @@ public class EntityServiceTest extends DataAccessTest {
         assertNotNull(genericEntity);
         assertEquals(Long.valueOf(1), genericEntity.getId());
 
-        EntityList hasManyField = genericEntity.getHasManyField("entities");
+        List<Entity> hasManyField = genericEntity.getHasManyField("entities");
 
         Field field = ReflectionUtils.findField(EntityList.class, "entities");
         ReflectionUtils.makeAccessible(field);
