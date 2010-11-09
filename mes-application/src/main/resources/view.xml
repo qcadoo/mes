@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<qcd:views plugin="core" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="systemInfoView">
+		<component type="window" name="mainWindow">
+			<ribbon>
+			</ribbon>
+			<component type="staticPage" name="infoPage">
+				<option type="page" value="core/systemInfo.jsp" />
+			</component>
+			<option type="header" value="false" />
+			<option type="static" value="true" />
+		</component>
+	</view>
+</qcd:views>

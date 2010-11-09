@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.crud.CrudController;
 import com.qcadoo.mes.internal.MenuService;
 
 @Controller
@@ -29,6 +30,9 @@ public final class MainPageController {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private CrudController crudController;
 
     // @RequestMapping(value = "mainPage", method = RequestMethod.GET)
     // public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
@@ -60,5 +64,10 @@ public final class MainPageController {
 
         mav.setViewName("core/dashboard");
         return mav;
+    }
+
+    @RequestMapping(value = "systemInfo", method = RequestMethod.GET)
+    public ModelAndView getSystemInfoView(@RequestParam final Map<String, String> arguments, final Locale locale) {
+        return crudController.getView("core", "systemInfoView", arguments, locale);
     }
 }

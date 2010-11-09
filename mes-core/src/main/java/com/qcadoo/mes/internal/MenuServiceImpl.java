@@ -79,6 +79,8 @@ public final class MenuServiceImpl implements MenuService {
                 "http://qcadoo.com/"));
         homeItem.addItem(new UrlMenuItem("profile", translationService.translate("core.menu.profile", locale), null,
                 "userProfile.html"));
+        homeItem.addItem(new UrlMenuItem("systemInfo", translationService.translate("core.menu.systemInfo", locale), null,
+                "systemInfo.html"));
         menuDef.addItem(homeItem);
 
         DataDefinition menuDD = dataDefinitionService.get("menu", "menuCategory");
