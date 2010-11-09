@@ -101,6 +101,14 @@
 							<name>QCADOO_RESTART_CMD</name>
 							<value>${basedir}/restart.sh</value>
 						</systemProperty>
+						<systemProperty>
+							<name>project.version</name>
+							<value>${project.version}</value>
+						</systemProperty>
+						<systemProperty>
+							<name>project.buildName</name>
+							<value>N/A</value>
+						</systemProperty>
 					</systemProperties>
 					<webAppConfig>
 						<contextPath>/</contextPath>
@@ -144,8 +152,8 @@
 				</property>
 			</activation>
 			<properties>
-				<project.buildNumber>${env.buildNumber}</project.buildNumber>
-				<project.buildTimeStamp>${env.buildTimeStamp}</project.buildTimeStamp>
+				<project.buildNumber>${buildNumber}</project.buildNumber>
+				<project.buildTimeStamp>${buildTimeStamp}</project.buildTimeStamp>
 			</properties>
 		</profile>
 		<profile>
