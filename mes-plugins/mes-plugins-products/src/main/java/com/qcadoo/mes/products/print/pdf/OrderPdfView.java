@@ -76,10 +76,10 @@ public final class OrderPdfView extends ProductsPdfView {
                 entity.getField("machine"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.effectiveDateFrom.label", locale),
-                entity.getField("plannedQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
+                entity.getField("effectiveDateFrom"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.plannedQuantity.label", locale),
-                entity.getField("effectiveDateFrom"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
+                entity.getField("plannedQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.effectiveDateTo.label", locale),
                 entity.getField("effectiveDateTo"),
