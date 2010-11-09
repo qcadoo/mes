@@ -1,4 +1,4 @@
-package com.qcadoo.mes;
+package com.qcadoo.mes.application;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

@@ -64,7 +64,7 @@ public interface PluginManagementService {
      * 
      * @param file
      *            file to upload
-     * @throws com.qcadoo.mes.exceptions.PluginException
+     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -75,7 +75,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws com.qcadoo.mes.exceptions.PluginException
+     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -86,7 +86,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws com.qcadoo.mes.exceptions.PluginException
+     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -97,7 +97,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws com.qcadoo.mes.exceptions.PluginException
+     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -108,7 +108,7 @@ public interface PluginManagementService {
      * 
      * @param id
      *            id
-     * @throws com.qcadoo.mes.exceptions.PluginException
+     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -119,7 +119,7 @@ public interface PluginManagementService {
      * 
      * @param file
      *            file to upload
-     * @throws com.qcadoo.mes.exceptions.PluginException
+     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
      *             if operation cannot be executed
      * @return the operation's status
      */
@@ -128,7 +128,7 @@ public interface PluginManagementService {
     /**
      * Restart the server.
      * 
-     * @throws com.qcadoo.mes.exceptions.PluginException
+     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
      *             if restart cannot be executed
      */
     void restartServer();

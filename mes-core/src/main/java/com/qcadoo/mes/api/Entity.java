@@ -108,8 +108,8 @@ public interface Entity {
     /**
      * Set error for given field.
      * 
-     * @param fieldName
-     *            field's name
+     * @param fieldDefinition
+     *            field's definition
      * @param message
      *            message
      * @param vars

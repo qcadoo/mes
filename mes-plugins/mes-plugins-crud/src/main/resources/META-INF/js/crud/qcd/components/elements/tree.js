@@ -36,13 +36,13 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			
 			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.new') ,function(e) {
 				newClicked();
-			}, "addIcon16.png");
+			}, "newIcon16_dis.png");
 			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.edit') ,function(e) {
 				editClicked();
-			}, "editIcon16.png");
+			}, "editIcon16_dis.png");
 			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.delete'),function(e) {
 				deleteClicked();
-			}, "deleteIcon16_disabled.png");
+			}, "deleteIcon16_dis.png");
 			
 			header.append(buttons.newButton);
 			header.append(buttons.editButton);

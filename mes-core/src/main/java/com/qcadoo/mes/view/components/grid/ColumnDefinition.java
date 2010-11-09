@@ -23,7 +23,8 @@ import com.qcadoo.mes.utils.ExpressionUtil;
  * 
  * Width is % of grid width for presentation given column
  * 
- * Method {@link ColumnDefinition#getValue(Entity)} returns value of the column for given entity.
+ * Method {@link com.qcadoo.mes.view.components.grid.ColumnDefinition#getValue(Entity, Locale)} returns value of the column for
+ * given entity.
  * 
  * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
  * @apiviz.has com.qcadoo.mes.core.data.definition.ColumnAggregationMode

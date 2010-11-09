@@ -434,8 +434,6 @@ ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv {
 	
 }
 ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv.hasIcon {
-	//background-image:url('images/btn_list.png');
-	//background-image:url('images/testIcon32.png');
 	padding-left: 34px;
 }
 ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv label {
@@ -549,7 +547,8 @@ ul.ribbonListElement li a span {
 }
 ul.ribbonListElement li a span div {
 	background-repeat:no-repeat;
-	background-position: 0px 7px;
+	//background-position: 0px 7px;
+	background-position: 0px 10px;
 	vertical-align: middle;
 	display:block;
 	height:40px;
@@ -557,9 +556,8 @@ ul.ribbonListElement li a span div {
 	margin: auto;
 }
 ul.ribbonListElement li a span div.hasIcon {
-	//background-image:url('images/btn_list.png');
-	//background-image:url('images/testIcon32.png');
-	padding-left: 34px;
+	//padding-left: 34px;
+	padding-left: 26px;
 }
 ul.ribbonListElement li a span div label {
 	vertical-align: middle;

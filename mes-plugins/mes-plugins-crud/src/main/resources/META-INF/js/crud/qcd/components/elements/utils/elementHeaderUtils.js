@@ -17,7 +17,7 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 	
 	if (icon && $.trim(icon) != "") {
 		itemElementLabel.addClass('hasIcon');
-		itemElementSpan.append($('<div>').addClass('icon').css('background', 'url(\'/img/core/icons/'+elementIcon+'\')'));
+		itemElementSpan.append($('<div>').addClass('icon').css('backgroundImage', 'url(\'/img/core/icons/'+elementIcon+'\')'));
 	}
 
 	itemElementSpan.append(itemElementLabel);

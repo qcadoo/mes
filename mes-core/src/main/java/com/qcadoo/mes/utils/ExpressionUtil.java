@@ -26,6 +26,11 @@ import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 
+/**
+ * Helper class that contains methods to evaluate expression value.
+ * 
+ */
+
 @Component
 public final class ExpressionUtil {
 
@@ -45,6 +50,15 @@ public final class ExpressionUtil {
         ExpressionUtil.translationService = translationService;
     }
 
+    /**
+     * Generates text to display in grid cell. If columnDefinition has expression - uses it, otherwise result is value of field
+     * (or comma separated fields values when columDefinition has more than one field). Returns null when generated value is null.
+     * 
+     * @param entity
+     * @param columnDefinition
+     * @param locale
+     * @return text to display in grid cell
+     */
     public static String getValue(final Entity entity, final ColumnDefinition columnDefinition, final Locale locale) {
         String value = null;
         if (StringUtils.isEmpty(columnDefinition.getExpression())) {
@@ -60,6 +74,13 @@ public final class ExpressionUtil {
         }
     }
 
+    /**
+     * Evaluate expression value using entity fields values. Returns null when generated value is null.
+     * 
+     * @param entity
+     * @param expression
+     * @return result of expression evaluation
+     */
     public static String getValue(final Entity entity, final String expression) {
         checkState(!isEmpty(expression), "Expression must be defined");
 

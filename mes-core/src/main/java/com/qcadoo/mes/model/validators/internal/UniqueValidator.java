@@ -1,9 +1,9 @@
 package com.qcadoo.mes.model.validators.internal;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.enums.RestrictionOperator;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;

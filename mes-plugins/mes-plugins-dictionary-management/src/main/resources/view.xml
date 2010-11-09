@@ -25,10 +25,10 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="newValue" icon="addIcon32.png" action="#{mainWindow.dictionaries}.performNew;" />
+					<bigButton name="newValue" icon="newIcon24.png" action="#{mainWindow.dictionaries}.performNew;" />
 					<smallButton name="deleteValue" icon="deleteIcon16.png"
 						action="#{mainWindow.dictionaries}.performDelete;" />
 				</group>
@@ -54,12 +54,12 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon32.png"
+					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon32.png"
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performSave; #{mainWindow}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.dictionaryItemDetailsForm}.performCancel;" />
