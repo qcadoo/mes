@@ -70,7 +70,9 @@ public final class PdfUtil {
 
     public static void prepareFontsAndColors() throws DocumentException, IOException {
         if (!initialized) {
-            LOG.debug("Pdf fonts and color initialization");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Pdf fonts and color initialization");
+            }
             ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
             FontFactory.register(classPathResource.getPath());
             arial = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);

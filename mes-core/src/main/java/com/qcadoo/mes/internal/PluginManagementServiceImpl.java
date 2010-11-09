@@ -165,7 +165,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         } else {
             try {
                 pluginUtil.movePluginFile(pluginsTmpPath + "/" + plugin.getFileName(), pluginsPath);
-            } catch (PluginException e) {
+            } catch (IOException e) {
                 plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
                 save(plugin);
                 LOG.error("Problem with moving plugin file - " + e.getMessage());
@@ -278,8 +278,8 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileError");
             } catch (IOException e) {
                 deleteFile = true;
-                LOG.error("Problem with installing file - " + e.getMessage());
-                return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileError");
+                LOG.error("Problem with installing/moving file - " + e.getMessage());
+                return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileInstallMoveError");
             } catch (ParserConfigurationException e) {
                 deleteFile = true;
                 LOG.error("Problem with parsing descriptor - " + e.getMessage());
@@ -290,8 +290,8 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.descriptorError");
             } catch (PluginException e) {
                 deleteFile = true;
-                LOG.error("Problem with moving/removing plugin file - " + e.getMessage());
-                return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileRemoveMoveError");
+                LOG.error("Problem with removing plugin file - " + e.getMessage());
+                return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileRemoveError");
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     boolean success = pluginFile.delete();
@@ -363,7 +363,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         getCurrentSession().save(plugin);
     }
 
-    private void movePlugin(final PluginsPlugin plugin, final PluginsPlugin databasePlugin) throws PluginException {
+    private void movePlugin(final PluginsPlugin plugin, final PluginsPlugin databasePlugin) throws IOException, PluginException {
         plugin.setDeleted(false);
         plugin.setStatus(databasePlugin.getStatus());
         plugin.setBase(false);

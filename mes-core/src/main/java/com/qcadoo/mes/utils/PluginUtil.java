@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,7 +84,7 @@ public final class PluginUtil {
         }
     }
 
-    public void movePluginFile(final String filePath, final String dirPath) throws PluginException {
+    public void movePluginFile(final String filePath, final String dirPath) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Moving file: " + filePath + " to: " + dirPath);
         }
@@ -93,10 +94,7 @@ public final class PluginUtil {
         File dir = new File(dirPath);
         // Move file to new directory
 
-        boolean success = file.renameTo(new File(dir, file.getName()));
-        if (!success) {
-            throw new PluginException("Move: move failed");
-        }
+        FileUtils.moveFile(file, new File(dir, file.getName()));
     }
 
     public PluginsPlugin readDescriptor(final File file) throws IOException, ParserConfigurationException, SAXException {
