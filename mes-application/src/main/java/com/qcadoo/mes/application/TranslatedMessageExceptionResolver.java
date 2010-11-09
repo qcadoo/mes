@@ -1,4 +1,4 @@
-package com.qcadoo.mes;
+package com.qcadoo.mes.application;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

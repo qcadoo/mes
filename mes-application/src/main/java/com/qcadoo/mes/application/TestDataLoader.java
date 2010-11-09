@@ -1,4 +1,4 @@
-package com.qcadoo.mes;
+package com.qcadoo.mes.application;
 
 import java.io.File;
 import java.io.IOException;

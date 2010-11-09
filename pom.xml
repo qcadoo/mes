@@ -272,11 +272,38 @@
 					<encoding>UTF-8</encoding>
 					<docencoding>UTF-8</docencoding>
 					<breakiterator>true</breakiterator>
-					<version>true</version>
-					<author>true</author>
-					<keywords>true</keywords>
-					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
-					<excludePackageNames>*.internal.*</excludePackageNames>
+					<version>false</version>
+					<author>false</author>
+					<failOnError>false</failOnError>
+					<nodeprecated>true</nodeprecated>
+					<nodeprecatedlist>true</nodeprecatedlist>
+					<nosince>true</nosince>
+					<nohelp>true</nohelp>
+					<use>false</use>
+					<notree>true</notree>
+					<groups>
+						<group>
+							<title>API Packages</title>
+							<packages>com.qcadoo.mes.api</packages>
+						</group>
+						<group>
+							<title>Model Management Packages</title>
+							<packages>com.qcadoo.mes.model:com.qcadoo.mes.model.*</packages>
+						</group>
+						<group>
+							<title>View Management Packages</title>
+							<packages>com.qcadoo.mes.view:com.qcadoo.mes.view.*</packages>
+						</group>
+					</groups>
+					<excludePackageNames>*.internal.*:com.qcadoo.mes.application:com.qcadoo.mes.controller:com.qcadoo.mes.beans:com.qcadoo.mes.menu:com.qcadoo.mes.crud:com.qcadoo.mes.plugins:com.qcadoo.mes.products:com.qcadoo.mes.users</excludePackageNames>
+					<reportSets>
+						<reportSet>
+							<id>aggregate</id>
+							<reports>
+								<report>aggregate</report>
+							</reports>
+						</reportSet>
+					</reportSets>
 				</configuration>
 			</plugin>
 		</plugins>

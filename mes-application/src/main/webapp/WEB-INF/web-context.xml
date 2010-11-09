@@ -108,9 +108,9 @@
 	</bean>
 	
 	<bean id="exceptionResolver"  
-		class="com.qcadoo.mes.TranslatedMessageExceptionResolver">  
+		class="com.qcadoo.mes.application.TranslatedMessageExceptionResolver">  
   		<property name="defaultErrorView" value="core/exception" />
-  		<property name="warnLogCategory" value="com.qcadoo.mes.Application" />
+  		<property name="warnLogCategory" value="com.qcadoo.mes.application.Application" />
  	</bean>  
 
 </beans>
