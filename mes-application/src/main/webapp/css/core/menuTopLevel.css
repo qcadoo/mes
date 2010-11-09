@@ -6,6 +6,7 @@
 
 #topLevelMenu #logoImage {
 	margin-top: 8px;
+	cursor: pointer;
 }
 
 #topLevelMenu #topRightPanel {

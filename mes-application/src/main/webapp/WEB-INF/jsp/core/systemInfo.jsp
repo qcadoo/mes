@@ -5,27 +5,47 @@
 <style type="text/css">
 	#systemInfoContent {
 		margin: 20px;
+		font-family:Arial, Helvetica, sans-serif;
 	}
 	#systemInfoContent #systemInfoHeader {
-		color: red;
+		font-size: 16px;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+	#systemInfoContent .systemInfoItem {
+		margin-top: 10px;
+		margin-left: 20px;
+		font-size: 13px;
+	}
+	#systemInfoContent .systemInfoItem .systemInfoItemLabel {
+		display: inline-block;
+		width: 100px;
+		color: #616161;
+	}
+	#systemInfoContent .systemInfoItem .systemInfoItemValue {
+		
 	}
 </style>
 
 <div id="systemInfoContent">
 
 	<div id="systemInfoHeader">
-		SYSTEM INFO:
+		${translationsMap['core.systemInfo.header']}
 	</div>
-	<div>
-		nazwa: ${applicationName}
+	<div class="systemInfoItem">
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.name.label']}</span>
+		<span class="systemInfoItemValue">${applicationName}</span>
 	</div>
-	<div>
-		wersja: ${applicationVersion}
+	<div class="systemInfoItem">
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.version.label']}</span>
+		<span class="systemInfoItemValue">${applicationVersion}</span>
 	</div>
-	<div>
-		build: ${buildNumber}
+	<div class="systemInfoItem">
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.build.label']}</span>
+		<span class="systemInfoItemValue">${buildNumber}</span>
 	</div>
-	<div>
-		data buildu: ${buildDate}
+	<div class="systemInfoItem">
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildDate.label']}</span>
+		<span class="systemInfoItemValue">${buildDate}</span>
 	</div>
 </div>

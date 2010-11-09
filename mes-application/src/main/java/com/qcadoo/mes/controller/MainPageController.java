@@ -1,5 +1,6 @@
 package com.qcadoo.mes.controller;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -73,6 +74,16 @@ public final class MainPageController {
     @RequestMapping(value = "systemInfo", method = RequestMethod.GET)
     public ModelAndView getSystemInfoView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = crudController.getView("core", "systemInfoView", arguments, locale);
+
+        Map<String, String> translationsMap = new HashMap<String, String>();
+        translationsMap.put("core.systemInfo.header", translationService.translate("core.systemInfo.header", locale));
+        translationsMap.put("core.systemInfo.name.label", translationService.translate("core.systemInfo.name.label", locale));
+        translationsMap.put("core.systemInfo.version.label",
+                translationService.translate("core.systemInfo.version.label", locale));
+        translationsMap.put("core.systemInfo.build.label", translationService.translate("core.systemInfo.build.label", locale));
+        translationsMap.put("core.systemInfo.buildDate.label",
+                translationService.translate("core.systemInfo.buildDate.label", locale));
+        mav.addObject("translationsMap", translationsMap);
 
         mav.addObject("applicationName", applicationName);
         mav.addObject("applicationVersion", applicationVersion);
