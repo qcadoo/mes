@@ -46,6 +46,7 @@ public final class MainPageController {
         mav.addObject("viewsList", viewDefinitionService.list());
         mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
         mav.addObject("menuStructure", menuService.getMenu(locale).getAsJson());
+        mav.addObject("userLogin", securityService.getCurrentUser().getUserName());
         return mav;
     }
 

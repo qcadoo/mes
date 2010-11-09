@@ -41,7 +41,7 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="plugins">
 					<bigButton name="update" action="#{mainWindow.pluginDetailsForm}.performCallFunction(goToUrl,../update.html);" />
@@ -64,7 +64,7 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 			</ribbon>
 			<component type="staticPage" name="infoPage">
@@ -81,7 +81,7 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 			</ribbon>
 			<component type="staticPage" name="infoPage">

@@ -24,12 +24,12 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon32.png"
+					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.groupDetailsForm}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon32.png"
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
 						action="#{mainWindow.groupDetailsForm}.performSave; #{mainWindow}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.groupDetailsForm}.performCancel;" />
@@ -47,7 +47,7 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" icon="addIcon32.png" action="#{mainWindow.users}.performNew;" />
+					<bigButton name="new" icon="newIcon24.png" action="#{mainWindow.users}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
 						action="#{mainWindow.users}.performDelete;" />
 				</group>
@@ -75,12 +75,12 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon32.png"
+					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.userDetailsForm}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon32.png"
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
 						action="#{mainWindow.userDetailsForm}.performSave; #{mainWindow}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.userDetailsForm}.performCancel;" />
@@ -117,10 +117,10 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon32.png"
+					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.userDetailsForm}.performSave;" />
 				</group>
 			</ribbon>
@@ -138,7 +138,7 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon32.png"
+					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.userDetailsForm}.performSave;" />
 				</group>
 			</ribbon>
@@ -168,10 +168,10 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon32.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon32.png"
+					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.userDetailsForm}.performSave;" />
 				</group>
 			</ribbon>

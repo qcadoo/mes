@@ -10,7 +10,7 @@
 #mainPageIframeWrapper {
 	position: absolute;
 	border: 0;
-	top: 94px;
+	top: 99px;
 	bottom: 0px;
 	left: 0;
 	right: 0;
@@ -25,27 +25,3 @@
 	padding: 0px;
 }
 
-#mainTopMenu #topLevelMenu #leftPanel {
-	float: left;
-	margin: 0;
-	padding: 0;
-}
-#mainTopMenu #topLevelMenu #logoImage {
-	margin: 0;
-	padding: 0;
-	padding-top: 5px;
-	vertical-align: middle;
-}
-#mainTopMenu #topLevelMenu #loadingIndicator {
-	margin-left: 2px;
-	vertical-align: middle;
-	display: none;
-}
-#mainTopMenu #topLevelMenu #rightPanel {
-	padding-top: 5px;
-	float: right;
-}
-#mainTopMenu #topLevelMenu #logoutDiv {
-	display: inline;
-	margin-left: 50px;
-}

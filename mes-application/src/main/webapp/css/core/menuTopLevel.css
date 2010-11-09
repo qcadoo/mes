@@ -1,15 +1,30 @@
 #topLevelMenu {
-	height: 40px;
+	height: 45px;
 	padding-left: 20px;
-	background: #f1f1f1;
+	background: #f1f1f1 url('images/topBg.png') repeat-x 0 0;
 }
 
-#logoImage {
-	margin-top: 5px;
+#topLevelMenu #logoImage {
+	margin-top: 8px;
 }
 
-#topRightPanel {
-	 float: right;
-	 padding-top: 10px;
-	 margin-right: 20px;
+#topLevelMenu #topRightPanel {
+	float: right;
+	margin-right: 20px;
+	line-height: 45px;
+	font-size: 12px;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+#topLevelMenu #topRightPanel #userInfo {
+	color: #919191;
+	margin-right: 20px;
+}
+
+#topLevelMenu #topRightPanel #profileButton {
+	margin-right: 15px;
+}
+
+#topLevelMenu #topRightPanel a {
+	color: black;
 }
