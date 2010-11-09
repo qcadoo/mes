@@ -12,13 +12,26 @@ import com.qcadoo.mes.model.search.restrictions.internal.LikeRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.SimpleRestriction;
 
 /**
- * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
+ * Class creates restrictions for search criteria.
+ * 
+ * @apiviz.uses com.qcadoo.mes.model.search.Restriction
+ * @apiviz.uses com.qcadoo.mes.model.FieldDefinition
  */
 public final class Restrictions {
 
     private Restrictions() {
     }
 
+    /**
+     * Create "equals" restriction for given field's definition. If expected value contains "%", "*", "?" or "_" sql "like"
+     * restriction will be used.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @param expectedValue
+     *            expected value
+     * @return restriction
+     */
     public static Restriction eq(final FieldDefinition fieldDefinition, final Object expectedValue) {
         Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
@@ -28,6 +41,16 @@ public final class Restrictions {
         return createEqRestriction(fieldDefinition.getName(), value);
     }
 
+    /**
+     * Create "equals" restriction for given field's name. If expected value contains "%", "*", "?" or "_" sql "like" restriction
+     * will be used.
+     * 
+     * @param fieldName
+     *            field's name
+     * @param expectedValue
+     *            expected value
+     * @return restriction
+     */
     public static Restriction eq(final String fieldName, final String expectedValue) {
         return createEqRestriction(fieldName, expectedValue);
     }
@@ -40,6 +63,15 @@ public final class Restrictions {
         return new SimpleRestriction(fieldName, expectedValue, RestrictionOperator.EQ);
     }
 
+    /**
+     * Create "belongsTo" restriction for given field's definition. Expected value can be both entity object or its id.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @param entityOrId
+     *            entity or id
+     * @return restriction
+     */
     public static Restriction belongsTo(final FieldDefinition fieldDefinition, final Object entityOrId) {
         if (entityOrId instanceof Long) {
             return new BelongsToRestriction(fieldDefinition.getName(), (Long) entityOrId);
@@ -53,10 +85,28 @@ public final class Restrictions {
         }
     }
 
-    public static Restriction idRestriction(final Long id, final RestrictionOperator restrictionOperator) {
-        return new SimpleRestriction("id", id, restrictionOperator);
+    /**
+     * Create simple restriction for id field, comparing it to expected value using given operator.
+     * 
+     * @param id
+     *            expected value
+     * @param operator
+     *            operator
+     * @return restriction
+     */
+    public static Restriction idRestriction(final Long id, final RestrictionOperator operator) {
+        return new SimpleRestriction("id", id, operator);
     }
 
+    /**
+     * Create "greater or equals" restriction for given field's definition.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @param expectedValue
+     *            expected value
+     * @return restriction
+     */
     public static Restriction ge(final FieldDefinition fieldDefinition, final Object expectedValue) {
         Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
@@ -66,6 +116,15 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.GE);
     }
 
+    /**
+     * Create "greater than" restriction for given field's definition.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @param expectedValue
+     *            expected value
+     * @return restriction
+     */
     public static Restriction gt(final FieldDefinition fieldDefinition, final Object expectedValue) {
         Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
@@ -75,14 +134,37 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.GT);
     }
 
+    /**
+     * Create "is not null" restriction for given field's definition.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @return restriction
+     */
     public static Restriction isNotNull(final FieldDefinition fieldDefinition) {
         return new IsNotNullRestriction(fieldDefinition.getName());
     }
 
+    /**
+     * Create "is null" restriction for given field's definition.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @return restriction
+     */
     public static Restriction isNull(final FieldDefinition fieldDefinition) {
         return new IsNullRestriction(fieldDefinition.getName());
     }
 
+    /**
+     * Create "less or equals" restriction for given field's definition.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @param expectedValue
+     *            expected value
+     * @return restriction
+     */
     public static Restriction le(final FieldDefinition fieldDefinition, final Object expectedValue) {
         Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
@@ -92,6 +174,15 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.LE);
     }
 
+    /**
+     * Create "greater than" restriction for given field's definition.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @param expectedValue
+     *            expected value
+     * @return restriction
+     */
     public static Restriction lt(final FieldDefinition fieldDefinition, final Object expectedValue) {
         Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);
@@ -101,6 +192,15 @@ public final class Restrictions {
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.LT);
     }
 
+    /**
+     * Create "not equals" restriction for given field's definition.
+     * 
+     * @param fieldDefinition
+     *            field's definition
+     * @param expectedValue
+     *            expected value
+     * @return restriction
+     */
     public static Restriction ne(final FieldDefinition fieldDefinition, final Object expectedValue) {
         Entity validatedEntity = new DefaultEntity("", "");
         Object value = validateValue(fieldDefinition, expectedValue, validatedEntity);

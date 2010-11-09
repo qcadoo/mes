@@ -19,6 +19,16 @@ import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;
 
+/**
+ * Represents simple field of form.<br/>
+ * <br/>
+ * XML declaration: <br/>
+ * 
+ * <pre>
+ *      {@code <component type="{component type}" name="{identifier of component}" field="{field name of component}" 
+ *                              source="{source of component content}" enabled="true|false" visible="true|false">}
+ * </pre>
+ */
 public abstract class SimpleFieldComponent extends AbstractComponent<SimpleValue> {
 
     public SimpleFieldComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,

@@ -4,6 +4,14 @@ import java.util.Map;
 
 import com.qcadoo.mes.view.components.SimpleValue;
 
+/**
+ * View value of EntityComboBoxComponent.
+ * 
+ * @see com.qcadoo.mes.view.components.EntityComboBoxComponent
+ * @see com.qcadoo.mes.view.ViewValue
+ */
+
+@Deprecated
 public final class EntityComboBoxValue extends SimpleValue {
 
     private Map<Long, String> values;

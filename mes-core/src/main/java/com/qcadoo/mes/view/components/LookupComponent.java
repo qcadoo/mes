@@ -38,6 +38,37 @@ import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem.Type;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 
+/**
+ * Represents lookup input.<br/>
+ * <br/>
+ * XML declaration: <br/>
+ * 
+ * <pre>
+ *      {@code <component type="lookup" name="{identifier of component}" field="{field name of component}" source="{source of component content}">}
+ * </pre>
+ * 
+ * XML options:
+ * <ul>
+ * <li>column - integer - definition of column of lookup window (can be more than one). Suboptions:
+ * <ul>
+ * <li>name - String - name of column</li>
+ * <li>fields - String - list of column fields</li>
+ * <li>expression - String - expression which describes how to display value in cell</li>
+ * <li>width - integer - width of column (actual width will be calculate dynamically, this options define proportion between
+ * columns widths)</li>
+ * <li>link - [true|false] - true when values of this column should be links to select entity</li>
+ * </ul>
+ * </li>
+ * <li>height - integer - height of lookup window</li>
+ * <li>width - integer - width of lookup window</li>
+ * <li>fullScreen - [true|false] - true when grid should expand to full screen</li>
+ * <li>orderable - comma separated list of column names - list of column names of lookup window which sorting is enabled</li>
+ * <li>searchable - comma separated list of column names - list of column names of lookup window which searching is enabled</li>
+ * <li>paginable - [true|false] - true when grid of lookup window should have paging</li>
+ * <li>expression - String - defines how to display lookup input value</li>
+ * <li>fieldCode - String - name of field that should be field code</li>
+ * </ul>
+ */
 public final class LookupComponent extends AbstractComponent<LookupData> implements SelectableComponent {
 
     private int width;

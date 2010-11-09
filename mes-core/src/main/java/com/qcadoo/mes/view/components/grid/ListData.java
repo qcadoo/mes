@@ -8,6 +8,12 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.Entity;
 
+/**
+ * View value of GridComponent.
+ * 
+ * @see com.qcadoo.mes.view.components.GridComponent
+ * @see com.qcadoo.mes.view.ViewValue
+ */
 public final class ListData {
 
     private Integer totalNumberOfEntities;

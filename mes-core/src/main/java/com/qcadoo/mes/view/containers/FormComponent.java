@@ -23,6 +23,21 @@ import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.components.SimpleValue;
 
+/**
+ * Represents form.<br/>
+ * <br/>
+ * XML declaration: <br/>
+ * 
+ * <pre>
+ *      {@code <component type="form" name="{identifier of component}">}
+ * </pre>
+ * 
+ * XML options:
+ * <ul>
+ * <li>expression - String - expression that defines text visible on header</li>
+ * <li>header - [true | false] - true when form contains header</li>
+ * </ul>
+ */
 public final class FormComponent extends AbstractContainerComponent<FormValue> implements SaveableComponent, SelectableComponent {
 
     private boolean header = true;

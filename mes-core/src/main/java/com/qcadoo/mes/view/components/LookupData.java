@@ -1,5 +1,11 @@
 package com.qcadoo.mes.view.components;
 
+/**
+ * View value of LookupComponent.
+ * 
+ * @see com.qcadoo.mes.view.components.LookupComponent
+ * @see com.qcadoo.mes.view.ViewValue
+ */
 public final class LookupData extends SimpleValue {
 
     private String selectedEntityValue;

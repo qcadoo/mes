@@ -41,15 +41,37 @@ import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 import com.qcadoo.mes.view.components.grid.ListData;
 
 /**
- * Grid defines structure used for listing entities. It contains the list of field that can be used for restrictions and the list
- * of columns. It also have default order and default restrictions.
+ * Represents grid.<br/>
+ * <br/>
+ * XML declaration: <br/>
  * 
- * Searchable fields must have searchable type - FieldType#isSearchable().
+ * <pre>
+ *      {@code <component type="grid" name="{identifier of component}" source="{source of component content}">}
+ * </pre>
  * 
- * @apiviz.owns com.qcadoo.mes.core.data.definition.FieldDefinition
- * @apiviz.owns com.qcadoo.mes.core.data.definition.ColumnDefinition
- * @apiviz.uses com.qcadoo.mes.core.data.search.Order
- * @apiviz.uses com.qcadoo.mes.core.data.search.Restriction
+ * XML options:
+ * <ul>
+ * <li>column - integer - definition of column (can be more than one). Suboptions:
+ * <ul>
+ * <li>name - String - name of column</li>
+ * <li>fields - String - list of column fields</li>
+ * <li>expression - String - expression which describes how to display value in cell</li>
+ * <li>width - integer - width of column (actual width will be calculate dynamically, this options define proportion between
+ * columns widths)</li>
+ * <li>link - [true|false] - true when values of this column should be links to entity details view</li>
+ * </ul>
+ * </li>
+ * <li>correspondingView - {pluginName}/{viewName} - defines content entity details view</li>
+ * <li>height - integer - height of component</li>
+ * <li>width - integer - width of component</li>
+ * <li>fullScreen - [true|false] - true when grid should expand to full screen</li>
+ * <li>orderable - comma separated list of column names - list of column names which sorting is enabled</li>
+ * <li>
+ * searchable - comma separated list of column names - list of column names which searching is enabled</li>
+ * <li>paginable - [true|false] - true when grid should have paging</li>
+ * <li>creatable - [true|false] - true when grid should have 'create' button</li>
+ * <li>deletable - [true|false] - true when grid should have 'delete' button</li>
+ * </ul>
  */
 public final class GridComponent extends AbstractComponent<ListData> implements SelectableComponent {
 

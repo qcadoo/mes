@@ -1,5 +1,11 @@
 package com.qcadoo.mes.view.components;
 
+/**
+ * View value of SimpleFieldComponent.
+ * 
+ * @see com.qcadoo.mes.view.components.SimpleFieldComponent
+ * @see com.qcadoo.mes.view.ViewValue
+ */
 public class SimpleValue {
 
     private Object value;

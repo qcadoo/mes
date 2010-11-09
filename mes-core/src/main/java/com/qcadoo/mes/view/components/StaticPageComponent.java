@@ -14,6 +14,15 @@ import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;
 
+/**
+ * Represents static page element. Inside this element is content from another html page. <br/>
+ * <br/>
+ * Options:
+ * <ul>
+ * <li>
+ * page - String - URI to page with content should be include as content of this component</li>
+ * </ul>
+ */
 public final class StaticPageComponent extends AbstractComponent<Object> {
 
     public StaticPageComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,

@@ -340,8 +340,8 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:git://emhyr.qcadoo.private/Users/git/mes.git</connection>
-		<developerConnection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
+		<connection>scm:git:git://emhyr.qcadoo.private/Users/git/mes.git</connection>
+		<developerConnection>scm:git:git://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
 	</scm>
 
 	<profiles>

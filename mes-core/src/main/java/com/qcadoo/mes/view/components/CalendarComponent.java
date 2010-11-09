@@ -7,6 +7,9 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.view.ContainerComponent;
 
+/**
+ * Represents datepicker input element.
+ */
 public final class CalendarComponent extends SimpleFieldComponent {
 
     public CalendarComponent(final String name, final ContainerComponent<?> parent, final String fieldName,

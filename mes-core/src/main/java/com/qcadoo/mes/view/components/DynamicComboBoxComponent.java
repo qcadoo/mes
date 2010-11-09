@@ -23,6 +23,9 @@ import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.components.combobox.ComboBoxValue;
 
+/**
+ * Represents comboBox element.
+ */
 public final class DynamicComboBoxComponent extends AbstractComponent<ComboBoxValue> {
 
     public DynamicComboBoxComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,

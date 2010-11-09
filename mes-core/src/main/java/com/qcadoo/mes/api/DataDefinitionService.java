@@ -7,7 +7,6 @@ import com.qcadoo.mes.model.DataDefinition;
 /**
  * Service for manipulating data definitions.
  * 
- * @see com.qcadoo.mes.model.internal.DataDefinitionParser
  * @apiviz.uses com.qcadoo.mes.model.DataDefinition
  */
 public interface DataDefinitionService {

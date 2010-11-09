@@ -3,6 +3,12 @@ package com.qcadoo.mes.view.components.tree;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * View value of TreeComponent.
+ * 
+ * @see com.qcadoo.mes.view.components.TreeComponent
+ * @see com.qcadoo.mes.view.ViewValue
+ */
 public final class TreeData {
 
     private TreeNode rootNode;

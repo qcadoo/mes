@@ -16,12 +16,20 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 
+/**
+ * Abstract implementation of {@link RootComponent}.
+ */
 public abstract class AbstractRootComponent extends AbstractContainerComponent<Object> implements RootComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractRootComponent.class);
 
     private final Map<String, Component<?>> componentRegistry = new LinkedHashMap<String, Component<?>>();
 
+    /**
+     * Create new {@link RootComponent}.
+     * 
+     * @see AbstractComponent#AbstractComponent(String, ContainerComponent, String, String, TranslationService)
+     */
     public AbstractRootComponent(final String name, final DataDefinition dataDefinition, final ViewDefinition viewDefinition,
             final TranslationService translationService) {
         super(name, null, null, null, translationService);

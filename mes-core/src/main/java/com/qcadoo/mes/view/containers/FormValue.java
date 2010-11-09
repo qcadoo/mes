@@ -1,5 +1,11 @@
 package com.qcadoo.mes.view.containers;
 
+/**
+ * View value of Form component.
+ * 
+ * @see com.qcadoo.mes.view.containers.FormComponent
+ * @see com.qcadoo.mes.view.ViewValue
+ */
 public final class FormValue {
 
     private Long id;
