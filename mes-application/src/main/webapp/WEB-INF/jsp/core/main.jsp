@@ -79,8 +79,9 @@
 		<div id="topLevelMenu">
 			<img id="logoImage" src="css/core/images/logo_small.png"></img>
 			<div id="topRightPanel">
-				<button onclick="windowController.goToMenuPosition('home.profile')">${commonTranslations["commons.button.userProfile"] }</button>
-				<button onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</button>
+				<span id="userInfo">${userLogin}</span>
+				<a href='#' id="profileButton" onclick="windowController.goToMenuPosition('home.profile')">${commonTranslations["commons.button.userProfile"] }</a>
+				<a href='#' onclick="windowController.performLogout()">${commonTranslations["commons.button.logout"] }</a>
 			</div>
 		</div>
 		<div id="firstLevelMenu">
