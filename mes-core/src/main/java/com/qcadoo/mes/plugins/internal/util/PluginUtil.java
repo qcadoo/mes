@@ -58,29 +58,18 @@ public final class PluginUtil {
         return pluginFile;
     }
 
-    public void removePluginFile(final String fileName) throws PluginException {
+    public void removePluginFile(final String fileName, final boolean onExit) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Removing file: " + fileName);
         }
         // A File object to represent the filename
         File f = new File(fileName);
 
-        // Make sure the file or directory exists and isn't write protected
-        if (!f.exists()) {
-            throw new PluginException("Delete: no such file or directory: " + fileName);
-        }
-        if (!f.canWrite()) {
-            throw new PluginException("Delete: write protected: " + fileName);
-        }
-        // If it is a directory, make sure it is empty
-        if (f.isDirectory()) {
-            throw new PluginException("Delete: this is a directory: " + fileName);
-        }
-
         // Attempt to delete it
-        boolean success = f.delete();
-        if (!success) {
-            throw new PluginException("Delete: deletion failed");
+        if (onExit) {
+            FileUtils.forceDeleteOnExit(f);
+        } else {
+            FileUtils.forceDelete(f);
         }
     }
 
@@ -108,7 +97,8 @@ public final class PluginUtil {
         DocumentBuilder db = dbf.newDocumentBuilder();
 
         Document doc = db.parse(in);
-
+        in.close();
+        jarFile.close();
         doc.getDocumentElement().normalize();
 
         for (PluginDescriptorProperties property : PluginDescriptorProperties.values()) {
@@ -165,30 +155,10 @@ public final class PluginUtil {
 
     }
 
-    public void removeResources(final String type, final String targetPath) {
+    public void removeResources(final String type, final String targetPath) throws IOException {
         LOG.info("Removing resources " + type + " ...");
 
-        deleteDirectory(new File(targetPath));
-    }
-
-    private boolean deleteDirectory(final File path) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Recursive removing directory: " + path);
-        }
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                } else {
-                    boolean success = files[i].delete();
-                    if (!success) {
-                        LOG.error("Problem with removing file");
-                    }
-                }
-            }
-        }
-        return (path.delete());
+        FileUtils.forceDeleteOnExit(new File(targetPath));
     }
 
 }

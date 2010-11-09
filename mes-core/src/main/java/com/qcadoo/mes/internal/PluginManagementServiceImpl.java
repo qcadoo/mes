@@ -136,8 +136,8 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
             save(databasePlugin);
 
-            pluginUtil.removePluginFile(pluginsTmpPath + "/" + databasePlugin.getFileName());
-        } catch (PluginException e) {
+            pluginUtil.removePluginFile(pluginsTmpPath + "/" + databasePlugin.getFileName(), false);
+        } catch (IOException e) {
             LOG.error("Problem with removing plugin file - " + e.getMessage());
             return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileRemoveError");
         }
@@ -221,15 +221,15 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         try {
             databasePlugin.setDeleted(true);
             save(databasePlugin);
-            pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName());
-        } catch (PluginException e) {
+            pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName(), true);
+            pluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
+            pluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
+            pluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
+            pluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
+        } catch (IOException e) {
             LOG.error("Problem with removing plugin file - " + e.getMessage());
             return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileRemoveError");
         }
-        pluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
-        pluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
-        pluginUtil.removeResources("img", webappPath + "/" + "img" + "/" + databasePlugin.getIdentifier());
-        pluginUtil.removeResources("jsp", webappPath + "/" + "WEB-INF/jsp" + "/" + databasePlugin.getIdentifier());
 
         PluginManagementOperationStatusImpl status = new PluginManagementOperationStatusImpl(false,
                 "plugins.messages.success.deinstallSuccess");
@@ -372,7 +372,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
         save(plugin);
 
-        pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName());
+        pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName(), true);
 
         pluginUtil.movePluginFile(pluginsTmpPath + "/" + plugin.getFileName(), pluginsPath);
 
