@@ -2,12 +2,16 @@ package com.qcadoo.mes.model.types;
 
 import java.util.Map;
 
-
 /**
- * Method is {@link LookupedType#lookup(String)} returns all possible values that begin with given prefix.
+ * Object represents "lookup" field type.
  */
 public interface LookupedType extends FieldType {
 
+    /**
+     * Return all possible field values matching prefix.
+     * 
+     * @return values
+     */
     Map<Long, String> lookup(String prefix);
 
 }

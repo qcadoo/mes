@@ -4,7 +4,7 @@ import org.hibernate.Criteria;
 
 import com.qcadoo.mes.model.search.Restriction;
 
-public abstract class BaseRestriction implements Restriction, HibernateRestriction {
+public abstract class BaseRestriction implements Restriction {
 
     private final String fieldName;
 
@@ -15,12 +15,10 @@ public abstract class BaseRestriction implements Restriction, HibernateRestricti
         this.value = value;
     }
 
-    @Override
     public final String getFieldName() {
         return fieldName;
     }
 
-    @Override
     public final Object getValue() {
         return value;
     }

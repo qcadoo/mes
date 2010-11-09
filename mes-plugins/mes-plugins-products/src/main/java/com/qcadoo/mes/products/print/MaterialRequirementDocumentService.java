@@ -77,8 +77,4 @@ public abstract class MaterialRequirementDocumentService {
         return translationService;
     }
 
-    protected final DataDefinitionService getDataDefinitionService() {
-        return dataDefinitionService;
-    }
-
 }

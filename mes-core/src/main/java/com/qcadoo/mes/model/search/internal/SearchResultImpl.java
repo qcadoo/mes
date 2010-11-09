@@ -1,7 +1,6 @@
 package com.qcadoo.mes.model.search.internal;
 
 import java.util.List;
-import java.util.Map;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.search.SearchCriteria;
@@ -22,11 +21,6 @@ public final class SearchResultImpl implements SearchResult {
 
     public void setResults(final List<Entity> results) {
         this.results = results;
-    }
-
-    @Override
-    public Map<String, Integer> getAggregations() {
-        return null;
     }
 
     @Override
