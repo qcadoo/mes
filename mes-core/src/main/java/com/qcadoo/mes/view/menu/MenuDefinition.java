@@ -7,6 +7,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Represents top menu in application
+ */
 public final class MenuDefinition {
 
     private final List<MenulItemsGroup> items;
@@ -15,14 +18,29 @@ public final class MenuDefinition {
         items = new LinkedList<MenulItemsGroup>();
     }
 
+    /**
+     * get all menu groups
+     * 
+     * @return menu groups
+     */
     public List<MenulItemsGroup> getItems() {
         return items;
     }
 
+    /**
+     * add group to menu
+     * 
+     * @param item
+     */
     public void addItem(final MenulItemsGroup item) {
         items.add(item);
     }
 
+    /**
+     * generates JSON string that contains all menu definition
+     * 
+     * @return JSON menu definition
+     */
     public String getAsJson() {
         try {
             JSONArray menuItems = new JSONArray();

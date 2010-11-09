@@ -7,6 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Represents menu items group
+ * 
+ */
 public final class MenulItemsGroup {
 
     private final String name;
@@ -15,6 +19,13 @@ public final class MenulItemsGroup {
 
     private final List<MenuItem> items;
 
+    /**
+     * 
+     * @param name
+     *            identifier of group
+     * @param label
+     *            group label to display
+     */
     public MenulItemsGroup(final String name, final String label) {
         super();
         this.name = name;
@@ -22,22 +33,49 @@ public final class MenulItemsGroup {
         items = new LinkedList<MenuItem>();
     }
 
+    /**
+     * get identifier of group
+     * 
+     * @return identifier of group
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * get group label to display
+     * 
+     * @return group label to display
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     * get list of all items of group
+     * 
+     * @return list of all items of group
+     */
     public List<MenuItem> getItems() {
         return items;
     }
 
+    /**
+     * add item to menu group
+     * 
+     * @param item
+     *            item to add
+     */
     public void addItem(final MenuItem item) {
         items.add(item);
     }
 
+    /**
+     * generates JSON representation of this menu group
+     * 
+     * @return JSON group representation
+     * @throws JSONException
+     */
     public JSONObject getAsJson() throws JSONException {
         JSONObject itemObject = new JSONObject();
         itemObject.put("name", name);
