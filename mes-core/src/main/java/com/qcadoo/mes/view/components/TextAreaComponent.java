@@ -4,6 +4,9 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 
+/**
+ * Represents text area element.
+ */
 public final class TextAreaComponent extends SimpleFieldComponent {
 
     private int rows = 4;

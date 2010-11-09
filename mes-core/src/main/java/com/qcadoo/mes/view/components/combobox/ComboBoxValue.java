@@ -5,6 +5,12 @@ import java.util.List;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.components.SimpleValue;
 
+/**
+ * View value of DynamicComboBoxComponent.
+ * 
+ * @see com.qcadoo.mes.view.components.DynamicComboBoxComponent
+ * @see com.qcadoo.mes.view.ViewValue
+ */
 public final class ComboBoxValue extends SimpleValue {
 
     private List<Pair<String, String>> values;

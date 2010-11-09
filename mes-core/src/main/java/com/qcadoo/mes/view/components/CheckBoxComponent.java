@@ -4,6 +4,9 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 
+/**
+ * Represents checkbox element.
+ */
 public final class CheckBoxComponent extends SimpleFieldComponent {
 
     private boolean textRepresentationOnDisabled = false;

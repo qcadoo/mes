@@ -9,6 +9,21 @@ import com.qcadoo.mes.view.AbstractRootComponent;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ViewDefinition;
 
+/**
+ * Represents window. Window has his own ribbon and 'page effect'.<br/>
+ * <br/>
+ * XML declaration: <br/>
+ * 
+ * <pre>
+ *      {@code <component type="window" name="{identifier of component}">}
+ * </pre>
+ * 
+ * XML options:
+ * <ul>
+ * <li>fixedHeight - [true | false] - if true, component and its content always resize with browser window</li>
+ * <li>header - [true | false] - true when window contains header</li>
+ * </ul>
+ */
 public final class WindowComponent extends AbstractRootComponent {
 
     private boolean backButton = true;

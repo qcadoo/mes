@@ -3,6 +3,9 @@ package com.qcadoo.mes.view.components;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ContainerComponent;
 
+/**
+ * Represents password input element.
+ */
 public final class PasswordInputComponent extends SimpleFieldComponent {
 
     public PasswordInputComponent(final String name, final ContainerComponent<?> parent, final String fieldName,

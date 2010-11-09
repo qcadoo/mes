@@ -6,6 +6,9 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
 
+/**
+ * Represents text input element.
+ */
 public final class TextInputComponent extends SimpleFieldComponent {
 
     private boolean textRepresentationOnDisabled = false;

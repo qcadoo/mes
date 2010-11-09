@@ -30,6 +30,24 @@ import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.components.tree.TreeData;
 import com.qcadoo.mes.view.components.tree.TreeNode;
 
+/**
+ * Represents tree.<br/>
+ * <br/>
+ * XML declaration: <br/>
+ * 
+ * <pre>
+ *      {@code <component type="tree" name="{identifier of component}" source="{source of component content}">}
+ * </pre>
+ * 
+ * XML options:
+ * <ul>
+ * <li>height - integer - height of component</li>
+ * <li>width - integer - width of component</li>
+ * <li>expression - String - expression that defines how to display entities inside tree</li>
+ * <li>rootExpression - String - expression that defines what to display ass root label</li>
+ * <li>correspondingView - {pluginName}/{viewName} - defines content entity details view</li>
+ * </ul>
+ */
 public final class TreeComponent extends AbstractComponent<TreeData> implements SelectableComponent {
 
     private String expression;

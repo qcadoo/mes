@@ -27,6 +27,10 @@ import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.ViewValue;
 import com.qcadoo.mes.view.components.combobox.EntityComboBoxValue;
 
+/**
+ * Represents combobox with entities element.
+ */
+@Deprecated
 public final class EntityComboBoxComponent extends AbstractComponent<EntityComboBoxValue> {
 
     public EntityComboBoxComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
