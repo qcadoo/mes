@@ -9,6 +9,9 @@ import com.qcadoo.mes.model.validators.ErrorMessage;
 
 /**
  * Service for getting translations.
+ * 
+ * @apiviz.uses com.qcadoo.mes.model.DataDefinition
+ * @apiviz.uses com.qcadoo.mes.model.validators.ErrorMessage
  */
 public interface TranslationService {
 
