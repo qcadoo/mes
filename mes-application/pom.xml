@@ -106,7 +106,7 @@
 							<value>${project.version}</value>
 						</systemProperty>
 						<systemProperty>
-							<name>project.buildName</name>
+							<name>project.buildNumber</name>
 							<value>N/A</value>
 						</systemProperty>
 					</systemProperties>
