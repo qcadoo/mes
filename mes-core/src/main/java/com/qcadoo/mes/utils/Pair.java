@@ -1,5 +1,13 @@
 package com.qcadoo.mes.utils;
 
+/**
+ * Represents pair key->value
+ * 
+ * @param <A>
+ *            class of key
+ * @param <B>
+ *            class of value
+ */
 public final class Pair<A, B> {
 
     private final A key;
@@ -19,6 +27,13 @@ public final class Pair<A, B> {
         return value;
     }
 
+    /**
+     * creates new Pair instance
+     * 
+     * @param key
+     * @param value
+     * @return new Pair containing key and value same as arguments
+     */
     public static <A, B> Pair<A, B> of(final A key, final B value) {
         return new Pair<A, B>(key, value);
     }
