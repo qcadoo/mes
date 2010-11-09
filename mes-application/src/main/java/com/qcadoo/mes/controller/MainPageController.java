@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,14 +35,17 @@ public final class MainPageController {
     @Autowired
     private CrudController crudController;
 
-    // @RequestMapping(value = "mainPage", method = RequestMethod.GET)
-    // public ModelAndView getView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-    // ModelAndView mav = new ModelAndView();
-    // mav.setViewName("mainPage");
-    // mav.addObject("viewsList", viewDefinitionService.list());
-    // mav.addObject("commonTranslations", translationService.getCommonsMessages(locale));
-    // return mav;
-    // }
+    @Value("${com.qcadoo.mes.buildInfo.applicationName}")
+    private String applicationName;
+
+    @Value("${com.qcadoo.mes.buildInfo.applicationVersion}")
+    private String applicationVersion;
+
+    @Value("${com.qcadoo.mes.buildInfo.buildNumber}")
+    private String buildNumber;
+
+    @Value("${com.qcadoo.mes.buildInfo.buildDate}")
+    private String buildDate;
 
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getMainView(@RequestParam final Map<String, String> arguments, final Locale locale) {
@@ -68,6 +72,13 @@ public final class MainPageController {
 
     @RequestMapping(value = "systemInfo", method = RequestMethod.GET)
     public ModelAndView getSystemInfoView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        return crudController.getView("core", "systemInfoView", arguments, locale);
+        ModelAndView mav = crudController.getView("core", "systemInfoView", arguments, locale);
+
+        mav.addObject("applicationName", applicationName);
+        mav.addObject("applicationVersion", applicationVersion);
+        mav.addObject("buildNumber", buildNumber);
+        mav.addObject("buildDate", buildDate);
+
+        return mav;
     }
 }
