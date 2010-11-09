@@ -265,13 +265,13 @@ public final class LookupComponent extends AbstractComponent<LookupData> impleme
     private void addRibbonToLookupWindow(final WindowComponent windowComponent) {
         RibbonActionItem ribbonActionItem = new RibbonActionItem();
         ribbonActionItem.setName("select");
-        ribbonActionItem.setIcon("acceptIcon32.png");
+        ribbonActionItem.setIcon("acceptIcon24.png");
         ribbonActionItem.setAction("#{mainWindow.lookupGrid}.performLookupSelect; #{mainWindow}.performClose");
         ribbonActionItem.setType(Type.BIG_BUTTON);
 
         RibbonActionItem ribbonCancelActionItem = new RibbonActionItem();
         ribbonCancelActionItem.setName("cancel");
-        ribbonCancelActionItem.setIcon("cancelIcon32.png");
+        ribbonCancelActionItem.setIcon("cancelIcon24.png");
         ribbonCancelActionItem.setAction("#{mainWindow}.performClose");
         ribbonCancelActionItem.setType(Type.BIG_BUTTON);
 
