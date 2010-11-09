@@ -123,6 +123,7 @@
 					<webResources>
 						<resource>
 							<directory>src/main/resources</directory>
+							<targetPath>WEB-INF/classes</targetPath>
 							<filtering>true</filtering>
 							<includes>
 								<include>buildInfo.properties</include>
@@ -133,5 +134,30 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>bamboo</id>
+			<activation>
+				<property>
+					<name>buildNumber</name>
+				</property>
+			</activation>
+			<properties>
+				<project.buildNumber>${env.buildNumber}</project.buildNumber>
+				<project.buildTimeStamp>${env.buildTimeStamp}</project.buildTimeStamp>
+			</properties>
+		</profile>
+		<profile>
+			<id>no-bamboo</id>
+		 	<activation>
+		 		<activeByDefault>true</activeByDefault>
+		 	</activation>
+			<properties>
+				<project.buildNumber>N/A</project.buildNumber>
+				<project.buildTimeStamp>N/A</project.buildTimeStamp>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
