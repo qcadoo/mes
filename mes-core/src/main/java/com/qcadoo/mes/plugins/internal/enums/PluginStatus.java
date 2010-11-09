@@ -1,4 +1,4 @@
-package com.qcadoo.mes.enums;
+package com.qcadoo.mes.plugins.internal.enums;
 
 public enum PluginStatus {
 

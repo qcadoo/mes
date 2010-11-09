@@ -3,7 +3,6 @@ package com.qcadoo.mes.model.search;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.enums.RestrictionOperator;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.restrictions.internal.BelongsToRestriction;
