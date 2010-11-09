@@ -22,7 +22,7 @@ public class Persistent {
     @Column(nullable = false)
     private String token;
 
-    @Column(nullable = false)
+    @Column(name = "last_used", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsed;
 
