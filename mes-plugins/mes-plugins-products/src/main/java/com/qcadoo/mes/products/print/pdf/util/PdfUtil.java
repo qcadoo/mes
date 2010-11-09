@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import com.lowagie.text.Chunk;
@@ -27,6 +29,8 @@ import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.model.types.internal.DateType;
 
 public final class PdfUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
 
     public static final String PDF_EXTENSION = ".pdf";
 
@@ -58,40 +62,46 @@ public final class PdfUtil {
 
     private static BaseFont arial;
 
+    private static boolean initialized = false;
+
     private PdfUtil() {
 
     }
 
     public static void prepareFontsAndColors() throws DocumentException, IOException {
-        ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
-        FontFactory.register(classPathResource.getPath());
-        arial = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        lightColor = new Color(77, 77, 77);
-        Color darkColor = new Color(26, 26, 26);
-        lineDarkColor = new Color(102, 102, 102);
-        lineLightColor = new Color(153, 153, 153);
-        backgroundColor = new Color(230, 230, 230);
-        arialBold19Light = new Font(arial, 19);
-        arialBold19Light.setStyle(Font.BOLD);
-        arialBold19Light.setColor(lightColor);
-        arialBold19Dark = new Font(arial, 19);
-        arialBold19Dark.setStyle(Font.BOLD);
-        arialBold19Dark.setColor(darkColor);
-        arialRegular9Light = new Font(arial, 9);
-        arialRegular9Light.setColor(lightColor);
-        arialRegular9Dark = new Font(arial, 9);
-        arialRegular9Dark.setColor(darkColor);
-        arialBold9Dark = new Font(arial, 9);
-        arialBold9Dark.setColor(darkColor);
-        arialBold9Dark.setStyle(Font.BOLD);
-        arialBold11Dark = new Font(arial, 11);
-        arialBold11Dark.setColor(darkColor);
-        arialBold11Dark.setStyle(Font.BOLD);
-        arialRegular10Dark = new Font(arial, 10);
-        arialRegular10Dark.setColor(darkColor);
-        arialBold10Dark = new Font(arial, 10);
-        arialBold10Dark.setColor(darkColor);
-        arialBold10Dark.setStyle(Font.BOLD);
+        if (!initialized) {
+            LOG.debug("Pdf fonts and color initialization");
+            ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
+            FontFactory.register(classPathResource.getPath());
+            arial = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            lightColor = new Color(77, 77, 77);
+            Color darkColor = new Color(26, 26, 26);
+            lineDarkColor = new Color(102, 102, 102);
+            lineLightColor = new Color(153, 153, 153);
+            backgroundColor = new Color(230, 230, 230);
+            arialBold19Light = new Font(arial, 19);
+            arialBold19Light.setStyle(Font.BOLD);
+            arialBold19Light.setColor(lightColor);
+            arialBold19Dark = new Font(arial, 19);
+            arialBold19Dark.setStyle(Font.BOLD);
+            arialBold19Dark.setColor(darkColor);
+            arialRegular9Light = new Font(arial, 9);
+            arialRegular9Light.setColor(lightColor);
+            arialRegular9Dark = new Font(arial, 9);
+            arialRegular9Dark.setColor(darkColor);
+            arialBold9Dark = new Font(arial, 9);
+            arialBold9Dark.setColor(darkColor);
+            arialBold9Dark.setStyle(Font.BOLD);
+            arialBold11Dark = new Font(arial, 11);
+            arialBold11Dark.setColor(darkColor);
+            arialBold11Dark.setStyle(Font.BOLD);
+            arialRegular10Dark = new Font(arial, 10);
+            arialRegular10Dark.setColor(darkColor);
+            arialBold10Dark = new Font(arial, 10);
+            arialBold10Dark.setColor(darkColor);
+            arialBold10Dark.setStyle(Font.BOLD);
+            initialized = true;
+        }
     }
 
     public static Color getLineDarkColor() {
