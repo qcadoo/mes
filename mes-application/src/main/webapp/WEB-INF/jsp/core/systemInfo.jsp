@@ -2,15 +2,30 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
-<div style="margin: 20px;">
+<style type="text/css">
+	#systemInfoContent {
+		margin: 20px;
+	}
+	#systemInfoContent #systemInfoHeader {
+		color: red;
+	}
+</style>
 
-	<h1>
+<div id="systemInfoContent">
+
+	<div id="systemInfoHeader">
 		SYSTEM INFO:
-	</h1>
-	<div>
-		nazwa: QCADOO
 	</div>
-
-wersja:
-build:
+	<div>
+		nazwa: ${applicationName}
+	</div>
+	<div>
+		wersja: ${applicationVersion}
+	</div>
+	<div>
+		build: ${buildNumber}
+	</div>
+	<div>
+		data buildu: ${buildDate}
+	</div>
 </div>
