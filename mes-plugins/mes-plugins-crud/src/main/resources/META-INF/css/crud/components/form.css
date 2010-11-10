@@ -375,9 +375,70 @@
 }
 
 
-.linkButton.headerActionButton {
+.linkButton {
 	width: 300px;
 	margin-left: 20px;
 	margin-bottom: 20px;
+	padding: 0;
 	text-align: center;
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	color: black;
+	font-size: 14px;
+	line-height: 22px;
+	height: 23px;
+	
+}
+
+.linkButton a {
+	display: block;
+	height: 23px;
+	color: #c1c1c1;
+	text-decoration: none;
+	margin: 0;
+	padding: 0;
+	background-image: url('/css/core/menu/images/lt_twoB_l.png');
+	background-position: left 0px;
+	background-repeat: no-repeat;
+}
+.linkButton a span {
+	display: block;
+	height: 23px;
+	margin: 0;
+	padding: 0;
+	background-image: url('/css/core/menu/images/lt_twoB_r_noArrow.png');
+	background-position: right 0px;
+	background-repeat: no-repeat;
+}
+.linkButton a span div {
+	display: block;
+	height: 23px;
+	margin: 0;
+	padding: 0;
+	margin-left: 5px;
+	margin-right: 5px;
+	background-image: url('/css/core/menu/images/lt_twoB_c.png');
+	background-position: 0px 0px;
+	background-repeat: repeat-x;
+}
+.linkButton.activeButton a {
+	color: #313131;
+	background-position: left -1px;
+	background-image:url('/css/core/menu/images/lt_hover_l.png');
+}
+.linkButton.activeButton a span {
+	background-position: right -1px;
+	background-image:url('/css/core/menu/images/lt_1Up.png');
+}
+.linkButton.activeButton a span div {
+	background-position: 0px -1px;
+	background-image:url('/css/core/menu/images/lt_hover_c.png');
+}
+.linkButton.activeButton:hover a {
+	background-image:url('/css/core/menu/images/lt_activ_l.png');
+}
+.linkButton.activeButton:hover a span {
+	background-image:url('/css/core/menu/images/lt_activ_r.png');
+}
+.linkButton.activeButton:hover a span div {
+	background-image:url('/css/core/menu/images/lt_activ_c.png');
 }

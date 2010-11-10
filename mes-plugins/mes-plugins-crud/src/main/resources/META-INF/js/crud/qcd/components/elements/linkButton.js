@@ -14,8 +14,9 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	
 	var pageUrl;
 	
-	//var button = $("#"+element.attr('id')+"_button");
-	var button;
+	var button = $("#"+element.attr('id')+"_buttonDiv");
+	var buttonLabel = $("#"+element.attr('id')+"_labelDiv");
+	var buttonLink = $("#"+element.attr('id')+"_buttonLink");
 	
 	this.getComponentValue = function() {
 		return null;
@@ -35,9 +36,9 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
-			button.addClass('headerButtonEnabled');
+			button.addClass('activeButton');
 		} else {
-			button.removeClass('headerButtonEnabled');
+			button.removeClass('activeButton');
 		}
 	}
 	
@@ -45,17 +46,17 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 
 	}
 	
-	function onButtonClick() {
-		if (button.hasClass('headerButtonEnabled')) {
+	function onButtonClick(e) {
+		buttonLink.blur();
+		if (button.hasClass('activeButton')) {
 			mainController.goToPage(pageUrl);
 		}
 	}
 	
 	function constructor(_this) {
 		var labelToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label";
-		button = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(labelToTranslate), onButtonClick);
-		button.addClass("linkButton");
-		element.append(button);
+		buttonLabel.html(mainController.getTranslation(labelToTranslate));
+		buttonLink.click(onButtonClick);
 	}
 	
 	constructor(this);

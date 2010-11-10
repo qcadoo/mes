@@ -4,14 +4,14 @@
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" action="#{mainWindow}.performCallFunction(goToUrl,../download.html);" />
-					<bigButton name="update" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="download" icon="downloadIcon24.png" action="#{mainWindow}.performCallFunction(goToUrl,../download.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../update.html);" />
 				</group>
 				<group name="actions">
-					<smallButton name="enable" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../enable.html);" />
-					<smallButtons name="disable" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../disable.html);">
-						<smallButton name="deinstall" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../deinstall.html);" />
-						<smallButton name="remove" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../remove.html);" />
+					<smallButton name="enable" icon="enableIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../enable.html);" />
+					<smallButtons name="disable" icon="disableIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../disable.html);">
+						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../deinstall.html);" />
+						<smallButton name="remove" icon="deleteIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../remove.html);" />
 					</smallButtons>
 				</group>
 			</ribbon>
@@ -44,7 +44,7 @@
 					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
 				</group>
 				<group name="plugins">
-					<bigButton name="update" action="#{mainWindow.pluginDetailsForm}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{mainWindow.pluginDetailsForm}.performCallFunction(goToUrl,../update.html);" />
 				</group>
 			</ribbon>
 			<component type="form" name="pluginDetailsForm">

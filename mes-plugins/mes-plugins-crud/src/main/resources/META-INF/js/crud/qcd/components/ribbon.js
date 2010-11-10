@@ -147,7 +147,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 			var icon = (itemModel.items[menuIter].icon && $.trim(itemModel.items[menuIter].icon) != "") ? $.trim(itemModel.items[menuIter].icon) : null;
 			var style = "";
 			if (icon) {
-				style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
+				style = " style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
 			}
 			var menuItemButton = $("<a>").attr('href','#').html("<span "+style+">"+getItemLabel(path, itemModel.items[menuIter])+"</span>").addClass("icon");
 			menuItemButton.bind('click', {itemName: itemModel.name+"."+menuItemName, clickAction: itemModel.items[menuIter].clickAction}, buttonClicked);

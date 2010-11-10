@@ -16,4 +16,14 @@
 	<div class="element_options" style="display: none">
 		${component.optionsAsJson}
 	</div>
+	
+	<div class="linkButton" id="${componentFullName}_buttonDiv">
+		<a href="#" id="${componentFullName}_buttonLink">
+			<span>
+				<div id="${componentFullName}_labelDiv">
+				</div>
+			</span>
+		</a>
+	</div>
+	
 </div>
