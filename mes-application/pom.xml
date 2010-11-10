@@ -115,35 +115,45 @@
 					</webAppConfig>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<mkdir dir="${basedir}/target/classes" />
-								<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
-								<tstamp>
-									<format property="build.time" pattern="yyyy-MM-dd hh:mm:ss" />
-								</tstamp>
-								<echo file="${basedir}/target/classes/build.properties">
+		</plugins>
+	</build>
+	
+	<profiles>
+		<profile>
+			<id>installer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<mkdir dir="${basedir}/target/classes" />
+										<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+										<tstamp>
+											<format property="build.time" pattern="yyyy-MM-dd hh:mm:ss" />
+										</tstamp>
+										<echo file="${basedir}/target/classes/build.properties">
 buildApplicationName = Qcadoo MES
 buildApplicationVersion = ${pom.version}
 buildTime = ${build.time}
 buildNumber = ${build.number}
 buildRevision = ${build.revision}
-								</echo>
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
+										</echo>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
 </project>
