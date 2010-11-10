@@ -67,12 +67,13 @@ public final class PluginUtil {
 
         // Attempt to delete it
         if (onExit) {
-            /*
-             * try { FileUtils.forceDelete(f); } catch (IOException e) { LOG.error("Problem with deleting file - " +
-             * e.getMessage()); LOG.info("Trying delete file after JVM stop");
-             */
-            FileUtils.forceDeleteOnExit(f);
-            // }
+            try {
+                FileUtils.forceDelete(f);
+            } catch (IOException e) {
+                LOG.error("Problem with deleting file - " + e.getMessage());
+                LOG.info("Trying delete file after JVM stop");
+                FileUtils.forceDeleteOnExit(f);
+            }
         } else {
             FileUtils.forceDelete(f);
         }
@@ -165,12 +166,13 @@ public final class PluginUtil {
 
         File f = new File(targetPath);
         if (f.exists()) {
-            /*
-             * try { FileUtils.forceDelete(f); } catch (IOException e) { LOG.error("Problem with deleting file - " +
-             * e.getMessage()); LOG.info("Trying delete file after JVM stop");
-             */
-            FileUtils.forceDeleteOnExit(f);
-            // }
+            try {
+                FileUtils.forceDelete(f);
+            } catch (IOException e) {
+                LOG.error("Problem with deleting file - " + e.getMessage());
+                LOG.info("Trying delete file after JVM stop");
+                FileUtils.forceDeleteOnExit(f);
+            }
         }
     }
 
