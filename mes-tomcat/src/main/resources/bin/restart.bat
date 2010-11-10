@@ -37,10 +37,9 @@ shift
 goto setArgs
 :doneSetArgs
 
+
+start %CATALINA_HOME%\bin\callRestart.bat
+
 call "%EXECUTABLE%" stop
-
-timeout /T 5 /NOBREAK
-
-call "%EXECUTABLE%" start
 
 :end
