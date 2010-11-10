@@ -36,17 +36,20 @@ public final class MainPageController {
     @Autowired
     private CrudController crudController;
 
-    @Value("${com.qcadoo.mes.buildInfo.applicationName}")
-    private String applicationName;
+    @Value("${buildApplicationName:-}")
+    private String buildApplicationName;
 
-    @Value("${com.qcadoo.mes.buildInfo.applicationVersion}")
-    private String applicationVersion;
+    @Value("${buildApplicationVersion:-}")
+    private String buildApplicationVersion;
 
-    @Value("${com.qcadoo.mes.buildInfo.buildNumber}")
+    @Value("${buildTime:-}")
+    private String buildTime;
+
+    @Value("${buildNumber:-}")
     private String buildNumber;
 
-    @Value("${com.qcadoo.mes.buildInfo.buildDate}")
-    private String buildDate;
+    @Value("${buildRevision:-}")
+    private String buildRevision;
 
     @RequestMapping(value = "main", method = RequestMethod.GET)
     public ModelAndView getMainView(@RequestParam final Map<String, String> arguments, final Locale locale) {
@@ -77,18 +80,23 @@ public final class MainPageController {
 
         Map<String, String> translationsMap = new HashMap<String, String>();
         translationsMap.put("core.systemInfo.header", translationService.translate("core.systemInfo.header", locale));
-        translationsMap.put("core.systemInfo.name.label", translationService.translate("core.systemInfo.name.label", locale));
-        translationsMap.put("core.systemInfo.version.label",
-                translationService.translate("core.systemInfo.version.label", locale));
-        translationsMap.put("core.systemInfo.build.label", translationService.translate("core.systemInfo.build.label", locale));
-        translationsMap.put("core.systemInfo.buildDate.label",
-                translationService.translate("core.systemInfo.buildDate.label", locale));
+        translationsMap.put("core.systemInfo.buildApplicationName.label",
+                translationService.translate("core.systemInfo.buildApplicationName.label", locale));
+        translationsMap.put("core.systemInfo.buildApplicationVersion.label",
+                translationService.translate("core.systemInfo.buildApplicationVersion.label", locale));
+        translationsMap.put("core.systemInfo.buildNumber.label",
+                translationService.translate("core.systemInfo.buildNumber.label", locale));
+        translationsMap.put("core.systemInfo.buildRevision.label",
+                translationService.translate("core.systemInfo.buildRevision.label", locale));
+        translationsMap.put("core.systemInfo.buildTime.label",
+                translationService.translate("core.systemInfo.buildTime.label", locale));
         mav.addObject("translationsMap", translationsMap);
 
-        mav.addObject("applicationName", applicationName);
-        mav.addObject("applicationVersion", applicationVersion);
+        mav.addObject("buildApplicationName", buildApplicationName);
+        mav.addObject("buildApplicationVersion", buildApplicationVersion);
         mav.addObject("buildNumber", buildNumber);
-        mav.addObject("buildDate", buildDate);
+        mav.addObject("buildTime", buildTime);
+        mav.addObject("buildRevision", buildRevision);
 
         return mav;
     }

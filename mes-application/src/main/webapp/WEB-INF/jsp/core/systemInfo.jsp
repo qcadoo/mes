@@ -33,19 +33,23 @@
 		${translationsMap['core.systemInfo.header']}
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.name.label']}</span>
-		<span class="systemInfoItemValue">${applicationName}</span>
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildApplicationName.label']}</span>
+		<span class="systemInfoItemValue">${buildApplicationName}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.version.label']}</span>
-		<span class="systemInfoItemValue">${applicationVersion}</span>
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildApplicationVersion.label']}</span>
+		<span class="systemInfoItemValue">${buildApplicationVersion}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.build.label']}</span>
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildNumber.label']}</span>
 		<span class="systemInfoItemValue">${buildNumber}</span>
 	</div>
 	<div class="systemInfoItem">
-		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildDate.label']}</span>
-		<span class="systemInfoItemValue">${buildDate}</span>
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildTime.label']}</span>
+		<span class="systemInfoItemValue">${buildTime}</span>
+	</div>
+	<div class="systemInfoItem">
+		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildRevision.label']}</span>
+		<span class="systemInfoItemValue">${buildRevision}</span>
 	</div>
 </div>
