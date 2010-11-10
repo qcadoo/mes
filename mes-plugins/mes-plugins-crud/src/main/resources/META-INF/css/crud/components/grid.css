@@ -109,7 +109,7 @@
 	visible: none;
 	display: inline-block;
 	visibility: hidden;
-	background: transparent url('../images/sortArrows.png') no-repeat 0 -16px;
+	background: transparent url('../images/grid/sortArrows.png') no-repeat 0 -16px;
 	vertical-align: top;
 	margin-left: 5px;
 }

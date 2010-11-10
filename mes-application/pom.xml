@@ -101,14 +101,6 @@
 							<name>QCADOO_RESTART_CMD</name>
 							<value>${basedir}/restart.sh</value>
 						</systemProperty>
-						<systemProperty>
-							<name>project.version</name>
-							<value>${project.version}</value>
-						</systemProperty>
-						<systemProperty>
-							<name>project.buildNumber</name>
-							<value>N/A</value>
-						</systemProperty>
 					</systemProperties>
 					<webAppConfig>
 						<contextPath>/</contextPath>
@@ -123,49 +115,45 @@
 					</webAppConfig>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1</version>
-				<configuration>
-					<webResources>
-						<resource>
-							<directory>src/main/resources</directory>
-							<targetPath>WEB-INF/classes</targetPath>
-							<filtering>true</filtering>
-							<includes>
-								<include>buildInfo.properties</include>
-							</includes>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 	
 	<profiles>
 		<profile>
-			<id>bamboo</id>
-			<activation>
-				<property>
-					<name>buildNumber</name>
-				</property>
-			</activation>
-			<properties>
-				<project.buildNumber>${buildNumber}</project.buildNumber>
-				<project.buildTimeStamp>${buildTimeStamp}</project.buildTimeStamp>
-			</properties>
-		</profile>
-		<profile>
-			<id>no-bamboo</id>
-		 	<activation>
-		 		<activeByDefault>true</activeByDefault>
-		 	</activation>
-			<properties>
-				<project.buildNumber>N/A</project.buildNumber>
-				<project.buildTimeStamp>N/A</project.buildTimeStamp>
-			</properties>
+			<id>installer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<mkdir dir="${basedir}/target/classes" />
+										<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+										<tstamp>
+											<format property="build.time" pattern="yyyy-MM-dd hh:mm:ss" />
+										</tstamp>
+										<echo file="${basedir}/target/classes/build.properties">
+buildApplicationName = Qcadoo MES
+buildApplicationVersion = ${pom.version}
+buildTime = ${build.time}
+buildNumber = ${build.number}
+buildRevision = ${build.revision}
+										</echo>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
-
+	
 </project>

@@ -346,12 +346,6 @@
 
 	<profiles>
 		<profile>
-			<id>emhyr</id>
-			<modules>
-				<module>mes-tomcat</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>installer</id>
 			<modules>
 				<module>mes-tomcat</module>

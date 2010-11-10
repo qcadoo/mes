@@ -135,10 +135,21 @@ public final class ColumnDefinition {
             obj.put("width", width);
             obj.put("link", link);
             obj.put("hidden", hidden);
+            obj.put("align", getAlign());
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
         return obj.toString();
+    }
+
+    private String getAlign() {
+        if (fields.size() == 1) {
+            FieldDefinition fieldDefinition = fields.get(0);
+            if (Number.class.isAssignableFrom(fieldDefinition.getType().getType())) {
+                return "right";
+            }
+        }
+        return "left";
     }
 
 }
