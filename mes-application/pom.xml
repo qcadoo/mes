@@ -133,7 +133,7 @@
 								</tstamp>
 								<echo file="${basedir}/target/classes/build.properties">
 buildApplicationName = Qcadoo MES
-buildApplicationVersion = project.version
+buildApplicationVersion = ${pom.version}
 buildTime = ${build.time}
 buildNumber = ${build.number}
 buildRevision = ${build.revision}
