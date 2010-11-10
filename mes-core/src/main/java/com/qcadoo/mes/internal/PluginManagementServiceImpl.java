@@ -288,10 +288,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 deleteFile = true;
                 LOG.error("Problem with parsing descriptor - " + e.getMessage());
                 return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.descriptorError");
-            } catch (PluginException e) {
-                deleteFile = true;
-                LOG.error("Problem with removing plugin file - " + e.getMessage());
-                return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileRemoveError");
             } finally {
                 if (deleteFile && pluginFile != null && pluginFile.exists()) {
                     boolean success = pluginFile.delete();
@@ -363,7 +359,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         getCurrentSession().save(plugin);
     }
 
-    private void movePlugin(final PluginsPlugin plugin, final PluginsPlugin databasePlugin) throws IOException, PluginException {
+    private void movePlugin(final PluginsPlugin plugin, final PluginsPlugin databasePlugin) throws IOException {
         plugin.setDeleted(false);
         plugin.setStatus(databasePlugin.getStatus());
         plugin.setBase(false);
