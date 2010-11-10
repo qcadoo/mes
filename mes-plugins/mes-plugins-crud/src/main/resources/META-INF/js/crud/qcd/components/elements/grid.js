@@ -58,7 +58,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			if (!column.hidden) {
 				colNames.push(mainController.getTranslation(nameToTranslate)+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
-				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true});
+				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true, align: column.align});
 			} else {
 				hiddenColumnValues[column.name] = new Object();
 			}
