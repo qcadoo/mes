@@ -164,19 +164,20 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addPlugins() {
-        addPlugin("users", "Qcadoo MES :: Plugins :: User Management", true);
-        addPlugin("dictionaries", "Qcadoo MES :: Plugins :: Dictionary Management", true);
-        addPlugin("plugins", "Qcadoo MES :: Plugins :: Plugin Management", true);
-        addPlugin("menu", "Qcadoo MES :: Plugins :: Menu Management", true);
-        addPlugin("crud", "Qcadoo MES :: Plugins :: CRUD", true);
-        addPlugin("products", "Qcadoo MES :: Plugins :: Products", false);
+        addPlugin("users", "Qcadoo MES :: Plugins :: User Management", false, "mes-plugins-user-management-0.1-SNAPSHOT.jar");
+        addPlugin("dictionaries", "Qcadoo MES :: Plugins :: Dictionary Management", false,
+                "mes-plugins-dictionary-management-0.1-SNAPSHOT.jar");
+        addPlugin("plugins", "Qcadoo MES :: Plugins :: Plugin Management", true, "mes-plugins-plugin-management-0.1-SNAPSHOT.jar");
+        addPlugin("menu", "Qcadoo MES :: Plugins :: Menu Management", true, "mes-plugins-menu-management-0.1-SNAPSHOT.jar");
+        addPlugin("crud", "Qcadoo MES :: Plugins :: CRUD", true, "mes-plugins-crud-0.1-SNAPSHOT.jar");
+        addPlugin("products", "Qcadoo MES :: Plugins :: Products", false, "mes-plugins-products-0.1-SNAPSHOT.jar");
     }
 
-    private void addPlugin(final String identifier, final String name, final boolean base) {
+    private void addPlugin(final String identifier, final String name, final boolean base, final String fileName) {
         LOG.info("Adding plugin \"" + identifier + "\"");
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setBase(base);
-        plugin.setFileName("mes-plugins-" + name + "-0.1-SNAPSHOT.jar");
+        plugin.setFileName(fileName);
         plugin.setIdentifier(identifier);
         plugin.setName(name);
         plugin.setPackageName("com.qcadoo.mes." + name);
