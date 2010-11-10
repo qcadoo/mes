@@ -138,7 +138,7 @@
 										<exec command="git rev-list --max-count=1 --all"
 											osfamily="unix" outputproperty="build.revision" />
 										<tstamp>
-											<format property="build.time" pattern="yyyy-MM-dd hh:mm:ss" />
+											<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
 										</tstamp>
 										<property name="build.number" value="-"/>
 										<echo file="${basedir}/target/classes/build.properties">
