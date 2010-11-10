@@ -117,7 +117,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>installer</id>
@@ -135,10 +135,12 @@
 								<configuration>
 									<tasks>
 										<mkdir dir="${basedir}/target/classes" />
-										<exec command="git rev-list --max-count=1 --all" osfamily="unix" outputproperty="build.revision" />
+										<exec command="git rev-list --max-count=1 --all"
+											osfamily="unix" outputproperty="build.revision" />
 										<tstamp>
 											<format property="build.time" pattern="yyyy-MM-dd hh:mm:ss" />
 										</tstamp>
+										<property name="build.number" value="-"/>
 										<echo file="${basedir}/target/classes/build.properties">
 buildApplicationName = Qcadoo MES
 buildApplicationVersion = ${pom.version}
@@ -155,5 +157,5 @@ buildRevision = ${build.revision}
 			</build>
 		</profile>
 	</profiles>
-	
+
 </project>
