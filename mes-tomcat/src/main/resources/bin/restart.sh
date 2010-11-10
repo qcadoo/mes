@@ -27,6 +27,9 @@ while [ -h "$PRG" ] ; do
 done
  
 PRGDIR=`dirname "$PRG"`
+
+[ -z "$CATALINA_HOME" ] && CATALINA_HOME=`cd "$PRGDIR/.." >/dev/null; pwd`
+
 EXECUTABLE=catalina.sh
 
 # Check that target executable exists
@@ -47,7 +50,7 @@ fi
 . "$PRGDIR"/setenv.sh
 
 if [ -f "$CATALINA_PID" ]; then
-  sh "$PRGDIR"/"$EXECUTABLE" stop 5 -force
+  sh "$PRGDIR"/"$EXECUTABLE" stop 10 -force
 fi
 
 sh "$PRGDIR"/"$EXECUTABLE" start
