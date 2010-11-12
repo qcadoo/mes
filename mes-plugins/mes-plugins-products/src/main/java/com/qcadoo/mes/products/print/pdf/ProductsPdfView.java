@@ -1,6 +1,7 @@
 package com.qcadoo.mes.products.print.pdf;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,9 +25,12 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Autowired
     private TranslationService translationService;
 
+    protected DecimalFormat df;
+
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        df = (DecimalFormat) DecimalFormat.getInstance(request.getLocale());
         DefaultEntity entity = (DefaultEntity) model.get("entity");
         String fileName = addContent(document, entity, request.getLocale());
         String text = translationService.translate("products.report.endOfReport", request.getLocale());

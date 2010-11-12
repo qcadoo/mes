@@ -2,6 +2,8 @@ package com.qcadoo.mes.products.print.pdf.util;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -230,7 +232,7 @@ public final class PdfUtil {
     }
 
     public static void addTableCellAsTable(final PdfPTable table, final String label, final Object fieldValue,
-            final String nullValue, final Font headerFont, final Font valueFont) {
+            final String nullValue, final Font headerFont, final Font valueFont, final DecimalFormat df) {
         PdfPTable cellTable = new PdfPTable(1);
         cellTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
         cellTable.addCell(new Phrase(label, headerFont));
@@ -238,8 +240,19 @@ public final class PdfUtil {
         if (value == null) {
             cellTable.addCell(new Phrase(nullValue, valueFont));
         } else {
-            cellTable.addCell(new Phrase(value.toString(), valueFont));
+            if (value instanceof BigDecimal && df != null) {
+                cellTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+                cellTable.addCell(new Phrase(df.format(((BigDecimal) value).stripTrailingZeros()), valueFont));
+                cellTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            } else {
+                cellTable.addCell(new Phrase(value.toString(), valueFont));
+            }
         }
         table.addCell(cellTable);
+    }
+
+    public static void addTableCellAsTable(final PdfPTable table, final String label, final Object fieldValue,
+            final String nullValue, final Font headerFont, final Font valueFont) {
+        addTableCellAsTable(table, label, fieldValue, nullValue, headerFont, valueFont, null);
     }
 }
