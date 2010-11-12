@@ -9,27 +9,26 @@
 <html>
 <head>
 
-	<script type="text/javascript" src="js/core/lib/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="/js/core/lib/jquery-1.4.2.min.js"></script>
 
 	<script type="text/javascript">
 
 		jQuery(document).ready(function(){
 			$.ajax({
-				url: "handleRestart.html",
+				url: 'handleRestart.html',
 				type: 'POST',
 				complete: function(XMLHttpRequest, textStatus) {
-					setTimeout("checkStatus();",5000);
+					setTimeout('checkStatus();',5000);
 				}
 			});
 		});
 
 		function checkStatus() {
 			$.ajax({
-				url: "restartPage.html?message=noMessage",
+				url: 'restartPage.html?message=noMessage',
 				type: 'GET',
 				complete: function(XMLHttpRequest, textStatus) {
 					if (XMLHttpRequest.status == 200) {
-						//window.location = "page/plugins/pluginInfoView.html?iframe=true&pluginStatusError=false&pluginStatusMessageHeader=${messageHeader}&pluginStatusMessage=${message}";
 						window.location = "restartInfoView.html?message=${message}";
 						return;
 					} else {
