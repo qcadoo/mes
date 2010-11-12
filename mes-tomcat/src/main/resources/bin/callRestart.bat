@@ -37,8 +37,14 @@ shift
 goto setArgs
 :doneSetArgs
 
+
 timeout /T 5 /NOBREAK
 
-start /b %EXECUTABLE% run
+
+call "%EXECUTABLE%" start
+
+
+exit
+
 
 :end

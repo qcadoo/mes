@@ -38,8 +38,10 @@ goto setArgs
 :doneSetArgs
 
 
-start %CATALINA_HOME%\bin\callRestart.bat
+start /min %CATALINA_HOME%\bin\callRestart.bat
 
-call "%EXECUTABLE%" stop
+
+start /b %EXECUTABLE% stop
+
 
 :end
