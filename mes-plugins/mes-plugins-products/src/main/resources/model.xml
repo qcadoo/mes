@@ -30,7 +30,7 @@
 		</text>
 		<date name="effectiveDateFrom" />
 		<date name="effectiveDateTo" />
-		<belongsTo name="product" model="product" lookupField="name" lazy="false">
+		<belongsTo name="product" model="product" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" />
