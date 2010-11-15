@@ -30,6 +30,8 @@ public final class SessionExpirationFilter implements Filter {
         chain.doFilter(request, redirectResponseWrapper);
 
         if (redirectResponseWrapper.getRedirect() != null) {
+            System.out.println("DCBA");
+            System.out.println(redirectResponseWrapper.getRedirect());
             if (redirectResponseWrapper.getRedirect().contains("logout=true")) {
                 httpResponse.sendRedirect(redirectResponseWrapper.getRedirect());
             } else {
