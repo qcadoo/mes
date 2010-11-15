@@ -3,6 +3,7 @@ package com.qcadoo.mes.products.print.pdf;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
@@ -40,10 +42,13 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
 
     private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementPdfService.class);
 
+    private DecimalFormat df;
+
     @Override
     public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
         try {
+            df = (DecimalFormat) DecimalFormat.getInstance(locale);
             String fileName = getFileName((Date) entity.getField("date")) + PdfUtil.PDF_EXTENSION;
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
@@ -119,7 +124,10 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             } else {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
-            table.addCell(new Phrase(order.getField("plannedQuantity").toString(), PdfUtil.getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(df.format(((BigDecimal) order.getField("plannedQuantity")).stripTrailingZeros()), PdfUtil
+                    .getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
 
@@ -139,7 +147,9 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             } else {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
-            table.addCell(new Phrase(entry.getValue().toEngineeringString(), PdfUtil.getArialBold9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(df.format(entry.getValue().stripTrailingZeros()), PdfUtil.getArialBold9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
     }

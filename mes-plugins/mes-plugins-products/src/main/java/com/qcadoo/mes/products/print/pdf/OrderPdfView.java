@@ -79,14 +79,14 @@ public final class OrderPdfView extends ProductsPdfView {
                 entity.getField("effectiveDateFrom"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.plannedQuantity.label", locale),
-                entity.getField("plannedQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
+                entity.getField("plannedQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark(), df);
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.effectiveDateTo.label", locale),
                 entity.getField("effectiveDateTo"),
                 getTranslationService().translate("products.order.report.effectiveDateToState", locale),
                 PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.doneQuantity.label", locale),
-                entity.getField("doneQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
+                entity.getField("doneQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark(), df);
         PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.startWorker.label", locale),
                 entity.getField("startWorker"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         Entity instruction = (Entity) entity.getField("instruction");
