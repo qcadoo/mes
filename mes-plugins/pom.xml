@@ -17,7 +17,7 @@
 	<description></description>
 
 	<properties>
-		<mes.plugin.identifier></mes.plugin.identifier>
+		<mes.plugin.identifier>${pom.artifactId}</mes.plugin.identifier>
 		<mes.plugin.dependencies></mes.plugin.dependencies>
 	</properties>
 

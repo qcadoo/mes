@@ -53,7 +53,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
-                    getTranslationService().translate("products.report.in", locale)));
+                    getTranslationService().translate("products.report.in", locale), getFontsPath()));
             document.setMargins(8, 80, 40, 100);
             buildPdfMetadata(document, locale);
             writer.createXmpMetadata();
