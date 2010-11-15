@@ -10,12 +10,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
+import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Paragraph;
@@ -35,8 +35,6 @@ public final class PdfUtil {
     private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
 
     public static final String PDF_EXTENSION = ".pdf";
-
-    private static final String FONT_PATH = "fonts/Arial.ttf";
 
     private static Font arialBold19Light;
 
@@ -70,14 +68,24 @@ public final class PdfUtil {
 
     }
 
-    public static void prepareFontsAndColors() throws DocumentException, IOException {
+    public static void prepareFontsAndColors(final String fontsPath) throws DocumentException, IOException {
         if (!initialized) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Pdf fonts and color initialization");
+                LOG.debug("Fonts path: " + fontsPath);
             }
-            ClassPathResource classPathResource = new ClassPathResource(FONT_PATH);
-            FontFactory.register(classPathResource.getPath());
-            arial = BaseFont.createFont(classPathResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            if (fontsPath == null) {
+                LOG.warn("Fonts path is null, using embedded font helvetica");
+                arial = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
+            } else {
+                try {
+                    FontFactory.register(fontsPath);
+                    arial = BaseFont.createFont(fontsPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                } catch (ExceptionConverter e) {
+                    LOG.warn("Font not found, using embedded font helvetica");
+                    arial = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
+                }
+            }
             lightColor = new Color(77, 77, 77);
             Color darkColor = new Color(26, 26, 26);
             lineDarkColor = new Color(102, 102, 102);

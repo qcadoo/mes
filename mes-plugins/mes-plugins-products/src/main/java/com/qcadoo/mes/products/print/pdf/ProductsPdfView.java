@@ -8,7 +8,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
 
 import com.lowagie.text.Document;
@@ -27,6 +29,15 @@ public abstract class ProductsPdfView extends AbstractPdfView {
 
     protected DecimalFormat df;
 
+    @Value("${windowsFonts}")
+    private String windowsFontsPath;
+
+    @Value("${macosFonts}")
+    private String macosFontsPath;
+
+    @Value("${linuxFonts}")
+    private String linuxFontsPath;
+
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -44,7 +55,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
             throws DocumentException {
         super.prepareWriter(model, writer, request);
         writer.setPageEvent(new PdfPageNumbering(translationService.translate("products.report.page", request.getLocale()),
-                translationService.translate("products.report.in", request.getLocale())));
+                translationService.translate("products.report.in", request.getLocale()), getFontsPath()));
     }
 
     @Override
@@ -72,4 +83,15 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     }
 
     protected abstract void addTitle(final Document document, final Locale locale);
+
+    protected final String getFontsPath() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return windowsFontsPath;
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
+            return macosFontsPath;
+        } else if (SystemUtils.IS_OS_LINUX) {
+            return linuxFontsPath;
+        }
+        return null;
+    }
 }

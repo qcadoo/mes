@@ -17,10 +17,13 @@ public final class PdfPageNumbering extends PdfPageEventHelper {
 
     private final String in;
 
-    public PdfPageNumbering(final String page, final String in) {
+    private final String fontsPath;
+
+    public PdfPageNumbering(final String page, final String in, final String fontsPath) {
         super();
         this.page = page;
         this.in = in;
+        this.fontsPath = fontsPath;
     }
 
     /**
@@ -31,7 +34,7 @@ public final class PdfPageNumbering extends PdfPageEventHelper {
         total = writer.getDirectContent().createTemplate(100, 100);
         total.setBoundingBox(new Rectangle(-20, -20, 100, 100));
         try {
-            PdfUtil.prepareFontsAndColors();
+            PdfUtil.prepareFontsAndColors(fontsPath);
         } catch (Exception e) {
             throw new ExceptionConverter(e);
         }

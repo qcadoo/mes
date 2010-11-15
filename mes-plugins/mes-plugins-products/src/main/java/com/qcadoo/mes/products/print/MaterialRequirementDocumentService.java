@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -32,6 +33,15 @@ public abstract class MaterialRequirementDocumentService {
     private static final String MATERIAL_COMPONENT = "component";
 
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
+
+    @Value("${windowsFonts}")
+    private String windowsFontsPath;
+
+    @Value("${macosFonts}")
+    private String macosFontsPath;
+
+    @Value("${linuxFonts}")
+    private String linuxFontsPath;
 
     @Value("${reportPath}")
     private String path;
@@ -75,6 +85,17 @@ public abstract class MaterialRequirementDocumentService {
 
     protected final TranslationService getTranslationService() {
         return translationService;
+    }
+
+    protected final String getFontsPath() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return windowsFontsPath;
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
+            return macosFontsPath;
+        } else if (SystemUtils.IS_OS_LINUX) {
+            return linuxFontsPath;
+        }
+        return null;
     }
 
 }
