@@ -17,6 +17,7 @@
 			<xs:element name="onView" type="hookType" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="name" type="identifierType" use="required" />
+		<xs:attribute name="menuable" type="xs:boolean" default="false" />
 		<xs:attribute name="model" type="identifierType" use="required" />
 	</xs:complexType>
 	
