@@ -114,7 +114,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	function block() {
-		element.block({ message: mainController.getTranslation("commons.loading"), showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+		element.block({ message: '<div class="loading_div">'+mainController.getTranslation("commons.loading")+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
             border: 'none', 
             padding: '15px', 
             backgroundColor: '#000', 

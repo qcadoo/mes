@@ -27,11 +27,16 @@
 			$.ajax({
 				url: 'restartPage.html?message=noMessage',
 				type: 'GET',
+				timeout: 2000, 
 				complete: function(XMLHttpRequest, textStatus) {
-					if (XMLHttpRequest.status == 200) {
-						window.location = "restartInfoView.html?message=${message}";
-						return;
-					} else {
+					try {
+						if (XMLHttpRequest.status == 200) {
+							window.location = "restartInfoView.html?message=${message}";
+							return;
+						} else {
+							setTimeout("checkStatus();",1000);
+						}
+					} catch (e) {
 						setTimeout("checkStatus();",1000);
 					}
 				}

@@ -71,5 +71,15 @@ td.fieldRequired textarea {
 
 input.readonly, 
 textarea.readonly {
-	//background: #CCCCCC;
+}
+
+.loading_div {
+	height: 32px;
+	display: inline-block;
+	line-height: 32px;
+	//background-image:url('/img/core/loading_indicator.gif');
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	//padding-left: 34px;
+	margin: auto;
 }

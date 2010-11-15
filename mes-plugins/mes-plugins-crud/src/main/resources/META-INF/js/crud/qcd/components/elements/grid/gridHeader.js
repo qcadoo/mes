@@ -157,7 +157,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 				if (headerElements.filterButton.hasClass("headerButtonEnabled")) {
 					filterClicked();
 				}
-			}, "searchIcon16.png");
+			}, "filterIcon16_dis.png");
 			headerElement.append(headerElements.filterButton);
 			setEnabledButton(headerElements.filterButton, false);
 		}
