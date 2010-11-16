@@ -368,6 +368,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function onPostDataChange(postdata) {
 		blockGrid();
 		if (currentState.searchEnabled) {
+			QCD.info("filters");
+			QCD.info(postdata.filters);
 			var postFilters = JSON.parse(postdata.filters);
 			var filterArray = new Array();
 			for (var i in postFilters.rules) {

@@ -42,8 +42,6 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		} else {
 			this.input.val(selected);
 		}
-		
-		this.input.attr('title', selected);
 	}
 	
 	this.setComponentState = function(state) {
