@@ -1,4 +1,11 @@
 /*
+ * ********************************************************************
+ * Code developed by amazing QCADOO developers team.
+ * Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+ * ********************************************************************
+ */
+
+/*
  *
  * jqTransform
  * by mathieu vilaplana mvilaplana@dfc-e.com
