@@ -114,6 +114,10 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	
 	this.paging_setPageNo = function(pageNoElement) {
 		var pageNoValue = pageNoElement.val();
+		if (! pageNoValue || $.trim(pageNoValue) == "") {
+			pageNoElement.addClass("inputError");
+			return;
+		}
 		if (! /^\d*$/.test(pageNoValue)) {
 			pageNoElement.addClass("inputError");
 			return;
@@ -127,7 +131,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 			pageNoElement.addClass("inputError");
 			return;
 		}
-		pagingVars.first = pagingVars.max * (pageNoValue - 1);
+		pagingVars.first = pagingVars.max * (intValue - 1);
 		onPagingEvent();
 	}
 	
