@@ -84,9 +84,9 @@ textarea.readonly {
 	height: 32px;
 	display: inline-block;
 	line-height: 32px;
-	//background-image:url('/img/core/loading_indicator32.gif');
+	background-image:url('/img/core/loading_indicator32-1.gif');
 	background-repeat: no-repeat;
-	background-position: 0 0;
-	//padding-left: 34px;
+	background-position: 0 0px;
+	padding-left: 34px;
 	margin: auto;
 }

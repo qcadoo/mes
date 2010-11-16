@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
+<categories>
+	<row NAME="categories" ITEM="category 1" />
+	<row NAME="categories" ITEM="category 2" />
+	<row NAME="categories" ITEM="category 3" />
+	<row NAME="categories" ITEM="category 4" />
+	<row NAME="machines" ITEM="lathe" />
+	<row NAME="machines" ITEM="guillotine" />
+	<row NAME="machines" ITEM="furnace" />
+</categories>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ********************************************************************
@@ -10,6 +10,6 @@
 
 <units>
 	<row NAME="kg" />
-	<row NAME="szt" />
+	<row NAME="units" />
 	<row NAME="ml" />
 </units>
