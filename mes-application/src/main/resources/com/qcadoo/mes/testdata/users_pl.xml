@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ********************************************************************
@@ -7,7 +8,6 @@
 
 -->
 
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <categories>
 	<row LOGIN="adam" EMAIL="adam.rataj@email.com" FIRSTNAME="Adam" LASTNAME="Rataj" ROLE="ROLE_ADMIN" />
 	<row LOGIN="john.ford" EMAIL="john.ford@email.com" FIRSTNAME="John" LASTNAME="Ford" ROLE="ROLE_ADMIN" />
