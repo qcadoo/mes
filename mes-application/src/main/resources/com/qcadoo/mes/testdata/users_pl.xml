@@ -1,12 +1,3 @@
-<!--
-
-    ********************************************************************
-    Code developed by amazing QCADOO developers team.
-    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
-    ********************************************************************
-
--->
-
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <categories>
 	<row LOGIN="adam" EMAIL="adam.rataj@email.com" FIRSTNAME="Adam" LASTNAME="Rataj" ROLE="ROLE_ADMIN" />
