@@ -256,9 +256,7 @@ public final class PdfUtil {
             cellTable.addCell(new Phrase(nullValue, valueFont));
         } else {
             if (value instanceof BigDecimal && df != null) {
-                cellTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
                 cellTable.addCell(new Phrase(df.format(((BigDecimal) value).stripTrailingZeros()), valueFont));
-                cellTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             } else {
                 cellTable.addCell(new Phrase(value.toString(), valueFont));
             }
