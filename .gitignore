@@ -1,6 +1,7 @@
 .classpath
 .project
 .settings
+.DS_Store
 target
 mes.log*
 mes-application/src/main/java/HibernateTest.java
