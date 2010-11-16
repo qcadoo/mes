@@ -109,6 +109,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	this.paging_onRecordsNoSelectChange = function(recordsNoSelectElement) {
 		var recordsNoSelectValue = recordsNoSelectElement.val();
 		pagingVars.max = parseInt(recordsNoSelectValue);
+		pagingVars.first = 0;
 		onPagingEvent();
 	}
 	
