@@ -1,4 +1,13 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
 <spread_data type="spread">
 <header> 
 	<form_name>QMES_MM_PRODUCT_F</form_name>
