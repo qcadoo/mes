@@ -1,3 +1,12 @@
+<%--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+--%>
+
 <![CDATA[ERROR PAGE: ${exceptionMessage}]]>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>

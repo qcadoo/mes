@@ -1,3 +1,10 @@
+/**
+ * ********************************************************************
+ * Code developed by amazing QCADOO developers team.
+ * Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+ * ********************************************************************
+ */
+
 package com.qcadoo.mes.crud;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -177,6 +184,10 @@ public final class CrudController {
 
         ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
+
+        // for (Map.Entry<String, ErrorMessage> error : entity.getErrors().entrySet()) {
+        // System.out.println(" ----> " + error.getKey() + ", " + error.getValue().getMessage());
+        // }
 
         if (entity.isValid()) {
             responseViewValue.addSuccessMessage(translationService.translate(

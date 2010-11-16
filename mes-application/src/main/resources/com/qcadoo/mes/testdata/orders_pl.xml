@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><spread_data type="spread">
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
 <header><form_name>QMES_WIP_ORDER_F</form_name><form_title_id>FRM_QMESV_SPREAD_WIP_ORDER_F</form_title_id>
 <form_title>FRM_QMESV_SPREAD_WIP_ORDER_F</form_title></header><columns>
 <column caption="TXT_ORDER_ID" name="ORDER_ID" nlsID="TXT_ORDER_ID" type="NUMBER"/>

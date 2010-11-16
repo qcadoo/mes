@@ -1,3 +1,10 @@
+/**
+ * ********************************************************************
+ * Code developed by amazing QCADOO developers team.
+ * Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+ * ********************************************************************
+ */
+
 package com.qcadoo.mes.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -241,7 +248,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         for (FieldDefinition fieldDefinition : fields.values()) {
             if (fieldDefinition.getType() instanceof HasManyType) {
                 HasManyType hasManyFieldType = (HasManyType) fieldDefinition.getType();
-                List<?> children = (List<?>) entityService.getField(databaseEntity, fieldDefinition);
+                EntityList children = (EntityList) entityService.getField(databaseEntity, fieldDefinition);
                 InternalDataDefinition childDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
                 if (HasManyType.Cascade.NULLIFY.equals(hasManyFieldType.getCascade())) {
                     for (Object child : children) {
@@ -253,7 +260,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
                         }
                     }
                 } else {
-                    for (Object child : children) {
+                    for (Object child : children.find().includeDeleted().list().getEntities()) {
                         deleteEntity(childDataDefinition, entityService.getId(child), hardDelete);
                     }
                 }

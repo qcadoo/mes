@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
 <qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="productGridView" model="product" menuable="true">
 		<component type="window" name="mainWindow">
@@ -39,7 +48,7 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.productDetailsForm}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon24_2.png"
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
 						action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{mainWindow.productDetailsForm}.performCancel;" />

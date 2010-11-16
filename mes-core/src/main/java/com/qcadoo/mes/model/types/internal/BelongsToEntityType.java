@@ -1,3 +1,10 @@
+/**
+ * ********************************************************************
+ * Code developed by amazing QCADOO developers team.
+ * Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+ * ********************************************************************
+ */
+
 package com.qcadoo.mes.model.types.internal;
 
 import java.util.LinkedHashMap;

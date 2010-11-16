@@ -1,3 +1,10 @@
+/**
+ * ********************************************************************
+ * Code developed by amazing QCADOO developers team.
+ * Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+ * ********************************************************************
+ */
+
 .component_container_form {
 	margin: 20px 20px 0;
 	padding: 0;
@@ -325,10 +332,11 @@
 }
 .component_container_form_w .lookupValueWrapper .lookupLoading {
 	position: absolute;
-	top: 3px; right: 23px;
+	top: 3px; right: 22px;
 	width: 16px;
 	height: 16px;
-	background: transparent url(/css/core/images/loading.gif) no-repeat right center;
+	//background: transparent url(/css/core/images/loading.gif) no-repeat right center;
+	background: transparent url(/img/core/loading_indicator16.gif) no-repeat right center;
 	display: none;
 }
 

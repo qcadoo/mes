@@ -252,6 +252,26 @@
 					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
+			<plugin>
+	            <groupId>com.mycila.maven-license-plugin</groupId>
+	            <artifactId>maven-license-plugin</artifactId>
+	            <configuration>
+        	        <header>licence_include.txt</header>
+        	        <strictCheck>true</strictCheck>
+        	        <aggregate>true</aggregate>
+        	        <keywords>
+        	        	<keyword>copyright</keyword>
+        	        	<keyword>qcadoo</keyword>
+					</keywords>
+        	        <includes>
+	                    <include>src/**</include>
+        	        </includes>
+        	        <excludes>
+	        	        <exclude>**/lib/**</exclude>
+	        	        <exclude>mes-tomcat/**</exclude>
+        	        </excludes>
+    	        </configuration>
+	        </plugin>
 		</plugins>
 	</build>
 
@@ -336,6 +356,17 @@
 		<repository>
 			<id>codehaus-repository</id>
 			<url>http://repository.codehaus.org/</url>
+		</repository>
+		<repository>
+    		<id>mc-release</id>
+		    <name>Local Maven repository of releases</name>
+		    <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+		    <snapshots>
+		        <enabled>false</enabled>
+		    </snapshots>
+		    <releases>
+		        <enabled>true</enabled>
+		    </releases>
 		</repository>
 	</repositories>
 

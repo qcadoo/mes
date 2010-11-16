@@ -1,3 +1,10 @@
+/**
+ * ********************************************************************
+ * Code developed by amazing QCADOO developers team.
+ * Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+ * ********************************************************************
+ */
+
 .elementHeader {
 	background: #f2f2f2;
 	line-height: 28px;
@@ -54,15 +61,14 @@ div.headerActionButton.headerButtonEnabled.headerButtonActive a span {
 	background-image:url('/css/core/menu/images/lt_activ_r.png');
 }
 div.headerActionButton.headerButtonEnabled.headerButtonActive:hover {
-	background-image:url('/css/core/menu/images/lt_activ_c.png');
+	background-image:url('/css/core/menu/images/lt_activ_c_hover.png');
 }
 div.headerActionButton.headerButtonEnabled.headerButtonActive:hover a {
-	background-image:url('/css/core/menu/images/lt_activ_l.png');
+	background-image:url('/css/core/menu/images/lt_activ_l_hover.png');
 	background-position: 0px 0px;
-	color: red;
 }
 div.headerActionButton.headerButtonEnabled.headerButtonActive:hover a span {
-	background-image:url('/css/core/menu/images/lt_activ_r.png');
+	background-image:url('/css/core/menu/images/lt_activ_r_hover.png');
 }
 div.headerActionButton a span {
 	display:block;
