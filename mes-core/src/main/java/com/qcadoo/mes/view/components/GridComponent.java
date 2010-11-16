@@ -419,7 +419,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
         }
 
         String[] gridMessages = new String[] { "addFilter", "removeFilter", "perPage", "new", "delete", "up", "down",
-                "noRowSelectedError", "confirmDeleteMessage" };
+                "noRowSelectedError", "confirmDeleteMessage", "wrongSearchCharacterError" };
 
         for (String gridMessage : gridMessages) {
             translationsMap.put(

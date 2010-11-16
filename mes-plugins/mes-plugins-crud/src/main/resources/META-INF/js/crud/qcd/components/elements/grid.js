@@ -368,9 +368,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function onPostDataChange(postdata) {
 		blockGrid();
 		if (currentState.searchEnabled) {
-			QCD.info("filters");
-			QCD.info(postdata.filters);
-			var postFilters = JSON.parse(postdata.filters);
+			try {
+				var postFilters = JSON.parse(postdata.filters);
+			} catch (e) {
+				QCD.info("error in filters");
+				QCD.info(postdata.filters);
+				var wrongSearchCharacterError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".wrongSearchCharacterError";
+				mainController.showMessage("error", mainController.getTranslation(wrongSearchCharacterError));
+				unblockGrid();
+				return;
+			}
 			var filterArray = new Array();
 			for (var i in postFilters.rules) {
 				var filterRule = postFilters.rules[i];
