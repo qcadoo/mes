@@ -256,8 +256,20 @@
 	            <groupId>com.mycila.maven-license-plugin</groupId>
 	            <artifactId>maven-license-plugin</artifactId>
 	            <configuration>
-        	        <header>header.txt</header>
+        	        <header>licence_include.txt</header>
         	        <strictCheck>true</strictCheck>
+        	        <aggregate>true</aggregate>
+        	        <keywords>
+        	        	<keyword>copyright</keyword>
+        	        	<keyword>qcadoo</keyword>
+					</keywords>
+        	        <includes>
+	                    <include>src/**</include>
+        	        </includes>
+        	        <excludes>
+	        	        <exclude>**/lib/**</exclude>
+	        	        <exclude>mes-tomcat/**</exclude>
+        	        </excludes>
     	        </configuration>
 	        </plugin>
 		</plugins>

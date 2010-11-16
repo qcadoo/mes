@@ -1,3 +1,10 @@
+/*
+ * ********************************************************************
+ * Code developed by amazing QCADOO developers team.
+ * Copyright © Qcadoo Limited sp. z o.o. (2010)
+ * ********************************************************************
+ */
+
 var QCDSerializator = {};
 
 QCDSerializator.serializeForm = function(form) {

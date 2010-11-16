@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><spread_data type="spread"><header><form_name>QMES_MM_BOM_F</form_name>
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright © Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
 <form_title_id>FRM_QMESV_SPREAD_MM_BOM_F</form_title_id><form_title>FRM_QMESV_SPREAD_MM_BOM_F</form_title></header><columns>
 <column caption="TXT_BOM_ID" name="BOM_ID" nlsID="TXT_BOM_ID" type="NUMBER"/>
 <column caption="MTXT_PRODUCT_NR" name="PRODUCT_NR" nlsID="MTXT_PRODUCT_NR" type="VARCHAR2"/>

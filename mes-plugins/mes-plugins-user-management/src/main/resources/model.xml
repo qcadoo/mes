@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright © Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
 <qcd:models plugin="users" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="user">
 		<string name="userName" >

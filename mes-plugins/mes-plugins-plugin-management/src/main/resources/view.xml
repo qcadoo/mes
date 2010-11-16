@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright © Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
 <qcd:views plugin="plugins" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="pluginGridView" model="plugin" menuable="true">
 		<component type="window" name="mainWindow">
