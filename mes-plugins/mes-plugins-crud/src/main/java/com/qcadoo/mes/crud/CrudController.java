@@ -32,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.Component;
 import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
@@ -177,6 +178,10 @@ public final class CrudController {
 
         ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
+
+        for (Map.Entry<String, ErrorMessage> error : entity.getErrors().entrySet()) {
+            System.out.println(" ----> " + error.getKey() + ", " + error.getValue().getMessage());
+        }
 
         if (entity.isValid()) {
             responseViewValue.addSuccessMessage(translationService.translate(
