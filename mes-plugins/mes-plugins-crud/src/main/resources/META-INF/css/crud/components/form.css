@@ -325,7 +325,7 @@
 }
 .component_container_form_w .lookupValueWrapper .lookupValue {
 	position: absolute;
-	top: 4px; left: 8px;
+	top: 4px; left: 8px; right: 20px;
 	font: 11px arial;
 	height: 13px;
 	overflow: hidden;

@@ -130,11 +130,6 @@ public final class TestDataLoader {
 
         for (String attribute : attributes) {
             String value = fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue();
-            System.out.println(value);
-            // if ("".equals(value.trim()) || "''".equals(value)) {
-            // value = null;
-            // System.out.println("------");
-            // }
             values.put(attribute, value);
         }
 
@@ -160,8 +155,12 @@ public final class TestDataLoader {
         if (!values.get("ean").isEmpty()) {
             product.setEan(values.get("ean"));
         }
-        product.setName(values.get("name"));
-        product.setNumber(values.get("product_nr"));
+        if (!values.get("name").isEmpty()) {
+            product.setName(values.get("name"));
+        }
+        if (!values.get("product_nr").isEmpty()) {
+            product.setNumber(values.get("product_nr"));
+        }
         product.setTypeOfMaterial(getRandomTypeOfMaterial());
         product.setUnit(getRandomUnit());
         sessionFactory.getCurrentSession().save(product);
@@ -198,10 +197,18 @@ public final class TestDataLoader {
 
     private void addUser(final Map<String, String> values) {
         UsersUser user = new UsersUser();
-        user.setUserName(values.get("login"));
-        user.setEmail(values.get("email"));
-        user.setFirstName(values.get("firstname"));
-        user.setLastName(values.get("lastname"));
+        if (!values.get("login").isEmpty()) {
+            user.setUserName(values.get("login"));
+        }
+        if (!values.get("email").isEmpty()) {
+            user.setEmail(values.get("email"));
+        }
+        if (!values.get("firstname").isEmpty()) {
+            user.setFirstName(values.get("firstname"));
+        }
+        if (!values.get("lastname").isEmpty()) {
+            user.setLastName(values.get("lastname"));
+        }
         user.setUserGroup(getGroupByRole(values.get("role")));
         user.setPassword("a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
 
@@ -374,7 +381,9 @@ public final class TestDataLoader {
             instruction.setId(Long.valueOf(values.get("bom_id")));
             instruction.setDateFrom(dateFrom);
             instruction.setDateTo(dateTo);
-            instruction.setDescription(values.get("description"));
+            if (!values.get("description").isEmpty()) {
+                instruction.setDescription(values.get("description"));
+            }
             instruction.setMaster(defaultInstruction == null);
             instruction.setName(values.get("name"));
             instruction.setNumber(values.get("bom_nr"));
