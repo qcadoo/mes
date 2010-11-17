@@ -129,7 +129,13 @@ public final class TestDataLoader {
         Node fstNode = nodeLst.item(s);
 
         for (String attribute : attributes) {
-            values.put(attribute, fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue());
+            String value = fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue();
+            System.out.println(value);
+            // if ("".equals(value.trim()) || "''".equals(value)) {
+            // value = null;
+            // System.out.println("------");
+            // }
+            values.put(attribute, value);
         }
 
         if ("products".equals(type)) {
@@ -151,7 +157,9 @@ public final class TestDataLoader {
         ProductsProduct product = new ProductsProduct();
         product.setId(Long.valueOf(values.get("product_id")));
         product.setCategory(getRandomDictionaryItem("categories"));
-        product.setEan(values.get("ean"));
+        if (!values.get("ean").isEmpty()) {
+            product.setEan(values.get("ean"));
+        }
         product.setName(values.get("name"));
         product.setNumber(values.get("product_nr"));
         product.setTypeOfMaterial(getRandomTypeOfMaterial());
