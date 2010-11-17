@@ -83,6 +83,9 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	} 
 	
 	this.isChanged = function() {
+		if (!currentValue) {
+			return false;
+		}
 		return currentValue != this.input.val();
 	}
 
