@@ -14,7 +14,9 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 
 	var mainController = _mainController;
 	var elementPath = this.elementPath;
-	var selectedValue = null;
+	var stateSelectedValue = null;
+	
+	var input = this.input;
 
 	this.getComponentData = function() {
 		var selected = this.input.val();
@@ -24,28 +26,36 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		if (data == null) {
-			return;
-		}
-		var previousSelected = this.input.val();
-		this.input.children().remove();
-		var blankValue = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".blankValue";
-		this.input.append("<option value=''>"+mainController.getTranslation(blankValue)+"</option>");
-		for (var i in data.values) {
-			var value = data.values[i];
-			this.input.append("<option value='"+value.key+"'>"+value.value+"</option>");
-		}
-		selected = data.value;
-		
-		if (!selected || $.trim(selected) == "") {
-			this.input.val(previousSelected);
-		} else {
-			this.input.val(selected);
-		}
+		setData(data);
 	}
 	
 	this.setComponentState = function(state) {
-		selectedValue = state.value;
+		stateSelectedValue = state.value;
 	}
 	
+	function setData(data) {
+		if (data == null) {
+			return;
+		}
+		var previousSelected = input.val();
+		input.children().remove();
+		var blankValue = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".blankValue";
+		input.append("<option value=''>"+mainController.getTranslation(blankValue)+"</option>");
+		for (var i in data.values) {
+			var value = data.values[i];
+			input.append("<option value='"+value.key+"'>"+value.value+"</option>");
+		}
+		
+		if (stateSelectedValue) {
+			selected = stateSelectedValue;
+		} else {
+			selected = data.value;
+		}
+		
+		if (!selected || $.trim(selected) == "") {
+			input.val(previousSelected);
+		} else {
+			input.val(selected);
+		}
+	}
 }
