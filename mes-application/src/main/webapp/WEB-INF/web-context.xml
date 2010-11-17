@@ -91,19 +91,7 @@
 	<bean class="org.codehaus.jackson.map.ObjectMapper" id="jacksonObjectMapper" />
 
 	<bean id="messageSource"
-		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>WEB-INF/locales/messages</value>
-				<value>classpath:locales/products</value>
-				<value>classpath:locales/dictionaries</value>
-				<value>classpath:locales/plugins</value>
-				<value>classpath:locales/users</value>
-				<value>classpath:locales/crud</value>
-				<value>classpath:locales/menu</value>
-				<value>classpath:locales/warehouse</value>
-			</list>
-		</property> 
+		class="com.qcadoo.mes.application.ResourceBundleMessageSource">		
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 
