@@ -30,7 +30,7 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	var isTriggerBootonHovered = false;
 	
 	var constructor = function(_this) {
-		options = $.datepicker.regional['pl'];
+		options = $.datepicker.regional[locale];
 		
 		if(!options) {
 			options = $.datepicker.regional[''];
