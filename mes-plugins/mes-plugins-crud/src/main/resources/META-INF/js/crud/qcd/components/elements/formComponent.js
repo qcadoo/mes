@@ -32,6 +32,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 
 	function constructor(_this) {
 		_this.registerCallbacks();
+		currentValue = _this.input.val();
 	}
 	
 	this.registerCallbacks = function() {
@@ -83,9 +84,6 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	} 
 	
 	this.isChanged = function() {
-		if (!currentValue) {
-			return false;
-		}
 		return currentValue != this.input.val();
 	}
 
