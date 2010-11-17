@@ -133,7 +133,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         UsersGroup group = new UsersGroup();
         group.setName(name);
         group.setRole(role);
-        group.setDescription("");
+        group.setDescription(null);
         sessionFactory.getCurrentSession().save(group);
         return group;
     }
@@ -153,7 +153,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         user.setEmail(email);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setDescription("");
+        user.setDescription(null);
         user.setPassword(password);
         sessionFactory.getCurrentSession().save(user);
     }
@@ -191,7 +191,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         plugin.setStatus("active");
         plugin.setVendor("Qcadoo Limited");
         plugin.setVersion("0.1-SNAPSHOT");
-        plugin.setDescription("");
+        plugin.setDescription(null);
         sessionFactory.getCurrentSession().save(plugin);
     }
 
