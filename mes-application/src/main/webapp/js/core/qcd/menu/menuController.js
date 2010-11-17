@@ -74,6 +74,10 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	function onBottomItemClick(itemElement) {
 		itemElement.children().blur();
 		
+		if (! canChangePage()) {
+			return;
+		}
+		
 		var buttonName = itemElement.attr("id").substring(18);
 		var selectedItem = model.selectedItem.itemsMap[buttonName];
 		
@@ -181,6 +185,10 @@ QCD.menu.MenuController = function(menuStructure, _windowController) {
 	
 	function changePage(page) {
 		windowController.onMenuClicked(page);
+	}
+	
+	function canChangePage() {
+		return windowController.canChangePage();
 	}
 	
 	constructor(menuStructure);

@@ -86,6 +86,10 @@
 			controller.init(entityId, serializationObject);
 		}
 
+		window.canClose = function() {
+			return controller.canClose();
+		}
+
 		window.getComponent = function(componentPath) {
 			return controller.getComponent(componentPath);
 		}

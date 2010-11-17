@@ -371,30 +371,34 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	var getTranslation = this.getTranslation;
 	
 	this.goToPage = function(url) {
-		var serializationObject = {
-			value: rootEntityId,
-			components: getValueData()
+		if(canClose()) {
+			var serializationObject = {
+				value: rootEntityId,
+				components: getValueData()
+			}
+			window.parent.goToPage(url, serializationObject);
 		}
-		window.parent.goToPage(url, serializationObject);
 	}
 	var goToPage = this.goToPage;
 	
 	this.goBack = function() {
+		if(canClose()) {
+			window.parent.goBack();
+		}
+	}
+	this.canClose = canClose;
+	
+	function canClose() {
 		changed = false;
 		for (var i in pageComponents) {
 			if(pageComponents[i].isChanged()) {
 				changed = true;
 			}
 		}
-		
-		goBackConfirmation = true;
-		
 		if(changed) {
-			goBackConfirmation = window.confirm(getTranslation('commons.backWithChangesConfirmation'));
-		}
-		
-		if(goBackConfirmation) {		
-			window.parent.goBack();
+			return window.confirm(getTranslation('commons.backWithChangesConfirmation'));
+		} else {
+			return true;
 		}
 	}
 	

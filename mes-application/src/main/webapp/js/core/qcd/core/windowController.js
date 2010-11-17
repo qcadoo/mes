@@ -85,6 +85,13 @@ QCD.WindowController = function(_menuStructure) {
 		menuController.restoreState();
 	}
 	
+	this.canChangePage = function() {
+		if (iframe[0].contentWindow.canClose) {
+			return iframe[0].contentWindow.canClose();
+		}
+		return true;
+	}
+	
 	this.onMenuClicked = function(pageName) {
 		currentPage = pageName;
 		statesStack = new Array();
