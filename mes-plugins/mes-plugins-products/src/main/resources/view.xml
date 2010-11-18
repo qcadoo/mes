@@ -121,6 +121,7 @@
 				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom" />
 				<component type="input" name="effectiveDateTo" field="effectiveDateTo" />
 				<option type="header" value="false" />
+				<option type="expression" value="#name" />
 			</component>
 		</component>
 	</view>
@@ -155,6 +156,7 @@
 				</component>
 				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
+				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
 	</view>
