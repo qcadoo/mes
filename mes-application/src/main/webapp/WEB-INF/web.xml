@@ -28,11 +28,6 @@
 
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-
-	<!-- filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>*.pdf</url-pattern>
 	</filter-mapping>
 
@@ -43,13 +38,13 @@
 
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>j_spring_security_check</url-pattern>
+		<url-pattern>/j_spring_security_check</url-pattern>
 	</filter-mapping>
 
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>j_spring_security_logout</url-pattern>
-	</filter-mapping -->
+		<url-pattern>/j_spring_security_logout</url-pattern>
+	</filter-mapping>
 	
 	<filter>
         <filter-name>encoding-filter</filter-name>
