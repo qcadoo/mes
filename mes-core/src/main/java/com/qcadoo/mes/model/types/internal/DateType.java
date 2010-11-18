@@ -7,9 +7,12 @@
 
 package com.qcadoo.mes.model.types.internal;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
@@ -49,8 +52,15 @@ public final class DateType implements FieldType {
             return value;
         }
         try {
-            return new SimpleDateFormat(DATE_FORMAT).parse(String.valueOf(value));
-        } catch (ParseException e) {
+            DateTimeFormatter fmt = DateTimeFormat.forPattern(DATE_FORMAT);
+            DateTime dt = fmt.parseDateTime(String.valueOf(value));
+            int year = dt.getYear();
+            if (year < 1500 || year > 2500) {
+                validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidDateFormat");
+                return null;
+            }
+            return dt.toDate();
+        } catch (IllegalArgumentException e) {
             validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidDateFormat");
         }
         return null;
