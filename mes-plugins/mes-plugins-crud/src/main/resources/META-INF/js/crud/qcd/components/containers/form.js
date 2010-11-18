@@ -77,7 +77,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.performSave = function(actionsPerformer) {
 		block();
-		mainController.performSave(elementName, actionsPerformer);
+		mainController.performSave(elementName, actionsPerformer, function() {
+			unblock();
+		});
 	}
 	
 	this.performDelete = function(actionsPerformer) {
