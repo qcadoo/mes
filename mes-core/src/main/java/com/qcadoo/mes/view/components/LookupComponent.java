@@ -283,8 +283,16 @@ public final class LookupComponent extends AbstractComponent<LookupData> impleme
         addConstantsColumnToLookupGrid(gridComponent);
 
         for (ComponentOption rawOption : getRawOptions()) {
+
+            if (rawOption.getType().equals("orderable")) {
+                Map<String, String> newAttributes = new HashMap<String, String>();
+                newAttributes.put("value", rawOption.getValue() + ",lookupCodeVisible");
+                rawOption = new ComponentOption("orderable", newAttributes);
+            }
+
             gridComponent.addRawOption(rawOption);
         }
+
         gridComponent.addRawOption(new ComponentOption("isLookup", ImmutableMap.of("value", "true")));
 
         windowComponent.addComponent(gridComponent);

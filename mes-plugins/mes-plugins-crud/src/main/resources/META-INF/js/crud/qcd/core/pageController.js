@@ -19,6 +19,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	
 	var headerComponent = null;
 	
+	var messagesController;
+	
 	function constructor(_this) {
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
@@ -319,7 +321,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		if (window.parent && window.parent.addMessage) {
 			window.parent.addMessage(type, content);
 		} else {
-			alert(type+": "+content);
+			if (!messagesController) {
+				messagesController = new QCD.MessagesController();
+			}
+			messagesController.addMessage(type, content);
 		}
 	}
 	

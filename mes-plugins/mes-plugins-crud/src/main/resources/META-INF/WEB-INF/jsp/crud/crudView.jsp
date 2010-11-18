@@ -23,6 +23,7 @@
 	<link rel="stylesheet" href="../../css/core/qcd.css" type="text/css" />
 	<!--<link rel="stylesheet" href="../../css/menuRibbon.css" type="text/css" />-->
 	<link rel="stylesheet" href="../../css/core/menu/style.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/core/notification.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/window.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/grid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/form.css" type="text/css" />
@@ -38,6 +39,7 @@
 	<script type="text/javascript" src="../../js/core/lib/jquery.cookie.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery-ui-1.8.5.custom.min.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery-ui-i18n.js"></script>
+	<script type="text/javascript" src="../../js/core/lib/jquery.pnotify.min.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/encoder.js"></script>
 	
 	<script type="text/javascript" src="../../js/core/qcd/utils/logger.js"></script>
