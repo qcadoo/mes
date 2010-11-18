@@ -290,7 +290,7 @@
 				<option type="correspondingView" value="products/orderDetailsView" />
 				<option type="paginable" value="true" />
 				<option type="searchable" value="name,number,state" />
-				<option type="orderable" value="name,number" />
+				<option type="orderable" value="name,number,state" />
 				<option type="multiselect" value="true" />
 				<option type="fullScreen" value="true" />
 			</component>
