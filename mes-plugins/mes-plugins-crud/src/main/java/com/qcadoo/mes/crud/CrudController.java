@@ -39,7 +39,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.Component;
 import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
@@ -114,6 +113,7 @@ public final class CrudController {
 
         Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
 
+        String entityId = null;
         Entity entity = null;
         String componentName = "";
         ViewValue<Long> viewValue = null;
@@ -129,7 +129,7 @@ public final class CrudController {
 
             componentName = getComponentName(jsonBody);
 
-            String entityId = getJsonString(jsonBody, "entityId");
+            entityId = getJsonString(jsonBody, "entityId");
 
             if (entityId != null) {
                 entity = viewDefinition.getDataDefinition().get(Long.parseLong(entityId));
@@ -138,6 +138,11 @@ public final class CrudController {
 
         ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, componentName, false,
                 locale);
+
+        if (entityId != null && entity == null) {
+            responseViewValue.addErrorMessage(translationService.translate(
+                    Arrays.asList(new String[] { "core.message.entityNotFound" }), locale));
+        }
 
         return responseViewValue;
     }
@@ -185,10 +190,6 @@ public final class CrudController {
 
         ViewValue<Long> responseViewValue = viewDefinition.getValue(entity, selectedEntities, viewValue, triggerComponentName,
                 true, locale);
-
-        for (Map.Entry<String, ErrorMessage> error : entity.getErrors().entrySet()) {
-            System.out.println(" ----> " + error.getKey() + ", " + error.getValue().getMessage());
-        }
 
         if (entity.isValid()) {
             responseViewValue.addSuccessMessage(translationService.translate(

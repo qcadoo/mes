@@ -10,6 +10,8 @@ package com.qcadoo.mes.model.validators.internal;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class RequiredValidator implements FieldValidator {
@@ -25,6 +27,27 @@ public final class RequiredValidator implements FieldValidator {
             validatedEntity.addError(fieldDefinition, errorMessage);
             return false;
         }
+
+        if (fieldDefinition.getType().equals(BelongsToEntityType.class)) {
+            BelongsToType belongsToType = (BelongsToType) fieldDefinition.getType();
+            Long id = null;
+
+            if (value instanceof Long) {
+                id = (Long) value;
+            } else if (value instanceof Entity) {
+                id = ((Entity) value).getId();
+            } else {
+                id = Long.valueOf(value.toString());
+            }
+
+            Entity entity = belongsToType.getDataDefinition().get(id);
+
+            if (entity == null) {
+                validatedEntity.addError(fieldDefinition, errorMessage);
+                return false;
+            }
+        }
+
         return true;
     }
 

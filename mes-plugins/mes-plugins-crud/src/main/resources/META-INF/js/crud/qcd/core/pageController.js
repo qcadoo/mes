@@ -109,7 +109,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		});
 	}
 	
-	this.performSave = function(componentName, actionsPerformer) {
+	this.performSave = function(componentName, actionsPerformer, callback) {
 		QCD.info("save " +componentName);
 		var parameters = {
 			componentName: componentName,
@@ -123,6 +123,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 			setValueData(response);
 			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 				actionsPerformer.performNext();
+			}
+			if(callback) {
+				callback();
+			}
+		}, function(response) {
+			if(callback) {
+				callback();
 			}
 		});
 	}
