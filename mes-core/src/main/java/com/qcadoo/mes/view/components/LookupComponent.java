@@ -287,8 +287,7 @@ public final class LookupComponent extends AbstractComponent<LookupData> impleme
             if (rawOption.getType().equals("orderable")) {
                 Map<String, String> newAttributes = new HashMap<String, String>();
                 newAttributes.put("value", rawOption.getValue() + ",lookupCodeVisible");
-                ComponentOption lookupOptions = new ComponentOption("orderable", newAttributes);
-                rawOption = lookupOptions;
+                rawOption = new ComponentOption("orderable", newAttributes);
             }
 
             gridComponent.addRawOption(rawOption);
