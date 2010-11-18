@@ -74,6 +74,10 @@
 		window.hasMenuPosition = function(position) {
 			return windowController.hasMenuPosition(position);
 		}
+
+		window.getCurrentUserLogin = function() {
+			return "${userLogin}";
+		}
 	
 		window.translationsMap = new Object();
 		<c:forEach items="${commonTranslations}" var="translation">
