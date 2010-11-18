@@ -69,14 +69,26 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			if (!column.hidden) {
 				colNames.push(mainController.getTranslation(nameToTranslate)+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
-				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true, align: column.align});
+				
+				var stype = 'text';
+				var searchoptions = {};
+				if (column.values) {
+					var possibleValues = new Object();
+					possibleValues[""] = "";
+					for (var i in column.values) {
+						possibleValues[column.values[i].key] = mainController.getTranslation(column.values[i].value);
+					}
+					stype = 'select';
+					searchoptions.value = possibleValues;
+				}
+				
+				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true, 
+					align: column.align, stype: stype, searchoptions: searchoptions
+					});
 			} else {
 				hiddenColumnValues[column.name] = new Object();
 			}
 		}
-		
-		//colNames.push("");
-		//colModel.push({name:"empty", index:"empty", width:1020, sortable: false});
 		
 		gridParameters.sortColumns = options.sortColumns;
 		gridParameters.element = elementPath+"_grid";
