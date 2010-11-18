@@ -40,6 +40,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var hiddenColumnValues = new Object();
 	
+	var messages = {
+		noRowSelectedError: mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".noRowSelectedError"
+	}
+	
 	var defaultOptions = {
 		paging: true,
 		fullScreen: false,
@@ -490,8 +494,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				});
 			}
 		} else {
-			noRowSelectedError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".noRowSelectedError";
-			mainController.showMessage("error", mainController.getTranslation(noRowSelectedError));
+			mainController.showMessage("error", mainController.getTranslation(messages.noRowSelectedError));
 		}
 		
 	}
@@ -501,8 +504,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (currentState.selectedEntityId) {
 			mainController.performCallFunction(functionName, additionalAttribute, currentState.selectedEntityId, actionsPerformer);
 		} else {
-			noRowSelectedError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".noRowSelectedError";
-			mainController.showMessage("error", mainController.getTranslation(noRowSelectedError));
+			mainController.showMessage("error", mainController.getTranslation(messages.noRowSelectedError));
 		}
 	}
 
@@ -514,6 +516,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var lookupValue = hiddenColumnValues["lookupValue"][entityId];
 			var lookupCode = hiddenColumnValues["lookupCode"][entityId];
 			mainController.performLookupSelect(entityId, lookupValue, lookupCode, actionsPerformer);
+		} else {
+			mainController.showMessage("error", mainController.getTranslation(messages.noRowSelectedError));
 		}
 	}
 	var performLookupSelect = this.performLookupSelect;
