@@ -34,6 +34,7 @@ html>body .ui-pnotify {
 	min-height: 16px;
 	padding: 8px;
 	width: 282px;
+	-moz-border-radius: 0 0 0 0;
 }
 
 .ui-pnotify .ui-state-error {
@@ -62,6 +63,7 @@ html>body .ui-pnotify {
 .ui-pnotify-title {
 	display: block;
 	font-weight: bold;
+	font-size: 10px;
 	margin-bottom: .4em;
 	line-height: 16px;
 	vertical-align: middle;
@@ -70,6 +72,7 @@ html>body .ui-pnotify {
 
 .ui-pnotify-text {
 	display: block;
+	font-size: 10px;
 }
 
 .ui-pnotify-icon, .ui-pnotify-closer {
