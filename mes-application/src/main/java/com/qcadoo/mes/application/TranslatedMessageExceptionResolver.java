@@ -7,6 +7,10 @@
 
 package com.qcadoo.mes.application;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,12 +28,18 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     public static final String DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE = "exceptionMessage";
 
-    private static final String OBJECT_IN_USE = "Trying delete entity in use";
+    private final Map<String, String> translations = new HashMap<String, String>();
 
     private final String exceptionMessageAttribute = DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE;
 
     @Autowired
     private TranslationService translationService;
+
+    @PostConstruct
+    public void init() {
+        translations.put("Trying delete entity in use", "core.exception.illegalStateException.objectInUse");
+        translations.put("Entity.+ cannot be found", "core.exception.illegalStateException.entityNotFound");
+    }
 
     @Override
     protected ModelAndView doResolveException(final HttpServletRequest request, final HttpServletResponse response,
@@ -37,9 +47,12 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
         ModelAndView mv = super.doResolveException(request, response, handler, ex);
         if (mv != null) {
             String exceptionMessage = ex.getMessage();
-            if (OBJECT_IN_USE.equals(ex.getMessage())) {
-                exceptionMessage = translationService.translate("core.exception.illegalStateException.objectInUse",
-                        request.getLocale());
+
+            for (Map.Entry<String, String> translation : translations.entrySet()) {
+                if (exceptionMessage.matches(translation.getKey())) {
+                    exceptionMessage = translationService.translate(translation.getValue(), request.getLocale());
+                    break;
+                }
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Adding exception message to view: " + exceptionMessage);

@@ -152,9 +152,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	function onInputFocus() {
 		isFocused = true;
 		valueDivElement.hide();
-		inputElement.val(currentData.selectedEntityCode);
 		labelElement.html(labelFocus);
-		inputElement.attr('title', currentData.selectedEntityCode);
+		if (currentData.selectedEntityCode) {
+			inputElement.val(currentData.selectedEntityCode);
+			inputElement.attr('title', currentData.selectedEntityCode);
+		}
 	}
 	
 	function onInputBlur() {

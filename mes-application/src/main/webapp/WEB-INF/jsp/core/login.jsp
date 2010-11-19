@@ -56,20 +56,38 @@
 			
 			loginErrorMessagePanel = $("#loginErrorMessagePanel");
 			passwordErrorMessagePanel = $("#passwordErrorMessagePanel");
+
+			var usernameInput = $("#usernameInput");
+			var passwordInput = $("#passwordInput");
+			var loginButton = $("#loginButton");
 			
 			if (serverMessageType) {
 				showMessageBox(serverMessageType, serverMessageHeader, serverMessageContent);
 			}
+
+			if (window.parent.getCurrentUserLogin) {
+				var login = window.parent.getCurrentUserLogin();
+				usernameInput.val(login);
+				usernameInput.attr("disabled", "disabled");
+				$("#usernameInput_component_container_form_w").addClass("disabled");
+				passwordInput.focus();
+				$("#changeUserButton").show();
+			} else {
+				$("#changeUserButton").hide();
+				usernameInput.focus();
+				loginButton.css("display", "block");
+				loginButton.css("margin", "auto");
+				usernameInput.keypress(function(e) {
+					var key=e.keyCode || e.which;
+					if (key==13) {
+						ajaxLogin();
+					}
+				});
+			}
 			
 			$("#languageSelect").val("${currentLanguage}");
-			$("#usernameInput").focus();
-			$("#usernameInput").keypress(function(e) {
-				var key=e.keyCode || e.which;
-				if (key==13) {
-					ajaxLogin();
-				}
-			});
-			$("#passwordInput").keypress(function(e) {
+			
+			passwordInput.keypress(function(e) {
 				var key=e.keyCode || e.which;
 				if (key==13) {
 					ajaxLogin();
@@ -177,7 +195,7 @@
 				<form id="loginForm" name="loginForm" action="<c:url value='j_spring_security_check'/>" method="POST">
 			 		<div>
 			 			<label>${translation["security.form.label.login"]}</label>
-			 			<div class="component_container_form_w">
+			 			<div class="component_container_form_w" id="usernameInput_component_container_form_w" >
 							<div class="component_container_form_inner">
 								<div class="component_container_form_x"></div>
 								<div class="component_container_form_y"></div>
@@ -207,6 +225,7 @@
 			 			<label></label><input id="rememberMeCheckbox" type="checkbox" name="_spring_security_remember_me" /><label id="rememberMeLabel">${translation["security.form.label.rememberMe"]}</label>
 			 		</div>
 					<div id="loginButtonWrapper">
+			 			<a href="#" id="changeUserButton" onclick="window.parent.location='login.html'">${translation["security.form.button.changeUser"]}</a>
 			 			<a href="#" id="loginButton" onclick="ajaxLogin(); return false;"><span>${translation['security.form.button.logIn']}</span></a>
 					</div>
 			    </form>

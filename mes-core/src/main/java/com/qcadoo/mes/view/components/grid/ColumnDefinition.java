@@ -10,14 +10,18 @@ package com.qcadoo.mes.view.components.grid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 
 /**
@@ -52,8 +56,11 @@ public final class ColumnDefinition {
 
     private boolean hidden = false;
 
-    public ColumnDefinition(final String name) {
+    private final TranslationService translationService;
+
+    public ColumnDefinition(final String name, final TranslationService translationService) {
         this.name = name;
+        this.translationService = translationService;
     }
 
     public String getName() {
@@ -143,10 +150,44 @@ public final class ColumnDefinition {
             obj.put("link", link);
             obj.put("hidden", hidden);
             obj.put("align", getAlign());
+
+            if (fields.size() == 1) {
+                FieldDefinition fieldDefinition = fields.get(0);
+                if (fieldDefinition.getType() instanceof EnumType) {
+                    EnumType type = (EnumType) fieldDefinition.getType();
+                    JSONArray enumValuesArray = new JSONArray();
+                    for (String enumValue : type.values()) {
+                        JSONObject enumValueObject = new JSONObject();
+                        enumValueObject.put("key", enumValue);
+
+                        String messageCode = translationService.getEntityFieldBaseMessageCode(
+                                fieldDefinition.getDataDefinition(), fieldDefinition.getName()) + ".value." + enumValue;
+
+                        enumValueObject.put("value", messageCode);
+                        enumValuesArray.put(enumValueObject);
+                    }
+                    obj.put("values", enumValuesArray);
+                }
+            }
+
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
         return obj.toString();
+    }
+
+    public void addColumnTranslations(final Map<String, String> translationsMap, final Locale locale) {
+        if (fields.size() == 1) {
+            FieldDefinition fieldDefinition = fields.get(0);
+            if (fieldDefinition.getType() instanceof EnumType) {
+                EnumType type = (EnumType) fieldDefinition.getType();
+                for (String enumValue : type.values()) {
+                    String messageCode = translationService.getEntityFieldBaseMessageCode(fieldDefinition.getDataDefinition(),
+                            fieldDefinition.getName()) + ".value." + enumValue;
+                    translationsMap.put(messageCode, translationService.translate(messageCode, locale));
+                }
+            }
+        }
     }
 
     private String getAlign() {

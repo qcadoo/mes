@@ -30,7 +30,7 @@ public class ExpressionUtilTest {
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(new StringType());
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
         columnDefinition.addField(fieldDefinition);
 
         // when
@@ -52,7 +52,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl(null, "age").withType(new IntegerType());
         FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex").withType(new StringType());
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
         columnDefinition.addField(fieldDefinitionName);
         columnDefinition.addField(fieldDefinitionAge);
         columnDefinition.addField(fieldDefinitionSex);
@@ -72,7 +72,7 @@ public class ExpressionUtilTest {
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name");
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
         columnDefinition.addField(fieldDefinition);
         columnDefinition.setExpression("#name.toUpperCase()");
 
@@ -91,7 +91,7 @@ public class ExpressionUtilTest {
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name");
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
         columnDefinition.addField(fieldDefinition);
         columnDefinition.setExpression("#name");
 
@@ -114,7 +114,7 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl(null, "age");
         FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex");
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
         columnDefinition.addField(fieldDefinitionName);
         columnDefinition.addField(fieldDefinitionAge);
         columnDefinition.addField(fieldDefinitionSex);
@@ -138,7 +138,7 @@ public class ExpressionUtilTest {
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "product");
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col");
+        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
         columnDefinition.addField(fieldDefinition);
         columnDefinition.setExpression("#product['name']");
 

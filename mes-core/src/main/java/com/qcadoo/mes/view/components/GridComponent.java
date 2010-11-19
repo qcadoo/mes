@@ -144,7 +144,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             } else if ("orderable".equals(option.getType())) {
                 orderableColumns = getColumnNames(option.getValue());
             } else if ("column".equals(option.getType())) {
-                ColumnDefinition columnDefinition = new ColumnDefinition(option.getAtrributeValue("name"));
+                ColumnDefinition columnDefinition = new ColumnDefinition(option.getAtrributeValue("name"),
+                        getTranslationService());
                 for (FieldDefinition field : getFields(option.getAtrributeValue("fields"))) {
                     columnDefinition.addField(field);
                 }
@@ -416,6 +417,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             messageCodes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), column.getName())
                     + ".label");
             translationsMap.put(messageCodes.get(0), getTranslationService().translate(messageCodes, locale));
+
+            column.addColumnTranslations(translationsMap, locale);
         }
 
         String[] gridMessages = new String[] { "addFilter", "removeFilter", "perPage", "new", "delete", "up", "down",
