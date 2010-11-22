@@ -44,6 +44,7 @@ public class ProductsInstruction {
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsProduct product;
 
+    @Column(length = 2048)
     private String description;
 
     private Boolean master;
