@@ -39,12 +39,13 @@
 		</text>
 		<date name="effectiveDateFrom" />
 		<date name="effectiveDateTo" />
-		<belongsTo name="product" model="product" lazy="false">
+		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" />
 		<priority name="priority" scope="product" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
 	<model name="substituteComponent">
 		<belongsTo name="product" model="product" lookupField="name">
@@ -57,6 +58,7 @@
 			<validatesPresence />
 			<validatesRange from="0" inclusive="false" />
 		</decimal>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
 	</model>
 	<model name="instruction">
 		<string name="number">
@@ -77,6 +79,7 @@
 		<hasMany name="orders" model="order" joinField="instruction" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
 	<model name="instructionBomComponent">
 		<belongsTo name="instruction" model="instruction" lookupField="name">

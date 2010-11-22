@@ -127,9 +127,6 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
     @Override
     public void addContainerMessages(final Entity entity, final ViewValue<FormValue> viewValue, final Locale locale) {
         if (entity != null) {
-            if (!entity.isValid()) {
-                viewValue.addErrorMessage(getTranslationService().translate("core.validate.global.error", locale));
-            }
             for (ErrorMessage validationError : entity.getGlobalErrors()) {
                 viewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
             }
