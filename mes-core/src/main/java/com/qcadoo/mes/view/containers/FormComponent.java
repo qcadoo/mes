@@ -200,7 +200,11 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
     @SuppressWarnings("unchecked")
     public Long getSelectedEntityId(final ViewValue<Long> viewValue) {
         ViewValue<FormValue> formValue = (ViewValue<FormValue>) lookupViewValue(viewValue);
-        return formValue.getValue().getId();
+        if (formValue.getValue() != null) {
+            return formValue.getValue().getId();
+        } else {
+            return null;
+        }
     }
 
 }
