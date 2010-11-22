@@ -151,8 +151,6 @@ public class FieldTypeFactoryTest extends DataAccessTest {
         assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), entity));
         assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1), entity));
         assertNotNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(1234567), entity));
-        assertNull(fieldType.toObject(fieldDefinition, BigDecimal.valueOf(12345678), entity));
-        assertEquals("core.validate.field.error.invalidNumericFormat", entity.getError("aa").getMessage());
     }
 
     @Test

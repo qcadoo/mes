@@ -49,10 +49,6 @@ public final class DecimalType implements FieldType {
                 return null;
             }
         }
-        if (decimal.precision() > 7 || decimal.scale() > 3) {
-            validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidNumericFormat");
-            return null;
-        }
         return decimal;
     }
 
