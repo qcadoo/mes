@@ -118,14 +118,20 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (! currentData.isError) {
 			element.removeClass("error");
 			valueDivElement.html(currentData.selectedEntityValue);
-			valueDivElement.attr('title', currentData.selectedEntityValue);
-			inputElement.attr('title', currentData.selectedEntityValue);
-			if (! isFocused) {
-				valueDivElement.show();
-				inputElement.val("");
-				labelElement.html(labelNormal);
+			if (inputElement.currentData.selectedEntityCode) {
+				valueDivElement.attr('title', currentData.selectedEntityValue);
+				inputElement.attr('title', currentData.selectedEntityValue);
+				if (! isFocused) {
+					valueDivElement.show();
+					inputElement.val("");
+					labelElement.html(labelNormal);
+				} else {
+					inputElement.val(currentData.selectedEntityCode);
+				}
 			} else {
-				inputElement.val(currentData.selectedEntityCode);
+				valueDivElement.attr('title', "");
+				inputElement.attr('title', "");
+				inputElement.val("");
 			}
 		}		
 	}
@@ -137,6 +143,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (currentData.selectedEntityCode) {
 			inputElement.val(currentData.selectedEntityCode);
 			inputElement.attr('title', currentData.selectedEntityCode);
+		} else {
+			
 		}
 	}
 	
