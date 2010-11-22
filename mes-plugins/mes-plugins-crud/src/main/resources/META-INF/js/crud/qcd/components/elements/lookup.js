@@ -43,7 +43,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		labelFocus = "<span class='focusedLabel'>"+mainController.getTranslation(nameToTranslate)+"</span>";
 		
 		openLookupButtonElement.click(openLookup);
-		$(window.document).focus(onWindowClick);
+		if (window.parent) {
+			$(window.parent).focus(onWindowClick);
+		} else {
+			$(window).focus(onWindowClick);
+		}
 		var elementName = elementPath.replace(/-/g,".");
 		window[elementName+"_onReadyFunction"] = function() {
 			if (currentData.selectedEntityCode) {
@@ -65,7 +69,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		inputElement.keypress(function(e) {
 			var key=e.keyCode || e.which;
 			if (key==13) {
-				// TODO mina
 				performSearch();
 			}
 		});
