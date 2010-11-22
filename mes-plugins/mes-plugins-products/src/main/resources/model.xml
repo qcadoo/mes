@@ -59,6 +59,7 @@
 			<validatesRange from="0" inclusive="false" />
 		</decimal>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
 	</model>
 	<model name="instruction">
 		<string name="number">

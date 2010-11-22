@@ -140,6 +140,27 @@ public final class ProductService {
         }
     }
 
+    public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
+        // TODO masz why we get hibernate entities here?
+        ProductsProduct product = (ProductsProduct) entity.getField("product");
+        ProductsSubstitute substitute = (ProductsSubstitute) entity.getField("substitute");
+
+        if (substitute == null || product == null) {
+            return false;
+        }
+
+        SearchResult searchResult = dataDefinition.find()
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), product.getId()))
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("substitute"), substitute.getId())).list();
+
+        if (searchResult.getTotalNumberOfEntities() == 0) {
+            return true;
+        } else {
+            entity.addError(dataDefinition.getField("product"), "products.validate.global.error.substituteComponentDuplicated");
+            return false;
+        }
+    }
+
     public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
         ProductsOrder order = (ProductsOrder) entity.getField("order");
