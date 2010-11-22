@@ -24,6 +24,7 @@ import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
+import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
@@ -60,6 +61,34 @@ public final class ProductService {
 
     @Autowired
     private TranslationService translationService;
+
+    public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
+        ProductsProduct product = (ProductsProduct) entity.getField("product");
+
+        Entity productEntity = dataDefinitionService.get("products", "product").get(product.getId());
+
+        if (productEntity == null) {
+            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.setField("product", null);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
+        ProductsSubstitute substitute = (ProductsSubstitute) entity.getField("substitute");
+
+        Entity substituteEntity = dataDefinitionService.get("products", "substitute").get(substitute.getId());
+
+        if (substituteEntity == null) {
+            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.setField("substitute", null);
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,

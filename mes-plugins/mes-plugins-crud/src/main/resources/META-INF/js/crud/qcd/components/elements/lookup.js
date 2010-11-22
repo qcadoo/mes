@@ -121,7 +121,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (! currentData.isError) {
 			element.removeClass("error");
 			valueDivElement.html(currentData.selectedEntityValue);
-			if (inputElement.currentData.selectedEntityCode) {
+			if (currentData.selectedEntityCode) {
 				valueDivElement.attr('title', currentData.selectedEntityValue);
 				inputElement.attr('title', currentData.selectedEntityValue);
 				if (! isFocused) {
