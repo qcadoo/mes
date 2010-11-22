@@ -83,6 +83,16 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 					return;
 				}
 				if(!opened) {
+					
+					if (input.val()) {
+						try {
+							$.datepicker.parseDate( "yy-mm-dd", input.val());
+							datepickerElement.datepicker("setDate", input.val());
+						} catch (e) {
+							// do nothing
+						}
+					}
+					
 					var top = input.offset().top;
 					var calendarHeight = datepickerElement.outerHeight();
 					var inputHeight = input.outerHeight() - 1;
