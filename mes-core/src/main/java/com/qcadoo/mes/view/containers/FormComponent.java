@@ -14,10 +14,12 @@ import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.utils.ExpressionUtil;
@@ -28,6 +30,7 @@ import com.qcadoo.mes.view.ContainerComponent;
 import com.qcadoo.mes.view.SaveableComponent;
 import com.qcadoo.mes.view.SelectableComponent;
 import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.components.LookupData;
 import com.qcadoo.mes.view.components.SimpleValue;
 
 /**
@@ -157,26 +160,34 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
                 continue;
             }
 
-            setEntityField(entity, fieldPath, component.getKey(), formValue);
+            setEntityField(entity, fieldPath, component.getKey(), formValue, getDataDefinition().getField(fieldPath));
         }
 
         return entity;
     }
 
-    private Object setEntityField(final Entity entity, final String fieldPath, final String fieldName,
-            final ViewValue<FormValue> formValue) {
+    private void setEntityField(final Entity entity, final String fieldPath, final String fieldName,
+            final ViewValue<FormValue> formValue, final FieldDefinition fieldDefinition) {
         ViewValue<?> componentValue = formValue.getComponent(fieldName);
         Object value = componentValue.getValue();
 
         if (value == null) {
             entity.setField(fieldPath, null);
+        } else if (value instanceof LookupData) {
+            LookupData lookupValue = ((LookupData) value);
+
+            if (StringUtils.hasText(lookupValue.getSelectedEntityCode()) && lookupValue.getSelectedEntityId() == null) {
+                entity.addError(fieldDefinition, "core.validate.field.error.lookupCodeNotFound");
+            } else {
+                entity.setField(fieldPath,
+                        lookupValue.getSelectedEntityId() != null ? String.valueOf(lookupValue.getSelectedEntityId()) : null);
+            }
         } else if (value instanceof SimpleValue) {
             Object fieldValue = ((SimpleValue) value).getValue();
             entity.setField(fieldPath, fieldValue != null ? String.valueOf(fieldValue) : null);
         } else {
             throw new IllegalStateException("Value of " + fieldPath + " doesn't extends SimpleValue");
         }
-        return value;
     }
 
     @Override

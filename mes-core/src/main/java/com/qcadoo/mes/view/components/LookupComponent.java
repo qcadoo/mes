@@ -223,15 +223,17 @@ public final class LookupComponent extends AbstractComponent<LookupData> impleme
             newViewValue.setEnabled(false);
         }
 
-        ErrorMessage validationError = getErrorMessage(entity, selectedEntities);
-
-        if (validationError != null) {
-            newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
-        } else {
-            validationError = getErrorMessage(parentEntity, selectedEntities);
+        if (!error) {
+            ErrorMessage validationError = getErrorMessage(entity, selectedEntities);
 
             if (validationError != null) {
                 newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
+            } else {
+                validationError = getErrorMessage(parentEntity, selectedEntities);
+
+                if (validationError != null) {
+                    newViewValue.addErrorMessage(getTranslationService().translateErrorMessage(validationError, locale));
+                }
             }
         }
 
