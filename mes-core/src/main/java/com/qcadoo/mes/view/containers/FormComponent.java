@@ -175,10 +175,12 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             entity.setField(fieldPath, null);
         } else if (value instanceof LookupData) {
             LookupData lookupValue = ((LookupData) value);
-            if (StringUtils.hasText(lookupValue.getSelectedEntityCode()) && lookupValue.getValue() != null) {
+
+            if (StringUtils.hasText(lookupValue.getSelectedEntityCode()) && lookupValue.getSelectedEntityId() == null) {
                 entity.addError(fieldDefinition, "core.validate.field.error.lookupCodeNotFound");
             } else {
-                entity.setField(fieldPath, lookupValue.getValue() != null ? String.valueOf(lookupValue.getValue()) : null);
+                entity.setField(fieldPath,
+                        lookupValue.getSelectedEntityId() != null ? String.valueOf(lookupValue.getSelectedEntityId()) : null);
             }
         } else if (value instanceof SimpleValue) {
             Object fieldValue = ((SimpleValue) value).getValue();
