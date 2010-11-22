@@ -360,7 +360,7 @@
 				<component type="input" name="endWorker" field="endWorker"
 					enabled="false" />
 				<option type="header" value="false" />
-				<option type="expression" value="#name + ' - ' + #number + ' (' + #state +  ')'" />
+				<option type="expression" value="#name + ' - ' + #number" />
 			</component>
 		</component>
 		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />

@@ -41,6 +41,8 @@
 
 		var errorHeaderText = '${translation["security.message.errorHeader"]}';
 		var errorContentText = '${translation["security.message.errorContent"]}';
+
+		var usernameInput;
 	
 		<c:if test="${messageType != null }">
 			serverMessageType = '<c:out value="${messageType}"/>';
@@ -57,7 +59,8 @@
 			loginErrorMessagePanel = $("#loginErrorMessagePanel");
 			passwordErrorMessagePanel = $("#passwordErrorMessagePanel");
 
-			var usernameInput = $("#usernameInput");
+			usernameInput = $("#usernameInput");
+			
 			var passwordInput = $("#passwordInput");
 			var loginButton = $("#loginButton");
 			
@@ -100,7 +103,11 @@
 		}
 
 		ajaxLogin = function() {
+			usernameInput.attr("disabled", ""); // enable field to send it in form (and disable it later if neceserry)
 			var formData = QCDSerializator.serializeForm($("#loginForm"));
+			if (window.parent.getCurrentUserLogin) {
+				usernameInput.attr("disabled", "disabled");
+			}
 			var url = "j_spring_security_check";
 
 			hideLoginAndPasswordMessages();

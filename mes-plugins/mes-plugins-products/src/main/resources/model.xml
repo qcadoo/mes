@@ -57,6 +57,8 @@
 		<decimal name="quantity">
 			<validatesPresence />
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
@@ -92,6 +94,8 @@
 		<decimal name="quantity">
 			<validatesPresence />
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
 		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
 		<hasMany name="children" model="instructionBomComponent" joinField="parent" cascade="delete" />
@@ -119,9 +123,13 @@
 		<belongsTo name="instruction" model="instruction" lookupField="name" />
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
 		<decimal name="doneQuantity">
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
 		<date name="effectiveDateFrom" readonly="true" />
 		<date name="effectiveDateTo" readonly="true" />
