@@ -42,8 +42,11 @@
 			windowController = new QCD.WindowController(menuStructure);
 			
 			$("#mainPageIframe").load(function() {
-				el = $('body', $('iframe').contents());
-				el.click(function() {windowController.restoreMenuState()});
+				try {
+					el = $('body', $('iframe').contents());
+					el.click(function() {windowController.restoreMenuState()});
+				} catch(e) {
+				}
 			});
 		});
 

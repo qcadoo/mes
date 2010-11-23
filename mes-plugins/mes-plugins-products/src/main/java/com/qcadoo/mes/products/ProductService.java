@@ -92,7 +92,7 @@ public final class ProductService {
 
     @SuppressWarnings("unchecked")
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
-            final Locale locale) throws IOException, DocumentException {
+            final Entity entity, final Locale locale) throws IOException, DocumentException {
 
         if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
                 || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
@@ -221,7 +221,8 @@ public final class ProductService {
     }
 
     @SuppressWarnings("unchecked")
-    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
+    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+            final Locale locale) {
         generateOrderNumber(value, triggerComponentName, locale);
 
         ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
@@ -235,7 +236,7 @@ public final class ProductService {
                 .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
 
         if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
-                && stateValue.getValue().getValue().equals("done")) {
+                && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
             formValue.setEnabled(false);
         }
 

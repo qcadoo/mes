@@ -59,6 +59,6 @@ public interface HookDefinition {
      * @param locale
      *            locale
      */
-    void callWithViewValue(ViewValue<Long> value, final String triggerComponentName, final Locale locale);
+    void callWithViewValue(ViewValue<Long> value, final String triggerComponentName, final Entity entity, final Locale locale);
 
 }

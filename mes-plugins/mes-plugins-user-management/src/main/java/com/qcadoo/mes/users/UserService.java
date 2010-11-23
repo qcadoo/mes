@@ -23,7 +23,7 @@ import com.qcadoo.mes.view.containers.FormValue;
 public final class UserService {
 
     public void onUserProfileChangePasswordView(final ViewValue<Long> value, final String triggerComponentName,
-            final Locale locale) throws IOException, DocumentException {
+            final Entity entity, final Locale locale) throws IOException, DocumentException {
         SimpleValue oldPasswordValue = (SimpleValue) value.lookupValue("mainWindow.userDetailsForm.oldPassword").getValue();
         SimpleValue passwordConfirmationValue = (SimpleValue) value
                 .lookupValue("mainWindow.userDetailsForm.passwordConfirmation").getValue();
@@ -38,7 +38,7 @@ public final class UserService {
     }
 
     public void onUserDetailsChangePasswordView(final ViewValue<Long> value, final String triggerComponentName,
-            final Locale locale) throws IOException, DocumentException {
+            final Entity entity, final Locale locale) throws IOException, DocumentException {
         SimpleValue passwordConfirmationValue = (SimpleValue) value
                 .lookupValue("mainWindow.userDetailsForm.passwordConfirmation").getValue();
         SimpleValue passwordValue = (SimpleValue) value.lookupValue("mainWindow.userDetailsForm.password").getValue();
@@ -50,8 +50,8 @@ public final class UserService {
         viewIdentifier.setValue("userDetailsChangePasswordView");
     }
 
-    public void onUserDetailsViewView(final ViewValue<Long> value, final String triggerComponentName, final Locale locale)
-            throws IOException, DocumentException {
+    public void onUserDetailsViewView(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+            final Locale locale) throws IOException, DocumentException {
         if (value == null || value.lookupValue("mainWindow.userDetailsForm") == null) {
             return;
         }

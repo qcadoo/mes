@@ -86,8 +86,11 @@ QCD.WindowController = function(_menuStructure) {
 	}
 	
 	this.canChangePage = function() {
-		if (iframe[0].contentWindow.canClose) {
-			return iframe[0].contentWindow.canClose();
+		try {
+			if (iframe[0].contentWindow.canClose) {
+				return iframe[0].contentWindow.canClose();
+			}
+		} catch (e) {
 		}
 		return true;
 	}
@@ -115,9 +118,12 @@ QCD.WindowController = function(_menuStructure) {
 	}
 	
 	function onIframeLoad() {
-		if (iframe[0].contentWindow.init) {
-			iframe[0].contentWindow.init(serializationObjectToInsert);
-			serializationObjectToInsert = null;
+		try {
+			if (iframe[0].contentWindow.init) {
+				iframe[0].contentWindow.init(serializationObjectToInsert);
+				serializationObjectToInsert = null;
+			}
+		} catch (e) {
 		}
 		loadingIndicator.hide();
 	}
