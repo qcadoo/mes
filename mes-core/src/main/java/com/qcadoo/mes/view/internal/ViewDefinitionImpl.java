@@ -96,7 +96,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         ViewValue<Long> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
                 globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate, locale));
         if (value != null) {
-            callOnViewHook(value, triggerComponentName, locale);
+            callOnViewHook(value, triggerComponentName, entity, locale);
         }
         if (entity != null) {
             value.setValue(entity.getId());
@@ -104,9 +104,10 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         return value;
     }
 
-    private void callOnViewHook(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
+    private void callOnViewHook(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+            final Locale locale) {
         if (viewHook != null) {
-            viewHook.callWithViewValue(value, triggerComponentName, locale);
+            viewHook.callWithViewValue(value, triggerComponentName, entity, locale);
         }
     }
 

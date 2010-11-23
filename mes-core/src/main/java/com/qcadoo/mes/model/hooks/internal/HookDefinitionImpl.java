@@ -75,8 +75,9 @@ public final class HookDefinitionImpl implements HookDefinition {
     }
 
     @Override
-    public void callWithViewValue(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
-        call(new Object[] { value, triggerComponentName, locale }, new Class[] { ViewValue.class, String.class, Locale.class });
+    public void callWithViewValue(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+            final Locale locale) {
+        call(new Object[] { value, triggerComponentName, entity, locale }, new Class[] { ViewValue.class, String.class,
+                Entity.class, Locale.class });
     }
-
 }

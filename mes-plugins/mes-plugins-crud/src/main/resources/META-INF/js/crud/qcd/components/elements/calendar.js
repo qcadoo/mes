@@ -69,7 +69,6 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 			var target = $(event.target);
 			if (target.attr("id") != input.attr("id") && target.attr("id") != calendar.attr("id")
 					&& target.parents('.ui-datepicker').length == 0) {
-				
 				datepickerElement.slideUp(ANIMATION_LENGTH);
 				opened = false;
 			}

@@ -21,6 +21,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.beans.products.ProductsInstruction;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
@@ -65,6 +66,10 @@ public final class ProductService {
     public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
         ProductsProduct product = (ProductsProduct) entity.getField("product");
 
+        if (product == null || product.getId() == null) {
+            return true;
+        }
+
         Entity productEntity = dataDefinitionService.get("products", "product").get(product.getId());
 
         if (productEntity == null) {
@@ -76,8 +81,30 @@ public final class ProductService {
         }
     }
 
+    public boolean checkIfInstructionIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
+        ProductsInstruction instruction = (ProductsInstruction) entity.getField("instruction");
+
+        if (instruction == null || instruction.getId() == null) {
+            return true;
+        }
+
+        Entity instructionEntity = dataDefinitionService.get("products", "instruction").get(instruction.getId());
+
+        if (instructionEntity == null) {
+            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.setField("instruction", null);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
         ProductsSubstitute substitute = (ProductsSubstitute) entity.getField("substitute");
+
+        if (substitute == null || substitute.getId() == null) {
+            return true;
+        }
 
         Entity substituteEntity = dataDefinitionService.get("products", "substitute").get(substitute.getId());
 
@@ -92,7 +119,7 @@ public final class ProductService {
 
     @SuppressWarnings("unchecked")
     public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
-            final Locale locale) throws IOException, DocumentException {
+            final Entity entity, final Locale locale) throws IOException, DocumentException {
 
         if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
                 || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
@@ -221,7 +248,8 @@ public final class ProductService {
     }
 
     @SuppressWarnings("unchecked")
-    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
+    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+            final Locale locale) {
         generateOrderNumber(value, triggerComponentName, locale);
 
         ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
@@ -235,7 +263,7 @@ public final class ProductService {
                 .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
 
         if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
-                && stateValue.getValue().getValue().equals("done")) {
+                && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
             formValue.setEnabled(false);
         }
 
