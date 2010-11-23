@@ -8,6 +8,7 @@
 package com.qcadoo.mes.model.types.internal;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -54,12 +55,28 @@ public final class DateType implements FieldType {
         try {
             DateTimeFormatter fmt = DateTimeFormat.forPattern(DATE_FORMAT);
             DateTime dt = fmt.parseDateTime(String.valueOf(value));
+
             int year = dt.getYear();
             if (year < 1500 || year > 2500) {
-                validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidDateFormat");
+                validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidDateFormat.range");
                 return null;
             }
-            return dt.toDate();
+
+            Date date = dt.toDate();
+
+            if (year < 2000) {
+                Calendar c = Calendar.getInstance();
+                c.set(Calendar.YEAR, dt.getYear());
+                c.set(Calendar.MONTH, dt.getMonthOfYear() - 1);
+                c.set(Calendar.DAY_OF_MONTH, dt.getDayOfMonth());
+                c.set(Calendar.HOUR_OF_DAY, dt.hourOfDay().get());
+                c.set(Calendar.MINUTE, dt.getMinuteOfHour());
+                c.set(Calendar.SECOND, dt.getSecondOfMinute());
+                c.set(Calendar.MILLISECOND, dt.getMillisOfSecond());
+                date = c.getTime();
+            }
+
+            return date;
         } catch (IllegalArgumentException e) {
             validatedEntity.addError(fieldDefinition, "core.validate.field.error.invalidDateFormat");
         }
