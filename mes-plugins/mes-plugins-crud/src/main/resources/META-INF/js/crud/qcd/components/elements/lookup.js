@@ -103,7 +103,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	this.setFormComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
 			openLookupButtonElement.addClass("enabled")
-			document.getElementById(this.elementPath+"_valueDiv").setAttribute("disabled", false);
+			document.getElementById(this.elementPath+"_valueDiv").removeAttribute("disabled");
 		} else {
 			openLookupButtonElement.removeClass("enabled")
 			document.getElementById(this.elementPath+"_valueDiv").setAttribute("disabled", true);
