@@ -140,12 +140,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 //	function setSelectionRange(input, selectionStart, selectionEnd) {
-//		if (input.setSelectionRange) {
-//			alert('test1');
-//			input.focus();
-//			input.setSelectionRange(selectionStart, selectionEnd);
-//		} else if (input.createTextRange) {
-//			alert('test2');
+//		input = document.getElementsByTagName("input")[0];
+//		input.value = input.value;
+//		if (input.createTextRange) {
 //			var range = input.createTextRange();
 //			range.collapse(true);
 //			range.moveEnd('character', selectionEnd);
@@ -153,7 +150,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 //			range.select();
 //		}
 //	}
-//
+
 //	function setCaretToPos(input, pos) {
 //		setSelectionRange(input, pos, pos);
 //	}
@@ -168,13 +165,12 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		} else {
 			
 		}
-		// TODO mady - SC429
+		
+		//TODO: mady 429
+//		setCaretToPos(inputElement,2);
+//		var input = document.getElementsByTagName("input")[0];
+//		input.val(input.val());
 //		inputElement.val(inputElement.val());
-//		setCaretToPos(inputElement,6);
-//		var len = inputElement.val().length;
-//		alert(len);
-//		alert(inputElement.setSelectionRange);
-//		inputElement.setSelectionRange(len, len);
 	}
 	
 	function onInputBlur() {

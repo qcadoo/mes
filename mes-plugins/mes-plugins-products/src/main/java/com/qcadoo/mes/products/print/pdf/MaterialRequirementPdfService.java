@@ -132,8 +132,9 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(df.format(((BigDecimal) order.getField("plannedQuantity")).stripTrailingZeros()), PdfUtil
-                    .getArialRegular9Dark()));
+            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity.stripTrailingZeros();
+            table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
