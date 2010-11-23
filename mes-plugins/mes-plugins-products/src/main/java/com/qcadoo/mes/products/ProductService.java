@@ -21,6 +21,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.beans.products.ProductsInstruction;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
@@ -65,6 +66,10 @@ public final class ProductService {
     public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
         ProductsProduct product = (ProductsProduct) entity.getField("product");
 
+        if (product == null || product.getId() == null) {
+            return true;
+        }
+
         Entity productEntity = dataDefinitionService.get("products", "product").get(product.getId());
 
         if (productEntity == null) {
@@ -76,8 +81,30 @@ public final class ProductService {
         }
     }
 
+    public boolean checkIfInstructionIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
+        ProductsInstruction instruction = (ProductsInstruction) entity.getField("instruction");
+
+        if (instruction == null || instruction.getId() == null) {
+            return true;
+        }
+
+        Entity instructionEntity = dataDefinitionService.get("products", "instruction").get(instruction.getId());
+
+        if (instructionEntity == null) {
+            entity.addGlobalError("core.message.belongsToNotFound");
+            entity.setField("instruction", null);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
         ProductsSubstitute substitute = (ProductsSubstitute) entity.getField("substitute");
+
+        if (substitute == null || substitute.getId() == null) {
+            return true;
+        }
 
         Entity substituteEntity = dataDefinitionService.get("products", "substitute").get(substitute.getId());
 
