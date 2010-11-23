@@ -103,8 +103,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	this.setFormComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
 			openLookupButtonElement.addClass("enabled")
+			document.getElementById(this.elementPath+"_valueDiv").setAttribute("disabled", false);
 		} else {
 			openLookupButtonElement.removeClass("enabled")
+			document.getElementById(this.elementPath+"_valueDiv").setAttribute("disabled", true);
 		}
 	}
 	
@@ -165,7 +167,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		} else {
 			
 		}
-		
+
 		//TODO: mady 429
 //		setCaretToPos(inputElement,2);
 //		var input = document.getElementsByTagName("input")[0];
