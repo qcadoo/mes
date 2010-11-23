@@ -98,7 +98,14 @@
 
 		jQuery(document).ready(function(){
 
-			if (! window.parent.getCurrentUserLogin) {
+			if (lookupComponentName) {
+				lookupComponentName = $.trim(lookupComponentName);
+				if (lookupComponentName == '') {
+					lookupComponentName = null;
+				}
+			}
+
+			if (! window.parent.getCurrentUserLogin && ! lookupComponentName) {
 				window.location = "/main.html";
 			}
 			
