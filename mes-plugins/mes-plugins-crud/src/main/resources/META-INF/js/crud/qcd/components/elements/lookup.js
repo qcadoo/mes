@@ -127,27 +127,27 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			} else {
 				inputElement.val(currentData.selectedEntityCode);
 			}
-		}		
+		}
 	}
 	
-	function setSelectionRange(input, selectionStart, selectionEnd) {
-		  if (input.setSelectionRange) {
-		    input.focus();
-		    input.setSelectionRange(selectionStart, selectionEnd);
-		  }
-		  else if (input.createTextRange) {
-		    var range = input.createTextRange();
-		    range.collapse(true);
-		    range.moveEnd('character', selectionEnd);
-		    range.moveStart('character', selectionStart);
-		    range.select();
-		  }
-		}
-
-	function setCaretToPos(input, pos) {
-		setSelectionRange(input, pos, pos);
-	}
-
+//	function setSelectionRange(input, selectionStart, selectionEnd) {
+//		if (input.setSelectionRange) {
+//			alert('test1');
+//			input.focus();
+//			input.setSelectionRange(selectionStart, selectionEnd);
+//		} else if (input.createTextRange) {
+//			alert('test2');
+//			var range = input.createTextRange();
+//			range.collapse(true);
+//			range.moveEnd('character', selectionEnd);
+//			range.moveStart('character', selectionStart);
+//			range.select();
+//		}
+//	}
+//
+//	function setCaretToPos(input, pos) {
+//		setSelectionRange(input, pos, pos);
+//	}
 	
 	function onInputFocus() {
 		isFocused = true;
@@ -157,6 +157,13 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			inputElement.val(currentData.selectedEntityCode);
 			inputElement.attr('title', currentData.selectedEntityCode);
 		}
+		// TODO mady - SC429
+//		inputElement.val(inputElement.val());
+//		setCaretToPos(inputElement,6);
+//		var len = inputElement.val().length;
+//		alert(len);
+//		alert(inputElement.setSelectionRange);
+//		inputElement.setSelectionRange(len, len);
 	}
 	
 	function onInputBlur() {
