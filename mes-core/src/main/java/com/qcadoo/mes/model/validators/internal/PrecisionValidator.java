@@ -44,7 +44,6 @@ public final class PrecisionValidator implements FieldValidator {
         if (!(fieldClass.equals(Integer.class) || fieldClass.equals(BigDecimal.class))) {
             return true;
         }
-
         if (fieldClass.equals(BigDecimal.class)) {
             return validatePresicion(fieldDefinition, validatedEntity,
                     ((BigDecimal) value).precision() - ((BigDecimal) value).scale());

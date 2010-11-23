@@ -22,6 +22,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	var messagesController;
 	
 	function constructor(_this) {
+		
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
 		

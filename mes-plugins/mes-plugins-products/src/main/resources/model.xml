@@ -39,12 +39,13 @@
 		</text>
 		<date name="effectiveDateFrom" />
 		<date name="effectiveDateTo" />
-		<belongsTo name="product" model="product" lazy="false">
+		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" />
 		<priority name="priority" scope="product" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
 	<model name="substituteComponent">
 		<belongsTo name="product" model="product" lookupField="name">
@@ -56,7 +57,11 @@
 		<decimal name="quantity">
 			<validatesPresence />
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
 	</model>
 	<model name="instruction">
 		<string name="number">
@@ -77,6 +82,7 @@
 		<hasMany name="orders" model="order" joinField="instruction" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
 	<model name="instructionBomComponent">
 		<belongsTo name="instruction" model="instruction" lookupField="name">
@@ -88,6 +94,8 @@
 		<decimal name="quantity">
 			<validatesPresence />
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
 		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
 		<hasMany name="children" model="instructionBomComponent" joinField="parent" cascade="delete" />
@@ -115,9 +123,13 @@
 		<belongsTo name="instruction" model="instruction" lookupField="name" />
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
 		<decimal name="doneQuantity">
 			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" inclusive="true" />
+			<validatesScale max="3" inclusive="true" />
 		</decimal>
 		<date name="effectiveDateFrom" readonly="true" />
 		<date name="effectiveDateTo" readonly="true" />

@@ -76,8 +76,8 @@ public class DictionaryServiceTest {
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(DictionariesDictionaryItem.class)
-                        .createAlias("dictionary", "dc").add(Mockito.any(Criterion.class)).addOrder(Mockito.any(Order.class))
-                        .list()).willReturn(newArrayList(item1, item3, item2));
+                        .createAlias("dictionary", "dc").add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class))
+                        .addOrder(Mockito.any(Order.class)).list()).willReturn(newArrayList(item1, item3, item2));
 
         // when
         List<String> values = dictionaryService.values("dict");

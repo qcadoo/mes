@@ -97,6 +97,11 @@
 		}
 
 		jQuery(document).ready(function(){
+
+			if (! window.parent.getCurrentUserLogin) {
+				window.location = "/main.html";
+			}
+			
 			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName, hasDataDefinition);
 			if (window.opener) {
 				window.opener[lookupComponentName+"_onReadyFunction"].call();
