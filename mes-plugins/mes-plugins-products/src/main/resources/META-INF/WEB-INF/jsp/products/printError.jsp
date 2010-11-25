@@ -13,8 +13,8 @@
 <html>
     <body>
         <h1></h1>
-        <div>
-        	Raport nie może zostać zaprezentowany ponieważ nie został wygenerowany
-        </div>
-    </body>
+		<div>
+			${translation["demand.report.notGenerated.info"] }
+		</div>
+</body>
 </html>
