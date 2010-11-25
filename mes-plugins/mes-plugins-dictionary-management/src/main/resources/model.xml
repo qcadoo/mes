@@ -19,6 +19,7 @@
 	<model name="dictionaryItem">
 		<string name="name" >
 			<validatesPresence />
+			<validatesUniqueness />
 		</string>
 		<text name="description" />
 		<belongsTo name="dictionary" model="dictionary" lookupField="name">
