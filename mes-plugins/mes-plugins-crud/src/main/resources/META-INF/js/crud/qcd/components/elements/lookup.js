@@ -141,6 +141,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		}
 	}
 	
+	//TODO: mady 429
 //	function setSelectionRange(input, selectionStart, selectionEnd) {
 //		input = document.getElementsByTagName("input")[0];
 //		input.value = input.value;
@@ -170,9 +171,12 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 
 		//TODO: mady 429
 //		setCaretToPos(inputElement,2);
-//		var input = document.getElementsByTagName("input")[0];
+//		var input = $("input:first");
 //		input.val(input.val());
 //		inputElement.val(inputElement.val());
+//		input.focus();
+//		input.value = input.value;
+
 	}
 	
 	function onInputBlur() {

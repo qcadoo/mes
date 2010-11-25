@@ -61,7 +61,8 @@ public final class OrderPdfView extends ProductsPdfView {
                     product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         }
         PdfUtil.addTableCellAsTable(mainData, getTranslationService().translate("products.order.state.label", locale),
-                entity.getField("state"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                getTranslationService().translate("products.order.state.value." + entity.getField("state"), locale), "",
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         document.add(mainData);
     }
 
