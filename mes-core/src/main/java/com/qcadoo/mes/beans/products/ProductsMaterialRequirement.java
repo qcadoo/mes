@@ -28,7 +28,7 @@ public class ProductsMaterialRequirement {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, length = 2048)
+    @Column(nullable = false, length = 255)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)

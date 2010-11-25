@@ -146,6 +146,7 @@
 	<model name="materialRequirement">	
 		<text name="name">
 			<validatesPresence />
+			<validatesLength max="255"/>
 		</text>
 		<datetime name="date" readonly="true" />
 		<text name="worker" readonly="true" />
