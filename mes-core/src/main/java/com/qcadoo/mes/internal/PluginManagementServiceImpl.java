@@ -270,7 +270,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 } else if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
                     deleteFile = true;
                     LOG.info("Plugin has actual version");
-                    return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.noPlugin");
+                    return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.pluginHasActualVersion");
                 } else {
                     plugin.setFileName(file.getOriginalFilename());
                     movePlugin(plugin, databasePlugin);

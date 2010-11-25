@@ -69,7 +69,7 @@
 				<option type="column" name="userGroup" fields="userGroup"
 					expression="#userGroup['name']" />
 				<option type="header" value="false" />
-				<option type="orderable" value="userName,email,firstName,lastName,userGroup" />
+				<option type="orderable" value="login,email,firstName,lastName,userGroup" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="true" />
 				<option type="correspondingView" value="users/userDetailsView" />
