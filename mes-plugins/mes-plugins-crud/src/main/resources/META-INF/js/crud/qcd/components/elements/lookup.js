@@ -221,7 +221,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (currentData.contextEntityId) {
 			location += "&entityId="+currentData.contextEntityId;
 		}
-		lookupWindow = window.open(location, 'lookup', 'width=800,height=700');
+		var left = (screen.width/2)-(400);
+		var top = (screen.height/2)-(350);
+		lookupWindow = window.open(location, 'lookup', 'status=0,toolbar=0,width=800,height=700,left='+left+',top='+top);
+		//lookupWindow.moveTo(50,50);
 	}
 	
 	function closeLookup() {

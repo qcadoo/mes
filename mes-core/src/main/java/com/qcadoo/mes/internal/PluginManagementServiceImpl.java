@@ -342,6 +342,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional
     public PluginsPlugin getByIdentifier(final String identifier) {
         checkNotNull(identifier, "identifier must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
@@ -353,6 +354,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional
     public PluginsPlugin get(final Long id) {
         checkNotNull(id, "id must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.idEq(id))
@@ -365,6 +367,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional
     public PluginsPlugin getByNameAndVendor(final String name, final String vendor) {
         checkNotNull(vendor, "vendor must be given");
         checkNotNull(name, "name must be given");
@@ -377,6 +380,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     }
 
     @Override
+    @Transactional
     public void save(final PluginsPlugin plugin) {
         checkNotNull(plugin, "plugin must be given");
         getCurrentSession().save(plugin);

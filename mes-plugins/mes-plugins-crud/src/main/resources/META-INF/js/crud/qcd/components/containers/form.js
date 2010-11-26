@@ -86,7 +86,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
 		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 			block();
-			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer);
+			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer, function() {unblock();});
 		}
 	}
 	
