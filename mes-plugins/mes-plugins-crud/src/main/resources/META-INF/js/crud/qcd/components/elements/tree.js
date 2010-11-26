@@ -226,14 +226,15 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function deleteClicked() {
+		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
 		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
-			if (window.confirm("delete?")) {
+			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 				block();
 				var entityId = tree.jstree("get_selected").attr("id");
 				mainController.performDelete(elementPath, entityId, null);	
 			}
 		}
-	}
+	}	
 	
 	function redirectToCorrespondingPage(params) {
 		if (correspondingViewName && correspondingViewName != '') {

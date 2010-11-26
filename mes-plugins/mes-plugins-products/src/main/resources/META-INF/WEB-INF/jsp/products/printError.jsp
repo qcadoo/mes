@@ -14,7 +14,7 @@
     <body>
         <h1></h1>
 		<div>
-			${translation["demand.report.notGenerated.info"] }
+			${translation["commons.demand.report.notGenerated.info"] }
 		</div>
 </body>
 </html>

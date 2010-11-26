@@ -198,7 +198,7 @@ public final class TreeComponent extends AbstractComponent<TreeData> implements 
         String messagePath = getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
         translationsMap.put(messagePath + ".header", getTranslationService().translate(messagePath + ".header", locale));
 
-        String[] gridMessages = new String[] { "new", "delete", "edit", "root" };
+        String[] gridMessages = new String[] { "new", "delete", "edit", "root", "confirmDeleteMessage" };
 
         for (String gridMessage : gridMessages) {
             translationsMap.put(
