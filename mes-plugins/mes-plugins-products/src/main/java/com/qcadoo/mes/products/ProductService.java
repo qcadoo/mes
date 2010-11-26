@@ -180,11 +180,11 @@ public final class ProductService {
                 .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), product.getId()))
                 .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("substitute"), substitute.getId())).list();
 
-        if (searchResult.getTotalNumberOfEntities() == 0) {
-            return true;
-        } else {
+        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("product"), "products.validate.global.error.substituteComponentDuplicated");
             return false;
+        } else {
+            return true;
         }
     }
 
@@ -204,11 +204,11 @@ public final class ProductService {
                         Restrictions.belongsTo(dataDefinition.getField("materialRequirement"), materialRequirement.getId()))
                 .list();
 
-        if (searchResult.getTotalNumberOfEntities() == 0) {
-            return true;
-        } else {
+        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("order"), "products.validate.global.error.materialRequirementDuplicated");
             return false;
+        } else {
+            return true;
         }
     }
 
