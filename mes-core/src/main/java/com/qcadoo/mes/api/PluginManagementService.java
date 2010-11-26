@@ -130,7 +130,7 @@ public interface PluginManagementService {
      *             if operation cannot be executed
      * @return the operation's status
      */
-    PluginManagementOperationStatus updatePlugin(final MultipartFile file);
+    PluginManagementOperationStatus updatePlugin(final Long id, final MultipartFile file);
 
     /**
      * Restart the server.
@@ -139,5 +139,7 @@ public interface PluginManagementService {
      *             if restart cannot be executed
      */
     void restartServer();
+
+    boolean pluginIsInstalled(final Long id);
 
 }

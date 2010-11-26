@@ -513,6 +513,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var performDelete = this.performDelete;
 	
 	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
+		if(functionName == 'goToUrl' && (additionalAttribute == '../remove.html' || additionalAttribute == '../deinstall.html')) {
+			// hack - confirm removing and deistalling plugins
+			if(!confirm(mainController.getTranslation('commons.messages.confirm.removeAndDeinstall'))) {
+				return;
+			}
+		}
+		
 		if (currentState.selectedEntityId) {
 			mainController.performCallFunction(functionName, additionalAttribute, currentState.selectedEntityId, actionsPerformer);
 		} else {

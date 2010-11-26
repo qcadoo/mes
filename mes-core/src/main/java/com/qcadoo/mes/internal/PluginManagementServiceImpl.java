@@ -247,7 +247,19 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Override
     @Transactional
     @Monitorable
-    public PluginManagementOperationStatus updatePlugin(final MultipartFile file) {
+    public boolean pluginIsInstalled(final Long id) {
+        PluginsPlugin databasePlugin = get(id);
+        if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    @Transactional
+    @Monitorable
+    public PluginManagementOperationStatus updatePlugin(final Long id, final MultipartFile file) {
         if (!file.isEmpty()) {
             File pluginFile = null;
             boolean deleteFile = false;
@@ -259,6 +271,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                     deleteFile = true;
                     LOG.info("Plugin not found in database");
                     return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.noPlugin");
+                } else if (!databasePlugin.getId().equals(id)) {
+                    deleteFile = true;
+                    LOG.info("Ids from file and database are different");
+                    return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.updateDifferentPlugin");
                 } else if (databasePlugin.isBase()) {
                     deleteFile = true;
                     LOG.info("Plugin is base");

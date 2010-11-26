@@ -39,7 +39,7 @@ public final class PluginManagementController {
 
     @RequestMapping(value = "download", method = RequestMethod.GET)
     public ModelAndView getDownloadPageView(final Locale locale) {
-        return getDownloadPageView("download.html", locale);
+        return getDownloadPageView("download.html", null, locale);
     }
 
     @RequestMapping(value = "download", method = RequestMethod.POST)
@@ -85,13 +85,14 @@ public final class PluginManagementController {
     }
 
     @RequestMapping(value = "update", method = RequestMethod.GET)
-    public ModelAndView getUpdatePageView(final Locale locale) {
-        return getDownloadPageView("update.html", locale);
+    public ModelAndView getUpdatePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
+        return getDownloadPageView("update.html", entityId, locale);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    public ModelAndView handleUpdate(@RequestParam("file") final MultipartFile file, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.updatePlugin(file), locale);
+    public ModelAndView handleUpdate(@RequestParam("entityId") final String entityId,
+            @RequestParam("file") final MultipartFile file, final Locale locale) {
+        return getInfoMessageView(pluginManagementService.updatePlugin(Long.parseLong(entityId), file), locale);
     }
 
     @RequestMapping(value = "restartInfoView", method = RequestMethod.GET)
@@ -99,7 +100,7 @@ public final class PluginManagementController {
         return getInfoMessageView(new PluginManagementOperationStatusImpl(false, message), locale);
     }
 
-    private ModelAndView getDownloadPageView(final String downloadAction, final Locale locale) {
+    private ModelAndView getDownloadPageView(final String downloadAction, final String entityId, final Locale locale) {
         String headerLabel = translationService.translate("plugins.downloadView.header", locale);
         String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
 
@@ -107,8 +108,17 @@ public final class PluginManagementController {
 
         mav.addObject("headerLabel", headerLabel);
         mav.addObject("buttonLabel", buttonLabel);
-
         mav.addObject("downloadAction", downloadAction);
+        mav.addObject("entityId", entityId);
+
+        if (entityId != null && !pluginManagementService.pluginIsInstalled(Long.parseLong(entityId))) {
+            String message = translationService.translate("plugins.messages.error.wrongStatusToUpdate", locale);
+            mav.addObject("canUpload", false);
+            mav.addObject("pluginStatusMessage", message);
+            mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.error.header", locale));
+        } else {
+            mav.addObject("canUpload", true);
+        }
 
         return mav;
     }

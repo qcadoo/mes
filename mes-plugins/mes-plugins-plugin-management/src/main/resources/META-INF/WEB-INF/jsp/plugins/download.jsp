@@ -18,16 +18,29 @@ String ctx = request.getContextPath();
         <title>${headerLabel}</title>
     </head>
     <body>
-    	<div style="margin: 20px;">
-	        <h1>${headerLabel}</h1>
-	        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
-	        	<div>
-	            	<input type="file" name="file" size="50"/>
-	            </div>
-	            <div style="margin-top: 10px; margin-left: 130px;">
-	            	<input type="submit" value="${buttonLabel}" style="width: 200px; cursor: pointer;"/>
-	            </div>
-	        </form>
-        </div>
+    	<c:if test="${canUpload}">    	
+	    	<div style="margin: 20px;">
+		        <h1>${headerLabel}</h1>
+		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
+		        	<input type="hidden" name="entityId" value="${entityId}" />
+		        	<div>
+		            	<input type="file" name="file" size="50"/>
+		            </div>
+		            <div style="margin-top: 10px; margin-left: 130px;">
+		            	<input type="submit" value="${buttonLabel}" style="width: 200px; cursor: pointer;"/>
+		            </div>
+		        </form>
+	        </div>
+	    </c:if>
+	    <c:if test="${!canUpload}"> 
+			<div style='margin: 20px; color: red;'>
+				<div style="margin-bottom: 10px; font-weight: bold;">
+					${pluginStatusMessageHeader}
+				</div>
+				<div>
+					${pluginStatusMessage}
+				</div>
+			</div>
+		</c:if>
     </body>
 </html>
