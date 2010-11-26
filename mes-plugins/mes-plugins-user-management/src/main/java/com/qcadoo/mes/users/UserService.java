@@ -52,6 +52,7 @@ public final class UserService {
 
     public void onUserDetailsViewView(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
             final Locale locale) throws IOException, DocumentException {
+
         if (value == null || value.lookupValue("mainWindow.userDetailsForm") == null) {
             return;
         }
@@ -59,7 +60,11 @@ public final class UserService {
         FormValue formValue = (FormValue) value.lookupValue("mainWindow.userDetailsForm").getValue();
 
         if (formValue.getId() == null) {
-            value.lookupValue("mainWindow.userDetailsForm.password").setVisible(true);
+            if (value.lookupValue("mainWindow.userDetailsForm.password") != null) {
+                value.lookupValue("mainWindow.userDetailsForm.password").setVisible(true);
+            } else {
+                return;
+            }
             value.lookupValue("mainWindow.userDetailsForm.passwordConfirmation").setVisible(true);
             value.lookupValue("mainWindow.changePasswordButton").setVisible(false);
         } else {

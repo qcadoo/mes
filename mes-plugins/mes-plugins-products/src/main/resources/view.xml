@@ -265,6 +265,7 @@
 				</component>
 				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
+				<option type="expression" value="#product['name']" />
 			</component>
 		</component>
 	</view>

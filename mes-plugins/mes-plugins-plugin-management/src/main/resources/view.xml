@@ -34,7 +34,7 @@
 				<option type="correspondingView" value="plugins/pluginDetailsView" />
 				<option type="paginable" value="true" />
 				<option type="searchable" value="name,vendor,status" />
-				<option type="orderable" value="name" />
+				<option type="orderable" value="name,description,version,vendor,status" />
 				<option type="multiselect" value="false" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
