@@ -13,7 +13,7 @@
 		<string name="name" readonly="true" >
 			<validatesPresenceOnCreate />
 		</string>
-		<text name="description" readonly="true" />
+		<string name="description" readonly="true" />
 		<string name="vendor" readonly="true" >
 			<validatesPresenceOnCreate />
 		</string>

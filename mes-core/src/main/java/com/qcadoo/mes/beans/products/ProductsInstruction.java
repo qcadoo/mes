@@ -29,10 +29,10 @@ public class ProductsInstruction {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String number;
 
-    @Column(nullable = false, length = 2048)
+    @Column(nullable = false)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -44,7 +44,7 @@ public class ProductsInstruction {
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsProduct product;
 
-    @Column(length = 2048)
+    @Column
     private String description;
 
     private Boolean master;

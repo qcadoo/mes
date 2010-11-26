@@ -30,10 +30,10 @@ public class ProductsOrder {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String number;
 
-    @Column(nullable = false, length = 2048)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
