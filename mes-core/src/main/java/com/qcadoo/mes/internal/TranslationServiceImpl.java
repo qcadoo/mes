@@ -126,11 +126,11 @@ public final class TranslationServiceImpl implements TranslationService {
 
     private void getMessagesByPrefix(final String prefix, final Set<String> messages) {
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:locales/messages*.properties");
+            Resource[] resources = applicationContext.getResources("classpath*:locales/*.properties");
             for (Resource resource : resources) {
                 getMessagesByPrefix(prefix, messages, resource.getInputStream());
             }
-            resources = applicationContext.getResources("WEB-INF/locales/messages*.properties");
+            resources = applicationContext.getResources("WEB-INF/locales/*.properties");
             for (Resource resource : resources) {
                 getMessagesByPrefix(prefix, messages, resource.getInputStream());
             }

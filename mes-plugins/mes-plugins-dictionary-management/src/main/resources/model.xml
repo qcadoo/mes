@@ -21,9 +21,9 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
-		<text name="description" >
+		<string name="description" >
 			<validatesLength max="255"/>
-		</text>
+		</string>
 		<belongsTo name="dictionary" model="dictionary" lookupField="name">
 			<validatesPresence />
 		</belongsTo>

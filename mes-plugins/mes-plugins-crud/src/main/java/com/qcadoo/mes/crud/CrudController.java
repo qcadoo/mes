@@ -263,7 +263,8 @@ public final class CrudController {
     @RequestMapping(value = CONTROLLER_PATH + FUNCTION_PATH, method = RequestMethod.GET)
     public ModelAndView getFunctionCallPageView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName,
-            @PathVariable(FUNCTION_NAME_VARIABLE) final String functionName, @RequestParam("entityId") final String entityId) {
+            @PathVariable(FUNCTION_NAME_VARIABLE) final String functionName, @RequestParam("entityId") final String entityId,
+            final Locale locale) {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         Entity entity = null;
@@ -274,6 +275,7 @@ public final class CrudController {
         ModelAndView mav = new ModelAndView();
         if (!"printOrder".equals(functionName)
                 && (entity.getField("fileName") == null || "".equals(entity.getField("fileName").toString().trim()))) {
+            mav.addObject("translation", translationService.getCommonsMessages(locale));
             mav.setViewName("products/printError");
         } else {
             if ("printOrder".equals(functionName)) {

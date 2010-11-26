@@ -96,5 +96,4 @@ public interface TranslationService {
      * @return the translation
      */
     String translateErrorMessage(ErrorMessage validationError, Locale locale);
-
 }

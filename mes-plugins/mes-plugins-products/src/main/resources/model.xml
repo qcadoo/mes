@@ -13,10 +13,11 @@
 		<string name="number">
 			<validatesPresence />
 			<validatesUniqueness />
+			<validatesLength max="40" />
 		</string>
-		<text name="name">
+		<string name="name">
 			<validatesPresence />
-		</text>
+		</string>
 		<enum name="typeOfMaterial" values="product,intermediate,component">
 			<validatesPresence />
 		</enum>
@@ -33,10 +34,11 @@
 		<string name="number">
 			<validatesPresence />
 			<validatesUniqueness />
+			<validatesLength max="40" />
 		</string>
-		<text name="name">
+		<string name="name">
 			<validatesPresence />
-		</text>
+		</string>
 		<date name="effectiveDateFrom" />
 		<date name="effectiveDateTo" />
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
@@ -67,17 +69,18 @@
 		<string name="number">
 			<validatesPresence />
 			<validatesUniqueness />
+			<validatesLength max="40" />
 		</string>
-		<text name="name">
+		<string name="name">
 			<validatesPresence />
-		</text>
+		</string>
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<boolean name="master" />
 		<date name="dateFrom" />
 		<date name="dateTo" />
-		<text name="description" />
+		<string name="description" />
 		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
 		<hasMany name="orders" model="order" joinField="instruction" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
@@ -104,10 +107,11 @@
 		<string name="number">
 			<validatesPresence />
 			<validatesUniqueness />
+			<validatesLength max="40" />
 		</string>
-		<text name="name">
+		<string name="name">
 			<validatesPresence />
-		</text>
+		</string>
 		<date name="dateFrom">
 			<validatesPresence />
 		</date>
@@ -133,8 +137,8 @@
 		</decimal>
 		<date name="effectiveDateFrom" readonly="true" />
 		<date name="effectiveDateTo" readonly="true" />
-		<text name="startWorker" readonly="true" />
-		<text name="endWorker" readonly="true" />
+		<string name="startWorker" readonly="true" />
+		<string name="endWorker" readonly="true" />
 		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderPlannedQuantity" />
@@ -144,12 +148,12 @@
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
 	</model>
 	<model name="materialRequirement">	
-		<text name="name">
+		<string name="name">
 			<validatesPresence />
 			<validatesLength max="255"/>
-		</text>
+		</string>
 		<datetime name="date" readonly="true" />
-		<text name="worker" readonly="true" />
+		<string name="worker" readonly="true" />
 		<boolean name="onlyComponents" />
 		<boolean name="generated" />
 		<string name="fileName" />
