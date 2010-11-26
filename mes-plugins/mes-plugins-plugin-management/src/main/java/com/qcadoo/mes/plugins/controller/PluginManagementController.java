@@ -108,12 +108,15 @@ public final class PluginManagementController {
 
         }
 
-        String pluginName = pluginManagementService.get(Long.parseLong(entityId)).getName();
-
         ModelAndView mav = crudController.getView("plugins", "pluginDownloadView", new HashMap<String, String>(), locale);
 
-        String headerLabel = translationService.translate("plugins.downloadView.update.header", locale) + ": <span class='grey'>"
-                + pluginName + "</span>";
+        String headerLabel = translationService.translate("plugins.downloadView.header", locale);
+        if (entityId != null) {
+            String pluginName = pluginManagementService.get(Long.parseLong(entityId)).getName();
+            headerLabel = translationService.translate("plugins.downloadView.update.header", locale) + ": <span class='grey'>"
+                    + pluginName + "</span>";
+        }
+
         String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
 
         mav.addObject("headerLabel", headerLabel);
