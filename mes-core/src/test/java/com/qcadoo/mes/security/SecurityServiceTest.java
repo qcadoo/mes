@@ -51,8 +51,9 @@ public class SecurityServiceTest {
 
         UsersUser user = new UsersUser();
 
-        given(sessionFactory.getCurrentSession().createCriteria(UsersUser.class).add(Mockito.any(Criterion.class)).uniqueResult())
-                .willReturn(user);
+        given(
+                sessionFactory.getCurrentSession().createCriteria(UsersUser.class).add(Mockito.any(Criterion.class))
+                        .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(user);
 
         // when
         UsersUser currentUser = securityService.getCurrentUser();
