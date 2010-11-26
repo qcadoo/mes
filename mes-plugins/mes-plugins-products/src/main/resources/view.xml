@@ -406,7 +406,8 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
 						action="#{mainWindow.materialRequirementDetailsForm}.performSave;" />
-					<bigButton name="generate" action="#{mainWindow.materialRequirementDetailsForm.generated}.setSelected(true); #{mainWindow.materialRequirementDetailsForm}.performSave;" />
+					<bigButton name="generate" icon="generateIcon24.png"
+						action="#{mainWindow.materialRequirementDetailsForm.generated}.setSelected(true); #{mainWindow.materialRequirementDetailsForm}.performSave;" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"

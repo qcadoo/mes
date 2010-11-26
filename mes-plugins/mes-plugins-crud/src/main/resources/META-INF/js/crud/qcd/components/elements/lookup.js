@@ -229,7 +229,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	function closeLookup() {
 		if (lookupWindow) {
-			lookupWindow.close();
+			try {
+				lookupWindow.close();
+			} catch (e) {
+			}
 			lookupWindow = null;
 		}
 	}

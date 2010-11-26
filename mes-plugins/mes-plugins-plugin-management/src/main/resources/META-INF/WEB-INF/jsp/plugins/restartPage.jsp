@@ -57,7 +57,9 @@
 </head>
 <body>
 
-	${restartMessage}
+	<div style="margin: 20px; font-size: 18px; height: 35px; line-height: 35px; background: transparent url('/img/core/loading_indicator.gif') no-repeat 0 0; padding-left: 35px;">
+		${restartMessage}
+	</div>
 
 </body>
 </html>

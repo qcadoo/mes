@@ -248,6 +248,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid.setSelection(currentState.selectedEntityId, false);
 		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
 		if (rowIndex == false) {
+			currentState.selectedEntityId = null;
 			rowIndex = null;
 		}
 		headerController.onRowClicked(rowIndex);
