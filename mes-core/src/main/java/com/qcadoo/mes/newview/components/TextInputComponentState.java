@@ -9,28 +9,28 @@ import com.qcadoo.mes.newview.AbstractComponentState;
 
 public class TextInputComponentState extends AbstractComponentState {
 
-    private String textValue;
+    private String value;
 
     @Override
     protected void initializeContent(final JSONObject json, final Locale locale) throws JSONException {
-        textValue = json.getString("value");
+        value = json.getString("value");
     }
 
     @Override
     public void setFieldValue(final Object value) {
-        this.textValue = (String) value;
+        this.value = (String) value;
     }
 
     @Override
     public Object getFieldValue() {
-        return textValue;
+        return value;
     }
 
     @Override
     protected JSONObject renderContent() throws JSONException {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("value", textValue);
-        return jsonContent;
+        JSONObject json = new JSONObject();
+        json.put("value", value != null ? value : JSONObject.NULL);
+        return json;
     }
 
 }
