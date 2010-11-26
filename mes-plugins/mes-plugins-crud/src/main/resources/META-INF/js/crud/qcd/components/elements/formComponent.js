@@ -115,7 +115,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 			component.removeClass("error");
 		}
 	}
-
+	
 	this.setMessages = function(messages) {
 		errorMessages.html("");
 
@@ -128,6 +128,20 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 			messageDiv.append('<p>' + message[1] + '</p>');
 
 			errorMessages.append(messageDiv);
+
+			var top = this.input.offset().top;
+			var errorIconHeight = errorMessages.height();
+			var inputHeight = this.input.outerHeight() - 1;
+			var viewHeight = document.documentElement.clientHeight + $(document).scrollTop();
+
+			if ((top+errorIconHeight+inputHeight) > viewHeight) {
+				errorMessages.css("top", "");
+				errorMessages.css("bottom", errorIcon.outerHeight()+"px");
+			} else {
+				errorMessages.css("top", errorIcon.outerHeight()+"px");
+				errorMessages.css("bottom", "");
+			}
+			
 		}
 
 		setComponentError(messages.error.length != 0);

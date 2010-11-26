@@ -208,7 +208,6 @@
 
 .component_container_form .error_messages {
 	position: absolute;
-	top: 15px;
 	left: 15px;
 	background: #fff;
 	z-index: 999;
