@@ -27,7 +27,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 
-public class AbstractComponentTest {
+public class AbstractComponentStateTest {
 
     private DataDefinition dataDefinition;
 
