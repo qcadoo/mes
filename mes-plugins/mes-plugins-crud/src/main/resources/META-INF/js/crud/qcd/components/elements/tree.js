@@ -237,7 +237,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
 			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 				block();
-				var entityId = tree.jstree("get_selected").attr("id");
+				var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
 				mainController.performDelete(elementPath, entityId, null);	
 			}
 		}
