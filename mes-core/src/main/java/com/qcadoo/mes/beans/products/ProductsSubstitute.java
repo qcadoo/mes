@@ -34,10 +34,10 @@ public class ProductsSubstitute {
 
     private Integer priority;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String number;
 
-    @Column(nullable = false, length = 2048)
+    @Column(nullable = false)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)

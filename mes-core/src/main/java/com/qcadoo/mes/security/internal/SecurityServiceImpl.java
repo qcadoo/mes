@@ -32,7 +32,7 @@ public final class SecurityServiceImpl implements SecurityService {
     public UsersUser getCurrentUser() {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         UsersUser user = (UsersUser) sessionFactory.getCurrentSession().createCriteria(UsersUser.class)
-                .add(Restrictions.eq("userName", login)).uniqueResult();
+                .add(Restrictions.eq("userName", login)).add(Restrictions.eq("deleted", false)).uniqueResult();
         checkNotNull(user, "Current user with login %s cannot be found", login);
         return user;
     }

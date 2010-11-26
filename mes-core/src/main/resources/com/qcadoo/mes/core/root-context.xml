@@ -125,12 +125,12 @@
 			<value>
 				SELECT USERNAME, PASSWORD, not deleted as enabled FROM
 				Users_User WHERE
-				USERNAME=?
+				USERNAME=? and deleted=false
             </value>
 		</property>
 		<property name="authoritiesByUsernameQuery">
 			<value>SELECT U.username, G.role as authority FROM Users_User U JOIN
-				Users_Group G ON u.usergroup_id = G.id WHERE U.username=?</value>
+				Users_Group G ON u.usergroup_id = G.id WHERE U.username=? and U.deleted=false</value>
 		</property>
 	</bean>
 

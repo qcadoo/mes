@@ -387,8 +387,8 @@
 				<option type="header" value="false" />
 				<option type="correspondingView" value="products/materialRequirementDetailsView" />
 				<option type="paginable" value="true" />
-				<option type="searchable" value="name,date,worker" />
-				<option type="orderable" value="name,date,worker" />
+				<option type="searchable" value="name,generated,worker" />
+				<option type="orderable" value="name,generated,worker" />
 				<option type="multiselect" value="true" />
 				<option type="fullScreen" value="true" />
 			</component>

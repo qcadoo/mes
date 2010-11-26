@@ -20,9 +20,9 @@
 		<string name="email" />
 		<string name="firstName" />
 		<string name="lastName" />
-		<text name="description" >
+		<string name="description" >
 			<validatesLength max="255"/>
-		</text>
+		</string>
 		<string name="email" />
 		<password name="password">
 			<validatesPresenceOnCreate />
@@ -39,7 +39,7 @@
 			<validatesPresenceOnCreate />
 			<validatesUniqueness />
 		</string>
-		<text name="description" />
+		<string name="description" />
 		<string name="role" readonly="true">
 			<validatesPresenceOnCreate />
 		</string>

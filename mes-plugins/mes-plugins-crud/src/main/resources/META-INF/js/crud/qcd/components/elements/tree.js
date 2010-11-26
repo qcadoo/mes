@@ -162,9 +162,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			selectedEntityIdToInstert = null;
 		}
 		if (tree.jstree("get_selected").length > 0) {
-			buttons.editButton.addClass("headerButtonEnabled");
-			buttons.deleteButton.addClass("headerButtonEnabled");
+			buttons.newButton.addClass("headerButtonEnabled");
+			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
+				buttons.editButton.addClass("headerButtonEnabled");
+				buttons.deleteButton.addClass("headerButtonEnabled");
+			} else {
+				buttons.editButton.removeClass("headerButtonEnabled");
+				buttons.deleteButton.removeClass("headerButtonEnabled");
+			}
 		} else {
+			buttons.newButton.removeClass("headerButtonEnabled");
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
