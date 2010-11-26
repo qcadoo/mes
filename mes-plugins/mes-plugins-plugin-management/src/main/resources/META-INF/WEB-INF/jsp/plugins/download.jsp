@@ -18,7 +18,6 @@ String ctx = request.getContextPath();
         <title>${headerLabel}</title>
     </head>
     <body>
-    	<c:if test="${canUpload}">    	
 	    	<div style="margin: 20px;">
 		        <h1>${headerLabel}</h1>
 		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
@@ -31,16 +30,5 @@ String ctx = request.getContextPath();
 		            </div>
 		        </form>
 	        </div>
-	    </c:if>
-	    <c:if test="${!canUpload}"> 
-			<div style='margin: 20px; color: red;'>
-				<div style="margin-bottom: 10px; font-weight: bold;">
-					${pluginStatusMessageHeader}
-				</div>
-				<div>
-					${pluginStatusMessage}
-				</div>
-			</div>
-		</c:if>
     </body>
 </html>

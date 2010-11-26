@@ -101,24 +101,25 @@ public final class PluginManagementController {
     }
 
     private ModelAndView getDownloadPageView(final String downloadAction, final String entityId, final Locale locale) {
-        String headerLabel = translationService.translate("plugins.downloadView.header", locale);
-        String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
+
+        if (entityId != null && !pluginManagementService.pluginIsInstalled(Long.parseLong(entityId))) {
+            return getInfoMessageView(
+                    new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToUpdate"), locale);
+
+        }
+
+        String pluginName = pluginManagementService.get(Long.parseLong(entityId)).getName();
 
         ModelAndView mav = crudController.getView("plugins", "pluginDownloadView", new HashMap<String, String>(), locale);
+
+        String headerLabel = translationService.translate("plugins.downloadView.update.header", locale) + ": <span class='grey'>"
+                + pluginName + "</span>";
+        String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
 
         mav.addObject("headerLabel", headerLabel);
         mav.addObject("buttonLabel", buttonLabel);
         mav.addObject("downloadAction", downloadAction);
         mav.addObject("entityId", entityId);
-
-        if (entityId != null && !pluginManagementService.pluginIsInstalled(Long.parseLong(entityId))) {
-            String message = translationService.translate("plugins.messages.error.wrongStatusToUpdate", locale);
-            mav.addObject("canUpload", false);
-            mav.addObject("pluginStatusMessage", message);
-            mav.addObject("pluginStatusMessageHeader", translationService.translate("plugins.messages.error.header", locale));
-        } else {
-            mav.addObject("canUpload", true);
-        }
 
         return mav;
     }
