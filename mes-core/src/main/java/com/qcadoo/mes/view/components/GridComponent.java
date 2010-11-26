@@ -38,6 +38,7 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.view.AbstractComponent;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ContainerComponent;
@@ -348,7 +349,11 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq(matcher.group(1) + "." + matcher.group(2), value + "*"));
             }
         } else if (field.getType().isSearchable()) {
-            searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value + "*"));
+            if (field.getType() instanceof BooleanType) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value));
+            } else {
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq(field, value + "*"));
+            }
         }
     }
 

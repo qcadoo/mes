@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 
@@ -167,6 +168,17 @@ public final class ColumnDefinition {
                         enumValuesArray.put(enumValueObject);
                     }
                     obj.put("values", enumValuesArray);
+                } else if (fieldDefinition.getType() instanceof BooleanType) {
+                    JSONArray checkboxValues = new JSONArray();
+                    JSONObject trueValueObject = new JSONObject();
+                    trueValueObject.put("key", "1");
+                    trueValueObject.put("value", "commons.true");
+                    checkboxValues.put(trueValueObject);
+                    JSONObject falseValueObject = new JSONObject();
+                    falseValueObject.put("key", "0");
+                    falseValueObject.put("value", "commons.false");
+                    checkboxValues.put(falseValueObject);
+                    obj.put("values", checkboxValues);
                 }
             }
 
