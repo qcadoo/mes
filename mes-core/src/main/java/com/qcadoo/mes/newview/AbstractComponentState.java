@@ -1,15 +1,20 @@
 package com.qcadoo.mes.newview;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.utils.Pair;
 
 public abstract class AbstractComponentState implements ComponentState, FieldEntityIdChangeListener, ScopeEntityIdChangeListener {
 
@@ -17,41 +22,79 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     private final Set<ScopeEntityIdChangeListener> scopeEntityIdChangeListeners = new HashSet<ScopeEntityIdChangeListener>();
 
-    private final Map<String, EventHandler> eventHandlers = new HashMap<String, EventHandler>();
+    private final EventHandlerHolder eventHandlerHolder = new EventHandlerHolder(this);
+
+    private final List<Pair<String, MessageType>> messages = new ArrayList<Pair<String, MessageType>>();
+
+    private String name;
+
+    private Locale locale;
+
+    private DataDefinition dataDefinition;
+
+    private TranslationService translationService;
 
     private boolean requestRender;
 
+    private boolean requestUpdateState;
+
     @Override
     public String getName() {
-        // TODO masz
-        return null;
+        return name;
     };
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setDataDefinition(final DataDefinition dataDefinition) {
+        this.dataDefinition = dataDefinition;
+    }
+
+    protected DataDefinition getDataDefinition() {
+        return dataDefinition;
+    }
+
+    public void setTranslationService(final TranslationService translationService) {
+        this.translationService = translationService;
+    }
+
+    protected TranslationService getTranslationService() {
+        return translationService;
+    }
+
+    @Override
+    public void addMessage(final String message, final MessageType type) {
+        messages.add(new Pair<String, ComponentState.MessageType>(message, type));
+        requestRender();
+    }
 
     @Override
     public void initialize(final JSONObject json, final Locale locale) throws JSONException {
+        this.locale = locale;
 
         // wypełnic wpólne pola
 
-        initializeContent(json.getJSONObject("content"), locale);
+        initializeContent(json.getJSONObject(JSON_CONTENT));
     }
 
-    protected abstract void initializeContent(final JSONObject json, final Locale locale) throws JSONException;
+    protected Locale getLocale() {
+        return locale;
+    }
+
+    protected abstract void initializeContent(final JSONObject json) throws JSONException;
 
     public void registemCustomEvent(final String name, final Object obj, final String method) {
-        eventHandlers.put(name, new EventHandler(obj, method, true));
+        eventHandlerHolder.registemCustomEvent(name, obj, method);
     }
 
     protected void registerEvent(final String name, final Object obj, final String method) {
-        eventHandlers.put(name, new EventHandler(obj, method, false));
+        eventHandlerHolder.registemEvent(name, obj, method);
     }
 
     @Override
     public final void performEvent(final String event, final String... args) {
-        if (!eventHandlers.containsKey(event)) {
-            throw new IllegalStateException("Event with given name doesn't exist");
-        } else {
-            eventHandlers.get(event).invokeEvent(args);
-        }
+        eventHandlerHolder.performEvent(event, args);
     }
 
     @Override
@@ -61,7 +104,22 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         // wypełnic wpólne pola
 
         if (requestRender) {
-            json.put("content", renderContent());
+            json.put(JSON_CONTENT, renderContent());
+            json.put(JSON_MESSAGES, renderMessages());
+            json.put(JSON_UPDATE_STATE, requestUpdateState);
+        }
+
+        return json;
+    }
+
+    private JSONArray renderMessages() throws JSONException {
+        JSONArray json = new JSONArray();
+
+        for (Pair<String, MessageType> message : messages) {
+            JSONObject jsonMessage = new JSONObject();
+            jsonMessage.put(JSON_MESSAGE_BODY, message.getKey());
+            jsonMessage.put(JSON_MESSAGE_TYPE, message.getValue().ordinal());
+            json.put(jsonMessage);
         }
 
         return json;
@@ -82,12 +140,20 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         requestRender = true;
     }
 
+    protected final void requestUpdateState() {
+        requestUpdateState = true;
+    }
+
     public void addFieldEntityIdChangeListener(final String field, final FieldEntityIdChangeListener listener) {
         fieldEntityIdChangeListeners.put(field, listener);
     }
 
     public void addScopeEntityIdChangeListener(final ScopeEntityIdChangeListener listener) {
         scopeEntityIdChangeListeners.add(listener);
+    }
+
+    protected Map<String, FieldEntityIdChangeListener> getFieldEntityIdChangeListeners() {
+        return fieldEntityIdChangeListeners;
     }
 
     @Override
@@ -98,47 +164,6 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     @Override
     public void onScopeEntityIdChange(final Long entityId) {
         // implements if you want
-    }
-
-    private class EventHandler {
-
-        private final Method method;
-
-        private final Object obj;
-
-        private final boolean isCustom;
-
-        public EventHandler(final Object obj, final String method, final boolean isCustom) {
-            this.isCustom = isCustom;
-            this.obj = obj;
-            try {
-                if (isCustom) {
-                    this.method = obj.getClass().getDeclaredMethod(method, ComponentState.class, String[].class);
-                } else {
-                    this.method = obj.getClass().getDeclaredMethod(method, String[].class);
-                }
-            } catch (SecurityException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            }
-        }
-
-        public void invokeEvent(final String[] args) {
-            try {
-                if (isCustom) {
-                    method.invoke(obj, AbstractComponentState.this, args);
-                } else {
-                    method.invoke(obj, new Object[] { args });
-                }
-            } catch (IllegalArgumentException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (InvocationTargetException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            }
-        }
     }
 
 }

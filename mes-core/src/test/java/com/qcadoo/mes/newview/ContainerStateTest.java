@@ -7,6 +7,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -88,13 +89,13 @@ public class ContainerStateTest extends AbstractStateTest {
         JSONObject json = new JSONObject();
         JSONObject children = new JSONObject();
         JSONObject component1Json = new JSONObject();
-        component1Json.put("content", new JSONObject());
+        component1Json.put(ComponentState.JSON_CONTENT, new JSONObject());
         JSONObject component2Json = new JSONObject();
-        component2Json.put("content", new JSONObject());
+        component2Json.put(ComponentState.JSON_CONTENT, new JSONObject());
         children.put("component1", component1Json);
         children.put("component2", component2Json);
-        json.put("children", children);
-        json.put("content", new JSONObject());
+        json.put(ComponentState.JSON_CHILDREN, children);
+        json.put(ComponentState.JSON_CONTENT, new JSONObject(Collections.singletonMap(ComponentState.JSON_VALUE, 13L)));
 
         // when
         container.initialize(json, Locale.ENGLISH);
@@ -108,9 +109,9 @@ public class ContainerStateTest extends AbstractStateTest {
     public void shouldRenderChildren() throws Exception {
         // given
         JSONObject component1Json = new JSONObject();
-        component1Json.put("content", "test1");
+        component1Json.put(ComponentState.JSON_CONTENT, "test1");
         JSONObject component2Json = new JSONObject();
-        component2Json.put("content", "test2");
+        component2Json.put(ComponentState.JSON_CONTENT, "test2");
 
         ComponentState component1 = createMockComponent("component1");
         given(component1.render()).willReturn(component1Json);
@@ -127,8 +128,14 @@ public class ContainerStateTest extends AbstractStateTest {
         // then
         verify(component1).render();
         verify(component2).render();
-        assertEquals("test1", json.getJSONObject("children").getJSONObject("component1").getString("content"));
-        assertEquals("test2", json.getJSONObject("children").getJSONObject("component2").getString("content"));
+        assertEquals(
+                "test1",
+                json.getJSONObject(ComponentState.JSON_CHILDREN).getJSONObject("component1")
+                        .getString(ComponentState.JSON_CONTENT));
+        assertEquals(
+                "test2",
+                json.getJSONObject(ComponentState.JSON_CHILDREN).getJSONObject("component2")
+                        .getString(ComponentState.JSON_CONTENT));
     }
 
 }

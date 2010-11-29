@@ -1,7 +1,5 @@
 package com.qcadoo.mes.newview.components;
 
-import java.util.Locale;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,8 +10,8 @@ public class TextInputComponentState extends AbstractComponentState {
     private String value;
 
     @Override
-    protected void initializeContent(final JSONObject json, final Locale locale) throws JSONException {
-        value = json.getString("value");
+    protected void initializeContent(final JSONObject json) throws JSONException {
+        value = json.getString(JSON_VALUE);
     }
 
     @Override
@@ -30,7 +28,7 @@ public class TextInputComponentState extends AbstractComponentState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("value", value);
+        json.put(JSON_VALUE, value);
         return json;
     }
 
