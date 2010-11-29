@@ -100,6 +100,8 @@ public class FormComponentState extends AbstractContainerState {
             copyFieldsToEntity(entity);
             copyContextToEntity(entity);
 
+            System.out.println(entity);
+
             try {
                 entity = getDataDefinition().save(entity);
 

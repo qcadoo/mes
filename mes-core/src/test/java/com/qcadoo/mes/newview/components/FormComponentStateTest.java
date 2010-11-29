@@ -172,6 +172,36 @@ public class FormComponentStateTest extends AbstractStateTest {
     }
 
     @Test
+    public void shouldUseContextWhileSaving() throws Exception {
+        // given
+        Entity entity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
+        Entity savedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
+        given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
+        given(name.getFieldValue()).willReturn("text");
+
+        JSONObject json = new JSONObject();
+        JSONObject jsonContext = new JSONObject();
+        jsonContext.put("id", 14L);
+        jsonContext.put("name", "text2");
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put(ComponentState.JSON_VALUE, 13L);
+        jsonContent.put("context", jsonContext);
+        json.put(ComponentState.JSON_CONTENT, jsonContent);
+        json.put(ComponentState.JSON_CHILDREN, new JSONObject());
+
+        form.initialize(json, Locale.ENGLISH);
+
+        // when
+        form.performEvent("save", new String[0]);
+
+        // then
+        verify(dataDefinition).save(eq(entity));
+        verify(name).setFieldValue("text2");
+        assertEquals(14L, form.getFieldValue());
+        assertTrue(((FormComponentState) form).isValid());
+    }
+
+    @Test
     public void shouldHaveValidationErrors() throws Exception {
         // given
         Entity entity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text"));
