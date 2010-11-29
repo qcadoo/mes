@@ -31,6 +31,8 @@ public interface ComponentState {
 
     void performEvent(String event, String... args);
 
+    void beforeRender();
+
     JSONObject render() throws JSONException;
 
     void setFieldValue(Object value);

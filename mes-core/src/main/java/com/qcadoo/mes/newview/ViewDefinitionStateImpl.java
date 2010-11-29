@@ -17,12 +17,12 @@ public class ViewDefinitionStateImpl extends AbstractContainerState implements V
     }
 
     @Override
-    protected void initializeContent(JSONObject json) throws JSONException {
+    public void initializeContent(JSONObject json) throws JSONException {
         // empty method
     }
 
     @Override
-    protected JSONObject renderContent() throws JSONException {
+    public JSONObject renderContent() throws JSONException {
         // empty method
         return null;
     }

@@ -1,5 +1,6 @@
 package com.qcadoo.mes.newview.components;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.withSettings;
 
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import com.qcadoo.mes.newview.AbstractComponentPattern;
 import com.qcadoo.mes.newview.AbstractComponentState;
 import com.qcadoo.mes.newview.ComponentPattern;
 import com.qcadoo.mes.newview.ComponentState;
@@ -86,5 +88,25 @@ public class TestComponentPatternTest {
         // then
         Mockito.verify(f1State).addFieldEntityIdChangeListener("field1", (FieldEntityIdChangeListener) t1State);
         Mockito.verify(f1State).addFieldEntityIdChangeListener("field2", (FieldEntityIdChangeListener) t2State);
+    }
+
+    @Test
+    public void shouldCallStateOnChildren() throws Exception {
+        // given
+        TestComponentPattern pattern = new TestComponentPattern("f1", null, null, null);
+        AbstractComponentPattern child1 = Mockito.mock(AbstractComponentPattern.class);
+        given(child1.getName()).willReturn("test1");
+        AbstractComponentPattern child2 = Mockito.mock(AbstractComponentPattern.class);
+        given(child2.getName()).willReturn("test2");
+        pattern.addChild(child1);
+        pattern.addChild(child2);
+        ViewDefinitionState vds = Mockito.mock(ViewDefinitionState.class);
+
+        // when
+        pattern.updateComponentStateListeners(vds);
+
+        // then
+        Mockito.verify(child1).updateComponentStateListeners(vds);
+        Mockito.verify(child2).updateComponentStateListeners(vds);
     }
 }

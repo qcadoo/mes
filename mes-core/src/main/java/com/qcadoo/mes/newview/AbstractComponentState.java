@@ -125,6 +125,11 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         return json;
     }
 
+    @Override
+    public void beforeRender() {
+        // TODO mina
+    }
+
     protected abstract JSONObject renderContent() throws JSONException;
 
     protected final void notifyEntityIdChangeListeners(final Long entityId) {

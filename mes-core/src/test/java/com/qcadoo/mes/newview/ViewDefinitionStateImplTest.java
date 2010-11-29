@@ -52,4 +52,5 @@ public class ViewDefinitionStateImplTest extends AbstractStateTest {
         // then
         Mockito.verify(c2).performEvent("event", "arg1", "arg2");
     }
+
 }

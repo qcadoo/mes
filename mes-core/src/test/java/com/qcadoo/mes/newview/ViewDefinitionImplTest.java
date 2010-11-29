@@ -2,10 +2,14 @@ package com.qcadoo.mes.newview;
 
 import static org.mockito.BDDMockito.given;
 
+import java.util.Locale;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.newview.components.TextInputComponentPattern;
@@ -128,4 +132,63 @@ public class ViewDefinitionImplTest {
         Assert.assertNull(testChild1);
     }
 
+    @Test
+    public void shouldCallEvent() throws Exception {
+        // given
+        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+
+        AbstractContainerPattern child1 = Mockito.mock(AbstractContainerPattern.class);
+        AbstractContainerPattern child2 = Mockito.mock(AbstractContainerPattern.class);
+        given(child1.getName()).willReturn("test1");
+        given(child2.getName()).willReturn("test2");
+        vd.addChild(child1);
+        vd.addChild(child2);
+
+        ContainerState child1state = Mockito.mock(ContainerState.class);
+        ContainerState child2state = Mockito.mock(ContainerState.class);
+        given(child1.createComponentState()).willReturn(child1state);
+        given(child2.createComponentState()).willReturn(child2state);
+
+        ViewDefinitionState vds = Mockito.mock(ViewDefinitionState.class);
+        vd.setViewDefinitionStateFactory(new TestViewDefinitionStateFactory(vds));
+        JSONObject resultObj = new JSONObject();
+        BDDMockito.given(vds.render()).willReturn(resultObj);
+
+        JSONObject obj = new JSONObject();
+        obj.put("eventName", "TestEvent");
+        obj.put("eventComponent", "TestComponent");
+        JSONArray eventArgs = new JSONArray();
+        eventArgs.put("arg1");
+        eventArgs.put("arg2");
+        obj.put("eventArgs", eventArgs);
+
+        // when
+        JSONObject result = vd.performEvent(obj, Locale.ENGLISH);
+
+        // then
+        Mockito.verify(vds).addChild(child1state);
+        Mockito.verify(vds).addChild(child2state);
+        Mockito.verify(vds).initialize(obj, Locale.ENGLISH);
+        Mockito.verify(child1).updateComponentStateListeners(vds);
+        Mockito.verify(child2).updateComponentStateListeners(vds);
+        Mockito.verify(vds).performEvent("TestComponent", "TestEvent", new String[] { "arg1", "arg2" });
+        Mockito.verify(vds).beforeRender();
+        Mockito.verify(vds).render();
+        Assert.assertEquals(resultObj, result);
+    }
+
+    private class TestViewDefinitionStateFactory implements ViewDefinitionStateFactory {
+
+        private final ViewDefinitionState vds;
+
+        public TestViewDefinitionStateFactory(ViewDefinitionState vds) {
+            this.vds = vds;
+        }
+
+        @Override
+        public ViewDefinitionState getInstance() {
+            return vds;
+        }
+
+    }
 }

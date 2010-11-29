@@ -30,4 +30,11 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
             componentPattern.initialize(viewDefinition);
         }
     }
+
+    public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
+        super.updateComponentStateListeners(viewDefinitionState);
+        for (ComponentPattern componentPattern : children.values()) {
+            ((AbstractComponentPattern) componentPattern).updateComponentStateListeners(viewDefinitionState);
+        }
+    }
 }
