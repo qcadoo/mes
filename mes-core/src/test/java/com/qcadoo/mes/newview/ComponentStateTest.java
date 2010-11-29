@@ -6,11 +6,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
+import junit.framework.Assert;
+
 import org.json.JSONObject;
 import org.junit.Test;
 
 import com.qcadoo.mes.newview.ComponentState.MessageType;
 import com.qcadoo.mes.newview.components.FormComponentState;
+import com.qcadoo.mes.newview.components.TestComponentState;
 import com.qcadoo.mes.newview.components.TextInputComponentState;
 
 public class ComponentStateTest {
@@ -96,4 +99,79 @@ public class ComponentStateTest {
         assertFalse(json.getBoolean(ComponentState.JSON_UPDATE_STATE));
     }
 
+    @Test
+    public void shouldHaveVisibleFlag() throws Exception {
+        // given
+        ComponentState componentState = new TextInputComponentState();
+
+        JSONObject json = new JSONObject();
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put(ComponentState.JSON_VALUE, "text");
+        json.put(ComponentState.JSON_CONTENT, jsonContent);
+        json.put(ComponentState.JSON_VISIBLE, true);
+
+        // when
+        componentState.initialize(json, Locale.ENGLISH);
+
+        // then
+        assertTrue(componentState.isVisible());
+        assertTrue(componentState.render().getBoolean(ComponentState.JSON_VISIBLE));
+    }
+
+    @Test
+    public void shouldModifyVisibleFlag() throws Exception {
+        // given
+        ComponentState componentState = new TextInputComponentState();
+
+        // when
+        componentState.setVisible(false);
+
+        // then
+        assertFalse(componentState.isVisible());
+        assertFalse(componentState.render().getBoolean(ComponentState.JSON_VISIBLE));
+    }
+
+    @Test
+    public void shouldHaveEnableFlag() throws Exception {
+        // given
+        ComponentState componentState = new TextInputComponentState();
+
+        JSONObject json = new JSONObject();
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put(ComponentState.JSON_VALUE, "text");
+        json.put(ComponentState.JSON_CONTENT, jsonContent);
+        json.put(ComponentState.JSON_ENABLE, true);
+
+        // when
+        componentState.initialize(json, Locale.ENGLISH);
+
+        // then
+        assertTrue(componentState.isEnable());
+        assertTrue(componentState.render().getBoolean(ComponentState.JSON_ENABLE));
+    }
+
+    @Test
+    public void shouldModifyEnableFlag() throws Exception {
+        // given
+        ComponentState componentState = new TextInputComponentState();
+
+        // when
+        componentState.setEnable(false);
+
+        // then
+        assertFalse(componentState.isEnable());
+        assertFalse(componentState.render().getBoolean(ComponentState.JSON_ENABLE));
+    }
+
+    @Test
+    public void shouldCallBeforeRenderContent() throws Exception {
+        // given
+        TestComponentState componentState = new TestComponentState(null);
+
+        // when
+        componentState.beforeRender();
+
+        // then
+        Assert.assertEquals(1, componentState.getBeforeRenderContentCallNumber());
+    }
 }

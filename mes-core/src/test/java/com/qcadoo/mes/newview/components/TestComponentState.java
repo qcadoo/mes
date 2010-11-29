@@ -10,6 +10,12 @@ import com.qcadoo.mes.newview.FieldEntityIdChangeListener;
 
 public class TestComponentState extends AbstractComponentState {
 
+    private int beforeRenderContentCallNumber = 0;
+
+    public TestComponentState(String name) {
+        setName(name);
+    }
+
     @Override
     public void setFieldValue(Object value) {
         // TODO Auto-generated method stub
@@ -36,6 +42,15 @@ public class TestComponentState extends AbstractComponentState {
 
     public final Map<String, FieldEntityIdChangeListener> getFieldEntityIdChangeListenersMap() {
         return getFieldEntityIdChangeListeners();
+    }
+
+    @Override
+    protected void beforeRenderContent() {
+        beforeRenderContentCallNumber++;
+    }
+
+    public int getBeforeRenderContentCallNumber() {
+        return beforeRenderContentCallNumber;
     }
 
 }

@@ -15,7 +15,7 @@ public class TestComponentPattern extends AbstractContainerPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TestComponentState();
+        return new TestComponentState(null);
     }
 
     public Map<String, ComponentPattern> getFieldEntityIdChangeListeners() {

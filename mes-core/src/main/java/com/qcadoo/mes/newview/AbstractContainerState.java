@@ -23,6 +23,14 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
     }
 
     @Override
+    public void beforeRender() {
+        super.beforeRender();
+        for (ComponentState child : children.values()) {
+            child.beforeRender();
+        }
+    }
+
+    @Override
     public JSONObject render() throws JSONException {
         JSONObject json = super.render();
 

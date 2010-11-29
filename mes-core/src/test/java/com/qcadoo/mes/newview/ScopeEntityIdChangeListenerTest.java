@@ -15,8 +15,8 @@ public class ScopeEntityIdChangeListenerTest extends AbstractStateTest {
         ComponentState component2 = createMockComponent("component2");
 
         FormComponentState container = new FormComponentState();
-        container.addScopeEntityIdChangeListener((ScopeEntityIdChangeListener) component1);
-        container.addScopeEntityIdChangeListener((ScopeEntityIdChangeListener) component2);
+        container.addScopeEntityIdChangeListener("component1", (ScopeEntityIdChangeListener) component1);
+        container.addScopeEntityIdChangeListener("component2", (ScopeEntityIdChangeListener) component2);
 
         // when
         container.setFieldValue(13L);

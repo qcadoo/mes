@@ -1,5 +1,7 @@
 package com.qcadoo.mes.newview.components;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +23,11 @@ public class FormComponentState extends AbstractContainerState {
 
     private boolean valid = true;
 
+    private final Map<String, Object> context = new HashMap<String, Object>();
+
+    private final FormEventPerformer eventPerformer = new FormEventPerformer();
+
     public FormComponentState() {
-        FormEventPerformer eventPerformer = new FormEventPerformer();
         registerEvent("clear", eventPerformer, "clear");
         registerEvent("save", eventPerformer, "save");
         registerEvent("saveAndClear", eventPerformer, "saveAndClear");
@@ -32,8 +37,28 @@ public class FormComponentState extends AbstractContainerState {
     }
 
     @Override
+    public void onFieldEntityIdChange(final Long entityId) {
+        setFieldValue(entityId);
+        eventPerformer.initialize(new String[0]);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     protected void initializeContent(final JSONObject json) throws JSONException {
         value = json.getLong(JSON_VALUE);
+
+        if (json.has("context")) {
+            JSONObject contextJson = json.getJSONObject("context");
+            Iterator<String> iterator = contextJson.keys();
+            while (iterator.hasNext()) {
+                String field = iterator.next();
+                if ("id".equals(field)) {
+                    value = contextJson.getLong(field);
+                } else {
+                    context.put(field, contextJson.get(field));
+                }
+            }
+        }
     }
 
     @Override
@@ -42,11 +67,6 @@ public class FormComponentState extends AbstractContainerState {
         requestRender();
         requestUpdateState();
         notifyEntityIdChangeListeners((Long) value);
-    }
-
-    private void setNotValid() {
-        valid = false;
-        requestRender();
     }
 
     public boolean isValid() {
@@ -78,24 +98,40 @@ public class FormComponentState extends AbstractContainerState {
             Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(), value);
 
             copyFieldsToEntity(entity);
+            copyContextToEntity(entity);
 
-            entity = getDataDefinition().save(entity);
+            try {
+                entity = getDataDefinition().save(entity);
 
-            if (!entity.isValid()) {
-                setNotValid();
-                copyMessages(entity.getGlobalErrors());
-            }
+                if (!entity.isValid()) {
+                    valid = false;
+                    requestRender();
+                    copyMessages(entity.getGlobalErrors());
+                }
 
-            copyEntityToFields(entity);
+                copyEntityToFields(entity);
 
-            if (entity.isValid()) {
-                setFieldValue(entity.getId());
+                if (entity.isValid()) {
+                    setFieldValue(entity.getId());
+                    addMessage("TODO - zapisano", MessageType.SUCCESS); // TODO masz
+                } else {
+                    addMessage("TODO - niezapisano", MessageType.FAILURE); // TODO masz
+                }
+            } catch (IllegalStateException e) {
+                addMessage("TODO - niezapisano - " + e.getMessage(), MessageType.FAILURE); // TODO masz
             }
         }
 
         public void delete(final String[] args) {
             if (value != null) {
-                getDataDefinition().delete(value);
+                try {
+                    getDataDefinition().delete(value);
+                    addMessage("TODO - usunięto", MessageType.SUCCESS); // TODO masz
+                } catch (IllegalStateException e) {
+                    addMessage("TODO - nieusunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
+                }
+            } else {
+                addMessage("TODO - nieusunięto", MessageType.FAILURE); // TODO masz
             }
 
             clear(args);
@@ -173,6 +209,14 @@ public class FormComponentState extends AbstractContainerState {
             for (Map.Entry<String, FieldEntityIdChangeListener> field : getFieldEntityIdChangeListeners().entrySet()) {
                 if (isValidFormField(field.getKey())) {
                     entity.setField(field.getKey(), ((ComponentState) field.getValue()).getFieldValue());
+                }
+            }
+        }
+
+        private void copyContextToEntity(final Entity entity) {
+            for (Map.Entry<String, Object> field : context.entrySet()) {
+                if (isValidFormField(field.getKey())) {
+                    entity.setField(field.getKey(), field.getValue());
                 }
             }
         }

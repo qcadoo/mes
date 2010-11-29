@@ -11,10 +11,13 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.json.JSONObject;
 import org.junit.Test;
 
 import com.qcadoo.mes.newview.components.FormComponentState;
+import com.qcadoo.mes.newview.components.TestComponentState;
 
 public class ContainerStateTest extends AbstractStateTest {
 
@@ -138,4 +141,20 @@ public class ContainerStateTest extends AbstractStateTest {
                         .getString(ComponentState.JSON_CONTENT));
     }
 
+    @Test
+    public void shouldCallBeforeRenderOnChildren() throws Exception {
+        // given
+        FormComponentState container = new FormComponentState();
+        TestComponentState componentState1 = new TestComponentState("test1");
+        TestComponentState componentState2 = new TestComponentState("test2");
+        container.addChild(componentState1);
+        container.addChild(componentState2);
+
+        // when
+        container.beforeRender();
+
+        // then
+        Assert.assertEquals(1, componentState1.getBeforeRenderContentCallNumber());
+        Assert.assertEquals(1, componentState2.getBeforeRenderContentCallNumber());
+    }
 }

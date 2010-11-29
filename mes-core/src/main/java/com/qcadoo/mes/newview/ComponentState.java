@@ -9,6 +9,10 @@ public interface ComponentState {
 
     String JSON_UPDATE_STATE = "updateState";
 
+    String JSON_VISIBLE = "v";
+
+    String JSON_ENABLE = "e";
+
     String JSON_CONTENT = "content";
 
     String JSON_VALUE = "value";
@@ -40,5 +44,13 @@ public interface ComponentState {
     Object getFieldValue();
 
     void addMessage(String message, MessageType type);
+
+    boolean isVisible();
+
+    void setVisible(boolean visible);
+
+    boolean isEnable();
+
+    void setEnable(boolean enable);
 
 }
