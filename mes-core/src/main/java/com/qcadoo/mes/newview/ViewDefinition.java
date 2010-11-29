@@ -11,4 +11,6 @@ public interface ViewDefinition {
 
     void performEvent(JSONObject object, Locale locale);
 
+    ComponentPattern getComponentByPath(String path);
+
 }

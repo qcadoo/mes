@@ -78,6 +78,10 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         }
     }
 
+    protected final Map<String, FieldEntityIdChangeListener> getFieldEntityIdChangeListeners() {
+        return fieldEntityIdChangeListeners;
+    }
+
     protected final void requestRender() {
         requestRender = true;
     }
