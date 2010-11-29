@@ -1,6 +1,7 @@
 package com.qcadoo.mes.newview;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Locale;
 
@@ -45,13 +46,25 @@ public class ComponentStateTest {
     public void shouldRenderJsonWithNullFieldValue() throws Exception {
         // given
         ComponentState componentState = new TextInputComponentState();
+        componentState.setFieldValue(null);
 
         // when
         JSONObject json = componentState.render();
 
         // then
-        // TODO co z nullami
-        assertEquals(JSONObject.NULL, json.getJSONObject("content").get("value"));
+        assertFalse(json.getJSONObject("content").has("value"));
+    }
+
+    @Test
+    public void shouldNotRenderComponentIfNotRequested() throws Exception {
+        // given
+        ComponentState componentState = new TextInputComponentState();
+
+        // when
+        JSONObject json = componentState.render();
+
+        // then
+        assertFalse(json.has("content"));
     }
 
 }

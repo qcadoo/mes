@@ -19,6 +19,7 @@ public class TextInputComponentState extends AbstractComponentState {
     @Override
     public void setFieldValue(final Object value) {
         this.value = (String) value;
+        requestRender();
     }
 
     @Override
@@ -29,7 +30,7 @@ public class TextInputComponentState extends AbstractComponentState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("value", value != null ? value : JSONObject.NULL);
+        json.put("value", value);
         return json;
     }
 
