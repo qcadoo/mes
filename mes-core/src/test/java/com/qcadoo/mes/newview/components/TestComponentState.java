@@ -1,6 +1,5 @@
 package com.qcadoo.mes.newview.components;
 
-import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -24,7 +23,7 @@ public class TestComponentState extends AbstractComponentState {
     }
 
     @Override
-    protected void initializeContent(JSONObject json, Locale locale) throws JSONException {
+    protected void initializeContent(JSONObject json) throws JSONException {
         // TODO Auto-generated method stub
 
     }

@@ -1,7 +1,5 @@
 package com.qcadoo.mes.newview;
 
-import java.util.Locale;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,7 +17,7 @@ public class ViewDefinitionStateImpl extends AbstractContainerState implements V
     }
 
     @Override
-    protected void initializeContent(JSONObject json, Locale locale) throws JSONException {
+    protected void initializeContent(JSONObject json) throws JSONException {
         // empty method
     }
 

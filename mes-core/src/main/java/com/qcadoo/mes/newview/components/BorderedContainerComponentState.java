@@ -1,7 +1,5 @@
 package com.qcadoo.mes.newview.components;
 
-import java.util.Locale;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,7 +20,7 @@ public class BorderedContainerComponentState extends AbstractContainerState {
     }
 
     @Override
-    protected void initializeContent(final JSONObject json, final Locale locale) throws JSONException {
+    protected void initializeContent(final JSONObject json) throws JSONException {
         // TODO Auto-generated method stub
 
     }

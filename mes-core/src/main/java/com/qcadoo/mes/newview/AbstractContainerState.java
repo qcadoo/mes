@@ -15,7 +15,7 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
     public void initialize(final JSONObject json, final Locale locale) throws JSONException {
         super.initialize(json, locale);
 
-        JSONObject childerJson = json.getJSONObject("children");
+        JSONObject childerJson = json.getJSONObject(JSON_CHILDREN);
 
         for (Map.Entry<String, ComponentState> child : children.entrySet()) {
             child.getValue().initialize(childerJson.getJSONObject(child.getKey()), locale);
@@ -32,7 +32,7 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
             childerJson.put(child.getKey(), child.getValue().render());
         }
 
-        json.put("children", childerJson);
+        json.put(JSON_CHILDREN, childerJson);
 
         return json;
     }
