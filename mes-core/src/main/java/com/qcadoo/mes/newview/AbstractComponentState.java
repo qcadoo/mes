@@ -1,30 +1,21 @@
 package com.qcadoo.mes.newview;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.utils.Pair;
 
 public abstract class AbstractComponentState implements ComponentState, FieldEntityIdChangeListener, ScopeEntityIdChangeListener {
 
-    private final Map<String, FieldEntityIdChangeListener> fieldEntityIdChangeListeners = new HashMap<String, FieldEntityIdChangeListener>();
-
-    private final Set<ScopeEntityIdChangeListener> scopeEntityIdChangeListeners = new HashSet<ScopeEntityIdChangeListener>();
+    private final EntityIdChangeListenerHolder listenerHolder = new EntityIdChangeListenerHolder();
 
     private final EventHandlerHolder eventHandlerHolder = new EventHandlerHolder(this);
 
-    private final List<Pair<String, MessageType>> messages = new ArrayList<Pair<String, MessageType>>();
+    private final MessageHolder messageHolder = new MessageHolder();
 
     private String name;
 
@@ -37,6 +28,10 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     private boolean requestRender;
 
     private boolean requestUpdateState;
+
+    private boolean enable;
+
+    private boolean visible;
 
     @Override
     public String getName() {
@@ -65,7 +60,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     @Override
     public void addMessage(final String message, final MessageType type) {
-        messages.add(new Pair<String, ComponentState.MessageType>(message, type));
+        messageHolder.addMessage(message, type);
         requestRender();
     }
 
@@ -73,7 +68,13 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     public void initialize(final JSONObject json, final Locale locale) throws JSONException {
         this.locale = locale;
 
-        // wypełnic wpólne pola
+        if (json.has(JSON_ENABLE)) {
+            setEnable(json.getBoolean(JSON_ENABLE));
+        }
+
+        if (json.has(JSON_VISIBLE)) {
+            setVisible(json.getBoolean(JSON_VISIBLE));
+        }
 
         initializeContent(json.getJSONObject(JSON_CONTENT));
     }
@@ -100,26 +101,13 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     @Override
     public JSONObject render() throws JSONException {
         JSONObject json = new JSONObject();
-
-        // wypełnic wpólne pola
+        json.put(JSON_ENABLE, isEnable());
+        json.put(JSON_VISIBLE, isVisible());
 
         if (requestRender) {
             json.put(JSON_CONTENT, renderContent());
-            json.put(JSON_MESSAGES, renderMessages());
+            json.put(JSON_MESSAGES, messageHolder.renderMessages());
             json.put(JSON_UPDATE_STATE, requestUpdateState);
-        }
-
-        return json;
-    }
-
-    private JSONArray renderMessages() throws JSONException {
-        JSONArray json = new JSONArray();
-
-        for (Pair<String, MessageType> message : messages) {
-            JSONObject jsonMessage = new JSONObject();
-            jsonMessage.put(JSON_MESSAGE_BODY, message.getKey());
-            jsonMessage.put(JSON_MESSAGE_TYPE, message.getValue().ordinal());
-            json.put(jsonMessage);
         }
 
         return json;
@@ -128,16 +116,15 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     protected abstract JSONObject renderContent() throws JSONException;
 
     protected final void notifyEntityIdChangeListeners(final Long entityId) {
-        for (FieldEntityIdChangeListener listener : fieldEntityIdChangeListeners.values()) {
-            listener.onFieldEntityIdChange(entityId);
-        }
-        for (ScopeEntityIdChangeListener listener : scopeEntityIdChangeListeners) {
-            listener.onScopeEntityIdChange(entityId);
-        }
+        listenerHolder.notifyEntityIdChangeListeners(entityId);
     }
 
     protected final Map<String, FieldEntityIdChangeListener> getFieldEntityIdChangeListeners() {
-        return fieldEntityIdChangeListeners;
+        return listenerHolder.getFieldEntityIdChangeListeners();
+    }
+
+    protected final Map<String, ScopeEntityIdChangeListener> getScopeEntityIdChangeListeners() {
+        return listenerHolder.getScopeEntityIdChangeListeners();
     }
 
     protected final void requestRender() {
@@ -149,11 +136,31 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     }
 
     public void addFieldEntityIdChangeListener(final String field, final FieldEntityIdChangeListener listener) {
-        fieldEntityIdChangeListeners.put(field, listener);
+        listenerHolder.addFieldEntityIdChangeListener(field, listener);
     }
 
-    public void addScopeEntityIdChangeListener(final ScopeEntityIdChangeListener listener) {
-        scopeEntityIdChangeListeners.add(listener);
+    public void addScopeEntityIdChangeListener(final String scope, final ScopeEntityIdChangeListener listener) {
+        listenerHolder.addScopeEntityIdChangeListener(scope, listener);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
+    @Override
+    public void setVisible(final boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public boolean isEnable() {
+        return enable;
+    }
+
+    @Override
+    public void setEnable(final boolean enable) {
+        this.enable = enable;
     }
 
     @Override
