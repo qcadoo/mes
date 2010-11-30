@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview;
+package com.qcadoo.mes.newview.states;
 
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.mes.newview.ComponentState;
 import com.qcadoo.mes.newview.components.FormComponentState;
 
 public class EventHandlerTest {

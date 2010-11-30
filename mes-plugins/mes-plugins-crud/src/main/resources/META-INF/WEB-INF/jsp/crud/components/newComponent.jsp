@@ -16,12 +16,10 @@
 	
 	
 <div id="${component.pathName}" style="margin-left: 20px; padding-left: 2px; border-left: solid black 1px;">
-	<div class="JSObject">
-		${component.javaScriptFilePath}
-	</div>
+	<div class="element_js_object">${component.javaScriptObjectName}</div>
 	<div class="element_options" style="display: none">
 	</div>
-	<tiles:insertTemplate template="${component.jspPath}">
+	<tiles:insertTemplate template="${component.jspFilePath}">
 		<tiles:putAttribute name="component" value="${component}" />
 	</tiles:insertTemplate>
 </div>

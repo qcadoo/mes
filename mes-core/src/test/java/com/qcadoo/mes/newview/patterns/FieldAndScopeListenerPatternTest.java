@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview.components;
+package com.qcadoo.mes.newview.patterns;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.withSettings;
@@ -15,30 +15,11 @@ import com.qcadoo.mes.newview.AbstractComponentState;
 import com.qcadoo.mes.newview.ComponentPattern;
 import com.qcadoo.mes.newview.ComponentState;
 import com.qcadoo.mes.newview.FieldEntityIdChangeListener;
+import com.qcadoo.mes.newview.ViewDefinition;
 import com.qcadoo.mes.newview.ViewDefinitionState;
+import com.qcadoo.mes.newview.components.TextInputComponentPattern;
 
-public class TestComponentPatternTest {
-
-    @Test
-    public void shouldReturnValidPath() throws Exception {
-        // given
-        TextInputComponentPattern root = new TextInputComponentPattern("rootName", null, null, null);
-        TextInputComponentPattern child1 = new TextInputComponentPattern("child1", null, null, root);
-        TextInputComponentPattern child2 = new TextInputComponentPattern("child2", null, null, root);
-        TextInputComponentPattern child11 = new TextInputComponentPattern("child11", null, null, child1);
-
-        // when
-        String rootPathName = root.getPathName();
-        String child1PathName = child1.getPathName();
-        String child2PathName = child2.getPathName();
-        String child11PathName = child11.getPathName();
-
-        // then
-        Assert.assertEquals("rootName", rootPathName);
-        Assert.assertEquals("rootName.child1", child1PathName);
-        Assert.assertEquals("rootName.child2", child2PathName);
-        Assert.assertEquals("rootName.child1.child11", child11PathName);
-    }
+public class FieldAndScopeListenerPatternTest {
 
     @Test
     public void shouldHaveFieldListeners() throws Exception {
@@ -47,6 +28,7 @@ public class TestComponentPatternTest {
 
         ComponentPatternMock t1 = new ComponentPatternMock("t1", "t1", null, pattern);
         ComponentPatternMock t2 = new ComponentPatternMock("t2", "t2", null, pattern);
+
         pattern.addChild(t1);
         pattern.addChild(t2);
 
@@ -67,13 +49,17 @@ public class TestComponentPatternTest {
         ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
         ComponentPatternMock t1 = new ComponentPatternMock("t1", "field1", null, pattern);
         ComponentPatternMock t2 = new ComponentPatternMock("t2", "field2", null, pattern);
+
         pattern.addChild(t1);
         pattern.addChild(t2);
+
         pattern.initialize(null);
 
         AbstractComponentState f1State = Mockito.mock(AbstractComponentState.class);
+
         ComponentState t1State = Mockito.mock(ComponentState.class,
                 withSettings().extraInterfaces(FieldEntityIdChangeListener.class));
+
         ComponentState t2State = Mockito.mock(ComponentState.class,
                 withSettings().extraInterfaces(FieldEntityIdChangeListener.class));
 
@@ -91,22 +77,19 @@ public class TestComponentPatternTest {
     }
 
     @Test
-    public void shouldCallStateOnChildren() throws Exception {
+    public void shouldAddItselfToRelationFieldComponentWhenComplexFieldPath() throws Exception {
         // given
-        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
-        AbstractComponentPattern child1 = Mockito.mock(AbstractComponentPattern.class);
-        given(child1.getName()).willReturn("test1");
-        AbstractComponentPattern child2 = Mockito.mock(AbstractComponentPattern.class);
-        given(child2.getName()).willReturn("test2");
-        pattern.addChild(child1);
-        pattern.addChild(child2);
-        ViewDefinitionState vds = Mockito.mock(ViewDefinitionState.class);
+        AbstractComponentPattern parent = Mockito.mock(AbstractComponentPattern.class);
+        TextInputComponentPattern pattern = new TextInputComponentPattern("testName", "#{testComponent}.testField", null, parent);
+        AbstractComponentPattern testComponent = Mockito.mock(AbstractComponentPattern.class);
+        ViewDefinition vd = Mockito.mock(ViewDefinition.class);
+        given(vd.getComponentByPath("testComponent")).willReturn(testComponent);
 
         // when
-        pattern.updateComponentStateListeners(vds);
+        pattern.initialize(vd);
 
         // then
-        Mockito.verify(child1).updateComponentStateListeners(vds);
-        Mockito.verify(child2).updateComponentStateListeners(vds);
+        Mockito.verify(testComponent).addFieldEntityIdChangeListener("testField", pattern);
     }
+
 }

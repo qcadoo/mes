@@ -2,9 +2,11 @@ package com.qcadoo.mes.newview;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -131,6 +133,22 @@ public class ViewDefinitionImpl implements ViewDefinition {
     @Override
     public boolean isMenuAccessible() {
         return menuAccessible;
+    }
+
+    @Override
+    public Set<String> getJavaScriptFilePaths() {
+        Set<String> pathsSet = new HashSet<String>();
+        updateJavaScriptFilePaths(pathsSet, componentPatterns.values());
+        return pathsSet;
+    }
+
+    private void updateJavaScriptFilePaths(final Set<String> paths, final Iterable<ComponentPattern> componentPatterns) {
+        for (ComponentPattern componentPattern : componentPatterns) {
+            paths.add(componentPattern.getJavaScriptFilePath());
+            if (componentPattern instanceof ContainerPattern) {
+                updateJavaScriptFilePaths(paths, ((ContainerPattern) componentPattern).getChildren().values());
+            }
+        }
     }
 
     public void addPostInitializeHook(final HookDefinition hookDefinition) {

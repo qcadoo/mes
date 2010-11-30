@@ -1,10 +1,15 @@
 package com.qcadoo.mes.newview;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.springframework.util.StringUtils.hasText;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
@@ -22,25 +27,34 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     // private boolean defaultVisible = true;
     // private boolean hasDescription = false;
 
-    protected static final String JSP_PATH = "aaa";
+    protected static final String JSP_PATH = "AbstractJspPath";
 
-    protected static final String JS_PATH = "bbb";
+    protected static final String JS_PATH = "AbstractJavaScriptPath";
+
+    protected static final String JS_OBJECT = "AbstractJavascriptObject";
 
     private final String name;
 
     private final String fieldPath;
 
-    private final String sourceFieldPath;
+    private final String scopeFieldPath;
 
     private final ComponentPattern parent;
 
     private final Map<String, ComponentPattern> fieldEntityIdChangeListeners = new HashMap<String, ComponentPattern>();
 
-    public AbstractComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
+    private FieldDefinition fieldDefinition;
+
+    private FieldDefinition sourceFieldDefinition;
+
+    private DataDefinition dataDefinition;
+
+    public AbstractComponentPattern(final String name, final String fieldPath, final String scopeFieldPath,
             final ComponentPattern parent) {
+        checkArgument(hasText(name), "Name must be specified");
         this.name = name;
         this.fieldPath = fieldPath;
-        this.sourceFieldPath = sourceFieldPath;
+        this.scopeFieldPath = scopeFieldPath;
         this.parent = parent;
     }
 
@@ -60,14 +74,17 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     @Override
     public void initialize(final ViewDefinition viewDefinition) {
+        AbstractComponentPattern field = null;
+        AbstractComponentPattern scopeField = null;
+
         if (fieldPath != null) {
             Pattern p = Pattern.compile("^#\\{.+\\}\\.");
             Matcher m = p.matcher(fieldPath);
             if (m.find()) {
-                String field = fieldPath.substring(m.end());
+                String fieldName = fieldPath.substring(m.end());
                 String componentPath = fieldPath.substring(2, m.end() - 2);
                 ((AbstractComponentPattern) viewDefinition.getComponentByPath(componentPath)).addFieldEntityIdChangeListener(
-                        field, this);
+                        fieldName, this);
             } else {
                 ((AbstractComponentPattern) parent).addFieldEntityIdChangeListener(fieldPath, this);
             }
@@ -102,7 +119,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
                         (FieldEntityIdChangeListener) listenerState);
             }
         }
-
     }
 
     public void setDefaultEnabled(final boolean booleanAttribute) {
@@ -127,6 +143,17 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     public void setReference(final String stringAttribute) {
         // TODO Auto-generated method stub
+    }
 
+    protected FieldDefinition getFieldDefinition() {
+        return fieldDefinition;
+    }
+
+    protected FieldDefinition getSourceFieldDefinition() {
+        return sourceFieldDefinition;
+    }
+
+    protected DataDefinition getDataDefinition() {
+        return dataDefinition;
     }
 }

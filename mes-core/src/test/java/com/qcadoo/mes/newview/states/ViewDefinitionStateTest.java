@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview;
+package com.qcadoo.mes.newview.states;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -7,7 +7,12 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ViewDefinitionStateImplTest extends AbstractStateTest {
+import com.qcadoo.mes.newview.ComponentState;
+import com.qcadoo.mes.newview.ContainerState;
+import com.qcadoo.mes.newview.ViewDefinitionState;
+import com.qcadoo.mes.newview.ViewDefinitionStateImpl;
+
+public class ViewDefinitionStateTest extends AbstractStateTest {
 
     @Test
     public void shouldGetComponentByPath() throws Exception {

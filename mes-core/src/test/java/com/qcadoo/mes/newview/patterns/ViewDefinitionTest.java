@@ -1,10 +1,12 @@
-package com.qcadoo.mes.newview;
+package com.qcadoo.mes.newview.patterns;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,9 +16,16 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.newview.AbstractContainerPattern;
+import com.qcadoo.mes.newview.ComponentPattern;
+import com.qcadoo.mes.newview.ContainerPattern;
+import com.qcadoo.mes.newview.ContainerState;
+import com.qcadoo.mes.newview.ViewDefinitionImpl;
+import com.qcadoo.mes.newview.ViewDefinitionState;
+import com.qcadoo.mes.newview.ViewDefinitionStateFactory;
 import com.qcadoo.mes.newview.components.TextInputComponentPattern;
 
-public class ViewDefinitionImplTest {
+public class ViewDefinitionTest {
 
     @Test
     public void shouldHaveChildrenWhenAddSome() throws Exception {
@@ -177,6 +186,37 @@ public class ViewDefinitionImplTest {
         Mockito.verify(vds).beforeRender();
         Mockito.verify(vds).render();
         Assert.assertEquals(resultObj, result);
+    }
+
+    @Test
+    public void shouldReturnValidJavaScriptFilesSet() throws Exception {
+        // given
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
+
+        ContainerPattern child1 = Mockito.mock(ContainerPattern.class);
+        ContainerPattern child2 = Mockito.mock(ContainerPattern.class);
+        ComponentPattern child3 = Mockito.mock(ComponentPattern.class);
+
+        Map<String, ComponentPattern> childrenMap = new HashMap<String, ComponentPattern>();
+        childrenMap.put("child2", child2);
+        childrenMap.put("child3", child3);
+
+        given(child1.getName()).willReturn("test1");
+        given(child1.getChildren()).willReturn(childrenMap);
+
+        vd.addChild(child1);
+
+        given(child1.getJavaScriptFilePath()).willReturn("testPath1");
+        given(child2.getJavaScriptFilePath()).willReturn("testPath2");
+        given(child3.getJavaScriptFilePath()).willReturn("testPath1");
+
+        // when
+        Set<String> paths = vd.getJavaScriptFilePaths();
+
+        // then
+        Assert.assertEquals(2, paths.size());
+        Assert.assertTrue(paths.contains("testPath1"));
+        Assert.assertTrue(paths.contains("testPath2"));
     }
 
     private class TestViewDefinitionStateFactory implements ViewDefinitionStateFactory {

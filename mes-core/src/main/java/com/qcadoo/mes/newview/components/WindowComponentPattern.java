@@ -11,7 +11,9 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     private static final String JSP_PATH = "newComponents/window.jsp";
 
-    private static final String JS_PATH = "newComponents/window.jsp";
+    private static final String JS_PATH = "newComponents/window.js";
+
+    private static final String JS_OBJECT = "JS.Window";
 
     private Ribbon ribbon;
 
@@ -30,13 +32,18 @@ public class WindowComponentPattern extends AbstractContainerPattern {
     }
 
     @Override
-    public String getJspPath() {
+    public String getJspFilePath() {
         return JSP_PATH;
     }
 
     @Override
     public String getJavaScriptFilePath() {
         return JS_PATH;
+    }
+
+    @Override
+    public String getJavaScriptObjectName() {
+        return JS_OBJECT;
     }
 
 }

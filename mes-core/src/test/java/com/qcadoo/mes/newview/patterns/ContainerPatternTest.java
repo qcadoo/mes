@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview.components;
+package com.qcadoo.mes.newview.patterns;
 
 import static org.mockito.BDDMockito.given;
 
@@ -8,30 +8,23 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.mes.newview.AbstractComponentPattern;
 import com.qcadoo.mes.newview.ComponentPattern;
-import com.qcadoo.mes.newview.ComponentState;
+import com.qcadoo.mes.newview.ContainerPattern;
 import com.qcadoo.mes.newview.ViewDefinition;
+import com.qcadoo.mes.newview.ViewDefinitionState;
+import com.qcadoo.mes.newview.components.FormComponentPattern;
+import com.qcadoo.mes.newview.components.TextInputComponentPattern;
 
-public class FormComponentPatternTest {
-
-    @Test
-    public void shouldReturnValidFormComponentStateInstance() throws Exception {
-        // given
-        FormComponentPattern pattern = new FormComponentPattern(null, null, null, null);
-
-        // when
-        ComponentState state = pattern.createComponentState();
-
-        // then
-        Assert.assertTrue(state instanceof FormComponentState);
-    }
+public class ContainerPatternTest {
 
     @Test
-    public void shouldHaveChildrenWhenAddSome() throws Exception {
+    public void shouldHaveChildren() throws Exception {
         // given
-        FormComponentPattern pattern = new FormComponentPattern(null, null, null, null);
         ComponentPattern child1 = new TextInputComponentPattern("test1", null, null, null);
         ComponentPattern child2 = new TextInputComponentPattern("test2", null, null, null);
+
+        ContainerPattern pattern = new FormComponentPattern("test", null, null, null);
         pattern.addChild(child1);
         pattern.addChild(child2);
 
@@ -47,9 +40,10 @@ public class FormComponentPatternTest {
     @Test
     public void shouldReturnChildByName() throws Exception {
         // given
-        FormComponentPattern pattern = new FormComponentPattern(null, null, null, null);
         ComponentPattern child1 = new TextInputComponentPattern("test1", null, null, null);
         ComponentPattern child2 = new TextInputComponentPattern("test2", null, null, null);
+
+        ContainerPattern pattern = new FormComponentPattern("test", null, null, null);
         pattern.addChild(child1);
         pattern.addChild(child2);
 
@@ -67,14 +61,17 @@ public class FormComponentPatternTest {
     @Test
     public void shouldCallInitializeOnChildren() throws Exception {
         // given
-        FormComponentPattern pattern = new FormComponentPattern(null, null, null, null);
+        ViewDefinition vd = Mockito.mock(ViewDefinition.class);
+
         ComponentPattern child1 = Mockito.mock(ComponentPattern.class);
         given(child1.getName()).willReturn("test1");
+
         ComponentPattern child2 = Mockito.mock(ComponentPattern.class);
         given(child2.getName()).willReturn("test2");
+
+        ContainerPattern pattern = new FormComponentPattern("test", null, null, null);
         pattern.addChild(child1);
         pattern.addChild(child2);
-        ViewDefinition vd = Mockito.mock(ViewDefinition.class);
 
         // when
         pattern.initialize(vd);
@@ -84,4 +81,26 @@ public class FormComponentPatternTest {
         Mockito.verify(child2).initialize(vd);
     }
 
+    @Test
+    public void shouldCallStateOnChildren() throws Exception {
+        // given
+        ViewDefinitionState vds = Mockito.mock(ViewDefinitionState.class);
+
+        AbstractComponentPattern child1 = Mockito.mock(AbstractComponentPattern.class);
+        given(child1.getName()).willReturn("test1");
+
+        AbstractComponentPattern child2 = Mockito.mock(AbstractComponentPattern.class);
+        given(child2.getName()).willReturn("test2");
+
+        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
+        pattern.addChild(child1);
+        pattern.addChild(child2);
+
+        // when
+        pattern.updateComponentStateListeners(vds);
+
+        // then
+        Mockito.verify(child1).updateComponentStateListeners(vds);
+        Mockito.verify(child2).updateComponentStateListeners(vds);
+    }
 }

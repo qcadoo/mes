@@ -21,13 +21,18 @@ public class FormComponentPattern extends AbstractContainerPattern {
     }
 
     @Override
-    public String getJspPath() {
+    public String getJspFilePath() {
         return JSP_PATH;
     }
 
     @Override
     public String getJavaScriptFilePath() {
         return JS_PATH;
+    }
+
+    @Override
+    public String getJavaScriptObjectName() {
+        return JS_OBJECT;
     }
 
 }

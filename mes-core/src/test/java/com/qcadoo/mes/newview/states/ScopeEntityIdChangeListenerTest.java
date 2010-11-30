@@ -1,9 +1,11 @@
-package com.qcadoo.mes.newview;
+package com.qcadoo.mes.newview.states;
 
 import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
+import com.qcadoo.mes.newview.ComponentState;
+import com.qcadoo.mes.newview.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.newview.components.FormComponentState;
 
 public class ScopeEntityIdChangeListenerTest extends AbstractStateTest {

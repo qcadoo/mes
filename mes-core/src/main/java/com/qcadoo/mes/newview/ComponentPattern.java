@@ -10,8 +10,10 @@ public interface ComponentPattern {
 
     String getPathName();
 
-    String getJspPath();
+    String getJspFilePath();
 
     String getJavaScriptFilePath();
+
+    String getJavaScriptObjectName();
 
 }

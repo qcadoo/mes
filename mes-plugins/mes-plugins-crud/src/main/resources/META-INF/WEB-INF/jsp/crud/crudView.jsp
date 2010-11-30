@@ -70,6 +70,8 @@
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/staticComponent.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/ribbon.js"></script>
 	
+	
+	
 	<!--<script type="text/javascript">
 
 		var viewName = "{viewDefinition.name}";
@@ -122,6 +124,10 @@
 	</script>-->
 </head>
 <body>
+
+	<c:forEach items="${viewDefinition.javaScriptFilePaths}" var="javaScriptPath">
+		${javaScriptPath}<br/>
+	</c:forEach>
 
 	<c:forEach items="${viewDefinition.children}" var="componentEntry">
 		<tiles:insertTemplate template="components/newComponent.jsp">
