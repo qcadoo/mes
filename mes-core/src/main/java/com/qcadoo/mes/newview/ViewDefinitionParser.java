@@ -9,8 +9,6 @@ package com.qcadoo.mes.newview;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +57,9 @@ public final class ViewDefinitionParser {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
+
+    @Autowired
+    private ViewComponentsResolver viewComponentsResolver;
 
     @Autowired
     private HookFactory hookFactory;
@@ -164,37 +165,12 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + type);
         }
 
-        ComponentPattern component = getComponentPatternInstance(type, name, fieldPath, sourceFieldPath, parent);
+        ComponentPattern component = viewComponentsResolver.getViewComponentInstance(type, name, fieldPath, sourceFieldPath,
+                parent);
 
         addMenuAndChildrenComponentsAndOptions(reader, component);
 
         return component;
-    }
-
-    private ComponentPattern getComponentPatternInstance(final String type, final String name, final String fieldPath,
-            final String sourceFieldPath, final ComponentPattern parent) {
-        Class<?> clazz = componentPatterns.get(type);
-
-        if (clazz == null) {
-            throw new IllegalStateException("Unsupported component: " + type);
-        }
-
-        try {
-            Constructor<?> constructor = clazz.getConstructor(String.class, String.class, String.class, ComponentPattern.class);
-            return (ComponentPattern) constructor.newInstance(name, fieldPath, sourceFieldPath, parent);
-        } catch (SecurityException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } catch (InstantiationException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
     }
 
     private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final ComponentPattern component)

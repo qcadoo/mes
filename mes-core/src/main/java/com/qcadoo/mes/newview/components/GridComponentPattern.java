@@ -3,11 +3,10 @@ package com.qcadoo.mes.newview.components;
 import com.qcadoo.mes.newview.AbstractContainerPattern;
 import com.qcadoo.mes.newview.ComponentPattern;
 import com.qcadoo.mes.newview.ComponentState;
-import com.qcadoo.mes.view.menu.ribbon.Ribbon;
+import com.qcadoo.mes.newview.ViewComponent;
 
+@ViewComponent("grid")
 public class GridComponentPattern extends AbstractContainerPattern {
-
-    private Ribbon ribbon;
 
     public GridComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
@@ -17,10 +16,6 @@ public class GridComponentPattern extends AbstractContainerPattern {
     @Override
     public ComponentState getComponentStateInstance() {
         return new FormComponentState();
-    }
-
-    public void setRibbon(final Ribbon ribbon) {
-        this.ribbon = ribbon;
     }
 
 }

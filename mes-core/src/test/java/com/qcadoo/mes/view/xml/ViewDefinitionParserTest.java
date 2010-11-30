@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -42,6 +43,7 @@ import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.newview.ComponentPattern;
+import com.qcadoo.mes.newview.ViewComponentsResolver;
 import com.qcadoo.mes.newview.ViewDefinition;
 import com.qcadoo.mes.newview.ViewDefinitionParser;
 import com.qcadoo.mes.newview.components.ButtonComponentPattern;
@@ -76,6 +78,14 @@ public class ViewDefinitionParserTest {
 
     private DataDefinition dataDefinitionB;
 
+    private static ViewComponentsResolver viewComponentsResolver;
+
+    @BeforeClass
+    public static void initClass() throws Exception {
+        viewComponentsResolver = new ViewComponentsResolver();
+        viewComponentsResolver.refreshAvaliebleComponentsList();
+    }
+
     @Before
     public void init() throws Exception {
         applicationContext = mock(ApplicationContext.class);
@@ -92,6 +102,7 @@ public class ViewDefinitionParserTest {
         setField(viewDefinitionParser, "dataDefinitionService", dataDefinitionService);
         setField(viewDefinitionParser, "viewDefinitionService", viewDefinitionService);
         setField(viewDefinitionParser, "hookFactory", hookFactory);
+        setField(viewDefinitionParser, "viewComponentsResolver", viewComponentsResolver);
         viewDefinitionParser.init();
 
         xml = new FileInputStream(new File("src/test/resources/view.xml"));
@@ -197,7 +208,6 @@ public class ViewDefinitionParserTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldSetFields() {
         // given
         ViewDefinition vd = parseAndGetViewDefinition();

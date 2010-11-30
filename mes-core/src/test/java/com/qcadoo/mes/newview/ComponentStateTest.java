@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.qcadoo.mes.newview.ComponentState.MessageType;
 import com.qcadoo.mes.newview.components.FormComponentState;
-import com.qcadoo.mes.newview.components.TestComponentState;
+import com.qcadoo.mes.newview.components.ComponentStateMock;
 import com.qcadoo.mes.newview.components.TextInputComponentState;
 
 public class ComponentStateTest {
@@ -166,7 +166,7 @@ public class ComponentStateTest {
     @Test
     public void shouldCallBeforeRenderContent() throws Exception {
         // given
-        TestComponentState componentState = new TestComponentState(null);
+        ComponentStateMock componentState = new ComponentStateMock(null);
 
         // when
         componentState.beforeRender();

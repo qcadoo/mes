@@ -3,7 +3,9 @@ package com.qcadoo.mes.newview.components;
 import com.qcadoo.mes.newview.AbstractComponentPattern;
 import com.qcadoo.mes.newview.ComponentPattern;
 import com.qcadoo.mes.newview.ComponentState;
+import com.qcadoo.mes.newview.ViewComponent;
 
+@ViewComponent("lookup")
 public class LookupComponentPattern extends AbstractComponentPattern {
 
     public LookupComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
