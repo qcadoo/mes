@@ -85,7 +85,8 @@ public final class ViewDefinitionParser {
         LOG.info("Reading view definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:view.xml");
+            // Resource[] resources = applicationContext.getResources("classpath*:view.xml");
+            Resource[] resources = applicationContext.getResources("classpath*:testView.xml");
             for (Resource resource : resources) {
                 parse(resource.getInputStream());
             }

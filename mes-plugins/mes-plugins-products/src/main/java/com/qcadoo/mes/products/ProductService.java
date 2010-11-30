@@ -34,10 +34,7 @@ import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
-import com.qcadoo.mes.utils.ExpressionUtil;
-import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewValue;
-import com.qcadoo.mes.view.components.LookupComponent;
 import com.qcadoo.mes.view.components.LookupData;
 import com.qcadoo.mes.view.components.SimpleValue;
 import com.qcadoo.mes.view.containers.FormValue;
@@ -336,14 +333,14 @@ public final class ProductService {
     }
 
     private void selectDefaultInstruction(final ViewValue<LookupData> instructionValue, final Entity defaultInstructionEntity) {
-        ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
-        LookupComponent lookupInstruction = (LookupComponent) viewDefinition
-                .lookupComponent("mainWindow.orderDetailsForm.instruction");
-        instructionValue.getValue().setValue(defaultInstructionEntity.getId());
-        instructionValue.getValue().setSelectedEntityCode(
-                defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
-        instructionValue.getValue().setSelectedEntityValue(
-                ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
+        // ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
+        // LookupComponent lookupInstruction = (LookupComponent) viewDefinition
+        // .lookupComponent("mainWindow.orderDetailsForm.instruction");
+        // instructionValue.getValue().setValue(defaultInstructionEntity.getId());
+        // instructionValue.getValue().setSelectedEntityCode(
+        // defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
+        // instructionValue.getValue().setSelectedEntityValue(
+        // ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
     }
 
     private Entity getDefaultInstruction(final Long selectedProductId) {
