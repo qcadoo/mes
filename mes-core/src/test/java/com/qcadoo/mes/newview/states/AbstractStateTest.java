@@ -1,8 +1,12 @@
-package com.qcadoo.mes.newview;
+package com.qcadoo.mes.newview.states;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
+
+import com.qcadoo.mes.newview.ComponentState;
+import com.qcadoo.mes.newview.FieldEntityIdChangeListener;
+import com.qcadoo.mes.newview.ScopeEntityIdChangeListener;
 
 public abstract class AbstractStateTest {
 

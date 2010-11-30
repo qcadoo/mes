@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview;
+package com.qcadoo.mes.newview.states;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,8 +16,9 @@ import junit.framework.Assert;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.qcadoo.mes.newview.ComponentState;
 import com.qcadoo.mes.newview.components.FormComponentState;
-import com.qcadoo.mes.newview.components.ComponentStateMock;
+import com.qcadoo.mes.newview.states.components.ComponentStateMock;
 
 public class ContainerStateTest extends AbstractStateTest {
 

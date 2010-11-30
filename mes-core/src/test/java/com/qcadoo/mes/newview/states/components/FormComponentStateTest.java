@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview.components;
+package com.qcadoo.mes.newview.states.components;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
@@ -24,10 +24,11 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.newview.AbstractContainerState;
-import com.qcadoo.mes.newview.AbstractStateTest;
 import com.qcadoo.mes.newview.ComponentState;
 import com.qcadoo.mes.newview.ContainerState;
 import com.qcadoo.mes.newview.FieldEntityIdChangeListener;
+import com.qcadoo.mes.newview.components.FormComponentState;
+import com.qcadoo.mes.newview.states.AbstractStateTest;
 
 public class FormComponentStateTest extends AbstractStateTest {
 

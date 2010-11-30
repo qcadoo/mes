@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview.components;
+package com.qcadoo.mes.newview.states.components;
 
 import java.util.Map;
 

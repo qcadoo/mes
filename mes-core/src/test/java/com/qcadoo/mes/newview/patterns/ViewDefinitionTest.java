@@ -1,4 +1,4 @@
-package com.qcadoo.mes.newview;
+package com.qcadoo.mes.newview.patterns;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -14,9 +14,16 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.newview.AbstractContainerPattern;
+import com.qcadoo.mes.newview.ComponentPattern;
+import com.qcadoo.mes.newview.ContainerPattern;
+import com.qcadoo.mes.newview.ContainerState;
+import com.qcadoo.mes.newview.ViewDefinitionImpl;
+import com.qcadoo.mes.newview.ViewDefinitionState;
+import com.qcadoo.mes.newview.ViewDefinitionStateFactory;
 import com.qcadoo.mes.newview.components.TextInputComponentPattern;
 
-public class ViewDefinitionImplTest {
+public class ViewDefinitionTest {
 
     @Test
     public void shouldHaveChildrenWhenAddSome() throws Exception {
