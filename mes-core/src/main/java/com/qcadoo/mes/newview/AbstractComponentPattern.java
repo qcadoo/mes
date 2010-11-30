@@ -16,7 +16,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     // private final Map<String, Object> options = new HashMap<String, Object>();
     // private final ContainerComponent<?> parentContainer;
     // private final TranslationService translationService;
-    // private Set<String> listeners = new HashSet<String>();
     // private DataDefinition dataDefinition;
     // private Ribbon ribbon;
     // private boolean defaultEnabled = true;

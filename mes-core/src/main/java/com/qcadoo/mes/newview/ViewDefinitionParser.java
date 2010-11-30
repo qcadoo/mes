@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -33,13 +32,6 @@ import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
-import com.qcadoo.mes.newview.components.ButtonComponentPattern;
-import com.qcadoo.mes.newview.components.CheckBoxComponentPattern;
-import com.qcadoo.mes.newview.components.FormComponentPattern;
-import com.qcadoo.mes.newview.components.GridComponentPattern;
-import com.qcadoo.mes.newview.components.LookupComponentPattern;
-import com.qcadoo.mes.newview.components.TextAreaComponentPattern;
-import com.qcadoo.mes.newview.components.TextInputComponentPattern;
 import com.qcadoo.mes.newview.components.WindowComponentPattern;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
@@ -66,20 +58,6 @@ public final class ViewDefinitionParser {
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    private final Map<String, Class<?>> componentPatterns = new HashMap<String, Class<?>>();
-
-    @PostConstruct
-    public void init() {
-        componentPatterns.put("window", WindowComponentPattern.class);
-        componentPatterns.put("form", FormComponentPattern.class);
-        componentPatterns.put("textarea", TextAreaComponentPattern.class);
-        componentPatterns.put("checkbox", CheckBoxComponentPattern.class);
-        componentPatterns.put("lookup", LookupComponentPattern.class);
-        componentPatterns.put("grid", GridComponentPattern.class);
-        componentPatterns.put("button", ButtonComponentPattern.class);
-        componentPatterns.put("input", TextInputComponentPattern.class);
-    }
 
     public void parse() {
         LOG.info("Reading view definitions ...");
