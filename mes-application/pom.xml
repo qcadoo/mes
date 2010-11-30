@@ -21,7 +21,7 @@
 			<artifactId>mes-plugins-crud</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
-		<!-- dependency>
+		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-dictionary-management</artifactId>
 			<version>0.1-SNAPSHOT</version>
@@ -36,16 +36,17 @@
 			<artifactId>mes-plugins-plugin-management</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-products</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-menu-management</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-products</artifactId>
-			<version>0.1-SNAPSHOT</version>
-		</dependency -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>

@@ -8,6 +8,8 @@ import com.qcadoo.mes.newview.ViewComponent;
 @ViewComponent("input")
 public class TextInputComponentPattern extends AbstractComponentPattern {
 
+    private static final String JSP_PATH = "newComponents/input.jsp";
+
     public TextInputComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);
@@ -16,5 +18,20 @@ public class TextInputComponentPattern extends AbstractComponentPattern {
     @Override
     public ComponentState getComponentStateInstance() {
         return new TextInputComponentState();
+    }
+
+    @Override
+    public String getJspFilePath() {
+        return JSP_PATH;
+    }
+
+    @Override
+    public String getJavaScriptFilePath() {
+        return JS_PATH;
+    }
+
+    @Override
+    public String getJavaScriptObjectName() {
+        return JS_OBJECT;
     }
 }

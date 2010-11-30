@@ -2,6 +2,7 @@ package com.qcadoo.mes.newview;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,5 +28,7 @@ public interface ViewDefinition {
     boolean isMenuAccessible();
 
     DataDefinition getDataDefinition();
+
+    Set<String> getJavaScriptFilePaths();
 
 }

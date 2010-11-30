@@ -70,17 +70,19 @@
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/staticComponent.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/ribbon.js"></script>
 	
-	<script type="text/javascript">
+	
+	
+	<!--<script type="text/javascript">
 
-		var viewName = "${viewDefinition.name}";
-		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
-		var entityId = "${entityId}";
-		var context = '${context}';
-		var locale = '${locale}';
+		var viewName = "{viewDefinition.name}";
+		var pluginIdentifier = "{viewDefinition.pluginIdentifier}";
+		var entityId = "{entityId}";
+		var context = '{context}';
+		var locale = '{locale}';
 
-		var hasDataDefinition = '${viewDefinition.dataDefinition}' == '' ? false : true;
+		var hasDataDefinition = '{viewDefinition.dataDefinition}' == '' ? false : true;
 
-		var lookupComponentName = '${lookupComponentName}';
+		var lookupComponentName = '{lookupComponentName}';
 
 		var controller = null;
 
@@ -119,15 +121,19 @@
 		<c:forEach items="${translationsMap}" var="translation">
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
-	</script>
+	</script>-->
 </head>
 <body>
 
-		<tiles:insertTemplate template="components/component.jsp">
-			<tiles:putAttribute name="component" value="${viewDefinition.root}" />
-			<tiles:putAttribute name="viewName" value="${viewDefinition.name}" />
-			<tiles:putAttribute name="pluginIdentifier" value="${viewDefinition.pluginIdentifier}" />
+	<c:forEach items="${viewDefinition.javaScriptFilePaths}" var="javaScriptPath">
+		${javaScriptPath}<br/>
+	</c:forEach>
+
+	<c:forEach items="${viewDefinition.children}" var="componentEntry">
+		<tiles:insertTemplate template="components/newComponent.jsp">
+			<tiles:putAttribute name="component" value="${componentEntry.value}" />
 		</tiles:insertTemplate>
+	</c:forEach>
 
 </body>
 </html>

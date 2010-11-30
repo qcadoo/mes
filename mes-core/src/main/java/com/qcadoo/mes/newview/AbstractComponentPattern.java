@@ -14,6 +14,12 @@ import com.qcadoo.mes.view.ComponentOption;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
 
+    protected static final String JSP_PATH = "AbstractJspPath";
+
+    protected static final String JS_PATH = "AbstractJavaScriptPath";
+
+    protected static final String JS_OBJECT = "AbstractJavascriptObject";
+
     private final String name;
 
     private final String fieldPath;

@@ -30,4 +30,18 @@ public class ComponentPatternMock extends AbstractContainerPattern {
         return super.getScopeEntityIdChangeListeners();
     }
 
+    @Override
+    public String getJspFilePath() {
+        return JSP_PATH;
+    }
+
+    @Override
+    public String getJavaScriptFilePath() {
+        return JS_PATH;
+    }
+
+    @Override
+    public String getJavaScriptObjectName() {
+        return JS_OBJECT;
+    }
 }
