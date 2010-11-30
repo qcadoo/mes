@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+-->
+
+<qcd:views plugin="core" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="form" model="product">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{mainWindow.productDetailsForm}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png"
+						action="#{mainWindow.productDetailsForm}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="form">
+				<component type="input" name="number" field="number" />
+				<component type="input" name="name" field="name" />					
+				<component type="input" name="ean" field="ean" />
+				<component type="input" name="unit" field="unit" />
+			</component>
+		</component>
+	</view>
+</qcd:views>
