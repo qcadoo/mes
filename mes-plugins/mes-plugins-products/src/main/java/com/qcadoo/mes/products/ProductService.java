@@ -373,6 +373,21 @@ public final class ProductService {
         return (searchResult.getTotalNumberOfEntities() > 0);
     }
 
+    public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {
+
+        SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
+                .restrictedWith(Restrictions.eq(dataDefinition.getField("state"), "started"))
+                .restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.EQ));
+
+        SearchResult searchResult = searchCriteria.list();
+
+        if (entity.getField("state").toString().equals("pending") && searchResult.getTotalNumberOfEntities() > 0) {
+            entity.addError(dataDefinition.getField("state"), "products.validate.global.error.illegalStateChange");
+            return false;
+        }
+        return true;
+    }
+
     public boolean checkInstructionDefault(final DataDefinition dataDefinition, final Entity entity) {
         Boolean master = (Boolean) entity.getField("master");
 
@@ -405,7 +420,7 @@ public final class ProductService {
         }
         Object o = entity.getField("plannedQuantity");
         if (o == null) {
-            entity.addError(dataDefinition.getField("plannedQuantity"), "products.validate.global.error.plannedQuantityError");
+            entity.addError(dataDefinition.getField("plannedQuantity"), "products.validate.global.error.illegalStateChange");
             return false;
         } else {
             return true;
@@ -455,10 +470,12 @@ public final class ProductService {
 
         }
 
-        if (entity.getField("effectiveDateTo") != null) {
-            entity.setField("state", "done");
-        } else if (entity.getField("effectiveDateFrom") != null) {
-            entity.setField("state", "pending");
+        if (!entity.getField("state").toString().equals("started")) {
+            if (entity.getField("effectiveDateTo") != null) {
+                entity.setField("state", "done");
+            } else if (entity.getField("effectiveDateFrom") != null) {
+                entity.setField("state", "pending");
+            }
         }
     }
 

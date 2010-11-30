@@ -118,7 +118,7 @@
 		<date name="dateTo">
 			<validatesPresence />
 		</date>
-		<enum name="state" values="pending,done">
+		<enum name="state" values="started,pending,done">
 			<validatesPresence />
 		</enum>
 		<dictionary name="machine" dictionary="machines" />
@@ -140,6 +140,7 @@
 		<string name="startWorker" readonly="true" />
 		<string name="endWorker" readonly="true" />
 		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfStateChangeIsCorrect" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderPlannedQuantity" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderInstruction" />
