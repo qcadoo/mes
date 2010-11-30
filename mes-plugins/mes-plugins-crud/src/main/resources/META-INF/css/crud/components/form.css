@@ -82,6 +82,7 @@
 
 .disabled .component_container_form_inner {
 	background-color: #F0F0F0;
+	color: #818181;
 }
 
 .component_container_form_x {
@@ -125,6 +126,13 @@
 	background: transparent url(../images/form/input_c_transparent.png) no-repeat 0 0;
 	padding-left: 6px;
 	width: 100%;
+}
+
+.disabled .component_container_form_inner input[type='text'],
+.disabled .component_container_form_inner input[type='password'],
+.disabled .component_container_form_inner textarea,
+.disabled select {
+	color: #818181;
 }
 
 .component_container_form input[type='text'], .component_container_form input[type='password'], .component_container_form textarea {
