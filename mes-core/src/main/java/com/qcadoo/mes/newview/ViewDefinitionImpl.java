@@ -1,6 +1,8 @@
 package com.qcadoo.mes.newview;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -8,9 +10,34 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.HookDefinition;
+
 public class ViewDefinitionImpl implements ViewDefinition {
 
-    private Map<String, ComponentPattern> componentPatterns = new HashMap<String, ComponentPattern>();
+    private final String name;
+
+    private final String pluginIdentifier;
+
+    private final DataDefinition dataDefinition;
+
+    private final boolean menuAccessible;
+
+    private final List<HookDefinition> postInitializeHooks = new ArrayList<HookDefinition>();
+
+    private final List<HookDefinition> preInitializeHooks = new ArrayList<HookDefinition>();
+
+    private final List<HookDefinition> preRenderHooks = new ArrayList<HookDefinition>();
+
+    public ViewDefinitionImpl(final String name, final String pluginIdentifier, final DataDefinition dataDefinition,
+            final boolean menuAccessible) {
+        this.name = name;
+        this.dataDefinition = dataDefinition;
+        this.pluginIdentifier = pluginIdentifier;
+        this.menuAccessible = menuAccessible;
+    }
+
+    private final Map<String, ComponentPattern> componentPatterns = new HashMap<String, ComponentPattern>();
 
     private ViewDefinitionStateFactory viewDefinitionStateFactory = new ViewDefinitionStateFactory() {
 
@@ -20,7 +47,7 @@ public class ViewDefinitionImpl implements ViewDefinition {
         }
     };
 
-    public void setViewDefinitionStateFactory(ViewDefinitionStateFactory viewDefinitionStateFactory) {
+    public void setViewDefinitionStateFactory(final ViewDefinitionStateFactory viewDefinitionStateFactory) {
         this.viewDefinitionStateFactory = viewDefinitionStateFactory;
     }
 
@@ -30,13 +57,15 @@ public class ViewDefinitionImpl implements ViewDefinition {
         }
     }
 
-    public Map<String, Object> prepareView(Locale locale) {
+    @Override
+    public Map<String, Object> prepareView(final Locale locale) {
         // TODO mina
 
         return null;
     }
 
-    public JSONObject performEvent(JSONObject object, Locale locale) throws JSONException {
+    @Override
+    public JSONObject performEvent(final JSONObject object, final Locale locale) throws JSONException {
         ViewDefinitionState vds = viewDefinitionStateFactory.getInstance();
         for (ComponentPattern cp : componentPatterns.values()) {
             vds.addChild(cp.createComponentState());
@@ -64,15 +93,16 @@ public class ViewDefinitionImpl implements ViewDefinition {
         return componentPatterns;
     }
 
-    public ComponentPattern getChild(String name) {
+    public ComponentPattern getChild(final String name) {
         return componentPatterns.get(name);
     }
 
-    public void addChild(ComponentPattern componentPattern) {
+    public void addChild(final ComponentPattern componentPattern) {
         componentPatterns.put(componentPattern.getName(), componentPattern);
     }
 
-    public ComponentPattern getComponentByPath(String path) {
+    @Override
+    public ComponentPattern getComponentByPath(final String path) {
         String[] pathParts = path.split("\\.");
         ComponentPattern componentPattern = componentPatterns.get(pathParts[0]);
         if (componentPattern == null) {
@@ -86,5 +116,32 @@ public class ViewDefinitionImpl implements ViewDefinition {
             }
         }
         return componentPattern;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getPluginIdentifier() {
+        return pluginIdentifier;
+    }
+
+    @Override
+    public boolean isMenuAccessible() {
+        return menuAccessible;
+    }
+
+    public void addPostInitializeHook(final HookDefinition hookDefinition) {
+        postInitializeHooks.add(hookDefinition);
+    }
+
+    public void addPreRenderHook(final HookDefinition hookDefinition) {
+        preRenderHooks.add(hookDefinition);
+    }
+
+    public void addPreInitializeHook(final HookDefinition hookDefinition) {
+        preInitializeHooks.add(hookDefinition);
     }
 }

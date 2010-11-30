@@ -9,7 +9,7 @@
 -->
 
 <qcd:views plugin="sample" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="simpleView" model="beanB">
+	<view name="simpleView" model="beanB" menuAccessible="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="first">
@@ -25,10 +25,9 @@
 				</group>
 			</ribbon>
 			<component type="form" name="beanBForm">
-				<component type="textarea" name="name" field="name" />
-				<component type="checkbox" name="active" field="name" enabled="false" visible="false" />
+				<component type="checkbox" name="active" field="active" defaultEnabled="false" defaultVisible="false" />
 				<component type="lookup" name="selectBeanA" field="beanA" />
-				<component type="textarea" name="beanM" field="name" />
+				<component type="textarea" name="beanM" field="beanM" />
 				<component type="textarea" name="beanB" field="beanA.name" />
 				<component type="grid" name="beansBGrig"
 					source="#{mainWindow.beanBForm.selectBeanA}.beansB">
@@ -36,10 +35,11 @@
 					<option type="correspondingView" value="products/form" />
 				</component>
 				<component type="form" name="beanAForm" field="beanA">
-					<component type="textarea" name="name" field="name" />
+					<component type="input" name="name" field="name" />
 				</component>
 				<option type="header" value="false" />
 			</component>
+			<component type="textarea" name="name" field="#{mainWindow.beanBForm}.name" reference="referenceToTextarea" />
 			<component type="grid" name="beansBGrig"
 				source="#{mainWindow.beanBForm.selectBeanA}.beansB">
 				<option type="column" name="name" fields="name" />
@@ -60,8 +60,9 @@
 			</component>
 			<option type="backButton" value="false" />
 		</component>
-		<onView bean="com.qcadoo.mes.beans.sample.CustomEntityService"
-			method="onView" />
+		<preInitializeHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />
+		<postInitializeHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />
+		<preRenderHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />
 	</view>
 	<view name="simpleView2" model="beanA">
 		<component type="window" name="mainWindow" />

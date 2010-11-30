@@ -5,16 +5,16 @@
  * ********************************************************************
  */
 
-package com.qcadoo.mes.view.internal;
-
-import static com.google.common.base.Preconditions.checkState;
-import static org.springframework.util.StringUtils.hasText;
+package com.qcadoo.mes.newview;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -27,33 +27,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.google.common.base.Preconditions;
 import com.qcadoo.mes.api.DataDefinitionService;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
-import com.qcadoo.mes.view.AbstractComponent;
-import com.qcadoo.mes.view.AbstractContainerComponent;
-import com.qcadoo.mes.view.Component;
+import com.qcadoo.mes.newview.components.ButtonComponentPattern;
+import com.qcadoo.mes.newview.components.CheckBoxComponentPattern;
+import com.qcadoo.mes.newview.components.FormComponentPattern;
+import com.qcadoo.mes.newview.components.GridComponentPattern;
+import com.qcadoo.mes.newview.components.LookupComponentPattern;
+import com.qcadoo.mes.newview.components.TextAreaComponentPattern;
+import com.qcadoo.mes.newview.components.TextInputComponentPattern;
+import com.qcadoo.mes.newview.components.WindowComponentPattern;
 import com.qcadoo.mes.view.ComponentOption;
-import com.qcadoo.mes.view.ContainerComponent;
-import com.qcadoo.mes.view.RootComponent;
-import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.components.CalendarComponent;
-import com.qcadoo.mes.view.components.CheckBoxComponent;
-import com.qcadoo.mes.view.components.DynamicComboBoxComponent;
-import com.qcadoo.mes.view.components.GridComponent;
-import com.qcadoo.mes.view.components.LinkButtonComponent;
-import com.qcadoo.mes.view.components.LookupComponent;
-import com.qcadoo.mes.view.components.PasswordInputComponent;
-import com.qcadoo.mes.view.components.StaticPageComponent;
-import com.qcadoo.mes.view.components.TextAreaComponent;
-import com.qcadoo.mes.view.components.TextInputComponent;
-import com.qcadoo.mes.view.components.TreeComponent;
-import com.qcadoo.mes.view.containers.FormComponent;
-import com.qcadoo.mes.view.containers.WindowComponent;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
@@ -71,13 +61,24 @@ public final class ViewDefinitionParser {
     private ViewDefinitionService viewDefinitionService;
 
     @Autowired
-    private TranslationService translationService;
-
-    @Autowired
     private HookFactory hookFactory;
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    private final Map<String, Class<?>> componentPatterns = new HashMap<String, Class<?>>();
+
+    @PostConstruct
+    public void init() {
+        componentPatterns.put("window", WindowComponentPattern.class);
+        componentPatterns.put("form", FormComponentPattern.class);
+        componentPatterns.put("textarea", TextAreaComponentPattern.class);
+        componentPatterns.put("checkbox", CheckBoxComponentPattern.class);
+        componentPatterns.put("lookup", LookupComponentPattern.class);
+        componentPatterns.put("grid", GridComponentPattern.class);
+        componentPatterns.put("button", ButtonComponentPattern.class);
+        componentPatterns.put("input", TextInputComponentPattern.class);
+    }
 
     public void parse() {
         LOG.info("Reading view definitions ...");
@@ -115,112 +116,103 @@ public final class ViewDefinitionParser {
     }
 
     private void getViewDefinition(final XMLStreamReader reader, final String pluginIdentifier) throws XMLStreamException {
-        String viewName = getStringAttribute(reader, "name");
+        String name = getStringAttribute(reader, "name");
 
-        LOG.info("Reading view " + viewName + " for plugin " + pluginIdentifier);
+        LOG.info("Reading view " + name + " for plugin " + pluginIdentifier);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(pluginIdentifier, viewName);
-
-        viewDefinition.setMenuable(getBooleanAttribute(reader, "menuable", false));
+        boolean menuAccessible = getBooleanAttribute(reader, "menuable", false);
 
         DataDefinition dataDefinition = null;
+
         if (getStringAttribute(reader, "model") != null) {
             dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
         }
 
-        RootComponent root = null;
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(name, pluginIdentifier, dataDefinition, menuAccessible);
+
+        ComponentPattern root = null;
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "component")) {
-                root = getRootComponentDefinition(reader, viewDefinition, dataDefinition);
-            } else if (isTagStarted(reader, "onView")) {
-                viewDefinition.setViewHook(getHookDefinition(reader));
+                root = getComponentPattern(reader, null);
+            } else if (isTagStarted(reader, "preInitializeHook")) {
+                viewDefinition.addPreInitializeHook(getHookDefinition(reader));
+            } else if (isTagStarted(reader, "postInitializeHook")) {
+                viewDefinition.addPostInitializeHook(getHookDefinition(reader));
+            } else if (isTagStarted(reader, "preRenderHook")) {
+                viewDefinition.addPreRenderHook(getHookDefinition(reader));
             } else if (isTagEnded(reader, "view")) {
                 break;
             }
         }
 
-        viewDefinition.setRoot(root);
-        root.initialize();
+        viewDefinition.addChild(root);
+
+        viewDefinition.initialize();
 
         viewDefinitionService.save(viewDefinition);
     }
 
-    private RootComponent getRootComponentDefinition(final XMLStreamReader reader, final ViewDefinition viewDefinition,
-            final DataDefinition dataDefinition) throws XMLStreamException {
-        String componentType = getStringAttribute(reader, "type");
-        String componentName = getStringAttribute(reader, "name");
+    private ComponentPattern getComponentPattern(final XMLStreamReader reader, final ComponentPattern parent)
+            throws XMLStreamException {
+        String type = getStringAttribute(reader, "type");
+        String name = getStringAttribute(reader, "name");
+        String fieldPath = getStringAttribute(reader, "field");
+        String sourceFieldPath = getStringAttribute(reader, "source");
 
-        RootComponent component = null;
-
-        if ("window".equals(componentType)) {
-            component = new WindowComponent(componentName, dataDefinition, viewDefinition, translationService);
-        } else {
-            throw new IllegalStateException("Unsupported component: " + componentType);
+        if (parent == null && !"window".equals(type)) {
+            throw new IllegalStateException("Unsupported component: " + type);
         }
 
-        addMenuAndChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
+        ComponentPattern component = getComponentPatternInstance(type, name, fieldPath, sourceFieldPath, parent);
+
+        addMenuAndChildrenComponentsAndOptions(reader, component);
 
         return component;
     }
 
-    private Component<?> getComponentDefinition(final XMLStreamReader reader, final ContainerComponent<?> parentComponent)
-            throws XMLStreamException {
-        String componentType = getStringAttribute(reader, "type");
-        String componentName = getStringAttribute(reader, "name");
-        String fieldName = getStringAttribute(reader, "field");
-        String dataSource = getStringAttribute(reader, "source");
+    private ComponentPattern getComponentPatternInstance(final String type, final String name, final String fieldPath,
+            final String sourceFieldPath, final ComponentPattern parent) {
+        Class<?> clazz = componentPatterns.get(type);
 
-        Component<?> component = null;
-
-        if ("input".equals(componentType)) {
-            component = new TextInputComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("textarea".equals(componentType)) {
-            component = new TextAreaComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("password".equals(componentType)) {
-            component = new PasswordInputComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("grid".equals(componentType)) {
-            component = new GridComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("form".equals(componentType)) {
-            component = new FormComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("checkbox".equals(componentType)) {
-            component = new CheckBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("select".equals(componentType)) {
-            component = new DynamicComboBoxComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("lookup".equals(componentType)) {
-            component = new LookupComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("button".equals(componentType)) {
-            component = new LinkButtonComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("tree".equals(componentType)) {
-            component = new TreeComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("calendar".equals(componentType)) {
-            component = new CalendarComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else if ("staticPage".equals(componentType)) {
-            component = new StaticPageComponent(componentName, parentComponent, fieldName, dataSource, translationService);
-        } else {
-            throw new IllegalStateException("Unsupported component: " + componentType);
+        if (clazz == null) {
+            throw new IllegalStateException("Unsupported component: " + type);
         }
 
-        addMenuAndChildrenComponentsAndOptions(reader, (AbstractComponent<?>) component);
-
-        return component;
+        try {
+            Constructor<?> constructor = clazz.getConstructor(String.class, String.class, String.class, ComponentPattern.class);
+            return (ComponentPattern) constructor.newInstance(name, fieldPath, sourceFieldPath, parent);
+        } catch (SecurityException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (InstantiationException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
-    private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final AbstractComponent<?> component)
+    private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final ComponentPattern component)
             throws XMLStreamException {
-        component.setDefaultEnabled(getBooleanAttribute(reader, "enabled", true));
-        component.setDefaultVisible(getBooleanAttribute(reader, "visible", true));
-        component.setHasDescription(getBooleanAttribute(reader, "hasDescription", false));
-
+        ((AbstractComponentPattern) component).setReference(getStringAttribute(reader, "reference"));
+        ((AbstractComponentPattern) component).setDefaultEnabled(getBooleanAttribute(reader, "defaultEnabled", true));
+        ((AbstractComponentPattern) component).setDefaultVisible(getBooleanAttribute(reader, "defaultVisible", true));
+        ((AbstractComponentPattern) component).setHasDescription(getBooleanAttribute(reader, "hasDescription", false));
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "ribbon")) {
-                component.setRibbon(getRibbon(reader));
+                if (component instanceof WindowComponentPattern) {
+                    ((WindowComponentPattern) component).setRibbon(getRibbon(reader));
+                }
             } else if (isTagStarted(reader, "option")) {
-                component.addRawOption(getOption(reader));
+                ((AbstractComponentPattern) component).addOption(getOption(reader));
             } else if (isTagStarted(reader, "component")) {
-                if (component instanceof AbstractContainerComponent) {
-                    ((AbstractContainerComponent<?>) component).addComponent(getComponentDefinition(reader,
-                            (AbstractContainerComponent<?>) component));
+                if (component instanceof ContainerPattern) {
+                    ((ContainerPattern) component).addChild(getComponentPattern(reader, component));
                 }
             } else if (isTagEnded(reader, "component")) {
                 break;
@@ -257,26 +249,21 @@ public final class ViewDefinitionParser {
         String stringType = reader.getLocalName();
         boolean combo = ("bigButtons".equals(stringType) || "smallButtons".equals(stringType));
         RibbonActionItem.Type type = null;
-
         if ("bigButtons".equals(stringType) || "bigButton".equals(stringType)) {
             type = RibbonActionItem.Type.BIG_BUTTON;
         } else if ("smallButtons".equals(stringType) || "smallButton".equals(stringType)) {
             type = RibbonActionItem.Type.SMALL_BUTTON;
         }
-
         RibbonActionItem item = null;
-
         if (combo) {
             item = new RibbonComboItem();
         } else {
             item = new RibbonActionItem();
         }
-
         item.setIcon(getStringAttribute(reader, "icon"));
         item.setName(getStringAttribute(reader, "name"));
         item.setAction(getStringAttribute(reader, "action"));
         item.setType(type);
-
         if (combo) {
             while (reader.hasNext() && reader.next() > 0) {
                 if (isTagEnded(reader, stringType)) {
@@ -288,7 +275,6 @@ public final class ViewDefinitionParser {
         } else {
             (item).setAction(getStringAttribute(reader, "action"));
         }
-
         return item;
     }
 
@@ -297,15 +283,14 @@ public final class ViewDefinitionParser {
         for (int i = 0; i < reader.getAttributeCount(); i++) {
             attributes.put(reader.getAttributeLocalName(i), reader.getAttributeValue(i));
         }
-
         return new ComponentOption(getStringAttribute(reader, "type"), attributes);
     }
 
     private HookDefinition getHookDefinition(final XMLStreamReader reader) {
         String fullyQualifiedClassName = getStringAttribute(reader, "bean");
         String methodName = getStringAttribute(reader, "method");
-        checkState(hasText(fullyQualifiedClassName), "Hook bean name is required");
-        checkState(hasText(methodName), "Hook method name is required");
+        Preconditions.checkState(StringUtils.hasText(fullyQualifiedClassName), "Hook bean name is required");
+        Preconditions.checkState(StringUtils.hasText(methodName), "Hook method name is required");
         return hookFactory.getHook(fullyQualifiedClassName, methodName);
     }
 

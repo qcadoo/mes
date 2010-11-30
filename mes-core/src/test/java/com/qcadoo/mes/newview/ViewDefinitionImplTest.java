@@ -1,6 +1,7 @@
 package com.qcadoo.mes.newview;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 import java.util.Locale;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.newview.components.TextInputComponentPattern;
 
 public class ViewDefinitionImplTest {
@@ -19,7 +21,7 @@ public class ViewDefinitionImplTest {
     @Test
     public void shouldHaveChildrenWhenAddSome() throws Exception {
         // given
-        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
         ComponentPattern child1 = new TextInputComponentPattern("test1", null, null, null);
         ComponentPattern child2 = new TextInputComponentPattern("test2", null, null, null);
         vd.addChild(child1);
@@ -37,7 +39,7 @@ public class ViewDefinitionImplTest {
     @Test
     public void shouldReturnChildByName() throws Exception {
         // given
-        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
         ComponentPattern child1 = new TextInputComponentPattern("test1", null, null, null);
         ComponentPattern child2 = new TextInputComponentPattern("test2", null, null, null);
         vd.addChild(child1);
@@ -57,7 +59,7 @@ public class ViewDefinitionImplTest {
     @Test
     public void shouldCallInitializeOnChildren() throws Exception {
         // given
-        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
         ComponentPattern child1 = Mockito.mock(ComponentPattern.class);
         given(child1.getName()).willReturn("test1");
         ComponentPattern child2 = Mockito.mock(ComponentPattern.class);
@@ -76,7 +78,7 @@ public class ViewDefinitionImplTest {
     @Test
     public void shouldFindComponentByPathWhenOneStep() throws Exception {
         // given
-        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
         ComponentPattern child1 = Mockito.mock(ComponentPattern.class);
         given(child1.getName()).willReturn("test1");
         vd.addChild(child1);
@@ -91,7 +93,7 @@ public class ViewDefinitionImplTest {
     @Test
     public void shouldFindComponentByPathWhenMoreThanOneStep() throws Exception {
         // given
-        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
 
         ContainerPattern child1 = Mockito.mock(ContainerPattern.class);
         ContainerPattern child2 = Mockito.mock(ContainerPattern.class);
@@ -113,7 +115,7 @@ public class ViewDefinitionImplTest {
     @Test
     public void shouldReturnNullWhenNoComponentFound() throws Exception {
         // given
-        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
 
         ContainerPattern child1 = Mockito.mock(ContainerPattern.class);
         ContainerPattern child2 = Mockito.mock(ContainerPattern.class);
@@ -135,7 +137,7 @@ public class ViewDefinitionImplTest {
     @Test
     public void shouldCallEvent() throws Exception {
         // given
-        ViewDefinitionImpl vd = new ViewDefinitionImpl();
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
 
         AbstractContainerPattern child1 = Mockito.mock(AbstractContainerPattern.class);
         AbstractContainerPattern child2 = Mockito.mock(AbstractContainerPattern.class);
@@ -181,7 +183,7 @@ public class ViewDefinitionImplTest {
 
         private final ViewDefinitionState vds;
 
-        public TestViewDefinitionStateFactory(ViewDefinitionState vds) {
+        public TestViewDefinitionStateFactory(final ViewDefinitionState vds) {
             this.vds = vds;
         }
 

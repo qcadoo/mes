@@ -22,8 +22,8 @@ import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.model.search.Restrictions;
+import com.qcadoo.mes.newview.ViewDefinition;
 import com.qcadoo.mes.plugins.internal.enums.PluginStatus;
-import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
 import com.qcadoo.mes.view.menu.items.UrlMenuItem;
@@ -67,7 +67,7 @@ public final class MenuServiceImpl implements MenuService {
         for (Entity viewDefinitionEntity : viewDefinitionDD.find().list().getEntities()) {
             ViewDefinition vd = viewDefinitionService.getWithoutSession(viewDefinitionEntity.getStringField("pluginIdentifier"),
                     viewDefinitionEntity.getStringField("viewName"));
-            if (vd == null || !vd.isMenuable()) {
+            if (vd == null || !vd.isMenuAccessible()) {
                 viewDefinitionDD.deleteHard(viewDefinitionEntity.getId());
             }
         }

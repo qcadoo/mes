@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.newview.ViewDefinition;
 
 /**
  * Service for manipulating view definitions.

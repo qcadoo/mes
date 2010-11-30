@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
-import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.newview.ViewDefinition;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
@@ -45,7 +45,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     public List<ViewDefinition> listForMenu() {
         List<ViewDefinition> menuableViews = new LinkedList<ViewDefinition>();
         for (ViewDefinition viewDefinition : viewDefinitions.values()) {
-            if (viewDefinition.isMenuable()) {
+            if (viewDefinition.isMenuAccessible()) {
                 menuableViews.add(viewDefinition);
             }
         }

@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.qcadoo.mes.view.ComponentOption;
+
 public abstract class AbstractComponentPattern implements ComponentPattern {
 
     // private ViewDefinition viewDefinition;
@@ -27,22 +29,24 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private final String sourceFieldPath;
 
-    private final AbstractComponentPattern parent;
+    private final ComponentPattern parent;
 
-    private Map<String, ComponentPattern> fieldEntityIdChangeListeners = new HashMap<String, ComponentPattern>();
+    private final Map<String, ComponentPattern> fieldEntityIdChangeListeners = new HashMap<String, ComponentPattern>();
 
     public AbstractComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
-            final AbstractComponentPattern parent) {
+            final ComponentPattern parent) {
         this.name = name;
         this.fieldPath = fieldPath;
         this.sourceFieldPath = sourceFieldPath;
         this.parent = parent;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getPathName() {
         if (parent == null) {
             return name;
@@ -51,7 +55,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         }
     }
 
-    public void initialize(ViewDefinition viewDefinition) {
+    @Override
+    public void initialize(final ViewDefinition viewDefinition) {
         if (fieldPath != null) {
             Pattern p = Pattern.compile("^#\\{.+\\}\\.");
             Matcher m = p.matcher(fieldPath);
@@ -61,7 +66,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
                 ((AbstractComponentPattern) viewDefinition.getComponentByPath(componentPath)).addFieldEntityIdChangeListener(
                         field, this);
             } else {
-                parent.addFieldEntityIdChangeListener(fieldPath, this);
+                ((AbstractComponentPattern) parent).addFieldEntityIdChangeListener(fieldPath, this);
             }
         }
     }
@@ -76,6 +81,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     public abstract ComponentState getComponentStateInstance();
 
+    @Override
     public ComponentState createComponentState() {
         ComponentState componentState = getComponentStateInstance();
         // TODO mina
@@ -93,6 +99,31 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
                         (FieldEntityIdChangeListener) listenerState);
             }
         }
+
+    }
+
+    public void setDefaultEnabled(final boolean booleanAttribute) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setDefaultVisible(final boolean booleanAttribute) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setHasDescription(final boolean booleanAttribute) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void addOption(final ComponentOption option) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setReference(final String stringAttribute) {
+        // TODO Auto-generated method stub
 
     }
 }

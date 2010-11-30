@@ -5,32 +5,37 @@ import java.util.Map;
 
 public abstract class AbstractContainerPattern extends AbstractComponentPattern implements ContainerPattern {
 
-    private Map<String, ComponentPattern> children = new HashMap<String, ComponentPattern>();
+    private final Map<String, ComponentPattern> children = new HashMap<String, ComponentPattern>();
 
     public AbstractContainerPattern(final String name, final String fieldPath, final String sourceFieldPath,
-            final AbstractComponentPattern parent) {
+            final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);
     }
 
+    @Override
     public Map<String, ComponentPattern> getChildren() {
         return children;
     }
 
-    public ComponentPattern getChild(String name) {
+    @Override
+    public ComponentPattern getChild(final String name) {
         return children.get(name);
     }
 
-    public void addChild(ComponentPattern componentPattern) {
+    @Override
+    public void addChild(final ComponentPattern componentPattern) {
         children.put(componentPattern.getName(), componentPattern);
     }
 
-    public void initialize(ViewDefinition viewDefinition) {
+    @Override
+    public void initialize(final ViewDefinition viewDefinition) {
         super.initialize(viewDefinition);
         for (ComponentPattern componentPattern : children.values()) {
             componentPattern.initialize(viewDefinition);
         }
     }
 
+    @Override
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
         super.updateComponentStateListeners(viewDefinitionState);
         for (ComponentPattern componentPattern : children.values()) {

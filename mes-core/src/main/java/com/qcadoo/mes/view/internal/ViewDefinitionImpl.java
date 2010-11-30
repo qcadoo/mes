@@ -107,7 +107,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     private void callOnViewHook(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
             final Locale locale) {
         if (viewHook != null) {
-            viewHook.callWithViewValue(value, triggerComponentName, entity, locale);
+            // viewHook.callWithViewState(value, triggerComponentName, entity, locale);
         }
     }
 

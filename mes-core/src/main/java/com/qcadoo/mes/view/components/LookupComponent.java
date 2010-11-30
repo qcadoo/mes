@@ -253,12 +253,12 @@ public final class LookupComponent extends AbstractComponent<LookupData> impleme
     public ViewDefinition getLookupViewDefinition(final ViewDefinitionService viewDefinitionService) {
         String viewName = getViewDefinition().getName() + ".lookup." + getPath();
 
-        ViewDefinition existingLookupViewDefinition = viewDefinitionService.get(getViewDefinition().getPluginIdentifier(),
-                viewName);
+        // ViewDefinition existingLookupViewDefinition = viewDefinitionService.get(getViewDefinition().getPluginIdentifier(),
+        // viewName);
 
-        if (existingLookupViewDefinition != null) {
-            return existingLookupViewDefinition;
-        }
+        // if (existingLookupViewDefinition != null) {
+        // return existingLookupViewDefinition;
+        // }
 
         ViewDefinitionImpl lookupViewDefinition = new ViewDefinitionImpl(getViewDefinition().getPluginIdentifier(), viewName);
 
@@ -305,7 +305,7 @@ public final class LookupComponent extends AbstractComponent<LookupData> impleme
 
         windowComponent.initialize();
 
-        viewDefinitionService.save(lookupViewDefinition);
+        // viewDefinitionService.save(lookupViewDefinition);
 
         return lookupViewDefinition;
     }

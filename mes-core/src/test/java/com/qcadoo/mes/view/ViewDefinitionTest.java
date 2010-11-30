@@ -180,7 +180,7 @@ public class ViewDefinitionTest {
 
         // then
         assertEquals(1, pathsToUpdate.size());
-        verify(hookDefinition).callWithViewValue(value, triggerComponentName, entity, Locale.ENGLISH);
+        // verify(hookDefinition).callWithViewState(value, triggerComponentName, entity, Locale.ENGLISH);
     }
 
     @Test

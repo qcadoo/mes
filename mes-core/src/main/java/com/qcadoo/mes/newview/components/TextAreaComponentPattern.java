@@ -4,9 +4,9 @@ import com.qcadoo.mes.newview.AbstractComponentPattern;
 import com.qcadoo.mes.newview.ComponentPattern;
 import com.qcadoo.mes.newview.ComponentState;
 
-public class TextInputComponentPattern extends AbstractComponentPattern {
+public class TextAreaComponentPattern extends AbstractComponentPattern {
 
-    public TextInputComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
+    public TextAreaComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);
     }
