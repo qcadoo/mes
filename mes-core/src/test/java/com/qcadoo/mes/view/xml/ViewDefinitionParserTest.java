@@ -103,7 +103,6 @@ public class ViewDefinitionParserTest {
         setField(viewDefinitionParser, "viewDefinitionService", viewDefinitionService);
         setField(viewDefinitionParser, "hookFactory", hookFactory);
         setField(viewDefinitionParser, "viewComponentsResolver", viewComponentsResolver);
-        viewDefinitionParser.init();
 
         xml = new FileInputStream(new File("src/test/resources/view.xml"));
 
