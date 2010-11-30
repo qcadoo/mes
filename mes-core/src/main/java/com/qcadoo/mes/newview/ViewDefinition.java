@@ -6,6 +6,8 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.qcadoo.mes.model.DataDefinition;
+
 public interface ViewDefinition {
 
     String getName();
@@ -23,5 +25,7 @@ public interface ViewDefinition {
     ComponentPattern getChild(String name);
 
     boolean isMenuAccessible();
+
+    DataDefinition getDataDefinition();
 
 }

@@ -89,10 +89,12 @@ public class ViewDefinitionImpl implements ViewDefinition {
         return vds.render();
     }
 
+    @Override
     public Map<String, ComponentPattern> getChildren() {
         return componentPatterns;
     }
 
+    @Override
     public ComponentPattern getChild(final String name) {
         return componentPatterns.get(name);
     }
@@ -132,6 +134,11 @@ public class ViewDefinitionImpl implements ViewDefinition {
     public boolean isMenuAccessible() {
         return menuAccessible;
     }
+
+    @Override
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
+    };
 
     public void addPostInitializeHook(final HookDefinition hookDefinition) {
         postInitializeHooks.add(hookDefinition);

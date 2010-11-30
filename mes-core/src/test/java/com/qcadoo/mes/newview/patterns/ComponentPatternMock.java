@@ -20,8 +20,14 @@ public class ComponentPatternMock extends AbstractContainerPattern {
         return new ComponentStateMock(null);
     }
 
+    @Override
     public Map<String, ComponentPattern> getFieldEntityIdChangeListeners() {
-        return getFieldEntityIdChangeListenersMap();
+        return super.getFieldEntityIdChangeListeners();
+    }
+
+    @Override
+    public Map<String, ComponentPattern> getScopeEntityIdChangeListeners() {
+        return super.getScopeEntityIdChangeListeners();
     }
 
 }
