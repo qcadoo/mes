@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import com.qcadoo.mes.newview.components.FormComponentState;
-import com.qcadoo.mes.newview.components.TestComponentState;
+import com.qcadoo.mes.newview.components.ComponentStateMock;
 
 public class ContainerStateTest extends AbstractStateTest {
 
@@ -145,8 +145,8 @@ public class ContainerStateTest extends AbstractStateTest {
     public void shouldCallBeforeRenderOnChildren() throws Exception {
         // given
         FormComponentState container = new FormComponentState();
-        TestComponentState componentState1 = new TestComponentState("test1");
-        TestComponentState componentState2 = new TestComponentState("test2");
+        ComponentStateMock componentState1 = new ComponentStateMock("test1");
+        ComponentStateMock componentState2 = new ComponentStateMock("test2");
         container.addChild(componentState1);
         container.addChild(componentState2);
 

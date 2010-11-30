@@ -43,10 +43,10 @@ public class TestComponentPatternTest {
     @Test
     public void shouldHaveFieldListeners() throws Exception {
         // given
-        TestComponentPattern pattern = new TestComponentPattern("f1", null, null, null);
+        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
 
-        TestComponentPattern t1 = new TestComponentPattern("t1", "t1", null, pattern);
-        TestComponentPattern t2 = new TestComponentPattern("t2", "t2", null, pattern);
+        ComponentPatternMock t1 = new ComponentPatternMock("t1", "t1", null, pattern);
+        ComponentPatternMock t2 = new ComponentPatternMock("t2", "t2", null, pattern);
         pattern.addChild(t1);
         pattern.addChild(t2);
 
@@ -64,9 +64,9 @@ public class TestComponentPatternTest {
     @Test
     public void shouldUpdateStateListeners() throws Exception {
         // given
-        TestComponentPattern pattern = new TestComponentPattern("f1", null, null, null);
-        TestComponentPattern t1 = new TestComponentPattern("t1", "field1", null, pattern);
-        TestComponentPattern t2 = new TestComponentPattern("t2", "field2", null, pattern);
+        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
+        ComponentPatternMock t1 = new ComponentPatternMock("t1", "field1", null, pattern);
+        ComponentPatternMock t2 = new ComponentPatternMock("t2", "field2", null, pattern);
         pattern.addChild(t1);
         pattern.addChild(t2);
         pattern.initialize(null);
@@ -93,7 +93,7 @@ public class TestComponentPatternTest {
     @Test
     public void shouldCallStateOnChildren() throws Exception {
         // given
-        TestComponentPattern pattern = new TestComponentPattern("f1", null, null, null);
+        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
         AbstractComponentPattern child1 = Mockito.mock(AbstractComponentPattern.class);
         given(child1.getName()).willReturn("test1");
         AbstractComponentPattern child2 = Mockito.mock(AbstractComponentPattern.class);

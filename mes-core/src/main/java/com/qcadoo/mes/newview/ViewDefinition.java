@@ -14,4 +14,8 @@ public interface ViewDefinition {
 
     ComponentPattern getComponentByPath(String path);
 
+    Map<String, ComponentPattern> getChildren();
+
+    ComponentPattern getChild(String name);
+
 }

@@ -16,6 +16,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.MenuService;
 import com.qcadoo.mes.internal.TranslationServiceImpl;
 import com.qcadoo.mes.model.internal.DataDefinitionParser;
+import com.qcadoo.mes.newview.ViewComponentsResolver;
 import com.qcadoo.mes.view.internal.ViewDefinitionParser;
 
 @Service
@@ -33,12 +34,18 @@ public final class Application {
     @Autowired
     private MenuService menuService;
 
+    @Autowired
+    private ViewComponentsResolver viewComponentResolver;
+
     @PostConstruct
     public void init() {
+        System.out.println("XXX");
+        viewComponentResolver.refreshAvaliebleComponentsList();
         dataDefinitionParser.parse();
         viewDefinitionParser.parse();
         ((TranslationServiceImpl) translationService).init();
         menuService.updateViewDefinitionDatabase();
+
     }
 
 }

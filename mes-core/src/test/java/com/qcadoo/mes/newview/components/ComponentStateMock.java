@@ -8,11 +8,11 @@ import org.json.JSONObject;
 import com.qcadoo.mes.newview.AbstractComponentState;
 import com.qcadoo.mes.newview.FieldEntityIdChangeListener;
 
-public class TestComponentState extends AbstractComponentState {
+public class ComponentStateMock extends AbstractComponentState {
 
     private int beforeRenderContentCallNumber = 0;
 
-    public TestComponentState(String name) {
+    public ComponentStateMock(String name) {
         setName(name);
     }
 

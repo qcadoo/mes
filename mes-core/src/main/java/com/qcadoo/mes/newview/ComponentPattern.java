@@ -9,4 +9,5 @@ public interface ComponentPattern {
     String getName();
 
     String getPathName();
+
 }
