@@ -100,7 +100,7 @@ public final class ViewDefinitionParser {
 
         LOG.info("Reading view " + name + " for plugin " + pluginIdentifier);
 
-        boolean menuAccessible = getBooleanAttribute(reader, "menuable", false);
+        boolean menuAccessible = getBooleanAttribute(reader, "menuAccessible", false);
 
         DataDefinition dataDefinition = null;
 

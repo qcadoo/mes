@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.newview.ViewDefinition;
 
 @Controller
 public final class CrudController {
@@ -64,6 +65,9 @@ public final class CrudController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("crud/crudView");
+
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
+        modelAndView.addObject("viewDefinition", viewDefinition);
 
         // String lookupComponentName = arguments.get("lookupComponent");
         //

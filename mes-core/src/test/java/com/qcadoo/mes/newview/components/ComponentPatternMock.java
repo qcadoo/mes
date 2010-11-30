@@ -21,4 +21,14 @@ public class ComponentPatternMock extends AbstractContainerPattern {
     public Map<String, ComponentPattern> getFieldEntityIdChangeListeners() {
         return getFieldEntityIdChangeListenersMap();
     }
+
+    @Override
+    public String getJspPath() {
+        return JSP_PATH;
+    }
+
+    @Override
+    public String getJavaScriptFilePath() {
+        return JS_PATH;
+    }
 }

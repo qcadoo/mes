@@ -8,8 +8,8 @@
 
 -->
 
-<qcd:views plugin="core" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="form" model="product">
+<qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="form" model="product" menuAccessible="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">

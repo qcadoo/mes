@@ -22,6 +22,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     // private boolean defaultVisible = true;
     // private boolean hasDescription = false;
 
+    protected static final String JSP_PATH = "aaa";
+
+    protected static final String JS_PATH = "bbb";
+
     private final String name;
 
     private final String fieldPath;

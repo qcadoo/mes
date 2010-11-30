@@ -18,4 +18,14 @@ public class GridComponentPattern extends AbstractContainerPattern {
         return new FormComponentState();
     }
 
+    @Override
+    public String getJspPath() {
+        return JSP_PATH;
+    }
+
+    @Override
+    public String getJavaScriptFilePath() {
+        return JS_PATH;
+    }
+
 }

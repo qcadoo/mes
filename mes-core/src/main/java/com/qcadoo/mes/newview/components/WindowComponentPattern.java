@@ -9,6 +9,10 @@ import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 @ViewComponent("window")
 public class WindowComponentPattern extends AbstractContainerPattern {
 
+    private static final String JSP_PATH = "newComponents/window.jsp";
+
+    private static final String JS_PATH = "newComponents/window.jsp";
+
     private Ribbon ribbon;
 
     public WindowComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
@@ -23,6 +27,16 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     public void setRibbon(final Ribbon ribbon) {
         this.ribbon = ribbon;
+    }
+
+    @Override
+    public String getJspPath() {
+        return JSP_PATH;
+    }
+
+    @Override
+    public String getJavaScriptFilePath() {
+        return JS_PATH;
     }
 
 }

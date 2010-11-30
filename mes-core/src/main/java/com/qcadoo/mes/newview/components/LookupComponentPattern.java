@@ -17,4 +17,14 @@ public class LookupComponentPattern extends AbstractComponentPattern {
     public ComponentState getComponentStateInstance() {
         return new TextInputComponentState();
     }
+
+    @Override
+    public String getJspPath() {
+        return JSP_PATH;
+    }
+
+    @Override
+    public String getJavaScriptFilePath() {
+        return JS_PATH;
+    }
 }
