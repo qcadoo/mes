@@ -41,8 +41,7 @@ public final class DictionaryServiceImpl implements DictionaryService {
         checkArgument(hasText(dictionaryName), "dictionary name must be given");
         List<DictionariesDictionaryItem> items = sessionFactory.getCurrentSession()
                 .createCriteria(DictionariesDictionaryItem.class).createAlias("dictionary", "dc")
-                .add(Restrictions.eq("dc.name", dictionaryName)).add(Restrictions.ne(EntityService.FIELD_DELETED, true))
-                .addOrder(Order.asc("name")).list();
+                .add(Restrictions.eq("dc.name", dictionaryName)).addOrder(Order.asc("name")).list();
 
         List<String> values = new ArrayList<String>();
 

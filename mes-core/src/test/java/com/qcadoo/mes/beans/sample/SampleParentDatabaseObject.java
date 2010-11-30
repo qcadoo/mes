@@ -26,8 +26,6 @@ public class SampleParentDatabaseObject implements HibernateProxy {
 
     private String name;
 
-    private boolean deleted;
-
     private List<SampleSimpleDatabaseObject> entities;
 
     public SampleParentDatabaseObject() {
@@ -51,14 +49,6 @@ public class SampleParentDatabaseObject implements HibernateProxy {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     @Override

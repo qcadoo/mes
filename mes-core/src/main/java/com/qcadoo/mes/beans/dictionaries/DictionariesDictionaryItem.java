@@ -28,9 +28,6 @@ public class DictionariesDictionaryItem {
 
     private String description;
 
-    @Column(nullable = false)
-    private boolean deleted;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private DictionariesDictionary dictionary;
 
@@ -56,14 +53,6 @@ public class DictionariesDictionaryItem {
 
     public void setDictionary(final DictionariesDictionary dictionary) {
         this.dictionary = dictionary;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getDescription() {

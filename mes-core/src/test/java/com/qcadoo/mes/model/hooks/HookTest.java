@@ -9,11 +9,11 @@ package com.qcadoo.mes.model.hooks;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 
-import org.hibernate.criterion.Criterion;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
@@ -69,10 +69,7 @@ public class HookTest extends DataAccessTest {
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
-        given(
-                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class)
-                        .add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(
-                databaseObject);
+        given(sessionFactory.getCurrentSession().get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
 
         dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
 
@@ -111,10 +108,7 @@ public class HookTest extends DataAccessTest {
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
-        given(
-                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class)
-                        .add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(
-                databaseObject);
+        given(sessionFactory.getCurrentSession().get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
 
         dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));
 
@@ -135,10 +129,7 @@ public class HookTest extends DataAccessTest {
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
-        given(
-                sessionFactory.getCurrentSession().createCriteria(SampleSimpleDatabaseObject.class)
-                        .add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(
-                databaseObject);
+        given(sessionFactory.getCurrentSession().get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
 
         dataDefinition.withUpdateHook(hookFactory.getHook(CustomEntityService.class.getName(), "onUpdate"));
         dataDefinition.withSaveHook(hookFactory.getHook(CustomEntityService.class.getName(), "onSave"));

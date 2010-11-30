@@ -28,6 +28,7 @@ import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -236,9 +237,16 @@ public final class ProductService {
             return;
         }
 
-        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).includeDeleted().list();
+        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).orderBy(Order.desc("id"))
+                .list();
 
-        String number = String.format("%06d", results.getTotalNumberOfEntities() + 1);
+        long longValue = 0;
+        if (results.getEntities().isEmpty()) {
+            longValue++;
+        } else {
+            longValue = results.getEntities().get(0).getId() + 1;
+        }
+        String number = String.format("%06d", longValue);
 
         if (numberValue.getValue() == null) {
             numberValue.setValue(new SimpleValue(number));

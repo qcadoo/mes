@@ -17,6 +17,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "menu_menu_category")
 public class MenuMenuCategory {
@@ -32,19 +35,17 @@ public class MenuMenuCategory {
 
     private boolean active;
 
-    @Column(nullable = false)
-    private boolean deleted;
-
     private Integer categoryOrder;
 
     @OneToMany(mappedBy = "menuCategory", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<MenuMenuViewDefinitionItem> viewDefinitionItems;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -52,23 +53,15 @@ public class MenuMenuCategory {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public List<MenuMenuViewDefinitionItem> getViewDefinitionItems() {
         return viewDefinitionItems;
     }
 
-    public void setViewDefinitionItems(List<MenuMenuViewDefinitionItem> viewDefinitionItems) {
+    public void setViewDefinitionItems(final List<MenuMenuViewDefinitionItem> viewDefinitionItems) {
         this.viewDefinitionItems = viewDefinitionItems;
     }
 
@@ -76,7 +69,7 @@ public class MenuMenuCategory {
         return categoryOrder;
     }
 
-    public void setCategoryOrder(Integer categoryOrder) {
+    public void setCategoryOrder(final Integer categoryOrder) {
         this.categoryOrder = categoryOrder;
     }
 
@@ -84,7 +77,7 @@ public class MenuMenuCategory {
         return translationName;
     }
 
-    public void setTranslationName(String translationName) {
+    public void setTranslationName(final String translationName) {
         this.translationName = translationName;
     }
 
@@ -92,7 +85,7 @@ public class MenuMenuCategory {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(final boolean active) {
         this.active = active;
     }
 

@@ -509,7 +509,8 @@ public class ValidatorTest extends DataAccessTest {
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
-        given(criteria.uniqueResult()).willReturn(databaseObject, 0);
+        given(session.get(SampleSimpleDatabaseObject.class, 1L)).willReturn(databaseObject);
+        given(criteria.uniqueResult()).willReturn(0);
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 

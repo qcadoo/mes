@@ -40,8 +40,6 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
 
     private final DataDefinition dataDefinition;
 
-    private boolean includeDeleted = false;
-
     public SearchCriteriaImpl(final DataDefinition dataDefinition) {
         checkNotNull(dataDefinition);
         this.dataDefinition = dataDefinition;
@@ -50,11 +48,6 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
         } else {
             order = Order.asc();
         }
-    }
-
-    @Override
-    public boolean isIncludeDeleted() {
-        return includeDeleted;
     }
 
     @Override
@@ -114,12 +107,6 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     }
 
     @Override
-    public SearchCriteriaBuilder includeDeleted() {
-        this.includeDeleted = true;
-        return this;
-    }
-
-    @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
@@ -132,8 +119,8 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     @Override
     public String toString() {
         return "SearchCriteria[dataDefinition=" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName()
-                + ", maxResults=" + maxResults + ", firstResult=" + firstResult + ", order=" + order + ", includeDeleted="
-                + includeDeleted + ", restrictions=" + restrictions + "]";
+                + ", maxResults=" + maxResults + ", firstResult=" + firstResult + ", order=" + order + ", restrictions="
+                + restrictions + "]";
     }
 
 }

@@ -145,10 +145,6 @@ public final class PriorityService {
 
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
 
-        if (dataDefinition.isDeletable()) {
-            entityService.addDeletedRestriction(criteria);
-        }
-
         FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
 
         if (scopeFieldDefinition != null) {

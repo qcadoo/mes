@@ -21,6 +21,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "products_substitute")
 public class ProductsSubstitute {
@@ -47,9 +50,8 @@ public class ProductsSubstitute {
     private Date effectiveDateTo;
 
     @OneToMany(mappedBy = "substitute", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<ProductsSubstituteComponent> components;
-
-    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -97,14 +99,6 @@ public class ProductsSubstitute {
 
     public void setEffectiveDateTo(final Date effectiveDateTo) {
         this.effectiveDateTo = effectiveDateTo;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public ProductsProduct getProduct() {

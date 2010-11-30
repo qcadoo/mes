@@ -36,14 +36,6 @@ public interface SearchCriteria {
     int getFirstResult();
 
     /**
-     * Return true if deleted entities should be included.
-     * 
-     * @return include deleted
-     * @see SearchCriteriaBuilder#includeDeleted()
-     */
-    boolean isIncludeDeleted();
-
-    /**
      * Return seach order.
      * 
      * @return order

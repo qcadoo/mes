@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
@@ -28,7 +29,9 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     public static final String DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE = "exceptionMessage";
 
-    private final Map<String, String> translations = new HashMap<String, String>();
+    private final Map<String, String> messageTranslations = new HashMap<String, String>();
+
+    private final Map<Exception, String> exceptionTranslations = new HashMap<Exception, String>();
 
     private final String exceptionMessageAttribute = DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE;
 
@@ -37,8 +40,9 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     @PostConstruct
     public void init() {
-        translations.put("Trying delete entity in use", "core.exception.illegalStateException.objectInUse");
-        translations.put("Entity.+ cannot be found", "core.exception.illegalStateException.entityNotFound");
+        exceptionTranslations.put(new DataIntegrityViolationException(""),
+                "core.exception.dataIntegrityViolationException.objectInUse");
+        messageTranslations.put("Entity.+ cannot be found", "core.exception.illegalStateException.entityNotFound");
     }
 
     @Override
@@ -46,12 +50,23 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             final Object handler, final Exception ex) {
         ModelAndView mv = super.doResolveException(request, response, handler, ex);
         if (mv != null) {
+            boolean found = false;
             String exceptionMessage = ex.getMessage();
 
-            for (Map.Entry<String, String> translation : translations.entrySet()) {
-                if (exceptionMessage.matches(translation.getKey())) {
+            for (Map.Entry<Exception, String> translation : exceptionTranslations.entrySet()) {
+                if (translation.getKey().getClass().isInstance(ex)) {
                     exceptionMessage = translationService.translate(translation.getValue(), request.getLocale());
+                    found = true;
                     break;
+                }
+            }
+
+            if (!found) {
+                for (Map.Entry<String, String> translation : messageTranslations.entrySet()) {
+                    if (exceptionMessage.matches(translation.getKey())) {
+                        exceptionMessage = translationService.translate(translation.getValue(), request.getLocale());
+                        break;
+                    }
                 }
             }
             if (LOG.isDebugEnabled()) {

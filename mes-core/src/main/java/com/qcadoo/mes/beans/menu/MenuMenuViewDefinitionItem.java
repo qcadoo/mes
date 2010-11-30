@@ -38,14 +38,11 @@ public class MenuMenuViewDefinitionItem {
 
     private Integer itemOrder;
 
-    @Column(nullable = false)
-    private boolean deleted;
-
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -53,23 +50,15 @@ public class MenuMenuViewDefinitionItem {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public MenuMenuCategory getMenuCategory() {
         return menuCategory;
     }
 
-    public void setMenuCategory(MenuMenuCategory menuCategory) {
+    public void setMenuCategory(final MenuMenuCategory menuCategory) {
         this.menuCategory = menuCategory;
     }
 
@@ -77,7 +66,7 @@ public class MenuMenuViewDefinitionItem {
         return itemOrder;
     }
 
-    public void setItemOrder(Integer itemOrder) {
+    public void setItemOrder(final Integer itemOrder) {
         this.itemOrder = itemOrder;
     }
 
@@ -85,7 +74,7 @@ public class MenuMenuViewDefinitionItem {
         return viewDefinition;
     }
 
-    public void setViewDefinition(MenuViewDefinition viewDefinition) {
+    public void setViewDefinition(final MenuViewDefinition viewDefinition) {
         this.viewDefinition = viewDefinition;
     }
 
@@ -93,7 +82,7 @@ public class MenuMenuViewDefinitionItem {
         return translationName;
     }
 
-    public void setTranslationName(String translationName) {
+    public void setTranslationName(final String translationName) {
         this.translationName = translationName;
     }
 
@@ -101,7 +90,7 @@ public class MenuMenuViewDefinitionItem {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(final boolean active) {
         this.active = active;
     }
 

@@ -26,6 +26,9 @@ public class UsersUser {
     @Column(nullable = false)
     private String userName;
 
+    @Column(nullable = false, columnDefinition = "boolean DEFAULT TRUE")
+    private boolean enabled = true;
+
     @ManyToOne(fetch = FetchType.EAGER)
     private UsersGroup userGroup;
 
@@ -39,8 +42,6 @@ public class UsersUser {
 
     @Column(nullable = false)
     private String password;
-
-    private boolean deleted;
 
     public String getUserName() {
         return userName;
@@ -56,14 +57,6 @@ public class UsersUser {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getDescription() {
@@ -112,6 +105,14 @@ public class UsersUser {
 
     public void setUserGroup(final UsersGroup userGroup) {
         this.userGroup = userGroup;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

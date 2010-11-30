@@ -10,9 +10,11 @@ package com.qcadoo.mes.internal;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
+import org.mockito.Matchers;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
@@ -56,7 +58,7 @@ public final class DataAccessServiceSaveTest extends DataAccessTest {
         existingDatabaseObject.setName("Mr X");
         existingDatabaseObject.setAge(33);
 
-        given(criteria.uniqueResult()).willReturn(existingDatabaseObject);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(existingDatabaseObject);
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject();
         databaseObject.setId(1L);

@@ -20,6 +20,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "products_material_requirement")
 public class ProductsMaterialRequirement {
@@ -36,8 +39,6 @@ public class ProductsMaterialRequirement {
 
     private String worker;
 
-    private boolean deleted;
-
     private boolean onlyComponents = false;
 
     private boolean generated = false;
@@ -45,6 +46,7 @@ public class ProductsMaterialRequirement {
     private String fileName;
 
     @OneToMany(mappedBy = "materialRequirement", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<ProductsMaterialRequirementComponent> orders;
 
     public Long getId() {
@@ -61,14 +63,6 @@ public class ProductsMaterialRequirement {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public Date getDate() {

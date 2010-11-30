@@ -29,9 +29,6 @@ public class UsersGroup {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = false)
-    private boolean deleted;
-
     public Long getId() {
         return id;
     }
@@ -46,14 +43,6 @@ public class UsersGroup {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getDescription() {

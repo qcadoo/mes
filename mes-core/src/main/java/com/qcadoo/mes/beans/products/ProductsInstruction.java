@@ -21,6 +21,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "products_instruction")
 public class ProductsInstruction {
@@ -50,12 +53,11 @@ public class ProductsInstruction {
     private Boolean master;
 
     @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<ProductsInstructionBomComponent> bomComponents;
 
     @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
-
-    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -119,14 +121,6 @@ public class ProductsInstruction {
 
     public void setMaster(final Boolean master) {
         this.master = master;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
     public List<ProductsInstructionBomComponent> getBomComponents() {

@@ -29,8 +29,6 @@ public class PluginsPlugin {
 
     private String description;
 
-    private boolean deleted;
-
     private String status;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
@@ -56,14 +54,6 @@ public class PluginsPlugin {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getDescription() {
