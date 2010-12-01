@@ -97,10 +97,6 @@ QCDConnector.sendPost = function(parameters, responseFunction, errorFunction) {
 				if (responseFunction) {
 					if (responseText != "") {
 						var response = JSON.parse(responseText);
-						
-						// TODO masz remove next line
-						response = JSON.parse(response);
-						
 						responseFunction(response);
 					} else {
 						responseFunction(null);

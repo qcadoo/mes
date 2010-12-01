@@ -47,22 +47,23 @@ public class FormComponentState extends AbstractContainerState {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void initializeContent(final JSONObject json) throws JSONException {
         if (json.has(JSON_ENTITY_ID) && !json.isNull(JSON_ENTITY_ID)) {
             value = json.getLong(JSON_ENTITY_ID);
         }
+    }
 
-        if (json.has(JSON_CONTEXT)) {
-            JSONObject contextJson = json.getJSONObject(JSON_CONTEXT);
-            Iterator<String> iterator = contextJson.keys();
-            while (iterator.hasNext()) {
-                String field = iterator.next();
-                if ("id".equals(field)) {
-                    value = contextJson.getLong(field);
-                } else {
-                    context.put(field, contextJson.get(field));
-                }
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void initializeContext(final JSONObject json) throws JSONException {
+        JSONObject contextJson = json.getJSONObject(JSON_CONTEXT);
+        Iterator<String> iterator = contextJson.keys();
+        while (iterator.hasNext()) {
+            String field = iterator.next();
+            if ("id".equals(field)) {
+                value = contextJson.getLong(field);
+            } else {
+                context.put(field, contextJson.get(field));
             }
         }
     }

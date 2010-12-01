@@ -85,6 +85,10 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         if (json.has(JSON_CONTENT)) {
             initializeContent(json.getJSONObject(JSON_CONTENT));
         }
+
+        if (json.has(JSON_CONTEXT)) {
+            initializeContext(json.getJSONObject(JSON_CONTEXT));
+        }
     }
 
     protected Locale getLocale() {
@@ -187,6 +191,10 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     @Override
     public void onScopeEntityIdChange(final Long entityId) {
+        // implements if you want
+    }
+
+    protected void initializeContext(final JSONObject json) throws JSONException {
         // implements if you want
     }
 

@@ -7,24 +7,15 @@
 
 package com.qcadoo.mes.crud;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +34,7 @@ public final class CrudController {
 
     private static final String CONTROLLER_PATH = "page/{" + PLUGIN_IDENTIFIER_VARIABLE + "}/{" + VIEW_NAME_VARIABLE + "}";
 
-    private static final String JSON_BODY = "jsonBody";
+    // private static final String JSON_BODY = "jsonBody";
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
@@ -93,14 +84,12 @@ public final class CrudController {
     @RequestMapping(value = { CONTROLLER_PATH }, method = RequestMethod.POST)
     @ResponseBody
     public Object performEvent(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
-            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
-            final Locale locale) {
-        JSONObject json = getJsonBody(body);
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestBody final JSONObject body, final Locale locale) {
 
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         try {
-            return viewDefinition.performEvent(json, locale).toString();
+            return viewDefinition.performEvent(body, locale);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -347,99 +336,68 @@ public final class CrudController {
     // return responseViewValue;
     // }
 
-    private void addMessageToModel(final Map<String, String> arguments, final ModelAndView modelAndView) {
-        if (arguments.get("message") != null) {
-            modelAndView.addObject("message", arguments.get("message"));
-            if (arguments.get("messageType") != null) {
-                modelAndView.addObject("messageType", arguments.get("messageType"));
-            } else {
-                modelAndView.addObject("messageType", "info");
-            }
-        }
-    }
+    // private void addMessageToModel(final Map<String, String> arguments, final ModelAndView modelAndView) {
+    // if (arguments.get("message") != null) {
+    // modelAndView.addObject("message", arguments.get("message"));
+    // if (arguments.get("messageType") != null) {
+    // modelAndView.addObject("messageType", arguments.get("messageType"));
+    // } else {
+    // modelAndView.addObject("messageType", "info");
+    // }
+    // }
+    // }
+    //
+    // private String getComponentName(final JSONObject json) {
+    // String componentName = getJsonString(json, "componentName");
+    // if (componentName != null) {
+    // return componentName.replaceAll("-", ".");
+    // } else {
+    // return null;
+    // }
+    // }
+    //
+    // private String getJsonString(final JSONObject json, final String name) {
+    // try {
+    // if (!json.isNull(name)) {
+    // return json.getString(name);
+    // } else {
+    // return null;
+    // }
+    // } catch (JSONException e) {
+    // throw new IllegalStateException(e.getMessage(), e);
+    // }
+    // }
+    //
+    // private JSONArray getJsonArray(final JSONObject json, final String name) {
+    // try {
+    // if (!json.isNull(name)) {
+    // return json.getJSONArray(name);
+    // } else {
+    // return null;
+    // }
+    // } catch (JSONException e) {
+    // throw new IllegalStateException(e.getMessage(), e);
+    // }
+    // }
+    //
+    // private JSONObject getJsonObject(final JSONObject json) {
+    // try {
+    // if (!json.isNull("data")) {
+    // return json.getJSONObject("data");
+    // } else {
+    // return null;
+    // }
+    // } catch (JSONException e) {
+    // throw new IllegalStateException(e.getMessage(), e);
+    // }
+    // }
 
-    private String getComponentName(final JSONObject json) {
-        String componentName = getJsonString(json, "componentName");
-        if (componentName != null) {
-            return componentName.replaceAll("-", ".");
-        } else {
-            return null;
-        }
-    }
-
-    private String getJsonString(final JSONObject json, final String name) {
-        try {
-            if (!json.isNull(name)) {
-                return json.getString(name);
-            } else {
-                return null;
-            }
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private JSONArray getJsonArray(final JSONObject json, final String name) {
-        try {
-            if (!json.isNull(name)) {
-                return json.getJSONArray(name);
-            } else {
-                return null;
-            }
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private JSONObject getJsonObject(final JSONObject json) {
-        try {
-            if (!json.isNull("data")) {
-                return json.getJSONObject("data");
-            } else {
-                return null;
-            }
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private JSONObject getJsonBody(final StringBuilder body) {
-        try {
-            return new JSONObject(body.toString());
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    @InitBinder(JSON_BODY)
-    public void initBinder(final WebDataBinder binder, final HttpServletRequest request) {
-        StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = null;
-        try {
-            InputStream inputStream = request.getInputStream();
-            if (inputStream != null) {
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream, request.getCharacterEncoding()));
-                char[] charBuffer = new char[128];
-                int bytesRead = -1;
-                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                    stringBuilder.append(charBuffer, 0, bytesRead);
-                }
-            } else {
-                stringBuilder.append("");
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                }
-            }
-        }
-        String body = stringBuilder.toString();
-        ((StringBuilder) binder.getTarget()).append(body);
-    }
+    // private JSONObject getJsonBody(final String body) {
+    // try {
+    // return new JSONObject(body);
+    // } catch (JSONException e) {
+    // throw new IllegalStateException(e.getMessage(), e);
+    // }
+    // }
 
 }

@@ -119,7 +119,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         }
     }
 
-    private void getFieldAndScopeFieldDefinitions(String[] field, String[] scopeField) {
+    private void getFieldAndScopeFieldDefinitions(final String[] field, final String[] scopeField) {
         if (dataDefinition != null) {
             if (fieldPath != null) {
                 fieldDefinition = dataDefinition.getField(field[1]);
@@ -131,8 +131,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         }
     }
 
-    private void getDataDefinition(final ViewDefinition viewDefinition, AbstractComponentPattern fieldComponent,
-            AbstractComponentPattern scopeFieldComponent) {
+    private void getDataDefinition(final ViewDefinition viewDefinition, final AbstractComponentPattern fieldComponent,
+            final AbstractComponentPattern scopeFieldComponent) {
         if (fieldPath != null) {
             dataDefinition = fieldComponent.getDataDefinition();
         } else if (scopeFieldPath != null) {
@@ -207,16 +207,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
         if (fieldEntityIdChangeListeners.size() > 0) {
-            System.out.println("----1--->");
-            System.out.println(getPathName());
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
                     .getComponentByPath(getPathName());
-
-            System.out.println(thisComponentState);
             for (Map.Entry<String, ComponentPattern> listenerPattern : fieldEntityIdChangeListeners.entrySet()) {
-                System.out.println(listenerPattern.getKey());
                 ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPathName());
-                System.out.println(listenerState);
                 thisComponentState.addFieldEntityIdChangeListener(listenerPattern.getKey(),
                         (FieldEntityIdChangeListener) listenerState);
             }

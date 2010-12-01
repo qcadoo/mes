@@ -15,6 +15,8 @@ public interface ComponentState {
 
     String JSON_CONTENT = "content";
 
+    String JSON_CONTEXT = "context";
+
     String JSON_VALUE = "value";
 
     String JSON_CHILDREN = "components";
