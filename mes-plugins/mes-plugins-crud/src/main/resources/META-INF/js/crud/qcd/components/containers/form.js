@@ -25,8 +25,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	//var formValue = null;
 	
 	function constructor(_this) {
-		var childrenElement = $("#"+_this.elementPath+"_formComponents");
-		QCD.info(childrenElement);
+		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
 		//block();
 	}
