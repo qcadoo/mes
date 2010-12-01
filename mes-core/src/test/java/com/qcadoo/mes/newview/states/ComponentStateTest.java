@@ -147,7 +147,7 @@ public class ComponentStateTest {
         componentState.initialize(json, Locale.ENGLISH);
 
         // then
-        assertTrue(componentState.isEnable());
+        assertTrue(componentState.isEnabled());
         assertTrue(componentState.render().getBoolean(ComponentState.JSON_ENABLE));
     }
 
@@ -157,10 +157,10 @@ public class ComponentStateTest {
         ComponentState componentState = new TextInputComponentState();
 
         // when
-        componentState.setEnable(false);
+        componentState.setEnabled(false);
 
         // then
-        assertFalse(componentState.isEnable());
+        assertFalse(componentState.isEnabled());
         assertFalse(componentState.render().getBoolean(ComponentState.JSON_ENABLE));
     }
 

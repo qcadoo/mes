@@ -29,7 +29,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     private boolean requestUpdateState;
 
-    private boolean enable;
+    private boolean enabled;
 
     private boolean visible;
 
@@ -69,7 +69,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         this.locale = locale;
 
         if (json.has(JSON_ENABLE)) {
-            setEnable(json.getBoolean(JSON_ENABLE));
+            setEnabled(json.getBoolean(JSON_ENABLE));
         }
 
         if (json.has(JSON_VISIBLE)) {
@@ -101,7 +101,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     @Override
     public JSONObject render() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_ENABLE, isEnable());
+        json.put(JSON_ENABLE, isEnabled());
         json.put(JSON_VISIBLE, isVisible());
 
         if (requestRender) {
@@ -163,13 +163,13 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     }
 
     @Override
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @Override
-    public void setEnable(final boolean enable) {
-        this.enable = enable;
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

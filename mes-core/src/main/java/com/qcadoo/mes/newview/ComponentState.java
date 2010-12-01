@@ -49,8 +49,8 @@ public interface ComponentState {
 
     void setVisible(boolean visible);
 
-    boolean isEnable();
+    boolean isEnabled();
 
-    void setEnable(boolean enable);
+    void setEnabled(boolean enable);
 
 }
