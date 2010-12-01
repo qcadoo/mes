@@ -12,8 +12,8 @@ import java.util.Map;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.viewold.AbstractRootComponent;
-import com.qcadoo.mes.viewold.ComponentOption;
 import com.qcadoo.mes.viewold.ViewDefinition;
 
 /**

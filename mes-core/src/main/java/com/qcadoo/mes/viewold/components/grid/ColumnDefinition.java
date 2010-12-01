@@ -92,7 +92,7 @@ public final class ColumnDefinition {
     }
 
     public String getValue(final Entity entity, final Locale locale) {
-        return ExpressionUtil.getValue(entity, this, locale);
+        return ExpressionUtil.getValue(entity, this.getFields(), locale);
     }
 
     public Integer getWidth() {

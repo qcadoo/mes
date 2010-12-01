@@ -38,14 +38,14 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.viewold.AbstractComponent;
-import com.qcadoo.mes.viewold.ComponentOption;
 import com.qcadoo.mes.viewold.ContainerComponent;
+import com.qcadoo.mes.viewold.ListData;
 import com.qcadoo.mes.viewold.SelectableComponent;
 import com.qcadoo.mes.viewold.ViewValue;
 import com.qcadoo.mes.viewold.components.grid.ColumnAggregationMode;
 import com.qcadoo.mes.viewold.components.grid.ColumnDefinition;
-import com.qcadoo.mes.viewold.components.grid.ListData;
 
 /**
  * Represents grid.<br/>

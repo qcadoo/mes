@@ -23,15 +23,15 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.viewold.AbstractContainerComponent;
 import com.qcadoo.mes.viewold.Component;
-import com.qcadoo.mes.viewold.ComponentOption;
 import com.qcadoo.mes.viewold.ContainerComponent;
 import com.qcadoo.mes.viewold.SaveableComponent;
 import com.qcadoo.mes.viewold.SelectableComponent;
 import com.qcadoo.mes.viewold.ViewValue;
-import com.qcadoo.mes.viewold.components.LookupData;
 import com.qcadoo.mes.viewold.components.SimpleValue;
+import com.qcadoo.mes.viewold.components.grid.LookupData;
 
 /**
  * Represents form.<br/>
@@ -114,7 +114,7 @@ public final class FormComponent extends AbstractContainerComponent<FormValue> i
             if (entity.isValid()) {
                 selectedEntities.put(getPath(), entity);
                 formValue.setHeader(getTranslationService().translate(messageCode + ".headerEdit", locale));
-                formValue.setHeaderEntityIdentifier(ExpressionUtil.getValue(entity, expression));
+                formValue.setHeaderEntityIdentifier(ExpressionUtil.getValue(entity, expression, locale));
             } else {
                 formValue.setHeader(getTranslationService().translate(messageCode + ".headerNew", locale));
             }

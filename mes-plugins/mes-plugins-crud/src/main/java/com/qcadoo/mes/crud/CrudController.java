@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.newview.ViewDefinition;
+import com.qcadoo.mes.view.ViewDefinition;
 
 @Controller
 public final class CrudController {

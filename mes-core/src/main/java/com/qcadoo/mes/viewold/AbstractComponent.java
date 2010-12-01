@@ -33,6 +33,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;

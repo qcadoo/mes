@@ -18,8 +18,8 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.viewold.AbstractComponent;
-import com.qcadoo.mes.viewold.ComponentOption;
 import com.qcadoo.mes.viewold.ContainerComponent;
 import com.qcadoo.mes.viewold.ViewValue;
 

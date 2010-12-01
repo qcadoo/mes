@@ -10,7 +10,7 @@ package com.qcadoo.mes.viewold.components;
 import java.util.Date;
 
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.viewold.ComponentOption;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.viewold.ContainerComponent;
 
 /**

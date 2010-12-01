@@ -29,8 +29,8 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.viewold.AbstractComponent;
-import com.qcadoo.mes.viewold.ComponentOption;
 import com.qcadoo.mes.viewold.ContainerComponent;
 import com.qcadoo.mes.viewold.SelectableComponent;
 import com.qcadoo.mes.viewold.ViewValue;
@@ -163,7 +163,7 @@ public final class TreeComponent extends AbstractComponent<TreeData> implements 
                     parent = createdNodes.get(((Entity) e.getField("parent")).getId());
                 }
                 if (parent != null) {
-                    TreeNode cretedNode = new TreeNode(e.getId(), ExpressionUtil.getValue(e, expression));
+                    TreeNode cretedNode = new TreeNode(e.getId(), ExpressionUtil.getValue(e, expression, locale));
                     parent.addChild(cretedNode);
                     createdNodes.put(cretedNode.getId(), cretedNode);
                     entityIterator.remove();

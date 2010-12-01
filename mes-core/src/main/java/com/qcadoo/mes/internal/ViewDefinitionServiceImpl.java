@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
-import com.qcadoo.mes.newview.ViewDefinition;
+import com.qcadoo.mes.view.ViewDefinition;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {

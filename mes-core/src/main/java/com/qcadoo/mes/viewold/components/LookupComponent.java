@@ -32,16 +32,17 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem.Type;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 import com.qcadoo.mes.viewold.AbstractComponent;
-import com.qcadoo.mes.viewold.ComponentOption;
 import com.qcadoo.mes.viewold.ContainerComponent;
 import com.qcadoo.mes.viewold.SelectableComponent;
 import com.qcadoo.mes.viewold.ViewDefinition;
 import com.qcadoo.mes.viewold.ViewValue;
+import com.qcadoo.mes.viewold.components.grid.LookupData;
 import com.qcadoo.mes.viewold.containers.WindowComponent;
 import com.qcadoo.mes.viewold.internal.ViewDefinitionImpl;
 
@@ -200,7 +201,7 @@ public final class LookupComponent extends AbstractComponent<LookupData> impleme
         }
 
         if (selectedEntity != null) {
-            lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression));
+            lookupData.setSelectedEntityValue(ExpressionUtil.getValue(selectedEntity, expression, locale));
             lookupData.setSelectedEntityId(selectedEntity.getId());
             lookupData.setSelectedEntityCode(String.valueOf(selectedEntity.getField(fieldCode)));
             selectedEntities.put(getPath(), selectedEntity);

@@ -16,8 +16,8 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.MenuService;
 import com.qcadoo.mes.internal.TranslationServiceImpl;
 import com.qcadoo.mes.model.internal.DataDefinitionParser;
-import com.qcadoo.mes.newview.ViewComponentsResolver;
-import com.qcadoo.mes.newview.ViewDefinitionParser;
+import com.qcadoo.mes.view.internal.ViewComponentsResolver;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @Service
 public final class Application {

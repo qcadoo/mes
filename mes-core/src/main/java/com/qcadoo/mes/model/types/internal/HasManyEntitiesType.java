@@ -7,12 +7,13 @@
 
 package com.qcadoo.mes.model.types.internal;
 
+import java.util.Set;
+
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.viewold.components.grid.ListData;
 
 public final class HasManyEntitiesType implements HasManyType {
 
@@ -52,7 +53,7 @@ public final class HasManyEntitiesType implements HasManyType {
 
     @Override
     public Class<?> getType() {
-        return ListData.class;
+        return Set.class; // TODO masz - was ListData ???
     }
 
     @Override
