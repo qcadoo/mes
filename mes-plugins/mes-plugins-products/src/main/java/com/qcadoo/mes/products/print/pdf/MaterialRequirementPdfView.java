@@ -46,7 +46,7 @@ public final class MaterialRequirementPdfView extends AbstractPdfView {
 
     @Override
     protected void buildPdfMetadata(final Map<String, Object> model, final Document document, final HttpServletRequest request) {
-        addTitle(document, request.getLocale());
+        addTitle(document, PdfUtil.retrieveLocaleFromRequestCookie(request));
         PdfUtil.addMetaData(document);
     }
 
