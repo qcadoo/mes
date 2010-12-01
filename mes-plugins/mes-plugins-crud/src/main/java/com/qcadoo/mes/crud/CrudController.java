@@ -23,13 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ViewDefinition;
 
@@ -40,22 +41,18 @@ public final class CrudController {
 
     private static final String PLUGIN_IDENTIFIER_VARIABLE = "pluginIdentifier";
 
-    private static final String FUNCTION_NAME_VARIABLE = "functionName";
-
     private static final String CONTROLLER_PATH = "page/{" + PLUGIN_IDENTIFIER_VARIABLE + "}/{" + VIEW_NAME_VARIABLE + "}";
-
-    private static final String FUNCTION_PATH = "/function/{" + FUNCTION_NAME_VARIABLE + "}";
 
     private static final String JSON_BODY = "jsonBody";
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
 
-    @Autowired
-    private TranslationService translationService;
+    // @Autowired
+    // private TranslationService translationService;
 
     @RequestMapping(value = CONTROLLER_PATH, method = RequestMethod.GET)
-    public ModelAndView getView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+    public ModelAndView prepareView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
             final Locale locale) {
         // Map<String, String> translationsMap = translationService.getCommonsMessages(locale);
@@ -91,6 +88,22 @@ public final class CrudController {
         // addMessageToModel(arguments, modelAndView);
 
         return modelAndView;
+    }
+
+    @RequestMapping(value = { CONTROLLER_PATH }, method = RequestMethod.POST)
+    @ResponseBody
+    public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+            @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
+            final Locale locale) {
+        JSONObject json = getJsonBody(body);
+
+        ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
+
+        try {
+            return viewDefinition.performEvent(json, locale).toString();
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
     //

@@ -35,6 +35,6 @@ public class UserProfileController {
 
         arguments.put("entityId", securityService.getCurrentUser().getId().toString());
 
-        return crudController.getView("users", "userProfileView", arguments, locale);
+        return crudController.prepareView("users", "userProfileView", arguments, locale);
     }
 }

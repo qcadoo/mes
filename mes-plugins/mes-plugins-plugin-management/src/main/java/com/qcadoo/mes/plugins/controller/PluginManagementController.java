@@ -103,7 +103,7 @@ public final class PluginManagementController {
         String headerLabel = translationService.translate("plugins.downloadView.header", locale);
         String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
 
-        ModelAndView mav = crudController.getView("plugins", "pluginDownloadView", new HashMap<String, String>(), locale);
+        ModelAndView mav = crudController.prepareView("plugins", "pluginDownloadView", new HashMap<String, String>(), locale);
 
         mav.addObject("headerLabel", headerLabel);
         mav.addObject("buttonLabel", buttonLabel);
@@ -117,7 +117,7 @@ public final class PluginManagementController {
         if (operationStatus.isRestartRequired()) {
             return getRestartPagePageView(operationStatus.getMessage(), locale);
         }
-        ModelAndView mav = crudController.getView("plugins", "pluginInfoView", new HashMap<String, String>(), locale);
+        ModelAndView mav = crudController.prepareView("plugins", "pluginInfoView", new HashMap<String, String>(), locale);
         String message = translationService.translate(operationStatus.getMessage(), locale);
         mav.addObject("pluginStatusMessage", message);
         if (operationStatus.isError()) {
