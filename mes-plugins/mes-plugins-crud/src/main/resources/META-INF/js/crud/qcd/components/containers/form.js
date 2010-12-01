@@ -37,15 +37,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-		if(value.valid) {
-			if(value.headerEntityIdentifier) {
-				mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
-			} else {
-				mainController.setWindowHeader(value.header);
-			}
-		}
-		formValue = value;
-		unblock();
+//		if(value.valid) {
+//			if(value.headerEntityIdentifier) {
+//				mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
+//			} else {
+//				mainController.setWindowHeader(value.header);
+//			}
+//		}
+		formValue = value.entityId;
+//		unblock();
 	}
 	
 	this.setComponentState = function(state) {

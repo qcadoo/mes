@@ -60,7 +60,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		QCD.info(parametersJson);
 		QCDConnector.sendPost(parametersJson, function(response) {
 			QCD.info(response);
-//			setValueData(response);
+			setValueData(response);
 //			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 //				actionsPerformer.performNext();
 //			}
@@ -199,36 +199,36 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	
 	function setValueData(data) {
 		QCD.debug(data);
-		if (data.messages) {
-			var messagesToShow = new Array();
-			var isOvverideMode = false;
-			for (var i in data.messages) {
-				var message = data.messages[i];
-				if (message.message.substring(0,9) == "override:") {
-					message.message = message.message.substring(9);
-					if (!isOvverideMode) {
-						isOvverideMode= true;
-						messagesToShow = new Array();
-					}
-					messagesToShow.push(message);	
-				} else {
-					if (!isOvverideMode) {
-						messagesToShow.push(message);
-					}
-				}
-			}
-			for (var i in messagesToShow) {
-				var message = messagesToShow[i];
-				window.parent.addMessage(message.type, message.message);
-			}
-		}
+//		if (data.messages) {
+//			var messagesToShow = new Array();
+//			var isOvverideMode = false;
+//			for (var i in data.messages) {
+//				var message = data.messages[i];
+//				if (message.message.substring(0,9) == "override:") {
+//					message.message = message.message.substring(9);
+//					if (!isOvverideMode) {
+//						isOvverideMode= true;
+//						messagesToShow = new Array();
+//					}
+//					messagesToShow.push(message);	
+//				} else {
+//					if (!isOvverideMode) {
+//						messagesToShow.push(message);
+//					}
+//				}
+//			}
+//			for (var i in messagesToShow) {
+//				var message = messagesToShow[i];
+//				window.parent.addMessage(message.type, message.message);
+//			}
+//		}
 		for (var i in data.components) {
 			var component = pageComponents[i];
 			component.setValue(data.components[i]);
 		}
-		if (data.value) {
-			rootEntityId = data.value;
-		}
+//		if (data.value) {
+//			rootEntityId = data.value;
+//		}
 	}
 	
 	this.getComponent = function(componentPath) {

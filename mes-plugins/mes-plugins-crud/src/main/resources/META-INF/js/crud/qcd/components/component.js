@@ -55,24 +55,26 @@ QCD.components.Component = function(_element, _mainController) {
 		
 	}
 	
-//	this.setValue = function(value) {
-//		this.setEnabled(value.enabled);
-//		this.setVisible(value.visible);
-//		if (value.value != null) {
-//			this.setComponentValue(value.value);
-//		} else {
-//			this.setComponentLoading(false);
-//		}
+	this.setValue = function(value) {
+		//this.setEnabled(value.enabled);
+		//this.setVisible(value.visible);
+		
+		if (value.content != null) {
+			this.setComponentValue(value.content);
+		}
+		//} else {
+			//this.setComponentLoading(false);
+		//}
 //		this.setMessages({
 //			error: value.errorMessages,
 //			info: value.infoMessages,
 //			success: value.successMessages
 //		});
-//		if (value.components) {
-//			this.setComponentsValue(value);
-//		}
-//		updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
-//	}
+		if (value.components) {
+			this.setComponentsValue(value);
+		}
+		//updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
+	}
 	
 //	this.setState = function(state) {
 //		this.setEnabled(state.enabled);

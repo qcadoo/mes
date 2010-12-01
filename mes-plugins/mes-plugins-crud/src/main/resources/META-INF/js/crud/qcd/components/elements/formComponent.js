@@ -70,11 +70,12 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 		//return value;
 	}
 //
-//	this.setComponentValue = function(value) {
+	this.setComponentValue = function(value) {
+		this.input.val(value.value)
 //		this.setComponentData(value);
 //		setComponentRequired(value.required);
 //		this.setCurrentValue(value);
-//	}
+	}
 //
 //	this.setComponentState = function(state) {
 //		this.setComponentData(state);

@@ -35,15 +35,15 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		}
 		return values;
 	}
-//	
-//	this.setComponentsValue = function(value) {
-//		for (var i in value.components) {
-//			var componentValue = value.components[i];
-//			if (value.enabled == false)
-//				componentValue.enabled = false;
-//			components[i].setValue(componentValue);
-//		}
-//	}
+	
+	this.setComponentsValue = function(value) {
+		for (var i in value.components) {
+			var componentValue = value.components[i];
+			//if (value.enabled == false)
+			//	componentValue.enabled = false;
+			components[i].setValue(componentValue);
+		}
+	}
 //	
 //	this.setComponentsState = function(state) {
 //		if (this.setComponentState) {
