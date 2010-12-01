@@ -1,5 +1,8 @@
 package com.qcadoo.mes.newview.patterns;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -49,10 +52,10 @@ public class ComponentPatternTest {
     @Test
     public void shouldReturnValidPath() throws Exception {
         // given
-        TextInputComponentPattern root = new TextInputComponentPattern("rootName", null, null, null);
-        TextInputComponentPattern child1 = new TextInputComponentPattern("child1", null, null, root);
-        TextInputComponentPattern child2 = new TextInputComponentPattern("child2", null, null, root);
-        TextInputComponentPattern child11 = new TextInputComponentPattern("child11", null, null, child1);
+        ComponentPattern root = new TextInputComponentPattern("rootName", null, null, null);
+        ComponentPattern child1 = new TextInputComponentPattern("child1", null, null, root);
+        ComponentPattern child2 = new TextInputComponentPattern("child2", null, null, root);
+        ComponentPattern child11 = new TextInputComponentPattern("child11", null, null, child1);
 
         // when
         String rootPathName = root.getPathName();
@@ -71,7 +74,7 @@ public class ComponentPatternTest {
     public void shouldAddItselfToParentOnInitialize() throws Exception {
         // given
         AbstractComponentPattern parent = Mockito.mock(AbstractComponentPattern.class);
-        TextInputComponentPattern pattern = new TextInputComponentPattern("testName", "testField", null, parent);
+        ComponentPattern pattern = new TextInputComponentPattern("testName", "testField", null, parent);
 
         // when
         pattern.initialize(null);
@@ -80,4 +83,43 @@ public class ComponentPatternTest {
         Mockito.verify(parent).addFieldEntityIdChangeListener("testField", pattern);
     }
 
+    @Test
+    public void shouldHaveDefaultEnabledFlag() throws Exception {
+        // given
+        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
+        pattern.setDefaultEnabled(true);
+
+        // then
+        assertTrue(pattern.isDefaultEnabled());
+    }
+
+    @Test
+    public void shouldHaveDefaultVisibleFlag() throws Exception {
+        // given
+        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
+        pattern.setDefaultVisible(true);
+
+        // then
+        assertTrue(pattern.isDefaultVisible());
+    }
+
+    @Test
+    public void shouldHaveHasDescriptionFlag() throws Exception {
+        // given
+        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
+        pattern.setHasDescription(true);
+
+        // then
+        assertTrue(pattern.isHasDescription());
+    }
+
+    @Test
+    public void shouldHaveReferenceName() throws Exception {
+        // given
+        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
+        pattern.setReference("uniqueReferenceName");
+
+        // then
+        assertEquals("uniqueReferenceName", pattern.getReference());
+    }
 }
