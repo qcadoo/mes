@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ComponentOption;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
@@ -93,16 +95,24 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
         }
 
-        if (fieldPath != null) {
-            dataDefinition = fieldComponent.getDataDefinition();
-        } else if (scopeFieldPath != null) {
-            dataDefinition = scopeFieldComponent.getDataDefinition();
-        } else if (parent != null) {
-            dataDefinition = ((AbstractComponentPattern) parent).getDataDefinition();
-        } else {
-            dataDefinition = viewDefinition.getDataDefinition();
-        }
+        getDataDefinition(viewDefinition, fieldComponent, scopeFieldComponent);
 
+        getFieldAndScopeFieldDefinitions(field, scopeField);
+
+        getDataDefinitionFromFieldDefinition();
+
+        reinitializeListeners(viewDefinition);
+    }
+
+    private void getDataDefinitionFromFieldDefinition() {
+        if (fieldDefinition != null) {
+            getDataDefinitionFromFieldDefinition(fieldDefinition);
+        } else if (scopeFieldDefinition != null) {
+            getDataDefinitionFromFieldDefinition(scopeFieldDefinition);
+        }
+    }
+
+    private void getFieldAndScopeFieldDefinitions(String[] field, String[] scopeField) {
         if (dataDefinition != null) {
             if (fieldPath != null) {
                 fieldDefinition = dataDefinition.getField(field[1]);
@@ -112,7 +122,30 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
                 scopeFieldDefinition = dataDefinition.getField(scopeField[1]);
             }
         }
+    }
 
+    private void getDataDefinition(final ViewDefinition viewDefinition, AbstractComponentPattern fieldComponent,
+            AbstractComponentPattern scopeFieldComponent) {
+        if (fieldPath != null) {
+            dataDefinition = fieldComponent.getDataDefinition();
+        } else if (scopeFieldPath != null) {
+            dataDefinition = scopeFieldComponent.getDataDefinition();
+        } else if (parent != null) {
+            dataDefinition = ((AbstractComponentPattern) parent).getDataDefinition();
+        } else {
+            dataDefinition = viewDefinition.getDataDefinition();
+        }
+    }
+
+    private void getDataDefinitionFromFieldDefinition(final FieldDefinition fieldDefinition) {
+        if (fieldDefinition.getType() instanceof HasManyType) {
+            dataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
+        } else if (fieldDefinition.getType() instanceof BelongsToType) {
+            dataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
+        }
+    }
+
+    private void reinitializeListeners(final ViewDefinition viewDefinition) {
         for (ComponentPattern componentPattern : fieldEntityIdChangeListeners.values()) {
             ((AbstractComponentPattern) componentPattern).initialize(viewDefinition);
         }
