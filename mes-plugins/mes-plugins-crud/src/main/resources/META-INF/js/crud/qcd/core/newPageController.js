@@ -26,184 +26,49 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	this.init = function(entityId, serializationObject) {
-		var parameters = new Object();
-		if (entityId && $.trim(entityId) != "") {
-			rootEntityId = entityId;
+		
+		//var parameters = new Object();
+		//if (entityId && $.trim(entityId) != "") {
+			//rootEntityId = entityId;
+		//}
+		//if (serializationObject) {
+			//setComponentState(serializationObject);
+		//}
+//		if (hasDataDefinition) {
+//			parameters.entityId = rootEntityId;
+//			parameters.data = getValueData();
+//			var valuesJson = JSON.stringify(parameters);
+//			QCDConnector.sendPost("data", valuesJson, function(response) {
+//				setValueData(response);
+//			}, function(message) {
+//				//alert(message);
+//			});
+//		}
+		
+		var initParameters = new Object();
+		initParameters.event = {
+			name: "initialize"
 		}
-		if (serializationObject) {
-			setComponentState(serializationObject);
-		}
-		if (hasDataDefinition) {
-			parameters.entityId = rootEntityId;
-			parameters.data = getValueData();
-			var valuesJson = JSON.stringify(parameters);
-			QCDConnector.sendPost("data", valuesJson, function(response) {
-				setValueData(response);
-			}, function(message) {
-				//alert(message);
-			});
-		}
+		initParameters.components = getValueData();
+		callEvent(initParameters);
 	}
 	
-	this.getViewName = function() {
-		return viewName;
-	}
-	
-	this.getPluginIdentifier = function() {
-		return pluginIdentifier;
-	}
-	
-	this.performCancel = function(entityId, actionsPerformer) {
-		var parameters = new Object();
-		parameters.entityId = entityId;
-		var valuesJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("data", valuesJson, function(response) {
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-		});
-	}
-	
-	this.performNew = function(actionsPerformer) {
-		QCD.info("performNew");
-		var parameters = new Object();
-		var valuesJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("data", valuesJson, function(response) {
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-		});
-	}
-
-	this.getUpdate = function(componentName, value, listeners) {
-		QCD.info("getUpdate "+componentName+"->"+value);
-		if (listeners) {
-			for (var i in listeners) {
-				this.getComponent(listeners[i]).setLoading(true);
-			}
-		}
-		var parameters = {
-			componentName: componentName,
-			data: getValueData(),
-			entityId: rootEntityId
-		};
-		QCD.info(parameters);
-		var valuesJson = JSON.stringify(parameters);
-		var _this = this;
-		QCDConnector.sendPost("dataUpdate", valuesJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
-			if (listeners) {
-				for (var i in listeners) {
-					_this.getComponent(listeners[i]).setLoading(false);
-				}
-			}
-		});
-	}
-	
-	this.performSave = function(componentName, actionsPerformer, callback) {
-		QCD.info("save " +componentName);
-		var parameters = {
-			componentName: componentName,
-			context: context,
-			data: getValueData()
-		};
+	function callEvent(parameters) {
 		QCD.info(parameters);
 		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("save", parametersJson, function(response) {
+		QCD.info(parametersJson);
+		QCDConnector.sendPost(parametersJson, function(response) {
 			QCD.info(response);
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-			if(callback) {
-				callback();
-			}
-		}, function(response) {
-			if(callback) {
-				callback();
-			}
+//			setValueData(response);
+//			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
+//				actionsPerformer.performNext();
+//			}
+//			if(callback) {
+//				callback();
+//			}
 		});
 	}
 	
-	this.performDelete = function(componentName, entityId, actionsPerformer, callback) {
-		QCD.info("delete " +componentName+" - "+entityId);
-		var parameters = {
-			componentName: componentName,
-			data: getValueData(),
-			entityId: rootEntityId
-		};
-		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("delete", parametersJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-			if(callback) {
-				callback();
-			}
-		}, function(response) {
-			if(callback) {
-				callback();
-			}
-		});
-	}
-	
-		this.performCallUpdateFunction = function(functionTriggerName, actionsPerformer) {
-			QCD.info("performCallUpdateFunction " +functionTriggerName);
-			var parameters = {
-				triggerName: functionTriggerName,
-				data: getValueData(),
-				entityId: rootEntityId
-			};
-			QCD.info(parameters);
-			var parametersJson = JSON.stringify(parameters);
-			QCDConnector.sendPost("callUpdateFunction", parametersJson, function(response) {
-				QCD.info(response);
-				setValueData(response);
-				if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-					actionsPerformer.performNext();
-				}
-			});
-		}
-	
-	this.performCallFunction = function(functionName, additionalAttribute, entityId, actionsPerformer) {
-		if (functionName == "goToUrl") {
-			var url = additionalAttribute;
-			if (entityId) {
-				url += "?entityId="+entityId;
-			}
-			goToPage(url);
-		} else if (functionName == "updatePlugin") {
-			alert("updatePlugin");
-		} else {
-			if (additionalAttribute == "pdf") {
-				window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
-			} else if (additionalAttribute == "xls") {
-				window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
-			}
-		}
-		if (actionsPerformer) {
-			actionsPerformer.performNext();
-		}
-	}
-	
-	this.performChangePriority = function(componentName, entityId, direction) {
-		var parameters = {
-			componentName: componentName,
-			data: getValueData(),
-			offset: direction,
-			entityId: rootEntityId
-		};
-		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("move", parametersJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
-		});
-	}
 	
 	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
 		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
@@ -290,7 +155,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	function getValueData() {
 		var values = new Object();
 		for (var i in pageComponents) {
+			QCD.info(i);
 			var value = pageComponents[i].getValue();
+			QCD.info(value);
 			if (value) {
 				values[i] = value;
 			}

@@ -80,6 +80,7 @@
 		var viewName = "${viewDefinition.name}";
 		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
 		//var entityId = "{entityId}";
+		var entityId = "";
 		//var context = '{context}';
 		//var locale = '{locale}';
 

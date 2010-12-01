@@ -13,17 +13,16 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 		var element = $(e);
 		if (element.hasClass("component")) {
 			var component = null;
-			var elementFullName = element.attr('id');
-			var elementSearchName = elementFullName.replace(".","\\.");
 			
+			
+			var elementFullName = element.attr('id');
+			var elementSearchName = elementFullName.replace(/\./g,"\\.");
+			var elementName = elementFullName.split(".")[elementFullName.split(".").length - 1];
 			
 			var jsObjectElement = $("#"+elementSearchName+" > .element_js_object");
 			
 			var jsObjectClassName = $.trim(jsObjectElement.html());
 			jsObjectElement.remove();
-			
-			QCD.info(elementFullName + " - " + jsObjectClassName);
-			
 			
 			component = eval("new "+jsObjectClassName+"(element, mainController);");
 			
@@ -60,7 +59,7 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 //				component = new QCD.components.elements.StaticComponent(element, mainController);
 //			}
 			
-			//components[elementName] = component;
+			components[elementName] = component;
 		}
 	});
 	return components;

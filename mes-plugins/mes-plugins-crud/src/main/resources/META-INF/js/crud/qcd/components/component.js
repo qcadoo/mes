@@ -14,7 +14,7 @@ QCD.components.Component = function(_element, _mainController) {
 	var element = _element;
 	
 	var elementPath = element.attr('id');
-	var elementSearchName = elementPath.replace(".","\\.");
+	var elementSearchName = elementPath.replace(/\./g,"\\.");
 	var elementName = elementPath.split(".")[elementPath.split(".").length - 1];
 	
 	this.elementPath = elementPath;
@@ -39,20 +39,21 @@ QCD.components.Component = function(_element, _mainController) {
 //		QCD.error("TODO");
 //	}
 	
-//	this.getValue = function() {
-//		var mode = updateMode;
-//		updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
-//		if (this.getUpdateMode) {
-//			mode = this.getUpdateMode();
-//		}
-//		return {
-//			enabled: this.isEnabled(),
-//			visible: this.isVisible(),
-//			value: this.getComponentValue(),
-//			updateMode: mode,
-//			components: this.getComponentsValue()
-//		}
-//	}
+	this.getValue = function() {
+		var valueObject = new Object();
+		
+		if (this.getComponentValue) {
+			valueObject.content = this.getComponentValue();
+		} else {
+			valueObject.content = null;
+		}
+		if (this.getComponentsValue) {
+			valueObject.components = this.getComponentsValue();
+		}
+		
+		return valueObject;
+		
+	}
 	
 //	this.setValue = function(value) {
 //		this.setEnabled(value.enabled);

@@ -8,5 +8,10 @@
 
 <tiles:useAttribute name="component" />
 
-	INPUT
-	
+<tiles:insertTemplate template="formComponent.jsp">
+	<tiles:putAttribute name="component" value="${component}" />
+	<tiles:putAttribute name="componentType" value="textInput" />
+	<tiles:putAttribute name="componentBody">
+		<input type="text" id="${component.pathName}_input" />
+	</tiles:putAttribute>
+</tiles:insertTemplate>

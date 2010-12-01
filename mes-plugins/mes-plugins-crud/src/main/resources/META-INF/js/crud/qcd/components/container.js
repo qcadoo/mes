@@ -28,19 +28,13 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 //		}
 //	}
 //	
-//	this.getComponentsValue = function() {
-//		var values = null;
-//		for (var i in components) {
-//			var value = components[i].getValue();
-//			if (value != null) {
-//				if (values == null) {
-//					values = new Object();
-//				}
-//				values[i] = value;
-//			}
-//		}
-//		return values;
-//	}
+	this.getComponentsValue = function() {
+		var values = new Object();
+		for (var i in components) {
+			values[i] = components[i].getValue();
+		}
+		return values;
+	}
 //	
 //	this.setComponentsValue = function(value) {
 //		for (var i in value.components) {

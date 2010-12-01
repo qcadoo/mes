@@ -67,11 +67,11 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 	});
 }
 
-QCDConnector.sendPost = function(type, parameters, responseFunction, errorFunction) {
+QCDConnector.sendPost = function(parameters, responseFunction, errorFunction) {
 	if (!QCDConnector.windowName) {
 		throw("no window name defined in conector");
 	}
-	var url = QCDConnector.windowName+"/"+type+".html";
+	var url = QCDConnector.windowName+".html";
 	
 	$.ajax({
 		url: url,

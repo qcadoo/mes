@@ -12,7 +12,7 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.TextInput = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 	
-	var textRepresentation = $("#" + _element.attr('id') + "_text");
+	//var textRepresentation = $("#" + _element.attr('id') + "_text");
 	
 	var input = this.input;
 	
@@ -25,19 +25,19 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	this.setComponentData = function(data) {
 		if (data.value != undefined && data.value != null) {
 			input.val(data.value);
-			textRepresentation.html(data.value);
+			//textRepresentation.html(data.value);
 		}
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {
-		if(this.options.textRepresentationOnDisabled) {
-			if(isEnabled) {
-				input.show();
-				textRepresentation.hide();
-			} else {
-				input.hide();
-				textRepresentation.show();
-			}
-		}
+		//if(this.options.textRepresentationOnDisabled) {
+		//	if(isEnabled) {
+		//		input.show();
+		//		textRepresentation.hide();
+		//	} else {
+		//		input.hide();
+		//		textRepresentation.show();
+		//	}
+		//}
 	}
 }
