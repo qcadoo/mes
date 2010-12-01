@@ -27,7 +27,7 @@ public class EventHandlerHolder {
 
     public final void performEvent(final String event, final String... args) {
         if (!eventHandlers.containsKey(event)) {
-            throw new IllegalStateException("Event with given name doesn't exist");
+            return; // TODO masz throw new IllegalStateException("Event with given name doesn't exist");
         } else {
             eventHandlers.get(event).invokeEvent(args);
         }
