@@ -205,7 +205,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         jsonContext.put("name", "text2");
         JSONObject jsonContent = new JSONObject();
         jsonContent.put(FormComponentState.JSON_ENTITY_ID, 13L);
-        jsonContent.put(FormComponentState.JSON_CONTEXT, jsonContext);
+        json.put(ComponentState.JSON_CONTEXT, jsonContext);
         json.put(ComponentState.JSON_CONTENT, jsonContent);
         json.put(ComponentState.JSON_CHILDREN, new JSONObject());
 
