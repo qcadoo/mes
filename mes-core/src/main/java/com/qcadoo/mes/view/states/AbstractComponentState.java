@@ -190,4 +190,14 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         // implements if you want
     }
 
+    @Override
+    public void setFieldValue(final Object value) {
+        // implements if you want
+    }
+
+    @Override
+    public Object getFieldValue() {
+        return null; // implements if you want
+    }
+
 }

@@ -76,7 +76,7 @@ public class FormComponentStateTest extends AbstractStateTest {
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
-        jsonContent.put("entityId", 13L);
+        jsonContent.put(FormComponentState.JSON_ENTITY_ID, 13L);
         json.put(ComponentState.JSON_CONTENT, jsonContent);
         JSONObject jsonChildren = new JSONObject();
         json.put(ComponentState.JSON_CHILDREN, jsonChildren);
@@ -85,8 +85,26 @@ public class FormComponentStateTest extends AbstractStateTest {
         componentState.initialize(json, Locale.ENGLISH);
 
         // then
-        // TODO masz
-        // assertEquals(13L, componentState.getFieldValue());
+        assertEquals(13L, componentState.getFieldValue());
+    }
+
+    @Test
+    public void shouldInitialeFormWithNullEntityId() throws Exception {
+        // given
+        ComponentState componentState = new FormComponentState();
+
+        JSONObject json = new JSONObject();
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put(FormComponentState.JSON_ENTITY_ID, (String) null);
+        json.put(ComponentState.JSON_CONTENT, jsonContent);
+        JSONObject jsonChildren = new JSONObject();
+        json.put(ComponentState.JSON_CHILDREN, jsonChildren);
+
+        // when
+        componentState.initialize(json, Locale.ENGLISH);
+
+        // then
+        assertNull(componentState.getFieldValue());
     }
 
     @Test
@@ -99,7 +117,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         JSONObject json = componentState.render();
 
         // then
-        assertEquals(13L, json.getJSONObject(ComponentState.JSON_CONTENT).getLong("entityId"));
+        assertEquals(13L, json.getJSONObject(ComponentState.JSON_CONTENT).getLong(FormComponentState.JSON_ENTITY_ID));
     }
 
     @Test
@@ -186,8 +204,8 @@ public class FormComponentStateTest extends AbstractStateTest {
         jsonContext.put("id", 14L);
         jsonContext.put("name", "text2");
         JSONObject jsonContent = new JSONObject();
-        jsonContent.put("entityId", 13L);
-        jsonContent.put("context", jsonContext);
+        jsonContent.put(FormComponentState.JSON_ENTITY_ID, 13L);
+        jsonContent.put(FormComponentState.JSON_CONTEXT, jsonContext);
         json.put(ComponentState.JSON_CONTENT, jsonContent);
         json.put(ComponentState.JSON_CHILDREN, new JSONObject());
 

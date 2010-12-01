@@ -19,6 +19,10 @@ import com.qcadoo.mes.view.states.AbstractContainerState;
 
 public class FormComponentState extends AbstractContainerState {
 
+    public static final String JSON_CONTEXT = "context";
+
+    public static final String JSON_ENTITY_ID = "entityId";
+
     private Long value;
 
     private boolean valid = true;
@@ -45,14 +49,12 @@ public class FormComponentState extends AbstractContainerState {
     @Override
     @SuppressWarnings("unchecked")
     protected void initializeContent(final JSONObject json) throws JSONException {
-        if (json.has("entityId")) {
-            // TODO masz
-            // value = json.getLong("entityId");
+        if (json.has(JSON_ENTITY_ID) && !json.isNull(JSON_ENTITY_ID)) {
+            value = json.getLong(JSON_ENTITY_ID);
         }
-        value = 53L;
 
-        if (json.has("context")) {
-            JSONObject contextJson = json.getJSONObject("context");
+        if (json.has(JSON_CONTEXT)) {
+            JSONObject contextJson = json.getJSONObject(JSON_CONTEXT);
             Iterator<String> iterator = contextJson.keys();
             while (iterator.hasNext()) {
                 String field = iterator.next();
@@ -85,7 +87,7 @@ public class FormComponentState extends AbstractContainerState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("entityId", value);
+        json.put(JSON_ENTITY_ID, value);
         return json;
     }
 
