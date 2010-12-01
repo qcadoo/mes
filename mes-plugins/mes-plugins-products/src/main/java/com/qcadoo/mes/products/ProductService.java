@@ -7,15 +7,11 @@
 
 package com.qcadoo.mes.products;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -34,10 +30,6 @@ import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
-import com.qcadoo.mes.view.ViewValue;
-import com.qcadoo.mes.view.components.LookupData;
-import com.qcadoo.mes.view.components.SimpleValue;
-import com.qcadoo.mes.view.containers.FormValue;
 
 @Service
 public final class ProductService {
@@ -114,55 +106,55 @@ public final class ProductService {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
-            final Entity entity, final Locale locale) throws IOException, DocumentException {
-
-        if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
-                || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
-                || ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId() == null) {
-
-            ViewValue<SimpleValue> onlyComponentsValue = (ViewValue<SimpleValue>) value
-                    .lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents");
-            if (onlyComponentsValue != null && onlyComponentsValue.getValue() != null) {
-                onlyComponentsValue.getValue().setValue("1");
-            }
-            return;
-        }
-
-        String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.materialRequirementDetailsForm.generated")
-                .getValue()).getValue().toString();
-
-        boolean isGenerated = true;
-        if ("0".equals(generatedStringValue)) {
-            isGenerated = false;
-        }
-
-        if (isGenerated) {
-            value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
-            value.lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents").setEnabled(false);
-            value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
-
-            if ("mainWindow.materialRequirementDetailsForm".equals(triggerComponentName)) {
-                Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
-                        ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
-
-                if (materialRequirement.getField("fileName") == null
-                        || "".equals(materialRequirement.getField("fileName").toString().trim())) {
-                    materialRequirementPdfService.generateDocument(materialRequirement, locale);
-                    materialRequirementXlsService.generateDocument(materialRequirement, locale);
-                } else {
-                    // FIXME KRNA remove override
-                    value.addInfoMessage("override:"
-                            + translationService
-                                    .translate(
-                                            "products.materialRequirementDetailsView.mainWindow.materialRequirementDetailsForm.documentsWasGenerated",
-                                            locale));
-                }
-
-            }
-        }
-    }
+    // @SuppressWarnings("unchecked")
+    // public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
+    // final Entity entity, final Locale locale) throws IOException, DocumentException {
+    //
+    // if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
+    // || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
+    // || ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId() == null) {
+    //
+    // ViewValue<SimpleValue> onlyComponentsValue = (ViewValue<SimpleValue>) value
+    // .lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents");
+    // if (onlyComponentsValue != null && onlyComponentsValue.getValue() != null) {
+    // onlyComponentsValue.getValue().setValue("1");
+    // }
+    // return;
+    // }
+    //
+    // String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.materialRequirementDetailsForm.generated")
+    // .getValue()).getValue().toString();
+    //
+    // boolean isGenerated = true;
+    // if ("0".equals(generatedStringValue)) {
+    // isGenerated = false;
+    // }
+    //
+    // if (isGenerated) {
+    // value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
+    // value.lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents").setEnabled(false);
+    // value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
+    //
+    // if ("mainWindow.materialRequirementDetailsForm".equals(triggerComponentName)) {
+    // Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+    // ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
+    //
+    // if (materialRequirement.getField("fileName") == null
+    // || "".equals(materialRequirement.getField("fileName").toString().trim())) {
+    // materialRequirementPdfService.generateDocument(materialRequirement, locale);
+    // materialRequirementXlsService.generateDocument(materialRequirement, locale);
+    // } else {
+    // // FIXME KRNA remove override
+    // value.addInfoMessage("override:"
+    // + translationService
+    // .translate(
+    // "products.materialRequirementDetailsView.mainWindow.materialRequirementDetailsForm.documentsWasGenerated",
+    // locale));
+    // }
+    //
+    // }
+    // }
+    // }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
@@ -209,139 +201,140 @@ public final class ProductService {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void generateOrderNumber(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
-        ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
-        ViewValue<SimpleValue> numberValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.number");
+    // @SuppressWarnings("unchecked")
+    // private void generateOrderNumber(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
+    // ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
+    // ViewValue<SimpleValue> numberValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.number");
+    //
+    // if (formValue == null || numberValue == null) {
+    // return;
+    // }
+    //
+    // if (formValue.getValue() != null && formValue.getValue().getId() != null) {
+    // // form is already saved
+    // return;
+    // }
+    //
+    // if (numberValue.getValue() != null && StringUtils.hasText((String) numberValue.getValue().getValue())) {
+    // // number is already choosen
+    // return;
+    // }
+    //
+    // if (numberValue.getMessages().size() > 0) {
+    // // there is a validation message for that field
+    // return;
+    // }
+    //
+    // SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).includeDeleted().list();
+    //
+    // String number = String.format("%06d", results.getTotalNumberOfEntities() + 1);
+    //
+    // if (numberValue.getValue() == null) {
+    // numberValue.setValue(new SimpleValue(number));
+    // } else {
+    // numberValue.getValue().setValue(number);
+    // }
+    // }
 
-        if (formValue == null || numberValue == null) {
-            return;
-        }
+    // @SuppressWarnings("unchecked")
+    // public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+    // final Locale locale) {
+    // generateOrderNumber(value, triggerComponentName, locale);
+    //
+    // ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
+    // ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
+    // .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
+    // ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
+    // .lookupValue("mainWindow.orderDetailsForm.instruction");
+    // ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
+    // ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
+    // ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
+    // .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
+    //
+    // if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
+    // && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
+    // formValue.setEnabled(false);
+    // }
+    //
+    // if (formValue == null) {
+    // return;
+    // }
+    //
+    // if (defaultInstructionValue == null) {
+    // defaultInstructionValue = new ViewValue<SimpleValue>(new SimpleValue(""));
+    // defaultInstructionValue.setVisible(true);
+    // formValue.addComponent("defaultInstruction", defaultInstructionValue);
+    // }
+    // if (plannedQuantityValue == null) {
+    // plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
+    // plannedQuantityValue.setVisible(true);
+    // plannedQuantityValue.setEnabled(true);
+    // formValue.addComponent("plannedQuantity", plannedQuantityValue);
+    // }
+    //
+    // defaultInstructionValue.setEnabled(false);
+    // defaultInstructionValue.setValue(new SimpleValue(""));
+    // instructionValue.setEnabled(true);
+    //
+    // Long selectedProductId = null;
+    //
+    // if (productValue.getValue() != null && productValue.getValue().getSelectedEntityId() != null) {
+    // selectedProductId = productValue.getValue().getSelectedEntityId();
+    // }
+    //
+    // Entity selectedInstruction = null;
+    //
+    // if (selectedProductId != null && instructionValue.getValue() != null
+    // && instructionValue.getValue().getSelectedEntityId() != null
+    // && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+    // selectedInstruction = dataDefinitionService.get("products", "instruction").get(
+    // instructionValue.getValue().getSelectedEntityId());
+    // } else {
+    // instructionValue.getValue().setSelectedEntityId(null);
+    // instructionValue.getValue().setSelectedEntityCode("");
+    // instructionValue.getValue().setSelectedEntityValue("");
+    // }
+    //
+    // if (selectedProductId == null) {
+    // instructionValue.setEnabled(false);
+    // instructionValue.getValue().setSelectedEntityId(null);
+    // instructionValue.getValue().setSelectedEntityCode("");
+    // instructionValue.getValue().setSelectedEntityValue("");
+    // instructionValue.getValue().setRequired(false);
+    // plannedQuantityValue.getValue().setRequired(false);
+    // } else {
+    // plannedQuantityValue.getValue().setRequired(true);
+    // if (!hasAnyInstructions(selectedProductId)) {
+    // instructionValue.setEnabled(false);
+    // instructionValue.getValue().setRequired(false);
+    // instructionValue.getValue().setSelectedEntityId(null);
+    // instructionValue.getValue().setSelectedEntityCode("");
+    // instructionValue.getValue().setSelectedEntityValue("");
+    // } else {
+    // instructionValue.getValue().setRequired(true);
+    // Entity defaultInstructionEntity = getDefaultInstruction(selectedProductId);
+    // if (defaultInstructionEntity != null) {
+    // String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
+    // defaultInstructionValue.getValue().setValue(defaultInstructionName);
+    // if (selectedInstruction == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+    // selectDefaultInstruction(instructionValue, defaultInstructionEntity);
+    // }
+    // }
+    // }
+    // }
+    // }
 
-        if (formValue.getValue() != null && formValue.getValue().getId() != null) {
-            // form is already saved
-            return;
-        }
-
-        if (numberValue.getValue() != null && StringUtils.hasText((String) numberValue.getValue().getValue())) {
-            // number is already choosen
-            return;
-        }
-
-        if (numberValue.getMessages().size() > 0) {
-            // there is a validation message for that field
-            return;
-        }
-
-        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).includeDeleted().list();
-
-        String number = String.format("%06d", results.getTotalNumberOfEntities() + 1);
-
-        if (numberValue.getValue() == null) {
-            numberValue.setValue(new SimpleValue(number));
-        } else {
-            numberValue.getValue().setValue(number);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
-            final Locale locale) {
-        generateOrderNumber(value, triggerComponentName, locale);
-
-        ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
-        ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
-        ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
-                .lookupValue("mainWindow.orderDetailsForm.instruction");
-        ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
-        ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
-        ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
-
-        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
-                && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
-            formValue.setEnabled(false);
-        }
-
-        if (formValue == null) {
-            return;
-        }
-
-        if (defaultInstructionValue == null) {
-            defaultInstructionValue = new ViewValue<SimpleValue>(new SimpleValue(""));
-            defaultInstructionValue.setVisible(true);
-            formValue.addComponent("defaultInstruction", defaultInstructionValue);
-        }
-        if (plannedQuantityValue == null) {
-            plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
-            plannedQuantityValue.setVisible(true);
-            plannedQuantityValue.setEnabled(true);
-            formValue.addComponent("plannedQuantity", plannedQuantityValue);
-        }
-
-        defaultInstructionValue.setEnabled(false);
-        defaultInstructionValue.setValue(new SimpleValue(""));
-        instructionValue.setEnabled(true);
-
-        Long selectedProductId = null;
-
-        if (productValue.getValue() != null && productValue.getValue().getSelectedEntityId() != null) {
-            selectedProductId = productValue.getValue().getSelectedEntityId();
-        }
-
-        Entity selectedInstruction = null;
-
-        if (selectedProductId != null && instructionValue.getValue() != null
-                && instructionValue.getValue().getSelectedEntityId() != null
-                && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-            selectedInstruction = dataDefinitionService.get("products", "instruction").get(
-                    instructionValue.getValue().getSelectedEntityId());
-        } else {
-            instructionValue.getValue().setSelectedEntityId(null);
-            instructionValue.getValue().setSelectedEntityCode("");
-            instructionValue.getValue().setSelectedEntityValue("");
-        }
-
-        if (selectedProductId == null) {
-            instructionValue.setEnabled(false);
-            instructionValue.getValue().setSelectedEntityId(null);
-            instructionValue.getValue().setSelectedEntityCode("");
-            instructionValue.getValue().setSelectedEntityValue("");
-            instructionValue.getValue().setRequired(false);
-            plannedQuantityValue.getValue().setRequired(false);
-        } else {
-            plannedQuantityValue.getValue().setRequired(true);
-            if (!hasAnyInstructions(selectedProductId)) {
-                instructionValue.setEnabled(false);
-                instructionValue.getValue().setRequired(false);
-                instructionValue.getValue().setSelectedEntityId(null);
-                instructionValue.getValue().setSelectedEntityCode("");
-                instructionValue.getValue().setSelectedEntityValue("");
-            } else {
-                instructionValue.getValue().setRequired(true);
-                Entity defaultInstructionEntity = getDefaultInstruction(selectedProductId);
-                if (defaultInstructionEntity != null) {
-                    String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
-                    defaultInstructionValue.getValue().setValue(defaultInstructionName);
-                    if (selectedInstruction == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-                        selectDefaultInstruction(instructionValue, defaultInstructionEntity);
-                    }
-                }
-            }
-        }
-    }
-
-    private void selectDefaultInstruction(final ViewValue<LookupData> instructionValue, final Entity defaultInstructionEntity) {
-        // ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
-        // LookupComponent lookupInstruction = (LookupComponent) viewDefinition
-        // .lookupComponent("mainWindow.orderDetailsForm.instruction");
-        // instructionValue.getValue().setValue(defaultInstructionEntity.getId());
-        // instructionValue.getValue().setSelectedEntityCode(
-        // defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
-        // instructionValue.getValue().setSelectedEntityValue(
-        // ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
-    }
+    // private void selectDefaultInstruction(final ViewValue<LookupData> instructionValue, final Entity defaultInstructionEntity)
+    // {
+    // ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
+    // LookupComponent lookupInstruction = (LookupComponent) viewDefinition
+    // .lookupComponent("mainWindow.orderDetailsForm.instruction");
+    // instructionValue.getValue().setValue(defaultInstructionEntity.getId());
+    // instructionValue.getValue().setSelectedEntityCode(
+    // defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
+    // instructionValue.getValue().setSelectedEntityValue(
+    // ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
+    // }
 
     private Entity getDefaultInstruction(final Long selectedProductId) {
         DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");

@@ -1,52 +1,131 @@
-/**
- * ********************************************************************
- * Code developed by amazing QCADOO developers team.
- * Copyright (c) Qcadoo Limited sp. z o.o. (2010)
- * ********************************************************************
- */
-
 package com.qcadoo.mes.view.internal;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
-import com.qcadoo.mes.view.Component;
-import com.qcadoo.mes.view.RootComponent;
+import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
-public final class ViewDefinitionImpl implements ViewDefinition {
-
-    private final String pluginIdentifier;
+public class ViewDefinitionImpl implements ViewDefinition {
 
     private final String name;
 
-    private HookDefinition viewHook;
+    private final String pluginIdentifier;
 
-    private RootComponent root;
+    private final DataDefinition dataDefinition;
 
-    private boolean menuable = false;
+    private final boolean menuAccessible;
 
-    public ViewDefinitionImpl(final String pluginIdentifier, final String name) {
+    private final List<HookDefinition> postInitializeHooks = new ArrayList<HookDefinition>();
+
+    private final List<HookDefinition> preInitializeHooks = new ArrayList<HookDefinition>();
+
+    private final List<HookDefinition> preRenderHooks = new ArrayList<HookDefinition>();
+
+    public ViewDefinitionImpl(final String name, final String pluginIdentifier, final DataDefinition dataDefinition,
+            final boolean menuAccessible) {
         this.name = name;
+        this.dataDefinition = dataDefinition;
         this.pluginIdentifier = pluginIdentifier;
+        this.menuAccessible = menuAccessible;
+    }
+
+    private final Map<String, ComponentPattern> componentPatterns = new HashMap<String, ComponentPattern>();
+
+    private ViewDefinitionStateFactory viewDefinitionStateFactory = new ViewDefinitionStateFactory() {
+
+        @Override
+        public ViewDefinitionState getInstance() {
+            return new ViewDefinitionStateImpl();
+        }
+    };
+
+    public void setViewDefinitionStateFactory(final ViewDefinitionStateFactory viewDefinitionStateFactory) {
+        this.viewDefinitionStateFactory = viewDefinitionStateFactory;
+    }
+
+    public void initialize() {
+        for (ComponentPattern componentPattern : componentPatterns.values()) {
+            componentPattern.initialize(this);
+        }
     }
 
     @Override
-    public String getPluginIdentifier() {
-        return pluginIdentifier;
+    public Map<String, Object> prepareView(final Locale locale) {
+        // TODO mina
+
+        return null;
     }
 
-    public void setRoot(final RootComponent root) {
-        this.root = root;
+    @Override
+    public JSONObject performEvent(final JSONObject object, final Locale locale) throws JSONException {
+        ViewDefinitionState vds = viewDefinitionStateFactory.getInstance();
+        for (ComponentPattern cp : componentPatterns.values()) {
+            vds.addChild(cp.createComponentState());
+        }
+        vds.initialize(object, locale);
+        for (ComponentPattern cp : componentPatterns.values()) {
+            ((AbstractComponentPattern) cp).updateComponentStateListeners(vds);
+        }
+
+        JSONObject eventJson = object.getJSONObject("event");
+        String eventName = eventJson.getString("name");
+        String eventComponent = eventJson.has("component") ? eventJson.getString("component") : null;
+        JSONArray eventArgsArray = eventJson.has("args") ? eventJson.getJSONArray("args") : new JSONArray();
+        String[] eventArgs = new String[eventArgsArray.length()];
+        for (int i = 0; i < eventArgsArray.length(); i++) {
+            eventArgs[i] = eventArgsArray.getString(i);
+        }
+        vds.performEvent(eventComponent, eventName, eventArgs);
+
+        vds.beforeRender();
+
+        return vds.render();
+    }
+
+    @Override
+    public Map<String, ComponentPattern> getChildren() {
+        return componentPatterns;
+    }
+
+    @Override
+    public ComponentPattern getChild(final String name) {
+        return componentPatterns.get(name);
+    }
+
+    public void addChild(final ComponentPattern componentPattern) {
+        componentPatterns.put(componentPattern.getName(), componentPattern);
+    }
+
+    @Override
+    public ComponentPattern getComponentByPath(final String path) {
+        String[] pathParts = path.split("\\.");
+        ComponentPattern componentPattern = componentPatterns.get(pathParts[0]);
+        if (componentPattern == null) {
+            return null;
+        }
+        for (int i = 1; i < pathParts.length; i++) {
+            ContainerPattern container = (ContainerPattern) componentPattern;
+            componentPattern = container.getChild(pathParts[i]);
+            if (componentPattern == null) {
+                return null;
+            }
+        }
+        return componentPattern;
     }
 
     @Override
@@ -54,96 +133,46 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         return name;
     }
 
-    public void setViewHook(final HookDefinition viewHook) {
-        this.viewHook = viewHook;
+    @Override
+    public String getPluginIdentifier() {
+        return pluginIdentifier;
     }
 
     @Override
-    public ViewValue<Long> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) {
-        try {
-            return wrapIntoViewValue(root.castValue(selectedEntities,
-                    viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private void cleanSelectedEntities(final Map<String, Entity> selectedEntities, final Set<String> pathsToUpdate) {
-        if (selectedEntities != null) {
-            for (String pathToUpdate : pathsToUpdate) {
-                selectedEntities.remove(pathToUpdate);
-            }
-        }
-    }
-
-    @Override
-    public ViewValue<Long> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Long> globalViewValue, final String triggerComponentName, final boolean saveOrDelete,
-            final Locale locale) {
-
-        Set<String> pathsToUpdate = null;
-
-        if (triggerComponentName != null) {
-            pathsToUpdate = root.lookupListeners(triggerComponentName);
-            cleanSelectedEntities(selectedEntities, pathsToUpdate);
-            if (saveOrDelete || pathsToUpdate.isEmpty()) {
-                pathsToUpdate.add(triggerComponentName);
-            }
-        } else {
-            pathsToUpdate = new HashSet<String>();
-        }
-
-        ViewValue<Long> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
-                globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate, locale));
-        if (value != null) {
-            callOnViewHook(value, triggerComponentName, entity, locale);
-        }
-        if (entity != null) {
-            value.setValue(entity.getId());
-        }
-        return value;
-    }
-
-    private void callOnViewHook(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
-            final Locale locale) {
-        if (viewHook != null) {
-            // viewHook.callWithViewState(value, triggerComponentName, entity, locale);
-        }
-    }
-
-    @Override
-    public void updateTranslations(final Map<String, String> translationsMap, final Locale locale) {
-        root.updateTranslations(translationsMap, locale);
-    }
-
-    private ViewValue<Long> wrapIntoViewValue(final ViewValue<?> viewValue) {
-        ViewValue<Long> value = new ViewValue<Long>();
-        value.addComponent(root.getName(), viewValue);
-        return value;
+    public boolean isMenuAccessible() {
+        return menuAccessible;
     }
 
     @Override
     public DataDefinition getDataDefinition() {
-        return root.getDataDefinition();
-    }
+        return dataDefinition;
+    };
 
     @Override
-    public Component<?> lookupComponent(final String path) {
-        return root.lookupComponent(path);
+    public Set<String> getJavaScriptFilePaths() {
+        Set<String> pathsSet = new HashSet<String>();
+        updateJavaScriptFilePaths(pathsSet, componentPatterns.values());
+        return pathsSet;
     }
 
-    @Override
-    public RootComponent getRoot() {
-        return root;
+    private void updateJavaScriptFilePaths(final Set<String> paths, final Iterable<ComponentPattern> componentPatterns) {
+        for (ComponentPattern componentPattern : componentPatterns) {
+            paths.add(componentPattern.getJavaScriptFilePath());
+            if (componentPattern instanceof ContainerPattern) {
+                updateJavaScriptFilePaths(paths, ((ContainerPattern) componentPattern).getChildren().values());
+            }
+        }
     }
 
-    @Override
-    public boolean isMenuable() {
-        return menuable;
+    public void addPostInitializeHook(final HookDefinition hookDefinition) {
+        postInitializeHooks.add(hookDefinition);
     }
 
-    public void setMenuable(final boolean menuable) {
-        this.menuable = menuable;
+    public void addPreRenderHook(final HookDefinition hookDefinition) {
+        preRenderHooks.add(hookDefinition);
     }
 
+    public void addPreInitializeHook(final HookDefinition hookDefinition) {
+        preInitializeHooks.add(hookDefinition);
+    }
 }

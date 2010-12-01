@@ -10,7 +10,7 @@ package com.qcadoo.mes.model;
 import java.util.Locale;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.newview.ViewDefinitionState;
+import com.qcadoo.mes.view.ViewDefinitionState;
 
 /**
  * Defines hooks for validation/saving entities and generating views.
