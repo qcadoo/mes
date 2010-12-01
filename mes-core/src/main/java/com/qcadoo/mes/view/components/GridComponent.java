@@ -426,8 +426,8 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
             column.addColumnTranslations(translationsMap, locale);
         }
 
-        String[] gridMessages = new String[] { "addFilter", "removeFilter", "perPage", "new", "delete", "up", "down",
-                "noRowSelectedError", "confirmDeleteMessage", "wrongSearchCharacterError" };
+        String[] gridMessages = new String[] { "addFilter", "removeFilter", "perPage", "outOfPages", "new", "delete", "up",
+                "down", "noRowSelectedError", "confirmDeleteMessage", "wrongSearchCharacterError" };
 
         for (String gridMessage : gridMessages) {
             translationsMap.put(

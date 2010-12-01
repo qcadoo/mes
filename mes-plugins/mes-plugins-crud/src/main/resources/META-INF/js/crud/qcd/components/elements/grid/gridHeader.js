@@ -401,7 +401,10 @@ QCD.components.elements.grid.GridPagingElement = function(_gridHeaderController,
 				var component_container_form_w = $("<div>").addClass('component_container_form_w').append(component_container_form_inner);
 			pageInfoSpan.append(component_container_form_w);
 			var ofPagesInfoSpan = $("<span>").addClass("ofPagesSpan");
-			ofPagesInfoSpan.append('<span> z </span>'); // TODO masz translate
+//			ofPagesInfoSpan.append('<span> z </span>'); // TODO masz translate
+			ofPagesInfoSpan.append('<span> ');
+			ofPagesInfoSpan.append(mainController.getTranslation(messagesPath + ".outOfPages"));
+			ofPagesInfoSpan.append(' </span>');
 			pagingElements.allPagesNoSpan = $("<span>");
 			ofPagesInfoSpan.append(pagingElements.allPagesNoSpan.html(pagesNo));
 			pageInfoSpan.append(ofPagesInfoSpan);
