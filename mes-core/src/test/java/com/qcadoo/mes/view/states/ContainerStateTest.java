@@ -99,7 +99,7 @@ public class ContainerStateTest extends AbstractStateTest {
         children.put("component1", component1Json);
         children.put("component2", component2Json);
         json.put(ComponentState.JSON_CHILDREN, children);
-        json.put(ComponentState.JSON_CONTENT, new JSONObject(Collections.singletonMap(ComponentState.JSON_VALUE, 13L)));
+        json.put(ComponentState.JSON_CONTENT, new JSONObject(Collections.singletonMap("entityId", 13L)));
 
         // when
         container.initialize(json, Locale.ENGLISH);

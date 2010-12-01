@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
+import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
@@ -15,6 +17,18 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
     public AbstractContainerPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);
+    }
+
+    @Override
+    public ComponentState createComponentState() {
+        ContainerState componentState = (ContainerState) super.createComponentState();
+
+        for (ComponentPattern componentPattern : children.values()) {
+            ComponentState kid = componentPattern.createComponentState();
+            componentState.addChild(kid);
+        }
+        // TODO masz
+        return componentState;
     }
 
     @Override

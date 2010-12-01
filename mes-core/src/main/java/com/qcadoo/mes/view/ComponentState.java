@@ -17,7 +17,7 @@ public interface ComponentState {
 
     String JSON_VALUE = "value";
 
-    String JSON_CHILDREN = "children";
+    String JSON_CHILDREN = "components";
 
     String JSON_MESSAGES = "messages";
 

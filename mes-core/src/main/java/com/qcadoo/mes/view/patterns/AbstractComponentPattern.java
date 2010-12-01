@@ -195,17 +195,28 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     @Override
     public ComponentState createComponentState() {
         ComponentState componentState = getComponentStateInstance();
-        // TODO mina
+        // TODO masz
+
+        AbstractComponentState state = (AbstractComponentState) componentState;
+
+        state.setDataDefinition(dataDefinition);
+        state.setName(name);
 
         return componentState;
     }
 
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
         if (fieldEntityIdChangeListeners.size() > 0) {
+            System.out.println("----1--->");
+            System.out.println(getPathName());
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
                     .getComponentByPath(getPathName());
+
+            System.out.println(thisComponentState);
             for (Map.Entry<String, ComponentPattern> listenerPattern : fieldEntityIdChangeListeners.entrySet()) {
+                System.out.println(listenerPattern.getKey());
                 ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPathName());
+                System.out.println(listenerState);
                 thisComponentState.addFieldEntityIdChangeListener(listenerPattern.getKey(),
                         (FieldEntityIdChangeListener) listenerState);
             }

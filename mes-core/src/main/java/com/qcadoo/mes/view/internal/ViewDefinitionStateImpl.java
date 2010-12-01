@@ -1,5 +1,7 @@
 package com.qcadoo.mes.view.internal;
 
+import java.util.Arrays;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,13 +42,23 @@ public class ViewDefinitionStateImpl extends AbstractContainerState implements V
     @Override
     public ComponentState getComponentByPath(final String path) {
         String[] pathParts = path.split("\\.");
+        System.out.println("----2--->");
+        System.out.println(Arrays.toString(pathParts));
+        System.out.println(getName());
+        System.out.println(getChildren());
         ComponentState componentState = getChild(pathParts[0]);
+        System.out.println(componentState);
         if (componentState == null) {
             return null;
         }
         for (int i = 1; i < pathParts.length; i++) {
+            System.out.println("----");
             ContainerState container = (ContainerState) componentState;
+            System.out.println(container);
+            System.out.println(container.getName());
+            System.out.println(container.getChildren());
             componentState = container.getChild(pathParts[i]);
+            System.out.println(componentState);
             if (componentState == null) {
                 return null;
             }

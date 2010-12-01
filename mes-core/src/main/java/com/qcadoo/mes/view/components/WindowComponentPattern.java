@@ -24,7 +24,7 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new FormComponentState();
+        return new WindowComponentState();
     }
 
     public void setRibbon(final Ribbon ribbon) {

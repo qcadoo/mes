@@ -11,7 +11,6 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
-import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.internal.EntityIdChangeListenerHolder;
 import com.qcadoo.mes.view.internal.EventHandlerHolder;
 import com.qcadoo.mes.view.internal.MessageHolder;
@@ -83,7 +82,9 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
             setVisible(json.getBoolean(JSON_VISIBLE));
         }
 
-        initializeContent(json.getJSONObject(JSON_CONTENT));
+        if (json.has(JSON_CONTENT)) {
+            initializeContent(json.getJSONObject(JSON_CONTENT));
+        }
     }
 
     protected Locale getLocale() {

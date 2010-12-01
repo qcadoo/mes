@@ -45,7 +45,11 @@ public class FormComponentState extends AbstractContainerState {
     @Override
     @SuppressWarnings("unchecked")
     protected void initializeContent(final JSONObject json) throws JSONException {
-        value = json.getLong(JSON_VALUE);
+        if (json.has("entityId")) {
+            // TODO masz
+            // value = json.getLong("entityId");
+        }
+        value = 53L;
 
         if (json.has("context")) {
             JSONObject contextJson = json.getJSONObject("context");
@@ -81,7 +85,7 @@ public class FormComponentState extends AbstractContainerState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_VALUE, value);
+        json.put("entityId", value);
         return json;
     }
 

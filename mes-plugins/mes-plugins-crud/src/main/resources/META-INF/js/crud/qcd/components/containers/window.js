@@ -36,7 +36,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	
 	this.getComponentValue = function() {
-		return null;
+		return {};
 	}
 	this.setComponentValue = function(value) {
 	}

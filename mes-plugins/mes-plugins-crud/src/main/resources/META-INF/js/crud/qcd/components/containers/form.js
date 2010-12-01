@@ -22,7 +22,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	//buttons.saveButton = $("#"+elementName+"_saveButton");
 	
-	var formValue = null;
+	var formValue = 50;
 	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
@@ -31,7 +31,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 
 	this.getComponentValue = function() {
-		return formValue;
+		return {
+			entityId: formValue
+		};
 	}
 	
 	this.setComponentValue = function(value) {
