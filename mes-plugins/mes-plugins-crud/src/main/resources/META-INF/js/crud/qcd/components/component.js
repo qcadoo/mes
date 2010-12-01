@@ -24,6 +24,8 @@ QCD.components.Component = function(_element, _mainController) {
 	var isVisible = null;
 	var isEnabled = null;
 	
+	this.contextObject = null;
+	
 	
 	function constructor(_this) {
 		var optionsElement = $("#"+elementSearchName+" > .element_options");
@@ -35,24 +37,20 @@ QCD.components.Component = function(_element, _mainController) {
 		optionsElement.remove();
 	}
 	
-//	this.changeUpdateModeToUpdate = function() {
-//		QCD.error("TODO");
-//	}
-	
 	this.getValue = function() {
 		var valueObject = new Object();
-		
 		if (this.getComponentValue) {
 			valueObject.content = this.getComponentValue();
 		} else {
 			valueObject.content = null;
 		}
+		if (this.contextObject) {
+			valueObject.context = this.contextObject;
+		}
 		if (this.getComponentsValue) {
 			valueObject.components = this.getComponentsValue();
 		}
-		
 		return valueObject;
-		
 	}
 	
 	this.setValue = function(value) {
@@ -74,6 +72,13 @@ QCD.components.Component = function(_element, _mainController) {
 			this.setComponentsValue(value);
 		}
 		//updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
+	}
+	
+	this.addContext = function(contextField, contextValue) {
+		if (! this.contextObject) {
+			this.contextObject = new Object;
+		}
+		this.contextObject[contextField] = contextValue;
 	}
 	
 //	this.setState = function(state) {
