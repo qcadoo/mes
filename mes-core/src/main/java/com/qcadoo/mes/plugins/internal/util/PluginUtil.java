@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
@@ -104,7 +105,11 @@ public final class PluginUtil {
         PluginsPlugin plugin = new PluginsPlugin();
         JarFile jarFile = new JarFile(file);
 
-        InputStream in = jarFile.getInputStream(jarFile.getEntry(DESCRIPTOR));
+        ZipEntry entry = jarFile.getEntry(DESCRIPTOR);
+        if (entry == null) {
+            throw new IOException("Plugin descriptor not found");
+        }
+        InputStream in = jarFile.getInputStream(entry);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
