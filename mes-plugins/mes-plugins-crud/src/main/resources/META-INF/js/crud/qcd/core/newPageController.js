@@ -53,6 +53,17 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		callEvent(initParameters);
 	}
 	
+	this.setContext = function(contextStr) {
+		var context = JSON.parse(contextStr);
+		for (var i in context) {
+			var dotPos = i.lastIndexOf(".");
+			var contextComponentPath = i.substring(0, dotPos);
+			var contextField = i.substring(dotPos+1);
+			var contextComponent = this.getComponent(contextComponentPath);
+			contextComponent.addContext(contextField, context[i]);
+		}
+	}
+	
 	function callEvent(parameters) {
 		QCD.info(parameters);
 		var parametersJson = JSON.stringify(parameters);
@@ -70,94 +81,92 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	
-	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
-		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
-		if (actionsPerformer) {
-			actionsPerformer.performNext();
-		}
-	}
+//	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
+//		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
+//		if (actionsPerformer) {
+//			actionsPerformer.performNext();
+//		}
+//	}
 	
-	this.performRibbonAction = function(ribbonAction) {
-		var actionParts = ribbonAction.split(";");
-		var actions = new Array();
-		for (var actionIter in actionParts) {
-			var action = $.trim(actionParts[actionIter]);
-			if (action) {
-				var elementBegin = action.search("{");
-				var elementEnd = action.search("}");
-				if (elementBegin<0 || elementEnd<0 || elementEnd<elementBegin) {
-					QCD.error("action parse error in: "+action);
-					return;
-				}
-				var elementPath = action.substring(elementBegin+1, elementEnd);
-				
-				var elementPathElements = elementPath.split(".");
-				var component = pageComponents[elementPathElements[0]];
-				var componentPath = elementPath.substring(elementPathElements[0].length+1);
-				if (componentPath) {
-					component = component.getComponent(componentPath);
-				}
-				
-				var elementAction = action.substring(elementEnd+1);
-				if (elementAction[0] != ".") {
-					QCD.error("action parse error in: "+action);
-					return;
-				}
-				elementAction = elementAction.substring(1);
-
-				var argumentsBegin = elementAction.indexOf("(");
-				var argumentsEnd = elementAction.indexOf(")");
-				var argumentsList = new Array();
-				
-				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
-				//and only empty parenthesis ()
-				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
-					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
-					argumentsList = args.split(",");
-					elementAction = elementAction.substring(0, argumentsBegin);
-				} else if(argumentsBegin == argumentsEnd-1) {
-					//we need to get rid of the empty parenthesis
-					elementAction = elementAction.substring(0, argumentsBegin);
-				}
-
-				var actionObject = {
-					component: component,
-					action: elementAction,
-					arguments: argumentsList
-				}
-				
-				actions.push(actionObject);
-			}
-		}
-		var actionsPerformer = {
-			actions: actions,
-			actionIter: 0,
-			performNext: function() {
-				var actionObject = this.actions[this.actionIter];
-				if (actionObject) {
-					var func = actionObject.component[actionObject.action];
-					if (!func) {
-						QCD.error("no function in "+actionObject.component.elementPath+": "+actionObject.action);
-						return;
-					}
-					this.actionIter++;
-					
-					var fullArgumentList = new Array(this);
-					fullArgumentList = fullArgumentList.concat(actionObject.arguments);
-					
-					func.apply(actionObject.component, fullArgumentList);
-				}
-			}
-		}
-		actionsPerformer.performNext();
-	}
+//	this.performRibbonAction = function(ribbonAction) {
+//		var actionParts = ribbonAction.split(";");
+//		var actions = new Array();
+//		for (var actionIter in actionParts) {
+//			var action = $.trim(actionParts[actionIter]);
+//			if (action) {
+//				var elementBegin = action.search("{");
+//				var elementEnd = action.search("}");
+//				if (elementBegin<0 || elementEnd<0 || elementEnd<elementBegin) {
+//					QCD.error("action parse error in: "+action);
+//					return;
+//				}
+//				var elementPath = action.substring(elementBegin+1, elementEnd);
+//				
+//				var elementPathElements = elementPath.split(".");
+//				var component = pageComponents[elementPathElements[0]];
+//				var componentPath = elementPath.substring(elementPathElements[0].length+1);
+//				if (componentPath) {
+//					component = component.getComponent(componentPath);
+//				}
+//				
+//				var elementAction = action.substring(elementEnd+1);
+//				if (elementAction[0] != ".") {
+//					QCD.error("action parse error in: "+action);
+//					return;
+//				}
+//				elementAction = elementAction.substring(1);
+//
+//				var argumentsBegin = elementAction.indexOf("(");
+//				var argumentsEnd = elementAction.indexOf(")");
+//				var argumentsList = new Array();
+//				
+//				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
+//				//and only empty parenthesis ()
+//				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
+//					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
+//					argumentsList = args.split(",");
+//					elementAction = elementAction.substring(0, argumentsBegin);
+//				} else if(argumentsBegin == argumentsEnd-1) {
+//					//we need to get rid of the empty parenthesis
+//					elementAction = elementAction.substring(0, argumentsBegin);
+//				}
+//
+//				var actionObject = {
+//					component: component,
+//					action: elementAction,
+//					arguments: argumentsList
+//				}
+//				
+//				actions.push(actionObject);
+//			}
+//		}
+//		var actionsPerformer = {
+//			actions: actions,
+//			actionIter: 0,
+//			performNext: function() {
+//				var actionObject = this.actions[this.actionIter];
+//				if (actionObject) {
+//					var func = actionObject.component[actionObject.action];
+//					if (!func) {
+//						QCD.error("no function in "+actionObject.component.elementPath+": "+actionObject.action);
+//						return;
+//					}
+//					this.actionIter++;
+//					
+//					var fullArgumentList = new Array(this);
+//					fullArgumentList = fullArgumentList.concat(actionObject.arguments);
+//					
+//					func.apply(actionObject.component, fullArgumentList);
+//				}
+//			}
+//		}
+//		actionsPerformer.performNext();
+//	}
 	
 	function getValueData() {
 		var values = new Object();
 		for (var i in pageComponents) {
-			QCD.info(i);
 			var value = pageComponents[i].getValue();
-			QCD.info(value);
 			if (value) {
 				values[i] = value;
 			}
@@ -165,16 +174,16 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		return values;
 	}
 	
-	function setComponentState(state) {
-		QCD.debug(state);
-		if (state.value) {
-			rootEntityId = state.value;
-		}
-		for (var i in state.components) {
-			var component = pageComponents[i];
-			component.setState(state.components[i]);
-		}
-	}
+//	function setComponentState(state) {
+//		QCD.debug(state);
+//		if (state.value) {
+//			rootEntityId = state.value;
+//		}
+//		for (var i in state.components) {
+//			var component = pageComponents[i];
+//			component.setState(state.components[i]);
+//		}
+//	}
 	
 	this.showMessage = function(type, content) {
 		if (window.parent && window.parent.addMessage) {
@@ -187,14 +196,14 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
-	this.setWindowHeaderComponent = function(component) {
-		headerComponent = component;
-	}
-	this.setWindowHeader = function(header) {
-		if (headerComponent) {
-			headerComponent.setHeader(header);
-		}
-	}
+//	this.setWindowHeaderComponent = function(component) {
+//		headerComponent = component;
+//	}
+//	this.setWindowHeader = function(header) {
+//		if (headerComponent) {
+//			headerComponent.setHeader(header);
+//		}
+//	}
 	
 	function setValueData(data) {
 		QCD.debug(data);
@@ -231,67 +240,77 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	this.getComponent = function(componentPath) {
-		var componentName = componentPath.split(".")[0];
-		var path = componentPath.substring(componentName.length+1);
-		return pageComponents[componentName].getComponent(path);
-	}
-	
-	this.getTranslation = function(key) {
-		return window.translationsMap[key] ? window.translationsMap[key] : key;
-	}
-	var getTranslation = this.getTranslation;
-	
-	this.goToPage = function(url) {
-		if(canClose()) {
-			var serializationObject = {
-				value: rootEntityId,
-				components: getValueData()
-			}
-			window.parent.goToPage(url, serializationObject);
+		var pathParts = componentPath.split(".");
+		var component = pageComponents[pathParts[0]];
+		if (! component) {
+			return null;
 		}
-	}
-	var goToPage = this.goToPage;
-	
-	this.goBack = function() {
-		if(canClose()) {
-			window.parent.goBack();
-		}
-	}
-	this.canClose = canClose;
-	
-	function canClose() {
-		changed = false;
-		for (var i in pageComponents) {
-			if(pageComponents[i].isChanged()) {
-				changed = true;
+		for (var i = 1; i<pathParts.length; i++) {
+			component = component.components[pathParts[i]];
+			if (! component) {
+				return null;
 			}
 		}
-		if(changed) {
-			return window.confirm(getTranslation('commons.backWithChangesConfirmation'));
-		} else {
-			return true;
-		}
+		return component;
 	}
 	
-	this.closeWindow = function() {
-		window.close();
-	}
 	
-	this.onSessionExpired = function() {
-		var serializationObject = {
-			value: rootEntityId,
-			components: getValueData()
-		}
-		window.parent.onSessionExpired(serializationObject);
-	}
+	//this.getTranslation = function(key) {
+	//	return window.translationsMap[key] ? window.translationsMap[key] : key;
+	//}
+	//var getTranslation = this.getTranslation;
 	
-	function updateSize() {
-		var width = $(document).width();
-		var height = $(document).height();
-		for (var i in pageComponents) {
-			pageComponents[i].updateSize(width, height);
-		}
-	}
+//	this.goToPage = function(url) {
+//		if(canClose()) {
+//			var serializationObject = {
+//				value: rootEntityId,
+//				components: getValueData()
+//			}
+//			window.parent.goToPage(url, serializationObject);
+//		}
+//	}
+//	var goToPage = this.goToPage;
+//	
+//	this.goBack = function() {
+//		if(canClose()) {
+//			window.parent.goBack();
+//		}
+//	}
+//	this.canClose = canClose;
+//	
+//	function canClose() {
+//		changed = false;
+//		for (var i in pageComponents) {
+//			if(pageComponents[i].isChanged()) {
+//				changed = true;
+//			}
+//		}
+//		if(changed) {
+//			return window.confirm(getTranslation('commons.backWithChangesConfirmation'));
+//		} else {
+//			return true;
+//		}
+//	}
+//	
+//	this.closeWindow = function() {
+//		window.close();
+//	}
+//	
+//	this.onSessionExpired = function() {
+//		var serializationObject = {
+//			value: rootEntityId,
+//			components: getValueData()
+//		}
+//		window.parent.onSessionExpired(serializationObject);
+//	}
+//	
+//	function updateSize() {
+//		var width = $(document).width();
+//		var height = $(document).height();
+//		for (var i in pageComponents) {
+//			pageComponents[i].updateSize(width, height);
+//		}
+//	}
 	
 	constructor(this);
 }

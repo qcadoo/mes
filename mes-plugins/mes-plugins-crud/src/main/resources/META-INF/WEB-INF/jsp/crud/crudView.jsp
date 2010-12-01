@@ -81,7 +81,7 @@
 		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
 		//var entityId = "{entityId}";
 		var entityId = "";
-		//var context = '{context}';
+		var context = '${context}';
 		//var locale = '{locale}';
 
 		//var hasDataDefinition = '{viewDefinition.dataDefinition}' == '' ? false : true;
@@ -104,6 +104,7 @@
 
 		jQuery(document).ready(function(){
 
+
 			//if (lookupComponentName) {
 				//lookupComponentName = $.trim(lookupComponentName);
 				//if (lookupComponentName == '') {
@@ -115,6 +116,11 @@
 				//window.location = "/main.html";
 			//}
 			controller = new QCD.PageController(viewName, pluginIdentifier);
+			
+			context = $.trim(context);
+			if (context && context != "") {
+				controller.setContext(context);
+			} 
 			//controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName, hasDataDefinition);
 			//if (window.opener) {
 				//window.opener[lookupComponentName+"_onReadyFunction"].call();
