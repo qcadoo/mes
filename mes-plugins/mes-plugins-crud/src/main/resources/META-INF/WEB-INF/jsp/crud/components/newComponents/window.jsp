@@ -8,12 +8,15 @@
 
 <tiles:useAttribute name="component" />
 
+	WINDOW
 	
-	<c:forEach items="${component.children}" var="componentEntry">
-		<tiles:insertTemplate template="../newComponent.jsp">
-			<tiles:putAttribute name="component" value="${componentEntry.value}" />
-		</tiles:insertTemplate>
-	</c:forEach>
+	<div class="windowComponents" id="${component.pathName}_windowComponents">
+		<c:forEach items="${component.children}" var="componentEntry">
+			<tiles:insertTemplate template="../newComponent.jsp">
+				<tiles:putAttribute name="component" value="${componentEntry.value}" />
+			</tiles:insertTemplate>
+		</c:forEach>
+	</div>
 
 
 

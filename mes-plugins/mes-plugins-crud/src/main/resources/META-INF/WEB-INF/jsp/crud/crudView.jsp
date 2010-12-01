@@ -48,7 +48,7 @@
 	<script type="text/javascript" src="../../js/core/qcd/utils/options.js"></script>
 	<script type="text/javascript" src="../../js/core/qcd/utils/pageConstructor.js"></script>
 	<script type="text/javascript" src="../../js/core/qcd/core/messagesController.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/core/pageController.js"></script>
+	<script type="text/javascript" src="../../js/crud/qcd/core/newPageController.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/component.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/container.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/containers/window.js"></script>
@@ -70,19 +70,22 @@
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/staticComponent.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/ribbon.js"></script>
 	
+	<c:forEach items="${viewDefinition.javaScriptFilePaths}" var="javaScriptPath">
+		<script type="text/javascript" src="${javaScriptPath}"></script>
+	</c:forEach>
 	
 	
-	<!--<script type="text/javascript">
+	<script type="text/javascript">
 
-		var viewName = "{viewDefinition.name}";
-		var pluginIdentifier = "{viewDefinition.pluginIdentifier}";
-		var entityId = "{entityId}";
-		var context = '{context}';
-		var locale = '{locale}';
+		var viewName = "${viewDefinition.name}";
+		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
+		//var entityId = "{entityId}";
+		//var context = '{context}';
+		//var locale = '{locale}';
 
-		var hasDataDefinition = '{viewDefinition.dataDefinition}' == '' ? false : true;
+		//var hasDataDefinition = '{viewDefinition.dataDefinition}' == '' ? false : true;
 
-		var lookupComponentName = '{lookupComponentName}';
+		//var lookupComponentName = '{lookupComponentName}';
 
 		var controller = null;
 
@@ -100,34 +103,30 @@
 
 		jQuery(document).ready(function(){
 
-			if (lookupComponentName) {
-				lookupComponentName = $.trim(lookupComponentName);
-				if (lookupComponentName == '') {
-					lookupComponentName = null;
-				}
-			}
+			//if (lookupComponentName) {
+				//lookupComponentName = $.trim(lookupComponentName);
+				//if (lookupComponentName == '') {
+					//lookupComponentName = null;
+				//}
+			//}
 
-			if (! window.parent.getCurrentUserLogin && ! lookupComponentName) {
-				window.location = "/main.html";
-			}
-			
-			controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName, hasDataDefinition);
-			if (window.opener) {
-				window.opener[lookupComponentName+"_onReadyFunction"].call();
-		    }
+			//if (! window.parent.getCurrentUserLogin && ! lookupComponentName) {
+				//window.location = "/main.html";
+			//}
+			controller = new QCD.PageController(viewName, pluginIdentifier);
+			//controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName, hasDataDefinition);
+			//if (window.opener) {
+				//window.opener[lookupComponentName+"_onReadyFunction"].call();
+		    //}
 		});
 
-		window.translationsMap = new Object();
+		//window.translationsMap = new Object();
 		<c:forEach items="${translationsMap}" var="translation">
-			window.translationsMap["${translation.key}"] = "${translation.value}";
+			//window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
-	</script>-->
+	</script>
 </head>
 <body>
-
-	<c:forEach items="${viewDefinition.javaScriptFilePaths}" var="javaScriptPath">
-		${javaScriptPath}<br/>
-	</c:forEach>
 
 	<c:forEach items="${viewDefinition.children}" var="componentEntry">
 		<tiles:insertTemplate template="components/newComponent.jsp">

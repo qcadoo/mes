@@ -14,40 +14,53 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 		if (element.hasClass("component")) {
 			var component = null;
 			var elementFullName = element.attr('id');
-			var elementName = elementFullName.split("-")[elementFullName.split("-").length - 1];
-			if (element.hasClass("component_container_window")) {
-				component = new QCD.components.containers.Window(element, mainController);
-			} if (element.hasClass("component_container_form")) {
-				component = new QCD.components.containers.Form(element, mainController);
-			} else if (element.hasClass("component_element_grid")) {
-				component = new QCD.components.elements.Grid(element, mainController);
-			} else if (element.hasClass("component_element_textInput")) {
-				component = new QCD.components.elements.TextInput(element, mainController);
-			} else if (element.hasClass("component_element_textArea")) {
-				component = new QCD.components.elements.TextArea(element, mainController);
-			} else if (element.hasClass("component_element_passwordInput")) {
-				component = new QCD.components.elements.PasswordInput(element, mainController);
-			} else if (element.hasClass("component_element_dynamicComboBox")) {
-				component = new QCD.components.elements.DynamicComboBox(element, mainController);
-			} else if (element.hasClass("component_element_entityComboBox")) {
-				component = new QCD.components.elements.EntityComboBox(element, mainController);
-			} else if (element.hasClass("component_element_lookup")) {
-				component = new QCD.components.elements.Lookup(element, mainController);
-			} else if (element.hasClass("component_element_checkbox")) {
-				component = new QCD.components.elements.CheckBox(element, mainController);
-			} else if (element.hasClass("component_element_linkButton")) {
-				component = new QCD.components.elements.LinkButton(element, mainController);
-			} else if (element.hasClass("component_element_tree")) {
-				component = new QCD.components.elements.Tree(element, mainController);
-			} else if (element.hasClass("component_element_calendar")) {
-				component = new QCD.components.elements.Calendar(element, mainController);
-			}
+			var elementSearchName = elementFullName.replace(".","\\.");
 			
-			if (! component) {
-				component = new QCD.components.elements.StaticComponent(element, mainController);
-			}
 			
-			components[elementName] = component;
+			var jsObjectElement = $("#"+elementSearchName+" > .element_js_object");
+			
+			var jsObjectClassName = $.trim(jsObjectElement.html());
+			jsObjectElement.remove();
+			
+			QCD.info(elementFullName + " - " + jsObjectClassName);
+			
+			
+			component = eval("new "+jsObjectClassName+"(element, mainController);");
+			
+//			var elementName = elementFullName.split("-")[elementFullName.split("-").length - 1];
+//			if (element.hasClass("component_container_window")) {
+//				component = new QCD.components.containers.Window(element, mainController);
+//			} if (element.hasClass("component_container_form")) {
+//				component = new QCD.components.containers.Form(element, mainController);
+//			} else if (element.hasClass("component_element_grid")) {
+//				component = new QCD.components.elements.Grid(element, mainController);
+//			} else if (element.hasClass("component_element_textInput")) {
+//				component = new QCD.components.elements.TextInput(element, mainController);
+//			} else if (element.hasClass("component_element_textArea")) {
+//				component = new QCD.components.elements.TextArea(element, mainController);
+//			} else if (element.hasClass("component_element_passwordInput")) {
+//				component = new QCD.components.elements.PasswordInput(element, mainController);
+//			} else if (element.hasClass("component_element_dynamicComboBox")) {
+//				component = new QCD.components.elements.DynamicComboBox(element, mainController);
+//			} else if (element.hasClass("component_element_entityComboBox")) {
+//				component = new QCD.components.elements.EntityComboBox(element, mainController);
+//			} else if (element.hasClass("component_element_lookup")) {
+//				component = new QCD.components.elements.Lookup(element, mainController);
+//			} else if (element.hasClass("component_element_checkbox")) {
+//				component = new QCD.components.elements.CheckBox(element, mainController);
+//			} else if (element.hasClass("component_element_linkButton")) {
+//				component = new QCD.components.elements.LinkButton(element, mainController);
+//			} else if (element.hasClass("component_element_tree")) {
+//				component = new QCD.components.elements.Tree(element, mainController);
+//			} else if (element.hasClass("component_element_calendar")) {
+//				component = new QCD.components.elements.Calendar(element, mainController);
+//			}
+//			
+//			if (! component) {
+//				component = new QCD.components.elements.StaticComponent(element, mainController);
+//			}
+			
+			//components[elementName] = component;
 		}
 	});
 	return components;

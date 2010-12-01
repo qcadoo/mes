@@ -7,16 +7,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <tiles:useAttribute name="component" />
-<tiles:useAttribute name="parentComponentFullName" ignore="true"/>
-<tiles:useAttribute name="parentComponentFullNameWithDots" ignore="true"/>
-<tiles:useAttribute name="viewName" ignore="true"/>
-<tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
-	-- ${component.name }<br/>
-	
-	
-<div id="${component.pathName}" style="margin-left: 20px; padding-left: 2px; border-left: solid black 1px;">
-	<div class="element_js_object">${component.javaScriptObjectName}</div>
+<div id="${component.pathName}" class="component">
+	<div class="element_js_object" style="display: none">${component.javaScriptObjectName}</div>
 	<div class="element_options" style="display: none">
 	</div>
 	<tiles:insertTemplate template="${component.jspFilePath}">
