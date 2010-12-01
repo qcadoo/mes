@@ -2,6 +2,9 @@ package com.qcadoo.mes.view.states;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+
+import java.util.Collections;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -55,6 +58,25 @@ public class ViewDefinitionStateTest extends AbstractStateTest {
         vds.performEvent("c1.c2", "event", new String[] { "arg1", "arg2" });
 
         // then
+        Mockito.verify(c2).performEvent("event", "arg1", "arg2");
+    }
+
+    @Test
+    public void shouldPerformEventOnAllComponent() throws Exception {
+        // given
+        ViewDefinitionState vds = new ViewDefinitionStateImpl();
+
+        ContainerState c1 = mock(ContainerState.class);
+        given(c1.getName()).willReturn("c1");
+        vds.addChild(c1);
+        ComponentState c2 = mock(ComponentState.class);
+        given(c1.getChildren()).willReturn(Collections.singletonMap("c2", c2));
+
+        // when
+        vds.performEvent(null, "event", new String[] { "arg1", "arg2" });
+
+        // then
+        Mockito.verify(c1).performEvent("event", "arg1", "arg2");
         Mockito.verify(c2).performEvent("event", "arg1", "arg2");
     }
 
