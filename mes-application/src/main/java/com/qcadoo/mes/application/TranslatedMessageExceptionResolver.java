@@ -8,9 +8,11 @@
 package com.qcadoo.mes.application;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -50,7 +52,8 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
             for (Map.Entry<String, String> translation : translations.entrySet()) {
                 if (exceptionMessage.matches(translation.getKey())) {
-                    exceptionMessage = translationService.translate(translation.getValue(), request.getLocale());
+                    exceptionMessage = translationService.translate(translation.getValue(),
+                            retrieveLocaleFromRequestCookie(request));
                     break;
                 }
             }
@@ -60,5 +63,20 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             mv.addObject(this.exceptionMessageAttribute, exceptionMessage);
         }
         return mv;
+    }
+
+    private Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {
+        Locale locale = request.getLocale();
+        Cookie cookies[] = request.getCookies();
+        if ((cookies != null) && (cookies.length > 0)) {
+            for (int i = 0; i < cookies.length; i++) {
+                Cookie c = cookies[i];
+                if ("clientLanguage".equals(c.getName())) {
+                    locale = new Locale(c.getValue(), "");
+                    break;
+                }
+            }
+        }
+        return locale;
     }
 }

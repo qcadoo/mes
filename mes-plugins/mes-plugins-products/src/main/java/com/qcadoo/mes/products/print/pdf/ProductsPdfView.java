@@ -48,10 +48,12 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        df = (DecimalFormat) DecimalFormat.getInstance(request.getLocale());
+
+        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
+        df = (DecimalFormat) DecimalFormat.getInstance(locale);
         DefaultEntity entity = (DefaultEntity) model.get("entity");
-        String fileName = addContent(document, entity, request.getLocale());
-        String text = translationService.translate("products.report.endOfReport", request.getLocale());
+        String fileName = addContent(document, entity, locale);
+        String text = translationService.translate("products.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);
         writer.addJavaScript("this.print(false);", false);
@@ -60,9 +62,10 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Override
     protected final void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
             throws DocumentException {
+        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         super.prepareWriter(model, writer, request);
-        writer.setPageEvent(new PdfPageNumbering(translationService.translate("products.report.page", request.getLocale()),
-                translationService.translate("products.report.in", request.getLocale()), getFontsPath()));
+        writer.setPageEvent(new PdfPageNumbering(translationService.translate("products.report.page", locale), translationService
+                .translate("products.report.in", locale), getFontsPath()));
     }
 
     @Override
@@ -75,7 +78,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Override
     protected final void buildPdfMetadata(final Map<String, Object> model, final Document document,
             final HttpServletRequest request) {
-        addTitle(document, request.getLocale());
+        addTitle(document, PdfUtil.retrieveLocaleFromRequestCookie(request));
         PdfUtil.addMetaData(document);
     }
 
