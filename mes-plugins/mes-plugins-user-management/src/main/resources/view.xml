@@ -17,6 +17,7 @@
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="header" value="false" />
 				<option type="orderable" value="name,role" />
+				<option type="searchable" value="name" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="false" />
 				<option type="correspondingView" value="users/groupDetailsView" />
@@ -70,6 +71,7 @@
 					expression="#userGroup['name']" />
 				<option type="header" value="false" />
 				<option type="orderable" value="login,email,firstName,lastName,userGroup" />
+				<option type="searchable" value="login,email,firstName,lastName,userGroup" />
 				<option type="paginable" value="true" />
 				<option type="multiselect" value="true" />
 				<option type="correspondingView" value="users/userDetailsView" />
