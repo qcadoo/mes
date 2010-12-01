@@ -8,13 +8,17 @@
 
 <tiles:useAttribute name="component" />
 
+	FORM
 	
+<div id="${component.pathName}_formComponents">
 	
 	<c:forEach items="${component.children}" var="componentEntry">
 		<tiles:insertTemplate template="../newComponent.jsp">
 			<tiles:putAttribute name="component" value="${componentEntry.value}" />
 		</tiles:insertTemplate>
 	</c:forEach>
+	
+</div>
 	
 
 

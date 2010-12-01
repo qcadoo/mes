@@ -12,24 +12,27 @@ QCD.components.containers = QCD.components.containers || {};
 QCD.components.containers.Window = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Container(_element, _mainController));
 	
-	var mainController = _mainController;
-	var element = _element;
-	var elementName = element.attr('id');
+	//var mainController = _mainController;
+	//var element = _element;
+	//var elementName = element.attr('id');
 	
-	var ribbon;
+	//var ribbon;
 	
-	var isMinWidth = this.options.minWidth;
+	//var isMinWidth = this.options.minWidth;
 	
 	function constructor(_this) {
+		
 		var childrenElement = $("#"+_this.elementPath+"_windowComponents");
-		mainController.setWindowHeaderComponent(_this);
 		_this.constructChildren(childrenElement.children());
-		if (_this.options.ribbon) {
-			ribbon = new QCD.components.Ribbon(_this.options.ribbon, elementName, mainController);
-			var ribbonElement = ribbon.constructElement();
-			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
-			ribbonDiv.append(ribbonElement);
-		}
+		
+		//mainController.setWindowHeaderComponent(_this);
+		
+//		if (_this.options.ribbon) {
+//			ribbon = new QCD.components.Ribbon(_this.options.ribbon, elementName, mainController);
+//			var ribbonElement = ribbon.constructElement();
+//			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
+//			ribbonDiv.append(ribbonElement);
+//		}
 	}
 	
 	this.getComponentValue = function() {

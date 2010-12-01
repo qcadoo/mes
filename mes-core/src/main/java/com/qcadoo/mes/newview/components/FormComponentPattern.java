@@ -10,6 +10,8 @@ public class FormComponentPattern extends AbstractContainerPattern {
 
     private static final String JSP_PATH = "newComponents/form.jsp";
 
+    private static final String JS_OBJECT = "QCD.components.containers.Form";
+
     public FormComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);

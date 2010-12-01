@@ -13,21 +13,22 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Container(_element, _mainController));
 	
 	var mainController = _mainController;
-	var element = _element;
-	var elementName = element.attr('id');
+	//var element = _element;
+	//var elementName = element.attr('id');
 	
-	var elementPath = this.elementPath;
+	//var elementPath = this.elementPath;
 	
-	var buttons = new Object();
+	//var buttons = new Object();
 	
-	buttons.saveButton = $("#"+elementName+"_saveButton");
+	//buttons.saveButton = $("#"+elementName+"_saveButton");
 	
-	var formValue = null;
+	//var formValue = null;
 	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementPath+"_formComponents");
+		QCD.info(childrenElement);
 		_this.constructChildren(childrenElement.children());
-		block();
+		//block();
 	}
 
 	this.getComponentValue = function() {

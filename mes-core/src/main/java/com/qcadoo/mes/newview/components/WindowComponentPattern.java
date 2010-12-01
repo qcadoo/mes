@@ -13,7 +13,7 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     private static final String JS_PATH = "newComponents/window.js";
 
-    private static final String JS_OBJECT = "JS.Window";
+    private static final String JS_OBJECT = "QCD.components.containers.Window";
 
     private Ribbon ribbon;
 
