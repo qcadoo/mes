@@ -22,7 +22,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	function constructor(_this) {
 		
-		var childrenElement = $("#"+_this.elementPath+"_windowComponents");
+		var childrenElement = $("#"+_this.elementSearchName+"_windowComponents");
 		_this.constructChildren(childrenElement.children());
 		
 		//mainController.setWindowHeaderComponent(_this);
