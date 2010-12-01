@@ -153,6 +153,122 @@ public class InitializationTest {
     }
 
     @Test
+    public void shouldGetDataDefinitionFromBelongsToTypeFieldDefinition() throws Exception {
+        // given
+        BelongsToType fieldType = mock(BelongsToType.class);
+
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getType()).willReturn(fieldType);
+
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(dataDefinition.getField("field")).willReturn(fieldDefinition);
+
+        DataDefinition belongsToDefinition = mock(DataDefinition.class);
+        given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
+
+        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        setField(parent, "dataDefinition", dataDefinition);
+
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern pattern = new TextInputComponentPattern("test", "field", null, parent);
+
+        // when
+        pattern.initialize(viewDefinition);
+
+        // then
+        Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
+        Assert.assertEquals(fieldDefinition, getField(pattern, "fieldDefinition"));
+    }
+
+    @Test
+    public void shouldGetDataDefinitionFromHasManyTypeFieldDefinition() throws Exception {
+        // given
+        HasManyType fieldType = mock(HasManyType.class);
+
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getType()).willReturn(fieldType);
+
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(dataDefinition.getField("field")).willReturn(fieldDefinition);
+
+        DataDefinition belongsToDefinition = mock(DataDefinition.class);
+        given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
+
+        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        setField(parent, "dataDefinition", dataDefinition);
+
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern pattern = new TextInputComponentPattern("test", "field", null, parent);
+
+        // when
+        pattern.initialize(viewDefinition);
+
+        // then
+        Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
+        Assert.assertEquals(fieldDefinition, getField(pattern, "fieldDefinition"));
+    }
+
+    @Test
+    public void shouldGetDataDefinitionFromBelongsToTypeScopeFieldDefinition() throws Exception {
+        // given
+        BelongsToType fieldType = mock(BelongsToType.class);
+
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getType()).willReturn(fieldType);
+
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(dataDefinition.getField("field")).willReturn(fieldDefinition);
+
+        DataDefinition belongsToDefinition = mock(DataDefinition.class);
+        given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
+
+        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        setField(parent, "dataDefinition", dataDefinition);
+
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, "field", parent);
+
+        // when
+        pattern.initialize(viewDefinition);
+
+        // then
+        Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
+        Assert.assertEquals(fieldDefinition, getField(pattern, "scopeFieldDefinition"));
+    }
+
+    @Test
+    public void shouldGetDataDefinitionFromHasManyTypeScopeFieldDefinition() throws Exception {
+        // given
+        HasManyType fieldType = mock(HasManyType.class);
+
+        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
+        given(fieldDefinition.getType()).willReturn(fieldType);
+
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        given(dataDefinition.getField("field")).willReturn(fieldDefinition);
+
+        DataDefinition belongsToDefinition = mock(DataDefinition.class);
+        given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
+
+        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        setField(parent, "dataDefinition", dataDefinition);
+
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, "field", parent);
+
+        // when
+        pattern.initialize(viewDefinition);
+
+        // then
+        Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
+        Assert.assertEquals(fieldDefinition, getField(pattern, "scopeFieldDefinition"));
+    }
+
+    @Test
     public void shouldInitializeAllComponents() throws Exception {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
