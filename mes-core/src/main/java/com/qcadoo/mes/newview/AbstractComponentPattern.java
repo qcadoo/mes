@@ -12,7 +12,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.view.ComponentOption;
+import com.qcadoo.mes.viewold.ComponentOption;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
 

@@ -31,7 +31,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.model.types.internal.EnumType;
-import com.qcadoo.mes.view.components.grid.ColumnDefinition;
+import com.qcadoo.mes.viewold.components.grid.ColumnDefinition;
 
 /**
  * Helper class that contains methods to evaluate expression value.

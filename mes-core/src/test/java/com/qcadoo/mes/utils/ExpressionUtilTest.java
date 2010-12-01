@@ -18,7 +18,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.types.internal.StringType;
-import com.qcadoo.mes.view.components.grid.ColumnDefinition;
+import com.qcadoo.mes.viewold.components.grid.ColumnDefinition;
 
 public class ExpressionUtilTest {
 

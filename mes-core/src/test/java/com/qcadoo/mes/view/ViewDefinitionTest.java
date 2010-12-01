@@ -29,7 +29,9 @@ import org.mockito.Mockito;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.HookDefinition;
-import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
+import com.qcadoo.mes.viewold.RootComponent;
+import com.qcadoo.mes.viewold.ViewValue;
+import com.qcadoo.mes.viewold.internal.ViewDefinitionImpl;
 
 public class ViewDefinitionTest {
 

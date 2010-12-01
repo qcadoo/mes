@@ -33,11 +33,11 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.newview.components.WindowComponentPattern;
-import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.menu.ribbon.Ribbon;
 import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
 import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
+import com.qcadoo.mes.viewold.ComponentOption;
 
 @Service
 public final class ViewDefinitionParser {

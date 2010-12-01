@@ -28,6 +28,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.viewold.AbstractRootComponent;
+import com.qcadoo.mes.viewold.Component;
+import com.qcadoo.mes.viewold.ContainerComponent;
+import com.qcadoo.mes.viewold.ViewDefinition;
 
 public class AbstractRootComponentTest {
 

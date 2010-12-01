@@ -12,7 +12,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
-import com.qcadoo.mes.view.components.grid.ListData;
+import com.qcadoo.mes.viewold.components.grid.ListData;
 
 public final class HasManyEntitiesType implements HasManyType {
 

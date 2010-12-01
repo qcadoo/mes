@@ -26,6 +26,12 @@ import org.junit.Test;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.viewold.AbstractComponent;
+import com.qcadoo.mes.viewold.Component;
+import com.qcadoo.mes.viewold.ContainerComponent;
+import com.qcadoo.mes.viewold.RootComponent;
+import com.qcadoo.mes.viewold.ViewDefinition;
+import com.qcadoo.mes.viewold.ViewValue;
 
 public class AbstractComponentStateTest {
 

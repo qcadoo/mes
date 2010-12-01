@@ -30,6 +30,10 @@ import org.junit.Test;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.viewold.AbstractContainerComponent;
+import com.qcadoo.mes.viewold.Component;
+import com.qcadoo.mes.viewold.ContainerComponent;
+import com.qcadoo.mes.viewold.ViewValue;
 
 public class AbstractContainerComponentTest {
 

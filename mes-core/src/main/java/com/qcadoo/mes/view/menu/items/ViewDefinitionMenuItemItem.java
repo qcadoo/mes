@@ -12,7 +12,7 @@ import com.qcadoo.mes.view.menu.MenuItem;
 /**
  * Menu item that leads to specified ViewDefinition.
  * 
- * @see com.qcadoo.mes.view.ViewDefinition
+ * @see com.qcadoo.mes.viewold.ViewDefinition
  */
 public final class ViewDefinitionMenuItemItem extends MenuItem {
 
