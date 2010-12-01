@@ -40,8 +40,8 @@ public class EventHandlerTest {
 
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionWhenEventNotExists() throws Exception {
+    @Test
+    public void shouldNotThrowExceptionWhenEventNotExists() throws Exception {
         // given
         FormComponentState component = new FormComponentState();
         component.setFieldValue(13L);
