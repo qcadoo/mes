@@ -47,8 +47,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		
 		var initParameters = new Object();
 		initParameters.event = {
-			name: "initialize",
-			component: "mainWindow.form"
+			name: "initialize"
 		}
 		initParameters.components = getValueData();
 		callEvent(initParameters);
