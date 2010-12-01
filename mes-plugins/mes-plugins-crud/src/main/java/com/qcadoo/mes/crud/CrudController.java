@@ -92,7 +92,7 @@ public final class CrudController {
 
     @RequestMapping(value = { CONTROLLER_PATH }, method = RequestMethod.POST)
     @ResponseBody
-    public Object getData(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
+    public Object performEvent(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @ModelAttribute(JSON_BODY) final StringBuilder body,
             final Locale locale) {
         JSONObject json = getJsonBody(body);
