@@ -25,7 +25,7 @@ public class ContainerStateTest extends AbstractStateTest {
     @Test
     public void shouldHaveNoChildren() throws Exception {
         // given
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
 
         // when
         Map<String, ComponentState> children = container.getChildren();
@@ -41,7 +41,7 @@ public class ContainerStateTest extends AbstractStateTest {
         ComponentState component1 = createMockComponent("component1");
         ComponentState component2 = createMockComponent("component2");
 
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
         container.addChild(component1);
         container.addChild(component2);
 
@@ -58,7 +58,7 @@ public class ContainerStateTest extends AbstractStateTest {
         // given
         ComponentState component = createMockComponent("component");
 
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
         container.addChild(component);
 
         // when
@@ -71,7 +71,7 @@ public class ContainerStateTest extends AbstractStateTest {
     @Test
     public void shouldReturnNullIfChildNotExist() throws Exception {
         // given
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
 
         // when
         ComponentState child = container.getChild("component");
@@ -86,7 +86,7 @@ public class ContainerStateTest extends AbstractStateTest {
         ComponentState component1 = createMockComponent("component1");
         ComponentState component2 = createMockComponent("component2");
 
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
         container.addChild(component1);
         container.addChild(component2);
 
@@ -122,7 +122,7 @@ public class ContainerStateTest extends AbstractStateTest {
         ComponentState component2 = createMockComponent("component2");
         given(component2.render()).willReturn(component2Json);
 
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
         container.addChild(component1);
         container.addChild(component2);
 
@@ -145,7 +145,7 @@ public class ContainerStateTest extends AbstractStateTest {
     @Test
     public void shouldCallBeforeRenderOnChildren() throws Exception {
         // given
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
         ComponentStateMock componentState1 = new ComponentStateMock("test1");
         ComponentStateMock componentState2 = new ComponentStateMock("test2");
         container.addChild(componentState1);

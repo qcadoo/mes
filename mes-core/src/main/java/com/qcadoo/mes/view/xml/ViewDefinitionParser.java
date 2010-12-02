@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.api.DataDefinitionService;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
@@ -57,6 +58,9 @@ public final class ViewDefinitionParser {
 
     @Autowired
     private ViewComponentsResolver viewComponentsResolver;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Autowired
     private HookFactory hookFactory;
@@ -159,6 +163,7 @@ public final class ViewDefinitionParser {
 
     private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final ComponentPattern component)
             throws XMLStreamException {
+        ((AbstractComponentPattern) component).setTranslationService(translationService);
         ((AbstractComponentPattern) component).setReference(getStringAttribute(reader, "reference"));
         ((AbstractComponentPattern) component).setDefaultEnabled(getBooleanAttribute(reader, "defaultEnabled", true));
         ((AbstractComponentPattern) component).setDefaultVisible(getBooleanAttribute(reader, "defaultVisible", true));

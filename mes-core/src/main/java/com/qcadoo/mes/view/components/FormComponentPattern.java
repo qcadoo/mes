@@ -12,6 +12,12 @@ public class FormComponentPattern extends AbstractContainerPattern {
 
     private static final String JS_OBJECT = "QCD.components.containers.Form";
 
+    private static boolean hasHeader;
+
+    private static String expression;
+
+    // TODO opcje
+
     public FormComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);
@@ -19,7 +25,7 @@ public class FormComponentPattern extends AbstractContainerPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new FormComponentState();
+        return new FormComponentState(expression);
     }
 
     @Override
@@ -35,6 +41,10 @@ public class FormComponentPattern extends AbstractContainerPattern {
     @Override
     public String getJavaScriptObjectName() {
         return JS_OBJECT;
+    }
+
+    public static boolean isHasHeader() {
+        return hasHeader;
     }
 
 }

@@ -4,10 +4,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.springframework.util.StringUtils.hasText;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
@@ -55,6 +57,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private String reference;
 
+    private List<ComponentOption> options;
+
+    private TranslationService translationService;
+
     public AbstractComponentPattern(final String name, final String fieldPath, final String scopeFieldPath,
             final ComponentPattern parent) {
         checkArgument(hasText(name), "Name must be specified");
@@ -84,6 +90,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             return; // already initialized
         }
 
+        initializeOptions();
+
         String[] field = null;
         String[] scopeField = null;
         AbstractComponentPattern fieldComponent = null;
@@ -109,6 +117,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         getDataDefinitionFromFieldDefinition();
 
         reinitializeListeners(viewDefinition);
+    }
+
+    protected void initializeOptions() {
+        // implement me if you want
     }
 
     private void getDataDefinitionFromFieldDefinition() {
@@ -194,15 +206,17 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     @Override
     public ComponentState createComponentState() {
-        ComponentState componentState = getComponentStateInstance();
-        // TODO masz
-
-        AbstractComponentState state = (AbstractComponentState) componentState;
-
+        AbstractComponentState state = (AbstractComponentState) getComponentStateInstance();
         state.setDataDefinition(dataDefinition);
         state.setName(name);
+        state.setEnabled(isDefaultEnabled());
+        state.setVisible(isDefaultVisible());
+        state.setTranslationService(translationService);
+        return state;
+    }
 
-        return componentState;
+    public void setTranslationService(final TranslationService translationService) {
+        this.translationService = translationService;
     }
 
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
@@ -251,8 +265,11 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     public void addOption(final ComponentOption option) {
-        // TODO Auto-generated method stub
+        options.add(option);
+    }
 
+    protected List<ComponentOption> getOptions() {
+        return options;
     }
 
     public void setReference(final String reference) {

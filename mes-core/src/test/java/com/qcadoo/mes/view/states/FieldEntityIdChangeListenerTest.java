@@ -16,7 +16,7 @@ public class FieldEntityIdChangeListenerTest extends AbstractStateTest {
         ComponentState component1 = createMockComponent("component1");
         ComponentState component2 = createMockComponent("component2");
 
-        FormComponentState container = new FormComponentState();
+        FormComponentState container = new FormComponentState(null);
         container.addFieldEntityIdChangeListener("field1", (FieldEntityIdChangeListener) component1);
         container.addFieldEntityIdChangeListener("field2", (FieldEntityIdChangeListener) component2);
 

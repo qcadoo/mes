@@ -63,7 +63,7 @@ public class FormComponentStateTest extends AbstractStateTest {
 
         name = createMockComponent("name");
 
-        form = new FormComponentState();
+        form = new FormComponentState(null);
         ((AbstractContainerState) form).setDataDefinition(dataDefinition);
         ((AbstractContainerState) form).setTranslationService(translationService);
         ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", (FieldEntityIdChangeListener) name);
@@ -72,7 +72,7 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldInitialeFormWithEntityId() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState();
+        ComponentState componentState = new FormComponentState(null);
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
@@ -91,7 +91,7 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldInitialeFormWithNullEntityId() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState();
+        ComponentState componentState = new FormComponentState(null);
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
@@ -110,7 +110,7 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldRenderFormEntityId() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState();
+        ComponentState componentState = new FormComponentState(null);
         componentState.setFieldValue(13L);
 
         // when

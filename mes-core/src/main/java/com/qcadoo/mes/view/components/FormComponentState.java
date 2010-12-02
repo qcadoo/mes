@@ -21,7 +21,9 @@ public class FormComponentState extends AbstractContainerState {
 
     public static final String JSON_ENTITY_ID = "entityId";
 
-    private Long value;
+    // TODO nagłówek - headerNew, headerEdit
+
+    private Long entityId;
 
     private boolean valid = true;
 
@@ -29,7 +31,10 @@ public class FormComponentState extends AbstractContainerState {
 
     private final FormEventPerformer eventPerformer = new FormEventPerformer();
 
-    public FormComponentState() {
+    private final String headerExpression;
+
+    public FormComponentState(final String headerExpression) {
+        this.headerExpression = headerExpression;
         registerEvent("clear", eventPerformer, "clear");
         registerEvent("save", eventPerformer, "save");
         registerEvent("saveAndClear", eventPerformer, "saveAndClear");
@@ -47,7 +52,7 @@ public class FormComponentState extends AbstractContainerState {
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
         if (json.has(JSON_ENTITY_ID) && !json.isNull(JSON_ENTITY_ID)) {
-            value = json.getLong(JSON_ENTITY_ID);
+            entityId = json.getLong(JSON_ENTITY_ID);
         }
     }
 
@@ -58,19 +63,31 @@ public class FormComponentState extends AbstractContainerState {
         while (iterator.hasNext()) {
             String field = iterator.next();
             if ("id".equals(field)) {
-                value = json.getLong(field);
+                entityId = json.getLong(field);
             } else {
                 context.put(field, json.get(field));
             }
         }
     }
 
-    @Override
-    public void setFieldValue(final Object value) {
-        this.value = (Long) value;
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(final Long entityId) {
+        this.entityId = entityId;
         requestRender();
         requestUpdateState();
-        notifyEntityIdChangeListeners((Long) value);
+        notifyEntityIdChangeListeners(entityId);
+    }
+
+    @Override
+    public void setFieldValue(final Object value) {
+        setEntityId((Long) value);
+    }
+
+    public Entity getEntity() {
+        return null; // TODO masz entity ktore mapuje formularz, zmiany na nim wplywaja na wartosci inputow
     }
 
     public boolean isValid() {
@@ -79,13 +96,13 @@ public class FormComponentState extends AbstractContainerState {
 
     @Override
     public Object getFieldValue() {
-        return value;
+        return getEntityId();
     }
 
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_ENTITY_ID, value);
+        json.put(JSON_ENTITY_ID, entityId);
         return json;
     }
 
@@ -99,7 +116,7 @@ public class FormComponentState extends AbstractContainerState {
         }
 
         public void save(final String[] args) {
-            Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(), value);
+            Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(), entityId);
 
             copyFieldsToEntity(entity);
             copyContextToEntity(entity);
@@ -121,7 +138,7 @@ public class FormComponentState extends AbstractContainerState {
                     setFieldValue(entity.getId());
                     addMessage("TODO - zapisano", MessageType.SUCCESS); // TODO masz
                 } else {
-                    addMessage("TODO - niezapisano", MessageType.FAILURE); // TODO masz
+                    addMessage("TODO - niepoprawny", MessageType.FAILURE); // TODO masz
                 }
             } catch (IllegalStateException e) {
                 addMessage("TODO - niezapisano - " + e.getMessage(), MessageType.FAILURE); // TODO masz
@@ -129,15 +146,15 @@ public class FormComponentState extends AbstractContainerState {
         }
 
         public void delete(final String[] args) {
-            if (value != null) {
+            if (entityId != null) {
                 try {
-                    getDataDefinition().delete(value);
+                    getDataDefinition().delete(entityId);
                     addMessage("TODO - usunięto", MessageType.SUCCESS); // TODO masz
                 } catch (IllegalStateException e) {
                     addMessage("TODO - nieusunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
                 }
             } else {
-                addMessage("TODO - nieusunięto", MessageType.FAILURE); // TODO masz
+                addMessage("TODO - nieistnieje", MessageType.FAILURE); // TODO masz
             }
 
             clear(args);
@@ -160,8 +177,8 @@ public class FormComponentState extends AbstractContainerState {
         }
 
         private Entity getFormEntity() {
-            if (value != null) {
-                return getDataDefinition().get(value);
+            if (entityId != null) {
+                return getDataDefinition().get(entityId);
             } else {
                 return null;
             }

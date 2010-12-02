@@ -14,7 +14,7 @@ public class EventHandlerTest {
     @Test
     public void shouldCallEventMethod() throws Exception {
         // given
-        FormComponentState component = new FormComponentState();
+        FormComponentState component = new FormComponentState(null);
         component.setFieldValue(13L);
 
         // when
@@ -29,7 +29,7 @@ public class EventHandlerTest {
     public void shouldCallCustomEventMethod() throws Exception {
         // given
         CustomEventBean bean = mock(CustomEventBean.class);
-        FormComponentState component = new FormComponentState();
+        FormComponentState component = new FormComponentState(null);
         component.registemCustomEvent("custom", bean, "customMethod");
 
         // when
@@ -43,7 +43,7 @@ public class EventHandlerTest {
     @Test
     public void shouldNotThrowExceptionWhenEventNotExists() throws Exception {
         // given
-        FormComponentState component = new FormComponentState();
+        FormComponentState component = new FormComponentState(null);
         component.setFieldValue(13L);
 
         // when

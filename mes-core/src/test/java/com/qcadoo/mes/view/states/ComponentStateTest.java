@@ -77,7 +77,7 @@ public class ComponentStateTest {
     @Test
     public void shouldHaveRequestUpdateStateFlag() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState();
+        ComponentState componentState = new FormComponentState(null);
         componentState.setFieldValue(13L);
 
         // when
@@ -90,7 +90,7 @@ public class ComponentStateTest {
     @Test
     public void shouldNotHaveRequestUpdateStateIfNotValid() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState();
+        ComponentState componentState = new FormComponentState(null);
         componentState.addMessage("test", MessageType.FAILURE);
 
         // when
