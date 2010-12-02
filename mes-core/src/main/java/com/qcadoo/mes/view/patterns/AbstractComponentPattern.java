@@ -3,11 +3,16 @@ package com.qcadoo.mes.view.patterns;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.springframework.util.StringUtils.hasText;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
@@ -57,9 +62,11 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private String reference;
 
-    private List<ComponentOption> options;
+    private final List<ComponentOption> options = new ArrayList<ComponentOption>();
 
     private TranslationService translationService;
+
+    private final JSONObject jsOptions = new JSONObject();
 
     public AbstractComponentPattern(final String name, final String fieldPath, final String scopeFieldPath,
             final ComponentPattern parent) {
@@ -90,8 +97,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             return; // already initialized
         }
 
-        initializeOptions();
-
         String[] field = null;
         String[] scopeField = null;
         AbstractComponentPattern fieldComponent = null;
@@ -116,10 +121,16 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
         getDataDefinitionFromFieldDefinition();
 
+        try {
+            initializeOptions();
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
         reinitializeListeners(viewDefinition);
     }
 
-    protected void initializeOptions() {
+    protected void initializeOptions() throws JSONException {
         // implement me if you want
     }
 
@@ -292,4 +303,30 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return dataDefinition;
     }
 
+    protected final void addStaticJavaScriptOption(final String optionName, final Object optionValue) {
+        try {
+            jsOptions.put(optionName, optionValue);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public final JSONObject getStaticJavaScriptOptions() {
+        try {
+            if (fieldEntityIdChangeListeners.size() > 0 || scopeEntityIdChangeListeners.size() > 0) {
+                JSONArray listenersArray = new JSONArray();
+                for (ComponentPattern listener : fieldEntityIdChangeListeners.values()) {
+                    listenersArray.put(listener.getPathName());
+                }
+                for (ComponentPattern listener : scopeEntityIdChangeListeners.values()) {
+                    listenersArray.put(listener.getPathName());
+                }
+                jsOptions.put("listeners", listenersArray);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsOptions;
+    }
 }

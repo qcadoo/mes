@@ -31,7 +31,8 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 			for (var groupIter in ribbonModel.groups) {
 				var groupModel = ribbonModel.groups[groupIter];
 				
-				var groupTraslation = mainController.getTranslation(mainController.getPluginIdentifier() + "." + mainController.getViewName() + "." + _elementName + ".ribbon." + groupModel.name);
+				//var groupTraslation = mainController.getTranslation(mainController.getPluginIdentifier() + "." + mainController.getViewName() + "." + _elementName + ".ribbon." + groupModel.name);
+				var groupTraslation =  groupModel.name;
 				
 				var groupContent = $("<div>").addClass("ribbon_content");
 				var groupTitle = $("<div>").addClass("ribbon_title").html(groupTraslation);
@@ -185,7 +186,8 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	}
 	
 	function getItemLabel(path, itemModel) {
-		return mainController.getTranslation(mainController.getPluginIdentifier() + "." + mainController.getViewName() + "." + _elementName + ".ribbon." + path + "." + (itemModel.label ? itemModel.label : itemModel.name));
+		return itemModel.label ? itemModel.label : itemModel.name;
+		//return mainController.getTranslation(mainController.getPluginIdentifier() + "." + mainController.getViewName() + "." + _elementName + ".ribbon." + path + "." + (itemModel.label ? itemModel.label : itemModel.name));
 	}
 	function getItemIconStyle(itemModel) {
 		var icon = (itemModel.icon && $.trim(itemModel.icon) != "") ? $.trim(itemModel.icon) : null;

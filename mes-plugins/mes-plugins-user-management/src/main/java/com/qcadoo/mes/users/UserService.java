@@ -67,13 +67,6 @@ public final class UserService {
     // String oldPassword = entity.getStringField("oldPassword");
     // String viewIdentifier = entity.getStringField("viewIdentifier");
     //
-    // System.out.println("ABC");
-    // System.out.println(entity.getFields().containsKey("passwordConfirmation"));
-    // System.out.println(password);
-    // System.out.println(passwordConfirmation);
-    // System.out.println(oldPassword);
-    // System.out.println(viewIdentifier);
-    //
     // if (!"userProfileChangePasswordView".equals(viewIdentifier) && !"userDetailsChangePasswordView".equals(viewIdentifier)) {
     // return true;
     // }

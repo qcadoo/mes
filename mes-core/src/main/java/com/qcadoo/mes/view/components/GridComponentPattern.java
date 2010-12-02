@@ -3,18 +3,21 @@ package com.qcadoo.mes.view.components;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
@@ -27,7 +30,7 @@ public class GridComponentPattern extends AbstractContainerPattern {
 
     private final Set<String> orderableColumns = new HashSet<String>();
 
-    private final Map<String, Column> columns = new LinkedHashMap<String, Column>();
+    private final List<Column> columns = new ArrayList<Column>();
 
     private String correspondingView;
 
@@ -39,9 +42,9 @@ public class GridComponentPattern extends AbstractContainerPattern {
 
     private boolean creatable;
 
-    private int height;
+    private int height = 300;
 
-    private int width;
+    private int width = 300;
 
     private boolean lookup;
 
@@ -52,67 +55,7 @@ public class GridComponentPattern extends AbstractContainerPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new GridComponentState(getScopeFieldDefinition(), columns.values());
-    }
-
-    public boolean isPaginable() {
-        return paginable;
-    }
-
-    public boolean isCreatable() {
-        return creatable;
-    }
-
-    public boolean isDeletable() {
-        return deletable;
-    }
-
-    public boolean isLookup() {
-        return lookup;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public boolean isFullscreen() {
-        return width == 0 && height == 0;
-    }
-
-    public boolean isPrioritizable() {
-        return getDataDefinition().isPrioritizable();
-    }
-
-    public String getCorrespondingComponent() {
-        return correspondingComponent;
-    }
-
-    public String getCorrespondingView() {
-        return correspondingView;
-    }
-
-    public String getScopeFieldName() {
-        if (getScopeFieldDefinition() != null) {
-            return getScopeFieldDefinition().getName();
-        } else {
-            return null;
-        }
-    }
-
-    public Map<String, Column> getColumns() {
-        return columns;
-    }
-
-    public Set<String> getSearchableColumns() {
-        return searchableColumns;
-    }
-
-    public Set<String> getOrderableColumns() {
-        return orderableColumns;
+        return new GridComponentState(getScopeFieldDefinition(), columns);
     }
 
     @Override
@@ -128,6 +71,127 @@ public class GridComponentPattern extends AbstractContainerPattern {
     @Override
     public String getJavaScriptObjectName() {
         return JS_OBJECT;
+    }
+
+    @Override
+    protected void initializeOptions() throws JSONException {
+        parseOptions();
+        addOptions();
+    }
+
+    private void addOptions() throws JSONException {
+        addStaticJavaScriptOption("paginable", paginable);
+        addStaticJavaScriptOption("deletable", deletable);
+        addStaticJavaScriptOption("creatable", creatable);
+        addStaticJavaScriptOption("height", height);
+        addStaticJavaScriptOption("width", width);
+        addStaticJavaScriptOption("fullscreen", width == 0 || height == 0);
+        addStaticJavaScriptOption("lookup", lookup);
+        addStaticJavaScriptOption("correspondingView", correspondingView);
+        addStaticJavaScriptOption("correspondingComponent", correspondingComponent);
+        addStaticJavaScriptOption("prioritizable", getDataDefinition().isPrioritizable());
+        addStaticJavaScriptOption("searchableColumns", new JSONArray(searchableColumns));
+        addStaticJavaScriptOption("orderableColumns", new JSONArray(orderableColumns));
+
+        if (getScopeFieldDefinition() != null) {
+            addStaticJavaScriptOption("scopeFieldName", getScopeFieldDefinition().getName());
+        } else {
+            addStaticJavaScriptOption("scopeFieldName", null);
+        }
+
+        addColumnOptions();
+    }
+
+    private void addColumnOptions() throws JSONException {
+        JSONObject jsonColumns = new JSONObject();
+
+        for (Column column : columns) {
+            JSONObject jsonColumn = new JSONObject();
+            jsonColumn.put("name", column.getName()); // TODO masz i18n
+            jsonColumn.put("link", column.isLink());
+            jsonColumn.put("hidden", column.isHidden());
+            jsonColumn.put("width", column.getWidth());
+            jsonColumn.put("align", column.getAlign());
+            if (column.getFilterValues() != null && !column.getFilterValues().isEmpty()) {
+                JSONObject jsonFilterValues = new JSONObject();
+                for (Map.Entry<String, String> filterValue : column.getFilterValues().entrySet()) {
+                    jsonFilterValues.put(filterValue.getKey(), filterValue.getValue());
+                }
+                jsonColumn.put("filterValues", jsonFilterValues);
+            }
+            jsonColumns.put(column.getName(), jsonColumn);
+        }
+
+        addStaticJavaScriptOption("columns", jsonColumns);
+    }
+
+    private void parseOptions() {
+        for (ComponentOption option : getOptions()) {
+            if ("correspondingView".equals(option.getType())) {
+                correspondingView = option.getValue();
+            } else if ("correspondingComponent".equals(option.getType())) {
+                correspondingComponent = option.getValue();
+            } else if ("paginable".equals(option.getType())) {
+                paginable = Boolean.parseBoolean(option.getValue());
+            } else if ("creatable".equals(option.getType())) {
+                creatable = Boolean.parseBoolean(option.getValue());
+            } else if ("deletable".equals(option.getType())) {
+                deletable = Boolean.parseBoolean(option.getValue());
+            } else if ("height".equals(option.getType())) {
+                height = Integer.parseInt(option.getValue());
+            } else if ("width".equals(option.getType())) {
+                width = Integer.parseInt(option.getValue());
+            } else if ("fullscreen".equals(option.getType())) {
+                width = 0;
+                height = 0;
+            } else if ("lookup".equals(option.getType())) {
+                lookup = Boolean.parseBoolean(option.getValue());
+            } else if ("searchable".equals(option.getType())) {
+                searchableColumns.addAll(parseColumns(option.getValue()));
+            } else if ("orderable".equals(option.getType())) {
+                orderableColumns.addAll(parseColumns(option.getValue()));
+            } else if ("column".equals(option.getType())) {
+                parseColumnOption(option);
+            }
+        }
+    }
+
+    private void parseColumnOption(final ComponentOption option) {
+        Column column = new Column(option.getAtrributeValue("name"));
+        String fields = option.getAtrributeValue("fields");
+        if (fields != null) {
+            for (FieldDefinition field : parseFields(fields)) {
+                column.addField(field);
+            }
+        }
+        column.setExpression(option.getAtrributeValue("expression"));
+        String width = option.getAtrributeValue("width");
+        if (width != null) {
+            column.setWidth(Integer.valueOf(width));
+        }
+        if (option.getAtrributeValue("link") != null) {
+            column.setLink(Boolean.parseBoolean(option.getAtrributeValue("link")));
+        }
+        if (option.getAtrributeValue("hidden") != null) {
+            column.setHidden(Boolean.parseBoolean(option.getAtrributeValue("hidden")));
+        }
+        columns.add(column);
+    }
+
+    private Set<String> parseColumns(final String columns) {
+        Set<String> set = new HashSet<String>();
+        for (String column : columns.split("\\s*,\\s*")) {
+            set.add(column);
+        }
+        return set;
+    }
+
+    private Set<FieldDefinition> parseFields(final String fields) {
+        Set<FieldDefinition> set = new HashSet<FieldDefinition>();
+        for (String field : fields.split("\\s*,\\s*")) {
+            set.add(getDataDefinition().getField(field));
+        }
+        return set;
     }
 
     public class Column {
@@ -149,30 +213,30 @@ public class GridComponentPattern extends AbstractContainerPattern {
         }
 
         public String getName() {
-            return name; // TODO masz i18n
+            return name;
         }
 
-        public void setWidth(final Integer width) {
+        private void setWidth(final Integer width) {
             this.width = width;
         }
 
-        public Integer getWidth() {
+        private Integer getWidth() {
             return width;
         }
 
-        public boolean isLink() {
+        private boolean isLink() {
             return link;
         }
 
-        public void setLink(final boolean link) {
+        private void setLink(final boolean link) {
             this.link = link;
         }
 
-        public boolean isHidden() {
+        private boolean isHidden() {
             return hidden;
         }
 
-        public String getAlign() {
+        private String getAlign() {
             if (fields.size() == 1 && Number.class.isAssignableFrom(fields.get(0).getType().getType())) {
                 return "right";
             } else {
@@ -180,7 +244,7 @@ public class GridComponentPattern extends AbstractContainerPattern {
             }
         }
 
-        public Map<String, String> getFilterValues() {
+        private Map<String, String> getFilterValues() {
             if (fields.size() == 1 && fields.get(0).getType() instanceof EnumType) {
                 Map<String, String> values = new HashMap<String, String>();
                 EnumType type = (EnumType) fields.get(0).getType();
@@ -193,15 +257,15 @@ public class GridComponentPattern extends AbstractContainerPattern {
             }
         }
 
-        public void setHidden(final boolean hidden) {
+        private void setHidden(final boolean hidden) {
             this.hidden = hidden;
         }
 
-        public void setExpression(final String expression) {
+        private void setExpression(final String expression) {
             this.expression = expression;
         }
 
-        public void addField(final FieldDefinition field) {
+        private void addField(final FieldDefinition field) {
             fields.add(field);
         }
 

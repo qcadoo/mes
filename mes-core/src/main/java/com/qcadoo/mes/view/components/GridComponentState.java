@@ -66,7 +66,6 @@ public class GridComponentState extends AbstractComponentState {
     public GridComponentState(final FieldDefinition scopeField, final Collection<Column> columns) {
         this.scopeField = scopeField;
         this.columns = columns;
-        registerEvent("initialize", eventPerformer, "initialize");
         registerEvent("changeSelectedEntityId", eventPerformer, "changeSelectedEntityId");
         registerEvent("removeSelectedEntityId", eventPerformer, "removeSelectedEntityId");
         registerEvent("moveUpSelectedEntityId", eventPerformer, "moveUpSelectedEntityId");
@@ -201,28 +200,35 @@ public class GridComponentState extends AbstractComponentState {
 
     protected class GridEventPerformer {
 
-        public void initialize(final String[] args) {
-            // TODO
-        }
-
         public void changeSelectedEntityId(final String[] args) {
-            // TODO
-            refresh();
+            notifyEntityIdChangeListeners(getSelectedEntityId());
         }
 
         public void removeSelectedEntityId(final String[] args) {
-            // TODO
-            refresh();
+            try {
+                getDataDefinition().delete(selectedEntityId);
+                addMessage("TODO - usunięto", MessageType.SUCCESS); // TODO masz
+            } catch (IllegalStateException e) {
+                addMessage("TODO - nieusunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
+            }
         }
 
         public void moveUpSelectedEntityId(final String[] args) {
-            // TODO
-            refresh();
+            try {
+                getDataDefinition().move(selectedEntityId, -1);
+                addMessage("TODO - przesunięto", MessageType.SUCCESS); // TODO masz
+            } catch (IllegalStateException e) {
+                addMessage("TODO - nieprzesunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
+            }
         }
 
         public void moveDownSelectedEntityId(final String[] args) {
-            // TODO
-            refresh();
+            try {
+                getDataDefinition().move(selectedEntityId, 1);
+                addMessage("TODO - przesunięto", MessageType.SUCCESS); // TODO masz
+            } catch (IllegalStateException e) {
+                addMessage("TODO - nieprzesunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
+            }
         }
 
         public void refresh() {

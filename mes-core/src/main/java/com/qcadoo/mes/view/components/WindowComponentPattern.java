@@ -29,6 +29,7 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     public void setRibbon(final Ribbon ribbon) {
         this.ribbon = ribbon;
+        addStaticJavaScriptOption("ribbon", ribbon.getAsJson());
     }
 
     @Override
