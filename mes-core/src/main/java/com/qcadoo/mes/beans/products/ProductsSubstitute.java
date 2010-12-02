@@ -7,7 +7,6 @@
 
 package com.qcadoo.mes.beans.products;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -18,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -42,12 +39,6 @@ public class ProductsSubstitute {
 
     @Column(nullable = false)
     private String name;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date effectiveDateFrom;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date effectiveDateTo;
 
     @OneToMany(mappedBy = "substitute", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
@@ -83,22 +74,6 @@ public class ProductsSubstitute {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public Date getEffectiveDateFrom() {
-        return effectiveDateFrom;
-    }
-
-    public void setEffectiveDateFrom(final Date effectiveDateFrom) {
-        this.effectiveDateFrom = effectiveDateFrom;
-    }
-
-    public Date getEffectiveDateTo() {
-        return effectiveDateTo;
-    }
-
-    public void setEffectiveDateTo(final Date effectiveDateTo) {
-        this.effectiveDateTo = effectiveDateTo;
     }
 
     public ProductsProduct getProduct() {

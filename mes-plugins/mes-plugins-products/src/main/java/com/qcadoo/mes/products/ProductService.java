@@ -434,15 +434,7 @@ public final class ProductService {
         return true;
     }
 
-    public boolean checkSubstituteDates(final DataDefinition dataDefinition, final Entity entity) {
-        return compareDates(dataDefinition, entity, "effectiveDateFrom", "effectiveDateTo");
-    }
-
     public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        return compareDates(dataDefinition, entity, "dateFrom", "dateTo");
-    }
-
-    public boolean checkInstructionDates(final DataDefinition dataDefinition, final Entity entity) {
         return compareDates(dataDefinition, entity, "dateFrom", "dateTo");
     }
 

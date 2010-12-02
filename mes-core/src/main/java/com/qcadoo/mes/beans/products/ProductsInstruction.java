@@ -7,7 +7,6 @@
 
 package com.qcadoo.mes.beans.products;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -18,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -37,12 +34,6 @@ public class ProductsInstruction {
 
     @Column(nullable = false)
     private String name;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateFrom;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateTo;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsProduct product;
@@ -81,22 +72,6 @@ public class ProductsInstruction {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public Date getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(final Date dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public Date getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(final Date dateTo) {
-        this.dateTo = dateTo;
     }
 
     public ProductsProduct getProduct() {

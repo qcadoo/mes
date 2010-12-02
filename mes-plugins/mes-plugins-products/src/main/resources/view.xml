@@ -118,8 +118,6 @@
 				<component type="textarea" name="name" field="name" />
 				<component type="input" name="priority" field="priority"
 					enabled="false" />
-				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom" />
-				<component type="input" name="effectiveDateTo" field="effectiveDateTo" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
@@ -220,8 +218,6 @@
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
-				<component type="calendar" name="dateFrom" field="dateFrom" />
-				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="textarea" name="description" field="description">
 					<option type="rows" value="5" />
 				</component>
