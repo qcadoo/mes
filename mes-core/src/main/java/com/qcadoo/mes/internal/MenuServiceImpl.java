@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.PluginManagementService;
@@ -144,7 +145,7 @@ public final class MenuServiceImpl implements MenuService {
             menuDef.addItem(category);
         }
 
-        if (!hasMenuCategoryGridView) {
+        if (!hasMenuCategoryGridView && !SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
             if (administrationCategory == null) {
                 administrationCategory = new MenulItemsGroup("administration", getLabel("administration",
                         "core.menu.administration", locale));

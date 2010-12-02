@@ -35,6 +35,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.menu.MenuMenuCategory;
 import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
@@ -58,6 +59,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     private boolean addTestData;
 
     private UsersGroup adminGroup;
+
+    private UsersGroup supervisorsGroup;
 
     @Override
     @Transactional
@@ -104,10 +107,14 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
         addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryAdministration,
                 dictionaryGridView, 1);
-        addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
-        addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
-        addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration, pluginGridView, 4);
-        addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView, 5);
+        if (!SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+            addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
+            addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
+            addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration,
+                    pluginGridView, 4);
+            addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView,
+                    5);
+        }
     }
 
     private void addMenuViewDefinitionItem(final String name, final String translation, final MenuMenuCategory menuCategory,
@@ -141,7 +148,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
     private void addGroups() {
         adminGroup = addGroup("Admins", "ROLE_ADMIN");
-        addGroup("Supervisors", "ROLE_SUPERVISOR");
+        supervisorsGroup = addGroup("Supervisors", "ROLE_SUPERVISOR");
         addGroup("Users", "ROLE_USER");
     }
 
@@ -156,8 +163,16 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addUsers() {
-        addUser("admin", "admin@email.com", "Admin", "Admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-                adminGroup);
+        addUser("demo", "demo@email.com", "Demo", "Demo", "2a97516c354b68848cdbd8f54a226a0a55b21ed138e207ad6c5cbb9c00aa5aea",
+                supervisorsGroup);
+        if (SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+            addUser("admin", "admin@email.com", "Admin", "Admin",
+                    "6b63dcb740cd63e4497883ae1fb645c5880face17b6483b468ce4c50f93698be", adminGroup);
+            // amadzomin1410
+        } else {
+            addUser("admin", "admin@email.com", "Admin", "Admin",
+                    "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", adminGroup);
+        }
     }
 
     private void addUser(final String login, final String email, final String firstName, final String lastName,
