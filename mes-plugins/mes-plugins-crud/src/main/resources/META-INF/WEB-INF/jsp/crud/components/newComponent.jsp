@@ -8,10 +8,10 @@
 
 <tiles:useAttribute name="component" />
 
-<div id="${component.pathName}" class="component">
+<div id="${component.pathName}" class="component" style="height: 100%">
 	<div class="element_js_object" style="display: none">${component.javaScriptObjectName}</div>
-	<div class="element_options" style="display: none">
-	</div>
+	<div class="element_options" style="display: none">${component.staticJavaScriptOptions}</div>
+	
 	<tiles:insertTemplate template="${component.jspFilePath}">
 		<tiles:putAttribute name="component" value="${component}" />
 	</tiles:insertTemplate>

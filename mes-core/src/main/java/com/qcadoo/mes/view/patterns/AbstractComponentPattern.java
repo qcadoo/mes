@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
@@ -54,6 +58,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     private boolean hasDescription;
 
     private String reference;
+
+    private JSONObject jsOptions = new JSONObject();
 
     public AbstractComponentPattern(final String name, final String fieldPath, final String scopeFieldPath,
             final ComponentPattern parent) {
@@ -275,4 +281,29 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return dataDefinition;
     }
 
+    protected final void addStaticJavaScriptOption(String optionName, Object optionValue) {
+        try {
+            jsOptions.put(optionName, optionValue);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public final JSONObject getStaticJavaScriptOptions() {
+        try {
+            if (fieldEntityIdChangeListeners.size() > 0 || scopeEntityIdChangeListeners.size() > 0) {
+                JSONArray listenersArray = new JSONArray();
+                for (ComponentPattern listener : fieldEntityIdChangeListeners.values()) {
+                    listenersArray.put(listener.getPathName());
+                }
+                for (ComponentPattern listener : scopeEntityIdChangeListeners.values()) {
+                    listenersArray.put(listener.getPathName());
+                }
+                jsOptions.put("listeners", listenersArray);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsOptions;
+    }
 }

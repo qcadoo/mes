@@ -12,7 +12,9 @@ QCD.components.containers = QCD.components.containers || {};
 QCD.components.containers.Window = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Container(_element, _mainController));
 	
-	//var mainController = _mainController;
+	var mainController = _mainController;
+	
+	QCD.info(mainController);
 	//var element = _element;
 	//var elementName = element.attr('id');
 	
@@ -23,16 +25,17 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	function constructor(_this) {
 		
 		var childrenElement = $("#"+_this.elementSearchName+"_windowComponents");
+		QCD.info(childrenElement);
 		_this.constructChildren(childrenElement.children());
 		
 		//mainController.setWindowHeaderComponent(_this);
 		
-//		if (_this.options.ribbon) {
-//			ribbon = new QCD.components.Ribbon(_this.options.ribbon, elementName, mainController);
-//			var ribbonElement = ribbon.constructElement();
-//			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
-//			ribbonDiv.append(ribbonElement);
-//		}
+		if (_this.options.ribbon) {
+			ribbon = new QCD.components.Ribbon(_this.options.ribbon, _this.elementName, mainController);
+			var ribbonElement = ribbon.constructElement();
+			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
+			ribbonDiv.append(ribbonElement);
+		}
 	}
 	
 	this.getComponentValue = function() {

@@ -15,8 +15,6 @@ public class WindowComponentPattern extends AbstractContainerPattern {
 
     private static final String JS_OBJECT = "QCD.components.containers.Window";
 
-    private Ribbon ribbon;
-
     public WindowComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);
@@ -28,7 +26,7 @@ public class WindowComponentPattern extends AbstractContainerPattern {
     }
 
     public void setRibbon(final Ribbon ribbon) {
-        this.ribbon = ribbon;
+        addStaticJavaScriptOption("ribbon", ribbon.getAsJson());
     }
 
     @Override

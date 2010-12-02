@@ -1,8 +1,12 @@
 package com.qcadoo.mes.view;
 
+import org.json.JSONObject;
+
 public interface ComponentPattern {
 
     void initialize(ViewDefinition viewDefinition);
+
+    JSONObject getStaticJavaScriptOptions();
 
     ComponentState createComponentState();
 
