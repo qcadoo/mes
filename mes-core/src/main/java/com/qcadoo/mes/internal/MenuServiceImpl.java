@@ -99,8 +99,6 @@ public final class MenuServiceImpl implements MenuService {
 
         MenulItemsGroup homeItem = new MenulItemsGroup("home", translationService.translate("core.menu.home", locale));
         homeItem.addItem(new UrlMenuItem("home", translationService.translate("core.menu.home", locale), null, "homePage.html"));
-        homeItem.addItem(new UrlMenuItem("about", translationService.translate("core.menu.about", locale), null,
-                "http://qcadoo.com/"));
         homeItem.addItem(new UrlMenuItem("profile", translationService.translate("core.menu.profile", locale), null,
                 "userProfile.html"));
         homeItem.addItem(new UrlMenuItem("systemInfo", translationService.translate("core.menu.systemInfo", locale), null,

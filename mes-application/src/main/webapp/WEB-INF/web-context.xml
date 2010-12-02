@@ -120,7 +120,8 @@
 	<bean id="localeResolver"
 		class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 		<property name="cookieName" value="clientLanguage"/>
-		<property name="defaultLocale" value="pl" />
+		<property name="defaultLocale" value="en" />
+		<property name="cookieMaxAge" value="100000" />
 	</bean>
 	
 	<bean id="exceptionResolver"  
