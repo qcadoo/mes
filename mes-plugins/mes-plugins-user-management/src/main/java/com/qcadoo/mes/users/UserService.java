@@ -30,6 +30,7 @@ import java.util.Locale;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ViewValue;
@@ -98,7 +99,8 @@ public final class UserService {
             return;
         }
         String envHomeProperty = System.getenv("ENV_HOME");
-        if (envHomeProperty != null && envHomeProperty.equals("amazon")) {
+        // if (envHomeProperty != null && envHomeProperty.equals("amazon")) {
+        if (SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
             value.lookupValue("mainWindow.changePasswordButton").setVisible(false);
         }
     }

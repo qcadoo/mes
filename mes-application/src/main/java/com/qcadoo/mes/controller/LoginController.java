@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.api.TranslationService;
 
 @Controller
@@ -68,9 +69,7 @@ public final class LoginController {
             mav.addObject("messageContent", "security.message.errorContent");
         }
 
-        // String envHomeProperty = System.getenv("ENV_HOME");
-        String envHomeProperty = System.getProperty("ENV_HOME");
-        if (envHomeProperty != null && envHomeProperty.equals("amazon")) {
+        if (SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
             mav.addObject("isInAmazon", true);
         } else {
             mav.addObject("isInAmazon", false);
