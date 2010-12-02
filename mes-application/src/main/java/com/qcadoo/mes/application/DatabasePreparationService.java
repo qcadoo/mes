@@ -168,7 +168,6 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         if (SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
             addUser("admin", "admin@email.com", "Admin", "Admin",
                     "6b63dcb740cd63e4497883ae1fb645c5880face17b6483b468ce4c50f93698be", adminGroup);
-            // amadzomin1410
         } else {
             addUser("admin", "admin@email.com", "Admin", "Admin",
                     "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", adminGroup);
