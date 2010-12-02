@@ -54,6 +54,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
     public void init() {
         translations.put("Trying delete entity in use", "illegalStateException.objectInUse");
         translations.put("Entity.+ cannot be found", "illegalStateException.entityNotFound");
+        translations.put("PrintError:DocumentNotGenerated", "illegalStateException.printErrorDocumentNotGenerated");
     }
 
     @Override
