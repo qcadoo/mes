@@ -29,7 +29,7 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="identifierType" use="required" />		
 		<xs:attribute name="menuAccessible" type="xs:boolean" default="false" />
-		<xs:attribute name="model" type="identifierType" use="required" />
+		<xs:attribute name="model" type="identifierType" use="optional" />
 	</xs:complexType>
 	
 	<xs:complexType name="ribbonType">

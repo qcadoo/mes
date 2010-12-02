@@ -9,21 +9,20 @@
 -->
 
 <qcd:views plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="dictionaryGridView" model="dictionary" menuable="true">
+	<view name="dictionaryGridView" model="dictionary" menuAccessible="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 			</ribbon>				
 			<component type="grid" name="dictionaries">
-				<option type="column" name="name" fields="name" link="true"/>
-				<option type="header" value="false" />
+				<option type="column" name="name" fields="name" link="true" />
 				<option type="searchable" value="name" />
 				<option type="orderable" value="name" />
 				<option type="paginable" value="true" />
-				<option type="multiselect" value="false" />
 				<option type="correspondingView" value="dictionaries/dictionaryDetailsView" />
+				<option type="correspondingComponent" value="mainWindow.dictionaryDetailsForm" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
 			</component>
 			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
@@ -49,11 +48,10 @@
 			<component type="grid" name="dictionaries" source="#{mainWindow.dictionaryDetailsForm}.dictionaryItems">
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="description" fields="description" />
-				<option type="header" value="false" />
 				<option type="paginable" value="false" />
-				<option type="multiselect" value="true" />
 				<option type="height" value="250" />
 				<option type="correspondingView" value="dictionaries/dictionaryItemDetailsView" />
+				<option type="correspondingComponent" value="mainWindow.dictionaryItemDetailsForm" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 			</component>

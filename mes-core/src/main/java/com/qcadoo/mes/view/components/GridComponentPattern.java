@@ -77,6 +77,10 @@ public class GridComponentPattern extends AbstractContainerPattern {
     protected void initializeOptions() throws JSONException {
         parseOptions();
         addOptions();
+
+        if (correspondingView != null && correspondingComponent == null) {
+            throw new IllegalStateException("Missing correspondingComponent for grid");
+        }
     }
 
     private void addOptions() throws JSONException {
@@ -152,6 +156,8 @@ public class GridComponentPattern extends AbstractContainerPattern {
                 orderableColumns.addAll(parseColumns(option.getValue()));
             } else if ("column".equals(option.getType())) {
                 parseColumnOption(option);
+            } else {
+                throw new IllegalStateException("Unknown option for grid: " + option.getType());
             }
         }
     }

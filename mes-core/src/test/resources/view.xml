@@ -33,6 +33,7 @@
 					source="#{mainWindow.beanBForm.selectBeanA}.beansB">
 					<option type="column" name="name" fields="name" />
 					<option type="correspondingView" value="products/form" />
+					<option type="correspondingComponent" value="window.form" />
 				</component>
 				<component type="form" name="beanAForm" field="beanA">
 					<component type="input" name="name" field="name" />
@@ -45,15 +46,14 @@
 				<option type="column" name="name" fields="name" />
 				<option type="column" name="multicolumn" aggregation="sum"
 					expression="2 + 2" width="20" fields="name,beanA" />
-				<option type="header" value="true" />
 				<option type="searchable" value="name,beanA" />
 				<option type="orderable" value="name" />
 				<option type="paginable" value="true" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
-				<option type="multiselect" value="true" />
 				<option type="height" value="450" />
 				<option type="correspondingView" value="products/form" />
+				<option type="correspondingComponent" value="window.form" />
 			</component>
 			<component type="button" name="link">
 				<option type="url" value="download.html" />
