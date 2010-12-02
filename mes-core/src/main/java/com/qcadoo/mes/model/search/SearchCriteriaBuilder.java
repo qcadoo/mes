@@ -82,12 +82,4 @@ public interface SearchCriteriaBuilder {
      */
     SearchCriteriaBuilder withFirstResult(int firstResult);
 
-    /**
-     * Set that deleted entities should be included, by default they aren't included.
-     * 
-     * @return this search builder
-     * @see SearchCriteria#isIncludeDeleted()
-     */
-    SearchCriteriaBuilder includeDeleted();
-
 }

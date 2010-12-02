@@ -58,8 +58,6 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementServiceImpl.class);
 
-    private static final String FIELD_DELETED = "deleted";
-
     @Value("${QCADOO_PLUGINS_PATH}")
     private String pluginsPath;
 
@@ -103,11 +101,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                     LOG.info("Plugin was installed");
                     return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.pluginAlreadyInstalled");
                 } else {
-                    plugin.setDeleted(false);
                     plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
                     plugin.setBase(false);
                     plugin.setFileName(file.getOriginalFilename());
-                    save(plugin);
+                    getCurrentSession().save(plugin);
                     return new PluginManagementOperationStatusImpl(false, "plugins.messages.success.downloadSuccess");
                 }
             } catch (IllegalStateException e) {
@@ -156,9 +153,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToRemove");
         }
         try {
-            databasePlugin.setDeleted(true);
-
-            save(databasePlugin);
+            getCurrentSession().delete(databasePlugin);
 
             pluginUtil.removePluginFile(pluginsTmpPath + "/" + databasePlugin.getFileName(), false);
         } catch (IOException e) {
@@ -183,7 +178,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         }
         String pluginStatus = plugin.getStatus();
         plugin.setStatus(PluginStatus.ACTIVE.getValue());
-        save(plugin);
+        getCurrentSession().save(plugin);
         if (pluginStatus.equals(PluginStatus.INSTALLED.getValue())) {
             return new PluginManagementOperationStatusImpl(false, "plugins.messages.success.enableSuccess");
         } else {
@@ -191,7 +186,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                 pluginUtil.movePluginFile(pluginsTmpPath + "/" + plugin.getFileName(), pluginsPath);
             } catch (IOException e) {
                 plugin.setStatus(PluginStatus.DOWNLOADED.getValue());
-                save(plugin);
+                getCurrentSession().save(plugin);
                 LOG.error("Problem with moving plugin file - " + e.getMessage());
                 return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileMoveError");
             }
@@ -226,7 +221,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToDisable");
         }
         plugin.setStatus(PluginStatus.INSTALLED.getValue());
-        save(plugin);
+        getCurrentSession().save(plugin);
         return new PluginManagementOperationStatusImpl(false, "plugins.messages.success.disableSuccess");
     }
 
@@ -243,8 +238,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToUninstall");
         }
         try {
-            databasePlugin.setDeleted(true);
-            save(databasePlugin);
+            getCurrentSession().delete(databasePlugin);
             pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName(), true);
             pluginUtil.removeResources("js", webappPath + "/" + "js" + "/" + databasePlugin.getIdentifier());
             pluginUtil.removeResources("css", webappPath + "/" + "css" + "/" + databasePlugin.getIdentifier());
@@ -350,8 +344,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         checkNotNull(identifier, "identifier must be given");
         checkNotNull(status, "status must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
-                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("status", status))
-                .add(Restrictions.eq(FIELD_DELETED, false));
+                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq("status", status));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with identifier: " + identifier + " and status: " + status);
         }
@@ -363,7 +356,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     public PluginsPlugin getByIdentifier(final String identifier) {
         checkNotNull(identifier, "identifier must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class)
-                .add(Restrictions.eq("identifier", identifier)).add(Restrictions.eq(FIELD_DELETED, false));
+                .add(Restrictions.eq("identifier", identifier));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with identifier: " + identifier);
         }
@@ -374,8 +367,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Transactional
     public PluginsPlugin get(final Long id) {
         checkNotNull(id, "id must be given");
-        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.idEq(id))
-                .add(Restrictions.eq(FIELD_DELETED, false));
+        Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.idEq(id));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with id: " + id);
         }
@@ -389,28 +381,19 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         checkNotNull(vendor, "vendor must be given");
         checkNotNull(name, "name must be given");
         Criteria criteria = getCurrentSession().createCriteria(PluginsPlugin.class).add(Restrictions.eq("name", name))
-                .add(Restrictions.eq("vendor", vendor)).add(Restrictions.eq(FIELD_DELETED, false));
+                .add(Restrictions.eq("vendor", vendor));
         if (LOG.isDebugEnabled()) {
             LOG.debug("get plugin with name: " + name + " and vendor: " + vendor);
         }
         return (PluginsPlugin) criteria.uniqueResult();
     }
 
-    @Override
-    @Transactional
-    public void save(final PluginsPlugin plugin) {
-        checkNotNull(plugin, "plugin must be given");
-        getCurrentSession().save(plugin);
-    }
-
     private void movePlugin(final PluginsPlugin plugin, final PluginsPlugin databasePlugin) throws IOException {
-        plugin.setDeleted(false);
         plugin.setStatus(databasePlugin.getStatus());
         plugin.setBase(false);
-        databasePlugin.setDeleted(true);
-        save(databasePlugin);
+        getCurrentSession().delete(databasePlugin);
 
-        save(plugin);
+        getCurrentSession().save(plugin);
 
         pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName(), true);
 

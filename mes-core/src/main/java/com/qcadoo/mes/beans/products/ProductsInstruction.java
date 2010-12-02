@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.beans.products;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -35,8 +34,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(name = "products_instruction")
@@ -52,12 +52,6 @@ public class ProductsInstruction {
     @Column(nullable = false)
     private String name;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateFrom;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateTo;
-
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsProduct product;
 
@@ -67,12 +61,11 @@ public class ProductsInstruction {
     private Boolean master;
 
     @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<ProductsInstructionBomComponent> bomComponents;
 
     @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
-
-    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -98,22 +91,6 @@ public class ProductsInstruction {
         this.name = name;
     }
 
-    public Date getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(final Date dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public Date getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(final Date dateTo) {
-        this.dateTo = dateTo;
-    }
-
     public ProductsProduct getProduct() {
         return product;
     }
@@ -136,14 +113,6 @@ public class ProductsInstruction {
 
     public void setMaster(final Boolean master) {
         this.master = master;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
     public List<ProductsInstructionBomComponent> getBomComponents() {

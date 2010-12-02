@@ -34,6 +34,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "products_product")
 public class ProductsProduct {
@@ -57,9 +60,8 @@ public class ProductsProduct {
 
     private String unit;
 
-    private boolean deleted;
-
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<ProductsSubstitute> substitutes;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
@@ -128,14 +130,6 @@ public class ProductsProduct {
 
     public void setUnit(final String unit) {
         this.unit = unit;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public List<ProductsSubstitute> getSubstitutes() {

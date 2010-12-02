@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
@@ -45,16 +46,20 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     private static final Logger LOG = LoggerFactory.getLogger(TranslatedMessageExceptionResolver.class);
 
-    private final Map<String, String> translations = new HashMap<String, String>();
+    public static final String DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE = "exceptionMessage";
+
+    private final Map<String, String> messageTranslations = new HashMap<String, String>();
+
+    private final Map<Exception, String> exceptionTranslations = new HashMap<Exception, String>();
 
     @Autowired
     private ErrorController errorController;
 
     @PostConstruct
     public void init() {
-        translations.put("Trying delete entity in use", "illegalStateException.objectInUse");
-        translations.put("Entity.+ cannot be found", "illegalStateException.entityNotFound");
-        translations.put("PrintError:DocumentNotGenerated", "illegalStateException.printErrorDocumentNotGenerated");
+        exceptionTranslations.put(new DataIntegrityViolationException(""), "dataIntegrityViolationException.objectInUse");
+        messageTranslations.put("Entity.+ cannot be found", "illegalStateException.entityNotFound");
+        messageTranslations.put("PrintError:DocumentNotGenerated", "illegalStateException.printErrorDocumentNotGenerated");
     }
 
     @Override
@@ -65,22 +70,33 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
             String codeStr = mv.getViewName();
             int code = Integer.parseInt(codeStr);
+            boolean found = false;
 
             String exceptionMessage = ex.getMessage();
             String predefinedExceptionMessage = null;
-            for (Map.Entry<String, String> translation : translations.entrySet()) {
-                if (exceptionMessage.matches(translation.getKey())) {
+            for (Map.Entry<Exception, String> translation : exceptionTranslations.entrySet()) {
+                if (translation.getKey().getClass().isInstance(ex)) {
                     predefinedExceptionMessage = translation.getValue();
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Adding exception message to view: " + predefinedExceptionMessage);
-                    }
+                    found = true;
                     break;
                 }
             }
 
+            if (!found) {
+                for (Map.Entry<String, String> translation : messageTranslations.entrySet()) {
+                    if (exceptionMessage.matches(translation.getKey())) {
+                        predefinedExceptionMessage = translation.getValue();
+                        break;
+                    }
+                }
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Adding exception message to view: " + predefinedExceptionMessage);
+            }
+
             return errorController.getAccessDeniedPageView(code, ex, predefinedExceptionMessage,
                     retrieveLocaleFromRequestCookie(request));
-
         }
         return mv;
     }

@@ -56,14 +56,11 @@
 		<string name="name">
 			<validatesPresence />
 		</string>
-		<date name="effectiveDateFrom" />
-		<date name="effectiveDateTo" />
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" />
 		<priority name="priority" scope="product" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
 	<model name="substituteComponent">
@@ -95,13 +92,10 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<boolean name="master" />
-		<date name="dateFrom" />
-		<date name="dateTo" />
 		<string name="description" />
 		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
 		<hasMany name="orders" model="order" joinField="instruction" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
 	<model name="instructionBomComponent">

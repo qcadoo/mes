@@ -140,14 +140,14 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="usersByUsernameQuery">
 			<value>
-				SELECT USERNAME, PASSWORD, not deleted as enabled FROM
+				SELECT USERNAME, PASSWORD, enabled FROM
 				Users_User WHERE
-				USERNAME like ? and deleted=false
+				USERNAME like ? and enabled=true
             </value>
 		</property>
 		<property name="authoritiesByUsernameQuery">
 			<value>SELECT U.username, G.role as authority FROM Users_User U JOIN
-				Users_Group G ON u.usergroup_id = G.id WHERE U.username like ? and U.deleted=false</value>
+				Users_Group G ON u.usergroup_id = G.id WHERE U.username like ?</value>
 		</property>
 	</bean>
 

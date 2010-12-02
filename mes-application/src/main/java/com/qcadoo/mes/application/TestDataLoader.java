@@ -189,12 +189,7 @@ public final class TestDataLoader {
         }
 
         for (int i = 0; i < RANDOM.nextInt(5); i++) {
-            long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
-            long endDate = startDate + (MILLIS_IN_DAY * RANDOM.nextInt(50));
-            Date effectiveDateFrom = RANDOM.nextDouble() > 0.3 ? new Date(startDate) : null;
-            Date effectiveDateTo = RANDOM.nextDouble() > 0.3 ? new Date(endDate) : null;
-            addSubstitute(values.get("name") + "*", values.get("product_nr") + "*", product, effectiveDateFrom, effectiveDateTo,
-                    i + 1);
+            addSubstitute(values.get("name") + "*", values.get("product_nr") + "*", product, i + 1);
         }
     }
 
@@ -343,10 +338,8 @@ public final class TestDataLoader {
     }
 
     private ProductsSubstitute addSubstitute(final String name, final String number, final ProductsProduct product,
-            final Date effectiveDateFrom, final Date effectiveDateTo, final int priority) {
+            final int priority) {
         ProductsSubstitute substitute = new ProductsSubstitute();
-        substitute.setEffectiveDateFrom(effectiveDateFrom);
-        substitute.setEffectiveDateTo(effectiveDateTo);
         substitute.setName(name);
         substitute.setNumber(number);
         substitute.setPriority(priority);
@@ -354,8 +347,7 @@ public final class TestDataLoader {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test substitute {name=" + substitute.getName() + ", number=" + substitute.getNumber() + ", priority="
-                    + substitute.getPriority() + ", product=" + substitute.getProduct().getNumber() + ", effectiveDateFrom="
-                    + substitute.getEffectiveDateFrom() + ", effectiveDateTo=" + substitute.getEffectiveDateTo() + "}");
+                    + substitute.getPriority() + ", product=" + substitute.getProduct().getNumber() + "}");
         }
 
         sessionFactory.getCurrentSession().save(substitute);
@@ -390,14 +382,8 @@ public final class TestDataLoader {
         if (product != null) {
             ProductsInstruction defaultInstruction = getDefaultInstructionForProduct(product);
 
-            long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
-            long endDate = startDate + (MILLIS_IN_DAY * RANDOM.nextInt(50));
-            Date dateFrom = RANDOM.nextDouble() > 0.3 ? new Date(startDate) : null;
-            Date dateTo = RANDOM.nextDouble() > 0.3 ? new Date(endDate) : null;
             ProductsInstruction instruction = new ProductsInstruction();
             instruction.setId(Long.valueOf(values.get("bom_id")));
-            instruction.setDateFrom(dateFrom);
-            instruction.setDateTo(dateTo);
             if (!values.get("description").isEmpty()) {
                 instruction.setDescription(values.get("description"));
             }
@@ -408,8 +394,7 @@ public final class TestDataLoader {
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test instruction {id=" + instruction.getId() + ", name=" + instruction.getName() + ", number="
-                        + instruction.getNumber() + ", product=" + instruction.getProduct().getNumber() + ", dateFrom="
-                        + instruction.getDateFrom() + ", dateTo=" + instruction.getDateTo() + ", description="
+                        + instruction.getNumber() + ", product=" + instruction.getProduct().getNumber() + ", description="
                         + instruction.getDescription() + ", master=" + instruction.getMaster() + "}");
             }
 

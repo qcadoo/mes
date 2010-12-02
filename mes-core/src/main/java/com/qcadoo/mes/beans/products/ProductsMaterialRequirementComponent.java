@@ -45,22 +45,12 @@ public class ProductsMaterialRequirementComponent {
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsMaterialRequirement materialRequirement;
 
-    private boolean deleted;
-
     public Long getId() {
         return id;
     }
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public ProductsOrder getOrder() {

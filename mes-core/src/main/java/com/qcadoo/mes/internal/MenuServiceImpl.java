@@ -86,7 +86,7 @@ public final class MenuServiceImpl implements MenuService {
             ViewDefinition vd = viewDefinitionService.getWithoutSession(viewDefinitionEntity.getStringField("pluginIdentifier"),
                     viewDefinitionEntity.getStringField("viewName"));
             if (vd == null || !vd.isMenuable()) {
-                viewDefinitionDD.deleteHard(viewDefinitionEntity.getId());
+                viewDefinitionDD.delete(viewDefinitionEntity.getId());
             }
         }
     }

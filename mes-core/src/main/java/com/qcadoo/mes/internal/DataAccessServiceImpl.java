@@ -37,7 +37,6 @@ import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +125,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkNotNull(entityId, "EntityId must be given");
 
-        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
         if (databaseEntity == null) {
             LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
@@ -150,20 +149,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkState(entityIds.length > 0, "EntityIds must be given");
 
         for (Long entityId : entityIds) {
-            deleteEntity(dataDefinition, entityId, false);
-        }
-    }
-
-    @Override
-    @Transactional
-    @Monitorable
-    public void deleteHard(final InternalDataDefinition dataDefinition, final Long... entityIds) {
-        checkNotNull(dataDefinition, "DataDefinition must be given");
-        checkState(dataDefinition.isDeletable(), "Entity must be deletable");
-        checkState(entityIds.length > 0, "EntityIds must be given");
-
-        for (Long entityId : entityIds) {
-            deleteEntity(dataDefinition, entityId, true);
+            deleteEntity(dataDefinition, entityId);
         }
     }
 
@@ -203,7 +189,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkNotNull(entityId, "EntityId must be given");
         checkState(position > 0, "Position must be greaten than 0");
 
-        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
         if (databaseEntity == null) {
             LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
@@ -226,7 +212,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkNotNull(entityId, "EntityId must be given");
         checkState(offset != 0, "Offset must be different than 0");
 
-        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, false);
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
         if (databaseEntity == null) {
             LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
@@ -244,7 +230,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Object existingDatabaseEntity = null;
 
         if (entity.getId() != null) {
-            existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId(), false);
+            existingDatabaseEntity = getDatabaseEntity(dataDefinition, entity.getId());
             checkState(existingDatabaseEntity != null, "Entity[%s][id=%s] cannot be found", dataDefinition.getPluginIdentifier()
                     + "." + dataDefinition.getName(), entity.getId());
         }
@@ -252,14 +238,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return existingDatabaseEntity;
     }
 
-    private void deleteEntity(final InternalDataDefinition dataDefinition, final Long entityId, final boolean hardDelete) {
-        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId, true);
+    private void deleteEntity(final InternalDataDefinition dataDefinition, final Long entityId) {
+        Object databaseEntity = getDatabaseEntity(dataDefinition, entityId);
 
         checkNotNull(databaseEntity, "Entity[%s][id=%s] cannot be found", dataDefinition.getPluginIdentifier() + "."
                 + dataDefinition.getName(), entityId);
 
         priorityService.deprioritizeEntity(dataDefinition, databaseEntity);
-
         Map<String, FieldDefinition> fields = dataDefinition.getFields();
 
         for (FieldDefinition fieldDefinition : fields.values()) {
@@ -271,25 +256,13 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     for (Object child : children) {
                         DefaultEntity defaultEntity = (DefaultEntity) child;
                         defaultEntity.setField(hasManyFieldType.getJoinFieldName(), null);
-                        Entity genericEntity = save(childDataDefinition, defaultEntity);
-                        if (!genericEntity.isValid()) {
-                            throw new IllegalStateException("Trying delete entity in use");
-                        }
-                    }
-                } else {
-                    for (Object child : children.find().includeDeleted().list().getEntities()) {
-                        deleteEntity(childDataDefinition, entityService.getId(child), hardDelete);
+                        save(childDataDefinition, defaultEntity);
                     }
                 }
             }
         }
 
-        if (hardDelete) {
-            getCurrentSession().delete(databaseEntity);
-        } else {
-            entityService.setDeleted(databaseEntity);
-            getCurrentSession().update(databaseEntity);
-        }
+        getCurrentSession().delete(databaseEntity);
 
         LOG.info("Entity[" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName() + "][id=" + entityId
                 + "] has been deleted");
@@ -302,10 +275,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private Criteria getCriteria(final SearchCriteria searchCriteria) {
         InternalDataDefinition dataDefinition = (InternalDataDefinition) searchCriteria.getDataDefinition();
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
-
-        if (dataDefinition.isDeletable() && !searchCriteria.isIncludeDeleted()) {
-            entityService.addDeletedRestriction(criteria);
-        }
 
         for (Restriction restriction : searchCriteria.getRestrictions()) {
             addRestrictionToCriteria(restriction, criteria);
@@ -354,17 +323,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
     }
 
-    private Object getDatabaseEntity(final InternalDataDefinition dataDefinition, final Long entityId, final boolean withDeleted) {
-        if (withDeleted || !dataDefinition.isDeletable()) {
-            return getCurrentSession().get(dataDefinition.getClassForEntity(), entityId);
-        } else {
-            Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity()).add(
-                    Restrictions.idEq(entityId));
-            if (dataDefinition.isDeletable()) {
-                entityService.addDeletedRestriction(criteria);
-            }
-            return criteria.uniqueResult();
-        }
+    private Object getDatabaseEntity(final InternalDataDefinition dataDefinition, final Long entityId) {
+        return getCurrentSession().get(dataDefinition.getClassForEntity(), entityId);
     }
 
     private void copyMissingFields(final Entity genericEntityToSave, final Entity existingGenericEntity) {

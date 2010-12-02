@@ -76,14 +76,6 @@ public interface PluginManagementService {
     PluginsPlugin getByNameAndVendor(final String name, final String vendor);
 
     /**
-     * Save given plugin.
-     * 
-     * @param plugin
-     *            plugin to save
-     */
-    void save(PluginsPlugin plugin);
-
-    /**
      * Download the plugin and save it into the database with status "downloaded".
      * 
      * @param file

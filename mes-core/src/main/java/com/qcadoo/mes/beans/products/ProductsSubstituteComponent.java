@@ -51,8 +51,6 @@ public class ProductsSubstituteComponent {
     @Column(scale = 3, precision = 10, nullable = false)
     private BigDecimal quantity;
 
-    private boolean deleted;
-
     public Long getId() {
         return id;
     }
@@ -83,14 +81,6 @@ public class ProductsSubstituteComponent {
 
     public void setQuantity(final BigDecimal quantity) {
         this.quantity = quantity;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
 }

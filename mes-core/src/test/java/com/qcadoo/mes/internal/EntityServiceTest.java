@@ -25,10 +25,8 @@
 package com.qcadoo.mes.internal;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -168,27 +166,6 @@ public class EntityServiceTest extends DataAccessTest {
 
         // then
         assertEquals(Long.valueOf(13), databaseEntity.getId());
-    }
-
-    @Test
-    public void shouldSetEntityAsDeleted() throws Exception {
-        // given
-        SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject();
-
-        // when
-        entityService.setDeleted(databaseEntity);
-
-        // then
-        assertTrue(databaseEntity.isDeleted());
-    }
-
-    @Test
-    public void shouldNotBeDeletedAfterEntityCreation() throws Exception {
-        // given
-        SampleSimpleDatabaseObject databaseEntity = new SampleSimpleDatabaseObject();
-
-        // then
-        assertFalse(databaseEntity.isDeleted());
     }
 
     @Test(expected = IllegalStateException.class)

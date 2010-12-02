@@ -47,8 +47,6 @@ public class SampleSimpleDatabaseObject {
 
     private Date birthDate;
 
-    private boolean deleted;
-
     private SampleParentDatabaseObject belongsTo;
 
     private SampleParentDatabaseObject lazyBelongsTo;
@@ -82,14 +80,6 @@ public class SampleSimpleDatabaseObject {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public SampleParentDatabaseObject getBelongsTo() {
