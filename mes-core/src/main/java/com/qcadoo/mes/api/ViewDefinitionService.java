@@ -50,7 +50,7 @@ public interface ViewDefinitionService {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#pluginIdentifier == 'dictionaries') or (#pluginIdentifier == 'products' "
             + "and (#viewName != 'orderGridView' and #viewName != 'orderDetailsView' or hasRole('ROLE_SUPERVISOR'))) or "
-            + "(#pluginIdentifier == 'users' and #viewName == 'userProfileView')")
+            + "(#pluginIdentifier == 'users' and #viewName == 'userProfileView') or (#pluginIdentifier == 'core' and #viewName == 'systemInfoView')")
     ViewDefinition get(String pluginIdentifier, String viewName);
 
     /**

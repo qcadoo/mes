@@ -36,4 +36,5 @@
 	<row LOGIN="abdul.turek" EMAIL="abdul.turek@email.com" FIRSTNAME="Abdul" LASTNAME="Turek" ROLE="ROLE_USER" />
 	<row LOGIN="jose.mexico" EMAIL="jose.mexico@email.com" FIRSTNAME="Jose" LASTNAME="Mexico" ROLE="ROLE_USER" />
 	<row LOGIN="mark.pakistan" EMAIL="mark.pakistan@email.com" FIRSTNAME="Mark" LASTNAME="Pakistan" ROLE="ROLE_USER" />
+	<row LOGIN="demo" EMAIL="demo@qcadoo.com" FIRSTNAME="Demo" LASTNAME="Demo" ROLE="ROLE_SUPERVISOR" />
 </users>
