@@ -92,6 +92,17 @@ public final class UserService {
 
     }
 
+    public void onUserProfileView(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+            final Locale locale) throws IOException, DocumentException {
+        if (value == null || value.lookupValue("mainWindow.userDetailsForm") == null) {
+            return;
+        }
+        String envHomeProperty = System.getenv("ENV_HOME");
+        if (envHomeProperty != null && envHomeProperty.equals("amazon")) {
+            value.lookupValue("mainWindow.changePasswordButton").setVisible(false);
+        }
+    }
+
     public boolean checkPassword(final DataDefinition dataDefinition, final Entity entity) {
 
         String password = entity.getStringField("password");

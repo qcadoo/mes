@@ -131,19 +131,19 @@
 
 	<error-page>
 		<error-code>400</error-code>
-		<location>/error.jsp</location>
+		<location>/error.html?code=400</location>
 	</error-page>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/error.jsp</location>
+		<location>/error.html?code=404</location>
 	</error-page>
 	<error-page>
 		<error-code>500</error-code>
-		<location>/error.jsp</location>
+		<location>/error.html?code=500</location>
 	</error-page>
 	<error-page>
 		<error-code>503</error-code>
-		<location>/error.jsp</location>
+		<location>/error.html?code=503</location>
 	</error-page>
 
 	<welcome-file-list>

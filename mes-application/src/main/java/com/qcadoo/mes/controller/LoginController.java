@@ -68,6 +68,13 @@ public final class LoginController {
             mav.addObject("messageContent", "security.message.errorContent");
         }
 
+        String envHomeProperty = System.getenv("ENV_HOME");
+        if (envHomeProperty != null && envHomeProperty.equals("amazon")) {
+            mav.addObject("isInAmazon", true);
+        } else {
+            mav.addObject("isInAmazon", false);
+        }
+
         return mav;
     }
 

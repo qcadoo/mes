@@ -191,6 +191,7 @@
 				<option type="url" value="users/userProfileChangePasswordView.html" />
 			</component>
 		</component>
+		<onView bean="com.qcadoo.mes.users.UserService" method="onUserProfileView" />
 	</view>
 	<view name="userProfileChangePasswordView" model="user">
 		<component type="window" name="mainWindow">

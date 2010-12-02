@@ -103,6 +103,7 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 					QCDConnector.mainController.onSessionExpired();
 					return;
 				}
+				//alert(responseText);
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
 					var message = responseText.substring(20, responseText.search("]]>"));
 					QCDConnector.mainController.showMessage("error", message);

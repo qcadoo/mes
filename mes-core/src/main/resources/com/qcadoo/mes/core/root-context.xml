@@ -178,7 +178,7 @@
 
 	<bean id="accessDeniedHandler"
 		class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
-		<property name="errorPage" value="/accessDenied.html" />
+		<property name="errorPage" value="/error.html?code=403" />
 	</bean>
 
 	<bean id="mySessionExpirationFilter"

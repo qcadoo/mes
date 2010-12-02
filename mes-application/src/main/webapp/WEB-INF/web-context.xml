@@ -125,8 +125,13 @@
 	
 	<bean id="exceptionResolver"  
 		class="com.qcadoo.mes.application.TranslatedMessageExceptionResolver">  
-  		<property name="defaultErrorView" value="core/exception" />
+  		<property name="defaultErrorView" value="500" />
   		<property name="warnLogCategory" value="com.qcadoo.mes.application.Application" />
+  		<property name="exceptionMappings">  
+			<props>  
+				<prop key="org.springframework.security.access.AccessDeniedException">403</prop>  
+			</props>  
+		</property> 
  	</bean>  
 
 </beans>

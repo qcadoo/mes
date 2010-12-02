@@ -39,25 +39,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
-import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.controller.ErrorController;
 
 public final class TranslatedMessageExceptionResolver extends SimpleMappingExceptionResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger(TranslatedMessageExceptionResolver.class);
 
-    public static final String DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE = "exceptionMessage";
-
     private final Map<String, String> translations = new HashMap<String, String>();
 
-    private final String exceptionMessageAttribute = DEFAULT_EXCEPTION_MESSAGE_ATTRIBUTE;
-
     @Autowired
-    private TranslationService translationService;
+    private ErrorController errorController;
 
     @PostConstruct
     public void init() {
-        translations.put("Trying delete entity in use", "core.exception.illegalStateException.objectInUse");
-        translations.put("Entity.+ cannot be found", "core.exception.illegalStateException.entityNotFound");
+        translations.put("Trying delete entity in use", "illegalStateException.objectInUse");
+        translations.put("Entity.+ cannot be found", "illegalStateException.entityNotFound");
     }
 
     @Override
@@ -65,19 +61,25 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             final Object handler, final Exception ex) {
         ModelAndView mv = super.doResolveException(request, response, handler, ex);
         if (mv != null) {
-            String exceptionMessage = ex.getMessage();
 
+            String codeStr = mv.getViewName();
+            int code = Integer.parseInt(codeStr);
+
+            String exceptionMessage = ex.getMessage();
+            String predefinedExceptionMessage = null;
             for (Map.Entry<String, String> translation : translations.entrySet()) {
                 if (exceptionMessage.matches(translation.getKey())) {
-                    exceptionMessage = translationService.translate(translation.getValue(),
-                            retrieveLocaleFromRequestCookie(request));
+                    predefinedExceptionMessage = translation.getValue();
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Adding exception message to view: " + predefinedExceptionMessage);
+                    }
                     break;
                 }
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Adding exception message to view: " + exceptionMessage);
-            }
-            mv.addObject(this.exceptionMessageAttribute, exceptionMessage);
+
+            return errorController.getAccessDeniedPageView(code, ex, predefinedExceptionMessage,
+                    retrieveLocaleFromRequestCookie(request));
+
         }
         return mv;
     }

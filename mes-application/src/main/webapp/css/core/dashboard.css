@@ -142,6 +142,7 @@ body {
 }
 #dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon2 {
 	background-image: url('images/dashboard/define.png');
+	background-position: 15px 25px;
 }
 #dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon3 {
 	background-image: url('images/dashboard/react.png');
