@@ -55,6 +55,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.beans.products.ProductsInstruction;
@@ -106,7 +107,9 @@ public final class TestDataLoader {
 
     public void loadTestData() {
         readDataFromXML("units", new String[] { "name" });
-        readDataFromXML("users", USER_ATTRIBUTES);
+        if (!SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+            readDataFromXML("users", USER_ATTRIBUTES);
+        }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
         readDataFromXML("instructions", INSTRUCTION_ATTRIBUTES);

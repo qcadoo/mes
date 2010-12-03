@@ -7,7 +7,7 @@ public class SystemProperties {
     }
 
     public static env getEnviroment() {
-        return env.LOCAL;
+        return env.AMAZON;
     }
 
 }
