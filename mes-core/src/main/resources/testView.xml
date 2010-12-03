@@ -13,9 +13,9 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{mainWindow.grid}.performNew;" />
+					<bigButton name="new" icon="newIcon24.png" action="#{window.grid}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.grid}.performDelete;" />
+						action="#{window.grid}.performDelete;" />
 				</group>
 			</ribbon>
 			<component type="grid" name="grid">
@@ -34,17 +34,17 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.productDetailsForm}.performSave;" />
+						action="#{window.form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack" />
+						action="#{window.form}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{mainWindow.productDetailsForm}.performCancel;" />
+						action="#{window.form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
 			<component type="form" name="form">

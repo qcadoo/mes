@@ -70,30 +70,30 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performSave = function(actionsPerformer) {
-		block();
-		mainController.performSave(elementName, actionsPerformer, function() {
-			unblock();
-		});
+//		block();
+//		mainController.performSave(elementName, actionsPerformer, function() {
+//			unblock();
+//		});
 	}
 	
 	this.performDelete = function(actionsPerformer) {
-		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
-			block();
-			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer);
-		}
+//		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
+//		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
+//			block();
+//			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer);
+//		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-		var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
-		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
-			block();
-			mainController.performCancel(formValue ? formValue.id : null, actionsPerformer);
-		}
+//		var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
+//		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
+//			block();
+//			mainController.performCancel(formValue ? formValue.id : null, actionsPerformer);
+//		}
 	}
 	
 	this.callUpdateFunction = function(actionsPerformer, functionTriggerName) {
-		mainController.performCallUpdateFunction(functionTriggerName, actionsPerformer);
+//		mainController.performCallUpdateFunction(functionTriggerName, actionsPerformer);
 	}
 	
 	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
