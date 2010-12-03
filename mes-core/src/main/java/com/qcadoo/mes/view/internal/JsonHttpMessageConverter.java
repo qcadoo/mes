@@ -17,10 +17,12 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 public class JsonHttpMessageConverter extends AbstractHttpMessageConverter<JSONObject> {
 
-    public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+    public static final Charset CHARSET = Charset.forName("UTF-8");
+
+    public static final MediaType MEDIA_TYPE = new MediaType("application", "json", CHARSET);
 
     public JsonHttpMessageConverter() {
-        super(new MediaType("application", "json", DEFAULT_CHARSET));
+        super(MEDIA_TYPE);
     }
 
     @Override
@@ -31,7 +33,7 @@ public class JsonHttpMessageConverter extends AbstractHttpMessageConverter<JSONO
     @Override
     protected JSONObject readInternal(final Class<? extends JSONObject> clazz, final HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        String body = IOUtils.toString(inputMessage.getBody());
+        String body = IOUtils.toString(inputMessage.getBody(), CHARSET.name());
         try {
             return new JSONObject(body);
         } catch (JSONException e) {
@@ -42,7 +44,7 @@ public class JsonHttpMessageConverter extends AbstractHttpMessageConverter<JSONO
     @Override
     protected void writeInternal(final JSONObject json, final HttpOutputMessage outputMessage) throws IOException,
             HttpMessageNotWritableException {
-        Writer writer = new OutputStreamWriter(outputMessage.getBody());
+        Writer writer = new OutputStreamWriter(outputMessage.getBody(), CHARSET);
         writer.write(json.toString());
         writer.flush();
     }

@@ -16,7 +16,7 @@ public class TextInputComponentState extends AbstractComponentState {
 
     @Override
     public void setFieldValue(final Object value) {
-        this.value = (String) value;
+        this.value = value != null ? value.toString() : null;
         requestRender();
         requestUpdateState();
     }
