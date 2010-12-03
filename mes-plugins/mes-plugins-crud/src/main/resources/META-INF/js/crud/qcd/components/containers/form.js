@@ -16,7 +16,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	var element = _element;
 	//var elementName = element.attr('id');
 	
-	//var elementPath = this.elementPath;
+	var elementPath = this.elementPath;
 	
 	//var buttons = new Object();
 	
