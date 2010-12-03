@@ -9,9 +9,9 @@ public interface ComponentState {
 
     String JSON_UPDATE_STATE = "updateState";
 
-    String JSON_VISIBLE = "v";
+    String JSON_VISIBLE = "visible";
 
-    String JSON_ENABLED = "e";
+    String JSON_ENABLED = "enabled";
 
     String JSON_CONTENT = "content";
 
@@ -23,9 +23,9 @@ public interface ComponentState {
 
     String JSON_MESSAGES = "messages";
 
-    String JSON_MESSAGE_BODY = "m";
+    String JSON_MESSAGE_BODY = "message";
 
-    String JSON_MESSAGE_TYPE = "t";
+    String JSON_MESSAGE_TYPE = "type";
 
     enum MessageType {
         FAILURE, SUCCESS

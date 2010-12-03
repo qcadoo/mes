@@ -128,7 +128,7 @@ public class ComponentPatternTest {
     }
 
     @Test
-    public void shouldHaveEmptyOptions() throws Exception {
+    public void shouldHaveListenersOnEmptyOptions() throws Exception {
         // given
         AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
 
@@ -136,7 +136,7 @@ public class ComponentPatternTest {
         JSONObject options = pattern.getStaticJavaScriptOptions();
 
         // then
-        assertEquals(0, options.length());
+        assertEquals(1, options.length());
     }
 
     @Test

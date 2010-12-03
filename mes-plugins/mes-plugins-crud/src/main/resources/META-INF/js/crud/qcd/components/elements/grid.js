@@ -116,11 +116,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.shrinkToFit = true;
 		
 		gridParameters.listeners = options.listeners;
-		gridParameters.canNew = options.canNew;
-		gridParameters.canDelete = options.canDelete;
+		gridParameters.canNew = options.creatable;
+		gridParameters.canDelete = options.deletable;
 		gridParameters.paging = options.paginable;
 		gridParameters.filter = isSearchEnabled;
-		gridParameters.isLookup = options.isLookup ? true : false;
+		gridParameters.isLookup = options.lookup ? true : false;
 		gridParameters.orderable = options.prioritizable;
 		
 		gridParameters.fullScreen = options.fullscreen;
@@ -142,7 +142,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				gridParameters[opName] = defaultOptions[opName];
 			}
 		}
-		
 	};
 	function rowClicked(rowId) {
 		if (currentState.selectedEntityId == rowId) {
@@ -193,8 +192,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (state.selectedEntityId) {
 			currentState.selectedEntityId = state.selectedEntityId;
 		}
-		if (state.paging && state.paging.first) {
-			currentState.paging = state.paging;
+		if (state.firstEntity) {
+			currentState.firstEntity = state.firstEntity;
+		}
+		if (state.maxEntities) {
+			currentState.maxEntities = state.maxEntities;
 		}
 		if (state.searchEnabled) {
 			currentState.searchEnabled = state.searchEnabled;
@@ -251,7 +253,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 						fields[fieldName] = entity.fields[fieldName];
 					}
 				}
-			}
+			}			
 			grid.jqGrid('addRowData', entity.id, fields);
 			if (rowCounter % 2 == 0) {
 				grid.jqGrid('setRowData', entity.id, false, "darkRow");
@@ -266,7 +268,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			linkClicked(entityId);
 		});
 		
-		headerController.updatePagingParameters(currentState.paging, value.totalEntities);
+		headerController.updatePagingParameters(currentState.firstEntity, currentState.maxEntities, value.totalEntities);
 		
 		grid.setSelection(currentState.selectedEntityId, false);
 		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
@@ -323,7 +325,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
 		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
 		
-		currentState.paging = headerController.getPagingParameters();
+		currentState.firstEntity = headerController.getPagingParameters()[0];
+		currentState.maxEntities = headerController.getPagingParameters()[1];
 		
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
@@ -370,7 +373,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.onPagingParametersChange = function() {
 		blockGrid();
-		currentState.paging = headerController.getPagingParameters();
+		currentState.firstEntity = headerController.getPagingParameters()[0];
+		currentState.maxEntities = headerController.getPagingParameters()[1];
 		onCurrentStateChange();
 	}
 	
@@ -381,14 +385,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		$("#"+elementSearchName+"_grid_"+index).addClass("sortColumn");
 		if (currentState.order && currentState.order.column == index) {
-			if (currentState.order.drection == "asc") {
+			if (currentState.order.direction == "asc") {
 				$("#"+elementSearchName+"_sortArrow_"+index).removeClass("upArrow");
 				$("#"+elementSearchName+"_sortArrow_"+index).addClass("downArrow");
-				currentState.order.drection = "desc";
+				currentState.order.direction = "desc";
 			} else {
 				$("#"+elementSearchName+"_sortArrow_"+index).removeClass("downArrow");
 				$("#"+elementSearchName+"_sortArrow_"+index).addClass("upArrow");
-				currentState.order.drection = "asc";
+				currentState.order.direction = "asc";
 			}
 		} else {
 			$("#"+elementSearchName+"_sortArrow_"+index).addClass("upArrow");

@@ -316,16 +316,16 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     @Override
     public final JSONObject getStaticJavaScriptOptions() {
         try {
+            JSONArray listenersArray = new JSONArray();
             if (fieldEntityIdChangeListeners.size() > 0 || scopeEntityIdChangeListeners.size() > 0) {
-                JSONArray listenersArray = new JSONArray();
                 for (ComponentPattern listener : fieldEntityIdChangeListeners.values()) {
                     listenersArray.put(listener.getPathName());
                 }
                 for (ComponentPattern listener : scopeEntityIdChangeListeners.values()) {
                     listenersArray.put(listener.getPathName());
                 }
-                jsOptions.put("listeners", listenersArray);
             }
+            jsOptions.put("listeners", listenersArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }

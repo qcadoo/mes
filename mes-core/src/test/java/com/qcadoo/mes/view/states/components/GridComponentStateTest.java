@@ -32,7 +32,9 @@ import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.components.GridComponentColumn;
@@ -312,6 +314,44 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         // then
         verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test"));
+    }
+
+    @Test
+    public void shouldRestrictResultsUsingLike() throws Exception {
+        // given
+        SearchResult result = mock(SearchResult.class);
+        given(substituteCriteria.list()).willReturn(result);
+        given(result.getTotalNumberOfEntities()).willReturn(0);
+        given(result.getEntities()).willReturn(Collections.<Entity> emptyList());
+
+        BelongsToType productFieldType = mock(BelongsToType.class);
+        given(productFieldType.getDataDefinition()).willReturn(substituteDataDefinition);
+
+        FieldDefinition productFieldDefinition = mock(FieldDefinition.class);
+        given(productFieldDefinition.getType()).willReturn(productFieldType);
+
+        FieldDefinition nameFieldDefinition = mock(FieldDefinition.class);
+        given(nameFieldDefinition.getType()).willReturn(new StringType());
+
+        given(substituteDataDefinition.getField("product")).willReturn(productFieldDefinition);
+        given(substituteDataDefinition.getField("name")).willReturn(nameFieldDefinition);
+
+        JSONObject jsonOrder = new JSONObject(ImmutableMap.of("column", "asd", "direction", "desc"));
+
+        json.getJSONObject(ComponentState.JSON_CONTENT).put(GridComponentState.JSON_ORDER, jsonOrder);
+
+        grid.initialize(json, Locale.ENGLISH);
+
+        GridComponentColumn column = new GridComponentColumn("asd");
+        column.setExpression("#product['name']");
+
+        columns.put("asd", column);
+
+        // when
+        grid.render();
+
+        // then
+        verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test*"));
     }
 
     @Test

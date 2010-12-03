@@ -14,10 +14,13 @@ import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
 public class GridComponentState extends AbstractComponentState {
@@ -280,9 +283,44 @@ public class GridComponentState extends AbstractComponentState {
                 String field = getFieldNameByColumnName(filter.getKey());
 
                 if (field != null) {
-                    criteria.restrictedWith(Restrictions.eq(field, filter.getValue()));
+                    if (useLikeRestriction(field)) {
+                        criteria.restrictedWith(Restrictions.eq(field, filter.getValue() + "*"));
+                    } else {
+                        criteria.restrictedWith(Restrictions.eq(field, filter.getValue()));
+                    }
                 }
             }
+        }
+
+        private boolean useLikeRestriction(final String field) {
+            String[] path = field.split("\\.");
+
+            DataDefinition dataDefinition = getDataDefinition();
+
+            for (int i = 0; i < path.length; i++) {
+                System.out.println(dataDefinition + ", " + path[i]);
+
+                if (dataDefinition.getField(path[i]) == null) {
+                    // warn
+                    return false;
+                }
+
+                FieldType fieldType = dataDefinition.getField(path[i]).getType();
+
+                if (i < path.length - 1) {
+                    if (fieldType instanceof BelongsToType) {
+                        dataDefinition = ((BelongsToType) fieldType).getDataDefinition();
+                        continue;
+                    } else {
+                        // TODO warn
+                        return false;
+                    }
+                }
+
+                return String.class.isAssignableFrom(fieldType.getType());
+            }
+
+            return false;
         }
 
         private void addOrder(final SearchCriteriaBuilder criteria) {

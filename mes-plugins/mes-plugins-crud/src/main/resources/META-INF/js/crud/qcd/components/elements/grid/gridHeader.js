@@ -143,17 +143,17 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	}
 	
 	this.getPagingParameters = function() {
-		return pagingVars;
+		return [pagingVars.first, pagingVars.max];
 	}
 	
-	this.updatePagingParameters = function(_pagingVars, _totalNumberOfEntities) {
-		if (_pagingVars.first > _totalNumberOfEntities) {
+	this.updatePagingParameters = function(_first, _max, _totalNumberOfEntities) {
+		if (_first > _totalNumberOfEntities) {
 			pagingVars.first = 0;
 			gridController.onPagingParametersChange();
 		} else {
-			pagingVars.first = _pagingVars.first;
+			pagingVars.first = _first;
 		}
-		pagingVars.max = _pagingVars.max;
+		pagingVars.max = _max;
 		pagingVars.totalNumberOfEntities = _totalNumberOfEntities;
 		entitiesNumberSpan.html("("+pagingVars.totalNumberOfEntities+")");
 		paging_refresh();
