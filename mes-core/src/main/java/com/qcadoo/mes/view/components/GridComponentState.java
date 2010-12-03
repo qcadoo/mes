@@ -171,10 +171,11 @@ public class GridComponentState extends AbstractComponentState {
     private JSONObject convertEntityToJson(final Entity entity) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("id", entity.getId());
-
+        JSONObject fields = new JSONObject();
         for (Column column : columns) {
-            json.put(column.getName(), column.getValue(entity, getLocale()));
+            fields.put(column.getName(), column.getValue(entity, getLocale()));
         }
+        json.put("fields", fields);
 
         return json;
     }

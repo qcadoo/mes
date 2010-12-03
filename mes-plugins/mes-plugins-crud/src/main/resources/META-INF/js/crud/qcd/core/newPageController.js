@@ -21,8 +21,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
 		QCD.debug(pageComponents);
 		
-		//$(window).bind('resize', updateSize);
-		//updateSize();
+		$(window).bind('resize', updateSize);
+		updateSize();
 	}
 	
 	this.init = function(entityId, serializationObject) {
@@ -45,12 +45,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //			});
 //		}
 		
-		var initParameters = new Object();
-		initParameters.event = {
-			name: "initialize"
-		}
-		initParameters.components = getValueData();
-		callEvent(initParameters);
+//		var initParameters = new Object();
+//		initParameters.event = {
+//			name: "initialize"
+//		}
+//		initParameters.components = getValueData();
+//		performEvent(initParameters);
+		this.callEvent("initialize");
 	}
 	
 	this.setContext = function(contextStr) {
@@ -64,12 +65,24 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
-	function callEvent(parameters) {
-		QCD.info(parameters);
+	this.callEvent = function(eventName, component) {
+		var initParameters = new Object();
+		initParameters.event = {
+			name: eventName
+		}
+		if (component) {
+			initParameters.event.component = component;
+		}
+		initParameters.components = getValueData();
+		performEvent(initParameters);
+	}
+	
+	function performEvent(parameters) {
+		//QCD.info(parameters);
 		var parametersJson = JSON.stringify(parameters);
-		QCD.info(parametersJson);
+		//QCD.info(parametersJson);
 		QCDConnector.sendPost(parametersJson, function(response) {
-			QCD.info(response);
+			//QCD.info(response);
 			setValueData(response);
 //			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 //				actionsPerformer.performNext();
@@ -255,20 +268,21 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	
-	//this.getTranslation = function(key) {
+	this.getTranslation = function(key) {
 	//	return window.translationsMap[key] ? window.translationsMap[key] : key;
-	//}
+		return key;
+	}
 	//var getTranslation = this.getTranslation;
 	
-//	this.goToPage = function(url) {
-//		if(canClose()) {
-//			var serializationObject = {
-//				value: rootEntityId,
-//				components: getValueData()
-//			}
-//			window.parent.goToPage(url, serializationObject);
-//		}
-//	}
+	this.goToPage = function(url) {
+		//if(canClose()) {
+			var serializationObject = {
+				//value: rootEntityId,
+				components: getValueData()
+			}
+			window.parent.goToPage(url, serializationObject);
+		//}
+	}
 //	var goToPage = this.goToPage;
 //	
 //	this.goBack = function() {
@@ -304,13 +318,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //		window.parent.onSessionExpired(serializationObject);
 //	}
 //	
-//	function updateSize() {
-//		var width = $(document).width();
-//		var height = $(document).height();
-//		for (var i in pageComponents) {
-//			pageComponents[i].updateSize(width, height);
-//		}
-//	}
+	function updateSize() {
+		var width = $(document).width();
+		var height = $(document).height();
+		for (var i in pageComponents) {
+			pageComponents[i].updateSize(width, height);
+		}
+	}
 	
 	constructor(this);
 }

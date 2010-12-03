@@ -57,8 +57,6 @@ public final class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
         modelAndView.addObject("viewDefinition", viewDefinition);
 
-        // arguments.getContext();
-
         JSONObject testContext = new JSONObject();
         try {
             testContext.put("mainWindow.form.testField", 44);
@@ -66,7 +64,8 @@ public final class CrudController {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        modelAndView.addObject("context", testContext.toString());
+        // modelAndView.addObject("context", testContext.toString());
+        modelAndView.addObject("context", arguments.get("context"));
 
         // String lookupComponentName = arguments.get("lookupComponent");
         //

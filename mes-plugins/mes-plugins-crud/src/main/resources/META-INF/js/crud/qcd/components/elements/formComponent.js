@@ -91,18 +91,18 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 //		return currentValue != this.input.val();
 //	}
 //
-//	this.setComponentEnabled = function(isEnabled) {
-//		if (isEnabled) {
-//			element.removeClass("disabled");
-//			this.input.removeAttr('disabled');
-//		} else {
-//			element.addClass("disabled");
-//			this.input.attr('disabled', 'true');
-//		}
-//		if (this.setFormComponentEnabled) {
-//			this.setFormComponentEnabled(isEnabled);
-//		}
-//	}
+	this.setComponentEnabled = function(isEnabled) {
+		if (isEnabled) {
+			element.removeClass("disabled");
+			this.input.removeAttr('disabled');
+		} else {
+			element.addClass("disabled");
+			this.input.attr('disabled', 'true');
+		}
+		if (this.setFormComponentEnabled) {
+			this.setFormComponentEnabled(isEnabled);
+		}
+	}
 //	
 //	function setComponentRequired(isRequired) {
 //		if (isRequired) {
