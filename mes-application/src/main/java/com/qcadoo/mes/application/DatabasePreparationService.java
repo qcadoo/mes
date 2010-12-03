@@ -77,20 +77,22 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
         MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 2);
 
-        addMenuViewDefinitionItem("instructions", "products.menu.products.instructions", menuCategoryProducts,
-                instructionGridView, 1);
-        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryProducts, productGridView, 2);
-        addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryProducts,
-                orderGridView, 3);
-        addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryProducts,
-                materialRequirementGridView, 4);
-
-        addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryAdministration,
-                dictionaryGridView, 1);
-        addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
-        addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
-        addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration, pluginGridView, 4);
-        addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView, 5);
+        // addMenuViewDefinitionItem("instructions", "products.menu.products.instructions", menuCategoryProducts,
+        // instructionGridView, 1);
+        // addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryProducts, productGridView, 2);
+        // addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryProducts,
+        // orderGridView, 3);
+        // addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryProducts,
+        // materialRequirementGridView, 4);
+        //
+        // addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryAdministration,
+        // dictionaryGridView, 1);
+        // addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
+        // addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
+        // addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration, pluginGridView,
+        // 4);
+        // addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView,
+        // 5);
     }
 
     private void addMenuViewDefinitionItem(final String name, final String translation, final MenuMenuCategory menuCategory,

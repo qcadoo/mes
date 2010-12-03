@@ -60,7 +60,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	this.updateSize = function(_width, _height) {
 		
-		var childrenElement = $("#"+this.elementPath+"_windowContent");
+		var childrenElement = $("#"+this.elementSearchName+"_windowContent");
 		
 		var margin = Math.round(_width * 0.02);
 		if (margin < 20 && isMinWidth) {
@@ -96,7 +96,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 			this.components[i].updateSize(width, height);
 		}
 		
-		var innerWidth = $("#"+this.elementPath+"_windowContainerContentBodyWidthMarker").innerWidth();
+		var innerWidth = $("#"+this.elementSearchName+"_windowContainerContentBodyWidthMarker").innerWidth();
 		if (ribbon) {
 			ribbon.updateSize(margin, innerWidth);
 		}
@@ -109,25 +109,25 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		}
 	}
 	
-	this.performBack = function(actionsPerformer) {
-		mainController.goBack();
-		actionsPerformer.performNext();
-	}
-	this.performClose = function(actionsPerformer) {
-		mainController.closeWindow();
-		actionsPerformer.performNext();
-	}
-	
-	this.performCancel = function(actionsPerformer) {
-		mainController.performCancel(actionsPerformer);
-	}
-	this.performNew = function(actionsPerformer) {
-		mainController.performNew(actionsPerformer);
-	}
-	
-	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
-		mainController.performCallFunction(functionName, additionalAttribute, null, actionsPerformer);
-	}
+//	this.performBack = function(actionsPerformer) {
+//		mainController.goBack();
+//		actionsPerformer.performNext();
+//	}
+//	this.performClose = function(actionsPerformer) {
+//		mainController.closeWindow();
+//		actionsPerformer.performNext();
+//	}
+//	
+//	this.performCancel = function(actionsPerformer) {
+//		mainController.performCancel(actionsPerformer);
+//	}
+//	this.performNew = function(actionsPerformer) {
+//		mainController.performNew(actionsPerformer);
+//	}
+//	
+//	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
+//		mainController.performCallFunction(functionName, additionalAttribute, null, actionsPerformer);
+//	}
 	
 	constructor(this);
 }

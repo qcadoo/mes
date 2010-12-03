@@ -54,8 +54,8 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.setValue = function(value) {
-		//this.setEnabled(value.enabled);
-		//this.setVisible(value.visible);
+		this.setEnabled(value.e);
+		this.setVisible(value.v);
 		
 		if (value.content != null) {
 			this.setComponentValue(value.content);
@@ -117,8 +117,8 @@ QCD.components.Component = function(_element, _mainController) {
 //		}
 //	}
 	
-//	this.updateSize = function(width, height) {
-//	}
+	this.updateSize = function(width, height) {
+	}
 //	
 //	this.setMessages = function(messages) {
 //	}
@@ -130,34 +130,34 @@ QCD.components.Component = function(_element, _mainController) {
 //		
 //	}
 //	
-//	this.setEnabled = function(_isEnabled) {
-//		isEnabled = _isEnabled;
-//		this.setComponentEnabled(isEnabled);
-//	}
-//	
-//	this.isEnabled = function() {
-//		return isEnabled;
-//	}
-//	
-//	this.setVisible = function(_isVisible) {
-//		isVisible = _isVisible;
-//		if (this.setComponentVisible) {
-//			this.setComponentVisible(isVisible);
-//		} else {
-//			if (isVisible) {
-//				element.show();
-//			} else {
-//				QCD.info("hide: "+this.elementPath);
-//				element.hide();
-//			}
-//		}
-//		
-//	}
-//	
-//	this.isVisible = function() {
-//		return isVisible;
-//	}
-//	
+	this.setEnabled = function(_isEnabled) {
+		isEnabled = _isEnabled;
+		this.setComponentEnabled(isEnabled);
+	}
+	
+	this.isEnabled = function() {
+		return isEnabled;
+	}
+	
+	this.setVisible = function(_isVisible) {
+		isVisible = _isVisible;
+		if (this.setComponentVisible) {
+			this.setComponentVisible(isVisible);
+		} else {
+			if (isVisible) {
+				element.show();
+			} else {
+				QCD.info("hide: "+this.elementPath);
+				element.hide();
+			}
+		}
+		
+	}
+	
+	this.isVisible = function() {
+		return isVisible;
+	}
+
 //	this.isChanged = function() {
 //		return false;
 //	}

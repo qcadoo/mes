@@ -21,10 +21,14 @@ import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
-import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
+import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 @ViewComponent("grid")
-public class GridComponentPattern extends AbstractContainerPattern {
+public class GridComponentPattern extends AbstractComponentPattern {
+
+    private static final String JSP_PATH = "newComponents/grid.jsp";
+
+    private static final String JS_OBJECT = "QCD.components.elements.Grid";
 
     private final Set<String> searchableColumns = new HashSet<String>();
 

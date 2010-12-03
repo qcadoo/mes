@@ -13,7 +13,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Container(_element, _mainController));
 	
 	var mainController = _mainController;
-	//var element = _element;
+	var element = _element;
 	//var elementName = element.attr('id');
 	
 	//var elementPath = this.elementPath;
@@ -59,14 +59,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
-		if (buttons.saveButton) {
-			if (isEnabled) {
-				buttons.saveButton.removeAttr('disabled');
-			} else {
-				buttons.saveButton.attr('disabled', 'true');
-				unblock();
-			}
-		}
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
