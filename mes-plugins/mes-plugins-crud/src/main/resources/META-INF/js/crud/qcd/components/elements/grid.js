@@ -490,7 +490,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function onCurrentStateChange() {
 		if (componentEnabled) {
-			mainController.callEvent("gridUpdate", elementPath, function() {
+			mainController.callEvent("refresh", elementPath, function() {
 				unblockGrid();
 			});
 		}

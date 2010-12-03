@@ -35,9 +35,9 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     private boolean requestUpdateState;
 
-    private boolean enabled;
+    private boolean enabled = true;
 
-    private boolean visible;
+    private boolean visible = true;
 
     @Override
     public String getName() {

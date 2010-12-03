@@ -13,6 +13,8 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.types.internal.StringType;
@@ -85,7 +87,7 @@ public class GridComponentPatternTest {
         assertEquals("product", options.getJSONArray("searchableColumns").getString(0));
         assertEquals("name", options.getJSONArray("searchableColumns").getString(1));
         assertEquals("number", options.getJSONArray("searchableColumns").getString(2));
-        assertFalse(options.has("scopeFieldName"));
+        assertFalse(options.has("belongsToFieldName"));
         assertEquals(3, options.getJSONObject("columns").length());
 
         JSONObject number = options.getJSONObject("columns").getJSONObject("number");
@@ -132,7 +134,7 @@ public class GridComponentPatternTest {
 
         assertFalse(options.has("correspondingView"));
         assertFalse(options.has("correspondingComponent"));
-        assertFalse(options.has("scopeFieldName"));
+        assertFalse(options.has("belongsToFieldName"));
         assertTrue(options.getBoolean("paginable"));
         assertFalse(options.getBoolean("lookup"));
         assertTrue(options.getBoolean("creatable"));
@@ -170,11 +172,24 @@ public class GridComponentPatternTest {
     @Test
     public void shouldHaveScopeFieldName() throws Exception {
         // given
-        FieldDefinition fieldDefinition = mock(FieldDefinition.class);
-        given(fieldDefinition.getName()).willReturn("fieldName");
-
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(dataDefinition.getField("field")).willReturn(fieldDefinition);
+
+        BelongsToType belongsToFieldType = mock(BelongsToType.class);
+
+        FieldDefinition belongsToFieldDefinition = mock(FieldDefinition.class);
+        given(belongsToFieldDefinition.getName()).willReturn("joinName");
+        given(belongsToFieldDefinition.getType()).willReturn(belongsToFieldType);
+
+        HasManyType hasManyFieldType = mock(HasManyType.class);
+        given(hasManyFieldType.getJoinFieldName()).willReturn("joinName");
+        given(hasManyFieldType.getDataDefinition()).willReturn(dataDefinition);
+
+        FieldDefinition hasManyFieldDefinition = mock(FieldDefinition.class);
+        given(hasManyFieldDefinition.getName()).willReturn("fieldName");
+        given(hasManyFieldDefinition.getType()).willReturn(hasManyFieldType);
+
+        given(dataDefinition.getField("field")).willReturn(hasManyFieldDefinition);
+        given(dataDefinition.getField("joinName")).willReturn(belongsToFieldDefinition);
 
         AbstractComponentPattern sourceComponent = new TextInputComponentPattern("parent", null, null, null);
         setField(sourceComponent, "dataDefinition", dataDefinition);
@@ -191,7 +206,7 @@ public class GridComponentPatternTest {
         // then
         JSONObject options = pattern.getStaticJavaScriptOptions();
 
-        assertEquals("fieldName", options.getString("scopeFieldName"));
+        assertEquals("joinName", options.getString("belongsToFieldName"));
     }
 
 }

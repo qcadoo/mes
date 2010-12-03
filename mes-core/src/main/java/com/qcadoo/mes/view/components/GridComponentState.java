@@ -1,29 +1,30 @@
 package com.qcadoo.mes.view.components;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.view.components.GridComponentPattern.Column;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
 public class GridComponentState extends AbstractComponentState {
 
     public static final String JSON_SELECTED_ENTITY_ID = "selectedEntityId";
 
-    public static final String JSON_SCOPE_ENTITY_ID = "scopeEntityId";
+    public static final String JSON_BELONGS_TO_ENTITY_ID = "belongsToEntityId";
 
     public static final String JSON_FIRST_ENTITY = "firstEntity";
 
@@ -45,13 +46,13 @@ public class GridComponentState extends AbstractComponentState {
 
     private final GridEventPerformer eventPerformer = new GridEventPerformer();
 
-    private final Collection<Column> columns;
+    private final Map<String, GridComponentColumn> columns;
 
-    private final FieldDefinition scopeField;
+    private final FieldDefinition belongsToFieldDefinition;
 
     private Long selectedEntityId;
 
-    private Long scopeEntityId;
+    private Long belongsToEntityId;
 
     private List<Entity> entities;
 
@@ -63,17 +64,20 @@ public class GridComponentState extends AbstractComponentState {
 
     private boolean filtersEnabled = false;
 
-    private final Map<String, Boolean> order = new HashMap<String, Boolean>();
+    private String orderColumn;
+
+    private String orderDirection;
 
     private final Map<String, String> filters = new HashMap<String, String>();
 
-    public GridComponentState(final FieldDefinition scopeField, final Collection<Column> columns) {
-        this.scopeField = scopeField;
+    public GridComponentState(final FieldDefinition scopeField, final Map<String, GridComponentColumn> columns) {
+        this.belongsToFieldDefinition = scopeField;
         this.columns = columns;
-        registerEvent("changeSelectedEntityId", eventPerformer, "changeSelectedEntityId");
-        registerEvent("removeSelectedEntityId", eventPerformer, "removeSelectedEntityId");
-        registerEvent("moveUpSelectedEntityId", eventPerformer, "moveUpSelectedEntityId");
-        registerEvent("moveDownSelectedEntityId", eventPerformer, "moveDownSelectedEntityId");
+        registerEvent("refresh", eventPerformer, "refresh");
+        registerEvent("select", eventPerformer, "selectEntity");
+        registerEvent("remove", eventPerformer, "removeSelectedEntity");
+        registerEvent("moveUp", eventPerformer, "moveUpSelectedEntity");
+        registerEvent("moveDown", eventPerformer, "moveDownSelectedEntity");
     }
 
     @Override
@@ -82,8 +86,8 @@ public class GridComponentState extends AbstractComponentState {
         if (json.has(JSON_SELECTED_ENTITY_ID) && !json.isNull(JSON_SELECTED_ENTITY_ID)) {
             selectedEntityId = json.getLong(JSON_SELECTED_ENTITY_ID);
         }
-        if (json.has(JSON_SCOPE_ENTITY_ID) && !json.isNull(JSON_SCOPE_ENTITY_ID)) {
-            scopeEntityId = json.getLong(JSON_SCOPE_ENTITY_ID);
+        if (json.has(JSON_BELONGS_TO_ENTITY_ID) && !json.isNull(JSON_BELONGS_TO_ENTITY_ID)) {
+            belongsToEntityId = json.getLong(JSON_BELONGS_TO_ENTITY_ID);
         }
         if (json.has(JSON_FIRST_ENTITY) && !json.isNull(JSON_FIRST_ENTITY)) {
             firstResult = json.getInt(JSON_FIRST_ENTITY);
@@ -97,7 +101,8 @@ public class GridComponentState extends AbstractComponentState {
         if (json.has(JSON_ORDER) && !json.isNull(JSON_ORDER)) {
             JSONObject orderJson = json.getJSONObject(JSON_ORDER);
             if (orderJson.has(JSON_ORDER_COLUMN) && orderJson.has(JSON_ORDER_DIRECTION)) {
-                order.put(orderJson.getString(JSON_ORDER_COLUMN), orderJson.getString(JSON_ORDER_DIRECTION).equals("asc"));
+                orderColumn = orderJson.getString(JSON_ORDER_COLUMN);
+                orderDirection = orderJson.getString(JSON_ORDER_DIRECTION);
             }
         }
         if (json.has(JSON_FILTERS) && !json.isNull(JSON_FILTERS)) {
@@ -109,7 +114,7 @@ public class GridComponentState extends AbstractComponentState {
             }
         }
 
-        if (scopeField != null && scopeEntityId == null) {
+        if (belongsToFieldDefinition != null && belongsToEntityId == null) {
             setEnabled(false);
         }
 
@@ -124,8 +129,8 @@ public class GridComponentState extends AbstractComponentState {
 
     @Override
     public void onScopeEntityIdChange(final Long scopeEntityId) {
-        if (scopeField != null) {
-            this.scopeEntityId = scopeEntityId;
+        if (belongsToFieldDefinition != null) {
+            this.belongsToEntityId = scopeEntityId;
             setEnabled(true);
         } else {
             throw new IllegalStateException("Grid doesn't have scopeField, it cannot set scopeEntityId");
@@ -135,25 +140,23 @@ public class GridComponentState extends AbstractComponentState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         if (entities == null) {
-            eventPerformer.refresh();
+            eventPerformer.reload();
         }
 
         JSONObject json = new JSONObject();
         json.put(JSON_SELECTED_ENTITY_ID, selectedEntityId);
-        json.put(JSON_SCOPE_ENTITY_ID, scopeEntityId);
+        json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);
         json.put(JSON_FIRST_ENTITY, firstResult);
         json.put(JSON_MAX_ENTITIES, maxResults);
         json.put(JSON_FILTERS_ENABLED, filtersEnabled);
         json.put(JSON_TOTAL_ENTITIES, totalEntities);
 
-        JSONObject jsonOrder = new JSONObject();
-        for (Map.Entry<String, Boolean> entry : order.entrySet()) {
-            jsonOrder.put(JSON_ORDER_COLUMN, entry.getKey());
-            jsonOrder.put(JSON_ORDER_DIRECTION, entry.getValue() ? "asc" : "desc");
-            break;
+        if (orderColumn != null) {
+            JSONObject jsonOrder = new JSONObject();
+            jsonOrder.put(JSON_ORDER_COLUMN, orderColumn);
+            jsonOrder.put(JSON_ORDER_DIRECTION, orderDirection);
+            json.put(JSON_ORDER, jsonOrder);
         }
-
-        json.put(JSON_ORDER, jsonOrder);
 
         JSONObject jsonFilters = new JSONObject();
         for (Map.Entry<String, String> entry : filters.entrySet()) {
@@ -176,7 +179,7 @@ public class GridComponentState extends AbstractComponentState {
         JSONObject json = new JSONObject();
         json.put("id", entity.getId());
         JSONObject fields = new JSONObject();
-        for (Column column : columns) {
+        for (GridComponentColumn column : columns.values()) {
             fields.put(column.getName(), column.getValue(entity, getLocale()));
         }
         json.put("fields", fields);
@@ -205,20 +208,25 @@ public class GridComponentState extends AbstractComponentState {
 
     protected class GridEventPerformer {
 
-        public void changeSelectedEntityId(final String[] args) {
+        public void refresh(final String[] args) {
+            // nothing interesting here
+        }
+
+        public void selectEntity(final String[] args) {
             notifyEntityIdChangeListeners(getSelectedEntityId());
         }
 
-        public void removeSelectedEntityId(final String[] args) {
+        public void removeSelectedEntity(final String[] args) {
             try {
                 getDataDefinition().delete(selectedEntityId);
+                setSelectedEntityId(null);
                 addMessage("TODO - usunięto", MessageType.SUCCESS); // TODO masz
             } catch (IllegalStateException e) {
                 addMessage("TODO - nieusunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
             }
         }
 
-        public void moveUpSelectedEntityId(final String[] args) {
+        public void moveUpSelectedEntity(final String[] args) {
             try {
                 getDataDefinition().move(selectedEntityId, -1);
                 addMessage("TODO - przesunięto", MessageType.SUCCESS); // TODO masz
@@ -227,7 +235,7 @@ public class GridComponentState extends AbstractComponentState {
             }
         }
 
-        public void moveDownSelectedEntityId(final String[] args) {
+        public void moveDownSelectedEntity(final String[] args) {
             try {
                 getDataDefinition().move(selectedEntityId, 1);
                 addMessage("TODO - przesunięto", MessageType.SUCCESS); // TODO masz
@@ -236,22 +244,88 @@ public class GridComponentState extends AbstractComponentState {
             }
         }
 
-        public void refresh() {
-            if (isEnabled() && (scopeField == null || scopeEntityId != null)) {
+        private void reload() {
+            if (isEnabled() && (belongsToFieldDefinition == null || belongsToEntityId != null)) {
                 SearchCriteriaBuilder criteria = getDataDefinition().find();
-                if (scopeField != null) {
-                    criteria.restrictedWith(Restrictions.belongsTo(scopeField, scopeEntityId));
+                if (belongsToFieldDefinition != null) {
+                    criteria.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
                 }
 
-                // TODO restrictions, orders, paging
+                addFilters(criteria);
+                addOrder(criteria);
+                addPaging(criteria);
 
                 SearchResult result = criteria.list();
+
+                if (repeatWithFixedFirstResult(result)) {
+                    addPaging(criteria);
+                    result = criteria.list();
+                }
 
                 entities = result.getEntities();
                 totalEntities = result.getTotalNumberOfEntities();
             } else {
                 entities = Collections.emptyList();
                 totalEntities = 0;
+            }
+        }
+
+        private void addPaging(final SearchCriteriaBuilder criteria) {
+            criteria.withFirstResult(firstResult);
+            criteria.withMaxResults(maxResults);
+        }
+
+        private void addFilters(final SearchCriteriaBuilder criteria) {
+            for (Map.Entry<String, String> filter : filters.entrySet()) {
+                String field = getFieldNameByColumnName(filter.getKey());
+
+                if (field != null) {
+                    criteria.restrictedWith(Restrictions.eq(field, filter.getValue()));
+                }
+            }
+        }
+
+        private void addOrder(final SearchCriteriaBuilder criteria) {
+            if (orderColumn != null) {
+                String field = getFieldNameByColumnName(orderColumn);
+
+                if (field != null) {
+                    if ("asc".equals(orderDirection)) {
+                        criteria.orderAscBy(field);
+                    } else {
+                        criteria.orderDescBy(field);
+                    }
+                }
+            }
+        }
+
+        private String getFieldNameByColumnName(final String columnName) {
+            GridComponentColumn column = columns.get(columnName);
+
+            if (column == null) {
+                return null;
+            }
+
+            if (StringUtils.hasText(column.getExpression())) {
+                Matcher matcher = Pattern.compile("#(\\w+)\\['(\\w+)'\\]").matcher(column.getExpression());
+                if (matcher.matches()) {
+                    return matcher.group(1) + "." + matcher.group(2);
+                }
+            } else if (column.getFields().size() == 1) {
+                return column.getFields().get(0).getName();
+            }
+
+            return null;
+        }
+
+        private boolean repeatWithFixedFirstResult(final SearchResult result) {
+            if (result.getEntities().isEmpty() && result.getTotalNumberOfEntities() > 0) {
+                while (firstResult > result.getTotalNumberOfEntities()) {
+                    firstResult -= maxResults;
+                }
+                return true;
+            } else {
+                return false;
             }
         }
     }

@@ -44,7 +44,7 @@ public final class SearchCriteriaBuilderTest extends DataAccessTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfOrderIsNull() throws Exception {
         // when
-        dataDefinition.find().orderBy(null);
+        dataDefinition.find().orderAscBy(null);
     }
 
 }

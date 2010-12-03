@@ -36,14 +36,24 @@ public interface SearchCriteriaBuilder {
     SearchCriteriaBuilder restrictedWith(Restriction restriction);
 
     /**
-     * Set the order, by default there is an order by id.
+     * Set the asc order by given field, by default there is an order by id.
      * 
      * @param order
      *            order
      * @return this search builder
      * @see SearchCriteria#getOrder()
      */
-    SearchCriteriaBuilder orderBy(Order order);
+    SearchCriteriaBuilder orderAscBy(String fieldName);
+
+    /**
+     * Set the desc order by given field, by default there is an order by id.
+     * 
+     * @param order
+     *            order
+     * @return this search builder
+     * @see SearchCriteria#getOrder()
+     */
+    SearchCriteriaBuilder orderDescBy(String fieldName);
 
     /**
      * Set the max results, by default there is no limit.

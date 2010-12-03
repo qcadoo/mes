@@ -369,7 +369,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                     order = Order.desc(matcher.group(1) + "." + matcher.group(2));
                 }
 
-                searchCriteriaBuilder.orderBy(order);
+                // searchCriteriaBuilder.orderBy(order);
             }
         } else if (field.getType().isOrderable()) {
             Order order = null;
@@ -380,7 +380,7 @@ public final class GridComponent extends AbstractComponent<ListData> implements 
                 order = Order.desc(field.getName());
             }
 
-            searchCriteriaBuilder.orderBy(order);
+            // searchCriteriaBuilder.orderBy(order);
         }
     }
 

@@ -1,22 +1,16 @@
 package com.qcadoo.mes.view.components;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.internal.EnumType;
-import com.qcadoo.mes.utils.ExpressionUtil;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
@@ -34,7 +28,9 @@ public class GridComponentPattern extends AbstractComponentPattern {
 
     private final Set<String> orderableColumns = new HashSet<String>();
 
-    private final List<Column> columns = new ArrayList<Column>();
+    private final Map<String, GridComponentColumn> columns = new LinkedHashMap<String, GridComponentColumn>();
+
+    private FieldDefinition belongsToFieldDefinition;
 
     private String correspondingView;
 
@@ -59,7 +55,7 @@ public class GridComponentPattern extends AbstractComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new GridComponentState(getScopeFieldDefinition(), columns);
+        return new GridComponentState(belongsToFieldDefinition, columns);
     }
 
     @Override
@@ -79,11 +75,23 @@ public class GridComponentPattern extends AbstractComponentPattern {
 
     @Override
     protected void initializeOptions() throws JSONException {
+        getBelongsToFieldDefinition();
         parseOptions();
         addOptions();
 
         if (correspondingView != null && correspondingComponent == null) {
             throw new IllegalStateException("Missing correspondingComponent for grid");
+        }
+    }
+
+    private void getBelongsToFieldDefinition() {
+        if (getScopeFieldDefinition() != null) {
+            if (HasManyType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
+                HasManyType hasManyType = (HasManyType) getScopeFieldDefinition().getType();
+                belongsToFieldDefinition = hasManyType.getDataDefinition().getField(hasManyType.getJoinFieldName());
+            } else {
+                throw new IllegalStateException("Scope field for grid be a hasMany one");
+            }
         }
     }
 
@@ -101,10 +109,10 @@ public class GridComponentPattern extends AbstractComponentPattern {
         addStaticJavaScriptOption("searchableColumns", new JSONArray(searchableColumns));
         addStaticJavaScriptOption("orderableColumns", new JSONArray(orderableColumns));
 
-        if (getScopeFieldDefinition() != null) {
-            addStaticJavaScriptOption("scopeFieldName", getScopeFieldDefinition().getName());
+        if (belongsToFieldDefinition != null) {
+            addStaticJavaScriptOption("belongsToFieldName", belongsToFieldDefinition.getName());
         } else {
-            addStaticJavaScriptOption("scopeFieldName", null);
+            addStaticJavaScriptOption("belongsToFieldName", null);
         }
 
         addColumnOptions();
@@ -113,7 +121,7 @@ public class GridComponentPattern extends AbstractComponentPattern {
     private void addColumnOptions() throws JSONException {
         JSONObject jsonColumns = new JSONObject();
 
-        for (Column column : columns) {
+        for (GridComponentColumn column : columns.values()) {
             JSONObject jsonColumn = new JSONObject();
             jsonColumn.put("name", column.getName()); // TODO masz i18n
             jsonColumn.put("link", column.isLink());
@@ -167,7 +175,7 @@ public class GridComponentPattern extends AbstractComponentPattern {
     }
 
     private void parseColumnOption(final ComponentOption option) {
-        Column column = new Column(option.getAtrributeValue("name"));
+        GridComponentColumn column = new GridComponentColumn(option.getAtrributeValue("name"));
         String fields = option.getAtrributeValue("fields");
         if (fields != null) {
             for (FieldDefinition field : parseFields(fields)) {
@@ -185,7 +193,7 @@ public class GridComponentPattern extends AbstractComponentPattern {
         if (option.getAtrributeValue("hidden") != null) {
             column.setHidden(Boolean.parseBoolean(option.getAtrributeValue("hidden")));
         }
-        columns.add(column);
+        columns.put(column.getName(), column);
     }
 
     private Set<String> parseColumns(final String columns) {
@@ -202,91 +210,6 @@ public class GridComponentPattern extends AbstractComponentPattern {
             set.add(getDataDefinition().getField(field));
         }
         return set;
-    }
-
-    public class Column {
-
-        private final String name;
-
-        private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
-
-        private String expression;
-
-        private Integer width = 100;
-
-        private boolean link;
-
-        private boolean hidden;
-
-        public Column(final String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        private void setWidth(final Integer width) {
-            this.width = width;
-        }
-
-        private Integer getWidth() {
-            return width;
-        }
-
-        private boolean isLink() {
-            return link;
-        }
-
-        private void setLink(final boolean link) {
-            this.link = link;
-        }
-
-        private boolean isHidden() {
-            return hidden;
-        }
-
-        private String getAlign() {
-            if (fields.size() == 1 && Number.class.isAssignableFrom(fields.get(0).getType().getType())) {
-                return "right";
-            } else {
-                return "left";
-            }
-        }
-
-        private Map<String, String> getFilterValues() {
-            if (fields.size() == 1 && fields.get(0).getType() instanceof EnumType) {
-                Map<String, String> values = new HashMap<String, String>();
-                EnumType type = (EnumType) fields.get(0).getType();
-                for (String value : type.values()) {
-                    values.put(value, value); // TODO masz i18n
-                }
-                return values;
-            } else {
-                return null;
-            }
-        }
-
-        private void setHidden(final boolean hidden) {
-            this.hidden = hidden;
-        }
-
-        private void setExpression(final String expression) {
-            this.expression = expression;
-        }
-
-        private void addField(final FieldDefinition field) {
-            fields.add(field);
-        }
-
-        public String getValue(final Entity entity, final Locale locale) {
-            if (StringUtils.hasText(expression)) {
-                return ExpressionUtil.getValue(entity, expression, locale);
-            } else {
-                return ExpressionUtil.getValue(entity, fields, locale);
-            }
-        }
-
     }
 
 }
