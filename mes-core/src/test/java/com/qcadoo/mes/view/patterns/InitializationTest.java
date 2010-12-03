@@ -19,6 +19,7 @@ import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.FormComponentPattern;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
+import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
 
 public class InitializationTest {
 
@@ -66,6 +67,7 @@ public class InitializationTest {
 
         AbstractComponentPattern fieldComponent = new TextInputComponentPattern("parent", null, null, null);
         setField(fieldComponent, "dataDefinition", dataDefinition);
+        setField(fieldComponent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
         given(viewDefinition.getComponentByPath("component")).willReturn(fieldComponent);
@@ -90,6 +92,7 @@ public class InitializationTest {
 
         AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
         setField(parent, "dataDefinition", dataDefinition);
+        setField(parent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
@@ -113,6 +116,7 @@ public class InitializationTest {
 
         AbstractComponentPattern sourceComponent = new TextInputComponentPattern("parent", null, null, null);
         setField(sourceComponent, "dataDefinition", dataDefinition);
+        setField(sourceComponent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
         given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);
@@ -137,6 +141,7 @@ public class InitializationTest {
 
         AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
         setField(parent, "dataDefinition", dataDefinition);
+        setField(parent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
@@ -166,6 +171,7 @@ public class InitializationTest {
 
         AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
         setField(parent, "dataDefinition", dataDefinition);
+        setField(parent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
@@ -195,6 +201,7 @@ public class InitializationTest {
 
         AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
         setField(parent, "dataDefinition", dataDefinition);
+        setField(parent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
@@ -224,6 +231,7 @@ public class InitializationTest {
 
         AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
         setField(parent, "dataDefinition", dataDefinition);
+        setField(parent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
@@ -253,6 +261,7 @@ public class InitializationTest {
 
         AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
         setField(parent, "dataDefinition", dataDefinition);
+        setField(parent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
@@ -301,17 +310,11 @@ public class InitializationTest {
         form.addChild(select);
         form.addChild(subselect);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
-        given(viewDefinition.getDataDefinition()).willReturn(dataDefinition);
-        given(viewDefinition.getComponentByPath("parent")).willReturn(parent);
-        given(viewDefinition.getComponentByPath("parent.form")).willReturn(form);
-        given(viewDefinition.getComponentByPath("parent.form.input")).willReturn(input);
-        given(viewDefinition.getComponentByPath("parent.form.select")).willReturn(select);
-        given(viewDefinition.getComponentByPath("parent.form.subselect")).willReturn(subselect);
-        given(viewDefinition.getComponentByPath("parent.grid")).willReturn(grid);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("view", "plugin", dataDefinition, true);
+        viewDefinition.addChild(parent);
 
         // when
-        parent.initialize(viewDefinition);
+        viewDefinition.initialize();
 
         // then
         assertEquals(dataDefinition, getField(parent, "dataDefinition"));

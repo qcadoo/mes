@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 public interface ComponentPattern {
 
-    void initialize(ViewDefinition viewDefinition);
+    boolean initialize(ViewDefinition viewDefinition);
 
     JSONObject getStaticJavaScriptOptions();
 

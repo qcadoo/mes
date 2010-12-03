@@ -174,6 +174,9 @@ public class ComponentPatternTest {
         pattern.addChild(t3);
 
         pattern.initialize(vd);
+        t1.initialize(vd);
+        t2.initialize(vd);
+        t3.initialize(vd);
 
         // when
         JSONObject options = pattern.getStaticJavaScriptOptions();
@@ -188,7 +191,7 @@ public class ComponentPatternTest {
         assertTrue(JsonArrayContain(listenersArray, "f1.t3"));
     }
 
-    private boolean JsonArrayContain(JSONArray array, String value) throws JSONException {
+    private boolean JsonArrayContain(final JSONArray array, final String value) throws JSONException {
         for (int i = 0; i < array.length(); i++) {
             if (array.getString(i).equals(value)) {
                 return true;

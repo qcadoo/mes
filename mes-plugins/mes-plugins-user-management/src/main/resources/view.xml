@@ -16,7 +16,6 @@
 			<component type="grid" name="groups">
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="orderable" value="name,role" />
-				<option type="paginable" value="true" />
 				<option type="correspondingView" value="users/groupDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.groupDetailsForm" />
 				<option type="deletable" value="false" />
@@ -68,7 +67,6 @@
 				<option type="column" name="userGroup" fields="userGroup"
 					expression="#userGroup['name']" />
 				<option type="orderable" value="userName,email,firstName,lastName,userGroup" />
-				<option type="paginable" value="true" />
 				<option type="correspondingView" value="users/userDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.userDetailsForm" />
 				<option type="fullscreen" value="true" />
@@ -98,7 +96,6 @@
 			<component type="form" name="userDetailsForm">
 				<component type="input" name="login" field="userName" />
 				<component type="lookup" name="userGroup" field="userGroup">
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name" />
 					<option type="orderable" value="name" />
 					<option type="fullscreen" value="true" />
@@ -152,7 +149,6 @@
 			<component type="form" name="userDetailsForm">
 				<component type="input" name="login" field="userName" defaultEnabled="false" />
 				<component type="lookup" name="userGroup" field="userGroup" defaultEnabled="false" >
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name" />
 					<option type="orderable" value="name" />
 					<option type="fullscreen" value="true" />

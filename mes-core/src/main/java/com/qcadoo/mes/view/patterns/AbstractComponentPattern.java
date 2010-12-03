@@ -54,6 +54,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private DataDefinition dataDefinition;
 
+    private boolean initialized;
+
     private boolean defaultEnabled;
 
     private boolean defaultVisible;
@@ -92,9 +94,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     @Override
-    public void initialize(final ViewDefinition viewDefinition) {
-        if (dataDefinition != null) {
-            return; // already initialized
+    public boolean initialize(final ViewDefinition viewDefinition) {
+        if (initialized) {
+            return true;
         }
 
         String[] field = null;
@@ -115,6 +117,12 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
         }
 
+        if (isComponentInitialized(fieldComponent) && isComponentInitialized(scopeFieldComponent)) {
+            initialized = true;
+        } else {
+            return false;
+        }
+
         getDataDefinition(viewDefinition, fieldComponent, scopeFieldComponent);
 
         getFieldAndScopeFieldDefinitions(field, scopeField);
@@ -127,11 +135,15 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        reinitializeListeners(viewDefinition);
+        return true;
     }
 
     protected void initializeOptions() throws JSONException {
         // implement me if you want
+    }
+
+    private boolean isComponentInitialized(final AbstractComponentPattern fieldComponent) {
+        return fieldComponent == null || fieldComponent.initialized;
     }
 
     private void getDataDefinitionFromFieldDefinition() {
@@ -172,16 +184,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             dataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
         } else if (fieldDefinition.getType() instanceof BelongsToType) {
             dataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
-        }
-    }
-
-    private void reinitializeListeners(final ViewDefinition viewDefinition) {
-        for (ComponentPattern componentPattern : fieldEntityIdChangeListeners.values()) {
-            ((AbstractComponentPattern) componentPattern).initialize(viewDefinition);
-        }
-
-        for (ComponentPattern componentPattern : scopeEntityIdChangeListeners.values()) {
-            ((AbstractComponentPattern) componentPattern).initialize(viewDefinition);
         }
     }
 

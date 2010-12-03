@@ -1,18 +1,17 @@
 package com.qcadoo.mes.view.patterns;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ContainerState;
-import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 public abstract class AbstractContainerPattern extends AbstractComponentPattern implements ContainerPattern {
 
-    private final Map<String, ComponentPattern> children = new HashMap<String, ComponentPattern>();
+    private final Map<String, ComponentPattern> children = new LinkedHashMap<String, ComponentPattern>();
 
     public AbstractContainerPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
@@ -44,14 +43,6 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
     @Override
     public void addChild(final ComponentPattern componentPattern) {
         children.put(componentPattern.getName(), componentPattern);
-    }
-
-    @Override
-    public void initialize(final ViewDefinition viewDefinition) {
-        super.initialize(viewDefinition);
-        for (ComponentPattern componentPattern : children.values()) {
-            componentPattern.initialize(viewDefinition);
-        }
     }
 
     @Override

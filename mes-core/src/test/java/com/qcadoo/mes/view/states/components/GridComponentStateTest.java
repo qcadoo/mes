@@ -18,8 +18,8 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -34,8 +34,6 @@ public class GridComponentStateTest extends AbstractStateTest {
 
     private Entity entity;
 
-    private ComponentState name;
-
     private GridComponentState grid;
 
     private DataDefinition productDataDefinition;
@@ -43,8 +41,6 @@ public class GridComponentStateTest extends AbstractStateTest {
     private DataDefinition substituteDataDefinition;
 
     private FieldDefinition substitutesFieldDefinition;
-
-    private TranslationService translationService;
 
     private JSONObject json;
 
@@ -61,7 +57,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         jsonContent.put(GridComponentState.JSON_MAX_ENTITIES, 30);
         jsonContent.put(GridComponentState.JSON_FILTERS_ENABLED, true);
 
-        JSONObject jsonOrder = new JSONObject(Collections.singletonMap("asd", true));
+        JSONObject jsonOrder = new JSONObject(ImmutableMap.of("column", "asd", "direction", "asc"));
 
         jsonContent.put(GridComponentState.JSON_ORDER, jsonOrder);
 
@@ -75,8 +71,6 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         entity = mock(Entity.class);
         given(entity.getField("name")).willReturn("text");
-
-        translationService = mock(TranslationService.class);
 
         productDataDefinition = mock(DataDefinition.class);
         substituteDataDefinition = mock(DataDefinition.class);
@@ -183,7 +177,8 @@ public class GridComponentStateTest extends AbstractStateTest {
         assertEquals(10, json.getInt(GridComponentState.JSON_FIRST_ENTITY));
         assertEquals(30, json.getInt(GridComponentState.JSON_MAX_ENTITIES));
         assertTrue(json.getBoolean(GridComponentState.JSON_FILTERS_ENABLED));
-        assertTrue(json.getJSONObject(GridComponentState.JSON_ORDER).getBoolean("asd"));
+        assertEquals("asd", json.getJSONObject(GridComponentState.JSON_ORDER).getString("column"));
+        assertEquals("asc", json.getJSONObject(GridComponentState.JSON_ORDER).getString("direction"));
         assertEquals("test", json.getJSONObject(GridComponentState.JSON_FILTERS).getString("asd"));
         assertEquals("test2", json.getJSONObject(GridComponentState.JSON_FILTERS).getString("qwe"));
         assertEquals(0, json.getInt(GridComponentState.JSON_TOTAL_ENTITIES));
