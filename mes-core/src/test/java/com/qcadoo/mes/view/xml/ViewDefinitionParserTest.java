@@ -247,7 +247,7 @@ public class ViewDefinitionParserTest {
         checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"), vd.getComponentByPath("mainWindow.beanBForm.active"),
                 "active");
         checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"),
-                vd.getComponentByPath("mainWindow.beanBForm.selectBeanA"), "beanA");
+                vd.getComponentByPath("mainWindow.beanBForm.beanAForm"), "beanA");
         checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"), vd.getComponentByPath("mainWindow.beanBForm.beanM"),
                 "beanM");
 

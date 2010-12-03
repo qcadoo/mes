@@ -1,6 +1,6 @@
 package com.qcadoo.mes.view.patterns;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.qcadoo.mes.view.ComponentPattern;
@@ -11,7 +11,7 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 
 public abstract class AbstractContainerPattern extends AbstractComponentPattern implements ContainerPattern {
 
-    private final Map<String, ComponentPattern> children = new HashMap<String, ComponentPattern>();
+    private final Map<String, ComponentPattern> children = new LinkedHashMap<String, ComponentPattern>();
 
     public AbstractContainerPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {

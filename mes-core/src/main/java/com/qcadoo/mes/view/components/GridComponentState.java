@@ -33,6 +33,10 @@ public class GridComponentState extends AbstractComponentState {
 
     public static final String JSON_ORDER = "order";
 
+    public static final String JSON_ORDER_COLUMN = "column";
+
+    public static final String JSON_ORDER_DIRECTION = "direction";
+
     public static final String JSON_FILTERS = "filters";
 
     public static final String JSON_FILTERS_ENABLED = "filtersEnabled";
@@ -92,9 +96,8 @@ public class GridComponentState extends AbstractComponentState {
         }
         if (json.has(JSON_ORDER) && !json.isNull(JSON_ORDER)) {
             JSONObject orderJson = json.getJSONObject(JSON_ORDER);
-            if (orderJson.length() == 1) {
-                String column = (String) orderJson.keys().next();
-                order.put(column, orderJson.getBoolean(column));
+            if (orderJson.has(JSON_ORDER_COLUMN) && orderJson.has(JSON_ORDER_DIRECTION)) {
+                order.put(orderJson.getString(JSON_ORDER_COLUMN), orderJson.getString(JSON_ORDER_DIRECTION).equals("asc"));
             }
         }
         if (json.has(JSON_FILTERS) && !json.isNull(JSON_FILTERS)) {
@@ -145,7 +148,8 @@ public class GridComponentState extends AbstractComponentState {
 
         JSONObject jsonOrder = new JSONObject();
         for (Map.Entry<String, Boolean> entry : order.entrySet()) {
-            jsonOrder.put(entry.getKey(), entry.getValue());
+            jsonOrder.put(JSON_ORDER_COLUMN, entry.getKey());
+            jsonOrder.put(JSON_ORDER_DIRECTION, entry.getValue() ? "asc" : "desc");
             break;
         }
 

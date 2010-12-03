@@ -60,11 +60,7 @@ public class ViewDefinitionImpl implements ViewDefinition {
     }
 
     public void initialize() {
-        List<ComponentPattern> list = new ArrayList<ComponentPattern>();
-
-        addPatternsToList(list, componentPatterns.values());
-
-        System.out.println(list);
+        List<ComponentPattern> list = getPatternsAsList(componentPatterns.values());
 
         int lastNotInitialized = 0;
 
@@ -89,13 +85,15 @@ public class ViewDefinitionImpl implements ViewDefinition {
         }
     }
 
-    private void addPatternsToList(final List<ComponentPattern> list, final Collection<ComponentPattern> patterns) {
+    private List<ComponentPattern> getPatternsAsList(final Collection<ComponentPattern> patterns) {
+        List<ComponentPattern> list = new ArrayList<ComponentPattern>();
         list.addAll(patterns);
         for (ComponentPattern pattern : patterns) {
             if (pattern instanceof ContainerPattern) {
-                addPatternsToList(list, ((ContainerPattern) pattern).getChildren().values());
+                list.addAll(getPatternsAsList(((ContainerPattern) pattern).getChildren().values()));
             }
         }
+        return list;
     }
 
     @Override
