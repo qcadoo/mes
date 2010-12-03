@@ -83,10 +83,10 @@ public abstract class MaterialRequirementDocumentService {
         Map<ProxyEntity, BigDecimal> products = new HashMap<ProxyEntity, BigDecimal>();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
-            Entity instruction = (Entity) order.getField("instruction");
+            Entity technology = (Entity) order.getField("technology");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            if (instruction != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                List<Entity> bomComponents = instruction.getHasManyField("bomComponents");
+            if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                List<Entity> bomComponents = technology.getHasManyField("bomComponents");
                 for (Entity bomComponent : bomComponents) {
                     ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
                     if (!(Boolean) entity.getField("onlyComponents")

@@ -114,18 +114,17 @@ public final class OrderPdfView extends ProductsPdfView {
                 entity.getField("doneQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark(), df);
         PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.startWorker.label", locale),
                 entity.getField("startWorker"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
-        Entity instruction = (Entity) entity.getField("instruction");
-        if (instruction == null) {
+        Entity technology = (Entity) entity.getField("technology");
+        if (technology == null) {
             PdfUtil.addTableCellAsTable(
                     detailData,
-                    getTranslationService().translate("products.orderDetailsView.mainWindow.orderDetailsForm.instruction.label",
+                    getTranslationService().translate("products.orderDetailsView.mainWindow.orderDetailsForm.technology.label",
                             locale), null, "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         } else {
             PdfUtil.addTableCellAsTable(
                     detailData,
-                    getTranslationService().translate("products.orderDetailsView.mainWindow.orderDetailsForm.instruction.label",
-                            locale), instruction.getField("name"), "", PdfUtil.getArialBold9Dark(),
-                    PdfUtil.getArialRegular9Dark());
+                    getTranslationService().translate("products.orderDetailsView.mainWindow.orderDetailsForm.technology.label",
+                            locale), technology.getField("name"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         }
         PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.endWorker.label", locale),
                 entity.getField("endWorker"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());

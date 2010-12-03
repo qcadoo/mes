@@ -40,15 +40,15 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
-@Table(name = "products_instruction_bom_component")
-public class ProductsInstructionBomComponent {
+@Table(name = "products_technology_bom_component")
+public class ProductsTechnologyBomComponent {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstruction instruction;
+    private ProductsTechnology technology;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsProduct product;
@@ -57,11 +57,11 @@ public class ProductsInstructionBomComponent {
     private BigDecimal quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstructionBomComponent parent;
+    private ProductsTechnologyBomComponent parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<ProductsInstructionBomComponent> children;
+    private List<ProductsTechnologyBomComponent> children;
 
     public Long getId() {
         return id;
@@ -71,12 +71,12 @@ public class ProductsInstructionBomComponent {
         this.id = id;
     }
 
-    public ProductsInstruction getInstruction() {
-        return instruction;
+    public ProductsTechnology getTechnology() {
+        return technology;
     }
 
-    public void setInstruction(final ProductsInstruction instruction) {
-        this.instruction = instruction;
+    public void setTechnology(final ProductsTechnology technology) {
+        this.technology = technology;
     }
 
     public ProductsProduct getProduct() {
@@ -95,19 +95,19 @@ public class ProductsInstructionBomComponent {
         this.quantity = quantity;
     }
 
-    public ProductsInstructionBomComponent getParent() {
+    public ProductsTechnologyBomComponent getParent() {
         return parent;
     }
 
-    public void setParent(final ProductsInstructionBomComponent parent) {
+    public void setParent(final ProductsTechnologyBomComponent parent) {
         this.parent = parent;
     }
 
-    public List<ProductsInstructionBomComponent> getChildren() {
+    public List<ProductsTechnologyBomComponent> getChildren() {
         return children;
     }
 
-    public void setChildren(final List<ProductsInstructionBomComponent> children) {
+    public void setChildren(final List<ProductsTechnologyBomComponent> children) {
         this.children = children;
     }
 

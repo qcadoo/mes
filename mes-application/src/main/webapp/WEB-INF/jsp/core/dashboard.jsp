@@ -42,8 +42,8 @@
 			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.productionOrders')) {
 				$("#productionOrdersLink").show();
 			}
-			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.instructions')) {
-				$("#instructionsLink").show();
+			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.technologies')) {
+				$("#technologiesLink").show();
 			}
 			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.materialRequirements')) {
 				$("#materialRequirementsLink").show();
@@ -110,8 +110,8 @@
 					<div class="dashboardButtonContentText">
 					 	${translationsMap['core.dashboard.define.content']}
 					</div>
-					<div class="dashboardButtonContentLink" id="instructionsLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('products.instructions')">${translationsMap['core.dashboard.define.link']}</a>
+					<div class="dashboardButtonContentLink" id="technologiesLink" style="display: none;">
+						<a href="#" onclick="goToMenuPosition('products.technologies')">${translationsMap['core.dashboard.define.link']}</a>
 					</div>
 				</div>
 			</div>

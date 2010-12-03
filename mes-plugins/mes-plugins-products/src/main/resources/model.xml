@@ -42,9 +42,9 @@
 		<dictionary name="category" dictionary="categories" />
 		<string name="unit" />
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
-		<hasMany name="instructions" model="instruction" joinField="product" cascade="nullify" />
+		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
-		<hasMany name="instructionBomComponents" model="instructionBomComponent" joinField="product" cascade="nullify"/>
+		<hasMany name="technologyBomComponents" model="technologyBomComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
 	</model>
 	<model name="substitute">
@@ -79,7 +79,7 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
 	</model>
-	<model name="instruction">
+	<model name="technology">
 		<string name="number">
 			<validatesPresence />
 			<validatesUniqueness />
@@ -93,13 +93,13 @@
 		</belongsTo>
 		<boolean name="master" />
 		<string name="description" />
-		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
-		<hasMany name="orders" model="order" joinField="instruction" cascade="nullify"/>
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
+		<hasMany name="bomComponents" model="technologyBomComponent" joinField="technology" cascade="delete" />
+		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkTechnologyDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
-	<model name="instructionBomComponent">
-		<belongsTo name="instruction" model="instruction" lookupField="name">
+	<model name="technologyBomComponent">
+		<belongsTo name="technology" model="technology" lookupField="name">
 			<validatesPresence /> 
 		</belongsTo>
 		<belongsTo name="product" model="product" lookupField="name">
@@ -111,8 +111,8 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
-		<hasMany name="children" model="instructionBomComponent" joinField="parent" cascade="delete" />
+		<belongsTo name="parent" model="technologyBomComponent" lookupField="name" />
+		<hasMany name="children" model="technologyBomComponent" joinField="parent" cascade="delete" />
 	</model>
 	<model name="order">
 		<string name="number">
@@ -134,8 +134,8 @@
 		</enum>
 		<dictionary name="machine" dictionary="machines" />
 		<belongsTo name="product" model="product" lookupField="name" />
-		<belongsTo name="defaultInstruction" model="instruction" lookupField="name" readonly="true" />
-		<belongsTo name="instruction" model="instruction" lookupField="name" />
+		<belongsTo name="defaultTechnology" model="technology" lookupField="name" readonly="true" />
+		<belongsTo name="technology" model="technology" lookupField="name" />
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" inclusive="false" />
 			<validatesPrecision max="7" />
@@ -154,9 +154,9 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfStateChangeIsCorrect" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderPlannedQuantity" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderInstruction" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderTechnology" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfInstructionIsNotRemoved" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
 	</model>
 	<model name="materialRequirement">	

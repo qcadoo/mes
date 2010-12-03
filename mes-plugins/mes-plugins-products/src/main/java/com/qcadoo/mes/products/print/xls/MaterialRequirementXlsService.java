@@ -77,7 +77,7 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
         header.createCell(0).setCellValue(getTranslationService().translate("products.product.number.label", locale));
         header.createCell(1).setCellValue(getTranslationService().translate("products.product.name.label", locale));
         header.createCell(2).setCellValue(
-                getTranslationService().translate("products.instructionBomComponent.quantity.label", locale));
+                getTranslationService().translate("products.technologyBomComponent.quantity.label", locale));
         header.createCell(3).setCellValue(getTranslationService().translate("products.product.unit.label", locale));
     }
 

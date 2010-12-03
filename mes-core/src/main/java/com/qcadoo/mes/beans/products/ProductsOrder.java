@@ -82,10 +82,10 @@ public class ProductsOrder {
     private BigDecimal plannedQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstruction defaultInstruction;
+    private ProductsTechnology defaultTechnology;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstruction instruction;
+    private ProductsTechnology technology;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal doneQuantity;
@@ -185,20 +185,20 @@ public class ProductsOrder {
         this.plannedQuantity = plannedQuantity;
     }
 
-    public ProductsInstruction getDefaultInstruction() {
-        return defaultInstruction;
+    public ProductsTechnology getDefaultTechnology() {
+        return defaultTechnology;
     }
 
-    public void setDefaultInstruction(final ProductsInstruction defaultInstruction) {
-        this.defaultInstruction = defaultInstruction;
+    public void setDefaultTechnology(final ProductsTechnology defaultTechnology) {
+        this.defaultTechnology = defaultTechnology;
     }
 
-    public ProductsInstruction getInstruction() {
-        return instruction;
+    public ProductsTechnology getTechnology() {
+        return technology;
     }
 
-    public void setInstruction(final ProductsInstruction instruction) {
-        this.instruction = instruction;
+    public void setTechnology(final ProductsTechnology technology) {
+        this.technology = technology;
     }
 
     public BigDecimal getDoneQuantity() {

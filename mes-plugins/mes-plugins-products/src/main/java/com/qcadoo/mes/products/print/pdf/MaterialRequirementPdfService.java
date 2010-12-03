@@ -115,7 +115,7 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         productHeader.add(getTranslationService().translate("products.product.number.label", locale));
         productHeader.add(getTranslationService().translate("products.product.name.label", locale));
         productHeader.add(getTranslationService().translate("products.product.unit.label", locale));
-        productHeader.add(getTranslationService().translate("products.instructionBomComponent.quantity.label", locale));
+        productHeader.add(getTranslationService().translate("products.technologyBomComponent.quantity.label", locale));
         addBomSeries(document, (DefaultEntity) entity, productHeader);
     }
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+
+<spread_data type="spread"><header><form_name>QMES_MM_BOM_F</form_name>
+<form_title_id>FRM_QMESV_SPREAD_MM_BOM_F</form_title_id><form_title>FRM_QMESV_SPREAD_MM_BOM_F</form_title></header><columns>
+<column caption="TXT_BOM_ID" name="BOM_ID" nlsID="TXT_BOM_ID" type="NUMBER"/>
+<column caption="MTXT_PRODUCT_NR" name="PRODUCT_NR" nlsID="MTXT_PRODUCT_NR" type="VARCHAR2"/>
+<column caption="MES_BOM_NR" name="BOM_NR" nlsID="MES_BOM_NR" type="VARCHAR2"/>
+<column caption="MTXT_NAME" name="NAME" nlsID="MTXT_NAME" type="VARCHAR2"/>
+<column caption="MES_VALID_FROM" name="VALID_FROM" nlsID="MES_VALID_FROM" type="DATE"/>
+<column caption="MES_VALID_TO" name="VALID_TO" nlsID="MES_VALID_TO" type="DATE"/>
+<column caption="MTXT_DESCRIPTION" name="DESCRIPTION" nlsID="MTXT_DESCRIPTION" type="VARCHAR2"/>
+<column caption="MTXT_MATERIAL_TYPE" name="MATERIAL_TYPE" nlsID="MTXT_MATERIAL_TYPE" type="VARCHAR2"/>
+<column caption="MTXT_MATERIAL_TYPE" name="MATERIAL_TYPE_NAME" nlsID="MTXT_MATERIAL_TYPE" type="VARCHAR2"/>
+<column caption="MTXT_IS_DEFAULT" name="IS_DEFAULT_NAME" nlsID="MTXT_IS_DEFAULT" type="VARCHAR2"/>
+<column caption="MTXT_STATUS_NAME" name="STATUS_NAME" nlsID="MTXT_STATUS_NAME" type="VARCHAR2"/>
+</columns>
+<data rows="18">
+	<row BOM_ID="35" BOM_NR="BOM - MIX_COFFEE_PARAD" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla: MIX_COFFEE_PARAD" PRODUCT_NR="MIX_COFFEE_PARAD" 
+STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="38" BOM_NR="BOM - ROAST_COFFEE_PARAD" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla: ROAST_COFFEE_PARAD" PRODUCT_NR="ROAST_COFFEE_PARAD" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="40" BOM_NR="BOM - BLEND_COFFEE_PARAD" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla: BLEND_COFFEE_PARAD" PRODUCT_NR="BLEND_COFFEE_PARAD" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="42" BOM_NR="BOM - COFFEE_PARADISE" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="ARTICLE" MATERIAL_TYPE_NAME="Produkt" NAME="Technologia dla: COFFEE_PARADISE" PRODUCT_NR="COFFEE_PARADISE" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="44" BOM_NR="BOM - PRE-MIX_PAN_07" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla: PRE-MIX_PAN_07" PRODUCT_NR="PRE-MIX_PAN_07" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="49" BOM_NR="BOM - MIX_PAN_07" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla: MIX_PAN_07" PRODUCT_NR="MIX_PAN_07" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="55" BOM_NR="BOM - PAN_07" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="ARTICLE" MATERIAL_TYPE_NAME="Produkt" NAME="Technologia dla produktu: PAN_07" PRODUCT_NR="PAN_07" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="57" BOM_NR="BOM - PAN_07_PACK" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="ARTICLE" MATERIAL_TYPE_NAME="Produkt" NAME="Technologia dla produktu: PAN_07_PACK" PRODUCT_NR="PAN_07_PACK" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="62" BOM_NR="Bom_mieszanie" DESCRIPTION="" IS_DEFAULT_NAME="Nie" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="//" PRODUCT_NR="MIX_COFFEE_PARAD" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="1" BOM_NR="BOM - MCP2200EV-VCP" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="ARTICLE" MATERIAL_TYPE_NAME="Produkt" NAME="Technologia dla MCP2200EV-VCP" PRODUCT_NR="MCP2200EV-VCP" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="5" BOM_NR="BOM - MCP2200EV-BAKED" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla MCP2200EV-BAKED" PRODUCT_NR="MCP2200EV-BAKED" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="7" BOM_NR="BOM - MCP2200EV-SMT" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla MCP2200EV-SMT" PRODUCT_NR="MCP2200EV-SMT" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="13" BOM_NR="BOM - MCP2200EV-PASTE" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla MCP2200EV-PASTE" PRODUCT_NR="MCP2200EV-PASTE" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="16" BOM_NR="BOM - EL_AXIS_MLP_PASTE" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla EL_AXIS_MLP_PASTE" PRODUCT_NR="EL_AXIS_MLP_PASTE" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="19" BOM_NR="BOM - EL_AXIS_MLP_SMT" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla EL_AXIS_MLP_SMT" PRODUCT_NR="EL_AXIS_MLP_SMT" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="29" BOM_NR="BOM - EL_AXIS_MLP_BAKED" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="SEMI_FINISHED_ARTICLE" MATERIAL_TYPE_NAME="Półprodukt" NAME="Technologia dla EL_AXIS_MLP_BAKED" PRODUCT_NR="EL_AXIS_MLP_BAKED" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="31" BOM_NR="BOM - EL_AXIS_MLP_354" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="ARTICLE" MATERIAL_TYPE_NAME="Produkt" NAME="Technologia dla EL_AXIS_MLP_354" PRODUCT_NR="EL_AXIS_MLP_354" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+	<row BOM_ID="59" BOM_NR="BOM - HP 152 W2" DESCRIPTION="" IS_DEFAULT_NAME="Tak" MATERIAL_TYPE="ARTICLE" MATERIAL_TYPE_NAME="Produkt" NAME="Technologia dla produktu: HP 152 W2" PRODUCT_NR="HP 152 W2" STATUS_NAME="O.K." VALID_FROM="" VALID_TO=""/>
+</data>
+</spread_data>

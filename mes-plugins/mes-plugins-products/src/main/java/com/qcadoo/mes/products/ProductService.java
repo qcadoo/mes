@@ -38,11 +38,11 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.beans.products.ProductsInstruction;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
+import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Order;
@@ -99,18 +99,18 @@ public final class ProductService {
         }
     }
 
-    public boolean checkIfInstructionIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        ProductsInstruction instruction = (ProductsInstruction) entity.getField("instruction");
+    public boolean checkIfTechnologyIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
+        ProductsTechnology technology = (ProductsTechnology) entity.getField("technology");
 
-        if (instruction == null || instruction.getId() == null) {
+        if (technology == null || technology.getId() == null) {
             return true;
         }
 
-        Entity instructionEntity = dataDefinitionService.get("products", "instruction").get(instruction.getId());
+        Entity technologyEntity = dataDefinitionService.get("products", "technology").get(technology.getId());
 
-        if (instructionEntity == null) {
+        if (technologyEntity == null) {
             entity.addGlobalError("core.message.belongsToNotFound");
-            entity.setField("instruction", null);
+            entity.setField("technology", null);
             return false;
         } else {
             return true;
@@ -278,10 +278,10 @@ public final class ProductService {
         generateOrderNumber(value, triggerComponentName, locale);
 
         ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
-        ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
-        ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
-                .lookupValue("mainWindow.orderDetailsForm.instruction");
+        ViewValue<SimpleValue> defaultTechnologyValue = (ViewValue<SimpleValue>) value
+                .lookupValue("mainWindow.orderDetailsForm.defaultTechnology");
+        ViewValue<LookupData> technologyValue = (ViewValue<LookupData>) value
+                .lookupValue("mainWindow.orderDetailsForm.technology");
         ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
         ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
         ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
@@ -296,10 +296,10 @@ public final class ProductService {
             return;
         }
 
-        if (defaultInstructionValue == null) {
-            defaultInstructionValue = new ViewValue<SimpleValue>(new SimpleValue(""));
-            defaultInstructionValue.setVisible(true);
-            formValue.addComponent("defaultInstruction", defaultInstructionValue);
+        if (defaultTechnologyValue == null) {
+            defaultTechnologyValue = new ViewValue<SimpleValue>(new SimpleValue(""));
+            defaultTechnologyValue.setVisible(true);
+            formValue.addComponent("defaultTechnology", defaultTechnologyValue);
         }
         if (plannedQuantityValue == null) {
             plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
@@ -308,9 +308,9 @@ public final class ProductService {
             formValue.addComponent("plannedQuantity", plannedQuantityValue);
         }
 
-        defaultInstructionValue.setEnabled(false);
-        defaultInstructionValue.setValue(new SimpleValue(""));
-        instructionValue.setEnabled(true);
+        defaultTechnologyValue.setEnabled(false);
+        defaultTechnologyValue.setValue(new SimpleValue(""));
+        technologyValue.setEnabled(true);
 
         Long selectedProductId = null;
 
@@ -318,65 +318,64 @@ public final class ProductService {
             selectedProductId = productValue.getValue().getSelectedEntityId();
         }
 
-        Entity selectedInstruction = null;
+        Entity selectedTechnology = null;
 
-        if (selectedProductId != null && instructionValue.getValue() != null
-                && instructionValue.getValue().getSelectedEntityId() != null
+        if (selectedProductId != null && technologyValue.getValue() != null
+                && technologyValue.getValue().getSelectedEntityId() != null
                 && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-            selectedInstruction = dataDefinitionService.get("products", "instruction").get(
-                    instructionValue.getValue().getSelectedEntityId());
+            selectedTechnology = dataDefinitionService.get("products", "technology").get(
+                    technologyValue.getValue().getSelectedEntityId());
         } else {
-            instructionValue.getValue().setSelectedEntityId(null);
-            instructionValue.getValue().setSelectedEntityCode("");
-            instructionValue.getValue().setSelectedEntityValue("");
+            technologyValue.getValue().setSelectedEntityId(null);
+            technologyValue.getValue().setSelectedEntityCode("");
+            technologyValue.getValue().setSelectedEntityValue("");
         }
 
         if (selectedProductId == null) {
-            instructionValue.setEnabled(false);
-            instructionValue.getValue().setSelectedEntityId(null);
-            instructionValue.getValue().setSelectedEntityCode("");
-            instructionValue.getValue().setSelectedEntityValue("");
-            instructionValue.getValue().setRequired(false);
+            technologyValue.setEnabled(false);
+            technologyValue.getValue().setSelectedEntityId(null);
+            technologyValue.getValue().setSelectedEntityCode("");
+            technologyValue.getValue().setSelectedEntityValue("");
+            technologyValue.getValue().setRequired(false);
             plannedQuantityValue.getValue().setRequired(false);
         } else {
             plannedQuantityValue.getValue().setRequired(true);
-            if (!hasAnyInstructions(selectedProductId)) {
-                instructionValue.setEnabled(false);
-                instructionValue.getValue().setRequired(false);
-                instructionValue.getValue().setSelectedEntityId(null);
-                instructionValue.getValue().setSelectedEntityCode("");
-                instructionValue.getValue().setSelectedEntityValue("");
+            if (!hasAnyTechnologies(selectedProductId)) {
+                technologyValue.setEnabled(false);
+                technologyValue.getValue().setRequired(false);
+                technologyValue.getValue().setSelectedEntityId(null);
+                technologyValue.getValue().setSelectedEntityCode("");
+                technologyValue.getValue().setSelectedEntityValue("");
             } else {
-                instructionValue.getValue().setRequired(true);
-                Entity defaultInstructionEntity = getDefaultInstruction(selectedProductId);
-                if (defaultInstructionEntity != null) {
-                    String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
-                    defaultInstructionValue.getValue().setValue(defaultInstructionName);
-                    if (selectedInstruction == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-                        selectDefaultInstruction(instructionValue, defaultInstructionEntity);
+                technologyValue.getValue().setRequired(true);
+                Entity defaultTechnologyEntity = getDefaultTechnology(selectedProductId);
+                if (defaultTechnologyEntity != null) {
+                    String defaultTechnologyName = defaultTechnologyEntity.getField("name").toString();
+                    defaultTechnologyValue.getValue().setValue(defaultTechnologyName);
+                    if (selectedTechnology == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+                        selectDefaultTechnology(technologyValue, defaultTechnologyEntity);
                     }
                 }
             }
         }
     }
 
-    private void selectDefaultInstruction(final ViewValue<LookupData> instructionValue, final Entity defaultInstructionEntity) {
+    private void selectDefaultTechnology(final ViewValue<LookupData> technologyValue, final Entity defaultTechnologyEntity) {
         ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
-        LookupComponent lookupInstruction = (LookupComponent) viewDefinition
-                .lookupComponent("mainWindow.orderDetailsForm.instruction");
-        instructionValue.getValue().setValue(defaultInstructionEntity.getId());
-        instructionValue.getValue().setSelectedEntityCode(
-                defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
-        instructionValue.getValue().setSelectedEntityValue(
-                ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
+        LookupComponent lookupTechnology = (LookupComponent) viewDefinition
+                .lookupComponent("mainWindow.orderDetailsForm.technology");
+        technologyValue.getValue().setValue(defaultTechnologyEntity.getId());
+        technologyValue.getValue().setSelectedEntityCode(defaultTechnologyEntity.getStringField(lookupTechnology.getFieldCode()));
+        technologyValue.getValue().setSelectedEntityValue(
+                ExpressionUtil.getValue(defaultTechnologyEntity, lookupTechnology.getExpression()));
     }
 
-    private Entity getDefaultInstruction(final Long selectedProductId) {
-        DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
+    private Entity getDefaultTechnology(final Long selectedProductId) {
+        DataDefinition technologyDD = dataDefinitionService.get("products", "technology");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
-                .restrictedWith(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
+        SearchCriteriaBuilder searchCriteria = technologyDD.find().withMaxResults(1)
+                .restrictedWith(Restrictions.eq(technologyDD.getField("master"), true))
+                .restrictedWith(Restrictions.belongsTo(technologyDD.getField("product"), selectedProductId));
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -387,11 +386,11 @@ public final class ProductService {
         }
     }
 
-    private boolean hasAnyInstructions(final Long selectedProductId) {
-        DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
+    private boolean hasAnyTechnologies(final Long selectedProductId) {
+        DataDefinition technologyDD = dataDefinitionService.get("products", "technology");
 
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
+        SearchCriteriaBuilder searchCriteria = technologyDD.find().withMaxResults(1)
+                .restrictedWith(Restrictions.belongsTo(technologyDD.getField("product"), selectedProductId));
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -413,7 +412,7 @@ public final class ProductService {
         return true;
     }
 
-    public boolean checkInstructionDefault(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
         Boolean master = (Boolean) entity.getField("master");
 
         if (!master) {
@@ -452,14 +451,14 @@ public final class ProductService {
         }
     }
 
-    public boolean checkOrderInstruction(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean checkOrderTechnology(final DataDefinition dataDefinition, final Entity entity) {
         ProductsProduct product = (ProductsProduct) entity.getField("product");
         if (product == null) {
             return true;
         }
-        if (entity.getField("instruction") == null) {
-            if (hasAnyInstructions(product.getId())) {
-                entity.addError(dataDefinition.getField("instruction"), "products.validate.global.error.instructionError");
+        if (entity.getField("technology") == null) {
+            if (hasAnyTechnologies(product.getId())) {
+                entity.addError(dataDefinition.getField("technology"), "products.validate.global.error.technologyError");
                 return false;
             }
         }

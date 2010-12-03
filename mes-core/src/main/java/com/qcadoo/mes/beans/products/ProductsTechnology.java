@@ -39,8 +39,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
-@Table(name = "products_instruction")
-public class ProductsInstruction {
+@Table(name = "products_technology")
+public class ProductsTechnology {
 
     @Id
     @GeneratedValue
@@ -60,11 +60,11 @@ public class ProductsInstruction {
 
     private Boolean master;
 
-    @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<ProductsInstructionBomComponent> bomComponents;
+    private List<ProductsTechnologyBomComponent> bomComponents;
 
-    @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
 
     public Long getId() {
@@ -115,11 +115,11 @@ public class ProductsInstruction {
         this.master = master;
     }
 
-    public List<ProductsInstructionBomComponent> getBomComponents() {
+    public List<ProductsTechnologyBomComponent> getBomComponents() {
         return bomComponents;
     }
 
-    public void setBomComponents(final List<ProductsInstructionBomComponent> bomComponents) {
+    public void setBomComponents(final List<ProductsTechnologyBomComponent> bomComponents) {
         this.bomComponents = bomComponents;
     }
 

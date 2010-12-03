@@ -57,14 +57,14 @@ import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
-import com.qcadoo.mes.beans.products.ProductsInstruction;
-import com.qcadoo.mes.beans.products.ProductsInstructionBomComponent;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirementComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsSubstituteComponent;
+import com.qcadoo.mes.beans.products.ProductsTechnology;
+import com.qcadoo.mes.beans.products.ProductsTechnologyBomComponent;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
@@ -91,7 +91,7 @@ public final class TestDataLoader {
             "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
             "bom_name", "product_nr" };
 
-    private static final String[] INSTRUCTION_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr" };
+    private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr" };
 
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
@@ -109,7 +109,7 @@ public final class TestDataLoader {
         readDataFromXML("users", USER_ATTRIBUTES);
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
-        readDataFromXML("instructions", INSTRUCTION_ATTRIBUTES);
+        readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
         addMaterialRequirements();
     }
@@ -154,8 +154,8 @@ public final class TestDataLoader {
             addProduct(values);
         } else if ("orders".equals(type)) {
             addOrder(values);
-        } else if ("instructions".equals(type)) {
-            addInstruction(values);
+        } else if ("technologies".equals(type)) {
+            addTechnology(values);
         } else if ("dictionaries".equals(type)) {
             addDictionary(values);
         } else if ("users".equals(type)) {
@@ -299,7 +299,7 @@ public final class TestDataLoader {
         order.setEffectiveDateFrom(new Date(effectiveStartDate));
         order.setEffectiveDateTo(new Date(effectiveEndDate));
         order.setEndWorker(getRandomUser().getUserName());
-        order.setInstruction(getInstructionByName(values.get("bom_name")));
+        order.setTechnology(getTechnologyByName(values.get("bom_name")));
         order.setMachine(getRandomDictionaryItem("machines"));
         order.setName((values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setNumber(values.get("order_nr"));
@@ -320,13 +320,13 @@ public final class TestDataLoader {
 
         order.setProduct(product);
 
-        order.setDefaultInstruction(getDefaultInstructionForProduct(product));
+        order.setDefaultTechnology(getDefaultTechnologyForProduct(product));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test order {id=" + order.getId() + ", name=" + order.getName() + ", number=" + order.getNumber()
-                    + ", product=" + (order.getProduct() != null ? order.getProduct().getNumber() : null) + ", instruction="
-                    + (order.getInstruction() != null ? order.getInstruction().getNumber() : null) + ", defaultInstruction="
-                    + (order.getDefaultInstruction() != null ? order.getDefaultInstruction().getNumber() : null) + ", dateFrom="
+                    + ", product=" + (order.getProduct() != null ? order.getProduct().getNumber() : null) + ", technology="
+                    + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", defaultTechnology="
+                    + (order.getDefaultTechnology() != null ? order.getDefaultTechnology().getNumber() : null) + ", dateFrom="
                     + order.getDateFrom() + ", dateTo=" + order.getDateTo() + ", effectiveDateFrom="
                     + order.getEffectiveDateFrom() + ", effectiveDateTo=" + order.getEffectiveDateTo() + ", doneQuantity="
                     + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", machine="
@@ -376,57 +376,57 @@ public final class TestDataLoader {
         return substituteComponent;
     }
 
-    private void addInstruction(final Map<String, String> values) {
+    private void addTechnology(final Map<String, String> values) {
         ProductsProduct product = getProductByNumber(values.get("product_nr"));
 
         if (product != null) {
-            ProductsInstruction defaultInstruction = getDefaultInstructionForProduct(product);
+            ProductsTechnology defaultTechnology = getDefaultTechnologyForProduct(product);
 
-            ProductsInstruction instruction = new ProductsInstruction();
-            instruction.setId(Long.valueOf(values.get("bom_id")));
+            ProductsTechnology technology = new ProductsTechnology();
+            technology.setId(Long.valueOf(values.get("bom_id")));
             if (!values.get("description").isEmpty()) {
-                instruction.setDescription(values.get("description"));
+                technology.setDescription(values.get("description"));
             }
-            instruction.setMaster(defaultInstruction == null);
-            instruction.setName(values.get("name"));
-            instruction.setNumber(values.get("bom_nr"));
-            instruction.setProduct(product);
+            technology.setMaster(defaultTechnology == null);
+            technology.setName(values.get("name"));
+            technology.setNumber(values.get("bom_nr"));
+            technology.setProduct(product);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test instruction {id=" + instruction.getId() + ", name=" + instruction.getName() + ", number="
-                        + instruction.getNumber() + ", product=" + instruction.getProduct().getNumber() + ", description="
-                        + instruction.getDescription() + ", master=" + instruction.getMaster() + "}");
+                LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getName() + ", number="
+                        + technology.getNumber() + ", product=" + technology.getProduct().getNumber() + ", description="
+                        + technology.getDescription() + ", master=" + technology.getMaster() + "}");
             }
 
-            sessionFactory.getCurrentSession().save(instruction);
+            sessionFactory.getCurrentSession().save(technology);
 
-            addInstructionBomComponents(instruction, null, 3);
+            addTechnologyBomComponents(technology, null, 3);
         }
     }
 
-    private void addInstructionBomComponents(final ProductsInstruction instruction, final ProductsInstructionBomComponent parent,
+    private void addTechnologyBomComponents(final ProductsTechnology technology, final ProductsTechnologyBomComponent parent,
             final int depth) {
         if (depth <= 0) {
             return;
         }
 
         for (int i = 0; i < RANDOM.nextInt(4) + 1; i++) {
-            ProductsInstructionBomComponent component = new ProductsInstructionBomComponent();
-            component.setInstruction(instruction);
+            ProductsTechnologyBomComponent component = new ProductsTechnologyBomComponent();
+            component.setTechnology(technology);
             component.setParent(parent);
             component.setProduct(getRandomProduct());
             component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test bom component {product=" + component.getProduct().getNumber() + ", instruction="
-                        + component.getInstruction().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0)
+                LOG.debug("Add test bom component {product=" + component.getProduct().getNumber() + ", technology="
+                        + component.getTechnology().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0)
                         + ", quantity=" + component.getQuantity() + "}");
             }
 
             sessionFactory.getCurrentSession().save(component);
 
             if (RANDOM.nextDouble() > 0.2) {
-                addInstructionBomComponents(instruction, component, depth - 1);
+                addTechnologyBomComponents(technology, component, depth - 1);
             }
         }
     }
@@ -467,16 +467,16 @@ public final class TestDataLoader {
         }
     }
 
-    private ProductsInstruction getInstructionByName(final String name) {
-        return (ProductsInstruction) sessionFactory.getCurrentSession().createCriteria(ProductsInstruction.class)
+    private ProductsTechnology getTechnologyByName(final String name) {
+        return (ProductsTechnology) sessionFactory.getCurrentSession().createCriteria(ProductsTechnology.class)
                 .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
     }
 
-    private ProductsInstruction getDefaultInstructionForProduct(final ProductsProduct product) {
+    private ProductsTechnology getDefaultTechnologyForProduct(final ProductsProduct product) {
         if (product == null) {
             return null;
         }
-        return (ProductsInstruction) sessionFactory.getCurrentSession().createCriteria(ProductsInstruction.class)
+        return (ProductsTechnology) sessionFactory.getCurrentSession().createCriteria(ProductsTechnology.class)
                 .add(Restrictions.eq("product", product)).add(Restrictions.eq("master", true)).setMaxResults(1).uniqueResult();
     }
 

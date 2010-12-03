@@ -65,13 +65,13 @@ public class ProductsProduct {
     private List<ProductsSubstitute> substitutes;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<ProductsInstruction> instructions;
+    private List<ProductsTechnology> technologies;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<ProductsInstructionBomComponent> instructionBomComponents;
+    private List<ProductsTechnologyBomComponent> technologyBomComponents;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsSubstituteComponent> substituteComponents;
@@ -140,12 +140,12 @@ public class ProductsProduct {
         this.substitutes = substitutes;
     }
 
-    public List<ProductsInstruction> getInstructions() {
-        return instructions;
+    public List<ProductsTechnology> getTechnologies() {
+        return technologies;
     }
 
-    public void setInstructions(final List<ProductsInstruction> instructions) {
-        this.instructions = instructions;
+    public void setTechnologies(final List<ProductsTechnology> technologies) {
+        this.technologies = technologies;
     }
 
     public List<ProductsOrder> getOrders() {
@@ -156,12 +156,12 @@ public class ProductsProduct {
         this.orders = orders;
     }
 
-    public List<ProductsInstructionBomComponent> getInstructionBomComponents() {
-        return instructionBomComponents;
+    public List<ProductsTechnologyBomComponent> getTechnologyBomComponents() {
+        return technologyBomComponents;
     }
 
-    public void setInstructionBomComponents(final List<ProductsInstructionBomComponent> instructionBomComponents) {
-        this.instructionBomComponents = instructionBomComponents;
+    public void setTechnologyBomComponents(final List<ProductsTechnologyBomComponent> technologyBomComponents) {
+        this.technologyBomComponents = technologyBomComponents;
     }
 
     public List<ProductsSubstituteComponent> getSubstituteComponents() {
