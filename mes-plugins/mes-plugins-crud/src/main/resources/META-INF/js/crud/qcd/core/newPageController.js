@@ -65,7 +65,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
-	this.callEvent = function(eventName, component) {
+	this.callEvent = function(eventName, component, completeFunction) {
 		var initParameters = new Object();
 		initParameters.event = {
 			name: eventName
@@ -74,10 +74,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 			initParameters.event.component = component;
 		}
 		initParameters.components = getValueData();
-		performEvent(initParameters);
+		performEvent(initParameters, completeFunction);
 	}
 	
-	function performEvent(parameters) {
+	function performEvent(parameters, completeFunction) {
 		//QCD.info(parameters);
 		var parametersJson = JSON.stringify(parameters);
 		//QCD.info(parametersJson);
@@ -87,9 +87,16 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
 //				actionsPerformer.performNext();
 //			}
+			if (completeFunction) {
+				completeFunction();
+			}
 //			if(callback) {
 //				callback();
 //			}
+		}, function() {
+			if (completeFunction) {
+				completeFunction();
+			}
 		});
 	}
 	
