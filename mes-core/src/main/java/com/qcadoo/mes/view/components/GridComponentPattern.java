@@ -36,11 +36,11 @@ public class GridComponentPattern extends AbstractContainerPattern {
 
     private String correspondingComponent;
 
-    private boolean paginable;
+    private boolean paginable = true;
 
-    private boolean deletable;
+    private boolean deletable = true;
 
-    private boolean creatable;
+    private boolean creatable = true;
 
     private int height = 300;
 
@@ -89,7 +89,7 @@ public class GridComponentPattern extends AbstractContainerPattern {
         addStaticJavaScriptOption("creatable", creatable);
         addStaticJavaScriptOption("height", height);
         addStaticJavaScriptOption("width", width);
-        addStaticJavaScriptOption("fullscreen", width == 0 || height == 0);
+        addStaticJavaScriptOption("fullscreen", width == 0 || height == 0); // TODO masz
         addStaticJavaScriptOption("lookup", lookup);
         addStaticJavaScriptOption("correspondingView", correspondingView);
         addStaticJavaScriptOption("correspondingComponent", correspondingComponent);
