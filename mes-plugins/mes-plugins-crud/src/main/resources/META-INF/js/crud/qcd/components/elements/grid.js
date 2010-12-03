@@ -337,7 +337,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		
 		for (var i in gridParameters.sortColumns) {
-			$("#"+elementPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
+			$("#"+elementSearchName+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
 		}
 		
 		if (gridParameters.width) {
@@ -376,25 +376,25 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function onSortColumnChange(index,iCol,sortorder) {
 		blockGrid();
-		if (currentState.sort && currentState.sort.column) {
-			$("#"+elementPath+"_grid_"+currentState.sort.column).removeClass("sortColumn");
+		if (currentState.order && currentState.order.column) {
+			$("#"+elementSearchName+"_grid_"+currentState.sort.column).removeClass("sortColumn");
 		}
-		$("#"+elementPath+"_grid_"+index).addClass("sortColumn");
-		if (currentState.sort && currentState.sort.column == index) {
-			if (currentState.sort.order == "asc") {
-				$("#"+elementPath+"_sortArrow_"+index).removeClass("upArrow");
-				$("#"+elementPath+"_sortArrow_"+index).addClass("downArrow");
-				currentState.sort.order = "desc";
+		$("#"+elementSearchName+"_grid_"+index).addClass("sortColumn");
+		if (currentState.order && currentState.order.column == index) {
+			if (currentState.order.drection == "asc") {
+				$("#"+elementSearchName+"_sortArrow_"+index).removeClass("upArrow");
+				$("#"+elementSearchName+"_sortArrow_"+index).addClass("downArrow");
+				currentState.order.drection = "desc";
 			} else {
-				$("#"+elementPath+"_sortArrow_"+index).removeClass("downArrow");
-				$("#"+elementPath+"_sortArrow_"+index).addClass("upArrow");
-				currentState.sort.order = "asc";
+				$("#"+elementSearchName+"_sortArrow_"+index).removeClass("downArrow");
+				$("#"+elementSearchName+"_sortArrow_"+index).addClass("upArrow");
+				currentState.order.drection = "asc";
 			}
 		} else {
-			$("#"+elementPath+"_sortArrow_"+index).addClass("upArrow");
-			currentState.sort = {
+			$("#"+elementSearchName+"_sortArrow_"+index).addClass("upArrow");
+			currentState.order = {
 					column: index,
-					order: "asc"
+					direction: "asc"
 				}
 		}
 		onCurrentStateChange();
@@ -414,15 +414,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				unblockGrid();
 				return;
 			}
-			var filterArray = new Array();
+			currentState.filters = new Object();
 			for (var i in postFilters.rules) {
 				var filterRule = postFilters.rules[i];
-				filterArray.push({
-					column: filterRule.field,
-					value: filterRule.data
-				});
+				currentState.filters[filterRule.field] = filterRule.data;
 			}
-			currentState.filters = filterArray;
 		} else {
 			currentState.filters = null;
 		}
@@ -494,8 +490,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function onCurrentStateChange() {
 		if (componentEnabled) {
-			//mainController.getUpdate(elementPath, currentState, gridParameters.listeners);
-			mainController.callEvent("gridUpdate", elementPath);
+			mainController.callEvent("gridUpdate", elementPath, function() {
+				unblockGrid();
+			});
 		}
 	}
 	
