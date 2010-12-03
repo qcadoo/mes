@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.1
+    Version: 0.2.0
 
     This file is part of Qcadoo.
 
@@ -23,6 +23,7 @@
     ***************************************************************************
 
 --%>
+
 <![CDATA[ERROR PAGE: ${errorHeader}]]>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
