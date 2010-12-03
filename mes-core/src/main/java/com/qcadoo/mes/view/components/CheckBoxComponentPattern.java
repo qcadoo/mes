@@ -8,6 +8,10 @@ import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 @ViewComponent("checkbox")
 public class CheckBoxComponentPattern extends AbstractComponentPattern {
 
+    private static final String JS_OBJECT = "QCD.components.elements.TextInput";
+
+    private static final String JSP_PATH = "newComponents/input.jsp";
+
     public CheckBoxComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
             final ComponentPattern parent) {
         super(name, fieldPath, sourceFieldPath, parent);

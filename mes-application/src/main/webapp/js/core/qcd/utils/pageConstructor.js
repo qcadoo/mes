@@ -20,7 +20,6 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 			var elementName = elementFullName.split(".")[elementFullName.split(".").length - 1];
 			
 			var jsObjectElement = $("#"+elementSearchName+" > .element_js_object");
-			
 			var jsObjectClassName = $.trim(jsObjectElement.html());
 			jsObjectElement.remove();
 			
