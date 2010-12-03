@@ -1,6 +1,7 @@
 package com.qcadoo.mes.view.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,8 +60,41 @@ public class ViewDefinitionImpl implements ViewDefinition {
     }
 
     public void initialize() {
-        for (ComponentPattern componentPattern : componentPatterns.values()) {
-            componentPattern.initialize(this);
+        List<ComponentPattern> list = new ArrayList<ComponentPattern>();
+
+        addPatternsToList(list, componentPatterns.values());
+
+        System.out.println(list);
+
+        int lastNotInitialized = 0;
+
+        while (true) {
+            int notInitialized = 0;
+
+            for (ComponentPattern pattern : list) {
+                if (!pattern.initialize(this)) {
+                    notInitialized++;
+                }
+            }
+
+            if (notInitialized == 0) {
+                break;
+            }
+
+            if (notInitialized == lastNotInitialized) {
+                throw new IllegalStateException("There is cyclic dependency between components");
+            }
+
+            lastNotInitialized = notInitialized;
+        }
+    }
+
+    private void addPatternsToList(final List<ComponentPattern> list, final Collection<ComponentPattern> patterns) {
+        list.addAll(patterns);
+        for (ComponentPattern pattern : patterns) {
+            if (pattern instanceof ContainerPattern) {
+                addPatternsToList(list, ((ContainerPattern) pattern).getChildren().values());
+            }
         }
     }
 

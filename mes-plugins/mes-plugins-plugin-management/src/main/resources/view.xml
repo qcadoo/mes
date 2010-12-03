@@ -32,7 +32,6 @@
 				<option type="column" name="status" fields="status" />
 				<option type="correspondingView" value="plugins/pluginDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.pluginDetailsForm" />
-				<option type="paginable" value="true" />
 				<option type="searchable" value="name,vendor,status" />
 				<option type="orderable" value="name" />
 				<option type="deletable" value="false" />

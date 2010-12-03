@@ -27,7 +27,6 @@
 				<option type="column" name="ean" fields="ean" />
 				<option type="correspondingView" value="products/productDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.productDetailsForm" />
-				<option type="paginable" value="true" />
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
 				<option type="orderable" value="name,number,ean" />
 				<option type="fullscreen" value="true" />
@@ -75,8 +74,6 @@
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
 			</component>
 			<component type="grid" name="substitutesComponentGrid"
 				source="#{mainWindow.substitutesGrid}.components">
@@ -89,8 +86,6 @@
 				<option type="correspondingComponent" value="mainWindow.substitutesComponentDetailsForm" />
 				<option type="paginable" value="false" />
 				<option type="height" value="150" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
 				<option type="width" value="350" />
 			</component>
 		</component>
@@ -144,7 +139,6 @@
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
 					<option type="column" name="category" fields="category" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullscreen" value="true" />
@@ -174,7 +168,6 @@
 					expression="#product['name']" />
 				<option type="correspondingView" value="products/instructionDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.instructionDetailsForm" />
-				<option type="paginable" value="true" />
 				<option type="searchable" value="name,number,product" />
 				<option type="orderable" value="name,number,product" />
 				<option type="fullscreen" value="true" />
@@ -208,7 +201,6 @@
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
 					<option type="column" name="category" fields="category" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullscreen" value="true" />
@@ -251,7 +243,6 @@
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
 					<option type="column" name="category" fields="category" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullscreen" value="true" />
@@ -283,7 +274,6 @@
 				<option type="column" name="state" fields="state" />
 				<option type="correspondingView" value="products/orderDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.orderDetailsForm" />
-				<option type="paginable" value="true" />
 				<option type="searchable" value="name,number,state" />
 				<option type="orderable" value="name,number,state" />
 				<option type="fullscreen" value="true" />
@@ -320,7 +310,6 @@
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
 					<option type="column" name="category" fields="category" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
 					<option type="fullscreen" value="true" />
@@ -333,7 +322,6 @@
 					source="#{mainWindow.orderDetailsForm.product}.instructions">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name,number" />
 					<option type="orderable" value="name,number" />
 					<option type="fullscreen" value="true" />
@@ -376,7 +364,6 @@
 				<option type="column" name="worker" fields="worker" width="300" />
 				<option type="correspondingView" value="products/materialRequirementDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.materialRequirementDetailsForm" />
-				<option type="paginable" value="true" />
 				<option type="searchable" value="name,date,worker" />
 				<option type="orderable" value="name,date,worker" />
 				<option type="fullscreen" value="true" />
@@ -427,8 +414,6 @@
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
@@ -448,7 +433,6 @@
 				<component type="lookup" name="order" field="order">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="number,name" />
 					<option type="orderable" value="number,name" />
 					<option type="fullscreen" value="true" />

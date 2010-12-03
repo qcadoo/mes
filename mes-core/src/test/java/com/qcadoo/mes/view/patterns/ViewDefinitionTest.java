@@ -2,6 +2,7 @@ package com.qcadoo.mes.view.patterns;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -70,8 +71,10 @@ public class ViewDefinitionTest {
         ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
         ComponentPattern child1 = Mockito.mock(ComponentPattern.class);
         given(child1.getName()).willReturn("test1");
+        given(child1.initialize(vd)).willReturn(false, true);
         ComponentPattern child2 = Mockito.mock(ComponentPattern.class);
         given(child2.getName()).willReturn("test2");
+        given(child2.initialize(vd)).willReturn(true);
         vd.addChild(child1);
         vd.addChild(child2);
 
@@ -79,8 +82,34 @@ public class ViewDefinitionTest {
         vd.initialize();
 
         // then
-        Mockito.verify(child1).initialize(vd);
-        Mockito.verify(child2).initialize(vd);
+        Mockito.verify(child1, times(2)).initialize(vd);
+        Mockito.verify(child2, times(2)).initialize(vd);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowCyclicDependencyOnInitialize() throws Exception {
+        // given
+        ViewDefinitionImpl vd = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true);
+        ComponentPattern child1 = Mockito.mock(ComponentPattern.class);
+        given(child1.getName()).willReturn("test1");
+        given(child1.initialize(vd)).willReturn(false, false);
+        ComponentPattern child2 = Mockito.mock(ComponentPattern.class);
+        given(child2.getName()).willReturn("test2");
+        given(child2.initialize(vd)).willReturn(false, false);
+        ComponentPattern child3 = Mockito.mock(ComponentPattern.class);
+        given(child3.getName()).willReturn("test3");
+        given(child3.initialize(vd)).willReturn(true);
+        vd.addChild(child1);
+        vd.addChild(child2);
+        vd.addChild(child3);
+
+        // when
+        vd.initialize();
+
+        // then
+        Mockito.verify(child1, times(2)).initialize(vd);
+        Mockito.verify(child2, times(2)).initialize(vd);
+        Mockito.verify(child3, times(2)).initialize(vd);
     }
 
     @Test

@@ -23,7 +23,6 @@
 				<option type="column" name="name" fields="name" link="true" width="600" />
 				<option type="column" name="active" fields="active" />
 				<option type="orderable" value="name" />
-				<option type="paginable" value="true" />
 				<option type="searchable" value="name" />
 				<option type="correspondingView" value="menu/menuCategoryDetailsView" />
 				<option type="correspondingComponent" value="mainWindow.detailsForm" />
@@ -67,8 +66,6 @@
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="400" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.menu.MenuService" method="onDetailsView" />

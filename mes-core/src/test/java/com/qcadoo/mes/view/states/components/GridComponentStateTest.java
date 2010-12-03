@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -34,8 +33,6 @@ public class GridComponentStateTest extends AbstractStateTest {
 
     private Entity entity;
 
-    private ComponentState name;
-
     private GridComponentState grid;
 
     private DataDefinition productDataDefinition;
@@ -43,8 +40,6 @@ public class GridComponentStateTest extends AbstractStateTest {
     private DataDefinition substituteDataDefinition;
 
     private FieldDefinition substitutesFieldDefinition;
-
-    private TranslationService translationService;
 
     private JSONObject json;
 
@@ -75,8 +70,6 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         entity = mock(Entity.class);
         given(entity.getField("name")).willReturn("text");
-
-        translationService = mock(TranslationService.class);
 
         productDataDefinition = mock(DataDefinition.class);
         substituteDataDefinition = mock(DataDefinition.class);

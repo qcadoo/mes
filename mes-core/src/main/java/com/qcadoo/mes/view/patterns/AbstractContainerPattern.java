@@ -7,7 +7,6 @@ import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ContainerState;
-import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 public abstract class AbstractContainerPattern extends AbstractComponentPattern implements ContainerPattern {
@@ -44,14 +43,6 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
     @Override
     public void addChild(final ComponentPattern componentPattern) {
         children.put(componentPattern.getName(), componentPattern);
-    }
-
-    @Override
-    public void initialize(final ViewDefinition viewDefinition) {
-        super.initialize(viewDefinition);
-        for (ComponentPattern componentPattern : children.values()) {
-            componentPattern.initialize(viewDefinition);
-        }
     }
 
     @Override

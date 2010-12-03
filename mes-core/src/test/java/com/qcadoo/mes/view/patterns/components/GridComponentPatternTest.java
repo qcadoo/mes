@@ -133,10 +133,10 @@ public class GridComponentPatternTest {
         assertFalse(options.has("correspondingView"));
         assertFalse(options.has("correspondingComponent"));
         assertFalse(options.has("scopeFieldName"));
-        assertFalse(options.getBoolean("paginable"));
+        assertTrue(options.getBoolean("paginable"));
         assertFalse(options.getBoolean("lookup"));
-        assertFalse(options.getBoolean("creatable"));
-        assertFalse(options.getBoolean("deletable"));
+        assertTrue(options.getBoolean("creatable"));
+        assertTrue(options.getBoolean("deletable"));
         assertFalse(options.getBoolean("prioritizable"));
         assertFalse(options.getBoolean("fullscreen"));
         assertEquals(300, options.getInt("width"));
@@ -178,6 +178,7 @@ public class GridComponentPatternTest {
 
         AbstractComponentPattern sourceComponent = new TextInputComponentPattern("parent", null, null, null);
         setField(sourceComponent, "dataDefinition", dataDefinition);
+        setField(sourceComponent, "initialized", true);
 
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
         given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);

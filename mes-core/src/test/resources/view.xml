@@ -48,7 +48,6 @@
 					expression="2 + 2" width="20" fields="name,beanA" />
 				<option type="searchable" value="name,beanA" />
 				<option type="orderable" value="name" />
-				<option type="paginable" value="true" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="height" value="450" />

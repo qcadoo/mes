@@ -54,6 +54,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private DataDefinition dataDefinition;
 
+    private boolean initialized;
+
     private boolean defaultEnabled;
 
     private boolean defaultVisible;
@@ -92,10 +94,12 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     @Override
-    public void initialize(final ViewDefinition viewDefinition) {
-        if (dataDefinition != null) {
-            return; // already initialized
+    public boolean initialize(final ViewDefinition viewDefinition) {
+        if (initialized) {
+            return true;
         }
+
+        System.out.println("#1 ---> " + getPathName());
 
         String[] field = null;
         String[] scopeField = null;
@@ -103,16 +107,30 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         AbstractComponentPattern scopeFieldComponent = null;
 
         if (fieldPath != null) {
+            System.out.println("#2 ---> " + getPathName() + ": " + fieldPath);
             field = getComponentAndField(fieldPath);
+            System.out.println("#2.1 ---> " + getPathName() + ": " + field[0]);
+            System.out.println("#2.2 ---> " + getPathName() + ": " + field[1]);
             fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition.getComponentByPath(field[0]));
+            System.out.println("#2.3 ---> " + getPathName() + ": " + fieldComponent);
             fieldComponent.addFieldEntityIdChangeListener(field[1], this);
         }
 
         if (scopeFieldPath != null) {
+            System.out.println("#3 ---> " + getPathName() + ": " + scopeFieldPath);
             scopeField = getComponentAndField(scopeFieldPath);
+            System.out.println("#3.1 ---> " + getPathName() + ": " + scopeField[0]);
+            System.out.println("#3.2 ---> " + getPathName() + ": " + scopeField[1]);
             scopeFieldComponent = (AbstractComponentPattern) (scopeField[0] == null ? parent : viewDefinition
                     .getComponentByPath(scopeField[0]));
+            System.out.println("#3.3 ---> " + getPathName() + ": " + scopeFieldComponent);
             scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
+        }
+
+        if (isComponentInitialized(fieldComponent) && isComponentInitialized(scopeFieldComponent)) {
+            initialized = true;
+        } else {
+            return false;
         }
 
         getDataDefinition(viewDefinition, fieldComponent, scopeFieldComponent);
@@ -127,17 +145,27 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        reinitializeListeners(viewDefinition);
+        return true;
     }
 
     protected void initializeOptions() throws JSONException {
         // implement me if you want
     }
 
+    private boolean isComponentInitialized(final AbstractComponentPattern fieldComponent) {
+        System.out.println("#9.1 ---> " + getPathName() + ", " + fieldComponent);
+        if (fieldComponent != null) {
+            System.out.println("#9.2 ---> " + getPathName() + ", " + fieldComponent.initialized);
+        }
+        return fieldComponent == null || fieldComponent.initialized;
+    }
+
     private void getDataDefinitionFromFieldDefinition() {
         if (fieldDefinition != null) {
+            System.out.println("#6.1 ---> " + getPathName());
             getDataDefinitionFromFieldDefinition(fieldDefinition);
         } else if (scopeFieldDefinition != null) {
+            System.out.println("#6.2 ---> " + getPathName());
             getDataDefinitionFromFieldDefinition(scopeFieldDefinition);
         }
     }
@@ -146,10 +174,14 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         if (dataDefinition != null) {
             if (fieldPath != null) {
                 fieldDefinition = dataDefinition.getField(field[1]);
+                System.out.println("#5.1 ---> " + getPathName() + ": " + dataDefinition + ", " + field[1] + ", "
+                        + fieldDefinition);
             }
 
             if (scopeFieldPath != null) {
                 scopeFieldDefinition = dataDefinition.getField(scopeField[1]);
+                System.out.println("#5.2 ---> " + getPathName() + ": " + dataDefinition + ", " + scopeField[1] + ", "
+                        + scopeFieldDefinition);
             }
         }
     }
@@ -158,30 +190,27 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             final AbstractComponentPattern scopeFieldComponent) {
         if (fieldPath != null) {
             dataDefinition = fieldComponent.getDataDefinition();
+            System.out.println("#4.1 ---> " + getPathName() + ": " + dataDefinition);
         } else if (scopeFieldPath != null) {
             dataDefinition = scopeFieldComponent.getDataDefinition();
+            System.out.println("#4.2 ---> " + getPathName() + ": " + dataDefinition);
         } else if (parent != null) {
             dataDefinition = ((AbstractComponentPattern) parent).getDataDefinition();
+            System.out.println("#4.3 ---> " + getPathName() + ": " + dataDefinition);
         } else {
             dataDefinition = viewDefinition.getDataDefinition();
+            System.out.println("#4.4 ---> " + getPathName() + ": " + dataDefinition);
         }
     }
 
     private void getDataDefinitionFromFieldDefinition(final FieldDefinition fieldDefinition) {
+        System.out.println("#7.1 ---> " + getPathName() + ": " + fieldDefinition);
         if (fieldDefinition.getType() instanceof HasManyType) {
             dataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
+            System.out.println("#7.2 ---> " + getPathName() + ": " + dataDefinition);
         } else if (fieldDefinition.getType() instanceof BelongsToType) {
             dataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
-        }
-    }
-
-    private void reinitializeListeners(final ViewDefinition viewDefinition) {
-        for (ComponentPattern componentPattern : fieldEntityIdChangeListeners.values()) {
-            ((AbstractComponentPattern) componentPattern).initialize(viewDefinition);
-        }
-
-        for (ComponentPattern componentPattern : scopeEntityIdChangeListeners.values()) {
-            ((AbstractComponentPattern) componentPattern).initialize(viewDefinition);
+            System.out.println("#7.3 ---> " + getPathName() + ": " + dataDefinition);
         }
     }
 

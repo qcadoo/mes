@@ -36,6 +36,8 @@ public class FieldAndScopeListenerPatternTest {
         pattern.addChild(t2);
 
         pattern.initialize(vd);
+        t1.initialize(vd);
+        t2.initialize(vd);
 
         // when
         Map<String, ComponentPattern> listeners = pattern.getFieldEntityIdChangeListeners();
@@ -59,6 +61,8 @@ public class FieldAndScopeListenerPatternTest {
         pattern.addChild(t2);
 
         pattern.initialize(vd);
+        t1.initialize(vd);
+        t2.initialize(vd);
 
         AbstractComponentState f1State = Mockito.mock(AbstractComponentState.class);
 
@@ -111,6 +115,8 @@ public class FieldAndScopeListenerPatternTest {
         pattern.addChild(t2);
 
         pattern.initialize(vd);
+        t1.initialize(vd);
+        t2.initialize(vd);
 
         // when
         Map<String, ComponentPattern> listeners = pattern.getScopeEntityIdChangeListeners();
@@ -134,6 +140,8 @@ public class FieldAndScopeListenerPatternTest {
         pattern.addChild(t2);
 
         pattern.initialize(vd);
+        t1.initialize(vd);
+        t2.initialize(vd);
 
         AbstractComponentState f1State = Mockito.mock(AbstractComponentState.class);
 

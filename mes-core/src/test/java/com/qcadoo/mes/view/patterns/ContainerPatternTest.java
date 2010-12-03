@@ -1,6 +1,7 @@
 package com.qcadoo.mes.view.patterns;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class ContainerPatternTest {
     }
 
     @Test
-    public void shouldCallInitializeOnChildren() throws Exception {
+    public void shouldNotCallInitializeOnChildren() throws Exception {
         // given
         ViewDefinition vd = Mockito.mock(ViewDefinition.class);
 
@@ -76,8 +77,8 @@ public class ContainerPatternTest {
         pattern.initialize(vd);
 
         // then
-        Mockito.verify(child1).initialize(vd);
-        Mockito.verify(child2).initialize(vd);
+        Mockito.verify(child1, never()).initialize(vd);
+        Mockito.verify(child2, never()).initialize(vd);
     }
 
     @Test
