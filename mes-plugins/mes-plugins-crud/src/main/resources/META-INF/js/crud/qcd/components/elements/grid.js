@@ -377,7 +377,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function onSortColumnChange(index,iCol,sortorder) {
 		blockGrid();
 		if (currentState.order && currentState.order.column) {
-			$("#"+elementSearchName+"_grid_"+currentState.sort.column).removeClass("sortColumn");
+			$("#"+elementSearchName+"_grid_"+currentState.order.column).removeClass("sortColumn");
 		}
 		$("#"+elementSearchName+"_grid_"+index).addClass("sortColumn");
 		if (currentState.order && currentState.order.column == index) {
