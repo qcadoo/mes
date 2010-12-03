@@ -400,7 +400,7 @@ public final class ProductService {
     public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {
 
         SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
-                .restrictedWith(Restrictions.eq(dataDefinition.getField("state"), "started"))
+                .restrictedWith(Restrictions.eq(dataDefinition.getField("state"), "inProgress"))
                 .restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.EQ));
 
         SearchResult searchResult = searchCriteria.list();
@@ -486,7 +486,7 @@ public final class ProductService {
 
         }
 
-        if (!entity.getField("state").toString().equals("started")) {
+        if (!entity.getField("state").toString().equals("inProgress")) {
             if (entity.getField("effectiveDateTo") != null) {
                 entity.setField("state", "done");
             } else if (entity.getField("effectiveDateFrom") != null) {

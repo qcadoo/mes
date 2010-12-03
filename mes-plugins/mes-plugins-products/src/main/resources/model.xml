@@ -129,7 +129,7 @@
 		<date name="dateTo">
 			<validatesPresence />
 		</date>
-		<enum name="state" values="started,pending,done">
+		<enum name="state" values="pending,inProgress,done">
 			<validatesPresence />
 		</enum>
 		<dictionary name="machine" dictionary="machines" />
