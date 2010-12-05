@@ -11,7 +11,7 @@ import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 
-public class MessageHolder {
+public final class MessageHolder {
 
     private final List<Pair<String, MessageType>> messages = new ArrayList<Pair<String, MessageType>>();
 

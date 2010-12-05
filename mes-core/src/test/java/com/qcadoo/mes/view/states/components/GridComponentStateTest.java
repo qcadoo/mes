@@ -22,10 +22,13 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restriction;
@@ -37,8 +40,8 @@ import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
-import com.qcadoo.mes.view.components.GridComponentColumn;
-import com.qcadoo.mes.view.components.GridComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentColumn;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.states.AbstractStateTest;
 
 public class GridComponentStateTest extends AbstractStateTest {
@@ -52,6 +55,8 @@ public class GridComponentStateTest extends AbstractStateTest {
     private DataDefinition substituteDataDefinition;
 
     private FieldDefinition substitutesFieldDefinition;
+
+    private TranslationService translationService;
 
     private JSONObject json;
 
@@ -107,8 +112,13 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         columns = new LinkedHashMap<String, GridComponentColumn>();
 
+        translationService = mock(TranslationService.class);
+        given(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class))).willReturn("i18n");
+        given(translationService.translate(Mockito.anyList(), Mockito.any(Locale.class))).willReturn("i18n");
+
         grid = new GridComponentState(substitutesFieldDefinition, columns);
         grid.setDataDefinition(substituteDataDefinition);
+        grid.setTranslationService(translationService);
     }
 
     @Test
@@ -465,12 +475,12 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         assertFalse(json.getJSONObject(ComponentState.JSON_CONTENT).has(GridComponentState.JSON_SELECTED_ENTITY_ID));
         assertEquals(1, json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getInt(ComponentState.JSON_MESSAGE_TYPE));
-        assertEquals("TODO - usunięto",
+        assertEquals("i18n",
                 json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_BODY));
         verify(listener).onFieldEntityIdChange(null);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void shouldNotRemoveSelectedEntityOnFail() throws Exception {
         // given
         FieldEntityIdChangeListener listener = mock(FieldEntityIdChangeListener.class);
@@ -484,15 +494,6 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         // when
         grid.performEvent("remove", new String[0]);
-
-        // then
-        JSONObject json = grid.render();
-
-        assertEquals(13L, json.getJSONObject(ComponentState.JSON_CONTENT).getLong(GridComponentState.JSON_SELECTED_ENTITY_ID));
-        assertEquals(0, json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getInt(ComponentState.JSON_MESSAGE_TYPE));
-        assertEquals("TODO - nieusunięto - null",
-                json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_BODY));
-        verify(listener, never()).onFieldEntityIdChange(null);
     }
 
     @Test
@@ -515,12 +516,12 @@ public class GridComponentStateTest extends AbstractStateTest {
         JSONObject json = grid.render();
 
         assertEquals(1, json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getInt(ComponentState.JSON_MESSAGE_TYPE));
-        assertEquals("TODO - przesunięto",
+        assertEquals("i18n",
                 json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_BODY));
         verify(listener, never()).onFieldEntityIdChange(13L);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void shouldNotModeUpSelectedEntityOnFail() throws Exception {
         // given
         FieldEntityIdChangeListener listener = mock(FieldEntityIdChangeListener.class);
@@ -534,16 +535,6 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         // when
         grid.performEvent("moveUp", new String[0]);
-
-        // then
-        verify(substituteDataDefinition).move(13L, -1);
-
-        JSONObject json = grid.render();
-
-        assertEquals(0, json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getInt(ComponentState.JSON_MESSAGE_TYPE));
-        assertEquals("TODO - nieprzesunięto - null",
-                json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_BODY));
-        verify(listener, never()).onFieldEntityIdChange(13L);
     }
 
     @Test
@@ -566,12 +557,12 @@ public class GridComponentStateTest extends AbstractStateTest {
         JSONObject json = grid.render();
 
         assertEquals(1, json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getInt(ComponentState.JSON_MESSAGE_TYPE));
-        assertEquals("TODO - przesunięto",
+        assertEquals("i18n",
                 json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_BODY));
         verify(listener, never()).onFieldEntityIdChange(13L);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void shouldNotModeDownSelectedEntityOnFail() throws Exception {
         // given
         FieldEntityIdChangeListener listener = mock(FieldEntityIdChangeListener.class);
@@ -585,154 +576,65 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         // when
         grid.performEvent("moveDown", new String[0]);
-
-        // then
-        verify(substituteDataDefinition).move(13L, 1);
-
-        JSONObject json = grid.render();
-
-        assertEquals(0, json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getInt(ComponentState.JSON_MESSAGE_TYPE));
-        assertEquals("TODO - nieprzesunięto - null",
-                json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_BODY));
-        verify(listener, never()).onFieldEntityIdChange(13L);
     }
 
-    // @Test
-    // public void shouldRenderFormEntityId() throws Exception {
-    // // given
-    // ComponentState componentState = new FormComponentState(null);
-    // componentState.setFieldValue(13L);
-    //
-    // // when
-    // JSONObject json = componentState.render();
-    //
-    // // then
-    // assertEquals(13L, json.getJSONObject(ComponentState.JSON_CONTENT).getLong(FormComponentState.JSON_ENTITY_ID));
-    // }
-    //
-    // @Test
-    // public void shouldClearFormIfEntityIsNotExists() throws Exception {
-    // // given
-    // form.setFieldValue(12L);
-    //
-    // // when
-    // form.performEvent("initialize", new String[0]);
-    //
-    // // then
-    // assertNull(form.getFieldValue());
-    // }
-    //
-    // @Test
-    // public void shouldResetForm() throws Exception {
-    // // given
-    // form.setFieldValue(13L);
-    //
-    // // when
-    // form.performEvent("reset", new String[0]);
-    //
-    // // then
-    // verify(name).setFieldValue("text");
-    // }
-    //
-    // @Test
-    // public void shouldClearFormEntity() throws Exception {
-    // // given
-    // form.setFieldValue(13L);
-    //
-    // // when
-    // form.performEvent("clear", new String[0]);
-    //
-    // // then
-    // verify(name).setFieldValue(null);
-    // assertNull(form.getFieldValue());
-    // }
-    //
-    // @Test
-    // public void shouldDeleteFormEntity() throws Exception {
-    // // given
-    // form.setFieldValue(13L);
-    //
-    // // when
-    // form.performEvent("delete", new String[0]);
-    //
-    // // then
-    // verify(name).setFieldValue(null);
-    // verify(categoryDataDefinition).delete(13L);
-    // assertNull(form.getFieldValue());
-    // }
-    //
-    // @Test
-    // public void shouldSaveFormEntity() throws Exception {
-    // // given
-    // Entity entity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text"));
-    // Entity savedEntity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
-    // given(categoryDataDefinition.save(eq(entity))).willReturn(savedEntity);
-    // given(name.getFieldValue()).willReturn("text");
-    //
-    // form.setFieldValue(null);
-    //
-    // // when
-    // form.performEvent("save", new String[0]);
-    //
-    // // then
-    // verify(categoryDataDefinition).save(eq(entity));
-    // verify(name).setFieldValue("text2");
-    // assertEquals(13L, form.getFieldValue());
-    // assertTrue(((FormComponentState) form).isValid());
-    // }
-    //
-    // @Test
-    // public void shouldUseContextWhileSaving() throws Exception {
-    // // given
-    // Entity entity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
-    // Entity savedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
-    // given(categoryDataDefinition.save(eq(entity))).willReturn(savedEntity);
-    // given(name.getFieldValue()).willReturn("text");
-    //
-    // JSONObject json = new JSONObject();
-    // JSONObject jsonContext = new JSONObject();
-    // jsonContext.put("id", 14L);
-    // jsonContext.put("name", "text2");
-    // JSONObject jsonContent = new JSONObject();
-    // jsonContent.put(FormComponentState.JSON_ENTITY_ID, 13L);
-    // json.put(ComponentState.JSON_CONTEXT, jsonContext);
-    // json.put(ComponentState.JSON_CONTENT, jsonContent);
-    // json.put(ComponentState.JSON_CHILDREN, new JSONObject());
-    //
-    // form.initialize(json, Locale.ENGLISH);
-    //
-    // // when
-    // form.performEvent("save", new String[0]);
-    //
-    // // then
-    // verify(categoryDataDefinition).save(eq(entity));
-    // verify(name).setFieldValue("text2");
-    // assertEquals(14L, form.getFieldValue());
-    // assertTrue(((FormComponentState) form).isValid());
-    // }
-    //
-    // @Test
-    // public void shouldHaveValidationErrors() throws Exception {
-    // // given
-    // Entity entity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text"));
-    // Entity savedEntity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text2"));
-    // savedEntity.addGlobalError("global.error");
-    // savedEntity.addError(productsFieldDefinition, "field.error");
-    //
-    // given(translationService.translate(eq("global.error"), any(Locale.class))).willReturn("translated global error");
-    // given(translationService.translate(eq("field.error"), any(Locale.class))).willReturn("translated field error");
-    // given(categoryDataDefinition.save(eq(entity))).willReturn(savedEntity);
-    // given(name.getFieldValue()).willReturn("text");
-    //
-    // form.setFieldValue(null);
-    //
-    // // when
-    // form.performEvent("save", new String[0]);
-    //
-    // // then
-    // verify(categoryDataDefinition).save(eq(entity));
-    // assertFalse(((FormComponentState) form).isValid());
-    // verify(name).addMessage("translated field error", ComponentState.MessageType.FAILURE);
-    // assertTrue(form.render().toString().contains("translated global error"));
-    // }
+    @Test
+    public void shouldGetValueUsingExpression() throws Exception {
+        // given
+        GridComponentColumn column = new GridComponentColumn("name");
+        column.setExpression("#name + ' ' + #id");
+
+        Entity entity = new DefaultEntity("plugin", "name", 13L, ImmutableMap.of("name", (Object) "John"));
+
+        // when
+        String value = column.getValue(entity, Locale.ENGLISH);
+
+        // then
+        assertEquals("John 13", value);
+    }
+
+    @Test
+    public void shouldGetValueUsingField() throws Exception {
+        // given
+        FieldDefinition field = mock(FieldDefinition.class);
+        given(field.getName()).willReturn("name");
+        given(field.getValue("John")).willReturn("Johny");
+
+        GridComponentColumn column = new GridComponentColumn("name");
+        column.addField(field);
+
+        Entity entity = new DefaultEntity("plugin", "name", 13L, ImmutableMap.of("name", (Object) "John"));
+
+        // when
+        String value = column.getValue(entity, Locale.ENGLISH);
+
+        // then
+        assertEquals("Johny", value);
+    }
+
+    @Test
+    public void shouldGetValueUsingFields() throws Exception {
+        // given
+        FieldDefinition field1 = mock(FieldDefinition.class);
+        given(field1.getName()).willReturn("name");
+        given(field1.getValue("John")).willReturn("Johny");
+
+        FieldDefinition field2 = mock(FieldDefinition.class);
+        given(field2.getName()).willReturn("lastname");
+        given(field2.getValue("Smith")).willReturn("Smithy");
+
+        GridComponentColumn column = new GridComponentColumn("name");
+        column.addField(field1);
+        column.addField(field2);
+
+        Entity entity = new DefaultEntity("plugin", "name", 13L, ImmutableMap.of("name", (Object) "John", "lastname",
+                (Object) "Smith"));
+
+        // when
+        String value = column.getValue(entity, Locale.ENGLISH);
+
+        // then
+        assertEquals("Johny, Smithy", value);
+    }
+
 }

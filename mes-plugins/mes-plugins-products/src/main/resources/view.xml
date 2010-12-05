@@ -9,51 +9,50 @@
 -->
 
 <qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="productGridView" model="product" menuAccessible="true">
-		<component type="window" name="mainWindow">
+	<view name="products" model="product" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{mainWindow.productsGrid}.performNew;" />
+					<bigButton name="new" icon="newIcon24.png" action="#{window.products}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.productsGrid}.performDelete;" />
+						action="#{window.products}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="productsGrid">
+			<component type="grid" name="products">
 				<option type="column" name="number" fields="number" link="true"
 					width="200" />
 				<option type="column" name="name" fields="name" link="true"
 					width="300" />
 				<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
 				<option type="column" name="ean" fields="ean" />
-				<option type="correspondingView" value="products/productDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.productDetailsForm" />
+				<option type="correspondingView" value="products/product" />
+				<option type="correspondingComponent" value="window.product" />
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
 				<option type="orderable" value="name,number,ean" />
 				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="productDetailsView" model="product">
-		<component type="window" name="mainWindow">
+	<view name="product" model="product">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.productDetailsForm}.performSave;" />
+						action="#{window.product}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack" />
+						action="#{window.product}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{mainWindow.productDetailsForm}.performCancel;" />
+						action="#{window.product}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.product}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="productDetailsForm">
+			<component type="form" name="product">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" hasDescription="true" />					
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
@@ -62,51 +61,49 @@
 				<component type="input" name="unit" field="unit" />
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
-				<option type="height" value="300" />
-				<option type="fullscreen" value="true" />
 			</component>
-			<component type="grid" name="substitutesGrid" source="#{mainWindow.productDetailsForm}.substitutes">
+			<component type="grid" name="substitutes" source="#{window.product}.substitutes">
 				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="priority" fields="priority" />
-				<option type="correspondingView" value="products/substituteDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.substitutesDetailsForm" />
+				<option type="correspondingView" value="products/substitute" />
+				<option type="correspondingComponent" value="window.substitute" />
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
 			</component>
-			<component type="grid" name="substitutesComponentGrid"
-				source="#{mainWindow.substitutesGrid}.components">
+			<component type="grid" name="substituteComponents"
+				source="#{window.substitutes}.components">
 				<option type="column" name="number" fields="product"
 					expression="#product['number']" link="true" />
 				<option type="column" name="name" fields="product"
 					expression="#product['name']" link="true" />
 				<option type="column" name="quantity" fields="quantity" />
-				<option type="correspondingView" value="products/substituteComponentDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.substitutesComponentDetailsForm" />
+				<option type="correspondingView" value="products/substituteComponent" />
+				<option type="correspondingComponent" value="window.substituteComponent" />
 				<option type="paginable" value="false" />
 				<option type="height" value="150" />
 				<option type="width" value="350" />
 			</component>
 		</component>
 	</view>
-	<view name="substituteDetailsView" model="substitute">
-		<component type="window" name="mainWindow">
+	<view name="substitute" model="substitute">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.substitutesDetailsForm}.performSave;" />
+						action="#{window.substitute}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.substitutesDetailsForm}.performCancel;" />
+						action="#{window.substitute}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.substitute}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.substitutesDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.substitute}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="substitutesDetailsForm">
+			<component type="form" name="substitute">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="input" name="priority" field="priority"
@@ -118,23 +115,23 @@
 			</component>
 		</component>
 	</view>
-	<view name="substituteComponentDetailsView" model="substituteComponent">
-		<component type="window" name="mainWindow">
+	<view name="substituteComponent" model="substituteComponent">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.substitutesComponentDetailsForm}.performSave;" />
+						action="#{window.substituteComponent}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.substitutesComponentDetailsForm}.performCancel;" />
+						action="#{window.substituteComponent}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.substituteComponent}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.substitutesComponentDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.substituteComponent}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="substitutesComponentDetailsForm">
+			<component type="form" name="substituteComponent">
 				<component type="lookup" name="product" field="product">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
@@ -151,49 +148,48 @@
 			</component>
 		</component>
 	</view>
-	<view name="instructionGridView" model="instruction" menuAccessible="true">
-		<component type="window" name="mainWindow">
+	<view name="instructions" model="instruction" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.instructionsGrid}.performNew;" />
+						action="#{window.instructions}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.instructionsGrid}.performDelete;" />
+						action="#{window.instructions}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="instructionsGrid">
+			<component type="grid" name="instructions">
 				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
-				<option type="correspondingView" value="products/instructionDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.instructionDetailsForm" />
+				<option type="correspondingView" value="products/instruction" />
+				<option type="correspondingComponent" value="window.instruction" />
 				<option type="searchable" value="name,number,product" />
 				<option type="orderable" value="name,number,product" />
 				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="instructionDetailsView" model="instruction">
-		<component type="window" name="mainWindow">
+	<view name="instruction" model="instruction">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.instructionDetailsForm}.performSave;" />
+						action="#{window.instruction}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.instructionDetailsForm}.performSave;#{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.instructionDetailsForm}.performCancel;" />
+						action="#{window.instruction}.performSave;#{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.instruction}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.instructionDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.instruction}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="instructionDetailsForm">
+			<component type="form" name="instruction">
 				<component type="checkbox" name="master" field="master" />
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
@@ -215,30 +211,30 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="tree" name="bomTree" source="#{mainWindow.instructionDetailsForm}.bomComponents">
+			<component type="tree" name="instructionBomComponents" source="#{window.instruction}.bomComponents">
 				<option type="height" value="200" />
 				<option type="width" value="500" />
 				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #quantity + ' x &lt;/span&gt;' + #product['name']" />
 				<option type="rootExpression" value="#number" />
-				<option type="correspondingView" value="products/instructionComponentDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.detailsForm" />
+				<option type="correspondingView" value="products/instructionBomComponent" />
+				<option type="correspondingComponent" value="window.instructionBomComponent" />
 			</component>
 		</component>
 	</view>
-	<view name="instructionComponentDetailsView" model="instructionBomComponent">
-		<component type="window" name="mainWindow">
+	<view name="instructionBomComponent" model="instructionBomComponent">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png" action="#{mainWindow.detailsForm}.performSave;"/>
-					<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.detailsForm}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png" action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performBack" />
+					<bigButton name="save" icon="saveIcon24.png" action="#{window.instructionBomComponent}.performSave;"/>
+					<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{window.instructionBomComponent}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.instructionBomComponent}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png" action="#{window.instructionBomComponent}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="detailsForm">
+			<component type="form" name="instructionBomComponent">
 				<component type="lookup" name="product" field="product">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
@@ -254,52 +250,51 @@
 			</component>
 		</component>
 	</view>
-	<view name="orderGridView" model="order" menuAccessible="true">
-		<component type="window" name="mainWindow">
+	<view name="orders" model="order" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.ordersGrid}.performNew;" />
+						action="#{window.orders}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.ordersGrid}.performDelete;" />
+						action="#{window.orders}.performDelete;" />
 				</group>
 				<group name="export">
 					<smallButton name="print" icon="printIcon16.png"
-						action="#{mainWindow.ordersGrid}.performCallFunction(printOrder,pdf);" />
+						action="#{window.orders}.performCallFunction(printOrder,pdf);" />
 				</group>
 			</ribbon>		
-			<component type="grid" name="ordersGrid">
+			<component type="grid" name="orders">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="state" fields="state" />
-				<option type="correspondingView" value="products/orderDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.orderDetailsForm" />
+				<option type="correspondingView" value="products/order" />
+				<option type="correspondingComponent" value="window.order" />
 				<option type="searchable" value="name,number,state" />
 				<option type="orderable" value="name,number,state" />
 				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="orderDetailsView" model="order">
-		<component type="window" name="mainWindow">
+	<view name="order" model="order">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.orderDetailsForm}.performSave;" />
+						action="#{window.order}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.orderDetailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.orderDetailsForm}.performCancel;" />
+						action="#{window.order}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.order}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.orderDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.order}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="orderDetailsForm">
+			<component type="form" name="order">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />
@@ -319,7 +314,7 @@
 				<component type="input" name="defaultInstruction" field="defaultInstruction"
 					defaultEnabled="false" />
 				<component type="lookup" name="instruction" field="instruction"
-					source="#{mainWindow.orderDetailsForm.product}.instructions">
+					source="#{window.order.product}.instructions">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
 					<option type="searchable" value="name,number" />
@@ -342,56 +337,56 @@
 				<option type="expression" value="#name + ' - ' + #number" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
+		<postInitializeHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="selectDefaultInstruction" />
 	</view>
-	<view name="materialRequirementGridView" model="materialRequirement" menuAccessible="true">
-		<component type="window" name="mainWindow">
+	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.materialRequirementsGrid}.performNew;" />
+						action="#{window.materialRequirements}.performNew;" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementPdf,pdf);" />
+						action="#{window.materialRequirements}.performCallFunction(printMaterialRequirementPdf,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementXls,xls);" />
+						action="#{window.materialRequirements}.performCallFunction(printMaterialRequirementXls,xls);" />
 				</group>
 			</ribbon>		
-			<component type="grid" name="materialRequirementsGrid">
+			<component type="grid" name="materialRequirements">
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" />
 				<option type="column" name="worker" fields="worker" width="300" />
-				<option type="correspondingView" value="products/materialRequirementDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.materialRequirementDetailsForm" />
+				<option type="correspondingView" value="products/materialRequirement" />
+				<option type="correspondingComponent" value="window.materialRequirement" />
 				<option type="searchable" value="name,date,worker" />
 				<option type="orderable" value="name,date,worker" />
 				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="materialRequirementDetailsView" model="materialRequirement">
-		<component type="window" name="mainWindow">
+	<view name="materialRequirement" model="materialRequirement">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performSave;" />
-					<bigButton name="generate" action="#{mainWindow.materialRequirementDetailsForm.generated}.setSelected(true); #{mainWindow.materialRequirementDetailsForm}.performSave;" />
+						action="#{window.materialRequirement}.performSave;" />
+					<bigButton name="generate" action="#{window.materialRequirement.generated}.setSelected(true); #{window.materialRequirement}.performSave;" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementPdf,pdf);" />
+						action="#{window.materialRequirement}.performCallFunction(printMaterialRequirementPdf,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementXls,xls);" />
+						action="#{window.materialRequirement}.performCallFunction(printMaterialRequirementXls,xls);" />
 				</group>
 			</ribbon>
-			<component type="form" name="materialRequirementDetailsForm">
+			<component type="form" name="materialRequirement">
 				<component type="checkbox" name="generated" field="generated" defaultEnabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
@@ -406,11 +401,11 @@
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
-			<component type="grid" name="ordersGrid" source="#{mainWindow.materialRequirementDetailsForm}.orders">
+			<component type="grid" name="materialRequirementComponents" source="#{window.materialRequirement}.orders">
 				<option type="column" name="number" fields="order" expression="#order['number']"/>
 				<option type="column" name="name" fields="order" expression="#order['name']"/>
-				<option type="correspondingView" value="products/materialRequirementComponentDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.form" />
+				<option type="correspondingView" value="products/materialRequirementComponent" />
+				<option type="correspondingComponent" value="window.materialRequirementComponent" />
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
@@ -418,18 +413,18 @@
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
 	</view>	
-	<view name="materialRequirementComponentDetailsView" model="materialRequirementComponent">
-		<component type="window" name="mainWindow">
+	<view name="materialRequirementComponent" model="materialRequirementComponent">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveBackIcon24.png"
-						action="#{mainWindow.form}.performSave; #{mainWindow}.performBack" />
+						action="#{window.materialRequirementComponent}.performSave; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="form">
+			<component type="form" name="materialRequirementComponent">
 				<component type="lookup" name="order" field="order">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
@@ -443,6 +438,7 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
+		<postInitializeHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="selectDefaultInstruction" />
 	</view>
 </qcd:views>

@@ -1,5 +1,6 @@
-package com.qcadoo.mes.view.components;
+package com.qcadoo.mes.view.components.grid;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +24,7 @@ import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
-public class GridComponentState extends AbstractComponentState {
+public final class GridComponentState extends AbstractComponentState {
 
     public static final String JSON_SELECTED_ENTITY_ID = "selectedEntityId";
 
@@ -134,7 +135,7 @@ public class GridComponentState extends AbstractComponentState {
     public void onScopeEntityIdChange(final Long scopeEntityId) {
         if (belongsToFieldDefinition != null) {
             this.belongsToEntityId = scopeEntityId;
-            setEnabled(true);
+            setEnabled(scopeEntityId != null);
         } else {
             throw new IllegalStateException("Grid doesn't have scopeField, it cannot set scopeEntityId");
         }
@@ -209,6 +210,11 @@ public class GridComponentState extends AbstractComponentState {
         setSelectedEntityId((Long) value);
     }
 
+    private String translateMessage(final String key) {
+        List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.message." + key });
+        return getTranslationService().translate(codes, getLocale());
+    }
+
     protected class GridEventPerformer {
 
         public void refresh(final String[] args) {
@@ -220,31 +226,19 @@ public class GridComponentState extends AbstractComponentState {
         }
 
         public void removeSelectedEntity(final String[] args) {
-            try {
-                getDataDefinition().delete(selectedEntityId);
-                setSelectedEntityId(null);
-                addMessage("TODO - usunięto", MessageType.SUCCESS); // TODO masz
-            } catch (IllegalStateException e) {
-                addMessage("TODO - nieusunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
-            }
+            getDataDefinition().delete(selectedEntityId);
+            setSelectedEntityId(null);
+            addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
         }
 
         public void moveUpSelectedEntity(final String[] args) {
-            try {
-                getDataDefinition().move(selectedEntityId, -1);
-                addMessage("TODO - przesunięto", MessageType.SUCCESS); // TODO masz
-            } catch (IllegalStateException e) {
-                addMessage("TODO - nieprzesunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
-            }
+            getDataDefinition().move(selectedEntityId, -1);
+            addMessage(translateMessage("moveMessage"), MessageType.SUCCESS);
         }
 
         public void moveDownSelectedEntity(final String[] args) {
-            try {
-                getDataDefinition().move(selectedEntityId, 1);
-                addMessage("TODO - przesunięto", MessageType.SUCCESS); // TODO masz
-            } catch (IllegalStateException e) {
-                addMessage("TODO - nieprzesunięto - " + e.getMessage(), MessageType.FAILURE); // TODO masz
-            }
+            getDataDefinition().move(selectedEntityId, 1);
+            addMessage(translateMessage("moveMessage"), MessageType.SUCCESS);
         }
 
         private void reload() {
@@ -298,10 +292,8 @@ public class GridComponentState extends AbstractComponentState {
             DataDefinition dataDefinition = getDataDefinition();
 
             for (int i = 0; i < path.length; i++) {
-                System.out.println(dataDefinition + ", " + path[i]);
-
                 if (dataDefinition.getField(path[i]) == null) {
-                    // warn
+                    // TODO masz warn
                     return false;
                 }
 

@@ -10,15 +10,15 @@ import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
 
-public class ViewDefinitionStateImpl extends AbstractContainerState implements ViewDefinitionState {
+public final class ViewDefinitionStateImpl extends AbstractContainerState implements ViewDefinitionState {
 
     @Override
-    public void initializeContent(final JSONObject json) throws JSONException {
+    protected void initializeContent(final JSONObject json) throws JSONException {
         // empty method
     }
 
     @Override
-    public JSONObject renderContent() throws JSONException {
+    protected JSONObject renderContent() throws JSONException {
         return null; // empty method
     }
 
@@ -33,12 +33,9 @@ public class ViewDefinitionStateImpl extends AbstractContainerState implements V
 
     @Override
     public ComponentState getComponentByPath(final String path) {
+        ComponentState componentState = this;
         String[] pathParts = path.split("\\.");
-        ComponentState componentState = getChild(pathParts[0]);
-        if (componentState == null) {
-            return null;
-        }
-        for (int i = 1; i < pathParts.length; i++) {
+        for (int i = 0; i < pathParts.length; i++) {
             ContainerState container = (ContainerState) componentState;
             componentState = container.getChild(pathParts[i]);
             if (componentState == null) {

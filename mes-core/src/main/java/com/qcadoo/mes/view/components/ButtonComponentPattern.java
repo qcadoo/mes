@@ -1,25 +1,24 @@
 package com.qcadoo.mes.view.components;
 
-import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 @ViewComponent("button")
-public class ButtonComponentPattern extends AbstractComponentPattern {
+public final class ButtonComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.TextInput";
 
     private static final String JSP_PATH = "newComponents/input.jsp";
 
-    public ButtonComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
-            final ComponentPattern parent) {
-        super(name, fieldPath, sourceFieldPath, parent);
+    public ButtonComponentPattern(final ComponentDefinition componentDefinition) {
+        super(componentDefinition);
     }
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TextInputComponentState();
+        return new EmptyComponentState();
     }
 
     @Override
@@ -28,12 +27,12 @@ public class ButtonComponentPattern extends AbstractComponentPattern {
     }
 
     @Override
-    public String getJavaScriptFilePath() {
+    public String getJsFilePath() {
         return JS_PATH;
     }
 
     @Override
-    public String getJavaScriptObjectName() {
+    public String getJsObjectName() {
         return JS_OBJECT;
     }
 }

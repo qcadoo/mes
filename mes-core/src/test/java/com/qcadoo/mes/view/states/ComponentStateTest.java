@@ -3,26 +3,26 @@ package com.qcadoo.mes.view.states;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.Locale;
-
-import junit.framework.Assert;
 
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.components.FormComponentState;
-import com.qcadoo.mes.view.components.TextInputComponentState;
-import com.qcadoo.mes.view.states.components.ComponentStateMock;
+import com.qcadoo.mes.view.components.SimpleComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
 
 public class ComponentStateTest {
 
     @Test
     public void shouldHaveFieldValueAfterInitialize() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
@@ -39,7 +39,7 @@ public class ComponentStateTest {
     @Test
     public void shouldRenderJsonWithFieldValue() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
         componentState.setFieldValue("text");
 
         // when
@@ -52,7 +52,7 @@ public class ComponentStateTest {
     @Test
     public void shouldRenderJsonWithNullFieldValue() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
         componentState.setFieldValue(null);
 
         // when
@@ -65,7 +65,7 @@ public class ComponentStateTest {
     @Test
     public void shouldNotRenderComponentIfNotRequested() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
 
         // when
         JSONObject json = componentState.render();
@@ -77,7 +77,11 @@ public class ComponentStateTest {
     @Test
     public void shouldHaveRequestUpdateStateFlag() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState(null);
+        TranslationService translationService = mock(TranslationService.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        AbstractComponentState componentState = new FormComponentState("2");
+        componentState.setTranslationService(translationService);
+        componentState.setDataDefinition(dataDefinition);
         componentState.setFieldValue(13L);
 
         // when
@@ -90,7 +94,9 @@ public class ComponentStateTest {
     @Test
     public void shouldNotHaveRequestUpdateStateIfNotValid() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState(null);
+        TranslationService translationService = mock(TranslationService.class);
+        AbstractComponentState componentState = new FormComponentState(null);
+        componentState.setTranslationService(translationService);
         componentState.addMessage("test", MessageType.FAILURE);
 
         // when
@@ -103,7 +109,7 @@ public class ComponentStateTest {
     @Test
     public void shouldHaveVisibleFlag() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
@@ -122,7 +128,7 @@ public class ComponentStateTest {
     @Test
     public void shouldModifyVisibleFlag() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
 
         // when
         componentState.setVisible(false);
@@ -135,7 +141,7 @@ public class ComponentStateTest {
     @Test
     public void shouldHaveEnableFlag() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
@@ -154,7 +160,7 @@ public class ComponentStateTest {
     @Test
     public void shouldModifyEnableFlag() throws Exception {
         // given
-        ComponentState componentState = new TextInputComponentState();
+        ComponentState componentState = new SimpleComponentState();
 
         // when
         componentState.setEnabled(false);
@@ -164,15 +170,4 @@ public class ComponentStateTest {
         assertFalse(componentState.render().getBoolean(ComponentState.JSON_ENABLED));
     }
 
-    @Test
-    public void shouldCallBeforeRenderContent() throws Exception {
-        // given
-        ComponentStateMock componentState = new ComponentStateMock(null);
-
-        // when
-        componentState.beforeRender();
-
-        // then
-        Assert.assertEquals(1, componentState.getBeforeRenderContentCallNumber());
-    }
 }

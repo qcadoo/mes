@@ -1,25 +1,23 @@
 package com.qcadoo.mes.view.components;
 
-import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
-import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 @ViewComponent("password")
-public class PasswordComponentPattern extends AbstractComponentPattern {
+public final class PasswordComponentPattern extends FieldComponentPattern {
 
     private static final String JSP_PATH = "newComponents/input.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.TextInput";
 
-    public PasswordComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
-            final ComponentPattern parent) {
-        super(name, fieldPath, sourceFieldPath, parent);
+    public PasswordComponentPattern(final ComponentDefinition componentDefinition) {
+        super(componentDefinition);
     }
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TextInputComponentState();
+        return new FieldComponentState();
     }
 
     @Override
@@ -28,12 +26,12 @@ public class PasswordComponentPattern extends AbstractComponentPattern {
     }
 
     @Override
-    public String getJavaScriptFilePath() {
+    public String getJsFilePath() {
         return JS_PATH;
     }
 
     @Override
-    public String getJavaScriptObjectName() {
+    public String getJsObjectName() {
         return JS_OBJECT;
     }
 }

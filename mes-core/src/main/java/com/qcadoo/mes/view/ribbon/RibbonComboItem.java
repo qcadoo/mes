@@ -5,7 +5,7 @@
  * ********************************************************************
  */
 
-package com.qcadoo.mes.view.menu.ribbon;
+package com.qcadoo.mes.view.ribbon;
 
 import java.util.LinkedList;
 import java.util.List;

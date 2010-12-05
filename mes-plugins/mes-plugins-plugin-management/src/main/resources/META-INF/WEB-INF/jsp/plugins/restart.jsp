@@ -34,13 +34,13 @@
 
 		function checkStatus() {
 			$.ajax({
-				url: 'restartPage.html?message=noMessage',
+				url: 'restart.html?message=noMessage',
 				type: 'GET',
 				timeout: 2000, 
 				complete: function(XMLHttpRequest, textStatus) {
 					try {
 						if (XMLHttpRequest.status == 200) {
-							window.location = "restartInfoView.html?message=${message}";
+							window.location = "restartInfo.html?message=${message}";
 							return;
 						} else {
 							setTimeout("checkStatus();",1000);

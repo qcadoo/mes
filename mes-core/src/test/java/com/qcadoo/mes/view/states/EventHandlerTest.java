@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.components.FormComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
 
 public class EventHandlerTest {
 

@@ -25,8 +25,9 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
-import com.qcadoo.mes.view.FieldEntityIdChangeListener;
-import com.qcadoo.mes.view.components.FormComponentState;
+import com.qcadoo.mes.view.components.FieldComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.states.AbstractComponentState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
 import com.qcadoo.mes.view.states.AbstractStateTest;
 
@@ -34,7 +35,7 @@ public class FormComponentStateTest extends AbstractStateTest {
 
     private Entity entity;
 
-    private ComponentState name;
+    private FieldComponentState name;
 
     private ContainerState form;
 
@@ -61,12 +62,13 @@ public class FormComponentStateTest extends AbstractStateTest {
         given(dataDefinition.getName()).willReturn("name");
         given(dataDefinition.getField("name")).willReturn(fieldDefinition);
 
-        name = createMockComponent("name");
+        name = new FieldComponentState();
+        name.setName("name");
 
         form = new FormComponentState(null);
         ((AbstractContainerState) form).setDataDefinition(dataDefinition);
         ((AbstractContainerState) form).setTranslationService(translationService);
-        ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", (FieldEntityIdChangeListener) name);
+        ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", name);
     }
 
     @Test
@@ -110,7 +112,11 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldRenderFormEntityId() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState(null);
+        TranslationService translationService = mock(TranslationService.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        AbstractComponentState componentState = new FormComponentState("2");
+        componentState.setTranslationService(translationService);
+        componentState.setDataDefinition(dataDefinition);
         componentState.setFieldValue(13L);
 
         // when
@@ -141,7 +147,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.performEvent("reset", new String[0]);
 
         // then
-        verify(name).setFieldValue("text");
+        assertEquals("text", name.getFieldValue());
     }
 
     @Test
@@ -153,7 +159,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.performEvent("clear", new String[0]);
 
         // then
-        verify(name).setFieldValue(null);
+        assertNull(name.getFieldValue());
         assertNull(form.getFieldValue());
     }
 
@@ -166,7 +172,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.performEvent("delete", new String[0]);
 
         // then
-        verify(name).setFieldValue(null);
+        assertNull(name.getFieldValue());
         verify(dataDefinition).delete(13L);
         assertNull(form.getFieldValue());
     }
@@ -177,7 +183,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         Entity entity = new DefaultEntity("plugin", "name", null, Collections.singletonMap("name", (Object) "text"));
         Entity savedEntity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
-        given(name.getFieldValue()).willReturn("text");
+        name.setFieldValue("text");
 
         form.setFieldValue(null);
 
@@ -186,7 +192,7 @@ public class FormComponentStateTest extends AbstractStateTest {
 
         // then
         verify(dataDefinition).save(eq(entity));
-        verify(name).setFieldValue("text2");
+        assertEquals("text2", name.getFieldValue());
         assertEquals(13L, form.getFieldValue());
         assertTrue(((FormComponentState) form).isValid());
     }
@@ -197,7 +203,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         Entity entity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
         Entity savedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
-        given(name.getFieldValue()).willReturn("text");
+        name.setFieldValue("text");
 
         JSONObject json = new JSONObject();
         JSONObject jsonContext = new JSONObject();
@@ -216,7 +222,7 @@ public class FormComponentStateTest extends AbstractStateTest {
 
         // then
         verify(dataDefinition).save(eq(entity));
-        verify(name).setFieldValue("text2");
+        assertEquals("text2", name.getFieldValue());
         assertEquals(14L, form.getFieldValue());
         assertTrue(((FormComponentState) form).isValid());
     }
@@ -232,7 +238,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         given(translationService.translate(eq("global.error"), any(Locale.class))).willReturn("translated global error");
         given(translationService.translate(eq("field.error"), any(Locale.class))).willReturn("translated field error");
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
-        given(name.getFieldValue()).willReturn("text");
+        name.setFieldValue("text");
 
         form.setFieldValue(null);
 
@@ -242,7 +248,6 @@ public class FormComponentStateTest extends AbstractStateTest {
         // then
         verify(dataDefinition).save(eq(entity));
         assertFalse(((FormComponentState) form).isValid());
-        verify(name).addMessage("translated field error", ComponentState.MessageType.FAILURE);
         assertTrue(form.render().toString().contains("translated global error"));
     }
 }

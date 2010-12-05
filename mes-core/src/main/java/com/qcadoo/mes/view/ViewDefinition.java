@@ -2,7 +2,6 @@ package com.qcadoo.mes.view;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +9,18 @@ import org.json.JSONObject;
 import com.qcadoo.mes.model.DataDefinition;
 
 public interface ViewDefinition {
+
+    String JSON_EVENT = "event";
+
+    String JSON_EVENT_NAME = "name";
+
+    String JSON_EVENT_COMPONENT = "component";
+
+    String JSON_EVENT_ARGS = "args";
+
+    String JSON_COMPONENTS = "components";
+
+    String JSON_JS_FILE_PATHS = "jsFilePaths";
 
     String getName();
 
@@ -21,14 +32,10 @@ public interface ViewDefinition {
 
     ComponentPattern getComponentByPath(String path);
 
-    Map<String, ComponentPattern> getChildren();
-
-    ComponentPattern getChild(String name);
-
     boolean isMenuAccessible();
 
     DataDefinition getDataDefinition();
 
-    Set<String> getJavaScriptFilePaths();
+    void addJsFilePath(String jsFilePath);
 
 }

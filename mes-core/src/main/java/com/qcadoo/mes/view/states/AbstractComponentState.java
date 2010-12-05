@@ -39,33 +39,43 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     private boolean visible = true;
 
+    private String translationPath;
+
     @Override
-    public String getName() {
+    public final String getName() {
         return name;
     };
 
-    public void setName(final String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
 
-    public void setDataDefinition(final DataDefinition dataDefinition) {
+    public final void setDataDefinition(final DataDefinition dataDefinition) {
         this.dataDefinition = dataDefinition;
     }
 
-    protected DataDefinition getDataDefinition() {
+    protected final DataDefinition getDataDefinition() {
         return dataDefinition;
     }
 
-    public void setTranslationService(final TranslationService translationService) {
+    public final void setTranslationService(final TranslationService translationService) {
         this.translationService = translationService;
     }
 
-    protected TranslationService getTranslationService() {
+    protected final TranslationService getTranslationService() {
         return translationService;
     }
 
+    public final void setTranslationPath(final String translationPath) {
+        this.translationPath = translationPath;
+    }
+
+    protected final String getTranslationPath() {
+        return translationPath;
+    }
+
     @Override
-    public void addMessage(final String message, final MessageType type) {
+    public final void addMessage(final String message, final MessageType type) {
         messageHolder.addMessage(message, type);
         requestRender();
     }
@@ -91,17 +101,17 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         }
     }
 
-    protected Locale getLocale() {
+    protected final Locale getLocale() {
         return locale;
     }
 
     protected abstract void initializeContent(final JSONObject json) throws JSONException;
 
-    public void registemCustomEvent(final String name, final Object obj, final String method) {
+    public final void registemCustomEvent(final String name, final Object obj, final String method) {
         eventHandlerHolder.registemCustomEvent(name, obj, method);
     }
 
-    protected void registerEvent(final String name, final Object obj, final String method) {
+    protected final void registerEvent(final String name, final Object obj, final String method) {
         eventHandlerHolder.registemEvent(name, obj, method);
     }
 
@@ -123,15 +133,6 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         }
 
         return json;
-    }
-
-    @Override
-    public void beforeRender() {
-        beforeRenderContent();
-    }
-
-    protected void beforeRenderContent() {
-        // can be implemented
     }
 
     protected abstract JSONObject renderContent() throws JSONException;
@@ -156,31 +157,31 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         requestUpdateState = true;
     }
 
-    public void addFieldEntityIdChangeListener(final String field, final FieldEntityIdChangeListener listener) {
+    public final void addFieldEntityIdChangeListener(final String field, final FieldEntityIdChangeListener listener) {
         listenerHolder.addFieldEntityIdChangeListener(field, listener);
     }
 
-    public void addScopeEntityIdChangeListener(final String scope, final ScopeEntityIdChangeListener listener) {
+    public final void addScopeEntityIdChangeListener(final String scope, final ScopeEntityIdChangeListener listener) {
         listenerHolder.addScopeEntityIdChangeListener(scope, listener);
     }
 
     @Override
-    public boolean isVisible() {
+    public final boolean isVisible() {
         return visible;
     }
 
     @Override
-    public void setVisible(final boolean visible) {
+    public final void setVisible(final boolean visible) {
         this.visible = visible;
     }
 
     @Override
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return enabled;
     }
 
     @Override
-    public void setEnabled(final boolean enabled) {
+    public final void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 

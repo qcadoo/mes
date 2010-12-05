@@ -64,15 +64,15 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addMenus() {
-        MenuViewDefinition menuCategoryGridView = getMenuViewDefinition("menuCategoryGridView");
-        MenuViewDefinition instructionGridView = getMenuViewDefinition("instructionGridView");
-        MenuViewDefinition orderGridView = getMenuViewDefinition("orderGridView");
-        MenuViewDefinition pluginGridView = getMenuViewDefinition("pluginGridView");
-        MenuViewDefinition userGridView = getMenuViewDefinition("userGridView");
-        MenuViewDefinition dictionaryGridView = getMenuViewDefinition("dictionaryGridView");
-        MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirementGridView");
-        MenuViewDefinition productGridView = getMenuViewDefinition("productGridView");
-        MenuViewDefinition groupGridView = getMenuViewDefinition("groupGridView");
+        MenuViewDefinition menuCategoryGridView = getMenuViewDefinition("menuCategories");
+        MenuViewDefinition instructionGridView = getMenuViewDefinition("instructions");
+        MenuViewDefinition orderGridView = getMenuViewDefinition("orders");
+        MenuViewDefinition pluginGridView = getMenuViewDefinition("plugins");
+        MenuViewDefinition userGridView = getMenuViewDefinition("users");
+        MenuViewDefinition dictionaryGridView = getMenuViewDefinition("dictionaries");
+        MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirements");
+        MenuViewDefinition productGridView = getMenuViewDefinition("products");
+        MenuViewDefinition groupGridView = getMenuViewDefinition("groups");
 
         MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
         MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 2);

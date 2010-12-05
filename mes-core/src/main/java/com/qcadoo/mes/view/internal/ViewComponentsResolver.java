@@ -17,11 +17,12 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ViewComponent;
 
 @Service
-public class ViewComponentsResolver {
+public final class ViewComponentsResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger(ViewComponentsResolver.class);
 
@@ -61,8 +62,7 @@ public class ViewComponentsResolver {
         return viewComponentClasses.get(componentName);
     }
 
-    public ComponentPattern getViewComponentInstance(final String componentName, final String name, final String fieldPath,
-            final String sourceFieldPath, final ComponentPattern parent) {
+    public ComponentPattern getViewComponentInstance(final String componentName, final ComponentDefinition componentDefinition) {
         Class<? extends ComponentPattern> clazz = getViewComponentClass(componentName);
 
         if (clazz == null) {
@@ -70,9 +70,8 @@ public class ViewComponentsResolver {
         }
 
         try {
-            Constructor<? extends ComponentPattern> constructor = clazz.getConstructor(String.class, String.class, String.class,
-                    ComponentPattern.class);
-            return constructor.newInstance(name, fieldPath, sourceFieldPath, parent);
+            Constructor<? extends ComponentPattern> constructor = clazz.getConstructor(ComponentDefinition.class);
+            return constructor.newInstance(componentDefinition);
         } catch (SecurityException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (NoSuchMethodException e) {
@@ -95,16 +94,11 @@ public class ViewComponentsResolver {
         }
 
         @SuppressWarnings("rawtypes")
-        public final Collection getComponentClasses(String basePackage) {
-            basePackage = basePackage == null ? "" : basePackage;
+        public final Collection getComponentClasses(final String basePackage) {
             List<Class> classes = new ArrayList<Class>();
-            for (BeanDefinition candidate : findCandidateComponents(basePackage)) {
-                try {
-                    Class cls = ClassUtils.resolveClassName(candidate.getBeanClassName(), ClassUtils.getDefaultClassLoader());
-                    classes.add(cls);
-                } catch (Throwable ex) {
-                    ex.printStackTrace();
-                }
+            for (BeanDefinition candidate : findCandidateComponents(basePackage == null ? "" : basePackage)) {
+                Class cls = ClassUtils.resolveClassName(candidate.getBeanClassName(), ClassUtils.getDefaultClassLoader());
+                classes.add(cls);
             }
             return classes;
         }

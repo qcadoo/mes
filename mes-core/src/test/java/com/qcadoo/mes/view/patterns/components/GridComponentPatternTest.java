@@ -5,12 +5,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
+
+import java.util.Locale;
 
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
@@ -18,20 +23,25 @@ import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.types.internal.StringType;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
+import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.components.GridComponentPattern;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
+import com.qcadoo.mes.view.components.grid.GridComponentPattern;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.mes.view.patterns.AbstractPatternTest;
 
-public class GridComponentPatternTest {
+public class GridComponentPatternTest extends AbstractPatternTest {
 
     @Test
     public void shouldInitializeOptions() throws Exception {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
-
+        TranslationService translationService = mock(TranslationService.class);
+        given(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class))).willReturn("i18n");
         FieldDefinition nameFieldDefinition = mock(FieldDefinition.class);
         given(nameFieldDefinition.getType()).willReturn(new EnumType("v1", "v2"));
 
@@ -47,7 +57,9 @@ public class GridComponentPatternTest {
         given(dataDefinition.isPrioritizable()).willReturn(true);
 
         given(viewDefinition.getDataDefinition()).willReturn(dataDefinition);
-        GridComponentPattern pattern = new GridComponentPattern("grid", null, null, null);
+        ComponentDefinition componentDefinition = getComponentDefinition("grid", viewDefinition);
+        componentDefinition.setTranslationService(translationService);
+        GridComponentPattern pattern = new GridComponentPattern(componentDefinition);
 
         pattern.addOption(new ComponentOption("correspondingView", ImmutableMap.of("value", "plugin/details")));
         pattern.addOption(new ComponentOption("correspondingComponent", ImmutableMap.of("value", "window.form")));
@@ -65,10 +77,10 @@ public class GridComponentPatternTest {
         pattern.addOption(new ComponentOption("column", ImmutableMap.of("name", "product", "expression", "#product['name']")));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
-        JSONObject options = pattern.getStaticJavaScriptOptions();
+        JSONObject options = getJsOptions(pattern);
 
         assertEquals("plugin/details", options.getString("correspondingView"));
         assertEquals("window.form", options.getString("correspondingComponent"));
@@ -88,11 +100,11 @@ public class GridComponentPatternTest {
         assertEquals("name", options.getJSONArray("searchableColumns").getString(1));
         assertEquals("number", options.getJSONArray("searchableColumns").getString(2));
         assertFalse(options.has("belongsToFieldName"));
-        assertEquals(3, options.getJSONObject("columns").length());
+        assertEquals(3, options.getJSONArray("columns").length());
 
-        JSONObject number = options.getJSONObject("columns").getJSONObject("number");
-        JSONObject name = options.getJSONObject("columns").getJSONObject("name");
-        JSONObject product = options.getJSONObject("columns").getJSONObject("product");
+        JSONObject number = options.getJSONArray("columns").getJSONObject(0);
+        JSONObject name = options.getJSONArray("columns").getJSONObject(1);
+        JSONObject product = options.getJSONArray("columns").getJSONObject(2);
 
         assertEquals("number", number.getString("name"));
         assertTrue(number.getBoolean("link"));
@@ -107,8 +119,8 @@ public class GridComponentPatternTest {
         assertEquals(100, name.getInt("width"));
         assertEquals("left", name.getString("align"));
         assertEquals(2, name.getJSONObject("filterValues").length());
-        assertEquals("v1", name.getJSONObject("filterValues").getString("v1"));
-        assertEquals("v2", name.getJSONObject("filterValues").getString("v2"));
+        assertEquals("i18n", name.getJSONObject("filterValues").getString("v1"));
+        assertEquals("i18n", name.getJSONObject("filterValues").getString("v2"));
 
         assertEquals("product", product.getString("name"));
         assertFalse(product.getBoolean("link"));
@@ -123,14 +135,17 @@ public class GridComponentPatternTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
+        TranslationService translationService = mock(TranslationService.class);
         given(viewDefinition.getDataDefinition()).willReturn(dataDefinition);
-        GridComponentPattern pattern = new GridComponentPattern("grid", null, null, null);
+        ComponentDefinition componentDefinition = getComponentDefinition("grid", viewDefinition);
+        componentDefinition.setTranslationService(translationService);
+        GridComponentPattern pattern = new GridComponentPattern(componentDefinition);
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
-        JSONObject options = pattern.getStaticJavaScriptOptions();
+        JSONObject options = getJsOptions(pattern);
 
         assertFalse(options.has("correspondingView"));
         assertFalse(options.has("correspondingComponent"));
@@ -145,7 +160,7 @@ public class GridComponentPatternTest {
         assertEquals(300, options.getInt("height"));
         assertEquals(0, options.getJSONArray("orderableColumns").length());
         assertEquals(0, options.getJSONArray("searchableColumns").length());
-        assertEquals(0, options.getJSONObject("columns").length());
+        assertEquals(0, options.getJSONArray("columns").length());
     }
 
     @Test
@@ -153,16 +168,19 @@ public class GridComponentPatternTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
+        TranslationService translationService = mock(TranslationService.class);
         given(viewDefinition.getDataDefinition()).willReturn(dataDefinition);
-        GridComponentPattern pattern = new GridComponentPattern("grid", null, null, null);
+        ComponentDefinition componentDefinition = getComponentDefinition("grid", viewDefinition);
+        componentDefinition.setTranslationService(translationService);
+        GridComponentPattern pattern = new GridComponentPattern(componentDefinition);
 
         pattern.addOption(new ComponentOption("fullscreen", ImmutableMap.of("value", "true")));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
-        JSONObject options = pattern.getStaticJavaScriptOptions();
+        JSONObject options = getJsOptions(pattern);
 
         assertTrue(options.getBoolean("fullscreen"));
         assertEquals(0, options.getInt("width"));
@@ -173,6 +191,7 @@ public class GridComponentPatternTest {
     public void shouldHaveScopeFieldName() throws Exception {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
+        TranslationService translationService = mock(TranslationService.class);
 
         BelongsToType belongsToFieldType = mock(BelongsToType.class);
 
@@ -191,22 +210,75 @@ public class GridComponentPatternTest {
         given(dataDefinition.getField("field")).willReturn(hasManyFieldDefinition);
         given(dataDefinition.getField("joinName")).willReturn(belongsToFieldDefinition);
 
-        AbstractComponentPattern sourceComponent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern sourceComponent = new TextInputComponentPattern(getComponentDefinition("component",
+                viewDefinition));
         setField(sourceComponent, "dataDefinition", dataDefinition);
         setField(sourceComponent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
         given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);
 
-        GridComponentPattern pattern = new GridComponentPattern("grid", null, "#{component}.field", null);
+        ComponentDefinition componentDefinition = getComponentDefinition("grid", null, "#{component}.field", null, viewDefinition);
+        componentDefinition.setTranslationService(translationService);
+        GridComponentPattern pattern = new GridComponentPattern(componentDefinition);
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
-        JSONObject options = pattern.getStaticJavaScriptOptions();
+        JSONObject options = getJsOptions(pattern);
 
         assertEquals("joinName", options.getString("belongsToFieldName"));
+    }
+
+    @Test
+    public void shouldReturnState() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        TranslationService translationService = mock(TranslationService.class);
+
+        BelongsToType belongsToFieldType = mock(BelongsToType.class);
+
+        FieldDefinition belongsToFieldDefinition = mock(FieldDefinition.class);
+        given(belongsToFieldDefinition.getName()).willReturn("joinName");
+        given(belongsToFieldDefinition.getType()).willReturn(belongsToFieldType);
+
+        HasManyType hasManyFieldType = mock(HasManyType.class);
+        given(hasManyFieldType.getJoinFieldName()).willReturn("joinName");
+        given(hasManyFieldType.getDataDefinition()).willReturn(dataDefinition);
+
+        FieldDefinition hasManyFieldDefinition = mock(FieldDefinition.class);
+        given(hasManyFieldDefinition.getName()).willReturn("fieldName");
+        given(hasManyFieldDefinition.getType()).willReturn(hasManyFieldType);
+
+        given(dataDefinition.getField("field")).willReturn(hasManyFieldDefinition);
+        given(dataDefinition.getField("joinName")).willReturn(belongsToFieldDefinition);
+
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern sourceComponent = new TextInputComponentPattern(getComponentDefinition("component",
+                viewDefinition));
+        setField(sourceComponent, "dataDefinition", dataDefinition);
+        setField(sourceComponent, "initialized", true);
+
+        given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);
+
+        ComponentDefinition componentDefinition = getComponentDefinition("grid", null, "#{component}.field", null, viewDefinition);
+        componentDefinition.setTranslationService(translationService);
+        GridComponentPattern pattern = new GridComponentPattern(componentDefinition);
+
+        pattern.initialize();
+
+        // when
+        ComponentState state = pattern.createComponentState();
+
+        // then
+        assertTrue(state instanceof GridComponentState);
+
+        assertEquals(belongsToFieldDefinition, getField(state, "belongsToFieldDefinition"));
+        assertEquals(getField(pattern, "columns"), getField(state, "columns"));
+
     }
 
 }

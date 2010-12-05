@@ -70,15 +70,15 @@
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/staticComponent.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/ribbon.js"></script>
 	
-	<c:forEach items="${viewDefinition.javaScriptFilePaths}" var="javaScriptPath">
-		<script type="text/javascript" src="${javaScriptPath}"></script>
+	<c:forEach items="${model['jsFilePaths']}" var="jsFilePath">
+		<script type="text/javascript" src="${jsFilePath}"></script>
 	</c:forEach>
 	
 	
 	<script type="text/javascript">
 
-		var viewName = "${viewDefinition.name}";
-		var pluginIdentifier = "${viewDefinition.pluginIdentifier}";
+		var viewName = "${viewName}";
+		var pluginIdentifier = "${pluginIdentifier}";
 		//var entityId = "{entityId}";
 		var entityId = "";
 		var context = '${context}';
@@ -128,16 +128,16 @@
 		});
 
 		//window.translationsMap = new Object();
-		<c:forEach items="${translationsMap}" var="translation">
+		//<c:forEach items="${translationsMap}" var="translation">
 			//window.translationsMap["${translation.key}"] = "${translation.value}";
-		</c:forEach>
+		//</c:forEach>
 	</script>
 </head>
 <body>
 
-	<c:forEach items="${viewDefinition.children}" var="componentEntry">
+	<c:forEach items="${model['components']}" var="component">
 		<tiles:insertTemplate template="components/newComponent.jsp">
-			<tiles:putAttribute name="component" value="${componentEntry.value}" />
+			<tiles:putAttribute name="component" value="${component.value}" />
 		</tiles:insertTemplate>
 	</c:forEach>
 

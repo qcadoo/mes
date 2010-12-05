@@ -1,4 +1,4 @@
-package com.qcadoo.mes.view.components;
+package com.qcadoo.mes.view.components.grid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,9 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 
-public class GridComponentColumn {
+public final class GridComponentColumn {
+
+    private static final int DEFAULT_COLUMN_WIDTH = 100;
 
     private final String name;
 
@@ -21,7 +23,7 @@ public class GridComponentColumn {
 
     private String expression;
 
-    private Integer width = 100;
+    private Integer width = DEFAULT_COLUMN_WIDTH;
 
     private boolean link;
 
@@ -68,7 +70,7 @@ public class GridComponentColumn {
             Map<String, String> values = new HashMap<String, String>();
             EnumType type = (EnumType) fields.get(0).getType();
             for (String value : type.values()) {
-                values.put(value, value); // TODO masz i18n
+                values.put(value, value);
             }
             return values;
         } else {

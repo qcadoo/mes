@@ -20,15 +20,15 @@
 
 	<table style="height: 100%; width: 100%;" cellpadding=0 cellspacing=0 class="gridTable">
 	
-		<tr><td id="${component.pathName}_gridHeader" class="gridHeaderCell">
+		<tr><td id="${component['path']}_gridHeader" class="gridHeaderCell">
 		</td></tr>
 		
-		<tr style="height: 100%; width: 100%;" id="${component.pathName}_gridCell"><td>
-				<table class="element_table" id="${component.pathName}_grid" style="height: 100%">
+		<tr style="height: 100%; width: 100%;" id="${component['path']}_gridCell"><td>
+				<table class="element_table" id="${component['path']}_grid" style="height: 100%">
 				</table>
 		</td></tr>
 		
-		<tr><td id="${component.pathName}_gridFooter" class="gridFooterCell">
+		<tr><td id="${component['path']}_gridFooter" class="gridFooterCell">
 		</td></tr>
 		
 	</table>

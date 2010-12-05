@@ -5,7 +5,7 @@
  * ********************************************************************
  */
 
-package com.qcadoo.mes.view.menu.ribbon;
+package com.qcadoo.mes.view.ribbon;
 
 import org.json.JSONException;
 import org.json.JSONObject;

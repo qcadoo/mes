@@ -9,8 +9,8 @@ package com.qcadoo.mes.view.xml;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -21,8 +21,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,6 +33,7 @@ import org.springframework.context.ApplicationContext;
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.PluginManagementService;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.beans.sample.CustomEntityService;
@@ -46,16 +49,14 @@ import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.ButtonComponentPattern;
 import com.qcadoo.mes.view.components.CheckBoxComponentPattern;
-import com.qcadoo.mes.view.components.FormComponentPattern;
-import com.qcadoo.mes.view.components.GridComponentPattern;
-import com.qcadoo.mes.view.components.LookupComponentPattern;
 import com.qcadoo.mes.view.components.TextAreaComponentPattern;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
 import com.qcadoo.mes.view.components.WindowComponentPattern;
+import com.qcadoo.mes.view.components.form.FormComponentPattern;
+import com.qcadoo.mes.view.components.grid.GridComponentPattern;
+import com.qcadoo.mes.view.components.lookup.LookupComponentPattern;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
-import com.qcadoo.mes.view.menu.ribbon.Ribbon;
-import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
-import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
+import com.qcadoo.mes.view.ribbon.RibbonActionItem;
 
 public class ViewDefinitionParserTest {
 
@@ -77,6 +78,8 @@ public class ViewDefinitionParserTest {
 
     private DataDefinition dataDefinitionB;
 
+    private TranslationService translationService;
+
     private static ViewComponentsResolver viewComponentsResolver;
 
     @BeforeClass
@@ -92,6 +95,8 @@ public class ViewDefinitionParserTest {
 
         pluginManagementService = mock(PluginManagementService.class);
 
+        translationService = mock(TranslationService.class);
+
         viewDefinitionService = new ViewDefinitionServiceImpl();
 
         hookFactory = new HookFactory();
@@ -101,6 +106,7 @@ public class ViewDefinitionParserTest {
         setField(viewDefinitionParser, "dataDefinitionService", dataDefinitionService);
         setField(viewDefinitionParser, "viewDefinitionService", viewDefinitionService);
         setField(viewDefinitionParser, "hookFactory", hookFactory);
+        setField(viewDefinitionParser, "translationService", translationService);
         setField(viewDefinitionParser, "viewComponentsResolver", viewComponentsResolver);
 
         xml = new FileInputStream(new File("src/test/resources/view.xml"));
@@ -159,50 +165,67 @@ public class ViewDefinitionParserTest {
         assertThat(viewDefinition.getComponentByPath("mainWindow"), instanceOf(WindowComponentPattern.class));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldHasRibbon() throws Exception {
         // given
         ViewDefinition viewDefinition = parseAndGetViewDefinition();
-        Ribbon ribbon = (Ribbon) getField(viewDefinition.getComponentByPath("mainWindow"), "ribbon");
+
+        JSONObject jsOptions = (JSONObject) ((Map<String, Map<String, Object>>) viewDefinition.prepareView(Locale.ENGLISH).get(
+                "components")).get("mainWindow").get("jsOptions");
+
+        JSONObject ribbon = jsOptions.getJSONObject("ribbon");
 
         // then
         assertNotNull(ribbon);
-        assertEquals(2, ribbon.getGroups().size());
-        assertEquals("first", ribbon.getGroups().get(0).getName());
-        assertEquals(2, ribbon.getGroups().get(0).getItems().size());
-        assertEquals("second", ribbon.getGroups().get(1).getName());
-        assertEquals(2, ribbon.getGroups().get(1).getItems().size());
+        assertEquals(2, ribbon.getJSONArray("groups").length());
+        assertEquals("first", ribbon.getJSONArray("groups").getJSONObject(0).getString("name"));
+        assertEquals(2, ribbon.getJSONArray("groups").getJSONObject(0).getJSONArray("items").length());
+        assertEquals("second", ribbon.getJSONArray("groups").getJSONObject(1).getString("name"));
+        assertEquals(2, ribbon.getJSONArray("groups").getJSONObject(1).getJSONArray("items").length());
 
-        assertEquals("test", ribbon.getGroups().get(0).getItems().get(0).getName());
-        assertNull(ribbon.getGroups().get(0).getItems().get(0).getIcon());
-        assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(0).getItems().get(0).getType());
-        assertEquals("#{mainWindow.beanBForm}.save,#{mainWindow}.back", (ribbon.getGroups().get(0).getItems().get(0)).getAction());
-        assertEquals("test2", ribbon.getGroups().get(0).getItems().get(1).getName());
-        assertEquals("icon2", ribbon.getGroups().get(0).getItems().get(1).getIcon());
-        assertEquals(RibbonActionItem.Type.SMALL_BUTTON, ribbon.getGroups().get(0).getItems().get(1).getType());
-        assertEquals("xxx", (ribbon.getGroups().get(0).getItems().get(1)).getAction());
+        JSONObject item11 = ribbon.getJSONArray("groups").getJSONObject(0).getJSONArray("items").getJSONObject(0);
 
-        assertEquals("test2", ribbon.getGroups().get(1).getItems().get(0).getName());
-        assertNull(ribbon.getGroups().get(1).getItems().get(0).getIcon());
-        assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(1).getItems().get(0).getType());
-        assertNull((ribbon.getGroups().get(1).getItems().get(0)).getAction());
+        assertEquals("test", item11.getString("name"));
+        assertFalse(item11.has("icon"));
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON.toString(), item11.getString("type"));
+        assertEquals("#{mainWindow.beanBForm}.save,#{mainWindow}.back", item11.getString("clickAction"));
 
-        assertEquals("combo1", ribbon.getGroups().get(1).getItems().get(1).getName());
-        assertNull(ribbon.getGroups().get(1).getItems().get(1).getIcon());
-        assertEquals("yyy3", ribbon.getGroups().get(1).getItems().get(1).getAction());
-        assertEquals(RibbonActionItem.Type.BIG_BUTTON, ribbon.getGroups().get(1).getItems().get(1).getType());
+        JSONObject item12 = ribbon.getJSONArray("groups").getJSONObject(0).getJSONArray("items").getJSONObject(1);
 
-        List<RibbonActionItem> items = ((RibbonComboItem) ribbon.getGroups().get(1).getItems().get(1)).getItems();
+        assertEquals("test2", item12.getString("name"));
+        assertEquals("icon2", item12.getString("icon"));
+        assertEquals(RibbonActionItem.Type.SMALL_BUTTON.toString(), item12.getString("type"));
+        assertEquals("xxx", item12.getString("clickAction"));
 
-        assertEquals("test1", items.get(0).getName());
-        assertEquals(RibbonActionItem.Type.BIG_BUTTON, items.get(0).getType());
-        assertEquals("yyy1", items.get(0).getAction());
-        assertNull(items.get(0).getIcon());
+        JSONObject item21 = ribbon.getJSONArray("groups").getJSONObject(1).getJSONArray("items").getJSONObject(0);
 
-        assertEquals("test2", items.get(1).getName());
-        assertEquals(RibbonActionItem.Type.BIG_BUTTON, items.get(1).getType());
-        assertEquals("yyy2", items.get(1).getAction());
-        assertEquals("icon2", items.get(1).getIcon());
+        assertEquals("test2", item21.getString("name"));
+        assertFalse(item21.has("icon"));
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON.toString(), item21.getString("type"));
+        assertFalse(item21.has("clickAction"));
+
+        JSONObject item22 = ribbon.getJSONArray("groups").getJSONObject(1).getJSONArray("items").getJSONObject(1);
+
+        assertEquals("combo1", item22.getString("name"));
+        assertFalse(item22.has("icon"));
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON.toString(), item22.getString("type"));
+        assertEquals("yyy3", item22.getString("clickAction"));
+        assertEquals(2, item22.getJSONArray("items").length());
+
+        JSONObject item221 = item22.getJSONArray("items").getJSONObject(0);
+
+        assertEquals("test1", item221.getString("name"));
+        assertFalse(item221.has("icon"));
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON.toString(), item221.getString("type"));
+        assertEquals("yyy1", item221.getString("clickAction"));
+
+        JSONObject item222 = item22.getJSONArray("items").getJSONObject(1);
+
+        assertEquals("test2", item222.getString("name"));
+        assertEquals("icon2", item222.getString("icon"));
+        assertEquals(RibbonActionItem.Type.BIG_BUTTON.toString(), item222.getString("type"));
+        assertEquals("yyy2", item222.getString("clickAction"));
     }
 
     @Test

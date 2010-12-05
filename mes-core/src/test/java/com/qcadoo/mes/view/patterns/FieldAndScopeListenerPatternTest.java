@@ -1,5 +1,6 @@
 package com.qcadoo.mes.view.patterns;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
@@ -18,53 +19,58 @@ import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
-import com.qcadoo.mes.view.states.AbstractComponentState;
+import com.qcadoo.mes.view.states.ComponentStateMock;
 
-public class FieldAndScopeListenerPatternTest {
+public class FieldAndScopeListenerPatternTest extends AbstractPatternTest {
 
     @Test
     public void shouldHaveFieldListeners() throws Exception {
         // given
-        ViewDefinition vd = mock(ViewDefinition.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
-        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
+        AbstractContainerPattern parent = new ContainerPatternMock(getComponentDefinition("f1", viewDefinition));
 
-        ComponentPatternMock t1 = new ComponentPatternMock("t1", "t1", null, pattern);
-        ComponentPatternMock t2 = new ComponentPatternMock("t2", "t2", null, pattern);
+        ComponentPatternMock child1 = new ComponentPatternMock(getComponentDefinition("t1", "t1", null, parent, viewDefinition));
 
-        pattern.addChild(t1);
-        pattern.addChild(t2);
+        ComponentPatternMock child2 = new ComponentPatternMock(getComponentDefinition("t2", "t2", null, parent, viewDefinition));
 
-        pattern.initialize(vd);
-        t1.initialize(vd);
-        t2.initialize(vd);
+        parent.addChild(child1);
+        parent.addChild(child2);
+
+        parent.initialize();
+        child1.initialize();
+        child2.initialize();
 
         // when
-        Map<String, ComponentPattern> listeners = pattern.getFieldEntityIdChangeListeners();
+        Map<String, ComponentPattern> listeners = parent.getFieldEntityIdChangeListeners();
 
         // then
         Assert.assertEquals(2, listeners.size());
-        Assert.assertEquals(t1, listeners.get("t1"));
-        Assert.assertEquals(t2, listeners.get("t2"));
+        Assert.assertEquals(child1, listeners.get("t1"));
+        Assert.assertEquals(child2, listeners.get("t2"));
     }
 
     @Test
     public void shouldUpdateStateFieldListeners() throws Exception {
         // given
-        ViewDefinition vd = mock(ViewDefinition.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
-        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
-        ComponentPatternMock t1 = new ComponentPatternMock("t1", "field1", null, pattern);
-        ComponentPatternMock t2 = new ComponentPatternMock("t2", "field2", null, pattern);
+        AbstractContainerPattern parent = new ContainerPatternMock(getComponentDefinition("f1", viewDefinition));
 
-        pattern.addChild(t1);
-        pattern.addChild(t2);
+        ComponentPatternMock child1 = new ComponentPatternMock(getComponentDefinition("t1", "field1", null, parent,
+                viewDefinition));
 
-        pattern.initialize(vd);
-        t1.initialize(vd);
-        t2.initialize(vd);
+        ComponentPatternMock child2 = new ComponentPatternMock(getComponentDefinition("t2", "field2", null, parent,
+                viewDefinition));
 
-        AbstractComponentState f1State = Mockito.mock(AbstractComponentState.class);
+        parent.addChild(child1);
+        parent.addChild(child2);
+
+        parent.initialize();
+        child1.initialize();
+        child2.initialize();
+
+        ComponentStateMock f1State = new ComponentStateMock();
 
         ComponentState t1State = Mockito.mock(ComponentState.class,
                 withSettings().extraInterfaces(FieldEntityIdChangeListener.class));
@@ -72,78 +78,89 @@ public class FieldAndScopeListenerPatternTest {
         ComponentState t2State = Mockito.mock(ComponentState.class,
                 withSettings().extraInterfaces(FieldEntityIdChangeListener.class));
 
-        ViewDefinitionState vds = Mockito.mock(ViewDefinitionState.class);
-        BDDMockito.given(vds.getComponentByPath("f1")).willReturn(f1State);
-        BDDMockito.given(vds.getComponentByPath("f1.t1")).willReturn(t1State);
-        BDDMockito.given(vds.getComponentByPath("f1.t2")).willReturn(t2State);
+        ViewDefinitionState viewDefinitions = Mockito.mock(ViewDefinitionState.class);
+        BDDMockito.given(viewDefinitions.getComponentByPath("f1")).willReturn(f1State);
+        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t1")).willReturn(t1State);
+        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t2")).willReturn(t2State);
 
         // when
-        pattern.updateComponentStateListeners(vds);
+        parent.updateComponentStateListeners(viewDefinitions);
 
         // then
-        Mockito.verify(f1State).addFieldEntityIdChangeListener("field1", (FieldEntityIdChangeListener) t1State);
-        Mockito.verify(f1State).addFieldEntityIdChangeListener("field2", (FieldEntityIdChangeListener) t2State);
+
+        assertEquals(t1State, f1State.getPublicFieldEntityIdChangeListeners().get("field1"));
+        assertEquals(t2State, f1State.getPublicFieldEntityIdChangeListeners().get("field2"));
     }
 
     @Test
     public void shouldAddItselfToRelationFieldComponentWhenComplexFieldPath() throws Exception {
         // given
-        AbstractComponentPattern parent = Mockito.mock(AbstractComponentPattern.class);
-        TextInputComponentPattern pattern = new TextInputComponentPattern("testName", "#{testComponent}.testField", null, parent);
-        AbstractComponentPattern testComponent = Mockito.mock(AbstractComponentPattern.class);
-        ViewDefinition vd = Mockito.mock(ViewDefinition.class);
-        given(vd.getComponentByPath("testComponent")).willReturn(testComponent);
+        ViewDefinition viewDefinition = Mockito.mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = Mockito.mock(AbstractContainerPattern.class);
+
+        TextInputComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("testName",
+                "#{testComponent}.testField", null, parent, viewDefinition));
+
+        ComponentPatternMock testComponent = new ComponentPatternMock(getComponentDefinition("name", viewDefinition));
+
+        given(viewDefinition.getComponentByPath("testComponent")).willReturn(testComponent);
 
         // when
-        pattern.initialize(vd);
+        pattern.initialize();
 
         // then
-        Mockito.verify(testComponent).addFieldEntityIdChangeListener("testField", pattern);
+        Assert.assertEquals(pattern, testComponent.getFieldEntityIdChangeListeners().get("testField"));
     }
 
     @Test
     public void shouldHaveScopeListeners() throws Exception {
         // given
-        ViewDefinition vd = mock(ViewDefinition.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
-        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
+        AbstractContainerPattern parent = new ContainerPatternMock(getComponentDefinition("f1", viewDefinition));
 
-        ComponentPatternMock t1 = new ComponentPatternMock("t1", null, "t1", pattern);
-        ComponentPatternMock t2 = new ComponentPatternMock("t2", null, "t2", pattern);
+        ComponentPatternMock child1 = new ComponentPatternMock(getComponentDefinition("t1", null, "t1", parent, viewDefinition));
 
-        pattern.addChild(t1);
-        pattern.addChild(t2);
+        ComponentPatternMock child2 = new ComponentPatternMock(getComponentDefinition("t2", null, "t2", parent, viewDefinition));
 
-        pattern.initialize(vd);
-        t1.initialize(vd);
-        t2.initialize(vd);
+        parent.addChild(child1);
+        parent.addChild(child2);
+
+        parent.initialize();
+        child1.initialize();
+        child2.initialize();
 
         // when
-        Map<String, ComponentPattern> listeners = pattern.getScopeEntityIdChangeListeners();
+        Map<String, ComponentPattern> listeners = parent.getScopeEntityIdChangeListeners();
 
         // then
         Assert.assertEquals(2, listeners.size());
-        Assert.assertEquals(t1, listeners.get("t1"));
-        Assert.assertEquals(t2, listeners.get("t2"));
+        Assert.assertEquals(child1, listeners.get("t1"));
+        Assert.assertEquals(child2, listeners.get("t2"));
     }
 
     @Test
     public void shouldUpdateStateScopeListeners() throws Exception {
         // given
-        ViewDefinition vd = mock(ViewDefinition.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
-        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
-        ComponentPatternMock t1 = new ComponentPatternMock("t1", null, "field1", pattern);
-        ComponentPatternMock t2 = new ComponentPatternMock("t2", null, "field2", pattern);
+        AbstractContainerPattern parent = new ContainerPatternMock(getComponentDefinition("f1", viewDefinition));
 
-        pattern.addChild(t1);
-        pattern.addChild(t2);
+        ComponentPatternMock child1 = new ComponentPatternMock(getComponentDefinition("t1", null, "field1", parent,
+                viewDefinition));
 
-        pattern.initialize(vd);
-        t1.initialize(vd);
-        t2.initialize(vd);
+        ComponentPatternMock child2 = new ComponentPatternMock(getComponentDefinition("t2", null, "field2", parent,
+                viewDefinition));
 
-        AbstractComponentState f1State = Mockito.mock(AbstractComponentState.class);
+        parent.addChild(child1);
+        parent.addChild(child2);
+
+        parent.initialize();
+        child1.initialize();
+        child2.initialize();
+
+        ComponentStateMock f1State = new ComponentStateMock();
 
         ComponentState t1State = Mockito.mock(ComponentState.class,
                 withSettings().extraInterfaces(ScopeEntityIdChangeListener.class));
@@ -151,33 +168,37 @@ public class FieldAndScopeListenerPatternTest {
         ComponentState t2State = Mockito.mock(ComponentState.class,
                 withSettings().extraInterfaces(ScopeEntityIdChangeListener.class));
 
-        ViewDefinitionState vds = Mockito.mock(ViewDefinitionState.class);
-        BDDMockito.given(vds.getComponentByPath("f1")).willReturn(f1State);
-        BDDMockito.given(vds.getComponentByPath("f1.t1")).willReturn(t1State);
-        BDDMockito.given(vds.getComponentByPath("f1.t2")).willReturn(t2State);
+        ViewDefinitionState viewDefinitions = Mockito.mock(ViewDefinitionState.class);
+        BDDMockito.given(viewDefinitions.getComponentByPath("f1")).willReturn(f1State);
+        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t1")).willReturn(t1State);
+        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t2")).willReturn(t2State);
 
         // when
-        pattern.updateComponentStateListeners(vds);
+        parent.updateComponentStateListeners(viewDefinitions);
 
         // then
-        Mockito.verify(f1State).addScopeEntityIdChangeListener("field1", (ScopeEntityIdChangeListener) t1State);
-        Mockito.verify(f1State).addScopeEntityIdChangeListener("field2", (ScopeEntityIdChangeListener) t2State);
+        assertEquals(t1State, f1State.getPublicScopeFieldEntityIdChangeListeners().get("field1"));
+        assertEquals(t2State, f1State.getPublicScopeFieldEntityIdChangeListeners().get("field2"));
     }
 
     @Test
     public void shouldAddItselfToRelationScopeComponentWhenComplexFieldPath() throws Exception {
         // given
-        AbstractComponentPattern parent = Mockito.mock(AbstractComponentPattern.class);
-        TextInputComponentPattern pattern = new TextInputComponentPattern("testName", null, "#{testComponent}.testField", parent);
-        AbstractComponentPattern testComponent = Mockito.mock(AbstractComponentPattern.class);
-        ViewDefinition vd = Mockito.mock(ViewDefinition.class);
-        given(vd.getComponentByPath("testComponent")).willReturn(testComponent);
+        ViewDefinition viewDefinition = Mockito.mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = Mockito.mock(AbstractContainerPattern.class);
+
+        TextInputComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("testName", null,
+                "#{testComponent}.testField", parent, viewDefinition));
+
+        ComponentPatternMock testComponent = new ComponentPatternMock(getComponentDefinition("name", viewDefinition));
+        given(viewDefinition.getComponentByPath("testComponent")).willReturn(testComponent);
 
         // when
-        pattern.initialize(vd);
+        pattern.initialize();
 
         // then
-        Mockito.verify(testComponent).addScopeEntityIdChangeListener("testField", pattern);
+        assertEquals(pattern, testComponent.getScopeEntityIdChangeListeners().get("testField"));
     }
 
 }

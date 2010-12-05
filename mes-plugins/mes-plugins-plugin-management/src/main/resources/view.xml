@@ -9,49 +9,47 @@
 -->
 
 <qcd:views plugin="plugins" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="pluginGridView" model="plugin" menuAccessible="true">
-		<component type="window" name="mainWindow">
+	<view name="plugins" model="plugin" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" icon="downloadIcon24.png" action="#{mainWindow}.performCallFunction(goToUrl,../download.html);" />
-					<bigButton name="update" icon="updateIcon24.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="download" icon="downloadIcon24.png" action="#{window}.performCallFunction(goToUrl,../download.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{window.pluginsGrid}.performCallFunction(goToUrl,../update.html);" />
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../enable.html);" />
-					<smallButtons name="disable" icon="disableIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../disable.html);">
-						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../deinstall.html);" />
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{mainWindow.pluginsGrid}.performCallFunction(goToUrl,../remove.html);" />
+					<smallButton name="enable" icon="enableIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../enable.html);" />
+					<smallButtons name="disable" icon="disableIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../disable.html);">
+						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../deinstall.html);" />
+						<smallButton name="remove" icon="deleteIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../remove.html);" />
 					</smallButtons>
 				</group>
 			</ribbon>
-			<component type="grid" name="pluginsGrid">
+			<component type="grid" name="plugins">
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="description" fields="description" />
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
 				<option type="column" name="status" fields="status" />
-				<option type="correspondingView" value="plugins/pluginDetailsView" />
-				<option type="correspondingComponent" value="mainWindow.pluginDetailsForm" />
+				<option type="correspondingView" value="plugins/plugin" />
+				<option type="correspondingComponent" value="window.plugin" />
 				<option type="searchable" value="name,vendor,status" />
 				<option type="orderable" value="name" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
-			<option type="fullscreen" value="true" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="pluginDetailsView" model="plugin">
-		<component type="window" name="mainWindow">
+	<view name="plugin" model="plugin">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="plugins">
-					<bigButton name="update" icon="updateIcon24.png" action="#{mainWindow.pluginDetailsForm}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{window.plugin}.performCallFunction(goToUrl,../update.html);" />
 				</group>
 			</ribbon>
 			<component type="form" name="pluginDetailsForm">
@@ -67,35 +65,33 @@
 		</component>
 	</view>
 	
-	<view name="pluginDownloadView">
-		<component type="window" name="mainWindow">
+	<view name="pluginDownload">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="staticPage" name="infoPage">
-				<option type="page" value="plugins/download.jsp" />
+			<component type="staticPage" name="pluginDownload">
+				<option type="page" value="plugins/pluginDownload.jsp" />
 			</component>
 			<option type="header" value="false" />
-			<option type="static" value="true" />
 		</component>
 	</view>
 	
 	<!-- ERROR PAGES -->
 	
-	<view name="pluginInfoView">
-		<component type="window" name="mainWindow">
+	<view name="pluginInfo">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="staticPage" name="infoPage">
+			<component type="staticPage" name="pluginInfo">
 				<option type="page" value="plugins/pluginInfo.jsp" />
 			</component>
 			<option type="header" value="false" />
-			<option type="static" value="true" />
 		</component>
 	</view>
 	

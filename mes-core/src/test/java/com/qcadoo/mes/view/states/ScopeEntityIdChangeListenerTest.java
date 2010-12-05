@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
-import com.qcadoo.mes.view.components.FormComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
 
 public class ScopeEntityIdChangeListenerTest extends AbstractStateTest {
 

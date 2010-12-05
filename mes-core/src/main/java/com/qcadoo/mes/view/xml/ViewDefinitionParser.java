@@ -33,17 +33,20 @@ import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
+import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.WindowComponentPattern;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
-import com.qcadoo.mes.view.menu.ribbon.Ribbon;
-import com.qcadoo.mes.view.menu.ribbon.RibbonActionItem;
-import com.qcadoo.mes.view.menu.ribbon.RibbonComboItem;
-import com.qcadoo.mes.view.menu.ribbon.RibbonGroup;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
+import com.qcadoo.mes.view.ribbon.Ribbon;
+import com.qcadoo.mes.view.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.ribbon.RibbonComboItem;
+import com.qcadoo.mes.view.ribbon.RibbonGroup;
 
 @Service
 public final class ViewDefinitionParser {
@@ -123,7 +126,7 @@ public final class ViewDefinitionParser {
 
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "component")) {
-                root = getComponentPattern(reader, null);
+                root = getComponentPattern(reader, null, viewDefinition);
             } else if (isTagStarted(reader, "preInitializeHook")) {
                 viewDefinition.addPreInitializeHook(getHookDefinition(reader));
             } else if (isTagStarted(reader, "postInitializeHook")) {
@@ -135,15 +138,15 @@ public final class ViewDefinitionParser {
             }
         }
 
-        viewDefinition.addChild(root);
+        viewDefinition.addComponentPattern(root);
 
         viewDefinition.initialize();
 
         viewDefinitionService.save(viewDefinition);
     }
 
-    private ComponentPattern getComponentPattern(final XMLStreamReader reader, final ComponentPattern parent)
-            throws XMLStreamException {
+    private ComponentPattern getComponentPattern(final XMLStreamReader reader, final ContainerPattern parent,
+            final ViewDefinition viewDefinition) throws XMLStreamException {
         String type = getStringAttribute(reader, "type");
         String name = getStringAttribute(reader, "name");
         String fieldPath = getStringAttribute(reader, "field");
@@ -153,21 +156,27 @@ public final class ViewDefinitionParser {
             throw new IllegalStateException("Unsupported component: " + type);
         }
 
-        ComponentPattern component = viewComponentsResolver.getViewComponentInstance(type, name, fieldPath, sourceFieldPath,
-                parent);
+        ComponentDefinition componentDefinition = new ComponentDefinition();
+        componentDefinition.setName(name);
+        componentDefinition.setFieldPath(fieldPath);
+        componentDefinition.setSourceFieldPath(sourceFieldPath);
+        componentDefinition.setParent(parent);
+        componentDefinition.setTranslationService(translationService);
+        componentDefinition.setViewDefinition(viewDefinition);
+        componentDefinition.setReference(getStringAttribute(reader, "reference"));
+        componentDefinition.setDefaultEnabled(getBooleanAttribute(reader, "defaultEnabled", true));
+        componentDefinition.setDefaultVisible(getBooleanAttribute(reader, "defaultVisible", true));
+        componentDefinition.setHasDescription(getBooleanAttribute(reader, "hasDescription", false));
 
-        addMenuAndChildrenComponentsAndOptions(reader, component);
+        ComponentPattern component = viewComponentsResolver.getViewComponentInstance(type, componentDefinition);
+
+        addMenuAndChildrenComponentsAndOptions(reader, component, viewDefinition);
 
         return component;
     }
 
-    private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final ComponentPattern component)
-            throws XMLStreamException {
-        ((AbstractComponentPattern) component).setTranslationService(translationService);
-        ((AbstractComponentPattern) component).setReference(getStringAttribute(reader, "reference"));
-        ((AbstractComponentPattern) component).setDefaultEnabled(getBooleanAttribute(reader, "defaultEnabled", true));
-        ((AbstractComponentPattern) component).setDefaultVisible(getBooleanAttribute(reader, "defaultVisible", true));
-        ((AbstractComponentPattern) component).setHasDescription(getBooleanAttribute(reader, "hasDescription", false));
+    private void addMenuAndChildrenComponentsAndOptions(final XMLStreamReader reader, final ComponentPattern component,
+            final ViewDefinition viewDefinition) throws XMLStreamException {
         while (reader.hasNext() && reader.next() > 0) {
             if (isTagStarted(reader, "ribbon")) {
                 if (component instanceof WindowComponentPattern) {
@@ -177,7 +186,8 @@ public final class ViewDefinitionParser {
                 ((AbstractComponentPattern) component).addOption(getOption(reader));
             } else if (isTagStarted(reader, "component")) {
                 if (component instanceof ContainerPattern) {
-                    ((ContainerPattern) component).addChild(getComponentPattern(reader, component));
+                    ((AbstractContainerPattern) component).addChild(getComponentPattern(reader, (ContainerPattern) component,
+                            viewDefinition));
                 }
             } else if (isTagEnded(reader, "component")) {
                 break;

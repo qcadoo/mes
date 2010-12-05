@@ -57,7 +57,6 @@
 			<component type="button" name="link">
 				<option type="url" value="download.html" />
 			</component>
-			<option type="backButton" value="false" />
 		</component>
 		<preInitializeHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />
 		<postInitializeHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />

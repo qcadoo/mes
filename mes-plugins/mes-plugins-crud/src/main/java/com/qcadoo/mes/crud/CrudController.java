@@ -34,38 +34,23 @@ public final class CrudController {
 
     private static final String CONTROLLER_PATH = "page/{" + PLUGIN_IDENTIFIER_VARIABLE + "}/{" + VIEW_NAME_VARIABLE + "}";
 
-    // private static final String JSON_BODY = "jsonBody";
-
     @Autowired
     private ViewDefinitionService viewDefinitionService;
-
-    // @Autowired
-    // private TranslationService translationService;
 
     @RequestMapping(value = CONTROLLER_PATH, method = RequestMethod.GET)
     public ModelAndView prepareView(@PathVariable(PLUGIN_IDENTIFIER_VARIABLE) final String pluginIdentifier,
             @PathVariable(VIEW_NAME_VARIABLE) final String viewName, @RequestParam final Map<String, String> arguments,
             final Locale locale) {
-        // Map<String, String> translationsMap = translationService.getCommonsMessages(locale);
-        //
-        // ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
-        // viewDefinition.updateTranslations(translationsMap, locale);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("crud/crudView");
 
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
-        modelAndView.addObject("viewDefinition", viewDefinition);
 
-        JSONObject testContext = new JSONObject();
-        try {
-            testContext.put("mainWindow.form.testField", 44);
-            testContext.put("mainWindow.form.id", 22);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        // modelAndView.addObject("context", testContext.toString());
+        ModelAndView modelAndView = new ModelAndView("crud/crudView");
+
+        modelAndView.addObject("model", viewDefinition.prepareView(locale));
+        modelAndView.addObject("viewName", viewName);
+        modelAndView.addObject("pluginIdentifier", pluginIdentifier);
         modelAndView.addObject("context", arguments.get("context"));
+        modelAndView.addObject("locale", locale.getLanguage());
 
         // String lookupComponentName = arguments.get("lookupComponent");
         //
@@ -79,14 +64,7 @@ public final class CrudController {
         // } else {
         // modelAndView.addObject("viewDefinition", viewDefinition);
         // }
-        //
-        // modelAndView.addObject("entityId", arguments.get("entityId"));
-        // modelAndView.addObject("context", arguments.get("context"));
-        // modelAndView.addObject("translationsMap", translationsMap);
-        // modelAndView.addObject("locale", locale.getLanguage());
         // modelAndView.addObject("arguments", arguments);
-        //
-        // addMessageToModel(arguments, modelAndView);
 
         return modelAndView;
     }

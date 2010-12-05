@@ -8,6 +8,4 @@ public interface ContainerPattern extends ComponentPattern {
 
     ComponentPattern getChild(String name);
 
-    void addChild(ComponentPattern componentPattern);
-
 }

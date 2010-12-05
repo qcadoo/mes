@@ -17,11 +17,12 @@ import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.components.FormComponentPattern;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
+import com.qcadoo.mes.view.components.WindowComponentPattern;
+import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
 
-public class InitializationTest {
+public class InitializationTest extends AbstractPatternTest {
 
     @Test
     public void shouldTakeDataDefinitionFromView() throws Exception {
@@ -30,10 +31,10 @@ public class InitializationTest {
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
         given(viewDefinition.getDataDefinition()).willReturn(dataDefinition);
 
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, null, null);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(dataDefinition, ReflectionTestUtils.getField(pattern, "dataDefinition"));
@@ -45,13 +46,13 @@ public class InitializationTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
-        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("parent", viewDefinition));
         setField(parent, "dataDefinition", dataDefinition);
 
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, null, parent);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", parent, viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(dataDefinition, getField(pattern, "dataDefinition"));
@@ -65,17 +66,20 @@ public class InitializationTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(dataDefinition.getField("field")).willReturn(fieldDefinition);
 
-        AbstractComponentPattern fieldComponent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern fieldComponent = new TextInputComponentPattern(getComponentDefinition("component",
+                viewDefinition));
         setField(fieldComponent, "dataDefinition", dataDefinition);
         setField(fieldComponent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
         given(viewDefinition.getComponentByPath("component")).willReturn(fieldComponent);
 
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", "#{component}.field", null, null);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", "#{component}.field",
+                null, null, viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(dataDefinition, getField(pattern, "dataDefinition"));
@@ -90,16 +94,17 @@ public class InitializationTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(dataDefinition.getField("field")).willReturn(fieldDefinition);
 
-        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("parent", viewDefinition));
         setField(parent, "dataDefinition", dataDefinition);
         setField(parent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
-
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", "field", null, parent);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", "field", null, parent,
+                viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(dataDefinition, getField(pattern, "dataDefinition"));
@@ -114,17 +119,20 @@ public class InitializationTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(dataDefinition.getField("field")).willReturn(fieldDefinition);
 
-        AbstractComponentPattern sourceComponent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractComponentPattern sourceComponent = new TextInputComponentPattern(getComponentDefinition("component",
+                viewDefinition));
         setField(sourceComponent, "dataDefinition", dataDefinition);
         setField(sourceComponent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
         given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);
 
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, "#{component}.field", null);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", null,
+                "#{component}.field", null, viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(dataDefinition, getField(pattern, "dataDefinition"));
@@ -139,16 +147,17 @@ public class InitializationTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         given(dataDefinition.getField("field")).willReturn(fieldDefinition);
 
-        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("parent", viewDefinition));
         setField(parent, "dataDefinition", dataDefinition);
         setField(parent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
-
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, "field", parent);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", null, "field", parent,
+                viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(dataDefinition, getField(pattern, "dataDefinition"));
@@ -169,16 +178,17 @@ public class InitializationTest {
         DataDefinition belongsToDefinition = mock(DataDefinition.class);
         given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
 
-        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("parent", viewDefinition));
         setField(parent, "dataDefinition", dataDefinition);
         setField(parent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
-
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", "field", null, parent);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", "field", null, parent,
+                viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
@@ -199,16 +209,17 @@ public class InitializationTest {
         DataDefinition belongsToDefinition = mock(DataDefinition.class);
         given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
 
-        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("parent", viewDefinition));
         setField(parent, "dataDefinition", dataDefinition);
         setField(parent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
-
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", "field", null, parent);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", "field", null, parent,
+                viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
@@ -229,16 +240,17 @@ public class InitializationTest {
         DataDefinition belongsToDefinition = mock(DataDefinition.class);
         given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
 
-        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("parent", viewDefinition));
         setField(parent, "dataDefinition", dataDefinition);
         setField(parent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
-
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, "field", parent);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", null, "field", parent,
+                viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
@@ -259,16 +271,17 @@ public class InitializationTest {
         DataDefinition belongsToDefinition = mock(DataDefinition.class);
         given(fieldType.getDataDefinition()).willReturn(belongsToDefinition);
 
-        AbstractComponentPattern parent = new TextInputComponentPattern("parent", null, null, null);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("parent", viewDefinition));
         setField(parent, "dataDefinition", dataDefinition);
         setField(parent, "initialized", true);
 
-        ViewDefinition viewDefinition = mock(ViewDefinition.class);
-
-        AbstractComponentPattern pattern = new TextInputComponentPattern("test", null, "field", parent);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", null, "field", parent,
+                viewDefinition));
 
         // when
-        pattern.initialize(viewDefinition);
+        pattern.initialize();
 
         // then
         Assert.assertEquals(belongsToDefinition, getField(pattern, "dataDefinition"));
@@ -296,13 +309,19 @@ public class InitializationTest {
         given(hasManyType.getDataDefinition()).willReturn(hasManyDataDefinition);
         given(belongsToType.getDataDefinition()).willReturn(belongsToDataDefinition);
 
-        AbstractContainerPattern parent = new FormComponentPattern("parent", null, null, null);
-        AbstractContainerPattern form = new FormComponentPattern("form", null, null, parent);
-        AbstractComponentPattern input = new TextInputComponentPattern("input", "field", null, form);
-        AbstractComponentPattern select = new TextInputComponentPattern("select", "belongsTo", null, form);
-        AbstractComponentPattern subselect = new TextInputComponentPattern("subselect", "#{parent.form}.hasMany",
-                "#{parent.form.select}.hasMany", form);
-        AbstractComponentPattern grid = new TextInputComponentPattern("grid", null, "#{parent.form}.hasMany", parent);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("view", "plugin", dataDefinition, true);
+
+        AbstractContainerPattern parent = new FormComponentPattern(getComponentDefinition("parent", viewDefinition));
+        AbstractContainerPattern form = new FormComponentPattern(getComponentDefinition("form", null, null, parent,
+                viewDefinition));
+        AbstractComponentPattern input = new TextInputComponentPattern(getComponentDefinition("input", "field", null, form,
+                viewDefinition));
+        AbstractComponentPattern select = new TextInputComponentPattern(getComponentDefinition("select", "belongsTo", null, form,
+                viewDefinition));
+        AbstractComponentPattern subselect = new TextInputComponentPattern(getComponentDefinition("subselect",
+                "#{parent.form}.hasMany", "#{parent.form.select}.hasMany", form, viewDefinition));
+        AbstractComponentPattern grid = new TextInputComponentPattern(getComponentDefinition("grid", null,
+                "#{parent.form}.hasMany", parent, viewDefinition));
 
         parent.addChild(form);
         parent.addChild(grid);
@@ -310,8 +329,7 @@ public class InitializationTest {
         form.addChild(select);
         form.addChild(subselect);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("view", "plugin", dataDefinition, true);
-        viewDefinition.addChild(parent);
+        viewDefinition.addComponentPattern(parent);
 
         // when
         viewDefinition.initialize();

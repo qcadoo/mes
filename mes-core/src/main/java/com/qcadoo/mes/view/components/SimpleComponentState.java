@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
-public class TextInputComponentState extends AbstractComponentState {
+public final class SimpleComponentState extends AbstractComponentState {
 
     private String value;
 

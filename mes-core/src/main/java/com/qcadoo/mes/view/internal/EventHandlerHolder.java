@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.qcadoo.mes.view.ComponentState;
 
-public class EventHandlerHolder {
+public final class EventHandlerHolder {
 
     private final ComponentState owner;
 
@@ -25,7 +25,7 @@ public class EventHandlerHolder {
         eventHandlers.put(name, new EventHandler(obj, method, false));
     }
 
-    public final void performEvent(final String event, final String... args) {
+    public void performEvent(final String event, final String... args) {
         if (!eventHandlers.containsKey(event)) {
             return; // TODO masz throw new IllegalStateException("Event with given name doesn't exist");
         } else {

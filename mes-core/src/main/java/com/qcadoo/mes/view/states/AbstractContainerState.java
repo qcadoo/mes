@@ -15,7 +15,7 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
     private final Map<String, ComponentState> children = new HashMap<String, ComponentState>();
 
     @Override
-    public void initialize(final JSONObject json, final Locale locale) throws JSONException {
+    public final void initialize(final JSONObject json, final Locale locale) throws JSONException {
         super.initialize(json, locale);
 
         JSONObject childerJson = json.getJSONObject(JSON_CHILDREN);
@@ -26,15 +26,7 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
     }
 
     @Override
-    public void beforeRender() {
-        super.beforeRender();
-        for (ComponentState child : children.values()) {
-            child.beforeRender();
-        }
-    }
-
-    @Override
-    public JSONObject render() throws JSONException {
+    public final JSONObject render() throws JSONException {
         JSONObject json = super.render();
 
         JSONObject childerJson = new JSONObject();
@@ -49,17 +41,17 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
     }
 
     @Override
-    public Map<String, ComponentState> getChildren() {
+    public final Map<String, ComponentState> getChildren() {
         return children;
     }
 
     @Override
-    public ComponentState getChild(final String name) {
+    public final ComponentState getChild(final String name) {
         return children.get(name);
     }
 
     @Override
-    public void addChild(final ComponentState state) {
+    public final void addChild(final ComponentState state) {
         children.put(state.getName(), state);
     }
 

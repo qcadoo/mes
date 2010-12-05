@@ -10,11 +10,11 @@
 
 	FORM
 	
-<div id="${component.pathName}_formComponents">
+<div id="${component['path']}_formComponents">
 	
-	<c:forEach items="${component.children}" var="componentEntry">
+	<c:forEach items="${component['children']}" var="component">
 		<tiles:insertTemplate template="../newComponent.jsp">
-			<tiles:putAttribute name="component" value="${componentEntry.value}" />
+			<tiles:putAttribute name="component" value="${component.value}" />
 		</tiles:insertTemplate>
 	</c:forEach>
 	

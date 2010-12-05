@@ -1,21 +1,20 @@
 package com.qcadoo.mes.view.components;
 
-import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 @ViewComponent("staticPage")
-public class StaticPageComponentPattern extends AbstractComponentPattern {
+public final class StaticPageComponentPattern extends AbstractComponentPattern {
 
-    public StaticPageComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
-            final ComponentPattern parent) {
-        super(name, fieldPath, sourceFieldPath, parent);
+    public StaticPageComponentPattern(final ComponentDefinition componentDefinition) {
+        super(componentDefinition);
     }
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TextInputComponentState();
+        return new EmptyComponentState();
     }
 
     @Override
@@ -24,12 +23,12 @@ public class StaticPageComponentPattern extends AbstractComponentPattern {
     }
 
     @Override
-    public String getJavaScriptFilePath() {
+    public String getJsFilePath() {
         return JS_PATH;
     }
 
     @Override
-    public String getJavaScriptObjectName() {
+    public String getJsObjectName() {
         return JS_OBJECT;
     }
 }

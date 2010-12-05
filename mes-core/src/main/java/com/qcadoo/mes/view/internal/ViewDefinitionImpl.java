@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,7 +22,7 @@ import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
-public class ViewDefinitionImpl implements ViewDefinition {
+public final class ViewDefinitionImpl implements ViewDefinition {
 
     private final String name;
 
@@ -37,6 +38,10 @@ public class ViewDefinitionImpl implements ViewDefinition {
 
     private final List<HookDefinition> preRenderHooks = new ArrayList<HookDefinition>();
 
+    private final Set<String> jsFilePaths = new HashSet<String>();
+
+    private final Map<String, ComponentPattern> patterns = new LinkedHashMap<String, ComponentPattern>();
+
     public ViewDefinitionImpl(final String name, final String pluginIdentifier, final DataDefinition dataDefinition,
             final boolean menuAccessible) {
         this.name = name;
@@ -45,22 +50,8 @@ public class ViewDefinitionImpl implements ViewDefinition {
         this.menuAccessible = menuAccessible;
     }
 
-    private final Map<String, ComponentPattern> componentPatterns = new HashMap<String, ComponentPattern>();
-
-    private ViewDefinitionStateFactory viewDefinitionStateFactory = new ViewDefinitionStateFactory() {
-
-        @Override
-        public ViewDefinitionState getInstance() {
-            return new ViewDefinitionStateImpl();
-        }
-    };
-
-    public void setViewDefinitionStateFactory(final ViewDefinitionStateFactory viewDefinitionStateFactory) {
-        this.viewDefinitionStateFactory = viewDefinitionStateFactory;
-    }
-
     public void initialize() {
-        List<ComponentPattern> list = getPatternsAsList(componentPatterns.values());
+        List<ComponentPattern> list = getPatternsAsList(patterns.values());
 
         int lastNotInitialized = 0;
 
@@ -68,7 +59,7 @@ public class ViewDefinitionImpl implements ViewDefinition {
             int notInitialized = 0;
 
             for (ComponentPattern pattern : list) {
-                if (!pattern.initialize(this)) {
+                if (!pattern.initialize()) {
                     notInitialized++;
                 }
             }
@@ -85,68 +76,63 @@ public class ViewDefinitionImpl implements ViewDefinition {
         }
     }
 
-    private List<ComponentPattern> getPatternsAsList(final Collection<ComponentPattern> patterns) {
-        List<ComponentPattern> list = new ArrayList<ComponentPattern>();
-        list.addAll(patterns);
-        for (ComponentPattern pattern : patterns) {
-            if (pattern instanceof ContainerPattern) {
-                list.addAll(getPatternsAsList(((ContainerPattern) pattern).getChildren().values()));
-            }
-        }
-        return list;
-    }
-
     @Override
     public Map<String, Object> prepareView(final Locale locale) {
-        // TODO mina
+        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> childrenModels = new HashMap<String, Object>();
 
-        return null;
+        for (ComponentPattern componentPattern : patterns.values()) {
+            childrenModels.put(componentPattern.getName(), componentPattern.prepareView(locale));
+        }
+
+        model.put(JSON_COMPONENTS, childrenModels);
+        model.put(JSON_JS_FILE_PATHS, getJsFilePaths());
+
+        return model;
     }
 
     @Override
     public JSONObject performEvent(final JSONObject object, final Locale locale) throws JSONException {
-        ViewDefinitionState vds = viewDefinitionStateFactory.getInstance();
-        for (ComponentPattern cp : componentPatterns.values()) {
-            vds.addChild(cp.createComponentState());
-        }
-        vds.initialize(object, locale);
-        for (ComponentPattern cp : componentPatterns.values()) {
-            ((AbstractComponentPattern) cp).updateComponentStateListeners(vds);
+        ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
+
+        for (ComponentPattern cp : patterns.values()) {
+            viewDefinitionState.addChild(cp.createComponentState());
         }
 
-        JSONObject eventJson = object.getJSONObject("event");
-        String eventName = eventJson.getString("name");
-        String eventComponent = eventJson.has("component") ? eventJson.getString("component") : null;
-        JSONArray eventArgsArray = eventJson.has("args") ? eventJson.getJSONArray("args") : new JSONArray();
+        callHooks(preInitializeHooks, viewDefinitionState, locale);
+
+        viewDefinitionState.initialize(object, locale);
+
+        for (ComponentPattern cp : patterns.values()) {
+            ((AbstractComponentPattern) cp).updateComponentStateListeners(viewDefinitionState);
+        }
+
+        callHooks(postInitializeHooks, viewDefinitionState, locale);
+
+        JSONObject eventJson = object.getJSONObject(JSON_EVENT);
+        String eventName = eventJson.getString(JSON_EVENT_NAME);
+        String eventComponent = eventJson.has(JSON_EVENT_COMPONENT) ? eventJson.getString(JSON_EVENT_COMPONENT) : null;
+        JSONArray eventArgsArray = eventJson.has(JSON_EVENT_ARGS) ? eventJson.getJSONArray(JSON_EVENT_ARGS) : new JSONArray();
         String[] eventArgs = new String[eventArgsArray.length()];
         for (int i = 0; i < eventArgsArray.length(); i++) {
             eventArgs[i] = eventArgsArray.getString(i);
         }
-        vds.performEvent(eventComponent, eventName, eventArgs);
 
-        vds.beforeRender();
+        viewDefinitionState.performEvent(eventComponent, eventName, eventArgs);
 
-        return vds.render();
+        callHooks(preRenderHooks, viewDefinitionState, locale);
+
+        return viewDefinitionState.render();
     }
 
-    @Override
-    public Map<String, ComponentPattern> getChildren() {
-        return componentPatterns;
-    }
-
-    @Override
-    public ComponentPattern getChild(final String name) {
-        return componentPatterns.get(name);
-    }
-
-    public void addChild(final ComponentPattern componentPattern) {
-        componentPatterns.put(componentPattern.getName(), componentPattern);
+    public void addComponentPattern(final ComponentPattern componentPattern) {
+        patterns.put(componentPattern.getName(), componentPattern);
     }
 
     @Override
     public ComponentPattern getComponentByPath(final String path) {
         String[] pathParts = path.split("\\.");
-        ComponentPattern componentPattern = componentPatterns.get(pathParts[0]);
+        ComponentPattern componentPattern = patterns.get(pathParts[0]);
         if (componentPattern == null) {
             return null;
         }
@@ -180,20 +166,13 @@ public class ViewDefinitionImpl implements ViewDefinition {
         return dataDefinition;
     };
 
-    @Override
-    public Set<String> getJavaScriptFilePaths() {
-        Set<String> pathsSet = new HashSet<String>();
-        updateJavaScriptFilePaths(pathsSet, componentPatterns.values());
-        return pathsSet;
+    public Set<String> getJsFilePaths() {
+        return jsFilePaths;
     }
 
-    private void updateJavaScriptFilePaths(final Set<String> paths, final Iterable<ComponentPattern> componentPatterns) {
-        for (ComponentPattern componentPattern : componentPatterns) {
-            paths.add(componentPattern.getJavaScriptFilePath());
-            if (componentPattern instanceof ContainerPattern) {
-                updateJavaScriptFilePaths(paths, ((ContainerPattern) componentPattern).getChildren().values());
-            }
-        }
+    @Override
+    public void addJsFilePath(final String jsFilePath) {
+        jsFilePaths.add(jsFilePath);
     }
 
     public void addPostInitializeHook(final HookDefinition hookDefinition) {
@@ -207,4 +186,22 @@ public class ViewDefinitionImpl implements ViewDefinition {
     public void addPreInitializeHook(final HookDefinition hookDefinition) {
         preInitializeHooks.add(hookDefinition);
     }
+
+    private void callHooks(final List<HookDefinition> hooks, final ViewDefinitionState viewDefinitionState, final Locale locale) {
+        for (HookDefinition hook : hooks) {
+            hook.callWithViewState(viewDefinitionState, locale);
+        }
+    }
+
+    private List<ComponentPattern> getPatternsAsList(final Collection<ComponentPattern> patterns) {
+        List<ComponentPattern> list = new ArrayList<ComponentPattern>();
+        list.addAll(patterns);
+        for (ComponentPattern pattern : patterns) {
+            if (pattern instanceof ContainerPattern) {
+                list.addAll(getPatternsAsList(((ContainerPattern) pattern).getChildren().values()));
+            }
+        }
+        return list;
+    }
+
 }

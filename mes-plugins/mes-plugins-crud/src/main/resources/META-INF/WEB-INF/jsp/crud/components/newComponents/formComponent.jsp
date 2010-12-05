@@ -21,7 +21,7 @@
 
 	
 	<div class="labelbox"><div class="label_h"></div><div class="label" >
-		<span style="display: inline" id="${component.pathName}_labelDiv">${component.name}</span>
+		<span style="display: inline" id="${component['path']}_labelDiv">${component['name']}</span>
 				<div class="error_box">
 				<div id="${componentFullName}_error_icon" class="error_icon"></div>
 				<div id="${componentFullName}_error_messages" class="error_messages" style="display: none"></div></div></div></div>

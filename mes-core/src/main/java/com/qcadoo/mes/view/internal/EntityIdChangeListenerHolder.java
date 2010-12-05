@@ -6,7 +6,7 @@ import java.util.Map;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 
-public class EntityIdChangeListenerHolder {
+public final class EntityIdChangeListenerHolder {
 
     private final Map<String, FieldEntityIdChangeListener> fieldEntityIdChangeListeners = new HashMap<String, FieldEntityIdChangeListener>();
 
@@ -20,7 +20,7 @@ public class EntityIdChangeListenerHolder {
         scopeEntityIdChangeListeners.put(scope, listener);
     }
 
-    public final void notifyEntityIdChangeListeners(final Long entityId) {
+    public void notifyEntityIdChangeListeners(final Long entityId) {
         for (FieldEntityIdChangeListener listener : fieldEntityIdChangeListeners.values()) {
             listener.onFieldEntityIdChange(entityId);
         }

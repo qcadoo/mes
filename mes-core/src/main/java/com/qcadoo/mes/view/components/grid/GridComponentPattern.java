@@ -1,7 +1,10 @@
-package com.qcadoo.mes.view.components;
+package com.qcadoo.mes.view.components.grid;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,14 +14,18 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
-import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 @ViewComponent("grid")
-public class GridComponentPattern extends AbstractComponentPattern {
+public final class GridComponentPattern extends AbstractComponentPattern {
+
+    private static final int DEFAULT_GRID_HEIGHT = 300;
+
+    private static final int DEFAULT_GRID_WIDTH = 300;
 
     private static final String JSP_PATH = "newComponents/grid.jsp";
 
@@ -42,15 +49,14 @@ public class GridComponentPattern extends AbstractComponentPattern {
 
     private boolean creatable = true;
 
-    private int height = 300;
+    private int height = DEFAULT_GRID_HEIGHT;
 
-    private int width = 300;
+    private int width = DEFAULT_GRID_WIDTH;
 
     private boolean lookup;
 
-    public GridComponentPattern(final String name, final String fieldPath, final String sourceFieldPath,
-            final ComponentPattern parent) {
-        super(name, fieldPath, sourceFieldPath, parent);
+    public GridComponentPattern(final ComponentDefinition componentDefinition) {
+        super(componentDefinition);
     }
 
     @Override
@@ -64,20 +70,19 @@ public class GridComponentPattern extends AbstractComponentPattern {
     }
 
     @Override
-    public String getJavaScriptFilePath() {
+    public String getJsFilePath() {
         return JS_PATH;
     }
 
     @Override
-    public String getJavaScriptObjectName() {
+    public String getJsObjectName() {
         return JS_OBJECT;
     }
 
     @Override
-    protected void initializeOptions() throws JSONException {
+    protected void initializeComponent() throws JSONException {
         getBelongsToFieldDefinition();
         parseOptions();
-        addOptions();
 
         if (correspondingView != null && correspondingComponent == null) {
             throw new IllegalStateException("Missing correspondingComponent for grid");
@@ -95,35 +100,60 @@ public class GridComponentPattern extends AbstractComponentPattern {
         }
     }
 
-    private void addOptions() throws JSONException {
-        addStaticJavaScriptOption("paginable", paginable);
-        addStaticJavaScriptOption("deletable", deletable);
-        addStaticJavaScriptOption("creatable", creatable);
-        addStaticJavaScriptOption("height", height);
-        addStaticJavaScriptOption("width", width);
-        addStaticJavaScriptOption("fullscreen", width == 0 || height == 0); // TODO masz
-        addStaticJavaScriptOption("lookup", lookup);
-        addStaticJavaScriptOption("correspondingView", correspondingView);
-        addStaticJavaScriptOption("correspondingComponent", correspondingComponent);
-        addStaticJavaScriptOption("prioritizable", getDataDefinition().isPrioritizable());
-        addStaticJavaScriptOption("searchableColumns", new JSONArray(searchableColumns));
-        addStaticJavaScriptOption("orderableColumns", new JSONArray(orderableColumns));
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("paginable", paginable);
+        json.put("deletable", deletable);
+        json.put("creatable", creatable);
+        json.put("height", height);
+        json.put("width", width);
+        json.put("fullscreen", width == 0 || height == 0); // TODO masz
+        json.put("lookup", lookup);
+        json.put("correspondingView", correspondingView);
+        json.put("correspondingComponent", correspondingComponent);
+        json.put("prioritizable", getDataDefinition().isPrioritizable());
+        json.put("searchableColumns", new JSONArray(searchableColumns));
+        json.put("orderableColumns", new JSONArray(orderableColumns));
 
         if (belongsToFieldDefinition != null) {
-            addStaticJavaScriptOption("belongsToFieldName", belongsToFieldDefinition.getName());
-        } else {
-            addStaticJavaScriptOption("belongsToFieldName", null);
+            json.put("belongsToFieldName", belongsToFieldDefinition.getName());
         }
 
-        addColumnOptions();
+        json.put("columns", getColumnsForJsOptions(locale));
+
+        JSONObject translations = new JSONObject();
+
+        addTranslation(translations, "addFilterButton", locale);
+        addTranslation(translations, "removeFilterButton", locale);
+        addTranslation(translations, "newButton", locale);
+        addTranslation(translations, "deleteButton", locale);
+        addTranslation(translations, "upButton", locale);
+        addTranslation(translations, "downButton", locale);
+        addTranslation(translations, "perPage", locale);
+        addTranslation(translations, "totalPages", locale);
+        addTranslation(translations, "noRowSelectedError", locale);
+        addTranslation(translations, "confirmDeleteMessage", locale);
+        addTranslation(translations, "wrongSearchCharacterError", locale);
+        addTranslation(translations, "header", locale);
+
+        json.put("translations", translations);
+
+        return json;
     }
 
-    private void addColumnOptions() throws JSONException {
-        JSONObject jsonColumns = new JSONObject();
+    private void addTranslation(final JSONObject translation, final String key, final Locale locale) throws JSONException {
+        List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.grid." + key });
+        translation.put(key, getTranslationService().translate(codes, locale));
+    }
+
+    private JSONArray getColumnsForJsOptions(final Locale locale) throws JSONException {
+        JSONArray jsonColumns = new JSONArray();
 
         for (GridComponentColumn column : columns.values()) {
             JSONObject jsonColumn = new JSONObject();
-            jsonColumn.put("name", column.getName()); // TODO masz i18n
+            jsonColumn.put("name", column.getName());
+            jsonColumn.put("label", getTranslationService().translate(getColumnTranslationCodes(column), locale));
             jsonColumn.put("link", column.isLink());
             jsonColumn.put("hidden", column.isHidden());
             jsonColumn.put("width", column.getWidth());
@@ -131,14 +161,31 @@ public class GridComponentPattern extends AbstractComponentPattern {
             if (column.getFilterValues() != null && !column.getFilterValues().isEmpty()) {
                 JSONObject jsonFilterValues = new JSONObject();
                 for (Map.Entry<String, String> filterValue : column.getFilterValues().entrySet()) {
-                    jsonFilterValues.put(filterValue.getKey(), filterValue.getValue());
+                    if (column.getFields().size() == 1) {
+                        String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
+                                column.getFields().get(0).getName())
+                                + ".value." + filterValue.getValue();
+                        jsonFilterValues.put(filterValue.getKey(), getTranslationService().translate(fieldCode, locale));
+                    } else {
+                        jsonFilterValues.put(filterValue.getKey(), filterValue.getValue());
+                    }
                 }
                 jsonColumn.put("filterValues", jsonFilterValues);
             }
-            jsonColumns.put(column.getName(), jsonColumn);
+            jsonColumns.put(jsonColumn);
         }
 
-        addStaticJavaScriptOption("columns", jsonColumns);
+        return jsonColumns;
+    }
+
+    private List<String> getColumnTranslationCodes(final GridComponentColumn column) {
+        if (column.getFields().size() == 1) {
+            String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
+                    column.getFields().get(0).getName());
+            return Arrays.asList(new String[] { getTranslationPath() + ".column." + column.getName(), fieldCode + ".label" });
+        } else {
+            return Arrays.asList(new String[] { getTranslationPath() + ".column." + column.getName() });
+        }
     }
 
     private void parseOptions() {
@@ -183,9 +230,9 @@ public class GridComponentPattern extends AbstractComponentPattern {
             }
         }
         column.setExpression(option.getAtrributeValue("expression"));
-        String width = option.getAtrributeValue("width");
-        if (width != null) {
-            column.setWidth(Integer.valueOf(width));
+        String columnWidth = option.getAtrributeValue("width");
+        if (columnWidth != null) {
+            column.setWidth(Integer.valueOf(columnWidth));
         }
         if (option.getAtrributeValue("link") != null) {
             column.setLink(Boolean.parseBoolean(option.getAtrributeValue("link")));

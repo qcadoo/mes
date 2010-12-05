@@ -1,23 +1,18 @@
 package com.qcadoo.mes.view;
 
-import org.json.JSONObject;
+import java.util.Locale;
+import java.util.Map;
 
 public interface ComponentPattern {
 
-    boolean initialize(ViewDefinition viewDefinition);
-
-    JSONObject getStaticJavaScriptOptions();
+    boolean initialize();
 
     ComponentState createComponentState();
 
+    Map<String, Object> prepareView(Locale locale);
+
     String getName();
 
-    String getPathName();
-
-    String getJspFilePath();
-
-    String getJavaScriptFilePath();
-
-    String getJavaScriptObjectName();
+    String getPath();
 
 }

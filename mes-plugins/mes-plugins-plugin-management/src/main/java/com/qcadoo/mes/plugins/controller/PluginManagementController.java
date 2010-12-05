@@ -52,10 +52,10 @@ public final class PluginManagementController {
         return getInfoMessageView(pluginManagementService.removePlugin(Long.parseLong(entityId)), locale);
     }
 
-    @RequestMapping(value = "restartPage", method = RequestMethod.GET)
+    @RequestMapping(value = "restart", method = RequestMethod.GET)
     public ModelAndView getRestartPagePageView(@RequestParam("message") final String message, final Locale locale) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("plugins/restartPage");
+        mav.setViewName("plugins/restart");
         mav.addObject("message", message);
         mav.addObject("messageHeader", translationService.translate("plugins.messages.success.header", locale));
         mav.addObject("restartMessage", translationService.translate("plugins.restartView.message", locale));
@@ -94,7 +94,7 @@ public final class PluginManagementController {
         return getInfoMessageView(pluginManagementService.updatePlugin(file), locale);
     }
 
-    @RequestMapping(value = "restartInfoView", method = RequestMethod.GET)
+    @RequestMapping(value = "restartInfo", method = RequestMethod.GET)
     public ModelAndView getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
         return getInfoMessageView(new PluginManagementOperationStatusImpl(false, message), locale);
     }
@@ -103,7 +103,7 @@ public final class PluginManagementController {
         String headerLabel = translationService.translate("plugins.downloadView.header", locale);
         String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
 
-        ModelAndView mav = crudController.prepareView("plugins", "pluginDownloadView", new HashMap<String, String>(), locale);
+        ModelAndView mav = crudController.prepareView("plugins", "pluginDownload", new HashMap<String, String>(), locale);
 
         mav.addObject("headerLabel", headerLabel);
         mav.addObject("buttonLabel", buttonLabel);
@@ -117,7 +117,7 @@ public final class PluginManagementController {
         if (operationStatus.isRestartRequired()) {
             return getRestartPagePageView(operationStatus.getMessage(), locale);
         }
-        ModelAndView mav = crudController.prepareView("plugins", "pluginInfoView", new HashMap<String, String>(), locale);
+        ModelAndView mav = crudController.prepareView("plugins", "pluginInfo", new HashMap<String, String>(), locale);
         String message = translationService.translate(operationStatus.getMessage(), locale);
         mav.addObject("pluginStatusMessage", message);
         if (operationStatus.isError()) {

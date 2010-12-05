@@ -1,8 +1,10 @@
 package com.qcadoo.mes.view.patterns;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
@@ -13,43 +15,55 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
 
     private final Map<String, ComponentPattern> children = new LinkedHashMap<String, ComponentPattern>();
 
-    public AbstractContainerPattern(final String name, final String fieldPath, final String sourceFieldPath,
-            final ComponentPattern parent) {
-        super(name, fieldPath, sourceFieldPath, parent);
+    public AbstractContainerPattern(final ComponentDefinition componentDefinition) {
+        super(componentDefinition);
     }
 
     @Override
-    public ComponentState createComponentState() {
+    public final ComponentState createComponentState() {
         ContainerState componentState = (ContainerState) super.createComponentState();
 
         for (ComponentPattern componentPattern : children.values()) {
-            ComponentState kid = componentPattern.createComponentState();
-            componentState.addChild(kid);
+            componentState.addChild(componentPattern.createComponentState());
         }
-        // TODO masz
+
         return componentState;
     }
 
     @Override
-    public Map<String, ComponentPattern> getChildren() {
+    public final Map<String, ComponentPattern> getChildren() {
         return children;
     }
 
+    public final void addChild(final ComponentPattern child) {
+        children.put(child.getName(), child);
+    }
+
     @Override
-    public ComponentPattern getChild(final String name) {
+    public final ComponentPattern getChild(final String name) {
         return children.get(name);
     }
 
     @Override
-    public void addChild(final ComponentPattern componentPattern) {
-        children.put(componentPattern.getName(), componentPattern);
+    public final Map<String, Object> prepareView(final Locale locale) {
+        Map<String, Object> model = super.prepareView(locale);
+        Map<String, Object> childrenModels = new LinkedHashMap<String, Object>();
+
+        for (ComponentPattern child : children.values()) {
+            childrenModels.put(child.getName(), child.prepareView(locale));
+        }
+
+        model.put("children", childrenModels);
+
+        return model;
     }
 
     @Override
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
+        // TODO masz?
         super.updateComponentStateListeners(viewDefinitionState);
-        for (ComponentPattern componentPattern : children.values()) {
-            ((AbstractComponentPattern) componentPattern).updateComponentStateListeners(viewDefinitionState);
+        for (ComponentPattern child : children.values()) {
+            ((AbstractComponentPattern) child).updateComponentStateListeners(viewDefinitionState);
         }
     }
 }

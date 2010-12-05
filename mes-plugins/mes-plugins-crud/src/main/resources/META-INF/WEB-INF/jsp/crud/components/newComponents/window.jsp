@@ -10,17 +10,17 @@
 
 	<div class="windowContainer">
 		<div class="windowContainerRibbon">
-			<div id="${component.pathName}_windowContainerRibbon">
+			<div id="${component['path']}_windowContainerRibbon">
 			</div>
 		</div>
 		
-		<div class="windowContainerContentBody" id="${component.pathName}_windowContainerContentBody">
-			<div id="${component.pathName}_windowContainerContentBodyWidthMarker" style=" z-index: 5000;"></div>
-			<div class="windowContent" id="${component.pathName}_windowContent">
-				<div class="windowComponents" id="${component.pathName}_windowComponents">
-					<c:forEach items="${component.children}" var="componentEntry">
+		<div class="windowContainerContentBody" id="${component['path']}_windowContainerContentBody">
+			<div id="${component['path']}_windowContainerContentBodyWidthMarker" style=" z-index: 5000;"></div>
+			<div class="windowContent" id="${component['path']}_windowContent">
+				<div class="windowComponents" id="${component['path']}_windowComponents">
+					<c:forEach items="${component['children']}" var="component">
 						<tiles:insertTemplate template="../newComponent.jsp">
-							<tiles:putAttribute name="component" value="${componentEntry.value}" />
+							<tiles:putAttribute name="component" value="${component.value}" />
 						</tiles:insertTemplate>
 					</c:forEach>
 				</div>

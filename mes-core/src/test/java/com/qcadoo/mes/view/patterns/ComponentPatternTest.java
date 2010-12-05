@@ -1,29 +1,41 @@
 package com.qcadoo.mes.view.patterns;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+
+import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.components.FormComponentPattern;
-import com.qcadoo.mes.view.components.FormComponentState;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
+import com.qcadoo.mes.view.components.WindowComponentPattern;
+import com.qcadoo.mes.view.components.form.FormComponentPattern;
+import com.qcadoo.mes.view.components.form.FormComponentState;
 
-public class ComponentPatternTest {
+public class ComponentPatternTest extends AbstractPatternTest {
 
     @Test
     public void shouldHaveValidInstance() throws Exception {
         // given
-        ComponentPattern pattern = new FormComponentPattern("testName", null, null, null);
+        TranslationService translationService = mock(TranslationService.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+        ComponentDefinition componentDefinition = getComponentDefinition("testName", null);
+        componentDefinition.setTranslationService(translationService);
+        componentDefinition.setViewDefinition(viewDefinition);
+        ComponentPattern pattern = new FormComponentPattern(componentDefinition);
 
         // when
         ComponentState state = pattern.createComponentState();
@@ -35,7 +47,7 @@ public class ComponentPatternTest {
     @Test
     public void shouldHaveName() throws Exception {
         // given
-        ComponentPattern pattern = new FormComponentPattern("testName", null, null, null);
+        ComponentPattern pattern = new FormComponentPattern(getComponentDefinition("testName", null));
 
         // when
         String name = pattern.getName();
@@ -47,7 +59,8 @@ public class ComponentPatternTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithoutName() throws Exception {
         // given
-        ComponentPattern pattern = new FormComponentPattern(null, null, null, null);
+        ComponentDefinition componentDefinition = new ComponentDefinition();
+        ComponentPattern pattern = new FormComponentPattern(componentDefinition);
 
         // when
         pattern.createComponentState();
@@ -56,16 +69,16 @@ public class ComponentPatternTest {
     @Test
     public void shouldReturnValidPath() throws Exception {
         // given
-        ComponentPattern root = new TextInputComponentPattern("rootName", null, null, null);
-        ComponentPattern child1 = new TextInputComponentPattern("child1", null, null, root);
-        ComponentPattern child2 = new TextInputComponentPattern("child2", null, null, root);
-        ComponentPattern child11 = new TextInputComponentPattern("child11", null, null, child1);
+        ContainerPattern root = new WindowComponentPattern(getComponentDefinition("rootName", null));
+        ContainerPattern child1 = new WindowComponentPattern(getComponentDefinition("child1", root, null));
+        ComponentPattern child2 = new TextInputComponentPattern(getComponentDefinition("child2", root, null));
+        ComponentPattern child11 = new TextInputComponentPattern(getComponentDefinition("child11", child1, null));
 
         // when
-        String rootPathName = root.getPathName();
-        String child1PathName = child1.getPathName();
-        String child2PathName = child2.getPathName();
-        String child11PathName = child11.getPathName();
+        String rootPathName = root.getPath();
+        String child1PathName = child1.getPath();
+        String child2PathName = child2.getPath();
+        String child11PathName = child11.getPath();
 
         // then
         Assert.assertEquals("rootName", rootPathName);
@@ -77,41 +90,47 @@ public class ComponentPatternTest {
     @Test
     public void shouldAddItselfToParentOnInitialize() throws Exception {
         // given
-        AbstractComponentPattern parent = Mockito.mock(AbstractComponentPattern.class);
-        ComponentPattern pattern = new TextInputComponentPattern("testName", "testField", null, parent);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("test", viewDefinition));
+
+        ComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("testName", "testField", null, parent,
+                viewDefinition));
 
         // when
-        pattern.initialize(null);
+        pattern.initialize();
 
         // then
-        Mockito.verify(parent).addFieldEntityIdChangeListener("testField", pattern);
+        assertEquals(pattern, parent.getFieldEntityIdChangeListeners().get("testField"));
     }
 
     @Test
     public void shouldHaveDefaultEnabledFlag() throws Exception {
         // given
-        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
-        pattern.setDefaultEnabled(true);
+        ComponentDefinition componentDefinition = getComponentDefinition("testName", null);
+        componentDefinition.setDefaultEnabled(false);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(componentDefinition);
 
         // then
-        assertTrue(pattern.isDefaultEnabled());
+        assertFalse(pattern.isDefaultEnabled());
     }
 
     @Test
     public void shouldHaveDefaultVisibleFlag() throws Exception {
         // given
-        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
-        pattern.setDefaultVisible(true);
+        ComponentDefinition componentDefinition = getComponentDefinition("testName", null);
+        componentDefinition.setDefaultVisible(false);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(componentDefinition);
 
         // then
-        assertTrue(pattern.isDefaultVisible());
+        assertFalse(pattern.isDefaultVisible());
     }
 
     @Test
     public void shouldHaveHasDescriptionFlag() throws Exception {
         // given
-        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
-        pattern.setHasDescription(true);
+        ComponentDefinition componentDefinition = getComponentDefinition("testName", null);
+        componentDefinition.setHasDescription(true);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(componentDefinition);
 
         // then
         assertTrue(pattern.isHasDescription());
@@ -120,8 +139,9 @@ public class ComponentPatternTest {
     @Test
     public void shouldHaveReferenceName() throws Exception {
         // given
-        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
-        pattern.setReference("uniqueReferenceName");
+        ComponentDefinition componentDefinition = getComponentDefinition("testName", null);
+        componentDefinition.setReference("uniqueReferenceName");
+        AbstractComponentPattern pattern = new TextInputComponentPattern(componentDefinition);
 
         // then
         assertEquals("uniqueReferenceName", pattern.getReference());
@@ -130,60 +150,62 @@ public class ComponentPatternTest {
     @Test
     public void shouldHaveListenersOnEmptyOptions() throws Exception {
         // given
-        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
+        TranslationService translationService = mock(TranslationService.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+        ComponentDefinition componentDefinition = getComponentDefinition("testName", null);
+        componentDefinition.setTranslationService(translationService);
+        componentDefinition.setViewDefinition(viewDefinition);
+        AbstractComponentPattern pattern = new TextInputComponentPattern(componentDefinition);
 
         // when
-        JSONObject options = pattern.getStaticJavaScriptOptions();
+        Map<String, Object> model = pattern.prepareView(Locale.ENGLISH);
 
         // then
-        assertEquals(1, options.length());
+        JSONObject options = (JSONObject) model.get("jsOptions");
+        assertEquals(2, options.length());
     }
 
     @Test
     public void shouldHaveOptionsWhenAdded() throws Exception {
         // given
-        AbstractComponentPattern pattern = new TextInputComponentPattern("testName", null, null, null);
-        pattern.addStaticJavaScriptOption("test1", "testVal");
-        pattern.addStaticJavaScriptOption("test2", 3);
-        JSONObject obj = new JSONObject();
-        pattern.addStaticJavaScriptOption("test3", obj);
+        AbstractComponentPattern pattern = new WindowComponentPattern(getComponentDefinition("testName", null));
 
         // when
-        JSONObject options = pattern.getStaticJavaScriptOptions();
+        Map<String, Object> model = pattern.prepareView(Locale.ENGLISH);
 
         // then
-        assertEquals("testVal", options.get("test1"));
-        assertEquals(3, options.get("test2"));
-        assertEquals(obj, options.get("test3"));
+        JSONObject options = (JSONObject) model.get("jsOptions");
+        assertTrue(options.getBoolean("header"));
+        assertFalse(options.getBoolean("fixedHeight"));
     }
 
     @Test
     public void shouldHaveListenersInOptions() throws Exception {
         // given
-        // given
-        ViewDefinition vd = mock(ViewDefinition.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
 
-        ComponentPatternMock pattern = new ComponentPatternMock("f1", null, null, null);
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("f1", viewDefinition));
 
-        ComponentPatternMock t1 = new ComponentPatternMock("t1", "t1", null, pattern);
-        ComponentPatternMock t2 = new ComponentPatternMock("t2", "t2", null, pattern);
-        ComponentPatternMock t3 = new ComponentPatternMock("t3", null, "t3", pattern);
+        ComponentPatternMock child1 = new ComponentPatternMock(getComponentDefinition("t1", "t1", null, parent, viewDefinition));
 
-        pattern.addChild(t1);
-        pattern.addChild(t2);
-        pattern.addChild(t3);
+        ComponentPatternMock child2 = new ComponentPatternMock(getComponentDefinition("t2", "t2", null, parent, viewDefinition));
 
-        pattern.initialize(vd);
-        t1.initialize(vd);
-        t2.initialize(vd);
-        t3.initialize(vd);
+        ComponentPatternMock child3 = new ComponentPatternMock(getComponentDefinition("t3", null, "t3", parent, viewDefinition));
+
+        parent.addChild(child1);
+        parent.addChild(child2);
+        parent.addChild(child3);
+
+        parent.initialize();
+        child1.initialize();
+        child2.initialize();
+        child3.initialize();
 
         // when
-        JSONObject options = pattern.getStaticJavaScriptOptions();
+        Map<String, Object> model = parent.prepareView(Locale.ENGLISH);
 
         // then
-        assertEquals(1, options.length());
-
+        JSONObject options = (JSONObject) model.get("jsOptions");
         JSONArray listenersArray = options.getJSONArray("listeners");
         assertEquals(3, listenersArray.length());
         assertTrue(JsonArrayContain(listenersArray, "f1.t1"));

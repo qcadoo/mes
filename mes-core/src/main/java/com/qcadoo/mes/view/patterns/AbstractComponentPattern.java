@@ -1,11 +1,13 @@
 package com.qcadoo.mes.view.patterns;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.springframework.util.StringUtils.hasText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +21,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
@@ -44,9 +47,23 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private final ComponentPattern parent;
 
+    private final boolean defaultEnabled;
+
+    private final boolean defaultVisible;
+
+    private final boolean hasDescription;
+
+    private final String reference;
+
+    private final TranslationService translationService;
+
+    private final ViewDefinition viewDefinition;
+
     private final Map<String, ComponentPattern> fieldEntityIdChangeListeners = new HashMap<String, ComponentPattern>();
 
     private final Map<String, ComponentPattern> scopeEntityIdChangeListeners = new HashMap<String, ComponentPattern>();
+
+    private final List<ComponentOption> options = new ArrayList<ComponentOption>();
 
     private FieldDefinition fieldDefinition;
 
@@ -56,48 +73,90 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private boolean initialized;
 
-    private boolean defaultEnabled;
+    public AbstractComponentPattern(final ComponentDefinition componentDefinition) {
+        checkArgument(hasText(componentDefinition.getName()), "Component name must be specified");
+        this.name = componentDefinition.getName();
+        this.fieldPath = componentDefinition.getFieldPath();
+        this.scopeFieldPath = componentDefinition.getSourceFieldPath();
+        this.parent = componentDefinition.getParent();
+        this.reference = componentDefinition.getReference();
+        this.hasDescription = componentDefinition.isHasDescription();
+        this.defaultEnabled = componentDefinition.isDefaultEnabled();
+        this.defaultVisible = componentDefinition.isDefaultVisible();
+        this.translationService = componentDefinition.getTranslationService();
+        this.viewDefinition = componentDefinition.getViewDefinition();
+    }
 
-    private boolean defaultVisible;
+    protected abstract String getJspFilePath();
 
-    private boolean hasDescription;
+    protected abstract String getJsFilePath();
 
-    private String reference;
+    protected abstract String getJsObjectName();
 
-    private final List<ComponentOption> options = new ArrayList<ComponentOption>();
+    protected abstract ComponentState getComponentStateInstance();
 
-    private TranslationService translationService;
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        // reimplement me if you want
+        return new JSONObject();
+    }
 
-    private final JSONObject jsOptions = new JSONObject();
-
-    public AbstractComponentPattern(final String name, final String fieldPath, final String scopeFieldPath,
-            final ComponentPattern parent) {
-        checkArgument(hasText(name), "Name must be specified");
-        this.name = name;
-        this.fieldPath = fieldPath;
-        this.scopeFieldPath = scopeFieldPath;
-        this.parent = parent;
+    protected void initializeComponent() throws JSONException {
+        // implement me if you want
     }
 
     @Override
-    public String getName() {
+    public ComponentState createComponentState() {
+        AbstractComponentState state = (AbstractComponentState) getComponentStateInstance();
+        state.setDataDefinition(dataDefinition);
+        state.setName(name);
+        state.setEnabled(isDefaultEnabled());
+        state.setVisible(isDefaultVisible());
+        state.setTranslationService(translationService);
+        state.setTranslationPath(getTranslationPath());
+        return state;
+    }
+
+    @Override
+    public Map<String, Object> prepareView(final Locale locale) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("name", getName());
+        map.put("path", getPath());
+        map.put("jspFilePath", getJspFilePath());
+        map.put("jsFilePath", getJsFilePath());
+        map.put("jsObjectName", getJsObjectName());
+
+        try {
+            JSONObject jsOptions = getJsOptions(locale);
+            addListenersToJsOptions(jsOptions);
+            map.put("jsOptions", jsOptions);
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        return map;
+    }
+
+    @Override
+    public final String getName() {
         return name;
     }
 
     @Override
-    public String getPathName() {
+    public final String getPath() {
         if (parent == null) {
             return name;
         } else {
-            return parent.getPathName() + "." + name;
+            return parent.getPath() + "." + name;
         }
     }
 
     @Override
-    public boolean initialize(final ViewDefinition viewDefinition) {
+    public final boolean initialize() {
         if (initialized) {
             return true;
         }
+
+        viewDefinition.addJsFilePath(getJsFilePath());
 
         String[] field = null;
         String[] scopeField = null;
@@ -107,6 +166,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         if (fieldPath != null) {
             field = getComponentAndField(fieldPath);
             fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition.getComponentByPath(field[0]));
+            checkNotNull(fieldComponent, "Cannot find field component for " + getPath() + ": " + fieldPath);
             fieldComponent.addFieldEntityIdChangeListener(field[1], this);
         }
 
@@ -114,6 +174,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             scopeField = getComponentAndField(scopeFieldPath);
             scopeFieldComponent = (AbstractComponentPattern) (scopeField[0] == null ? parent : viewDefinition
                     .getComponentByPath(scopeField[0]));
+            checkNotNull(scopeFieldComponent, "Cannot find sourceField component for " + getPath() + ": " + scopeFieldPath);
             scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
         }
 
@@ -130,7 +191,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         getDataDefinitionFromFieldDefinition();
 
         try {
-            initializeOptions();
+            initializeComponent();
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -138,8 +199,103 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return true;
     }
 
-    protected void initializeOptions() throws JSONException {
-        // implement me if you want
+    public final void addFieldEntityIdChangeListener(final String field, final ComponentPattern listener) {
+        fieldEntityIdChangeListeners.put(field, listener);
+    }
+
+    public final void addScopeEntityIdChangeListener(final String field, final ComponentPattern listener) {
+        scopeEntityIdChangeListeners.put(field, listener);
+    }
+
+    public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
+        // TODO masz?
+        if (fieldEntityIdChangeListeners.size() > 0) {
+            AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
+                    .getComponentByPath(getPath());
+            for (Map.Entry<String, ComponentPattern> listenerPattern : fieldEntityIdChangeListeners.entrySet()) {
+                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPath());
+                thisComponentState.addFieldEntityIdChangeListener(listenerPattern.getKey(),
+                        (FieldEntityIdChangeListener) listenerState);
+            }
+        }
+        if (scopeEntityIdChangeListeners.size() > 0) {
+            AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
+                    .getComponentByPath(getPath());
+            for (Map.Entry<String, ComponentPattern> listenerPattern : scopeEntityIdChangeListeners.entrySet()) {
+                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPath());
+                thisComponentState.addScopeEntityIdChangeListener(listenerPattern.getKey(),
+                        (ScopeEntityIdChangeListener) listenerState);
+            }
+        }
+    }
+
+    protected final Map<String, ComponentPattern> getFieldEntityIdChangeListeners() {
+        return fieldEntityIdChangeListeners;
+    }
+
+    protected final Map<String, ComponentPattern> getScopeEntityIdChangeListeners() {
+        return scopeEntityIdChangeListeners;
+    }
+
+    protected final boolean isDefaultEnabled() {
+        return defaultEnabled;
+    }
+
+    protected final boolean isDefaultVisible() {
+        return defaultVisible;
+    }
+
+    protected final boolean isHasDescription() {
+        return hasDescription;
+    }
+
+    public final void addOption(final ComponentOption option) {
+        options.add(option);
+    }
+
+    protected final List<ComponentOption> getOptions() {
+        return options;
+    }
+
+    protected final String getReference() {
+        return reference;
+    }
+
+    protected final FieldDefinition getFieldDefinition() {
+        return fieldDefinition;
+    }
+
+    protected final FieldDefinition getScopeFieldDefinition() {
+        return scopeFieldDefinition;
+    }
+
+    protected final DataDefinition getDataDefinition() {
+        return dataDefinition;
+    }
+
+    protected final TranslationService getTranslationService() {
+        return translationService;
+    }
+
+    protected final ViewDefinition getViewDefinition() {
+        return viewDefinition;
+    }
+
+    protected final String getTranslationPath() {
+        return getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
+    }
+
+    private void addListenersToJsOptions(final JSONObject jsOptions) throws JSONException {
+        JSONArray listeners = new JSONArray();
+        if (fieldEntityIdChangeListeners.size() > 0 || scopeEntityIdChangeListeners.size() > 0) {
+            for (ComponentPattern listener : fieldEntityIdChangeListeners.values()) {
+                listeners.put(listener.getPath());
+            }
+            for (ComponentPattern listener : scopeEntityIdChangeListeners.values()) {
+                listeners.put(listener.getPath());
+            }
+        }
+        jsOptions.put("listeners", listeners);
     }
 
     private boolean isComponentInitialized(final AbstractComponentPattern fieldComponent) {
@@ -199,136 +355,4 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         }
     }
 
-    public void addFieldEntityIdChangeListener(final String field, final ComponentPattern listener) {
-        fieldEntityIdChangeListeners.put(field, listener);
-    }
-
-    public void addScopeEntityIdChangeListener(final String field, final ComponentPattern listener) {
-        scopeEntityIdChangeListeners.put(field, listener);
-    }
-
-    protected Map<String, ComponentPattern> getFieldEntityIdChangeListeners() {
-        return fieldEntityIdChangeListeners;
-    }
-
-    protected Map<String, ComponentPattern> getScopeEntityIdChangeListeners() {
-        return scopeEntityIdChangeListeners;
-    }
-
-    public abstract ComponentState getComponentStateInstance();
-
-    @Override
-    public ComponentState createComponentState() {
-        AbstractComponentState state = (AbstractComponentState) getComponentStateInstance();
-        state.setDataDefinition(dataDefinition);
-        state.setName(name);
-        state.setEnabled(isDefaultEnabled());
-        state.setVisible(isDefaultVisible());
-        state.setTranslationService(translationService);
-        return state;
-    }
-
-    public void setTranslationService(final TranslationService translationService) {
-        this.translationService = translationService;
-    }
-
-    public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
-        if (fieldEntityIdChangeListeners.size() > 0) {
-            AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
-                    .getComponentByPath(getPathName());
-            for (Map.Entry<String, ComponentPattern> listenerPattern : fieldEntityIdChangeListeners.entrySet()) {
-                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPathName());
-                thisComponentState.addFieldEntityIdChangeListener(listenerPattern.getKey(),
-                        (FieldEntityIdChangeListener) listenerState);
-            }
-        }
-        if (scopeEntityIdChangeListeners.size() > 0) {
-            AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
-                    .getComponentByPath(getPathName());
-            for (Map.Entry<String, ComponentPattern> listenerPattern : scopeEntityIdChangeListeners.entrySet()) {
-                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPathName());
-                thisComponentState.addScopeEntityIdChangeListener(listenerPattern.getKey(),
-                        (ScopeEntityIdChangeListener) listenerState);
-            }
-        }
-    }
-
-    public void setDefaultEnabled(final boolean defaultEnabled) {
-        this.defaultEnabled = defaultEnabled;
-    }
-
-    public boolean isDefaultEnabled() {
-        return defaultEnabled;
-    }
-
-    public void setDefaultVisible(final boolean defaultVisible) {
-        this.defaultVisible = defaultVisible;
-    }
-
-    public boolean isDefaultVisible() {
-        return defaultVisible;
-    }
-
-    public void setHasDescription(final boolean hasDescription) {
-        this.hasDescription = hasDescription;
-    }
-
-    public boolean isHasDescription() {
-        return hasDescription;
-    }
-
-    public void addOption(final ComponentOption option) {
-        options.add(option);
-    }
-
-    protected List<ComponentOption> getOptions() {
-        return options;
-    }
-
-    public void setReference(final String reference) {
-        this.reference = reference;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    protected FieldDefinition getFieldDefinition() {
-        return fieldDefinition;
-    }
-
-    protected FieldDefinition getScopeFieldDefinition() {
-        return scopeFieldDefinition;
-    }
-
-    protected DataDefinition getDataDefinition() {
-        return dataDefinition;
-    }
-
-    protected final void addStaticJavaScriptOption(final String optionName, final Object optionValue) {
-        try {
-            jsOptions.put(optionName, optionValue);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public final JSONObject getStaticJavaScriptOptions() {
-        try {
-            JSONArray listenersArray = new JSONArray();
-            if (fieldEntityIdChangeListeners.size() > 0 || scopeEntityIdChangeListeners.size() > 0) {
-                for (ComponentPattern listener : fieldEntityIdChangeListeners.values()) {
-                    listenersArray.put(listener.getPathName());
-                }
-                for (ComponentPattern listener : scopeEntityIdChangeListeners.values()) {
-                    listenersArray.put(listener.getPathName());
-                }
-            }
-            jsOptions.put("listeners", listenersArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsOptions;
-    }
 }

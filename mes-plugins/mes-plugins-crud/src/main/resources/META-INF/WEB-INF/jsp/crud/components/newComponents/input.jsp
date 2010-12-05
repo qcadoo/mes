@@ -12,6 +12,6 @@
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="textInput" />
 	<tiles:putAttribute name="componentBody">
-		<input type="text" id="${component.pathName}_input" />
+		<input type="text" id="${component['path']}_input" />
 	</tiles:putAttribute>
 </tiles:insertTemplate>

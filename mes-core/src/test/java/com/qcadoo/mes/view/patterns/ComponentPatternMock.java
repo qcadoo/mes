@@ -1,31 +1,26 @@
 package com.qcadoo.mes.view.patterns;
 
-import java.util.Map;
-
-import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.states.components.ComponentStateMock;
+import com.qcadoo.mes.view.states.ComponentStateMock;
 
-public class ComponentPatternMock extends AbstractContainerPattern {
+public class ComponentPatternMock extends AbstractComponentPattern {
 
-    public ComponentPatternMock(final String name, final String fieldPath, final String sourceFieldPath,
-            final AbstractComponentPattern parent) {
-        super(name, fieldPath, sourceFieldPath, parent);
+    private final ComponentState componentState;
+
+    public ComponentPatternMock(final ComponentDefinition componentDefinition) {
+        super(componentDefinition);
+        componentState = new ComponentStateMock();
+    }
+
+    public ComponentPatternMock(final ComponentDefinition componentDefinition, final ComponentState componentState) {
+        super(componentDefinition);
+        this.componentState = componentState;
     }
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new ComponentStateMock(null);
-    }
-
-    @Override
-    public Map<String, ComponentPattern> getFieldEntityIdChangeListeners() {
-        return super.getFieldEntityIdChangeListeners();
-    }
-
-    @Override
-    public Map<String, ComponentPattern> getScopeEntityIdChangeListeners() {
-        return super.getScopeEntityIdChangeListeners();
+        return componentState;
     }
 
     @Override
@@ -34,12 +29,12 @@ public class ComponentPatternMock extends AbstractContainerPattern {
     }
 
     @Override
-    public String getJavaScriptFilePath() {
+    public String getJsFilePath() {
         return JS_PATH;
     }
 
     @Override
-    public String getJavaScriptObjectName() {
+    public String getJsObjectName() {
         return JS_OBJECT;
     }
 }
