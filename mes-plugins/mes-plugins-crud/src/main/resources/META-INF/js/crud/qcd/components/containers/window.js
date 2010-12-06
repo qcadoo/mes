@@ -41,10 +41,10 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	this.getComponentValue = function() {
 		return {};
 	}
-//	this.setComponentValue = function(value) {
-//	}
-//	this.setComponentState = function(state) {
-//	}
+	this.setComponentValue = function(value) {
+	}
+	this.setComponentState = function(state) {
+	}
 	
 	this.setMessages = function(messages) {
 		QCD.info(messages);

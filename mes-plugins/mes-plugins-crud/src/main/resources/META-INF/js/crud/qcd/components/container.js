@@ -44,18 +44,18 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 			components[i].setValue(componentValue);
 		}
 	}
-//	
-//	this.setComponentsState = function(state) {
+	
+	this.setComponentsState = function(state) {
 //		if (this.setComponentState) {
 //			this.setComponentState(state.value);
 //		} else {
 //			QCD.error(this.elementPath+".setComponentState() no implemented");
 //		}
-//		for (var i in state.components) {
-//			var componentState = state.components[i];
-//			components[i].setState(componentState);
-//		}
-//	}
+		for (var i in state.components) {
+			var componentState = state.components[i];
+			components[i].setState(componentState);
+		}
+	}
 //	
 //	this.getComponent = function(componentName) {
 //		if (! componentName || $.trim(componentName) == "") {

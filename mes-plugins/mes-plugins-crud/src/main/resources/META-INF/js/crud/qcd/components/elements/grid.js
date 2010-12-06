@@ -204,20 +204,19 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			grid.setGridHeight(currentGridHeight);
 		}
-		if (state.filters && state.filters.length > 0) {
+		if (state.filters) {
 			currentState.filters = state.filters;
 			for (var filterIndex in currentState.filters) {
-				var filter = currentState.filters[filterIndex];
-				$("#gs_"+filter.column).val(filter.value);
+				$("#gs_"+filterIndex).val(currentState.filters[filterIndex]);
 			}
 		}
-		if (state.sort) {
-			currentState.sort = state.sort;
-			$("#"+gridParameters.modifiedPath+"_grid_"+currentState.sort.column).addClass("sortColumn");
-			if (currentState.sort.order == "asc") {
-				$("#"+gridParameters.modifiedPath+"_sortArrow_"+currentState.sort.column).addClass("upArrow");
+		if (state.order) {
+			currentState.order = state.order;
+			$("#"+gridParameters.modifiedPath+"_grid_"+currentState.order.column).addClass("sortColumn");
+			if (currentState.order.direction == "asc") {
+				$("#"+elementSearchName+"_sortArrow_"+currentState.order.column).addClass("upArrow");
 			} else {
-				$("#"+gridParameters.modifiedPath+"_sortArrow_"+currentState.sort.column).addClass("downArrow");
+				$("#"+elementSearchName+"_sortArrow_"+currentState.order.column).addClass("downArrow");
 			}
 		}
 	}
