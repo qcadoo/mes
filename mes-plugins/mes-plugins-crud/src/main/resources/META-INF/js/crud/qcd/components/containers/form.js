@@ -44,12 +44,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentState = function(state) {
-		if(state.headerEntityIdentifier) {
-			mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
-		} else {
-			mainController.setWindowHeader(state.header);
-		}
-		formValue = state;
+//		if(state.headerEntityIdentifier) {
+//			mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
+//		} else {
+//			mainController.setWindowHeader(state.header);
+//		}
+		formValue = state.entityId;
 		unblock();
 	}
 	

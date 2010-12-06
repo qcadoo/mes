@@ -77,11 +77,12 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 //		this.setCurrentValue(value);
 	}
 //
-//	this.setComponentState = function(state) {
+	this.setComponentState = function(state) {
+		this.input.val(state.value)
 //		this.setComponentData(state);
 //		setComponentRequired(state.required);
 //		this.setCurrentValue(state);
-//	}
+	}
 //	
 //	this.setCurrentValue = function(data) {
 //		currentValue = data.value ? data.value : "";
