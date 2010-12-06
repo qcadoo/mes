@@ -25,7 +25,7 @@ public final class MessageHolder {
         for (Pair<String, MessageType> message : messages) {
             JSONObject jsonMessage = new JSONObject();
             jsonMessage.put(ComponentState.JSON_MESSAGE_BODY, message.getKey());
-            jsonMessage.put(ComponentState.JSON_MESSAGE_TYPE, message.getValue().ordinal());
+            jsonMessage.put(ComponentState.JSON_MESSAGE_TYPE, message.getValue());
             json.put(jsonMessage);
         }
 

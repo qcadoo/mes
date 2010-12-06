@@ -16,6 +16,11 @@ QCD.MessagesController = function() {
 	}
 	
 	this.addMessage = function(type, message) { // type = [info|error|success]
+		
+		if (type == "failure") {
+			type = "error";
+		}
+		
 		message = QCD.MessagesController.split(message, type);
 		
 		$.pnotify({

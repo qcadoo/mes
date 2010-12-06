@@ -512,16 +512,23 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.performNew = function(actionsPerformer) {
-		var context = null;
-		if (belongsToFieldName && currentState.belongsToEntityId) {
-			var contextArray = new Array();
-			contextArray.push({
-				fieldName: belongsToFieldName,
-				entityId: currentState.belongsToEntityId
-			});
-			context = "context="+JSON.stringify(contextArray);
-		}
-		redirectToCorrespondingPage(context);
+//		var context = null;
+//		if (belongsToFieldName && currentState.belongsToEntityId) {
+//			var contextArray = new Array();
+//			contextArray.push({
+//				fieldName: belongsToFieldName,
+//				entityId: currentState.belongsToEntityId
+//			});
+//			context = "context="+JSON.stringify(contextArray);
+//		}
+		
+		var params = new Object();
+		//params[gridParameters.correspondingComponent+"."+"product"] = currentState.belongsToEntityId;
+		//alert(belongsToFieldName);
+		params[gridParameters.correspondingComponent+"."+belongsToFieldName] = currentState.belongsToEntityId;
+		redirectToCorrespondingPage(params);	
+		
+		//redirectToCorrespondingPage(context);
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
@@ -538,9 +545,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 		} else {
 			mainController.showMessage("error", translations.noRowSelectedError);
-		}
-		
+		}	
 	}
+	var performDelete = this.performDelete;
 	
 
 	this.performLookupSelect = function(actionsPerformer, entityId) {

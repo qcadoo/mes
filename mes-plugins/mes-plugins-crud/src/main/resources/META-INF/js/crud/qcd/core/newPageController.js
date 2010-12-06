@@ -202,7 +202,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //		}
 //	}
 	
-	this.showMessage = function(type, content) {
+	this.showMessage = function(message) {
+		var content = message.content;
+		var type = message.type.toLowerCase();
 		if (window.parent && window.parent.addMessage) {
 			window.parent.addMessage(type, content);
 		} else {
