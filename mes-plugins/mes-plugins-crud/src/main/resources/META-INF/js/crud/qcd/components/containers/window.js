@@ -14,7 +14,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	
-	QCD.info(mainController);
+	//QCD.info(mainController);
 	//var element = _element;
 	//var elementName = element.attr('id');
 	
@@ -25,7 +25,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	function constructor(_this) {
 		
 		var childrenElement = $("#"+_this.elementSearchName+"_windowComponents");
-		QCD.info(childrenElement);
+		//QCD.info(childrenElement);
 		_this.constructChildren(childrenElement.children());
 		
 		//mainController.setWindowHeaderComponent(_this);
@@ -47,7 +47,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	
 	this.setMessages = function(messages) {
-		QCD.info(messages);
+		//QCD.info(messages);
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -111,7 +111,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	this.performBack = function(actionsPerformer) {
 		mainController.goBack();
-		actionsPerformer.performNext();
+		if (actionsPerformer) {
+			actionsPerformer.performNext();
+		}
 	}
 	
 //	this.performClose = function(actionsPerformer) {

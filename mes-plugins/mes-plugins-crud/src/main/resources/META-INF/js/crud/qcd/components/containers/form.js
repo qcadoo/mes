@@ -72,6 +72,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performDelete = function(actionsPerformer) {
+		block();
+		mainController.callRibbonEvent(actionsPerformer, "remove", elementPath, function() {
+			unblock();
+		});
 //		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
 //		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 //			block();

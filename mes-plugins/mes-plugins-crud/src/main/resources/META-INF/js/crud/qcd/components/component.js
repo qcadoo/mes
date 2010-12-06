@@ -68,15 +68,9 @@ QCD.components.Component = function(_element, _mainController) {
 			//this.setComponentLoading(false);
 		//}
 		this.setMessages(value.messages);
-//		this.setMessages({
-//			error: value.errorMessages,
-//			info: value.infoMessages,
-//			success: value.successMessages
-//		});
 		if (value.components) {
 			this.setComponentsValue(value);
 		}
-		//updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
 	}
 	
 	this.addContext = function(contextField, contextValue) {
@@ -92,8 +86,6 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	this.setState = function(state) {
-		QCD.info(elementPath);
-		QCD.info(state);
 		this.setEnabled(state.enabled);
 		this.setVisible(state.visible);
 		if (this.setComponentState) {
@@ -120,20 +112,12 @@ QCD.components.Component = function(_element, _mainController) {
 //		}
 //	}
 	
-//	this.getComponent = function(componentName) {
-//		if (! componentName || $.trim(componentName) == "") {
-//			return this;
-//		} else {
-//			QCD.error("no component");
-//		}
-//	}
-	
 	this.updateSize = function(width, height) {
 	}
 
 	this.setMessages = function(messages) {
 		for ( var i in messages) {
-			QCD.info(messages[i]);
+			//QCD.info(messages[i]);
 			mainController.showMessage(messages[i]);
 		}
 	}
@@ -173,9 +157,9 @@ QCD.components.Component = function(_element, _mainController) {
 		return isVisible;
 	}
 
-//	this.isChanged = function() {
-//		return false;
-//	}
+	this.isChanged = function() {
+		return false;
+	}
 	
 	constructor(this);
 	

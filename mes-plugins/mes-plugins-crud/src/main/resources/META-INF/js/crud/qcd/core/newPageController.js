@@ -6,7 +6,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	var pluginIdentifier = _pluginIdentifier;
 	
 	var pageComponents;
-	//var rootEntityId = null;
 	
 	//var headerComponent = null;
 	
@@ -26,14 +25,12 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	this.init = function(entityId, serializationObject) {
-		
-		//var parameters = new Object();
-		//if (entityId && $.trim(entityId) != "") {
-			//rootEntityId = entityId;
-		//}
 		if (serializationObject) {
 			setComponentState(serializationObject);
 		}
+		
+		// TODO mina used in static pages (ex. error pages from plugin management) 
+		
 //		if (hasDataDefinition) {
 //			parameters.entityId = rootEntityId;
 //			parameters.data = getValueData();
@@ -45,12 +42,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //			});
 //		}
 		
-//		var initParameters = new Object();
-//		initParameters.event = {
-//			name: "initialize"
-//		}
-//		initParameters.components = getValueData();
-//		performEvent(initParameters);
 		this.callEvent("initialize");
 	}
 	
@@ -93,21 +84,12 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	function performEvent(parameters, completeFunction) {
-		//QCD.info(parameters);
 		var parametersJson = JSON.stringify(parameters);
-		//QCD.info(parametersJson);
 		QCDConnector.sendPost(parametersJson, function(response) {
-			//QCD.info(response);
 			setValueData(response);
-//			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-//				actionsPerformer.performNext();
-//			}
 			if (completeFunction) {
 				completeFunction();
 			}
-//			if(callback) {
-//				callback();
-//			}
 		}, function() {
 			if (completeFunction) {
 				completeFunction();
@@ -115,6 +97,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		});
 	}
 	
+	// TODO mina
 	
 //	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
 //		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
@@ -204,10 +187,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	function setComponentState(state) {
-//		QCD.debug(state);
-//		if (state.value) {
-//			rootEntityId = state.value;
-//		}
 		for (var i in state.components) {
 			var component = pageComponents[i];
 			component.setState(state.components[i]);
@@ -227,6 +206,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
+	// TODO mina add header
+	
 //	this.setWindowHeaderComponent = function(component) {
 //		headerComponent = component;
 //	}
@@ -238,36 +219,16 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	
 	function setValueData(data) {
 		QCD.debug(data);
-//		if (data.messages) {
-//			var messagesToShow = new Array();
-//			var isOvverideMode = false;
-//			for (var i in data.messages) {
-//				var message = data.messages[i];
-//				if (message.message.substring(0,9) == "override:") {
-//					message.message = message.message.substring(9);
-//					if (!isOvverideMode) {
-//						isOvverideMode= true;
-//						messagesToShow = new Array();
-//					}
-//					messagesToShow.push(message);	
-//				} else {
-//					if (!isOvverideMode) {
-//						messagesToShow.push(message);
-//					}
-//				}
-//			}
-//			for (var i in messagesToShow) {
-//				var message = messagesToShow[i];
-//				window.parent.addMessage(message.type, message.message);
-//			}
-//		}
+		if (data.messages) {
+			for (var i in data.messages) {
+				var message = data.messages[i];
+				window.parent.addMessage(message.type, message.content);
+			}
+		}
 		for (var i in data.components) {
 			var component = pageComponents[i];
 			component.setValue(data.components[i]);
 		}
-//		if (data.value) {
-//			rootEntityId = data.value;
-//		}
 	}
 	
 	this.getComponent = function(componentPath) {
@@ -287,55 +248,55 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	
 	
 	this.getTranslation = function(key) {
+		
+		// TODO mina translation
+		
 	//	return window.translationsMap[key] ? window.translationsMap[key] : key;
 		return key;
 	}
 	//var getTranslation = this.getTranslation;
 	
 	this.goToPage = function(url) {
-		//if(canClose()) {
+		if(canClose()) {
 			var serializationObject = {
-				//value: rootEntityId,
 				components: getValueData()
 			}
 			window.parent.goToPage(url, serializationObject);
-		//}
+		}
 	}
-//	var goToPage = this.goToPage;
-//	
+	
 	this.goBack = function() {
-//		if(canClose()) {
+		if(canClose()) {
 			window.parent.goBack();
-//		}
+		}
 	}
-//	this.canClose = canClose;
-//	
-//	function canClose() {
-//		changed = false;
-//		for (var i in pageComponents) {
-//			if(pageComponents[i].isChanged()) {
-//				changed = true;
-//			}
-//		}
-//		if(changed) {
-//			return window.confirm(getTranslation('commons.backWithChangesConfirmation'));
-//		} else {
-//			return true;
-//		}
-//	}
-//	
+	this.canClose = canClose;
+	
+	function canClose() {
+		changed = false;
+		for (var i in pageComponents) {
+			if(pageComponents[i].isChanged()) {
+				changed = true;
+			}
+		}
+		if(changed) {
+			return window.confirm(getTranslation('commons.backWithChangesConfirmation'));
+		} else {
+			return true;
+		}
+	}
+	
 //	this.closeWindow = function() {
 //		window.close();
 //	}
 //	
-//	this.onSessionExpired = function() {
-//		var serializationObject = {
-//			value: rootEntityId,
-//			components: getValueData()
-//		}
-//		window.parent.onSessionExpired(serializationObject);
-//	}
-//	
+	this.onSessionExpired = function() {
+		var serializationObject = {
+			components: getValueData()
+		}
+		window.parent.onSessionExpired(serializationObject);
+	}
+	
 	function updateSize() {
 		var width = $(document).width();
 		var height = $(document).height();
