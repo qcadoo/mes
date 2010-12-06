@@ -126,11 +126,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		element.unblock();
 	}
 	
-	this.setMessages = function(messages) {
-		for ( var i in messages.error) {
-			mainController.showMessage("error", messages.error[i]);
-		}
-	}
+	
 	
 	constructor(this);
 }

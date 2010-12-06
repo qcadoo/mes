@@ -63,6 +63,7 @@ QCD.components.Component = function(_element, _mainController) {
 		//} else {
 			//this.setComponentLoading(false);
 		//}
+		this.setMessages(value.messages);
 //		this.setMessages({
 //			error: value.errorMessages,
 //			info: value.infoMessages,
@@ -124,9 +125,13 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.updateSize = function(width, height) {
 	}
-//	
-//	this.setMessages = function(messages) {
-//	}
+
+	this.setMessages = function(messages) {
+		for ( var i in messages) {
+			QCD.info(messages[i]);
+			mainController.showMessage(messages[i]);
+		}
+	}
 //	
 //	this.getComponentsValue = function() {
 //		return null;

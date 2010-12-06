@@ -23,12 +23,12 @@ public interface ComponentState {
 
     String JSON_MESSAGES = "messages";
 
-    String JSON_MESSAGE_BODY = "message";
+    String JSON_MESSAGE_BODY = "content";
 
     String JSON_MESSAGE_TYPE = "type";
 
     enum MessageType {
-        FAILURE, SUCCESS
+        FAILURE, SUCCESS, INFO
     }
 
     String getName();
