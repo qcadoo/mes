@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -25,6 +26,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
+import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.states.AbstractComponentState;
@@ -34,6 +36,8 @@ import com.qcadoo.mes.view.states.AbstractStateTest;
 public class FormComponentStateTest extends AbstractStateTest {
 
     private Entity entity;
+
+    private ViewDefinitionState viewDefinitionState;
 
     private FieldComponentState name;
 
@@ -50,13 +54,16 @@ public class FormComponentStateTest extends AbstractStateTest {
         entity = mock(Entity.class);
         given(entity.getField("name")).willReturn("text");
 
+        viewDefinitionState = mock(ViewDefinitionState.class);
+
         translationService = mock(TranslationService.class);
 
         fieldDefinition = mock(FieldDefinition.class);
         given(fieldDefinition.getType()).willReturn(new StringType());
         given(fieldDefinition.getName()).willReturn("name");
 
-        dataDefinition = mock(DataDefinition.class);
+        dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(dataDefinition.get(12L)).willReturn(null);
         given(dataDefinition.get(13L)).willReturn(entity);
         given(dataDefinition.getPluginIdentifier()).willReturn("plugin");
         given(dataDefinition.getName()).willReturn("name");
@@ -132,7 +139,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(12L);
 
         // when
-        form.performEvent("initialize", new String[0]);
+        form.performEvent(viewDefinitionState, "initialize", new String[0]);
 
         // then
         assertNull(form.getFieldValue());
@@ -144,7 +151,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(13L);
 
         // when
-        form.performEvent("reset", new String[0]);
+        form.performEvent(viewDefinitionState, "reset", new String[0]);
 
         // then
         assertEquals("text", name.getFieldValue());
@@ -156,7 +163,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(13L);
 
         // when
-        form.performEvent("clear", new String[0]);
+        form.performEvent(viewDefinitionState, "clear", new String[0]);
 
         // then
         assertNull(name.getFieldValue());
@@ -169,7 +176,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(13L);
 
         // when
-        form.performEvent("delete", new String[0]);
+        form.performEvent(viewDefinitionState, "delete", new String[0]);
 
         // then
         assertNull(name.getFieldValue());
@@ -188,7 +195,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(null);
 
         // when
-        form.performEvent("save", new String[0]);
+        form.performEvent(viewDefinitionState, "save", new String[0]);
 
         // then
         verify(dataDefinition).save(eq(entity));
@@ -203,6 +210,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         Entity entity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
         Entity savedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
+        given(dataDefinition.getFields().keySet()).willReturn(Collections.singleton("name"));
         name.setFieldValue("text");
 
         JSONObject json = new JSONObject();
@@ -218,7 +226,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.initialize(json, Locale.ENGLISH);
 
         // when
-        form.performEvent("save", new String[0]);
+        form.performEvent(viewDefinitionState, "save", new String[0]);
 
         // then
         verify(dataDefinition).save(eq(entity));
@@ -243,7 +251,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(null);
 
         // when
-        form.performEvent("save", new String[0]);
+        form.performEvent(viewDefinitionState, "save", new String[0]);
 
         // then
         verify(dataDefinition).save(eq(entity));

@@ -38,7 +38,9 @@
 				<component type="form" name="beanAForm" field="beanA">
 					<component type="input" name="name" field="name" />
 				</component>
-				<option type="header" value="false" />
+				<option type="header" value="false" />	
+				<listener event="save" bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="saveForm" />
+				<listener event="generate" bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="generate" />
 			</component>
 			<component type="textarea" name="name" field="#{mainWindow.beanBForm}.name" reference="referenceToTextarea" />
 			<component type="grid" name="beansBGrig"

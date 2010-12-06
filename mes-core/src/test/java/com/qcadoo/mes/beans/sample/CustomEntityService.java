@@ -7,8 +7,12 @@
 
 package com.qcadoo.mes.beans.sample;
 
+import java.util.Locale;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ViewDefinitionState;
 
 public class CustomEntityService {
 
@@ -39,6 +43,18 @@ public class CustomEntityService {
             entity.addError(dataDefinition.getField("name"), "xxx");
             return false;
         }
+    }
+
+    public void onView(final ViewDefinitionState state, final Locale locale) {
+        // TODO Auto-generated method stub
+    }
+
+    public void saveForm(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        // TODO Auto-generated method stub
+    }
+
+    public void generate(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        // TODO Auto-generated method stub
     }
 
 }

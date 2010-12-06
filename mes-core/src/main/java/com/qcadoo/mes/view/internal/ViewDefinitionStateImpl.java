@@ -25,7 +25,7 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     @Override
     public void performEvent(final String component, final String event, final String... args) {
         if (component != null) {
-            getComponentByPath(component).performEvent(event, args);
+            getComponentByPath(component).performEvent(this, event, args);
         } else {
             performEventOnChildren(getChildren().values(), event, args);
         }
@@ -47,7 +47,7 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
 
     private void performEventOnChildren(final Collection<ComponentState> components, final String event, final String... args) {
         for (ComponentState component : components) {
-            component.performEvent(event, args);
+            component.performEvent(this, event, args);
             if (component instanceof ContainerState) {
                 performEventOnChildren(((ContainerState) component).getChildren().values(), event, args);
             }

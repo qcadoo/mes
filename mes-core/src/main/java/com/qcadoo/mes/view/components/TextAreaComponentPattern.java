@@ -1,6 +1,12 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.qcadoo.mes.view.ComponentDefinition;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 
@@ -11,8 +17,28 @@ public final class TextAreaComponentPattern extends FieldComponentPattern {
 
     private static final String JSP_PATH = "newComponents/input.jsp";
 
+    private int rows = 4;
+
     public TextAreaComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
+    }
+
+    @Override
+    protected void initializeComponent() throws JSONException {
+        for (ComponentOption option : getOptions()) {
+            if ("rows".equals(option.getType())) {
+                rows = Integer.parseInt(option.getValue());
+            } else {
+                throw new IllegalStateException("Unknown option for textarea: " + option.getType());
+            }
+        }
+    }
+
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = super.getJsOptions(locale);
+        json.put("rows", rows);
+        return json;
     }
 
     @Override

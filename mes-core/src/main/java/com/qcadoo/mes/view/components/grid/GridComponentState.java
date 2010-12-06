@@ -66,7 +66,7 @@ public final class GridComponentState extends AbstractComponentState {
 
     private int maxResults = Integer.MAX_VALUE;
 
-    private boolean filtersEnabled = false;
+    private boolean filtersEnabled = true;
 
     private String orderColumn;
 
@@ -248,7 +248,10 @@ public final class GridComponentState extends AbstractComponentState {
                     criteria.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
                 }
 
-                addFilters(criteria);
+                if (filtersEnabled) {
+                    addFilters(criteria);
+                }
+
                 addOrder(criteria);
                 addPaging(criteria);
 

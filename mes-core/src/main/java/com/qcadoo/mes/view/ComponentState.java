@@ -35,7 +35,7 @@ public interface ComponentState {
 
     void initialize(JSONObject json, Locale locale) throws JSONException;
 
-    void performEvent(String event, String... args);
+    void performEvent(ViewDefinitionState viewDefinitionState, String event, String... args);
 
     JSONObject render() throws JSONException;
 
@@ -52,5 +52,7 @@ public interface ComponentState {
     boolean isEnabled();
 
     void setEnabled(boolean enable);
+
+    Locale getLocale();
 
 }

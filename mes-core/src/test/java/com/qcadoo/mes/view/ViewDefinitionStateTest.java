@@ -10,9 +10,6 @@ import java.util.Collections;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.view.ComponentState;
-import com.qcadoo.mes.view.ContainerState;
-import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.internal.ViewDefinitionStateImpl;
 import com.qcadoo.mes.view.states.AbstractStateTest;
 
@@ -89,7 +86,7 @@ public class ViewDefinitionStateTest extends AbstractStateTest {
         viewDefinitionState.performEvent("name1.name2", "event", new String[] { "arg1", "arg2" });
 
         // then
-        Mockito.verify(state2).performEvent("event", "arg1", "arg2");
+        Mockito.verify(state2).performEvent(viewDefinitionState, "event", "arg1", "arg2");
     }
 
     @Test
@@ -106,11 +103,11 @@ public class ViewDefinitionStateTest extends AbstractStateTest {
         given(state1.getChildren()).willReturn(Collections.singletonMap("name2", state2));
 
         // when
-        viewDefinitionState.performEvent(null, "event", new String[] { "arg1", "arg2" });
+        viewDefinitionState.performEvent((String) null, "event", new String[] { "arg1", "arg2" });
 
         // then
-        Mockito.verify(state1).performEvent("event", "arg1", "arg2");
-        Mockito.verify(state2).performEvent("event", "arg1", "arg2");
+        Mockito.verify(state1).performEvent(viewDefinitionState, "event", "arg1", "arg2");
+        Mockito.verify(state2).performEvent(viewDefinitionState, "event", "arg1", "arg2");
     }
 
 }

@@ -11,6 +11,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
+import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.internal.EntityIdChangeListenerHolder;
 import com.qcadoo.mes.view.internal.EventHandlerHolder;
 import com.qcadoo.mes.view.internal.MessageHolder;
@@ -101,13 +102,14 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
         }
     }
 
-    protected final Locale getLocale() {
+    @Override
+    public final Locale getLocale() {
         return locale;
     }
 
     protected abstract void initializeContent(final JSONObject json) throws JSONException;
 
-    public final void registemCustomEvent(final String name, final Object obj, final String method) {
+    public final void registerCustomEvent(final String name, final Object obj, final String method) {
         eventHandlerHolder.registemCustomEvent(name, obj, method);
     }
 
@@ -116,8 +118,8 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     }
 
     @Override
-    public final void performEvent(final String event, final String... args) {
-        eventHandlerHolder.performEvent(event, args);
+    public final void performEvent(final ViewDefinitionState viewDefinitionState, final String event, final String... args) {
+        eventHandlerHolder.performEvent(viewDefinitionState, event, args);
     }
 
     @Override

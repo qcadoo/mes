@@ -73,6 +73,7 @@
 			<xs:element name="ribbon" type="ribbonType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="component" type="componentType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="listener" type="listenerType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="type" type="identifierType" use="required" />
 		<xs:attribute name="name" type="identifierType" use="required" />
@@ -96,6 +97,14 @@
 		<xs:attribute name="link" type="xs:string" />
 		<xs:attribute name="hidden" type="xs:boolean" />
 		<xs:anyAttribute/>
+	</xs:complexType>
+	
+	<xs:complexType name="listenerType">
+		<xs:complexContent>
+			<xs:extension base="hookType">
+				<xs:attribute name="event" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="hookType">

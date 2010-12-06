@@ -55,6 +55,7 @@ import com.qcadoo.mes.view.components.WindowComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.grid.GridComponentPattern;
 import com.qcadoo.mes.view.components.lookup.LookupComponentPattern;
+import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
 
@@ -273,7 +274,6 @@ public class ViewDefinitionParserTest {
                 vd.getComponentByPath("mainWindow.beanBForm.beanAForm"), "beanA");
         checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"), vd.getComponentByPath("mainWindow.beanBForm.beanM"),
                 "beanM");
-
         //
         // checkComponent(root, WindowComponent.class, "mainWindow", "window", "beanB", null, null, null,
         // Sets.<String> newHashSet(), 3, ImmutableMap.<String, Object> of("backButton", false, "header", true));
@@ -415,6 +415,23 @@ public class ViewDefinitionParserTest {
     private ViewDefinition parseAndGetViewDefinition() {
         viewDefinitionParser.parse(xml);
         return viewDefinitionService.get("sample", "simpleView");
+    }
+
+    @Test
+    public void shouldSetListeners() throws Exception {
+        // given
+        ComponentPattern component = parseAndGetViewDefinition().getComponentByPath("mainWindow.beanBForm");
+
+        // then
+        List<ComponentCustomEvent> customEvents = (List<ComponentCustomEvent>) getField(component, "customEvents");
+
+        assertEquals("save", customEvents.get(0).getEvent());
+        assertThat(customEvents.get(0).getObject(), instanceOf(CustomEntityService.class));
+        assertEquals("saveForm", customEvents.get(0).getMethod());
+
+        assertEquals("generate", customEvents.get(1).getEvent());
+        assertThat(customEvents.get(1).getObject(), instanceOf(CustomEntityService.class));
+        assertEquals("generate", customEvents.get(1).getMethod());
     }
 
 }
