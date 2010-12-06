@@ -30,6 +30,24 @@
 <%
 String ctx = request.getContextPath();
 %>
+<script type="text/JavaScript">
+		function checkExtension(fileName, submitName, fileTypes) {
+			if (!fileName) return;
+
+			dots = fileName.split(".")
+			//get the part AFTER the LAST period.
+			fileType = dots[dots.length-1];
+	      
+		      if (fileTypes.indexOf(fileType) != -1) {
+		    	  submitName.disabled = false;
+		        return true;
+		      } else {
+		        alert("${firstCheckExtensionMessage}" + "\n\n" + (fileTypes.join(" .")) + "\n\n" + "${lastCheckExtensionMessage}");
+		        submitName.disabled = true;
+		        return false;
+		      }
+		}
+</script>
 <html>
     <head>
         <title>${headerLabel}</title>
@@ -40,10 +58,10 @@ String ctx = request.getContextPath();
 		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
 		        	<input type="hidden" name="entityId" value="${entityId}" />
 		        	<div>
-		            	<input type="file" name="file" size="50"/>
+		            	<input type="file" name="file" size="50" onChange="checkExtension(this.value, this.form.upload, ['jar']);"/>
 		            </div>
 		            <div style="margin-top: 10px; margin-left: 130px;">
-		            	<input type="submit" value="${buttonLabel}" style="width: 200px; cursor: pointer;"/>
+		            	<input type="submit" name="upload" value="${buttonLabel}" style="width: 200px; cursor: pointer;"/>
 		            </div>
 		        </form>
 	        </div>

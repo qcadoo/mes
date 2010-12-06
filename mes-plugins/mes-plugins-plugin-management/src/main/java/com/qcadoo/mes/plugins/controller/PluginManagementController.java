@@ -135,11 +135,17 @@ public final class PluginManagementController {
         }
 
         String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
+        String firstCheckExtensionMessage = translationService.translate("plugins.downloadView.checkExtensionMessage.first",
+                locale);
+        String lastCheckExtensionMessage = translationService
+                .translate("plugins.downloadView.checkExtensionMessage.last", locale);
 
         mav.addObject("headerLabel", headerLabel);
         mav.addObject("buttonLabel", buttonLabel);
         mav.addObject("downloadAction", downloadAction);
         mav.addObject("entityId", entityId);
+        mav.addObject("firstCheckExtensionMessage", firstCheckExtensionMessage);
+        mav.addObject("lastCheckExtensionMessage", lastCheckExtensionMessage);
 
         return mav;
     }
