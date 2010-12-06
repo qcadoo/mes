@@ -8,18 +8,28 @@ import org.json.JSONObject;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.view.ComponentDefinition;
-import com.qcadoo.mes.view.ViewComponent;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
-@ViewComponent("input")
 public abstract class FieldComponentPattern extends AbstractComponentPattern {
+
+    private boolean textRepresentationOnDisabled;
 
     public FieldComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
     }
 
     @Override
-    protected final JSONObject getJsOptions(final Locale locale) throws JSONException {
+    protected void initializeComponent() throws JSONException {
+        for (ComponentOption option : getOptions()) {
+            if ("textRepresentationOnDisabled".equals(option.getType())) {
+                textRepresentationOnDisabled = Boolean.parseBoolean(option.getValue());
+            }
+        }
+    }
+
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
         JSONObject json = new JSONObject();
         JSONObject translations = new JSONObject();
 
@@ -35,6 +45,7 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         }
 
         json.put("translations", translations);
+        json.put("textRepresentationOnDisabled", textRepresentationOnDisabled);
 
         return json;
     }

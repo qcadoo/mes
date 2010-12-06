@@ -40,6 +40,7 @@ import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
+import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.grid.GridComponentColumn;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.states.AbstractStateTest;
@@ -47,6 +48,8 @@ import com.qcadoo.mes.view.states.AbstractStateTest;
 public class GridComponentStateTest extends AbstractStateTest {
 
     private Entity entity;
+
+    private ViewDefinitionState viewDefinitionState;
 
     private GridComponentState grid;
 
@@ -87,6 +90,8 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         entity = mock(Entity.class);
         given(entity.getField("name")).willReturn("text");
+
+        viewDefinitionState = mock(ViewDefinitionState.class);
 
         productDataDefinition = mock(DataDefinition.class);
         substituteDataDefinition = mock(DataDefinition.class);
@@ -433,7 +438,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("select", new String[0]);
+        grid.performEvent(viewDefinitionState, "select", new String[0]);
 
         // then
         verify(listener).onFieldEntityIdChange(13L);
@@ -451,7 +456,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("refresh", new String[0]);
+        grid.performEvent(viewDefinitionState, "refresh", new String[0]);
     }
 
     @Test
@@ -466,7 +471,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("remove", new String[0]);
+        grid.performEvent(viewDefinitionState, "remove", new String[0]);
 
         // then
         verify(substituteDataDefinition).delete(13L);
@@ -493,7 +498,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("remove", new String[0]);
+        grid.performEvent(viewDefinitionState, "remove", new String[0]);
     }
 
     @Test
@@ -508,7 +513,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("moveUp", new String[0]);
+        grid.performEvent(viewDefinitionState, "moveUp", new String[0]);
 
         // then
         verify(substituteDataDefinition).move(13L, -1);
@@ -534,7 +539,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("moveUp", new String[0]);
+        grid.performEvent(viewDefinitionState, "moveUp", new String[0]);
     }
 
     @Test
@@ -549,7 +554,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("moveDown", new String[0]);
+        grid.performEvent(viewDefinitionState, "moveDown", new String[0]);
 
         // then
         verify(substituteDataDefinition).move(13L, 1);
@@ -575,7 +580,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.addFieldEntityIdChangeListener("field", listener);
 
         // when
-        grid.performEvent("moveDown", new String[0]);
+        grid.performEvent(viewDefinitionState, "moveDown", new String[0]);
     }
 
     @Test

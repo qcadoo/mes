@@ -29,6 +29,7 @@ import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
@@ -64,6 +65,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     private final Map<String, ComponentPattern> scopeEntityIdChangeListeners = new HashMap<String, ComponentPattern>();
 
     private final List<ComponentOption> options = new ArrayList<ComponentOption>();
+
+    private final List<ComponentCustomEvent> customEvents = new ArrayList<ComponentCustomEvent>();
 
     private FieldDefinition fieldDefinition;
 
@@ -113,6 +116,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         state.setVisible(isDefaultVisible());
         state.setTranslationService(translationService);
         state.setTranslationPath(getTranslationPath());
+        for (ComponentCustomEvent customEvent : customEvents) {
+            state.registerCustomEvent(customEvent.getEvent(), customEvent.getObject(), customEvent.getMethod());
+        }
         return state;
     }
 
@@ -353,6 +359,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         } else {
             return new String[] { null, path };
         }
+    }
+
+    public void addCustomEvent(final ComponentCustomEvent customEvent) {
+        customEvents.add(customEvent);
     }
 
 }

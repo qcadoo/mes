@@ -17,7 +17,7 @@ public final class PasswordComponentPattern extends FieldComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new FieldComponentState();
+        return new PasswordComponentState();
     }
 
     @Override

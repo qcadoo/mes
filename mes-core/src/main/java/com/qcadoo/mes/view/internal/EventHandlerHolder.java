@@ -2,10 +2,13 @@ package com.qcadoo.mes.view.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ViewDefinitionState;
 
 public final class EventHandlerHolder {
 
@@ -15,21 +18,30 @@ public final class EventHandlerHolder {
         this.owner = owner;
     }
 
-    private final Map<String, EventHandler> eventHandlers = new HashMap<String, EventHandler>();
+    private final Map<String, List<EventHandler>> eventHandlers = new HashMap<String, List<EventHandler>>();
 
-    public void registemCustomEvent(final String name, final Object obj, final String method) {
-        eventHandlers.put(name, new EventHandler(obj, method, true));
+    public void registemCustomEvent(final String event, final Object obj, final String method) {
+        registemEvent(event, new EventHandler(obj, method, true));
     }
 
-    public void registemEvent(final String name, final Object obj, final String method) {
-        eventHandlers.put(name, new EventHandler(obj, method, false));
+    public void registemEvent(final String event, final Object obj, final String method) {
+        registemEvent(event, new EventHandler(obj, method, false));
     }
 
-    public void performEvent(final String event, final String... args) {
+    private void registemEvent(final String event, final EventHandler eventHandler) {
+        if (!eventHandlers.containsKey(event)) {
+            eventHandlers.put(event, new ArrayList<EventHandler>());
+        }
+        eventHandlers.get(event).add(eventHandler);
+    }
+
+    public void performEvent(final ViewDefinitionState viewDefinitionState, final String event, final String... args) {
         if (!eventHandlers.containsKey(event)) {
             return; // TODO masz throw new IllegalStateException("Event with given name doesn't exist");
         } else {
-            eventHandlers.get(event).invokeEvent(args);
+            for (EventHandler eventHandler : eventHandlers.get(event)) {
+                eventHandler.invokeEvent(viewDefinitionState, args);
+            }
         }
     }
 
@@ -46,7 +58,8 @@ public final class EventHandlerHolder {
             this.obj = obj;
             try {
                 if (isCustom) {
-                    this.method = obj.getClass().getDeclaredMethod(method, ComponentState.class, String[].class);
+                    this.method = obj.getClass().getDeclaredMethod(method, ViewDefinitionState.class, ComponentState.class,
+                            String[].class);
                 } else {
                     this.method = obj.getClass().getDeclaredMethod(method, String[].class);
                 }
@@ -57,10 +70,10 @@ public final class EventHandlerHolder {
             }
         }
 
-        public void invokeEvent(final String[] args) {
+        public void invokeEvent(final ViewDefinitionState viewDefinitionState, final String[] args) {
             try {
                 if (isCustom) {
-                    method.invoke(obj, owner, args);
+                    method.invoke(obj, viewDefinitionState, owner, args);
                 } else {
                     method.invoke(obj, new Object[] { args });
                 }

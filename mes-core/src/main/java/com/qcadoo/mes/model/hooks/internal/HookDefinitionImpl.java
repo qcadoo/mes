@@ -79,4 +79,12 @@ public final class HookDefinitionImpl implements HookDefinition {
         call(new Object[] { viewDefinitionState, locale }, new Class[] { ViewDefinitionState.class, Locale.class });
     }
 
+    public String getMethod() {
+        return methodName;
+    }
+
+    public Object getObject() {
+        return bean;
+    }
+
 }

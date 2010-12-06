@@ -32,6 +32,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.model.hooks.internal.HookDefinitionImpl;
 import com.qcadoo.mes.model.hooks.internal.HookFactory;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
@@ -39,6 +40,7 @@ import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.WindowComponentPattern;
+import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
@@ -76,7 +78,6 @@ public final class ViewDefinitionParser {
 
         try {
             Resource[] resources = applicationContext.getResources("classpath*:view.xml");
-            // Resource[] resources = applicationContext.getResources("classpath*:testView.xml");
             for (Resource resource : resources) {
                 parse(resource.getInputStream());
             }
@@ -189,10 +190,18 @@ public final class ViewDefinitionParser {
                     ((AbstractContainerPattern) component).addChild(getComponentPattern(reader, (ContainerPattern) component,
                             viewDefinition));
                 }
+            } else if (isTagStarted(reader, "listener")) {
+                ((AbstractComponentPattern) component).addCustomEvent(getCustomEvent(reader));
             } else if (isTagEnded(reader, "component")) {
                 break;
             }
         }
+    }
+
+    private ComponentCustomEvent getCustomEvent(final XMLStreamReader reader) {
+        HookDefinitionImpl hookDefinition = (HookDefinitionImpl) getHookDefinition(reader);
+        return new ComponentCustomEvent(getStringAttribute(reader, "event"), hookDefinition.getObject(),
+                hookDefinition.getMethod());
     }
 
     private Ribbon getRibbon(final XMLStreamReader reader) throws XMLStreamException {

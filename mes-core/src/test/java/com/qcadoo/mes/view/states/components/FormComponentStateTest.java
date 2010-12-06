@@ -25,6 +25,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.StringType;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
+import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.states.AbstractComponentState;
@@ -34,6 +35,8 @@ import com.qcadoo.mes.view.states.AbstractStateTest;
 public class FormComponentStateTest extends AbstractStateTest {
 
     private Entity entity;
+
+    private ViewDefinitionState viewDefinitionState;
 
     private FieldComponentState name;
 
@@ -49,6 +52,8 @@ public class FormComponentStateTest extends AbstractStateTest {
     public void init() {
         entity = mock(Entity.class);
         given(entity.getField("name")).willReturn("text");
+
+        viewDefinitionState = mock(ViewDefinitionState.class);
 
         translationService = mock(TranslationService.class);
 
@@ -132,7 +137,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(12L);
 
         // when
-        form.performEvent("initialize", new String[0]);
+        form.performEvent(viewDefinitionState, "initialize", new String[0]);
 
         // then
         assertNull(form.getFieldValue());
@@ -144,7 +149,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(13L);
 
         // when
-        form.performEvent("reset", new String[0]);
+        form.performEvent(viewDefinitionState, "reset", new String[0]);
 
         // then
         assertEquals("text", name.getFieldValue());
@@ -156,7 +161,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(13L);
 
         // when
-        form.performEvent("clear", new String[0]);
+        form.performEvent(viewDefinitionState, "clear", new String[0]);
 
         // then
         assertNull(name.getFieldValue());
@@ -169,7 +174,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(13L);
 
         // when
-        form.performEvent("delete", new String[0]);
+        form.performEvent(viewDefinitionState, "delete", new String[0]);
 
         // then
         assertNull(name.getFieldValue());
@@ -188,7 +193,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(null);
 
         // when
-        form.performEvent("save", new String[0]);
+        form.performEvent(viewDefinitionState, "save", new String[0]);
 
         // then
         verify(dataDefinition).save(eq(entity));
@@ -218,7 +223,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.initialize(json, Locale.ENGLISH);
 
         // when
-        form.performEvent("save", new String[0]);
+        form.performEvent(viewDefinitionState, "save", new String[0]);
 
         // then
         verify(dataDefinition).save(eq(entity));
@@ -243,7 +248,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         form.setFieldValue(null);
 
         // when
-        form.performEvent("save", new String[0]);
+        form.performEvent(viewDefinitionState, "save", new String[0]);
 
         // then
         verify(dataDefinition).save(eq(entity));
