@@ -65,13 +65,16 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
-	this.callEvent = function(eventName, component, completeFunction) {
+	this.callEvent = function(eventName, component, completeFunction, args) {
 		var initParameters = new Object();
 		initParameters.event = {
 			name: eventName
 		}
 		if (component) {
 			initParameters.event.component = component;
+		}
+		if (args) {
+			initParameters.event.args = args;
 		}
 		initParameters.components = getValueData();
 		performEvent(initParameters, completeFunction);
@@ -286,11 +289,11 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 //	var goToPage = this.goToPage;
 //	
-//	this.goBack = function() {
+	this.goBack = function() {
 //		if(canClose()) {
-//			window.parent.goBack();
+			window.parent.goBack();
 //		}
-//	}
+	}
 //	this.canClose = canClose;
 //	
 //	function canClose() {
