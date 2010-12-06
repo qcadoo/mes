@@ -64,7 +64,7 @@ import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsSubstituteComponent;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
-import com.qcadoo.mes.beans.products.ProductsTechnologyBomComponent;
+import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
@@ -400,25 +400,25 @@ public final class TestDataLoader {
 
             sessionFactory.getCurrentSession().save(technology);
 
-            addTechnologyBomComponents(technology, null, 3);
+            addTechnologyOperationComponents(technology, null, 3);
         }
     }
 
-    private void addTechnologyBomComponents(final ProductsTechnology technology, final ProductsTechnologyBomComponent parent,
-            final int depth) {
+    private void addTechnologyOperationComponents(final ProductsTechnology technology,
+            final ProductsTechnologyOperationComponent parent, final int depth) {
         if (depth <= 0) {
             return;
         }
 
         for (int i = 0; i < RANDOM.nextInt(4) + 1; i++) {
-            ProductsTechnologyBomComponent component = new ProductsTechnologyBomComponent();
+            ProductsTechnologyOperationComponent component = new ProductsTechnologyOperationComponent();
             component.setTechnology(technology);
             component.setParent(parent);
             component.setProduct(getRandomProduct());
             component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test bom component {product=" + component.getProduct().getNumber() + ", technology="
+                LOG.debug("Add test operation component {product=" + component.getProduct().getNumber() + ", technology="
                         + component.getTechnology().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0)
                         + ", quantity=" + component.getQuantity() + "}");
             }
@@ -426,7 +426,7 @@ public final class TestDataLoader {
             sessionFactory.getCurrentSession().save(component);
 
             if (RANDOM.nextDouble() > 0.2) {
-                addTechnologyBomComponents(technology, component, depth - 1);
+                addTechnologyOperationComponents(technology, component, depth - 1);
             }
         }
     }

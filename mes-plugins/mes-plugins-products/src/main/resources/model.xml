@@ -44,7 +44,7 @@
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
-		<hasMany name="technologyBomComponents" model="technologyBomComponent" joinField="product" cascade="nullify"/>
+		<hasMany name="technologyOperationComponents" model="technologyOperationComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
 	</model>
 	<model name="substitute">
@@ -93,12 +93,12 @@
 		</belongsTo>
 		<boolean name="master" />
 		<string name="description" />
-		<hasMany name="bomComponents" model="technologyBomComponent" joinField="technology" cascade="delete" />
+		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkTechnologyDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
-	<model name="technologyBomComponent">
+	<model name="technologyOperationComponent">
 		<belongsTo name="technology" model="technology" lookupField="name">
 			<validatesPresence /> 
 		</belongsTo>
@@ -111,8 +111,8 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<belongsTo name="parent" model="technologyBomComponent" lookupField="name" />
-		<hasMany name="children" model="technologyBomComponent" joinField="parent" cascade="delete" />
+		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
+		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
 	</model>
 	<model name="order">
 		<string name="number">

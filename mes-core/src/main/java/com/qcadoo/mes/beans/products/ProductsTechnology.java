@@ -62,7 +62,7 @@ public class ProductsTechnology {
 
     @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<ProductsTechnologyBomComponent> bomComponents;
+    private List<ProductsTechnologyOperationComponent> operationComponents;
 
     @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
@@ -115,12 +115,12 @@ public class ProductsTechnology {
         this.master = master;
     }
 
-    public List<ProductsTechnologyBomComponent> getBomComponents() {
-        return bomComponents;
+    public List<ProductsTechnologyOperationComponent> getOperationComponents() {
+        return operationComponents;
     }
 
-    public void setBomComponents(final List<ProductsTechnologyBomComponent> bomComponents) {
-        this.bomComponents = bomComponents;
+    public void setOperationComponents(final List<ProductsTechnologyOperationComponent> operationComponents) {
+        this.operationComponents = operationComponents;
     }
 
     public List<ProductsOrder> getOrders() {

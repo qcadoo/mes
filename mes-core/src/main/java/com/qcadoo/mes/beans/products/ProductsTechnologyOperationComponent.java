@@ -40,8 +40,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
-@Table(name = "products_technology_bom_component")
-public class ProductsTechnologyBomComponent {
+@Table(name = "products_technology_operation_component")
+public class ProductsTechnologyOperationComponent {
 
     @Id
     @GeneratedValue
@@ -57,11 +57,11 @@ public class ProductsTechnologyBomComponent {
     private BigDecimal quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsTechnologyBomComponent parent;
+    private ProductsTechnologyOperationComponent parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<ProductsTechnologyBomComponent> children;
+    private List<ProductsTechnologyOperationComponent> children;
 
     public Long getId() {
         return id;
@@ -95,19 +95,19 @@ public class ProductsTechnologyBomComponent {
         this.quantity = quantity;
     }
 
-    public ProductsTechnologyBomComponent getParent() {
+    public ProductsTechnologyOperationComponent getParent() {
         return parent;
     }
 
-    public void setParent(final ProductsTechnologyBomComponent parent) {
+    public void setParent(final ProductsTechnologyOperationComponent parent) {
         this.parent = parent;
     }
 
-    public List<ProductsTechnologyBomComponent> getChildren() {
+    public List<ProductsTechnologyOperationComponent> getChildren() {
         return children;
     }
 
-    public void setChildren(final List<ProductsTechnologyBomComponent> children) {
+    public void setChildren(final List<ProductsTechnologyOperationComponent> children) {
         this.children = children;
     }
 

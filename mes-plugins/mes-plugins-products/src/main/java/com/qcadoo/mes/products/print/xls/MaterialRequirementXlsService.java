@@ -77,14 +77,14 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
         header.createCell(0).setCellValue(getTranslationService().translate("products.product.number.label", locale));
         header.createCell(1).setCellValue(getTranslationService().translate("products.product.name.label", locale));
         header.createCell(2).setCellValue(
-                getTranslationService().translate("products.technologyBomComponent.quantity.label", locale));
+                getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
         header.createCell(3).setCellValue(getTranslationService().translate("products.product.unit.label", locale));
     }
 
     private void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         List<Entity> orders = entity.getHasManyField("orders");
-        Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, orders);
+        Map<ProxyEntity, BigDecimal> products = getTechnologySeries(entity, orders);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());

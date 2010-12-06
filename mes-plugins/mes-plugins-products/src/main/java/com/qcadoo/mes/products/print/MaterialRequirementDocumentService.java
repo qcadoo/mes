@@ -79,24 +79,26 @@ public abstract class MaterialRequirementDocumentService {
         dataDefinitionService.get("products", "materialRequirement").save(entity);
     }
 
-    protected final Map<ProxyEntity, BigDecimal> getBomSeries(final Entity entity, final List<Entity> orders) {
+    protected final Map<ProxyEntity, BigDecimal> getTechnologySeries(final Entity entity, final List<Entity> orders) {
         Map<ProxyEntity, BigDecimal> products = new HashMap<ProxyEntity, BigDecimal>();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
             if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                List<Entity> bomComponents = technology.getHasManyField("bomComponents");
-                for (Entity bomComponent : bomComponents) {
-                    ProxyEntity product = (ProxyEntity) bomComponent.getField("product");
+                List<Entity> operationComponents = technology.getHasManyField("operationComponents");
+                for (Entity operationComponent : operationComponents) {
+                    ProxyEntity product = (ProxyEntity) operationComponent.getField("product");
                     if (!(Boolean) entity.getField("onlyComponents")
                             || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
                         if (products.containsKey(product)) {
                             BigDecimal quantity = products.get(product);
-                            quantity = ((BigDecimal) bomComponent.getField("quantity")).multiply(plannedQuantity).add(quantity);
+                            quantity = ((BigDecimal) operationComponent.getField("quantity")).multiply(plannedQuantity).add(
+                                    quantity);
                             products.put(product, quantity);
                         } else {
-                            products.put(product, ((BigDecimal) bomComponent.getField("quantity")).multiply(plannedQuantity));
+                            products.put(product,
+                                    ((BigDecimal) operationComponent.getField("quantity")).multiply(plannedQuantity));
                         }
                     }
                 }

@@ -115,8 +115,8 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         productHeader.add(getTranslationService().translate("products.product.number.label", locale));
         productHeader.add(getTranslationService().translate("products.product.name.label", locale));
         productHeader.add(getTranslationService().translate("products.product.unit.label", locale));
-        productHeader.add(getTranslationService().translate("products.technologyBomComponent.quantity.label", locale));
-        addBomSeries(document, (DefaultEntity) entity, productHeader);
+        productHeader.add(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
+        addTechnologySeries(document, (DefaultEntity) entity, productHeader);
     }
 
     private void buildPdfMetadata(final Document document, final Locale locale) {
@@ -158,10 +158,10 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
 
     }
 
-    private void addBomSeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
+    private void addTechnologySeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
-        Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, orders);
+        Map<ProxyEntity, BigDecimal> products = getTechnologySeries(entity, orders);
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
