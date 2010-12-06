@@ -1,6 +1,12 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.qcadoo.mes.view.ComponentDefinition;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 
@@ -11,8 +17,28 @@ public final class TextInputComponentPattern extends FieldComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.TextInput";
 
+    private boolean textRepresentationOnDisabled;
+
     public TextInputComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
+    }
+
+    @Override
+    protected void initializeComponent() throws JSONException {
+        for (ComponentOption option : getOptions()) {
+            if ("textRepresentationOnDisabled".equals(option.getType())) {
+                textRepresentationOnDisabled = Boolean.parseBoolean(option.getValue());
+            } else {
+                throw new IllegalStateException("Unknown option for input: " + option.getType());
+            }
+        }
+    }
+
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = super.getJsOptions(locale);
+        json.put("textRepresentationOnDisabled", textRepresentationOnDisabled);
+        return json;
     }
 
     @Override

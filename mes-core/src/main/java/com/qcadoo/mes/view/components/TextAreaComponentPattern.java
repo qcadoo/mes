@@ -25,7 +25,6 @@ public final class TextAreaComponentPattern extends FieldComponentPattern {
 
     @Override
     protected void initializeComponent() throws JSONException {
-        super.initializeComponent();
         for (ComponentOption option : getOptions()) {
             if ("rows".equals(option.getType())) {
                 rows = Integer.parseInt(option.getValue());

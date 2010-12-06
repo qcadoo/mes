@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -61,7 +62,8 @@ public class FormComponentStateTest extends AbstractStateTest {
         given(fieldDefinition.getType()).willReturn(new StringType());
         given(fieldDefinition.getName()).willReturn("name");
 
-        dataDefinition = mock(DataDefinition.class);
+        dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        given(dataDefinition.get(12L)).willReturn(null);
         given(dataDefinition.get(13L)).willReturn(entity);
         given(dataDefinition.getPluginIdentifier()).willReturn("plugin");
         given(dataDefinition.getName()).willReturn("name");
@@ -208,6 +210,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         Entity entity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
         Entity savedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
+        given(dataDefinition.getFields().keySet()).willReturn(Collections.singleton("name"));
         name.setFieldValue("text");
 
         JSONObject json = new JSONObject();

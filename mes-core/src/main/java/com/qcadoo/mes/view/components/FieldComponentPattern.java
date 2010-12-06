@@ -8,24 +8,12 @@ import org.json.JSONObject;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.view.ComponentDefinition;
-import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 public abstract class FieldComponentPattern extends AbstractComponentPattern {
 
-    private boolean textRepresentationOnDisabled;
-
     public FieldComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
-    }
-
-    @Override
-    protected void initializeComponent() throws JSONException {
-        for (ComponentOption option : getOptions()) {
-            if ("textRepresentationOnDisabled".equals(option.getType())) {
-                textRepresentationOnDisabled = Boolean.parseBoolean(option.getValue());
-            }
-        }
     }
 
     @Override
@@ -45,7 +33,6 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         }
 
         json.put("translations", translations);
-        json.put("textRepresentationOnDisabled", textRepresentationOnDisabled);
 
         return json;
     }

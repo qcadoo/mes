@@ -74,7 +74,19 @@ public final class DataAccessServiceImpl implements DataAccessService {
             existingGenericEntity = entityService.convertToGenericEntity(dataDefinition, existingDatabaseEntity);
         }
 
+        System.out.println(" @1 ---> " + genericEntity);
+
         validationService.validateGenericEntity(dataDefinition, genericEntity, existingGenericEntity);
+
+        System.out.println(" @2 ---> " + genericEntity);
+
+        for (Map.Entry<String, ErrorMessage> error : genericEntity.getErrors().entrySet()) {
+            System.out.println(" @3 ---> " + error.getKey() + " : " + error.getValue().getMessage());
+        }
+
+        for (ErrorMessage error : genericEntity.getGlobalErrors()) {
+            System.out.println(" @4 ---> " + error);
+        }
 
         if (!genericEntity.isValid()) {
             copyValidationErrors(dataDefinition, genericEntityToSave, genericEntity);

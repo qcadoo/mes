@@ -175,6 +175,7 @@ public final class FormComponentState extends AbstractContainerState {
             Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(), entityId);
 
             copyFieldsToEntity(entity);
+
             copyContextToEntity(entity);
 
             entity = getDataDefinition().save(entity);
@@ -266,9 +267,9 @@ public final class FormComponentState extends AbstractContainerState {
         }
 
         private void copyContextToEntity(final Entity entity) {
-            for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
-                if (context.containsKey(field.getKey())) {
-                    entity.setField(field.getKey(), context.get(field.getKey()));
+            for (String field : getDataDefinition().getFields().keySet()) {
+                if (context.containsKey(field)) {
+                    entity.setField(field, context.get(field));
                 }
             }
         }

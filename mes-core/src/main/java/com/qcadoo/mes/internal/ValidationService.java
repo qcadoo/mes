@@ -35,7 +35,11 @@ public final class ValidationService {
 
         copyReadOnlyAndMissingFields(dataDefinition, genericEntity, existingGenericEntity);
 
+        System.out.println(" #1 ---> " + genericEntity);
+
         parseAndValidateEntity(dataDefinition, genericEntity);
+
+        System.out.println(" #2 ---> " + genericEntity);
 
         if (genericEntity.getId() != null) {
             dataDefinition.callUpdateHook(genericEntity);
@@ -118,6 +122,8 @@ public final class ValidationService {
                 }
             } else if (value instanceof Long) {
                 referencedEntityId = (Long) value;
+            } else if (value instanceof Integer) {
+                referencedEntityId = Long.valueOf((Integer) value);
             } else if (value instanceof Entity) {
                 referencedEntityId = ((Entity) value).getId();
             } else {
@@ -142,8 +148,10 @@ public final class ValidationService {
     private Object parseAndValidateField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final Object value, final Entity validatedEntity) {
         if (fieldDefinition.getType() instanceof BelongsToEntityType) {
+            System.out.println(" !1 ---> " + fieldDefinition.getName());
             return parseAndValidateBelongsToField(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         } else {
+            System.out.println(" !2 ---> " + fieldDefinition.getName());
             return parseAndValidateValue(dataDefinition, fieldDefinition, trimAndNullIfEmpty(value), validatedEntity);
         }
     }

@@ -172,7 +172,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         assertEquals(0, getField(grid, "totalEntities"));
         assertEquals(0, getField(grid, "firstResult"));
         assertEquals(Integer.MAX_VALUE, getField(grid, "maxResults"));
-        assertFalse((Boolean) getField(grid, "filtersEnabled"));
+        assertTrue((Boolean) getField(grid, "filtersEnabled"));
 
         assertNull(getField(grid, "orderColumn"));
         assertNull(getField(grid, "orderDirection"));
