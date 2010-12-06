@@ -8,9 +8,7 @@
 
 <tiles:useAttribute name="component" />
 
-	FORM
-	
-<div id="${component['path']}_formComponents">
+<div id="${component['path']}_formComponents" class="form_components component_container_form">
 	
 	<c:forEach items="${component['children']}" var="component">
 		<tiles:insertTemplate template="../newComponent.jsp">

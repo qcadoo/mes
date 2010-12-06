@@ -69,6 +69,8 @@
 				<option type="correspondingView" value="products/substitute" />
 				<option type="correspondingComponent" value="window.substitute" />
 				<option type="paginable" value="false" />
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
 			</component>
@@ -82,6 +84,8 @@
 				<option type="correspondingView" value="products/substituteComponent" />
 				<option type="correspondingComponent" value="window.substituteComponent" />
 				<option type="paginable" value="false" />
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
 				<option type="height" value="150" />
 				<option type="width" value="350" />
 			</component>

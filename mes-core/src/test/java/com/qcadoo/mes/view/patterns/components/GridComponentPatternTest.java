@@ -152,8 +152,8 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         assertFalse(options.has("belongsToFieldName"));
         assertTrue(options.getBoolean("paginable"));
         assertFalse(options.getBoolean("lookup"));
-        assertTrue(options.getBoolean("creatable"));
-        assertTrue(options.getBoolean("deletable"));
+        assertFalse(options.getBoolean("creatable"));
+        assertFalse(options.getBoolean("deletable"));
         assertFalse(options.getBoolean("prioritizable"));
         assertFalse(options.getBoolean("fullscreen"));
         assertEquals(300, options.getInt("width"));

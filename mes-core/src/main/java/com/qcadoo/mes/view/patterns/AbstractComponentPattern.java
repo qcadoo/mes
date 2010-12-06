@@ -142,6 +142,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return map;
     }
 
+    protected void prepareComponentView(final Map<String, Object> map, final Locale locale) throws JSONException {
+        // implement me if you want
+    }
+
     @Override
     public final String getName() {
         return name;

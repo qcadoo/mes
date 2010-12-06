@@ -14,20 +14,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	var element = _element;
-	//var elementName = element.attr('id');
 	
 	var elementPath = this.elementPath;
-	
-	//var buttons = new Object();
-	
-	//buttons.saveButton = $("#"+elementName+"_saveButton");
 	
 	var formValue = null;
 	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
-		//block();
+		block();
 	}
 
 	this.getComponentValue = function() {
@@ -45,7 +40,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 //			}
 //		}
 		formValue = value.entityId;
-//		unblock();
+		unblock();
 	}
 	
 	this.setComponentState = function(state) {
@@ -70,10 +65,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performSave = function(actionsPerformer) {
-//		block();
-//		mainController.performSave(elementName, actionsPerformer, function() {
-//			unblock();
-//		});
 		block();
 		mainController.callEvent("save", elementPath, function() {
 			unblock();

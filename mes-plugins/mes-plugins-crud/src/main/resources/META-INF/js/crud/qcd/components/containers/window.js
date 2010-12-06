@@ -109,10 +109,11 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		}
 	}
 	
-//	this.performBack = function(actionsPerformer) {
-//		mainController.goBack();
-//		actionsPerformer.performNext();
-//	}
+	this.performBack = function(actionsPerformer) {
+		mainController.goBack();
+		actionsPerformer.performNext();
+	}
+	
 //	this.performClose = function(actionsPerformer) {
 //		mainController.closeWindow();
 //		actionsPerformer.performNext();

@@ -45,9 +45,9 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     private boolean paginable = true;
 
-    private boolean deletable = true;
+    private boolean deletable = false;
 
-    private boolean creatable = true;
+    private boolean creatable = false;
 
     private int height = DEFAULT_GRID_HEIGHT;
 
