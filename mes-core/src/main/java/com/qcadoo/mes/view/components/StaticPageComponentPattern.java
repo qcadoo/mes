@@ -1,9 +1,10 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
@@ -32,10 +33,10 @@ public final class StaticPageComponentPattern extends AbstractComponentPattern {
     }
 
     @Override
-    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put("page", page);
-        return json;
+    protected Map<String, Object> getJspOptions(final Locale locale) {
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("page", page);
+        return options;
     }
 
     @Override

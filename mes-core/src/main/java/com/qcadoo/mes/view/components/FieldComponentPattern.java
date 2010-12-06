@@ -1,10 +1,9 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.view.ComponentDefinition;
@@ -17,9 +16,9 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
     }
 
     @Override
-    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
-        JSONObject json = new JSONObject();
-        JSONObject translations = new JSONObject();
+    protected Map<String, Object> getJspOptions(final Locale locale) {
+        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Object> translations = new HashMap<String, Object>();
 
         List<String> codes = Lists.newArrayList(getTranslationPath() + ".label", getTranslationService()
                 .getEntityFieldBaseMessageCode(getDataDefinition(), getName()) + ".label");
@@ -32,8 +31,8 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
             translations.put("descriptionHeader", getTranslationService().translate(headerCodes, locale));
         }
 
-        json.put("translations", translations);
+        options.put("translations", translations);
 
-        return json;
+        return options;
     }
 }

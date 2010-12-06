@@ -19,13 +19,18 @@
 <tiles:useAttribute name="componentType" />
 <tiles:useAttribute name="componentBody"/>
 
+<div class="component_element component_element_${componentType}">
+
+	<c:set var="isInputBox" value="${'textarea' == componentType || 'input' == componentType || 'password' == componentType || 'calendar' == componentType || 'lookup' == componentType}"/>
+
+	<div class="labelbox"><div class="label_h"></div><div class="label" ><span style="display: inline" id="${component['path']}_labelDiv">${component['jspOptions']['translations']['label']}</span><c:if test="${component['hasDescription']}"><div class="description_box">
+				<div id="${component['path']}_description_icon" class="description_icon"></div>
+				<div id="${component['path']}_description_message" class="description_message" style="display: none"><span>${component['jspOptions']['translations']['descriptionHeader']}</span><p>${component['jspOptions']['translations']['description']}</p></div></div></c:if><div class="error_box">
+				<div id="${component['path']}_error_icon" class="error_icon"></div>
+				<div id="${component['path']}_error_messages" class="error_messages" style="display: none"></div></div></div></div>
 	
-	<div class="labelbox"><div class="label_h"></div><div class="label" >
-		<span style="display: inline" id="${component['path']}_labelDiv">${component['name']}</span>
-				<div class="error_box">
-				<div id="${componentFullName}_error_icon" class="error_icon"></div>
-				<div id="${componentFullName}_error_messages" class="error_messages" style="display: none"></div></div></div></div>
-	
+	<c:choose>
+		<c:when test="${isInputBox && !component['jspOptions']['textRepresentationOnDisabled']}">
 			<div class="component_container_form_w">
 				<div class="component_container_form_inner">
 					<div class="component_container_form_x"></div>
@@ -33,3 +38,12 @@
 					${componentBody}
 				</div>
 			</div>
+		</c:when>
+		<c:otherwise>
+			<div class="component_container_form_w">
+				${componentBody}
+			</div>			
+		</c:otherwise>
+	</c:choose>
+	
+</div>
