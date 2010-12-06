@@ -65,6 +65,18 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
+	this.callRibbonEvent = function(actionsPerformer, eventName, component, completeFunction, args) {
+		this.callEvent(eventName, component, function() {
+			if (completeFunction) {
+				completeFunction();
+			}
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
+
+		}, args);
+	}
+	
 	this.callEvent = function(eventName, component, completeFunction, args) {
 		var initParameters = new Object();
 		initParameters.event = {

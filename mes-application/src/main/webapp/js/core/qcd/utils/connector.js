@@ -43,7 +43,7 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 				}
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
 					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.mainController.showMessage("error", message);
+					QCDConnector.showErrorMessage(message);
 					if (errorFunction) {
 						errorFunction(message);
 					}
@@ -58,7 +58,7 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 					}
 				}
 			} else {
-				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
+				QCDConnector.showErrorMessage("connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);
 				}
@@ -88,7 +88,7 @@ QCDConnector.sendPost = function(parameters, responseFunction, errorFunction) {
 				}
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
 					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.mainController.showMessage("error", message);
+					QCDConnector.showErrorMessage(message);
 					if (errorFunction) {
 						errorFunction(message);
 					}
@@ -103,11 +103,18 @@ QCDConnector.sendPost = function(parameters, responseFunction, errorFunction) {
 					}
 				}
 			} else {
-				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
+				QCDConnector.showErrorMessage("connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);
 				}
 			}
 		}
+	});
+}
+
+QCDConnector.showErrorMessage = function(messageContent) {
+	QCDConnector.mainController.showMessage({
+		type: "failure",
+		content: messageContent
 	});
 }

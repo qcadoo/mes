@@ -66,7 +66,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.performSave = function(actionsPerformer) {
 		block();
-		mainController.callEvent("save", elementPath, function() {
+		mainController.callRibbonEvent(actionsPerformer, "save", elementPath, function() {
 			unblock();
 		});
 	}
