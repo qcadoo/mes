@@ -21,8 +21,8 @@ QCD.components.Component = function(_element, _mainController) {
 	this.elementSearchName = elementSearchName;
 	this.elementName = elementName;
 	
-	var isVisible = null;
-	var isEnabled = null;
+	var isVisible = true;
+	var isEnabled = true;
 	
 	this.contextObject = null;
 	
@@ -39,6 +39,10 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.getValue = function() {
 		var valueObject = new Object();
+		
+		valueObject.enabled = isEnabled;
+		valueObject.visible = isVisible;
+		
 		if (this.getComponentValue) {
 			valueObject.content = this.getComponentValue();
 		} else {
@@ -87,19 +91,20 @@ QCD.components.Component = function(_element, _mainController) {
 		mainController.callEvent(eventName, elementPath, null, args);
 	}
 	
-//	this.setState = function(state) {
-//		this.setEnabled(state.enabled);
-//		this.setVisible(state.visible);
-//		if (this.setComponentState) {
-//			this.setComponentState(state.value);
-//		} else {
-//			QCD.error(this.elementPath+".setComponentState() no implemented");
-//		}
-//		if (state.components) {
-//			this.setComponentsState(state);
-//		}
-//		updateMode = QCD.components.Component.UPDATE_MODE_IGNORE;
-//	}
+	this.setState = function(state) {
+		QCD.info(elementPath);
+		QCD.info(state);
+		this.setEnabled(state.enabled);
+		this.setVisible(state.visible);
+		if (this.setComponentState) {
+			this.setComponentState(state.content);
+		} else {
+			QCD.error(this.elementPath+".setComponentState() no implemented");
+		}
+		if (state.components) {
+			this.setComponentsState(state);
+		}
+	}
 	
 //	this.setLoading = function(isLoadingVisible) {
 //		var listeners = options.listeners;

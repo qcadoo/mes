@@ -31,9 +31,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		//if (entityId && $.trim(entityId) != "") {
 			//rootEntityId = entityId;
 		//}
-		//if (serializationObject) {
-			//setComponentState(serializationObject);
-		//}
+		if (serializationObject) {
+			setComponentState(serializationObject);
+		}
 //		if (hasDataDefinition) {
 //			parameters.entityId = rootEntityId;
 //			parameters.data = getValueData();
@@ -191,16 +191,16 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		return values;
 	}
 	
-//	function setComponentState(state) {
+	function setComponentState(state) {
 //		QCD.debug(state);
 //		if (state.value) {
 //			rootEntityId = state.value;
 //		}
-//		for (var i in state.components) {
-//			var component = pageComponents[i];
-//			component.setState(state.components[i]);
-//		}
-//	}
+		for (var i in state.components) {
+			var component = pageComponents[i];
+			component.setState(state.components[i]);
+		}
+	}
 	
 	this.showMessage = function(message) {
 		var content = message.content;
