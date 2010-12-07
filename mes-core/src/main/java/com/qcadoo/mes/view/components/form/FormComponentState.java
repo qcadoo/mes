@@ -210,6 +210,8 @@ public final class FormComponentState extends AbstractContainerState {
         public void initialize(final String[] args) {
             Entity entity = getFormEntity();
 
+            copyDefaultValuesToFields();
+
             if (entity != null) {
                 copyEntityToFields(entity);
                 setFieldValue(entity.getId());
@@ -234,20 +236,30 @@ public final class FormComponentState extends AbstractContainerState {
             }
         }
 
+        private void copyDefaultValuesToFields() {
+            for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
+                FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
+
+                if (fieldDefinition.getDefaultValue() != null) {
+                    field.getValue().setFieldValue(convertFieldToString(fieldDefinition.getDefaultValue(), field.getKey()));
+                }
+            }
+        }
+
         private void copyEntityToFields(final Entity entity) {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 ErrorMessage message = entity.getError(field.getKey());
                 if (message == null) {
-                    field.getValue().setFieldValue(convertFieldToString(entity, field.getKey()));
+                    field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
                 } else {
                     copyMessage(field.getValue(), message);
                 }
             }
         }
 
-        private String convertFieldToString(final Entity entity, final String field) {
-            if (entity.getField(field) != null) {
-                return getDataDefinition().getField(field).getType().toString(entity.getField(field));
+        private String convertFieldToString(final Object value, final String field) {
+            if (value != null) {
+                return getDataDefinition().getField(field).getType().toString(value);
             } else {
                 return "";
             }

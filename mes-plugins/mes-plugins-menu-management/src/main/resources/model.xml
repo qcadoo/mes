@@ -14,7 +14,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
-		<boolean name="active" readonly="false">
+		<boolean name="active" readonly="false" default="true">
 			<validatesPresence />
 		</boolean>
 		<string name="translationName" />
@@ -27,7 +27,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 		</string>
-		<boolean name="active" readonly="false">
+		<boolean name="active" readonly="false" default="true">
 			<validatesPresence />
 		</boolean>
 		<string name="translationName" />

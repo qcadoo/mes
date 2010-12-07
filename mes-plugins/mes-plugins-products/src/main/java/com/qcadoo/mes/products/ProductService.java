@@ -7,12 +7,15 @@
 
 package com.qcadoo.mes.products;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
@@ -34,6 +37,8 @@ import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.FieldComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
 
 @Service
 public final class ProductService {
@@ -110,53 +115,6 @@ public final class ProductService {
         }
     }
 
-    public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state, final Locale locale) {
-        // if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
-        // || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
-        // || ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId() == null) {
-        //
-        // ViewValue<SimpleValue> onlyComponentsValue = (ViewValue<SimpleValue>) value
-        // .lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents");
-        // if (onlyComponentsValue != null && onlyComponentsValue.getValue() != null) {
-        // onlyComponentsValue.getValue().setValue("1");
-        // }
-        // return;
-        // }
-        //
-        // String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.materialRequirementDetailsForm.generated")
-        // .getValue()).getValue().toString();
-        //
-        // boolean isGenerated = true;
-        // if ("0".equals(generatedStringValue)) {
-        // isGenerated = false;
-        // }
-        //
-        // if (isGenerated) {
-        // value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
-        // value.lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents").setEnabled(false);
-        // value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
-        //
-        // if ("mainWindow.materialRequirementDetailsForm".equals(triggerComponentName)) {
-        // Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
-        // ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
-        //
-        // if (materialRequirement.getField("fileName") == null
-        // || "".equals(materialRequirement.getField("fileName").toString().trim())) {
-        // materialRequirementPdfService.generateDocument(materialRequirement, locale);
-        // materialRequirementXlsService.generateDocument(materialRequirement, locale);
-        // } else {
-        // // FIXME KRNA remove override
-        // value.addInfoMessage("override:"
-        // + translationService
-        // .translate(
-        // "products.materialRequirementDetailsView.mainWindow.materialRequirementDetailsForm.documentsWasGenerated",
-        // locale));
-        // }
-        //
-        // }
-        // }
-    }
-
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
         ProductsProduct product = (ProductsProduct) entity.getField("product");
@@ -203,37 +161,27 @@ public final class ProductService {
     }
 
     public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
-        // ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
-        // ViewValue<SimpleValue> numberValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.number");
-        //
-        // if (formValue == null || numberValue == null) {
-        // return;
-        // }
-        //
-        // if (formValue.getValue() != null && formValue.getValue().getId() != null) {
-        // // form is already saved
-        // return;
-        // }
-        //
-        // if (numberValue.getValue() != null && StringUtils.hasText((String) numberValue.getValue().getValue())) {
-        // // number is already choosen
-        // return;
-        // }
-        //
-        // if (numberValue.getMessages().size() > 0) {
-        // // there is a validation message for that field
-        // return;
-        // }
-        //
-        // SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).includeDeleted().list();
-        //
-        // String number = String.format("%06d", results.getTotalNumberOfEntities() + 1);
-        //
-        // if (numberValue.getValue() == null) {
-        // numberValue.setValue(new SimpleValue(number));
-        // } else {
-        // numberValue.getValue().setValue(number);
-        // }
+        FormComponentState form = (FormComponentState) state.getComponentByPath("window.order");
+        FieldComponentState number = (FieldComponentState) state.getComponentByPath("window.order.number");
+
+        if (form.getEntityId() != null) {
+            // form is already saved
+            return;
+        }
+
+        if (StringUtils.hasText((String) number.getFieldValue())) {
+            // number is already choosen
+            return;
+        }
+
+        if (number.isHasError()) {
+            // there is a validation message for that field
+            return;
+        }
+
+        String generatedNumber = String.format("%06d", 666); // TODO krna
+
+        number.setFieldValue(generatedNumber);
     }
 
     public void selectDefaultInstruction(final ViewDefinitionState state, final Locale locale) {
@@ -477,12 +425,88 @@ public final class ProductService {
         }
     }
 
+    public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (state instanceof FormComponentState) {
+            state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                    (Long) state.getFieldValue());
+
+            if (materialRequirement == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+                String message = translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.documentsWasGenerated", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+            } else {
+                try {
+                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
+                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
+                    state.performEvent(viewDefinitionState, "reset", new String[0]);
+                } catch (IOException e) {
+                    new IllegalStateException(e.getMessage(), e);
+                } catch (DocumentException e) {
+                    new IllegalStateException(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
     public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
-            viewDefinitionState.redirectTo("/products/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), true);
+            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                    (Long) state.getFieldValue());
+            if (materialRequirement == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+                state.addMessage(translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.documentsWasNotGenerated", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                viewDefinitionState
+                        .redirectTo("/products/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), false);
+            }
         } else {
-            state.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO masz i18n
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
+
+    public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+            viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
+
+    public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state, final Locale locale) {
+        FieldComponentState name = (FieldComponentState) state.getComponentByPath(("window.materialRequirement.name"));
+        FieldComponentState onlyComponents = (FieldComponentState) state
+                .getComponentByPath(("window.materialRequirement.onlyComponents"));
+        FieldComponentState generated = (FieldComponentState) state.getComponentByPath(("window.materialRequirement.generated"));
+        FieldComponentState materialRequirementComponents = (FieldComponentState) state
+                .getComponentByPath(("window.materialRequirementComponents"));
+
+        if ("1".equals(generated.getFieldValue())) {
+            name.setEnabled(false);
+            onlyComponents.setEnabled(false);
+            materialRequirementComponents.setEnabled(false);
         }
     }
 
