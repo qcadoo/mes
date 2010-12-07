@@ -1,5 +1,6 @@
 package com.qcadoo.mes.beans.products;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,8 +14,10 @@ public class ProductsOperation {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, length = 255)
     private String number;
 
+    @Column(nullable = false, length = 2048)
     private String name;
 
     public Long getId() {

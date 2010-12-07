@@ -80,7 +80,14 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
 	</model>
 	<model name="operation">
-		<string name="name" />
+		<string name="number">
+			<validatesPresence/>
+			<validatesUniqueness/>
+			<validatesLength max="255"/>
+		</string>
+		<string name="name">
+			<validatesLength max="2048"/>
+		</string>
 		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="nullify" />
 	</model>
 	<model name="technology">

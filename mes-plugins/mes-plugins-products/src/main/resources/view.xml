@@ -175,6 +175,55 @@
 			</component>
 		</component>
 	</view>
+	<view name="operationGridView" model="operation" menuable="true">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" icon="newIcon24.png" 
+						action="#{mainWindow.operationsGrid}.performNew;"/>
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.technologiesGrid}.performDelete;"/>
+				</group>
+			</ribbon>
+			<component>
+				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="name" fields="number" link="true"/>
+				<option type="header" value="false"/>
+				<option type="correspondingView" value="products/operationDetailsView"/>
+				<option type="paginable" value="true"/>
+				<option type="searchable" value="number, name"/>
+				<option type="orderable" value="number, name"/>
+				<option type="multiselect" value="true"/>
+			</component>
+			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />			
+		</component>
+	</view>
+	<view name="operationDetailsView" model="operation">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack;"/>
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{mainWindow.technologyDetailsForm}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{mainWindow.technologyDetailsForm}.performSave;#{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.technologyDetailsForm}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.technologyDetailsForm}.performDelete; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="technologyDetailsForm">
+				<component type="input" name="number" field="number" />
+				<component type="textarea" name="name" field="name" />
+				<option type="expression" value="#name" />
+				<option type="header" value="false" />
+			</component>
+		</component>
+	</view>
 	<view name="technologyGridView" model="technology" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
