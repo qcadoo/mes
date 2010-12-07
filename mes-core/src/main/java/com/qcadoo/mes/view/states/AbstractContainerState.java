@@ -26,7 +26,7 @@ public abstract class AbstractContainerState extends AbstractComponentState impl
     }
 
     @Override
-    public final JSONObject render() throws JSONException {
+    public JSONObject render() throws JSONException {
         JSONObject json = super.render();
 
         JSONObject childerJson = new JSONObject();

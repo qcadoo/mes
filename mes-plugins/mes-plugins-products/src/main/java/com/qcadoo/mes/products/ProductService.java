@@ -31,6 +31,8 @@ import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
+import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 @Service
@@ -472,6 +474,15 @@ public final class ProductService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+            viewDefinitionState.redirectTo("/products/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), true);
+        } else {
+            state.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO masz i18n
         }
     }
 

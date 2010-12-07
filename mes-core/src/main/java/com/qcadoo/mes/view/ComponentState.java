@@ -29,7 +29,7 @@ public interface ComponentState {
 
     String JSON_MESSAGE_TYPE = "type";
 
-    enum MessageType {
+    public enum MessageType {
         FAILURE, SUCCESS, INFO
     }
 
