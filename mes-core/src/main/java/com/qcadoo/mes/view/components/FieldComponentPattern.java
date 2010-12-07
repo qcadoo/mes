@@ -20,8 +20,13 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         Map<String, Object> options = new HashMap<String, Object>();
         Map<String, Object> translations = new HashMap<String, Object>();
 
-        List<String> codes = Lists.newArrayList(getTranslationPath() + ".label", getTranslationService()
-                .getEntityFieldBaseMessageCode(getDataDefinition(), getName()) + ".label");
+        List<String> codes = Lists.newArrayList(getTranslationPath() + ".label");
+
+        if (getFieldDefinition() != null) {
+            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getFieldDefinition().getName())
+                    + ".label");
+        }
+
         translations.put("label", getTranslationService().translate(codes, locale));
 
         if (isHasDescription()) {

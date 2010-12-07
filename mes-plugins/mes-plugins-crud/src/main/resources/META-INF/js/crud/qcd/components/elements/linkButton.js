@@ -22,11 +22,10 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	var pageUrl;
 	
 	var button = $("#"+element.attr('id')+"_buttonDiv");
-	var buttonLabel = $("#"+element.attr('id')+"_labelDiv");
 	var buttonLink = $("#"+element.attr('id')+"_buttonLink");
 	
 	this.getComponentValue = function() {
-		return null;
+		return { value: {}};
 	}
 	
 	this.setComponentValue = function(value) {
@@ -60,9 +59,7 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 		}
 	}
 	
-	function constructor(_this) {
-		var labelToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label";
-		buttonLabel.html(mainController.getTranslation(labelToTranslate));
+	function constructor(_this) {		
 		buttonLink.click(onButtonClick);
 	}
 	

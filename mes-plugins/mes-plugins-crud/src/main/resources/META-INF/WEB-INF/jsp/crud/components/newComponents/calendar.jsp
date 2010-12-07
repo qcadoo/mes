@@ -8,6 +8,10 @@
 
 <tiles:useAttribute name="component" />
 
+<div style="display: none;">
+	<div class="calendar" id="calendar"></div>
+</div>
+
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="calendar" />

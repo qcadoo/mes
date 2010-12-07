@@ -15,6 +15,10 @@ import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 @ViewComponent("staticPage")
 public final class StaticPageComponentPattern extends AbstractComponentPattern {
 
+    private static final String JS_OBJECT = "QCD.components.elements.StaticComponent";
+
+    private static final String JSP_PATH = "newComponents/staticPage.jsp";
+
     private String page;
 
     public StaticPageComponentPattern(final ComponentDefinition componentDefinition) {
@@ -27,7 +31,7 @@ public final class StaticPageComponentPattern extends AbstractComponentPattern {
             if ("page".equals(option.getType())) {
                 page = option.getValue();
             } else {
-                throw new IllegalStateException("Unknown option for page: " + option.getType());
+                throw new IllegalStateException("Unknown option for staticPage: " + option.getType());
             }
         }
     }

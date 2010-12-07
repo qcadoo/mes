@@ -32,6 +32,10 @@ import com.qcadoo.mes.viewold.ViewValue;
  */
 public final class StaticPageComponent extends AbstractComponent<Object> {
 
+    private static final String JS_OBJECT = "QCD.components.elements.LinkButton";
+
+    private static final String JSP_PATH = "newComponents/staticPage.jsp";
+
     public StaticPageComponent(final String name, final ContainerComponent<?> parentContainer, final String fieldPath,
             final String sourceFieldPath, final TranslationService translationService) {
         super(name, parentContainer, fieldPath, sourceFieldPath, translationService);

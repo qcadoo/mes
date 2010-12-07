@@ -1,21 +1,23 @@
 package com.qcadoo.mes.view.components;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
+import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 @ViewComponent("button")
-public final class ButtonComponentPattern extends FieldComponentPattern {
+public final class ButtonComponentPattern extends AbstractComponentPattern {
 
-    private static final String JS_OBJECT = "QCD.components.elements.TextInput";
+    private static final String JS_OBJECT = "QCD.components.elements.LinkButton";
 
-    private static final String JSP_PATH = "newComponents/input.jsp";
+    private static final String JSP_PATH = "newComponents/button.jsp";
 
     private String url;
 
@@ -36,15 +38,17 @@ public final class ButtonComponentPattern extends FieldComponentPattern {
     }
 
     @Override
-    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
-        JSONObject json = super.getJsOptions(locale);
-        json.put("url", url);
-        return json;
+    public ComponentState getComponentStateInstance() {
+        return new ButtonComponentState(url);
     }
 
     @Override
-    public ComponentState getComponentStateInstance() {
-        return new EmptyComponentState();
+    protected Map<String, Object> getJspOptions(final Locale locale) {
+        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Object> translations = new HashMap<String, Object>();
+        translations.put("label", getTranslationService().translate(getTranslationPath() + ".label", locale));
+        options.put("translations", translations);
+        return options;
     }
 
     @Override
