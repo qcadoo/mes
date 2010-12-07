@@ -79,20 +79,14 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performSave = function(actionsPerformer) {
-		block();
-		mainController.callRibbonEvent(actionsPerformer, "save", elementPath, function() {
-			unblock();
-		});
+		callEvent("save", actionsPerformer);
 	}
 	
 	this.performDelete = function(actionsPerformer) {
 		//var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
 		var confirmDeleteMessage = "confirmDeleteMessage";
 		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
-			block();
-			mainController.callRibbonEvent(actionsPerformer, "delete", elementPath, function() {
-				unblock();
-			});
+			callEvent("delete", actionsPerformer);
 		}
 	}
 	
@@ -100,11 +94,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		//var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
 		var confirmCancelMessage = "confirmCancelMessage";
 		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
-			block();
-			mainController.callRibbonEvent(actionsPerformer, "reset", elementPath, function() {
-				unblock();
-			});
+			callEvent("reset", actionsPerformer);
 		}
+	}
+	
+	function callEvent(eventName, actionsPerformer) {
+		block();
+		mainController.callEvent(eventName, elementPath, function() {
+			unblock();
+		}, null, actionsPerformer);
 	}
 	
 //	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {

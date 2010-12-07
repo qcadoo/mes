@@ -59,19 +59,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
-	this.callRibbonEvent = function(actionsPerformer, eventName, component, completeFunction, args) {
-		this.callEvent(eventName, component, function() {
-			if (completeFunction) {
-				completeFunction();
-			}
-			if (actionsPerformer) {
-				actionsPerformer.performNext();
-			}
-
-		}, args);
-	}
 	
-	this.callEvent = function(eventName, component, completeFunction, args) {
+	this.callEvent = function(eventName, component, completeFunction, args, actionsPerformer) {
 		var initParameters = new Object();
 		initParameters.event = {
 			name: eventName
@@ -83,15 +72,18 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 			initParameters.event.args = args;
 		}
 		initParameters.components = getValueData();
-		performEvent(initParameters, completeFunction);
+		performEvent(initParameters, completeFunction, actionsPerformer);
 	}
 	
-	function performEvent(parameters, completeFunction) {
+	function performEvent(parameters, completeFunction, actionsPerformer) {
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost(parametersJson, function(response) {
 			setValueData(response);
 			if (completeFunction) {
 				completeFunction();
+			}
+			if (actionsPerformer && response.content.status == "ok") {
+				actionsPerformer.performNext();
 			}
 		}, function() {
 			if (completeFunction) {
