@@ -28,7 +28,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		//QCD.info(childrenElement);
 		_this.constructChildren(childrenElement.children());
 		
-		//mainController.setWindowHeaderComponent(_this);
+		mainController.setWindowHeaderComponent(_this);
 		
 		if (_this.options.ribbon) {
 			ribbon = new QCD.components.Ribbon(_this.options.ribbon, _this.elementName, mainController);

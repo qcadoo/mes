@@ -17,6 +17,9 @@
 		<div class="windowContainerContentBody" id="${component['path']}_windowContainerContentBody">
 			<div id="${component['path']}_windowContainerContentBodyWidthMarker" style=" z-index: 5000;"></div>
 			<div class="windowContent" id="${component['path']}_windowContent">
+				<c:if test="${component.jspOptions['header']}">
+					<div class="windowHeader" id="${component['path']}_windowHeader"></div>
+				</c:if>
 				<div class="windowComponents" id="${component['path']}_windowComponents">
 					<c:forEach items="${component['children']}" var="component">
 						<tiles:insertTemplate template="../newComponent.jsp">

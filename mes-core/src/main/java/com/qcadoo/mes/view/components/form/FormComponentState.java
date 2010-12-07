@@ -28,7 +28,7 @@ public final class FormComponentState extends AbstractContainerState {
 
     public static final String JSON_HEADER = "header";
 
-    public static final String JSON_HEADER_ENTITY_IDENTIFIER = "headerEntityIdendifier";
+    public static final String JSON_HEADER_ENTITY_IDENTIFIER = "headerEntityIdentifier";
 
     private Long entityId;
 

@@ -38,8 +38,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		if(value.valid) {
-			QCD.info(value.headerEntityIdendifier);
-			QCD.info(value);
 			if(value.headerEntityIdentifier) {
 				mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
 			} else {

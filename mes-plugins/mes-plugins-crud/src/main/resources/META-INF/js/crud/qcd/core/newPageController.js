@@ -7,7 +7,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	
 	var pageComponents;
 	
-	//var headerComponent = null;
+	var headerComponent = null;
 	
 	var pageOptions;
 	
@@ -205,17 +205,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 		}
 	}
 	
-	// TODO mina add header
-	
-//	this.setWindowHeaderComponent = function(component) {
-//		headerComponent = component;
-//	}
+	this.setWindowHeaderComponent = function(component) {
+		headerComponent = component;
+	}
 	this.setWindowHeader = function(header) {
-		QCD.info("HEADER:");
-		QCD.info(header);
-//		if (headerComponent) {
-//			headerComponent.setHeader(header);
-//		}
+		//QCD.info("HEADER:");
+		//QCD.info(header);
+		if (headerComponent) {
+			headerComponent.setHeader(header);
+		}
 	}
 	
 	function setValueData(data) {
