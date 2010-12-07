@@ -26,7 +26,7 @@
 -->
 
 <qcd:models plugin="basic" xmlns:qcd="http://www.qcadoo.com/model">
-	<model name="machine" deletable="false">
+	<model name="machine" deletable="true">
 		<string name="name" >
 			<validatesPresence />
 			<validatesUniqueness />
@@ -42,7 +42,7 @@
 			<validatesLength max="2048"/>
 		</string>
 	</model>
-	<model name="staff" deletable="false">
+	<model name="staff" deletable="true">
 		<string name="number">
 			<validatesPresence />
 			<validatesUniqueness />

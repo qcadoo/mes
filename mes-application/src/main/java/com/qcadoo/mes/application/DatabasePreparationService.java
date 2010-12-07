@@ -98,8 +98,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition staffGridView = getMenuViewDefinition("staffGridView");
 
         MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
-        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 2);
-        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 3);
+        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
+        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 3);
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryProducts,
                 technologyGridView, 1);
