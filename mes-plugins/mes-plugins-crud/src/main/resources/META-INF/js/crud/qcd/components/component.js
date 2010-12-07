@@ -64,13 +64,16 @@ QCD.components.Component = function(_element, _mainController) {
 		if (value.content != null) {
 			this.setComponentValue(value.content);
 		}
-		//} else {
-			//this.setComponentLoading(false);
-		//}
 		this.setMessages(value.messages);
 		if (value.components) {
 			this.setComponentsValue(value);
 		}
+		if (value.updateState) {
+			this.performUpdateState();
+		}
+	}
+	
+	this.performUpdateState = function() {
 	}
 	
 	this.addContext = function(contextField, contextValue) {
@@ -158,6 +161,10 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 
 	this.isChanged = function() {
+		return this.isComponentChanged();
+	}
+	
+	this.isComponentChanged = function() {
 		return false;
 	}
 	

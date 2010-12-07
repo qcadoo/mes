@@ -22,7 +22,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	var descriptionIcon = $("#" + this.elementSearchName + "_description_icon");
 	var descriptionMessage = $("#" + this.elementSearchName + "_description_message");
 	
-	var currentValue;
+	var baseValue;
 	
 	this.input = $("#" + this.elementSearchName + "_input");
 
@@ -46,13 +46,17 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	
 	this.getComponentData = function() {
 		return {
-			value : this.input.val()
+			value : this.input.val(),
+			baseValue: baseValue
 		}
 	}
 
 	this.setComponentData = function(data) {
 		if (data.value) {
 			this.input.val(data.value);
+		}
+		if (data.baseValue) {
+			baseValue = data.baseValue;
 		}
 	}
 
@@ -72,13 +76,12 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 		setComponentRequired(state.required);
 	}
 	
-	this.setCurrentValue = function(data) {
-		currentValue = data.value ? data.value : "";
-	} 
-	
-//	this.isChanged = function() {
-//		return currentValue != this.input.val();
-//	}
+	this.performUpdateState = function() {
+		baseValue = this.getComponentData().value;
+	}
+	this.isComponentChanged = function() {
+		return ! (baseValue == this.getComponentData().value);
+	}
 
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {

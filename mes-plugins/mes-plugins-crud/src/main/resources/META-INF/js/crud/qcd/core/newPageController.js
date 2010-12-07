@@ -27,6 +27,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	this.init = function(entityId, serializationObject) {
 		if (serializationObject) {
 			setComponentState(serializationObject);
+			this.callEvent("initializeAfterBack");
+		} else {
+			this.callEvent("initialize");	
 		}
 		
 		// TODO mina used in static pages (ex. error pages from plugin management) 
@@ -42,7 +45,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //			});
 //		}
 		
-		this.callEvent("initialize");
+		
 	}
 	
 	this.setContext = function(contextStr) {
@@ -252,15 +255,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	//	return window.translationsMap[key] ? window.translationsMap[key] : key;
 		return key;
 	}
-	//var getTranslation = this.getTranslation;
+	var getTranslation = this.getTranslation;
 	
 	this.goToPage = function(url) {
-		if(canClose()) {
+		//if(canClose()) {
 			var serializationObject = {
 				components: getValueData()
 			}
 			window.parent.goToPage(url, serializationObject);
-		}
+		//}
 	}
 	
 	this.goBack = function() {

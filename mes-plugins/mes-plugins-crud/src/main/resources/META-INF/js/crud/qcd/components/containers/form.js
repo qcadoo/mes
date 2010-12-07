@@ -19,6 +19,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	var formValue = null;
 	
+	var baseValue = null; 
+	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
@@ -64,6 +66,14 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		}
 	}
 	
+	this.performUpdateState = function() {
+		baseValue = formValue;
+	}
+	
+	this.isComponentChanged = function() {
+		return ! (baseValue == formValue);
+	}
+	
 	this.performSave = function(actionsPerformer) {
 		block();
 		mainController.callRibbonEvent(actionsPerformer, "save", elementPath, function() {
@@ -72,37 +82,35 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performDelete = function(actionsPerformer) {
-		block();
-		mainController.callRibbonEvent(actionsPerformer, "remove", elementPath, function() {
-			unblock();
-		});
-//		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-//		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
-//			block();
-//			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer);
-//		}
+		//var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
+		var confirmDeleteMessage = "confirmDeleteMessage";
+		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
+			block();
+			mainController.callRibbonEvent(actionsPerformer, "delete", elementPath, function() {
+				unblock();
+			});
+		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-//		var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
-//		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
-//			block();
-//			mainController.performCancel(formValue ? formValue.id : null, actionsPerformer);
-//		}
-	}
-	
-	this.callUpdateFunction = function(actionsPerformer, functionTriggerName) {
-//		mainController.performCallUpdateFunction(functionTriggerName, actionsPerformer);
-	}
-	
-	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
-		if (formValue && formValue.id) {
-			mainController.performCallFunction(functionName, additionalAttribute, formValue.id, actionsPerformer);
-		} else {
-			entityWithoutIdentifier = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".entityWithoutIdentifier";
-			mainController.showMessage("error", mainController.getTranslation(entityWithoutIdentifier)); 
+		//var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
+		var confirmCancelMessage = "confirmCancelMessage";
+		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
+			block();
+			mainController.callRibbonEvent(actionsPerformer, "reset", elementPath, function() {
+				unblock();
+			});
 		}
 	}
+	
+//	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
+//		if (formValue && formValue.id) {
+//			mainController.performCallFunction(functionName, additionalAttribute, formValue.id, actionsPerformer);
+//		} else {
+//			entityWithoutIdentifier = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".entityWithoutIdentifier";
+//			mainController.showMessage("error", mainController.getTranslation(entityWithoutIdentifier)); 
+//		}
+//	}
 	
 	this.updateSize = function(_width, _height) {
 		width = _width - 40;
@@ -129,8 +137,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	function unblock() {
 		element.unblock();
 	}
-	
-	
 	
 	constructor(this);
 }
