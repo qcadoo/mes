@@ -299,6 +299,25 @@
 				<option type="correspondingView" value="products/technologyComponentDetailsView" />
 				<option type="multiselect" value="false" />
 			</component>
+			<!--  
+			<component type="grid" name="productsGrid" source="product">
+				<option type="column" name="number" fields="number" link="true"
+					width="200" />
+				<option type="column" name="name" fields="name" link="true"
+					width="300" />
+				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+					width="100" />
+				<option type="column" name="ean" fields="ean" width="100" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,number,typeOfMaterial,ean" />
+				<option type="orderable" value="name,number,ean" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="200" />
+				<option type="width" value="350" />
+				<option type="creatable" value="false" />
+				<option type="deletable" value="false" />
+				<option type="updatable" value="false" />
+			</component>-->
 		</component>
 	</view>
 	<view name="technologyComponentDetailsView" model="technologyOperationComponent">
