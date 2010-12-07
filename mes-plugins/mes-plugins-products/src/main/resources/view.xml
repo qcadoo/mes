@@ -265,7 +265,7 @@
 				</group>
 				<group name="export">
 					<smallButton name="print" icon="printIcon16.png"
-						action="#{window.orders}.performCallFunction(printOrder,pdf);" />
+						action="#{window.orders}.fireEvent(printOrder,pdf);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="orders">
@@ -353,9 +353,9 @@
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{window.materialRequirements}.performCallFunction(printMaterialRequirementPdf,pdf);" />
+						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{window.materialRequirements}.performCallFunction(printMaterialRequirementXls,xls);" />
+						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,xls,arg1,arg2);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirements">
@@ -381,13 +381,13 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
 						action="#{window.materialRequirement}.performSave;" />
-					<bigButton name="generate" action="#{window.materialRequirement.generated}.setSelected(true); #{window.materialRequirement}.performSave;" />
+					<bigButton name="generate" action="#{window.materialRequirement}.fireEvent(generate);" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{window.materialRequirement}.performCallFunction(printMaterialRequirementPdf,pdf);" />
+						action="#{window.materialRequirement}.fireEvent(printMaterialRequirement,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{window.materialRequirement}.performCallFunction(printMaterialRequirementXls,xls);" />
+						action="#{window.materialRequirement}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>
 			<component type="form" name="materialRequirement">
@@ -411,6 +411,7 @@
 				<option type="correspondingView" value="products/materialRequirementComponent" />
 				<option type="correspondingComponent" value="window.materialRequirementComponent" />
 				<option type="paginable" value="false" />
+				<option type="creatable" value="true" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
 			</component>

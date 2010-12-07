@@ -98,11 +98,15 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		}
 	}
 	
-	function callEvent(eventName, actionsPerformer) {
+	this.fireEvent = function(actionsPerformer, eventName, args) {
+		callEvent(eventName, actionsPerformer, args);
+	}
+	
+	function callEvent(eventName, actionsPerformer, args) {
 		block();
 		mainController.callEvent(eventName, elementPath, function() {
 			unblock();
-		}, null, actionsPerformer);
+		}, args, actionsPerformer);
 	}
 	
 //	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {

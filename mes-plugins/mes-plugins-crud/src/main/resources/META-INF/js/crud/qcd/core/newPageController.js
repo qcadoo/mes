@@ -167,7 +167,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 					this.actionIter++;
 					
 					var fullArgumentList = new Array(this);
-					fullArgumentList = fullArgumentList.concat(actionObject.arguments);
+					fullArgumentList = fullArgumentList.concat(actionObject.arguments[0]);
+					fullArgumentList.push(actionObject.arguments.slice(1));
 					
 					func.apply(actionObject.component, fullArgumentList);
 				}

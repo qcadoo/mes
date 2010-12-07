@@ -13,7 +13,7 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 	
 	var mainController = _mainController;
-	var textRepresentation = $("#" + _element.attr('id') + "_text");
+	var textRepresentation = $("#" + this.elementSearchName + "_text");
 	var currentValue;
 	
 	this.getComponentData = function() {
@@ -26,10 +26,10 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 	this.setComponentData = function(data) {
 		if (data != null && data.value == 1) {
 			this.input.attr('checked', true);
-			textRepresentation.html(mainController.getTranslation('commons.true'));
+			textRepresentation.html('commons.true');
 		} else {
 			this.input.attr('checked', false);
-			textRepresentation.html(mainController.getTranslation('commons.false'));
+			textRepresentation.html('commons.false');
 		}
 	}
 	
@@ -56,8 +56,4 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 		currentValue = this.input.attr('checked');
 	} 
 	
-	this.isChanged = function() {
-		return currentValue != this.input.attr('checked');
-	}
-
 }

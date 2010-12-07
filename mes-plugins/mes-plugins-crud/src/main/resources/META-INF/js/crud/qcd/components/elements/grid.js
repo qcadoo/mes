@@ -537,15 +537,23 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	this.performDelete = function(actionsPerformer) {
 		if (currentState.selectedEntityId) {
 			if (window.confirm(translations.confirmDeleteMessage)) {
+				blockGrid();
 				mainController.callEvent("remove", elementPath, function() {
 					unblockGrid();
-				});
+				}, null, actionsPerformer);
 			}
 		} else {
 			mainController.showMessage("error", translations.noRowSelectedError);
 		}	
 	}
 	var performDelete = this.performDelete;
+	
+	this.fireEvent = function(actionsPerformer, eventName, args) {
+		blockGrid();
+		mainController.callEvent(eventName, elementPath, function() {
+			unblockGrid();
+		}, args, actionsPerformer);
+	}
 	
 
 	this.performLookupSelect = function(actionsPerformer, entityId) {
