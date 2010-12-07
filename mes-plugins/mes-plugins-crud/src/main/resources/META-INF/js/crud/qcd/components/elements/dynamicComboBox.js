@@ -37,10 +37,10 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		if (data == null) {
 			return;
 		}
+		
+		
 		var previousSelected = input.val();
 		input.children().remove();
-		var blankValue = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".blankValue";
-		input.append("<option value=''>"+mainController.getTranslation(blankValue)+"</option>");
 		for (var i in data.values) {
 			var value = data.values[i];
 			input.append("<option value='"+value.key+"'>"+value.value+"</option>");

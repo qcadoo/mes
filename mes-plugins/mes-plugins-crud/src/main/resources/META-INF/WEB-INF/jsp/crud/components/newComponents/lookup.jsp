@@ -10,15 +10,13 @@
 
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="input" />
+	<tiles:putAttribute name="componentType" value="lookup" />
 	<tiles:putAttribute name="componentBody">
-		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
-			<c:set var="displayHiddenIfTextRepresentationOnDisabled" value="display: none" />
-		</c:if>
-		<input type="text" id="${component['path']}_input" style="${displayHiddenIfTextRepresentationOnDisabled}" />
-		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
-			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
-			<span id="${componentFullName}_textHeight" style="display: inline-block">&nbsp;</span>
-		</c:if>
+		<div class=lookupValueWrapper>
+			<div class="lookupValue" id="${component['path']}_valueDiv"></div>
+			<div class="lookupLoading" id="${component['path']}_loadingDiv"></div>
+			<input type="text" id="${component['path']}_input" class="hasDatepick"/>
+		</div>
+		<div class="lookupIcon" id="${component['path']}_openLookupButton"></div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

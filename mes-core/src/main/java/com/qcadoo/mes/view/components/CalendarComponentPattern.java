@@ -7,9 +7,9 @@ import com.qcadoo.mes.view.ViewComponent;
 @ViewComponent("calendar")
 public final class CalendarComponentPattern extends FieldComponentPattern {
 
-    private static final String JSP_PATH = "newComponents/input.jsp";
+    private static final String JSP_PATH = "newComponents/calendar.jsp";
 
-    private static final String JS_OBJECT = "QCD.components.elements.TextInput";
+    private static final String JS_OBJECT = "QCD.components.elements.Calendar";
 
     public CalendarComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);

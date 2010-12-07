@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.springframework.util.StringUtils.hasText;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -103,6 +104,11 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return new JSONObject();
     }
 
+    protected Map<String, Object> getJspOptions(final Locale locale) {
+        // reimplement me if you want
+        return Collections.emptyMap();
+    }
+
     protected void initializeComponent() throws JSONException {
         // implement me if you want
     }
@@ -130,6 +136,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         map.put("jspFilePath", getJspFilePath());
         map.put("jsFilePath", getJsFilePath());
         map.put("jsObjectName", getJsObjectName());
+        map.put("jspOptions", getJspOptions(locale));
+        map.put("hasDescription", isHasDescription());
 
         try {
             JSONObject jsOptions = getJsOptions(locale);

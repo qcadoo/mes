@@ -82,7 +82,7 @@
 		//var entityId = "{entityId}";
 		var entityId = "";
 		var context = '${context}';
-		//var locale = '{locale}';
+		var locale = '${locale}';
 
 		//var hasDataDefinition = '{viewDefinition.dataDefinition}' == '' ? false : true;
 

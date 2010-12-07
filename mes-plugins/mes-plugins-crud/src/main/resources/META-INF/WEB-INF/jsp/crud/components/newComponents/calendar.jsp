@@ -10,15 +10,9 @@
 
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="input" />
+	<tiles:putAttribute name="componentType" value="calendar" />
 	<tiles:putAttribute name="componentBody">
-		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
-			<c:set var="displayHiddenIfTextRepresentationOnDisabled" value="display: none" />
-		</c:if>
-		<input type="text" id="${component['path']}_input" style="${displayHiddenIfTextRepresentationOnDisabled}" />
-		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
-			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
-			<span id="${componentFullName}_textHeight" style="display: inline-block">&nbsp;</span>
-		</c:if>
+		<input id="${component['path']}_input" type="text" />
+		<div id="${component['path']}_calendar" class="calendar"></div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

@@ -214,7 +214,7 @@ public class ViewDefinitionTest extends AbstractPatternTest {
         Set<String> paths = viewDefinition.getJsFilePaths();
 
         // then
-        Assert.assertEquals(2, paths.size());
+        Assert.assertEquals(1, paths.size());
     }
 
     @Test
