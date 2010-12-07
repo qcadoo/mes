@@ -1,9 +1,13 @@
 package com.qcadoo.mes.beans.products;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -19,6 +23,9 @@ public class ProductsOperation {
 
     @Column(nullable = false, length = 2048)
     private String name;
+
+    @OneToMany(mappedBy = "operation", fetch = FetchType.LAZY)
+    private List<ProductsTechnologyOperationComponent> technologyOperationComponents;
 
     public Long getId() {
         return id;
@@ -42,6 +49,14 @@ public class ProductsOperation {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public List<ProductsTechnologyOperationComponent> getTechnologyOperationComponents() {
+        return technologyOperationComponents;
+    }
+
+    public void setTechnologyOperationComponents(final List<ProductsTechnologyOperationComponent> technologyOperationComponents) {
+        this.technologyOperationComponents = technologyOperationComponents;
     }
 
 }
