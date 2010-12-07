@@ -48,7 +48,6 @@ public final class FormComponentState extends AbstractContainerState {
         registerEvent("save", eventPerformer, "save");
         registerEvent("saveAndClear", eventPerformer, "saveAndClear");
         registerEvent("initialize", eventPerformer, "initialize");
-        registerEvent("initializeAfterBack", eventPerformer, "initialize");
         registerEvent("reset", eventPerformer, "initialize");
         registerEvent("delete", eventPerformer, "delete");
     }
