@@ -11,7 +11,7 @@
 	background: #fff;
 }
 
-.component_container_form .component_element {
+.component_container_form > .component {
 	padding: 0;
 	width: 31.5%;
 	margin-bottom: 19px;
