@@ -120,18 +120,10 @@ QCD.components.Component = function(_element, _mainController) {
 
 	this.setMessages = function(messages) {
 		for ( var i in messages) {
-			//QCD.info(messages[i]);
 			mainController.showMessage(messages[i]);
 		}
 	}
-//	
-//	this.getComponentsValue = function() {
-//		return null;
-//	}
-//	this.setComponentsValue = function() {
-//		
-//	}
-//	
+
 	this.setEnabled = function(_isEnabled) {
 		isEnabled = _isEnabled;
 		this.setComponentEnabled(isEnabled);

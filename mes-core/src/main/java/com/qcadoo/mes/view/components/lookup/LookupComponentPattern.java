@@ -8,7 +8,7 @@ import com.qcadoo.mes.view.components.FieldComponentPattern;
 @ViewComponent("lookup")
 public final class LookupComponentPattern extends FieldComponentPattern {
 
-    private static final String JSP_PATH = "newComponents/lookup.jsp";
+    private static final String JSP_PATH = "elements/lookup.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.TextInput";
 

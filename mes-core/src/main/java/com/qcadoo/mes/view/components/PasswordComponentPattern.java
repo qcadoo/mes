@@ -7,7 +7,7 @@ import com.qcadoo.mes.view.ViewComponent;
 @ViewComponent("password")
 public final class PasswordComponentPattern extends FieldComponentPattern {
 
-    private static final String JSP_PATH = "newComponents/password.jsp";
+    private static final String JSP_PATH = "elements/password.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.PasswordInput";
 

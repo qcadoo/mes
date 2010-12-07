@@ -13,7 +13,7 @@ import com.qcadoo.mes.view.ViewComponent;
 @ViewComponent("input")
 public final class TextInputComponentPattern extends FieldComponentPattern {
 
-    private static final String JSP_PATH = "newComponents/input.jsp";
+    private static final String JSP_PATH = "elements/input.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.TextInput";
 

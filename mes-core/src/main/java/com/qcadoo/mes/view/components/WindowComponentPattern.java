@@ -19,7 +19,7 @@ import com.qcadoo.mes.view.ribbon.Ribbon;
 @ViewComponent("window")
 public final class WindowComponentPattern extends AbstractContainerPattern {
 
-    private static final String JSP_PATH = "newComponents/window.jsp";
+    private static final String JSP_PATH = "containers/window.jsp";
 
     private static final String JS_OBJECT = "QCD.components.containers.Window";
 

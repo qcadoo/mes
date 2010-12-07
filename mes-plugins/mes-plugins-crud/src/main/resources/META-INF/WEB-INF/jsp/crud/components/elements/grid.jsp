@@ -16,28 +16,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <tiles:useAttribute name="component" />
-<tiles:useAttribute name="componentFullName"/>
-<tiles:useAttribute name="componentFullNameWithDots"/>
-<tiles:useAttribute name="viewName" ignore="true"/>
-<tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
-<div class="component component_element component_element_grid" id="${componentFullName}">
-	<div class=element_options style="display: none">
-		${component.optionsAsJson}
-	</div>
-	
 	<table style="height: 100%; width: 100%;" cellpadding=0 cellspacing=0 class="gridTable">
 	
-		<tr><td id="${componentFullName}_gridHeader" class="gridHeaderCell">
+		<tr><td id="${component['path']}_gridHeader" class="gridHeaderCell">
 		</td></tr>
 		
-		<tr style="height: 100%; width: 100%;" id="${componentFullName}_gridCell"><td>
-				<table class="element_table" id="${componentFullName}_grid" style="height: 100%">
+		<tr style="height: 100%; width: 100%;" id="${component['path']}_gridCell"><td>
+				<table class="element_table" id="${component.path}_grid" style="height: 100%">
 				</table>
 		</td></tr>
 		
-		<tr><td id="${componentFullName}_gridFooter" class="gridFooterCell">
+		<tr><td id="${component['path']}_gridFooter" class="gridFooterCell">
 		</td></tr>
 		
 	</table>
-</div>

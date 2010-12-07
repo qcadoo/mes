@@ -17,7 +17,7 @@ public final class ButtonComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.LinkButton";
 
-    private static final String JSP_PATH = "newComponents/button.jsp";
+    private static final String JSP_PATH = "elements/button.jsp";
 
     private String url;
 

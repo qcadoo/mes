@@ -17,7 +17,7 @@ public final class StaticPageComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.StaticComponent";
 
-    private static final String JSP_PATH = "newComponents/staticPage.jsp";
+    private static final String JSP_PATH = "elements/staticPage.jsp";
 
     private String page;
 

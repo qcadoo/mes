@@ -8,7 +8,7 @@ import com.qcadoo.mes.view.components.FieldComponentPattern;
 @ViewComponent("select")
 public final class SelectComponentPattern extends FieldComponentPattern {
 
-    private static final String JSP_PATH = "newComponents/select.jsp";
+    private static final String JSP_PATH = "elements/select.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.DynamicComboBox";
 
