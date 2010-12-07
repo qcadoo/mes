@@ -25,6 +25,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.crud.CrudController;
 import com.qcadoo.mes.internal.PluginManagementOperationStatusImpl;
 import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 @Controller
@@ -39,22 +40,7 @@ public final class PluginManagementController {
     @Autowired
     private CrudController crudController;
 
-    @RequestMapping(value = "download", method = RequestMethod.GET)
-    public ModelAndView getDownloadPageView(final Locale locale) {
-        return getDownloadPageView("download.html", locale);
-    }
-
-    @RequestMapping(value = "download", method = RequestMethod.POST)
-    public ModelAndView handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.downloadPlugin(file), locale);
-    }
-
-    @RequestMapping(value = "remove", method = RequestMethod.GET)
-    public ModelAndView getRemovePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.removePlugin(Long.parseLong(entityId)), locale);
-    }
-
-    @RequestMapping(value = "restart", method = RequestMethod.GET)
+    @RequestMapping(value = "pluginPages/restart", method = RequestMethod.GET)
     public ModelAndView getRestartPagePageView(@RequestParam("message") final String message, final Locale locale) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("plugins/restart");
@@ -64,11 +50,6 @@ public final class PluginManagementController {
         return mav;
     }
 
-    @RequestMapping(value = "enable", method = RequestMethod.GET)
-    public ModelAndView handleEnable(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.enablePlugin(Long.parseLong(entityId)), locale);
-    }
-
     @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
     @ResponseBody
     public String handleRestart() {
@@ -76,19 +57,19 @@ public final class PluginManagementController {
         return "ok";
     }
 
-    @RequestMapping(value = "disable", method = RequestMethod.GET)
-    public ModelAndView getDisablePageView(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.disablePlugin(Long.parseLong(entityId)), locale);
+    @RequestMapping(value = "pluginPages/downloadPage", method = RequestMethod.GET)
+    public ModelAndView getUpdatePageView(@RequestParam(required = false, value = "entityId") final Long pluginId,
+            final Locale locale) {
+        if (pluginId == null) {
+            return getDownloadPageView("download.html", locale);
+        } else {
+            return getDownloadPageView("update.html", locale);
+        }
     }
 
-    @RequestMapping(value = "deinstall", method = RequestMethod.GET)
-    public ModelAndView handleDeinstall(@RequestParam("entityId") final String entityId, final Locale locale) {
-        return getInfoMessageView(pluginManagementService.deinstallPlugin(Long.parseLong(entityId)), locale);
-    }
-
-    @RequestMapping(value = "update", method = RequestMethod.GET)
-    public ModelAndView getUpdatePageView(final Locale locale) {
-        return getDownloadPageView("update.html", locale);
+    @RequestMapping(value = "download", method = RequestMethod.POST)
+    public ModelAndView handleDownload(@RequestParam("file") final MultipartFile file, final Locale locale) {
+        return getInfoMessageView(pluginManagementService.downloadPlugin(file), locale);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -102,8 +83,8 @@ public final class PluginManagementController {
     }
 
     private ModelAndView getDownloadPageView(final String downloadAction, final Locale locale) {
-        String headerLabel = translationService.translate("plugins.downloadView.header", locale);
-        String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
+        String headerLabel = translationService.translate("plugins.pluginDownload.header", locale);
+        String buttonLabel = translationService.translate("plugins.pluginDownload.button", locale);
 
         ModelAndView mav = crudController.prepareView("plugins", "pluginDownload", new HashMap<String, String>(), locale);
 
@@ -133,8 +114,77 @@ public final class PluginManagementController {
         return mav;
     }
 
+    public void onPluginDownloadClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        viewDefinitionState.redirectTo("../pluginPages/downloadPage.html", false);
+    }
+
     public void onPluginUpdateClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        System.out.println("PLUGIN UPDATE");
+        Long pluginId = getPluginId(triggerState);
+        if (pluginId != null) {
+            viewDefinitionState.redirectTo("../pluginPages/downloadPage.html?entityId=" + pluginId, false);
+        }
+    }
+
+    public void onPluginEnableClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        Long pluginId = getPluginId(triggerState);
+        if (pluginId != null) {
+            PluginManagementOperationStatus operationStatus = pluginManagementService.enablePlugin(pluginId);
+            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+        }
+    }
+
+    public void onPluginDisableClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        Long pluginId = getPluginId(triggerState);
+        if (pluginId != null) {
+            PluginManagementOperationStatus operationStatus = pluginManagementService.disablePlugin(pluginId);
+            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+        }
+    }
+
+    public void onPluginDeinstallClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        Long pluginId = getPluginId(triggerState);
+        if (pluginId != null) {
+            PluginManagementOperationStatus operationStatus = pluginManagementService.deinstallPlugin(pluginId);
+            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+        }
+    }
+
+    public void onPluginRemoveClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        Long pluginId = getPluginId(triggerState);
+        if (pluginId != null) {
+            PluginManagementOperationStatus operationStatus = pluginManagementService.removePlugin(pluginId);
+            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+        }
+    }
+
+    private Long getPluginId(final ComponentState triggerState) {
+        if (triggerState.getFieldValue() != null && triggerState.getFieldValue() instanceof Long) {
+            return (Long) triggerState.getFieldValue();
+        } else {
+            triggerState.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO mina i18n
+            return null;
+        }
+    }
+
+    private void updatePluginManagementOperationStatus(final ViewDefinitionState viewDefinitionState,
+            final ComponentState triggerState, final PluginManagementOperationStatus operationStatus, final Locale locale) {
+
+        if (operationStatus.isRestartRequired()) {
+            viewDefinitionState.redirectTo("../pluginPages/restart.html?message=TODO", false);
+            return;
+        }
+
+        if (operationStatus.isError()) {
+            triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.FAILURE);
+        } else {
+            triggerState.addMessage(translationService.translate(operationStatus.getMessage(), locale), MessageType.SUCCESS);
+        }
+
     }
 }

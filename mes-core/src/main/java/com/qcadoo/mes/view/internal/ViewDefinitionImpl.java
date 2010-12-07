@@ -92,6 +92,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         model.put(JSON_COMPONENTS, childrenModels);
         model.put(JSON_JS_FILE_PATHS, getJsFilePaths());
 
+        model.put("hasDataDefinition", getDataDefinition() != null);
+
         try {
             JSONObject json = new JSONObject();
             JSONObject translations = new JSONObject();

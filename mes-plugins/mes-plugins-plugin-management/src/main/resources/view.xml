@@ -13,14 +13,14 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" icon="downloadIcon24.png" action="#{window}.performCallFunction(goToUrl,../download.html);" />
-					<bigButton name="update" icon="updateIcon24.png" action="#{window.pluginsGrid}.fireEvent(update);" />
+					<bigButton name="download" icon="downloadIcon24.png" action="#{window.plugins}.fireEvent(download);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{window.plugins}.fireEvent(update);" />
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../enable.html);" />
-					<smallButtons name="disable" icon="disableIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../disable.html);">
-						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../deinstall.html);" />
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../remove.html);" />
+					<smallButton name="enable" icon="enableIcon16.png" action="#{window.plugins}.fireEvent(enable);" />
+					<smallButtons name="disable" icon="disableIcon16.png" action="#{window.plugins}.fireEvent(disable);">
+						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{window.plugins}.fireEvent(deinstall);" />
+						<smallButton name="remove" icon="deleteIcon16.png" action="#{window.plugins}.fireEvent(remove);" />
 					</smallButtons>
 				</group>
 			</ribbon>
@@ -37,7 +37,12 @@
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
+				<listener event="download" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDownloadClick" />
 				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
+				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginEnableClick" />
+				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDisableClick" />
+				<listener event="deinstall" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDeinstallClick" />
+				<listener event="remove" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
