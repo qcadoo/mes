@@ -40,6 +40,8 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     private boolean visible = true;
 
+    private boolean hasError = false;
+
     private String translationPath;
 
     @Override
@@ -78,7 +80,15 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     @Override
     public final void addMessage(final String message, final MessageType type) {
         messageHolder.addMessage(message, type);
+        if (MessageType.FAILURE.equals(type)) {
+            hasError = true;
+        }
         requestRender();
+    }
+
+    @Override
+    public boolean isHasError() {
+        return hasError;
     }
 
     @Override
