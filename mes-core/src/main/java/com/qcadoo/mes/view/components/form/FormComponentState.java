@@ -48,6 +48,7 @@ public final class FormComponentState extends AbstractContainerState {
         registerEvent("save", eventPerformer, "save");
         registerEvent("saveAndClear", eventPerformer, "saveAndClear");
         registerEvent("initialize", eventPerformer, "initialize");
+        registerEvent("initializeAfterBack", eventPerformer, "initialize");
         registerEvent("reset", eventPerformer, "initialize");
         registerEvent("delete", eventPerformer, "delete");
     }
@@ -194,6 +195,8 @@ public final class FormComponentState extends AbstractContainerState {
             } else {
                 addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
             }
+
+            setFieldsRequiredAndDisables();
         }
 
         public void delete(final String[] args) {
@@ -209,17 +212,19 @@ public final class FormComponentState extends AbstractContainerState {
             Entity entity = getFormEntity();
 
             if (entity != null) {
-                setFieldsRequiredAndDisables();
                 copyEntityToFields(entity);
                 setFieldValue(entity.getId());
             } else {
                 clear(args);
             }
+
+            setFieldsRequiredAndDisables();
         }
 
         public void clear(final String[] args) {
             clearFields();
             setFieldValue(null);
+            setFieldsRequiredAndDisables();
         }
 
         private Entity getFormEntity() {
@@ -234,10 +239,18 @@ public final class FormComponentState extends AbstractContainerState {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 ErrorMessage message = entity.getError(field.getKey());
                 if (message == null) {
-                    field.getValue().setFieldValue(entity.getField(field.getKey()));
+                    field.getValue().setFieldValue(convertFieldToString(entity, field.getKey()));
                 } else {
                     copyMessage(field.getValue(), message);
                 }
+            }
+        }
+
+        private String convertFieldToString(final Entity entity, final String field) {
+            if (entity.getField(field) != null) {
+                return getDataDefinition().getField(field).getType().toString(entity.getField(field));
+            } else {
+                return "";
             }
         }
 

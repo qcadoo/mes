@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
@@ -23,8 +24,15 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
         List<String> codes = Lists.newArrayList(getTranslationPath() + ".label");
 
         if (getFieldDefinition() != null) {
-            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getFieldDefinition().getName())
+            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getFieldDefinition().getDataDefinition(),
+                    getFieldDefinition().getName())
                     + ".label");
+
+            if (BelongsToType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
+                codes.add(getTranslationService().getEntityFieldBaseMessageCode(
+                        ((BelongsToType) getFieldDefinition().getType()).getDataDefinition(), getFieldDefinition().getName())
+                        + ".label");
+            }
         }
 
         translations.put("label", getTranslationService().translate(codes, locale));

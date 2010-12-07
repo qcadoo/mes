@@ -23,6 +23,12 @@ public final class SelectComponentState extends FieldComponentState {
     }
 
     @Override
+    protected void initializeContent(final JSONObject json) throws JSONException {
+        super.initializeContent(json);
+        requestRender();
+    }
+
+    @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = super.renderContent();
         JSONArray values = new JSONArray();
@@ -57,7 +63,7 @@ public final class SelectComponentState extends FieldComponentState {
         return json;
     }
 
-    private JSONObject getValue(final String key, final String value) throws JSONException {
+    private JSONObject getTranslatedValue(final String key, final String value) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("key", key);
         String code = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), fieldDefinition.getName())
@@ -66,7 +72,7 @@ public final class SelectComponentState extends FieldComponentState {
         return json;
     }
 
-    private JSONObject getTranslatedValue(final String key, final String value) throws JSONException {
+    private JSONObject getValue(final String key, final String value) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("key", key);
         json.put("value", value);
