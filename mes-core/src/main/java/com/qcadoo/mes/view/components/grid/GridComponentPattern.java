@@ -23,13 +23,13 @@ import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 @ViewComponent("grid")
 public final class GridComponentPattern extends AbstractComponentPattern {
 
-    private static final int DEFAULT_GRID_HEIGHT = 300;
-
-    private static final int DEFAULT_GRID_WIDTH = 300;
-
     private static final String JSP_PATH = "newComponents/grid.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.Grid";
+
+    private static final int DEFAULT_GRID_HEIGHT = 300;
+
+    private static final int DEFAULT_GRID_WIDTH = 300;
 
     private final Set<String> searchableColumns = new HashSet<String>();
 

@@ -1,3 +1,12 @@
+<%--
+
+    ********************************************************************
+    Code developed by amazing QCADOO developers team.
+    Copyright (c) Qcadoo Limited sp. z o.o. (2010)
+    ********************************************************************
+
+--%>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -8,15 +17,6 @@
 
 <tiles:useAttribute name="component" />
 
-<div style="display: none;">
-	<div class="calendar" id="calendar"></div>
+<div class="component component_element component_element_staticPage" id="${component['path']}">
+	<jsp:include page="../../../${component['jspOptions']['page']}" />
 </div>
-
-<tiles:insertTemplate template="formComponent.jsp">
-	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="calendar" />
-	<tiles:putAttribute name="componentBody">
-			<input id="${component['path']}_input" type="text" />
-			<div id="${component['path']}_calendar" class="calendar"></div>
-	</tiles:putAttribute>
-</tiles:insertTemplate>

@@ -10,6 +10,8 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.EnumeratedType;
+import com.qcadoo.mes.model.types.internal.DictionaryType;
+import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.components.FieldComponentState;
 
 public final class SelectComponentState extends FieldComponentState {
@@ -26,7 +28,12 @@ public final class SelectComponentState extends FieldComponentState {
         JSONArray values = new JSONArray();
         values.put(getBlankValue());
 
-        if (EnumeratedType.class.isAssignableFrom(fieldDefinition.getType().getClass())) {
+        if (EnumType.class.isAssignableFrom(fieldDefinition.getType().getClass())) {
+            List<String> vals = ((EnumeratedType) fieldDefinition.getType()).values();
+            for (String val : vals) {
+                values.put(getTranslatedValue(val, val));
+            }
+        } else if (DictionaryType.class.isAssignableFrom(fieldDefinition.getType().getClass())) {
             List<String> vals = ((EnumeratedType) fieldDefinition.getType()).values();
             for (String val : vals) {
                 values.put(getValue(val, val));
@@ -56,6 +63,13 @@ public final class SelectComponentState extends FieldComponentState {
         String code = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), fieldDefinition.getName())
                 + ".value." + value;
         json.put("value", getTranslationService().translate(code, getLocale()));
+        return json;
+    }
+
+    private JSONObject getTranslatedValue(final String key, final String value) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("key", key);
+        json.put("value", value);
         return json;
     }
 
