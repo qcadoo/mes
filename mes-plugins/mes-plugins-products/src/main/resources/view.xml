@@ -367,6 +367,7 @@
 				<option type="searchable" value="name,date,worker" />
 				<option type="orderable" value="name,date,worker" />
 				<option type="fullscreen" value="true" />
+				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement"/>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -404,6 +405,7 @@
 				<component type="checkbox" name="onlyComponents" field="onlyComponents" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
+				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement" />
 			</component>
 			<component type="grid" name="materialRequirementComponents" source="#{window.materialRequirement}.orders">
 				<option type="column" name="number" fields="order" expression="#order['number']"/>

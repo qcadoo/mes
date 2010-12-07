@@ -14,6 +14,10 @@ import com.qcadoo.mes.view.states.AbstractContainerState;
 
 public final class ViewDefinitionStateImpl extends AbstractContainerState implements ViewDefinitionState {
 
+    private String redirectToUrl;
+
+    private boolean openInNewWindow;
+
     public ViewDefinitionStateImpl() {
         requestRender();
     }
@@ -21,6 +25,20 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
         // empty
+    }
+
+    @Override
+    public final JSONObject render() throws JSONException {
+        if (redirectToUrl != null) {
+            JSONObject json = new JSONObject();
+            JSONObject jsonRedirect = new JSONObject();
+            json.put("redirect", jsonRedirect);
+            jsonRedirect.put("url", redirectToUrl);
+            jsonRedirect.put("openInNewWindow", openInNewWindow);
+            return json;
+        } else {
+            return super.render();
+        }
     }
 
     @Override
@@ -84,6 +102,12 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
             }
         }
         return list;
+    }
+
+    @Override
+    public void redirectTo(final String redirectToUrl, final boolean openInNewWindow) {
+        this.redirectToUrl = redirectToUrl;
+        this.openInNewWindow = openInNewWindow;
     }
 
 }
