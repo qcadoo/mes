@@ -16,7 +16,7 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	
 	var containerElement = _element;
 	
-	var calendar = $("#"+this.elementPath+"_calendar");
+	var calendar = $("#"+this.elementSearchName+"_calendar");
 	
 	var input = this.input;
 	
