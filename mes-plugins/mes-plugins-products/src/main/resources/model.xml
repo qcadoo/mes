@@ -44,7 +44,7 @@
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
-		<hasMany name="technologyOperationComponents" model="technologyOperationComponent" joinField="product" cascade="nullify"/>
+		<hasMany name="operationProductComponents" model="operationProductComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
 	</model>
 	<model name="substitute">
@@ -81,6 +81,7 @@
 	</model>
 	<model name="operation">
 		<string name="name" />
+		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="nullify" />
 	</model>
 	<model name="technology">
 		<string name="number">
@@ -110,6 +111,7 @@
 		</belongsTo>
 		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
 		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
+		<hasMany name="operationProductComponents" model="operationProductComponent" joinField="operationComponent" cascade="delete" />
 	</model>
 	<model name="operationProductComponent">
 		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="name">

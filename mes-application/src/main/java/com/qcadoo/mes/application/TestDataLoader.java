@@ -414,14 +414,14 @@ public final class TestDataLoader {
             ProductsTechnologyOperationComponent component = new ProductsTechnologyOperationComponent();
             component.setTechnology(technology);
             component.setParent(parent);
-            component.setProduct(getRandomProduct());
-            component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test operation component {product=" + component.getProduct().getNumber() + ", technology="
-                        + component.getTechnology().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0)
-                        + ", quantity=" + component.getQuantity() + "}");
-            }
+            // component.setProduct(getRandomProduct());
+            // component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
+            // TODO MADY refactor test data loader
+            /*
+             * if (LOG.isDebugEnabled()) { LOG.debug("Add test operation component {product=" + component.getProduct().getNumber()
+             * + ", technology=" + component.getTechnology().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0) +
+             * ", quantity=" + component.getQuantity() + "}"); }
+             */
 
             sessionFactory.getCurrentSession().save(component);
 
