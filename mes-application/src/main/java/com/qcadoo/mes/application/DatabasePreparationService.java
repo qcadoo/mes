@@ -121,11 +121,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                     5);
         }
 
-        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Machine grid: " + machineGridView);
-        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Machine grid: " + staffGridView);
-
-        addMenuViewDefinitionItem("machines", "products.menu.products.machines", menuCategoryBasicData, machineGridView, 1);
-        addMenuViewDefinitionItem("staff", "products.menu.products.staff", menuCategoryBasicData, staffGridView, 2);
+        addMenuViewDefinitionItem("machines", "basic.menu.machines", menuCategoryBasicData, machineGridView, 1);
+        addMenuViewDefinitionItem("staff", "basic.menu.staff", menuCategoryBasicData, staffGridView, 2);
     }
 
     private void addMenuViewDefinitionItem(final String name, final String translation, final MenuMenuCategory menuCategory,
