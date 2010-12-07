@@ -57,4 +57,6 @@ public interface ComponentState {
 
     Locale getLocale();
 
+    boolean isHasError();
+
 }

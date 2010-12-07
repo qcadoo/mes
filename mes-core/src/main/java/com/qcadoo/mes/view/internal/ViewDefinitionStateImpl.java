@@ -1,6 +1,8 @@
 package com.qcadoo.mes.view.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,14 +14,33 @@ import com.qcadoo.mes.view.states.AbstractContainerState;
 
 public final class ViewDefinitionStateImpl extends AbstractContainerState implements ViewDefinitionState {
 
+    public ViewDefinitionStateImpl() {
+        requestRender();
+    }
+
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
-        // empty method
+        // empty
     }
 
     @Override
     protected JSONObject renderContent() throws JSONException {
-        return null; // empty method
+        JSONObject json = new JSONObject();
+
+        boolean isOk = true;
+
+        List<ComponentState> states = getStatesAsList(getChildren().values());
+
+        for (ComponentState state : states) {
+            if (state.isHasError()) {
+                isOk = false;
+                break;
+            }
+        }
+
+        json.put("status", isOk ? "ok" : "error");
+
+        return json;
     }
 
     @Override
@@ -52,6 +73,17 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
                 performEventOnChildren(((ContainerState) component).getChildren().values(), event, args);
             }
         }
+    }
+
+    private List<ComponentState> getStatesAsList(final Collection<ComponentState> states) {
+        List<ComponentState> list = new ArrayList<ComponentState>();
+        list.addAll(states);
+        for (ComponentState state : states) {
+            if (state instanceof ContainerState) {
+                list.addAll(getStatesAsList(((ContainerState) state).getChildren().values()));
+            }
+        }
+        return list;
     }
 
 }
