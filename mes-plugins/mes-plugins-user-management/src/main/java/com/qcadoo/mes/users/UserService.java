@@ -14,52 +14,58 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.ButtonComponentState;
+import com.qcadoo.mes.view.components.FieldComponentState;
+import com.qcadoo.mes.view.components.PasswordComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
 
 @Service
 public final class UserService {
 
     public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state, final Locale locale) {
-        // SimpleValue oldPasswordValue = (SimpleValue) value.lookupValue("mainWindow.userDetailsForm.oldPassword").getValue();
-        // SimpleValue passwordConfirmationValue = (SimpleValue) value
-        // .lookupValue("mainWindow.userDetailsForm.passwordConfirmation").getValue();
-        // SimpleValue passwordValue = (SimpleValue) value.lookupValue("mainWindow.userDetailsForm.password").getValue();
-        //
-        // oldPasswordValue.setRequired(true);
-        // passwordConfirmationValue.setRequired(true);
-        // passwordValue.setRequired(true);
-        //
-        // SimpleValue viewIdentifier = (SimpleValue) value.lookupValue("mainWindow.userDetailsForm.viewIdentifier").getValue();
-        // viewIdentifier.setValue("userProfileChangePasswordView");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByPath("window.user.viewIdentifier");
+        PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByPath("window.user.oldPassword");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByPath("window.user.password");
+        PasswordComponentState passwordConfirmation = (PasswordComponentState) state
+                .getComponentByPath("window.user.passwordConfirmation");
+
+        oldPassword.setRequired(true);
+        password.setRequired(true);
+        passwordConfirmation.setRequired(true);
+        viewIdentifier.setFieldValue("profileChangePassword");
     }
 
     public void setPasswordAsRequired(final ViewDefinitionState state, final Locale locale) {
-        // SimpleValue passwordConfirmationValue = (SimpleValue) value
-        // .lookupValue("mainWindow.userDetailsForm.passwordConfirmation").getValue();
-        // SimpleValue passwordValue = (SimpleValue) value.lookupValue("mainWindow.userDetailsForm.password").getValue();
-        //
-        // passwordConfirmationValue.setRequired(true);
-        // passwordValue.setRequired(true);
-        //
-        // SimpleValue viewIdentifier = (SimpleValue) value.lookupValue("mainWindow.userDetailsForm.viewIdentifier").getValue();
-        // viewIdentifier.setValue("userDetailsChangePasswordView");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByPath("window.user.viewIdentifier");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByPath("window.user.password");
+        PasswordComponentState passwordConfirmation = (PasswordComponentState) state
+                .getComponentByPath("window.user.passwordConfirmation");
+
+        password.setRequired(true);
+        passwordConfirmation.setRequired(true);
+        viewIdentifier.setFieldValue("userChangePassword");
     }
 
     public void hidePasswordOnUpdateForm(final ViewDefinitionState state, final Locale locale) {
-        // if (value == null || value.lookupValue("mainWindow.userDetailsForm") == null) {
-        // return;
-        // }
-        //
-        // FormValue formValue = (FormValue) value.lookupValue("mainWindow.userDetailsForm").getValue();
-        //
-        // if (formValue.getId() == null) {
-        // value.lookupValue("mainWindow.userDetailsForm.password").setVisible(true);
-        // value.lookupValue("mainWindow.userDetailsForm.passwordConfirmation").setVisible(true);
-        // value.lookupValue("mainWindow.changePasswordButton").setVisible(false);
-        // } else {
-        // value.lookupValue("mainWindow.userDetailsForm.password").setVisible(false);
-        // value.lookupValue("mainWindow.userDetailsForm.passwordConfirmation").setVisible(false);
-        // value.lookupValue("mainWindow.changePasswordButton").setVisible(true);
-        // }
+        FormComponentState form = (FormComponentState) state.getComponentByPath("window.user");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByPath("window.user.password");
+        PasswordComponentState passwordConfirmation = (PasswordComponentState) state
+                .getComponentByPath("window.user.passwordConfirmation");
+        ButtonComponentState changePasswordButton = (ButtonComponentState) state
+                .getComponentByPath("window.changePasswordButton");
+
+        password.setRequired(true);
+        passwordConfirmation.setRequired(true);
+
+        if (form.getEntityId() != null) {
+            password.setVisible(false);
+            passwordConfirmation.setVisible(false);
+            changePasswordButton.setVisible(true);
+        } else {
+            password.setVisible(true);
+            passwordConfirmation.setVisible(true);
+            changePasswordButton.setVisible(false);
+        }
     }
 
     public boolean checkPassword(final DataDefinition dataDefinition, final Entity entity) {
@@ -68,11 +74,11 @@ public final class UserService {
         String oldPassword = entity.getStringField("oldPassword");
         String viewIdentifier = entity.getStringField("viewIdentifier");
 
-        if (!"userProfileChangePasswordView".equals(viewIdentifier) && !"userDetailsChangePasswordView".equals(viewIdentifier)) {
+        if (!"profileChangePassword".equals(viewIdentifier) && !"userChangePassword".equals(viewIdentifier)) {
             return true;
         }
 
-        if ("userProfileChangePasswordView".equals(viewIdentifier)) {
+        if ("profileChangePassword".equals(viewIdentifier)) {
             if (oldPassword == null) {
                 entity.addError(dataDefinition.getField("oldPassword"), "users.validate.global.error.noOldPassword");
                 return false;

@@ -1,8 +1,10 @@
 package com.qcadoo.mes.view.components;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +61,13 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         }
 
         return json;
+    }
+
+    @Override
+    protected Map<String, Object> getJspOptions(final Locale locale) {
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("header", header);
+        return options;
     }
 
     private JSONObject getJsRibbon(final Locale locale) throws JSONException {
