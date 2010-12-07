@@ -58,7 +58,7 @@ public final class Restrictions {
      *            expected value
      * @return restriction
      */
-    public static Restriction eq(final String fieldName, final String expectedValue) {
+    public static Restriction eq(final String fieldName, final Object expectedValue) {
         return createEqRestriction(fieldName, expectedValue);
     }
 

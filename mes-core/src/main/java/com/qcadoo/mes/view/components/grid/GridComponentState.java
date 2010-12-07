@@ -280,8 +280,12 @@ public final class GridComponentState extends AbstractComponentState {
                 String field = getFieldNameByColumnName(filter.getKey());
 
                 if (field != null) {
-                    if (useLikeRestriction(field)) {
+                    FieldType type = getFieldType(field);
+
+                    if (type != null && String.class.isAssignableFrom(type.getType())) {
                         criteria.restrictedWith(Restrictions.eq(field, filter.getValue() + "*"));
+                    } else if (type != null && Boolean.class.isAssignableFrom(type.getType())) {
+                        criteria.restrictedWith(Restrictions.eq(field, "1".equals(filter.getValue())));
                     } else {
                         criteria.restrictedWith(Restrictions.eq(field, filter.getValue()));
                     }
@@ -289,15 +293,14 @@ public final class GridComponentState extends AbstractComponentState {
             }
         }
 
-        private boolean useLikeRestriction(final String field) {
+        private FieldType getFieldType(final String field) {
             String[] path = field.split("\\.");
 
             DataDefinition dataDefinition = getDataDefinition();
 
             for (int i = 0; i < path.length; i++) {
                 if (dataDefinition.getField(path[i]) == null) {
-                    // TODO masz warn
-                    return false;
+                    return null;
                 }
 
                 FieldType fieldType = dataDefinition.getField(path[i]).getType();
@@ -307,15 +310,14 @@ public final class GridComponentState extends AbstractComponentState {
                         dataDefinition = ((BelongsToType) fieldType).getDataDefinition();
                         continue;
                     } else {
-                        // TODO warn
-                        return false;
+                        return null;
                     }
                 }
 
-                return String.class.isAssignableFrom(fieldType.getType());
+                return fieldType;
             }
 
-            return false;
+            return null;
         }
 
         private void addOrder(final SearchCriteriaBuilder criteria) {

@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
@@ -44,6 +45,16 @@ public final class CheckBoxComponentPattern extends FieldComponentPattern {
         Map<String, Object> options = super.getJspOptions(locale);
         options.put("textRepresentationOnDisabled", textRepresentationOnDisabled);
         return options;
+    }
+
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = new JSONObject();
+        JSONObject jsonTranslations = new JSONObject();
+        jsonTranslations.put("true", getTranslationService().translate("commons.true", locale));
+        jsonTranslations.put("false", getTranslationService().translate("commons.false", locale));
+        json.put("translations", jsonTranslations);
+        return json;
     }
 
     @Override

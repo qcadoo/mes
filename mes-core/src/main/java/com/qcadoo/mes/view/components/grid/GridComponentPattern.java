@@ -14,6 +14,9 @@ import org.json.JSONObject;
 
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.internal.BooleanType;
+import com.qcadoo.mes.model.types.internal.DictionaryType;
+import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -160,24 +163,44 @@ public final class GridComponentPattern extends AbstractComponentPattern {
             jsonColumn.put("hidden", column.isHidden());
             jsonColumn.put("width", column.getWidth());
             jsonColumn.put("align", column.getAlign());
-            if (column.getFilterValues() != null && !column.getFilterValues().isEmpty()) {
-                JSONObject jsonFilterValues = new JSONObject();
-                for (Map.Entry<String, String> filterValue : column.getFilterValues().entrySet()) {
-                    if (column.getFields().size() == 1) {
-                        String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
-                                column.getFields().get(0).getName())
-                                + ".value." + filterValue.getValue();
-                        jsonFilterValues.put(filterValue.getKey(), getTranslationService().translate(fieldCode, locale));
-                    } else {
-                        jsonFilterValues.put(filterValue.getKey(), filterValue.getValue());
-                    }
-                }
-                jsonColumn.put("filterValues", jsonFilterValues);
-            }
+            jsonColumn.put("filterValues", getFilterValuesForColumn(column, locale));
             jsonColumns.put(jsonColumn);
         }
 
         return jsonColumns;
+    }
+
+    public JSONObject getFilterValuesForColumn(final GridComponentColumn column, final Locale locale) throws JSONException {
+        if (column.getFields().size() != 1) {
+            return null;
+        }
+
+        JSONObject json = new JSONObject();
+
+        if (column.getFields().get(0).getType() instanceof EnumType) {
+            EnumType type = (EnumType) column.getFields().get(0).getType();
+            for (String value : type.values()) {
+                String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
+                        column.getFields().get(0).getName())
+                        + ".value." + value;
+                json.put(value, getTranslationService().translate(fieldCode, locale));
+            }
+        } else if (column.getFields().get(0).getType() instanceof DictionaryType) {
+            DictionaryType type = (DictionaryType) column.getFields().get(0).getType();
+            for (String value : type.values()) {
+                json.put(value, value);
+            }
+        } else if (column.getFields().get(0).getType() instanceof BooleanType) {
+            json.put("1", getTranslationService().translate("commons.true", locale));
+            json.put("0", getTranslationService().translate("commons.false", locale));
+        }
+
+        if (json.length() > 0) {
+            return json;
+        } else {
+            return null;
+        }
+
     }
 
     private List<String> getColumnTranslationCodes(final GridComponentColumn column) {

@@ -1,16 +1,13 @@
 package com.qcadoo.mes.view.components.grid;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.internal.EnumType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 
 public final class GridComponentColumn {
@@ -62,19 +59,6 @@ public final class GridComponentColumn {
             return "right";
         } else {
             return "left";
-        }
-    }
-
-    public Map<String, String> getFilterValues() {
-        if (fields.size() == 1 && fields.get(0).getType() instanceof EnumType) {
-            Map<String, String> values = new HashMap<String, String>();
-            EnumType type = (EnumType) fields.get(0).getType();
-            for (String value : type.values()) {
-                values.put(value, value);
-            }
-            return values;
-        } else {
-            return null;
         }
     }
 
