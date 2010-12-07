@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.util.Locale;
 
 import org.dom4j.DocumentException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ViewValue;
@@ -39,6 +39,9 @@ import com.qcadoo.mes.view.containers.FormValue;
 
 @Service
 public final class UserService {
+
+    @Value("${showChangePasswordButton}")
+    private boolean showChangePasswordButton;
 
     public void onUserProfileChangePasswordView(final ViewValue<Long> value, final String triggerComponentName,
             final Entity entity, final Locale locale) throws IOException, DocumentException {
@@ -98,9 +101,7 @@ public final class UserService {
         if (value == null || value.lookupValue("mainWindow.userDetailsForm") == null) {
             return;
         }
-        String envHomeProperty = System.getenv("ENV_HOME");
-        // if (envHomeProperty != null && envHomeProperty.equals("amazon")) {
-        if (SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+        if (!showChangePasswordButton) {
             value.lookupValue("mainWindow.changePasswordButton").setVisible(false);
         }
     }

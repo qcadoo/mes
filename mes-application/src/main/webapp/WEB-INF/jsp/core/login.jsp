@@ -59,7 +59,7 @@
 		var errorHeaderText = '${translation["security.message.errorHeader"]}';
 		var errorContentText = '${translation["security.message.errorContent"]}';
 
-		var fillLoginAsDemo = ${isInAmazon};
+		var fillLoginAsDemo = ${showUserAndPassword};
 
 		var usernameInput;
 	
@@ -197,7 +197,7 @@
 
 	</script>
 	
-	<c:if test="${isInAmazon}">
+	<c:if test="${showUserAndPassword}">
 		<script type="text/javascript">
 		 var _gaq = _gaq || [];
 		  _gaq.push(['_setAccount', 'UA-20029533-2']);

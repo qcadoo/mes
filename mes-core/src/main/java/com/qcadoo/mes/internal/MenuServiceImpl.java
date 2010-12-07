@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.PluginManagementService;
@@ -61,6 +61,9 @@ public final class MenuServiceImpl implements MenuService {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
+
+    @Value("${showAdministrationMenu}")
+    private boolean showAdministrationMenu;
 
     @Override
     @Transactional
@@ -145,7 +148,7 @@ public final class MenuServiceImpl implements MenuService {
             menuDef.addItem(category);
         }
 
-        if (!hasMenuCategoryGridView && !SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+        if (!hasMenuCategoryGridView && showAdministrationMenu) {
             if (administrationCategory == null) {
                 administrationCategory = new MenulItemsGroup("administration", getLabel("administration",
                         "core.menu.administration", locale));

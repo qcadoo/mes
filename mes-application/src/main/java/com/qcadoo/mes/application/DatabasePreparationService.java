@@ -35,7 +35,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.menu.MenuMenuCategory;
 import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
@@ -61,6 +60,12 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     private UsersGroup adminGroup;
 
     private UsersGroup supervisorsGroup;
+
+    @Value("${addAdministrationMenuToDatabase}")
+    private boolean addAdministrationMenuToDatabase;
+
+    @Value("${addHardAdminPass}")
+    private boolean addHardAdminPass;
 
     @Override
     @Transactional
@@ -109,7 +114,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
         addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryAdministration,
                 dictionaryGridView, 1);
-        if (!SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+        if (addAdministrationMenuToDatabase) {
             addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
             addMenuViewDefinitionItem("groups", "users.menu.administration.groups", menuCategoryAdministration, groupGridView, 3);
             addMenuViewDefinitionItem("plugins", "plugins.menu.administration.plugins", menuCategoryAdministration,
@@ -167,7 +172,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     private void addUsers() {
         addUser("demo", "demo@email.com", "Demo", "Demo", "2a97516c354b68848cdbd8f54a226a0a55b21ed138e207ad6c5cbb9c00aa5aea",
                 supervisorsGroup);
-        if (SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+        if (addHardAdminPass) {
             addUser("admin", "admin@email.com", "Admin", "Admin",
                     "6b63dcb740cd63e4497883ae1fb645c5880face17b6483b468ce4c50f93698be", adminGroup);
         } else {

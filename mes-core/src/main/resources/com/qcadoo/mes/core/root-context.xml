@@ -44,7 +44,7 @@
        http://www.springframework.org/schema/aop 
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,classpath*:hibernate.properties" />
+	<context:property-placeholder location="file:${QCADOO_CONF}/db.properties,file:${QCADOO_CONF}/mes.properties,classpath*:hibernate.properties" />
 
 	<bean id="log4jConfigurer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetClass">
