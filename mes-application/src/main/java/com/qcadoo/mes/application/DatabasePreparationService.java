@@ -91,6 +91,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition userGridView = getMenuViewDefinition("userGridView");
         MenuViewDefinition dictionaryGridView = getMenuViewDefinition("dictionaryGridView");
         MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirementGridView");
+        MenuViewDefinition operationGridView = getMenuViewDefinition("operationGridView");
         MenuViewDefinition productGridView = getMenuViewDefinition("productGridView");
         MenuViewDefinition groupGridView = getMenuViewDefinition("groupGridView");
 
@@ -104,6 +105,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                 orderGridView, 3);
         addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryProducts,
                 materialRequirementGridView, 4);
+        addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryProducts, operationGridView, 5);
 
         addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryAdministration,
                 dictionaryGridView, 1);

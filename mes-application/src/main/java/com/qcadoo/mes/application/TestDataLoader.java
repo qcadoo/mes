@@ -59,6 +59,7 @@ import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirementComponent;
+import com.qcadoo.mes.beans.products.ProductsOperation;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
@@ -93,6 +94,8 @@ public final class TestDataLoader {
 
     private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr" };
 
+    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number" };
+
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Autowired
@@ -109,6 +112,7 @@ public final class TestDataLoader {
         readDataFromXML("users", USER_ATTRIBUTES);
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
+        readDataFromXML("operations", OPERATION_ATTRIBUTES);
         readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
         addMaterialRequirements();
@@ -162,7 +166,23 @@ public final class TestDataLoader {
             addUser(values);
         } else if ("units".equals(type)) {
             UNITS.add(values.get("name"));
+        } else if ("operations".equals(type)) {
+            addOperations(values);
         }
+    }
+
+    private void addOperations(Map<String, String> values) {
+        ProductsOperation operation = new ProductsOperation();
+
+        operation.setName(values.get("name"));
+        operation.setNumber(values.get("number"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test dictionary item {dictionary=" + operation.getName() + ", name=" + operation.getName() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(operation);
+
     }
 
     private void addProduct(final Map<String, String> values) {
@@ -414,6 +434,7 @@ public final class TestDataLoader {
             ProductsTechnologyOperationComponent component = new ProductsTechnologyOperationComponent();
             component.setTechnology(technology);
             component.setParent(parent);
+            component.setOperation(getRandomOperation());
             // component.setProduct(getRandomProduct());
             // component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
             // TODO MADY refactor test data loader
@@ -507,6 +528,13 @@ public final class TestDataLoader {
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
 
+    private ProductsOperation getRandomOperation() {
+        Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return (ProductsOperation) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
+                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
+    }
+
     private ProductsOrder getRandomOrder() {
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsOrder.class)
                 .setProjection(Projections.rowCount()).uniqueResult();
@@ -523,6 +551,11 @@ public final class TestDataLoader {
 
     private DictionariesDictionary getDictionaryByName(final String name) {
         return (DictionariesDictionary) sessionFactory.getCurrentSession().createCriteria(DictionariesDictionary.class)
+                .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
+    }
+
+    private ProductsOperation getOperationByName(final String name) {
+        return (ProductsOperation) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
                 .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
     }
 
