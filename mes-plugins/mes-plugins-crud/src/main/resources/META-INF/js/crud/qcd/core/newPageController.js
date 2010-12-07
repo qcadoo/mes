@@ -9,12 +9,18 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	
 	//var headerComponent = null;
 	
+	var pageOptions;
+	
 	var messagesController;
 	
 	function constructor(_this) {
 		
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
+		
+		var pageOptionsElement = $("#pageOptions");
+		pageOptions = JSON.parse($.trim(pageOptionsElement.html()));
+		pageOptionsElement.remove();
 		
 		var contentElement = $("body");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
@@ -204,11 +210,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 //	this.setWindowHeaderComponent = function(component) {
 //		headerComponent = component;
 //	}
-//	this.setWindowHeader = function(header) {
+	this.setWindowHeader = function(header) {
+		QCD.info("HEADER:");
+		QCD.info(header);
 //		if (headerComponent) {
 //			headerComponent.setHeader(header);
 //		}
-//	}
+	}
 	
 	function setValueData(data) {
 		QCD.debug(data);
@@ -240,15 +248,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	
-	this.getTranslation = function(key) {
-		
-		// TODO mina translation
-		
-	//	return window.translationsMap[key] ? window.translationsMap[key] : key;
-		return key;
-	}
-	var getTranslation = this.getTranslation;
-	
 	this.goToPage = function(url) {
 		//if(canClose()) {
 			var serializationObject = {
@@ -273,7 +272,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 			}
 		}
 		if(changed) {
-			return window.confirm(getTranslation('commons.backWithChangesConfirmation'));
+			return window.confirm(pageOptions.translations.backWithChangesConfirmation);
 		} else {
 			return true;
 		}

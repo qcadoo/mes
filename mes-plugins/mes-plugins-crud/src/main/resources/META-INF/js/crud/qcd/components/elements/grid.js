@@ -291,7 +291,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	function blockGrid() {
 		if (grid) {
 			// TODO masz i18n
-			element.block({ message: '<div class="loading_div">'+mainController.getTranslation("commons.loading")+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: {
+			element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: {
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 
@@ -413,7 +413,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			} catch (e) {
 				QCD.info("error in filters");
 				QCD.info(postdata.filters);
-				var wrongSearchCharacterError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".wrongSearchCharacterError";
 				mainController.showMessage("error", translations.wrongSearchCharacterError);
 				unblockGrid();
 				return;

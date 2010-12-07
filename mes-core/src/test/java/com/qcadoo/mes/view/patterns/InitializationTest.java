@@ -309,7 +309,7 @@ public class InitializationTest extends AbstractPatternTest {
         given(hasManyType.getDataDefinition()).willReturn(hasManyDataDefinition);
         given(belongsToType.getDataDefinition()).willReturn(belongsToDataDefinition);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("view", "plugin", dataDefinition, true);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("view", "plugin", dataDefinition, true, null);
 
         AbstractContainerPattern parent = new FormComponentPattern(getComponentDefinition("parent", viewDefinition));
         AbstractContainerPattern form = new FormComponentPattern(getComponentDefinition("form", null, null, parent,

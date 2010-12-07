@@ -121,7 +121,8 @@ public final class ViewDefinitionParser {
             dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(reader, "model"));
         }
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(name, pluginIdentifier, dataDefinition, menuAccessible);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(name, pluginIdentifier, dataDefinition, menuAccessible,
+                translationService);
 
         ComponentPattern root = null;
 

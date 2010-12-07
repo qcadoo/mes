@@ -21,6 +21,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	var baseValue = null; 
 	
+	translations = this.options.translations;
+	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
@@ -35,23 +37,25 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-//		if(value.valid) {
-//			if(value.headerEntityIdentifier) {
-//				mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
-//			} else {
-//				mainController.setWindowHeader(value.header);
-//			}
-//		}
+		if(value.valid) {
+			QCD.info(value.headerEntityIdendifier);
+			QCD.info(value);
+			if(value.headerEntityIdentifier) {
+				mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
+			} else {
+				mainController.setWindowHeader(value.header);
+			}
+		}
 		formValue = value.entityId;
 		unblock();
 	}
 	
 	this.setComponentState = function(state) {
-//		if(state.headerEntityIdentifier) {
-//			mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
-//		} else {
-//			mainController.setWindowHeader(state.header);
-//		}
+		if(state.headerEntityIdentifier) {
+			mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
+		} else {
+			mainController.setWindowHeader(state.header);
+		}
 		formValue = state.entityId;
 		if (state.baseValue) {
 			baseValue = state.baseValue;
@@ -83,16 +87,14 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performDelete = function(actionsPerformer) {
-		//var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-		var confirmDeleteMessage = "confirmDeleteMessage";
+		var confirmDeleteMessage = translations.confirmDeleteMessage;
 		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
 			callEvent("delete", actionsPerformer);
 		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-		//var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
-		var confirmCancelMessage = "confirmCancelMessage";
+		var confirmCancelMessage = translations.confirmCancelMessage;
 		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
 			callEvent("reset", actionsPerformer);
 		}
@@ -126,7 +128,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	function block() {
-		element.block({ message: '<div class="loading_div">'+mainController.getTranslation("commons.loading")+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+		element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
             border: 'none', 
             padding: '15px', 
             backgroundColor: '#000', 

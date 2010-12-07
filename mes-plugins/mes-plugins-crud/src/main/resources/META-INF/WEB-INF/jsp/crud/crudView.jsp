@@ -135,6 +135,8 @@
 </head>
 <body>
 
+	<div id="pageOptions" style="display: none;">${model['jsOptions']}</div>
+
 	<c:forEach items="${model['components']}" var="component">
 		<tiles:insertTemplate template="components/newComponent.jsp">
 			<tiles:putAttribute name="component" value="${component.value}" />

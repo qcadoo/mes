@@ -13,7 +13,6 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
@@ -44,15 +43,15 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     private final Map<String, ComponentPattern> patterns = new LinkedHashMap<String, ComponentPattern>();
 
-    @Autowired
-    private TranslationService translationService;
+    private final TranslationService translationService;
 
     public ViewDefinitionImpl(final String name, final String pluginIdentifier, final DataDefinition dataDefinition,
-            final boolean menuAccessible) {
+            final boolean menuAccessible, final TranslationService translationService) {
         this.name = name;
         this.dataDefinition = dataDefinition;
         this.pluginIdentifier = pluginIdentifier;
         this.menuAccessible = menuAccessible;
+        this.translationService = translationService;
     }
 
     public void initialize() {
@@ -99,7 +98,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
             translations.put("backWithChangesConfirmation",
                     translationService.translate("commons.backWithChangesConfirmation", locale));
             json.put("translations", translations);
-            model.put("jsOptions", getJsFilePaths());
+            model.put("jsOptions", json);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
