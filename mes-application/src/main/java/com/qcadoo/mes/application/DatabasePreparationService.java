@@ -94,9 +94,12 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition operationGridView = getMenuViewDefinition("operationGridView");
         MenuViewDefinition productGridView = getMenuViewDefinition("productGridView");
         MenuViewDefinition groupGridView = getMenuViewDefinition("groupGridView");
+        MenuViewDefinition machineGridView = getMenuViewDefinition("machineGridView");
+        MenuViewDefinition staffGridView = getMenuViewDefinition("staffGridView");
 
         MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
         MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 2);
+        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 3);
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryProducts,
                 technologyGridView, 1);
@@ -117,6 +120,12 @@ public final class DatabasePreparationService implements ApplicationListener<Con
             addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView,
                     5);
         }
+
+        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Machine grid: " + machineGridView);
+        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Machine grid: " + staffGridView);
+
+        addMenuViewDefinitionItem("machines", "products.menu.products.machines", menuCategoryBasicData, machineGridView, 1);
+        addMenuViewDefinitionItem("staff", "products.menu.products.staff", menuCategoryBasicData, staffGridView, 2);
     }
 
     private void addMenuViewDefinitionItem(final String name, final String translation, final MenuMenuCategory menuCategory,
@@ -212,6 +221,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         addPlugin("menu", "Qcadoo MES :: Plugins :: Menu Management", true, "mes-plugins-menu-management-0.2.0-SNAPSHOT.jar");
         addPlugin("crud", "Qcadoo MES :: Plugins :: CRUD", true, "mes-plugins-crud-0.2.0-SNAPSHOT.jar");
         addPlugin("products", "Qcadoo MES :: Plugins :: Products", false, "mes-plugins-products-0.2.0-SNAPSHOT.jar");
+        addPlugin("basic", "Qcadoo MES :: Plugins :: Basic", false, "mes-plugins-basic-management-0.2.0-SNAPSHOT.jar");
     }
 
     private void addPlugin(final String identifier, final String name, final boolean base, final String fileName) {

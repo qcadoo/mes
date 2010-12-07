@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<qcd:views plugin="basic" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="machineGridView" model="machine" menuable="true">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" icon="newIcon24.png" action="#{mainWindow.machinesGrid}.performNew;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.machinesGrid}.performDelete;" />
+				</group>
+			</ribbon>				
+			<component type="grid" name="machinesGrid">
+				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="number" fields="number" link="true"/>
+				<option type="header" value="false" />
+				<option type="searchable" value="name,number" />
+				<option type="orderable" value="name,number" />
+				<option type="paginable" value="true" />
+				<option type="multiselect" value="false" />
+				<option type="correspondingView" value="basic/machineDetailsView" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
+				<option type="fullScreen" value="true" />
+			</component>
+			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+	</view>
+	<view name="machineDetailsView" model="machine">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{mainWindow.machineDetailsForm}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{mainWindow.machineDetailsForm}.performSave; #{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png"
+						action="#{mainWindow.machineDetailsForm}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.machineDetailsForm}.performDelete; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>		
+			<component type="form" name="machineDetailsForm">
+				<component type="input" name="number" field="number"/>
+				<component type="textarea" name="name" field="name" />
+				<component type="checkbox" name="productionLine" field="productionLine"/>
+				<component type="textarea" name="description" field="description" />
+				<option type="header" value="false" />
+				<option type="expression" value="#name"/>
+			</component>
+		</component>
+	</view>
+	<view name="staffGridView" model="staff" menuable="true">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" icon="newIcon24.png" action="#{mainWindow.staffGrid}.performNew;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.staffGrid}.performDelete;" />
+				</group>
+			</ribbon>				
+			<component type="grid" name="staffGrid">
+				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="surname" fields="surname" link="true"/>
+				<option type="column" name="post" fields="post" link="true"/>
+				<option type="header" value="false" />
+				<option type="searchable" value="name,number,surname,post" />
+				<option type="orderable" value="name,number,surname,post" />
+				<option type="paginable" value="true" />
+				<option type="multiselect" value="false" />
+				<option type="correspondingView" value="basic/staffDetailsView" />
+				<option type="deletable" value="false" />
+				<option type="creatable" value="false" />
+				<option type="fullScreen" value="true" />
+			</component>
+			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+	</view>
+	<view name="staffDetailsView" model="staff">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{mainWindow.staffDetailsForm}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{mainWindow.staffDetailsForm}.performSave; #{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png"
+						action="#{mainWindow.staffDetailsForm}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.staffDetailsForm}.performDelete; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>		
+			<component type="form" name="staffDetailsForm">
+				<component type="input" name="number" field="number"/>
+				<component type="input" name="name" field="name" />
+				<component type="input" name="surname" field="surname" />
+				<component type="input" name="post" field="post" />
+				<option type="header" value="false" />
+				<option type="expression" value="#name"/>
+			</component>
+		</component>
+	</view>	
+</qcd:views>

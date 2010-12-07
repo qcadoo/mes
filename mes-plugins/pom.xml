@@ -28,6 +28,7 @@
 		<module>mes-plugins-plugin-management</module>
 		<module>mes-plugins-menu-management</module>
 		<module>mes-plugins-products</module>
+		<module>mes-plugins-basic-management</module>
 	</modules>
 
 	<dependencies>

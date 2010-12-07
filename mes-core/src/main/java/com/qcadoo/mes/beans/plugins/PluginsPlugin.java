@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.beans.plugins;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -48,8 +47,7 @@ public class PluginsPlugin {
 
     private String status;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean base;
+    private boolean base = false;
 
     private String identifier;
 
