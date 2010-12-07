@@ -355,7 +355,7 @@
 					<smallButton name="pdf" icon="printIcon16.png"
 						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,xls,arg1,arg2);" />
+						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirements">
