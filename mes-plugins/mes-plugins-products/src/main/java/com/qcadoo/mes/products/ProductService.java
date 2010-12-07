@@ -39,6 +39,7 @@ import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 
 @Service
 public final class ProductService {
@@ -456,6 +457,12 @@ public final class ProductService {
 
     public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
+
+        GridComponentState gridState = (GridComponentState) state;
+        if (gridState.getSelectedEntityId() == null) {
+            gridState.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO mina i18n
+        }
+
         if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
             Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                     (Long) state.getFieldValue());

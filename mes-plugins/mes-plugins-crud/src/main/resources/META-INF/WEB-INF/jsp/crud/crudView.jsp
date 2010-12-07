@@ -84,7 +84,7 @@
 		var context = '${context}';
 		var locale = '${locale}';
 
-		//var hasDataDefinition = '{viewDefinition.dataDefinition}' == '' ? false : true;
+		var hasDataDefinition = ${model['hasDataDefinition']};
 
 		//var lookupComponentName = '{lookupComponentName}';
 
@@ -115,7 +115,7 @@
 			//if (! window.parent.getCurrentUserLogin && ! lookupComponentName) {
 				//window.location = "/main.html";
 			//}
-			controller = new QCD.PageController(viewName, pluginIdentifier);
+			controller = new QCD.PageController(viewName, pluginIdentifier, hasDataDefinition);
 			
 			context = $.trim(context);
 			if (context && context != "") {

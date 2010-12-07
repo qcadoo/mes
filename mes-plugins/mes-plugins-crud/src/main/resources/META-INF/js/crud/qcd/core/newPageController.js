@@ -1,9 +1,10 @@
 var QCD = QCD || {};
 
-QCD.PageController = function(_viewName, _pluginIdentifier) {
+QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition) {
 	
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
+	var hasDataDefinition = _hasDataDefinition;
 	
 	var pageComponents;
 	
@@ -33,25 +34,14 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	this.init = function(entityId, serializationObject) {
 		if (serializationObject) {
 			setComponentState(serializationObject);
-			this.callEvent("initializeAfterBack");
+			if (hasDataDefinition) {
+				this.callEvent("initializeAfterBack");
+			}
 		} else {
-			this.callEvent("initialize");	
+			if (hasDataDefinition) {
+				this.callEvent("initialize");
+			}
 		}
-		
-		// TODO mina used in static pages (ex. error pages from plugin management) 
-		
-//		if (hasDataDefinition) {
-//			parameters.entityId = rootEntityId;
-//			parameters.data = getValueData();
-//			var valuesJson = JSON.stringify(parameters);
-//			QCDConnector.sendPost("data", valuesJson, function(response) {
-//				setValueData(response);
-//			}, function(message) {
-//				//alert(message);
-//			});
-//		}
-		
-		
 	}
 	
 	this.setContext = function(contextStr) {
@@ -89,7 +79,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 				if (response.redirect.openInNewWindow) {
 					window.open(response.redirect.url);
 				} else {
-					window.location = response.redirect.url;
+					goToPage(response.redirect.url);
+					return;
 				}
 			} else {
 				setValueData(response);
@@ -265,6 +256,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 			window.parent.goToPage(url, serializationObject);
 		//}
 	}
+	var goToPage = this.goToPage;
 	
 	this.goBack = function() {
 		if(canClose()) {

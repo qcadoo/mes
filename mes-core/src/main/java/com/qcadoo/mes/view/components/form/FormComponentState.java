@@ -210,8 +210,6 @@ public final class FormComponentState extends AbstractContainerState {
         public void initialize(final String[] args) {
             Entity entity = getFormEntity();
 
-            copyDefaultValuesToFields();
-
             if (entity != null) {
                 copyEntityToFields(entity);
                 setFieldValue(entity.getId());
@@ -225,6 +223,7 @@ public final class FormComponentState extends AbstractContainerState {
         public void clear(final String[] args) {
             clearFields();
             setFieldValue(null);
+            copyDefaultValuesToFields();
             setFieldsRequiredAndDisables();
         }
 
@@ -239,7 +238,6 @@ public final class FormComponentState extends AbstractContainerState {
         private void copyDefaultValuesToFields() {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
-
                 if (fieldDefinition.getDefaultValue() != null) {
                     field.getValue().setFieldValue(convertFieldToString(fieldDefinition.getDefaultValue(), field.getKey()));
                 }
