@@ -194,15 +194,13 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	}
 	
 	this.showMessage = function(message) {
-		var content = message.content;
-		var type = message.type.toLowerCase();
 		if (window.parent && window.parent.addMessage) {
-			window.parent.addMessage(type, content);
+			window.parent.addMessage(message);
 		} else {
 			if (!messagesController) {
 				messagesController = new QCD.MessagesController();
 			}
-			messagesController.addMessage(type, content);
+			messagesController.addMessage(message);
 		}
 	}
 	

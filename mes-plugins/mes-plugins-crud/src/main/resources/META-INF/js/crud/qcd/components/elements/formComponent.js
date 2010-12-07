@@ -106,12 +106,8 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 		for ( var i in messages) {
 			messageDiv = $('<div>');
 			
-			QCD.info(messages[i]);
-
-			message = QCD.MessagesController.split(messages[i].content, 'error');
-
-			messageDiv.append('<span>' + message[0] + '</span>');
-			messageDiv.append('<p>' + message[1] + '</p>');
+			messageDiv.append('<span>' + messages[i].title + '</span>');
+			messageDiv.append('<p>' + messages[i].content + '</p>');
 
 			errorMessages.append(messageDiv);
 		}

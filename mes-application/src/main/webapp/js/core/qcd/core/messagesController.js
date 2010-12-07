@@ -15,17 +15,16 @@ QCD.MessagesController = function() {
 		$.pnotify_remove_all()
 	}
 	
-	this.addMessage = function(type, message) { // type = [info|error|success]
+	this.addMessage = function(message) { // type = [info|error|success]
 		
+		type = message.type.toLowerCase();
 		if (type == "failure") {
 			type = "error";
 		}
 		
-		message = QCD.MessagesController.split(message, type);
-		
 		$.pnotify({
-			pnotify_title: message[0],
-			pnotify_text: message[1],
+			pnotify_title: message.title,
+			pnotify_text: message.content,
 			pnotify_stack: pnotify_stack,
 			pnotify_history: false,
 			pnotify_width: "300px",
@@ -42,18 +41,3 @@ QCD.MessagesController = function() {
 
 }
 
-QCD.MessagesController.split = function(message, type) {
-	contents = message.split('\n')
-	
-	if(contents.length > 1) {
-		title = contents[0];
-		text = contents.splice(1).join("\n")
-	} else {
-		//key = 'commons.notification.' + type;
-		//title = window.translationsMap[key] ? window.translationsMap[key] : key;
-		title = "test";
-		text = contents[0];
-	}
-
-	return [ title, text ];
-}
