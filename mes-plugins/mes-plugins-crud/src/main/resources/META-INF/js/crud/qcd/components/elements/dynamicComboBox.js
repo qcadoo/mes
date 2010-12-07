@@ -29,16 +29,18 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		setData(data);
 	}
 	
-	this.setComponentState = function(state) {
-		stateSelectedValue = state.value;
-	}
+	//this.setComponentState = function(state) {
+	//	stateSelectedValue = state.value;
+	//}
 	
 	function setData(data) {
 		if (data == null) {
 			return;
 		}
-		
-		
+		if (data.value && ! data.values) { // is setState
+			stateSelectedValue = data.value;
+			return;
+		}
 		var previousSelected = input.val();
 		input.children().remove();
 		for (var i in data.values) {

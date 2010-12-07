@@ -29,7 +29,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 
 	this.getComponentValue = function() {
 		return {
-			entityId: formValue
+			entityId: formValue,
+			baseValue: baseValue
 		};
 	}
 	
@@ -52,6 +53,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 //			mainController.setWindowHeader(state.header);
 //		}
 		formValue = state.entityId;
+		if (state.baseValue) {
+			baseValue = state.baseValue;
+		}
 		unblock();
 	}
 	

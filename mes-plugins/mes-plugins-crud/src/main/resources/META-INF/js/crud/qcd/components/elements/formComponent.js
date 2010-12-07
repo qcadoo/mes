@@ -47,7 +47,6 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.getComponentData = function() {
 		return {
 			value : this.input.val(),
-			baseValue: baseValue
 		}
 	}
 
@@ -55,14 +54,12 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 		if (data.value) {
 			this.input.val(data.value);
 		}
-		if (data.baseValue) {
-			baseValue = data.baseValue;
-		}
 	}
 
 	this.getComponentValue = function() {
 		var value = this.getComponentData();
 		value.required = element.hasClass("required");
+		value.baseValue = baseValue;
 		return value;
 	}
 
@@ -74,12 +71,19 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.setComponentState = function(state) {
 		this.setComponentData(state);
 		setComponentRequired(state.required);
+		if (state.baseValue) {
+			baseValue = state.baseValue;
+		}
 	}
 	
 	this.performUpdateState = function() {
 		baseValue = this.getComponentData().value;
 	}
 	this.isComponentChanged = function() {
+		if (! (baseValue == this.getComponentData().value)) {
+			baseValue
+		}
+		
 		return ! (baseValue == this.getComponentData().value);
 	}
 

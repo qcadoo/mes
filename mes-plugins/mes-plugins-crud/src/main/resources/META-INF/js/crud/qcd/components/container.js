@@ -50,6 +50,7 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 		for (var i in components) {
 			if(components[i].isChanged()) {
 				changed = true;
+				break;
 			}
 		}
 		return changed;
