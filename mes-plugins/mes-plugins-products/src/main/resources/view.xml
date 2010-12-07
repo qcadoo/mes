@@ -294,7 +294,7 @@
 			<component type="tree" name="technologyTree" source="#{mainWindow.technologyDetailsForm}.operationComponents">
 				<option type="height" value="200" />
 				<option type="width" value="500" />
-				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #quantity + ' x &lt;/span&gt;' + #product['name']" />
+				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 				<option type="rootExpression" value="#number" />
 				<option type="correspondingView" value="products/technologyComponentDetailsView" />
 				<option type="multiselect" value="false" />
@@ -315,21 +315,18 @@
 				</group>
 			</ribbon>
 			<component type="form" name="detailsForm">
-				<component type="lookup" name="product" field="product">
-					<option type="column" name="name" fields="name" link="true"
+				<component type="lookup" name="operation" field="operation">
+					<option type="column" name="name" fields="name"
 						width="300" />
-					<option type="column" name="category" fields="category"
-						width="100" />
 					<option type="paginable" value="true" />
-					<option type="searchable" value="name,category" />
-					<option type="orderable" value="name,category" />
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
 					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
-				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
-				<option type="expression" value="#product['name']" />
+				<option type="expression" value="#operation['name']" />
 			</component>
 		</component>
 	</view>

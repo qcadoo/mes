@@ -121,7 +121,7 @@
 		<hasMany name="operationProductComponents" model="operationProductComponent" joinField="operationComponent" cascade="delete" />
 	</model>
 	<model name="operationProductComponent">
-		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="name">
+		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">
 			<validatesPresence /> 
 		</belongsTo>
 		<belongsTo name="product" model="product" lookupField="name">
