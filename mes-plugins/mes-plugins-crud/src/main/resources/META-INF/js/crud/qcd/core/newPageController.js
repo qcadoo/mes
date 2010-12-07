@@ -84,7 +84,17 @@ QCD.PageController = function(_viewName, _pluginIdentifier) {
 	function performEvent(parameters, completeFunction, actionsPerformer) {
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost(parametersJson, function(response) {
-			setValueData(response);
+			
+			if (response.redirect) {
+				if (response.redirect.openInNewWindow) {
+					window.open(response.redirect.url);
+				} else {
+					window.location = response.redirect.url;
+				}
+			} else {
+				setValueData(response);
+			}
+			
 			if (completeFunction) {
 				completeFunction();
 			}
