@@ -137,6 +137,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         addTranslation(translations, "wrongSearchCharacterError", locale);
         addTranslation(translations, "header", locale);
 
+        translations.put("loading", getTranslationService().translate("commons.loading", locale));
+
         json.put("translations", translations);
 
         return json;

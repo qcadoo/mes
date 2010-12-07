@@ -10,6 +10,7 @@ import java.util.Locale;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.view.ComponentState;
@@ -41,6 +42,7 @@ public class ComponentStateTest {
         // given
         ComponentState componentState = new SimpleComponentState();
         componentState.setFieldValue("text");
+        componentState.initialize(new JSONObject(), Locale.ENGLISH);
 
         // when
         JSONObject json = componentState.render();
@@ -54,6 +56,7 @@ public class ComponentStateTest {
         // given
         ComponentState componentState = new SimpleComponentState();
         componentState.setFieldValue(null);
+        componentState.initialize(new JSONObject(), Locale.ENGLISH);
 
         // when
         JSONObject json = componentState.render();
@@ -83,6 +86,7 @@ public class ComponentStateTest {
         componentState.setTranslationService(translationService);
         componentState.setDataDefinition(dataDefinition);
         componentState.setFieldValue(13L);
+        componentState.initialize(new JSONObject(ImmutableMap.of("components", new JSONObject())), Locale.ENGLISH);
 
         // when
         JSONObject json = componentState.render();
@@ -97,6 +101,7 @@ public class ComponentStateTest {
         TranslationService translationService = mock(TranslationService.class);
         AbstractComponentState componentState = new FormComponentState(null);
         componentState.setTranslationService(translationService);
+        componentState.initialize(new JSONObject(ImmutableMap.of("components", new JSONObject())), Locale.ENGLISH);
         componentState.addMessage("test", MessageType.FAILURE);
 
         // when

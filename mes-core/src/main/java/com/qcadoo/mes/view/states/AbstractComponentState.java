@@ -22,7 +22,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     private final EventHandlerHolder eventHandlerHolder = new EventHandlerHolder(this);
 
-    private final MessageHolder messageHolder = new MessageHolder();
+    private MessageHolder messageHolder;
 
     private String name;
 
@@ -79,7 +79,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     @Override
     public final void addMessage(final String message, final MessageType type) {
-        messageHolder.addMessage(message, type);
+        messageHolder.addMessage(null, message, type);
         if (MessageType.FAILURE.equals(type)) {
             hasError = true;
         }
@@ -94,6 +94,7 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
     @Override
     public void initialize(final JSONObject json, final Locale locale) throws JSONException {
         this.locale = locale;
+        this.messageHolder = new MessageHolder(translationService, locale);
 
         if (json.has(JSON_ENABLED)) {
             setEnabled(json.getBoolean(JSON_ENABLED));

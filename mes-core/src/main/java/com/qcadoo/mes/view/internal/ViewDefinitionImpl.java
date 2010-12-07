@@ -13,7 +13,9 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
@@ -41,6 +43,9 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     private final Set<String> jsFilePaths = new HashSet<String>();
 
     private final Map<String, ComponentPattern> patterns = new LinkedHashMap<String, ComponentPattern>();
+
+    @Autowired
+    private TranslationService translationService;
 
     public ViewDefinitionImpl(final String name, final String pluginIdentifier, final DataDefinition dataDefinition,
             final boolean menuAccessible) {
@@ -87,6 +92,17 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
         model.put(JSON_COMPONENTS, childrenModels);
         model.put(JSON_JS_FILE_PATHS, getJsFilePaths());
+
+        try {
+            JSONObject json = new JSONObject();
+            JSONObject translations = new JSONObject();
+            translations.put("backWithChangesConfirmation",
+                    translationService.translate("commons.backWithChangesConfirmation", locale));
+            json.put("translations", translations);
+            model.put("jsOptions", getJsFilePaths());
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
 
         return model;
     }

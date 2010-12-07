@@ -52,6 +52,8 @@ public final class FormComponentPattern extends AbstractContainerPattern {
         addTranslation(translations, "confirmDeleteMessage", locale);
         addTranslation(translations, "entityWithoutIdentifier", locale);
 
+        translations.put("loading", getTranslationService().translate("commons.loading", locale));
+
         json.put("translations", translations);
 
         return json;

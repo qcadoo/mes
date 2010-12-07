@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -50,7 +51,7 @@ public class FormComponentStateTest extends AbstractStateTest {
     private TranslationService translationService;
 
     @Before
-    public void init() {
+    public void init() throws Exception {
         entity = mock(Entity.class);
         given(entity.getField("name")).willReturn("text");
 
@@ -70,12 +71,15 @@ public class FormComponentStateTest extends AbstractStateTest {
         given(dataDefinition.getField("name")).willReturn(fieldDefinition);
 
         name = new FieldComponentState();
+        ((AbstractComponentState) name).setTranslationService(translationService);
         name.setName("name");
+        name.initialize(new JSONObject(), Locale.ENGLISH);
 
         form = new FormComponentState(null);
         ((AbstractContainerState) form).setDataDefinition(dataDefinition);
         ((AbstractContainerState) form).setTranslationService(translationService);
         ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", name);
+        form.initialize(new JSONObject(ImmutableMap.of("components", new JSONObject())), Locale.ENGLISH);
     }
 
     @Test
@@ -125,6 +129,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         componentState.setTranslationService(translationService);
         componentState.setDataDefinition(dataDefinition);
         componentState.setFieldValue(13L);
+        componentState.initialize(new JSONObject(ImmutableMap.of("components", new JSONObject())), Locale.ENGLISH);
 
         // when
         JSONObject json = componentState.render();

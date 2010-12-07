@@ -171,6 +171,8 @@ public class ViewDefinitionParserTest {
     public void shouldHasRibbon() throws Exception {
         // given
         ViewDefinition viewDefinition = parseAndGetViewDefinition();
+        TranslationService translationService = mock(TranslationService.class);
+        setField(viewDefinition, "translationService", translationService);
 
         JSONObject jsOptions = (JSONObject) ((Map<String, Map<String, Object>>) viewDefinition.prepareView(Locale.ENGLISH).get(
                 "components")).get("mainWindow").get("jsOptions");
