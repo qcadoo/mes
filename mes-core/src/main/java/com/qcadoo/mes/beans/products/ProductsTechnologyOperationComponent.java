@@ -24,10 +24,8 @@
 
 package com.qcadoo.mes.beans.products;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -51,10 +49,7 @@ public class ProductsTechnologyOperationComponent {
     private ProductsTechnology technology;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsProduct product;
-
-    @Column(scale = 3, precision = 10)
-    private BigDecimal quantity;
+    private ProductsOperation operation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTechnologyOperationComponent parent;
@@ -79,22 +74,6 @@ public class ProductsTechnologyOperationComponent {
         this.technology = technology;
     }
 
-    public ProductsProduct getProduct() {
-        return product;
-    }
-
-    public void setProduct(final ProductsProduct product) {
-        this.product = product;
-    }
-
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(final BigDecimal quantity) {
-        this.quantity = quantity;
-    }
-
     public ProductsTechnologyOperationComponent getParent() {
         return parent;
     }
@@ -109,6 +88,14 @@ public class ProductsTechnologyOperationComponent {
 
     public void setChildren(final List<ProductsTechnologyOperationComponent> children) {
         this.children = children;
+    }
+
+    public ProductsOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(final ProductsOperation operation) {
+        this.operation = operation;
     }
 
 }
