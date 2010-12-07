@@ -29,10 +29,6 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		setData(data);
 	}
 	
-	//this.setComponentState = function(state) {
-	//	stateSelectedValue = state.value;
-	//}
-	
 	function setData(data) {
 		if (data == null) {
 			return;

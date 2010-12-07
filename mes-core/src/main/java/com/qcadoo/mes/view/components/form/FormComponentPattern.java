@@ -16,7 +16,7 @@ import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
 @ViewComponent("form")
 public final class FormComponentPattern extends AbstractContainerPattern {
 
-    private static final String JSP_PATH = "newComponents/form.jsp";
+    private static final String JSP_PATH = "containers/form.jsp";
 
     private static final String JS_OBJECT = "QCD.components.containers.Form";
 

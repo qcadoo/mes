@@ -85,15 +85,13 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.performDelete = function(actionsPerformer) {
-		var confirmDeleteMessage = translations.confirmDeleteMessage;
-		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
+		if (window.confirm(translations.confirmDeleteMessage)) {
 			callEvent("delete", actionsPerformer);
 		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-		var confirmCancelMessage = translations.confirmCancelMessage;
-		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
+		if (window.confirm(translations.confirmCancelMessage)) {
 			callEvent("reset", actionsPerformer);
 		}
 	}
@@ -108,15 +106,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 			unblock();
 		}, args, actionsPerformer);
 	}
-	
-//	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
-//		if (formValue && formValue.id) {
-//			mainController.performCallFunction(functionName, additionalAttribute, formValue.id, actionsPerformer);
-//		} else {
-//			entityWithoutIdentifier = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".entityWithoutIdentifier";
-//			mainController.showMessage("error", mainController.getTranslation(entityWithoutIdentifier)); 
-//		}
-//	}
 	
 	this.updateSize = function(_width, _height) {
 		width = _width - 40;
