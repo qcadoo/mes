@@ -86,6 +86,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 					}
 					stype = 'select';
 					searchoptions.value = possibleValues;
+					searchoptions.defaultValue = "";
 				}
 				
 				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true, 

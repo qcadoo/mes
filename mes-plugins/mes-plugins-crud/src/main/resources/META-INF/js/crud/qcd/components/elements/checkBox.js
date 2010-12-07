@@ -16,6 +16,8 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 	var textRepresentation = $("#" + this.elementSearchName + "_text");
 	var currentValue;
 	
+	var translations = this.options.translations; 
+	
 	this.getComponentData = function() {
 		if (this.input.attr('checked')) {
 			return { value: "1" };
@@ -26,10 +28,10 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 	this.setComponentData = function(data) {
 		if (data != null && data.value == 1) {
 			this.input.attr('checked', true);
-			textRepresentation.html('commons.true');
+			textRepresentation.html(translations.true);
 		} else {
 			this.input.attr('checked', false);
-			textRepresentation.html('commons.false');
+			textRepresentation.html(translations.false);
 		}
 	}
 	

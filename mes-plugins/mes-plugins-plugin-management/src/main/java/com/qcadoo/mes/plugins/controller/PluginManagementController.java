@@ -24,6 +24,8 @@ import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.crud.CrudController;
 import com.qcadoo.mes.internal.PluginManagementOperationStatusImpl;
+import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ViewDefinitionState;
 
 @Controller
 public final class PluginManagementController {
@@ -129,5 +131,10 @@ public final class PluginManagementController {
         }
 
         return mav;
+    }
+
+    public void onPluginUpdateClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        System.out.println("PLUGIN UPDATE");
     }
 }

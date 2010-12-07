@@ -14,7 +14,7 @@
 			<ribbon>
 				<group name="plugins">
 					<bigButton name="download" icon="downloadIcon24.png" action="#{window}.performCallFunction(goToUrl,../download.html);" />
-					<bigButton name="update" icon="updateIcon24.png" action="#{window.pluginsGrid}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{window.pluginsGrid}.fireEvent(update);" />
 				</group>
 				<group name="actions">
 					<smallButton name="enable" icon="enableIcon16.png" action="#{window.plugins}.performCallFunction(goToUrl,../enable.html);" />
@@ -37,6 +37,7 @@
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
+				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
