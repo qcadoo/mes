@@ -29,6 +29,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var labelFocus = this.options.translations.labelOnFocus;
 	
 	var currentData = new Object();
+	currentData.value = null;
+	currentData.selectedEntityValue = null;
+	currentData.selectedEntityCode = null;
 	
 	var isFocused = false;
 	
@@ -95,9 +98,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.getComponentData = function() {
-		return {
-			value: currentData
-		}
+		return currentData;
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {
@@ -213,25 +214,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (! openLookupButtonElement.hasClass("enabled")) {
 			return;
 		}
-		
-		
-		
-		lookupWindow = mainController.openPopup(_this.options.viewName+".html", _this, "lookup");
-//		
-//		var elementName = elementPath.replace(/-/g,".");
-//		var location = mainController.getViewName()+".html?lookupComponent="+elementName;
 //		if (currentData.contextEntityId) {
-//			location += "&entityId="+currentData.contextEntityId;
-//		}
-//		lookupWindow = window.open(location, 'lookup', 'width=800,height=700');
+//		location += "&entityId="+currentData.contextEntityId;
+//	}		
+		lookupWindow = mainController.openPopup(_this.options.viewName+".html", _this, "lookup");
 	}
-	
-//	function closeLookup() {
-//		if (lookupWindow) {
-//			lookupWindow.close();
-//			lookupWindow = null;
-//		}
-//	}
 	
 	this.onPopupInit = function() {
 		var grid = lookupWindow.getComponent("window.grid");
@@ -239,7 +226,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		//grid.setFilterState("lookupCodeVisible", currentData.selectedEntityCode);	
 		lookupWindow.init();
 	}
+	
 	this.onPopupClose = function() {
+		lookupWindow = null;
 	}
 	
 	this.onGridLinkClicked = function(entityId) {
