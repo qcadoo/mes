@@ -295,7 +295,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function blockGrid() {
 		if (grid) {
-			// TODO masz i18n
 			element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: {
 	            border: 'none', 
 	            padding: '15px', 
@@ -449,15 +448,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (! currentState.filtersEnabled) {
 			grid[0].toggleToolbar();
 			currentState.filtersEnabled = true;
+			headerController.setFilterActive();
+			currentGridHeight -= 21;
+			grid.setGridHeight(currentGridHeight);
 		}
-		if (! currentState.filters) {
-			currentState.filters = new Array();
-		}
-		var filter = {
-			column: column,
-			value: filterText
-		};
-		currentState.filters.push(filter);
+		currentState.filters = new Object();
+		currentState.filters[column] = filterText;
 		$("#gs_"+column).val(filterText);
 	}
 	
@@ -515,23 +511,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.performNew = function(actionsPerformer) {
-//		var context = null;
-//		if (belongsToFieldName && currentState.belongsToEntityId) {
-//			var contextArray = new Array();
-//			contextArray.push({
-//				fieldName: belongsToFieldName,
-//				entityId: currentState.belongsToEntityId
-//			});
-//			context = "context="+JSON.stringify(contextArray);
-//		}
-		
 		var params = new Object();
-		//params[gridParameters.correspondingComponent+"."+"product"] = currentState.belongsToEntityId;
-		//alert(belongsToFieldName);
 		params[gridParameters.correspondingComponent+"."+belongsToFieldName] = currentState.belongsToEntityId;
 		redirectToCorrespondingPage(params);	
-		
-		//redirectToCorrespondingPage(context);
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
@@ -575,26 +557,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.getLookupData = function(entityId) {
 		var result = Object();
+		result.entityId = entityId;
 		result.lookupValue = hiddenColumnValues["lookupValue"][entityId];
-		//result.lookupCode = hiddenColumnValues["lookupCode"][entityId];
-		result.lookupCode = 123;
+		var lookupCodeLink = grid.getRowData(entityId).lookupCode;
+		lookupCodeLink = lookupCodeLink.replace(/^<a[^>]*>/,"");
+		lookupCodeLink = lookupCodeLink.replace(/<\/a>$/,"");
+		result.lookupCode = lookupCodeLink;
 		return result;
-//		mainController.performLookupSelect(entityId, lookupValue, lookupCode, actionsPerformer);
 	}
 
-	this.performLookupSelect = function(actionsPerformer, entityId) {
-//		if (!entityId) {
-//			entityId = currentState.selectedEntityId;
-//		}
-//		if (entityId) {
-//			var lookupValue = hiddenColumnValues["lookupValue"][entityId];
-//			var lookupCode = hiddenColumnValues["lookupCode"][entityId];
-//			mainController.performLookupSelect(entityId, lookupValue, lookupCode, actionsPerformer);
-//		} else {
-//			mainController.showMessage("error", translations.noRowSelectedError);
-//		}
-	}
-	var performLookupSelect = this.performLookupSelect;
-	
 	constructor(this);
 }

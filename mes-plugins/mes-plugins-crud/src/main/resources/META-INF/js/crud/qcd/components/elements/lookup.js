@@ -26,7 +26,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var openLookupButtonElement = $("#"+this.elementSearchName+"_openLookupButton");
 	
 	var labelNormal = labelElement.html();
-	var labelFocus = this.options.translations.labelOnFocus;
+	var labelFocus = "<span class='focusedLabel'>"+this.options.translations.labelOnFocus+"</span>";
 	
 	var currentData = new Object();
 	currentData.value = null;
@@ -35,7 +35,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var isFocused = false;
 	
-	var currentValue;
+	var baseValue;
 	
 	var listeners = this.options.listeners;
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
@@ -46,30 +46,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var _this = this;
 	
 	var constructor = function(_this) {
-		
-		//var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label.focus";
-		//labelFocus = "<span class='focusedLabel'>"+mainController.getTranslation(nameToTranslate)+"</span>";
-		labelFocus = "<span class='focusedLabel'>"+labelFocus+"</span>";
-		
 		openLookupButtonElement.click(openLookup);
-
-//		var elementName = elementPath.replace(/-/g,".");
-//		window[elementName+"_onReadyFunction"] = function() {
-//			if (currentData.selectedEntityCode) {
-//				lookupWindow.getComponent("mainWindow.lookupGrid").setFilterState("lookupCodeVisible", currentData.selectedEntityCode);	
-//			}
-//			lookupWindow.init();
-//		}
-//		window[elementName+"_onSelectFunction"] = function(entityId, entityString, entityCode) {
-//			currentData.selectedEntityId = entityId;
-//			currentData.selectedEntityValue = entityString;
-//			currentData.selectedEntityCode = entityCode;
-//			currentData.isError = false;
-//			updateData();
-//			if (hasListeners) {
-//				mainController.getUpdate(elementPath, entityId, listeners);
-//			}
-//		}
 		inputElement.focus(onInputFocus).blur(onInputBlur);
 		inputElement.keypress(function(e) {
 			var key=e.keyCode || e.which;
@@ -85,7 +62,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		currentData.value = data.value;
+		currentData.value = data.value ? data.value : null;
 		currentData.selectedEntityValue = data.selectedEntityValue;
 		currentData.selectedEntityCode = data.selectedEntityCode;
 //		currentData.contextEntityId = data.contextEntityId;
@@ -111,13 +88,13 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		}
 	}
 	
-//	this.setCurrentValue = function(data) {
-//		currentValue = currentData.selectedEntityCode;
-//	} 
+	this.performUpdateState = function() {
+		baseValue = currentData;
+	}
 	
-//	this.isChanged = function() {
-//		return currentValue != currentData.selectedEntityCode;
-//	}
+	this.isComponentChanged = function() {
+		return ! (currentData.value == baseValue.value);
+	}
 	
 	function updateData() {
 		loadingElement.hide();
@@ -138,6 +115,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 				valueDivElement.attr('title', "");
 				inputElement.attr('title', "");
 				inputElement.val("");
+				if (! isFocused) {
+					labelElement.html(labelNormal);
+				}
 			}
 		}
 	}
@@ -223,7 +203,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	this.onPopupInit = function() {
 		var grid = lookupWindow.getComponent("window.grid");
 		grid.setLinkListener(this);
-		//grid.setFilterState("lookupCodeVisible", currentData.selectedEntityCode);	
+		var selectedCode = $.trim(inputElement.val());
+		if (selectedCode) {
+			grid.setFilterState("lookupCode", selectedCode);	
+		}
 		lookupWindow.init();
 	}
 	
@@ -234,7 +217,14 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	this.onGridLinkClicked = function(entityId) {
 		var grid = lookupWindow.getComponent("window.grid");
 		var lookupData = grid.getLookupData(entityId);
-		QCD.info(lookupData);
+		currentData.value = lookupData.entityId;
+		currentData.selectedEntityValue = lookupData.lookupValue;
+		currentData.selectedEntityCode = lookupData.lookupCode;
+		currentData.isError = false;
+		updateData();
+//		if (hasListeners) {
+//			mainController.getUpdate(elementPath, entityId, listeners);
+//		}
 		mainController.closePopup();
 	}
 	

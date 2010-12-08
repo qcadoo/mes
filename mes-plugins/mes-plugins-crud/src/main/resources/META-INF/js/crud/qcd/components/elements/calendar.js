@@ -56,6 +56,9 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 		datepickerElement = $("<div>").css("position", "absolute").css("zIndex", 100).css("right", "15px");
 		containerElement.css("position", "relative");
 		datepickerElement.hide();
+		
+		$("#ui-datepicker-div").hide();
+		
 		containerElement.append(datepickerElement);
 		
 		datepickerElement.datepicker(options);

@@ -13,7 +13,6 @@
 			<div id="${component['path']}_windowContainerRibbon">
 			</div>
 		</div>
-		
 		<div class="windowContainerContentBody" id="${component['path']}_windowContainerContentBody">
 			<div id="${component['path']}_windowContainerContentBodyWidthMarker" style=" z-index: 5000;"></div>
 			<div class="windowContent" id="${component['path']}_windowContent">
@@ -28,11 +27,5 @@
 					</c:forEach>
 				</div>
 			</div>
-			
 		</div>
 	</div>
-
-
-
-
-	
