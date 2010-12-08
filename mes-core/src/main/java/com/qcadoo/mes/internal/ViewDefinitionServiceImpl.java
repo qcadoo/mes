@@ -62,7 +62,7 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     public List<ViewDefinition> listForMenu() {
         List<ViewDefinition> menuableViews = new LinkedList<ViewDefinition>();
         for (ViewDefinition viewDefinition : viewDefinitions.values()) {
-            if (viewDefinition.isMenuable()) {
+            if (viewDefinition.isMenuAccessible()) {
                 menuableViews.add(viewDefinition);
             }
         }

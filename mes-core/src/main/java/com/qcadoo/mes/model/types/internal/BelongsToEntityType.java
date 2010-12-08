@@ -31,7 +31,6 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.BelongsToType;
 
@@ -78,7 +77,7 @@ public final class BelongsToEntityType implements BelongsToType {
 
     @Override
     public Map<Long, String> lookup(final String prefix) {
-        SearchResult resultSet = getDataDefinition().find().orderBy(Order.asc(lookupFieldName)).list();
+        SearchResult resultSet = getDataDefinition().find().orderAscBy(lookupFieldName).list();
         Map<Long, String> possibleValues = new LinkedHashMap<Long, String>();
 
         for (Entity entity : resultSet.getEntities()) {

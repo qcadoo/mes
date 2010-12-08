@@ -29,7 +29,7 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.TextInput = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 	
-	var textRepresentation = $("#" + _element.attr('id') + "_text");
+	var textRepresentation = $("#" + this.elementSearchName + "_text");
 	
 	var input = this.input;
 	

@@ -24,246 +24,256 @@
 
 package com.qcadoo.mes.view;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static com.google.common.collect.ImmutableMap.of;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.view.components.WindowComponentPattern;
+import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
+import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
+import com.qcadoo.mes.view.patterns.AbstractPatternTest;
+import com.qcadoo.mes.view.patterns.ComponentPatternMock;
+import com.qcadoo.mes.view.states.ComponentStateMock;
+import com.qcadoo.mes.view.states.ComponentStateMock.TestEvent;
 
-public class ViewDefinitionTest {
+public class ViewDefinitionTest extends AbstractPatternTest {
 
     @Test
-    public void shouldGetTranslationFromRootComponent() throws Exception {
+    public void shouldHaveBasicInformation() throws Exception {
         // given
-        RootComponent root = mock(RootComponent.class);
+        DataDefinition dataDefinition = mock(DataDefinition.class);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", dataDefinition, true, null);
 
-        Map<String, String> translations = new HashMap<String, String>();
+        // then
+        assertEquals("name", viewDefinition.getName());
+        assertEquals("plugin", viewDefinition.getPluginIdentifier());
+        assertEquals(dataDefinition, viewDefinition.getDataDefinition());
+        assertTrue(viewDefinition.isMenuAccessible());
+    }
+
+    @Test
+    public void shouldReturnPattern() throws Exception {
+        // given
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
+
+        ComponentPattern pattern = Mockito.mock(ComponentPattern.class);
+        given(pattern.getName()).willReturn("name");
+
+        viewDefinition.addComponentPattern(pattern);
 
         // when
-        viewDefinition.updateTranslations(translations, Locale.ENGLISH);
+        ComponentPattern actualPattern = viewDefinition.getComponentByPath("name");
 
         // then
-        verify(root).updateTranslations(translations, Locale.ENGLISH);
+        Assert.assertEquals(pattern, actualPattern);
     }
 
     @Test
-    public void shouldCastVauleFromRootComponent() throws Exception {
+    public void shouldReturnPatternByPath() throws Exception {
         // given
-        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        JSONObject jsonObject = new JSONObject();
-        JSONObject rootJsonObject = new JSONObject();
-        jsonObject.put("rootName", rootJsonObject);
+        ContainerPattern pattern1 = Mockito.mock(ContainerPattern.class);
+        ContainerPattern pattern2 = Mockito.mock(ContainerPattern.class);
+        ContainerPattern pattern3 = Mockito.mock(ContainerPattern.class);
 
-        RootComponent root = mock(RootComponent.class);
-        given(root.castValue(selectedEntities, rootJsonObject)).willReturn(new ViewValue<Object>("test"));
-        given(root.getName()).willReturn("rootName");
+        given(pattern1.getName()).willReturn("name1");
+        given(pattern1.getChild("name2")).willReturn(pattern2);
+        given(pattern2.getChild("name3")).willReturn(pattern3);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
+        viewDefinition.addComponentPattern(pattern1);
 
         // when
-        ViewValue<Long> value = viewDefinition.castValue(selectedEntities, jsonObject);
+        ComponentPattern actualPattern = viewDefinition.getComponentByPath("name1.name2.name3");
 
         // then
-        assertEquals("test", value.getComponent("rootName").getValue());
-        verify(root).castValue(selectedEntities, rootJsonObject);
+        Assert.assertEquals(pattern3, actualPattern);
     }
 
     @Test
-    public void shouldCastNullVauleFromRootComponent() throws Exception {
+    public void shouldReturnNullWhenPatternNotExists() throws Exception {
         // given
-        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        RootComponent root = mock(RootComponent.class);
-        given(root.castValue(selectedEntities, null)).willReturn(null);
-        given(root.getName()).willReturn("rootName");
+        ContainerPattern pattern = Mockito.mock(ContainerPattern.class);
+        given(pattern.getName()).willReturn("name");
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
+        viewDefinition.addComponentPattern(pattern);
 
         // when
-        ViewValue<Long> value = viewDefinition.castValue(selectedEntities, null);
+        ComponentPattern actualPattern = viewDefinition.getComponentByPath("name.name2.name3");
 
         // then
-        assertNull(value.getComponent("rootName"));
-        verify(root).castValue(selectedEntities, null);
+        assertNull(actualPattern);
     }
 
     @Test
-    public void shouldGetVauleFromRootComponent() throws Exception {
+    public void shouldCallInitializeOnChildren() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
-        selectedEntities.put("removeIt", new DefaultEntity("", "", 2L));
-        selectedEntities.put("keepIt", new DefaultEntity("", "", 3L));
+        ComponentPattern pattern1 = Mockito.mock(ComponentPattern.class);
+        given(pattern1.getName()).willReturn("test1");
+        given(pattern1.initialize()).willReturn(false, true);
 
-        String triggerComponentName = "trigger";
-        Set<String> pathsToUpdate = new HashSet<String>();
-        pathsToUpdate.add("removeIt");
+        ComponentPattern pattern2 = Mockito.mock(ComponentPattern.class);
+        given(pattern2.getName()).willReturn("test2");
+        given(pattern2.initialize()).willReturn(true);
 
-        ViewValue<Long> globalViewValue = new ViewValue<Long>();
-        ViewValue<Long> viewValue = new ViewValue<Long>();
-        globalViewValue.addComponent("rootName", viewValue);
-
-        RootComponent root = mock(RootComponent.class);
-        given(root.getValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH)).willReturn(
-                new ViewValue<Object>("test"));
-        given(root.getName()).willReturn("rootName");
-        given(root.lookupListeners(triggerComponentName)).willReturn(pathsToUpdate);
-
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
+        viewDefinition.addComponentPattern(pattern1);
+        viewDefinition.addComponentPattern(pattern2);
 
         // when
-        ViewValue<Long> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, true,
-                Locale.ENGLISH);
+        viewDefinition.initialize();
 
         // then
-        assertEquals(2, pathsToUpdate.size());
-        assertThat(pathsToUpdate, JUnitMatchers.hasItems(triggerComponentName, "removeIt"));
-        assertEquals(1, selectedEntities.size());
-        assertEquals(new DefaultEntity("", "", 3L), selectedEntities.get("keepIt"));
-        assertEquals("test", value.getComponent("rootName").getValue());
-        verify(root).getValue(entity, selectedEntities, viewValue, pathsToUpdate, Locale.ENGLISH);
+        Mockito.verify(pattern1, times(2)).initialize();
+        Mockito.verify(pattern2, times(2)).initialize();
     }
 
-    @Test
-    public void shouldGetNullVauleFromRootComponent() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowCyclicDependencyOnInitialize() throws Exception {
         // given
-        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
-        String triggerComponentName = "trigger";
-        Set<String> pathsToUpdate = new HashSet<String>();
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        RootComponent root = mock(RootComponent.class);
-        given(root.getValue(null, selectedEntities, null, pathsToUpdate, Locale.ENGLISH)).willReturn(null);
-        given(root.getName()).willReturn("rootName");
-        given(root.lookupListeners(triggerComponentName)).willReturn(pathsToUpdate);
+        ComponentPattern pattern1 = Mockito.mock(ComponentPattern.class);
+        given(pattern1.getName()).willReturn("test1");
+        given(pattern1.initialize()).willReturn(false, false, false);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
+        ComponentPattern pattern2 = Mockito.mock(ComponentPattern.class);
+        given(pattern2.getName()).willReturn("test2");
+        given(pattern2.initialize()).willReturn(false, false, false);
+
+        ComponentPattern pattern3 = Mockito.mock(ComponentPattern.class);
+        given(pattern3.getName()).willReturn("test3");
+        given(pattern3.initialize()).willReturn(false, true);
+
+        ComponentPattern pattern4 = Mockito.mock(ComponentPattern.class);
+        given(pattern3.getName()).willReturn("test4");
+        given(pattern3.initialize()).willReturn(true);
+
+        viewDefinition.addComponentPattern(pattern1);
+        viewDefinition.addComponentPattern(pattern2);
+        viewDefinition.addComponentPattern(pattern3);
+        viewDefinition.addComponentPattern(pattern4);
 
         // when
-        ViewValue<Long> value = viewDefinition.getValue(null, selectedEntities, null, triggerComponentName, true, Locale.ENGLISH);
-
-        // then
-        assertNull(value.getComponent("rootName"));
-        verify(root).getValue(null, selectedEntities, null, pathsToUpdate, Locale.ENGLISH);
+        viewDefinition.initialize();
     }
 
     @Test
-    public void shouldCallHook() throws Exception {
+    public void shouldCallEvent() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
-        ViewValue<Long> globalViewValue = new ViewValue<Long>();
-        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
-        String triggerComponentName = "trigger";
-        Set<String> pathsToUpdate = new HashSet<String>();
-        HookDefinition hookDefinition = mock(HookDefinition.class);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        RootComponent root = mock(RootComponent.class);
-        given(root.getName()).willReturn("rootName");
-        given(root.lookupListeners(triggerComponentName)).willReturn(pathsToUpdate);
+        TestEvent event = mock(TestEvent.class);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
-        viewDefinition.setViewHook(hookDefinition);
+        ComponentStateMock state = new ComponentStateMock(new JSONObject(of("asd", "123")));
+        state.registerTestEvent("eventName", event);
+
+        ComponentPatternMock pattern = new ComponentPatternMock(getComponentDefinition("componentName", viewDefinition), state);
+
+        viewDefinition.addComponentPattern(pattern);
+
+        JSONObject eventJson = new JSONObject();
+        eventJson.put(ViewDefinition.JSON_EVENT_NAME, "eventName");
+        eventJson.put(ViewDefinition.JSON_EVENT_COMPONENT, "componentName");
+        eventJson.put(ViewDefinition.JSON_EVENT_ARGS, new JSONArray(newArrayList("arg1", "arg2")));
+
+        JSONObject contentJson = new JSONObject(of("asd", "qwe"));
+        JSONObject componentJson = new JSONObject(of(ComponentState.JSON_CONTENT, contentJson));
+
+        JSONObject json = new JSONObject();
+        json.put(ViewDefinition.JSON_EVENT, eventJson);
+        json.put(ViewDefinition.JSON_COMPONENTS, new JSONObject(of("componentName", componentJson)));
 
         // when
-        ViewValue<Long> value = viewDefinition.getValue(entity, selectedEntities, globalViewValue, triggerComponentName, false,
-                Locale.ENGLISH);
+        JSONObject result = viewDefinition.performEvent(json, Locale.ENGLISH);
 
         // then
-        assertEquals(1, pathsToUpdate.size());
-        verify(hookDefinition).callWithViewValue(value, triggerComponentName, entity, Locale.ENGLISH);
+        assertEquals(contentJson, state.getContent());
+
+        verify(event).invoke(new String[] { "arg1", "arg2" });
+
+        Assert.assertEquals("123", result.getJSONObject("components").getJSONObject("componentName").getJSONObject("content")
+                .get("asd"));
     }
 
     @Test
-    public void shouldNotLookupListenersIfThereIsNotTriggerComponent() throws Exception {
+    public void shouldReturnJsFilePaths() throws Exception {
         // given
-        Entity entity = new DefaultEntity("", "", 1L);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        Map<String, Entity> selectedEntities = new HashMap<String, Entity>();
+        AbstractContainerPattern parent = new WindowComponentPattern(getComponentDefinition("test", viewDefinition));
+        ComponentPattern form = new FormComponentPattern(getComponentDefinition("test", parent, viewDefinition));
 
-        HookDefinition hookDefinition = mock(HookDefinition.class);
+        parent.addChild(form);
 
-        ViewValue<Long> globalViewValue = new ViewValue<Long>();
+        viewDefinition.addComponentPattern(parent);
 
-        RootComponent root = mock(RootComponent.class);
-        given(root.getName()).willReturn("rootName");
-
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
-        viewDefinition.setViewHook(hookDefinition);
+        viewDefinition.initialize();
 
         // when
-        viewDefinition.getValue(entity, selectedEntities, globalViewValue, null, false, Locale.ENGLISH);
+        Set<String> paths = viewDefinition.getJsFilePaths();
 
         // then
-        verify(root, never()).lookupListeners(Mockito.anyString());
+        Assert.assertEquals(1, paths.size());
     }
 
     @Test
-    public void shouldGetDataDefinitionFromRootComponent() throws Exception {
+    public void shouldCallHooks() throws Exception {
         // given
-        RootComponent root = mock(RootComponent.class);
+        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
+        HookDefinition preInitializeHook = mock(HookDefinition.class);
+        viewDefinition.addPreInitializeHook(preInitializeHook);
+
+        HookDefinition postInitializeHook1 = mock(HookDefinition.class);
+        viewDefinition.addPostInitializeHook(postInitializeHook1);
+
+        HookDefinition postInitializeHook2 = mock(HookDefinition.class);
+        viewDefinition.addPostInitializeHook(postInitializeHook2);
+
+        HookDefinition preRenderHook = mock(HookDefinition.class);
+        viewDefinition.addPreRenderHook(preRenderHook);
+
+        JSONObject eventJson = new JSONObject();
+        eventJson.put(ViewDefinition.JSON_EVENT_NAME, "eventName");
+        eventJson.put(ViewDefinition.JSON_EVENT_ARGS, new JSONArray(newArrayList("arg1", "arg2")));
+
+        JSONObject json = new JSONObject();
+        json.put(ViewDefinition.JSON_EVENT, eventJson);
+        json.put(ViewDefinition.JSON_COMPONENTS, new JSONObject());
 
         // when
-        viewDefinition.getDataDefinition();
+        viewDefinition.performEvent(json, Locale.ENGLISH);
 
         // then
-        verify(root).getDataDefinition();
+        verify(preInitializeHook).callWithViewState(any(ViewDefinitionState.class), eq(Locale.ENGLISH));
+        verify(postInitializeHook1).callWithViewState(any(ViewDefinitionState.class), eq(Locale.ENGLISH));
+        verify(postInitializeHook2).callWithViewState(any(ViewDefinitionState.class), eq(Locale.ENGLISH));
+        verify(preRenderHook).callWithViewState(any(ViewDefinitionState.class), eq(Locale.ENGLISH));
     }
 
-    @Test
-    public void shouldLookupComponentOnRootComponent() throws Exception {
-        // given
-        RootComponent root = mock(RootComponent.class);
-
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
-
-        // when
-        viewDefinition.lookupComponent("path");
-
-        // then
-        verify(root).lookupComponent("path");
-    }
-
-    @Test
-    public void shouldHasRootComponent() throws Exception {
-        // given
-        RootComponent root = mock(RootComponent.class);
-
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("test", "test");
-        viewDefinition.setRoot(root);
-
-        // then
-        assertEquals(root, viewDefinition.getRoot());
-    }
 }

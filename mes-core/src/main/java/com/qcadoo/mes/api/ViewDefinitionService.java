@@ -33,7 +33,7 @@ import com.qcadoo.mes.view.ViewDefinition;
 /**
  * Service for manipulating view definitions.
  * 
- * @see com.qcadoo.mes.view.internal.ViewDefinitionParser
+ * @see com.qcadoo.mes.view.xml.internal.ViewDefinitionParser
  * @apiviz.uses com.qcadoo.mes.view.ViewDefinition
  */
 public interface ViewDefinitionService {
@@ -49,8 +49,8 @@ public interface ViewDefinitionService {
      * @return the view definition, null if not found
      */
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#pluginIdentifier == 'dictionaries') or (#pluginIdentifier == 'products' "
-            + "and (#viewName != 'orderGridView' and #viewName != 'orderDetailsView' or hasRole('ROLE_SUPERVISOR'))) or "
-            + "(#pluginIdentifier == 'users' and #viewName == 'userProfileView') or (#pluginIdentifier == 'core' and #viewName == 'systemInfoView')")
+            + "and (#viewName != 'orders' and #viewName != 'order' or hasRole('ROLE_SUPERVISOR'))) or "
+            + "(#pluginIdentifier == 'users' and #viewName == 'profile') or (#pluginIdentifier == 'core' and #viewName == 'systemInfo')")
     ViewDefinition get(String pluginIdentifier, String viewName);
 
     /**

@@ -27,7 +27,7 @@ package com.qcadoo.mes.model;
 import java.util.Locale;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.ViewDefinitionState;
 
 /**
  * Defines hooks for validation/saving entities and generating views.
@@ -76,6 +76,6 @@ public interface HookDefinition {
      * @param locale
      *            locale
      */
-    void callWithViewValue(ViewValue<Long> value, final String triggerComponentName, final Entity entity, final Locale locale);
+    void callWithViewState(ViewDefinitionState viewDefinitionState, final Locale locale);
 
 }
