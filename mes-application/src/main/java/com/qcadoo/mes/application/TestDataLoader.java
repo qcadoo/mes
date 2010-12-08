@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -56,16 +56,19 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.SystemProperties;
+import com.qcadoo.mes.beans.basic.BasicMachine;
+import com.qcadoo.mes.beans.basic.BasicStaff;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
-import com.qcadoo.mes.beans.products.ProductsInstruction;
-import com.qcadoo.mes.beans.products.ProductsInstructionBomComponent;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirementComponent;
+import com.qcadoo.mes.beans.products.ProductsOperation;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsSubstituteComponent;
+import com.qcadoo.mes.beans.products.ProductsTechnology;
+import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
@@ -92,7 +95,13 @@ public final class TestDataLoader {
             "quantity_completed", "started_date", "finished_date", "name", "order_nr", "quantity_scheduled", "machine_nr",
             "bom_name", "product_nr" };
 
-    private static final String[] INSTRUCTION_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr" };
+    private static final String[] TECHNOLOGY_ATTRIBUTES = new String[] { "bom_id", "description", "name", "bom_nr", "product_nr" };
+
+    private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number" };
+
+    private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
+
+    private static final String[] STAFF_ATTRIBUTES = new String[] { "id", "name", "surname", "post" };
 
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
@@ -112,8 +121,11 @@ public final class TestDataLoader {
         }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
-        readDataFromXML("instructions", INSTRUCTION_ATTRIBUTES);
+        readDataFromXML("operations", OPERATION_ATTRIBUTES);
+        readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
+        readDataFromXML("machines", MACHINE_ATTRIBUTES);
+        readDataFromXML("staff", STAFF_ATTRIBUTES);
         addMaterialRequirements();
     }
 
@@ -157,15 +169,70 @@ public final class TestDataLoader {
             addProduct(values);
         } else if ("orders".equals(type)) {
             addOrder(values);
-        } else if ("instructions".equals(type)) {
-            addInstruction(values);
+        } else if ("technologies".equals(type)) {
+            addTechnology(values);
         } else if ("dictionaries".equals(type)) {
             addDictionary(values);
         } else if ("users".equals(type)) {
             addUser(values);
         } else if ("units".equals(type)) {
             UNITS.add(values.get("name"));
+        } else if ("operations".equals(type)) {
+            addOperations(values);
+        } else if ("staff".equals(type)) {
+            addStaff(values);
+        } else if ("machines".equals(type)) {
+            addMachine(values);
         }
+    }
+
+    private void addMachine(Map<String, String> values) {
+        BasicMachine machine = new BasicMachine();
+
+        LOG.debug("id: " + values.get("id") + " name " + values.get("name") + " surname " + values.get("prod_line") + " post "
+                + values.get("description"));
+        machine.setNumber(values.get("id"));
+        machine.setName(values.get("name"));
+        machine.setProductionLine(Boolean.getBoolean(values.get("prod_line")));
+        machine.setDescription(values.get("description"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test dictionary item {dictionary=" + machine.getName() + ", name=" + machine.getName() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(machine);
+    }
+
+    private void addStaff(Map<String, String> values) {
+        BasicStaff staff = new BasicStaff();
+
+        LOG.debug("id: " + values.get("id") + " name " + values.get("name") + " surname " + values.get("surname") + " post "
+                + values.get("post"));
+        staff.setNumber(values.get("id"));
+        staff.setName(values.get("name"));
+        staff.setSurname(values.get("surname"));
+        staff.setPost(values.get("post"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test dictionary item {dictionary=" + staff.getName() + ", name=" + staff.getName() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(staff);
+
+    }
+
+    private void addOperations(Map<String, String> values) {
+        ProductsOperation operation = new ProductsOperation();
+
+        operation.setName(values.get("name"));
+        operation.setNumber(values.get("number"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test dictionary item {dictionary=" + operation.getName() + ", name=" + operation.getName() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(operation);
+
     }
 
     private void addProduct(final Map<String, String> values) {
@@ -192,12 +259,7 @@ public final class TestDataLoader {
         }
 
         for (int i = 0; i < RANDOM.nextInt(5); i++) {
-            long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
-            long endDate = startDate + (MILLIS_IN_DAY * RANDOM.nextInt(50));
-            Date effectiveDateFrom = RANDOM.nextDouble() > 0.3 ? new Date(startDate) : null;
-            Date effectiveDateTo = RANDOM.nextDouble() > 0.3 ? new Date(endDate) : null;
-            addSubstitute(values.get("name") + "*", values.get("product_nr") + "*", product, effectiveDateFrom, effectiveDateTo,
-                    i + 1);
+            addSubstitute(values.get("name") + "*", values.get("product_nr") + "*", product, i + 1);
         }
     }
 
@@ -307,7 +369,7 @@ public final class TestDataLoader {
         order.setEffectiveDateFrom(new Date(effectiveStartDate));
         order.setEffectiveDateTo(new Date(effectiveEndDate));
         order.setEndWorker(getRandomUser().getUserName());
-        order.setInstruction(getInstructionByName(values.get("bom_name")));
+        order.setTechnology(getTechnologyByName(values.get("bom_name")));
         order.setMachine(getRandomDictionaryItem("machines"));
         order.setName((values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setNumber(values.get("order_nr"));
@@ -328,13 +390,13 @@ public final class TestDataLoader {
 
         order.setProduct(product);
 
-        order.setDefaultInstruction(getDefaultInstructionForProduct(product));
+        order.setDefaultTechnology(getDefaultTechnologyForProduct(product));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test order {id=" + order.getId() + ", name=" + order.getName() + ", number=" + order.getNumber()
-                    + ", product=" + (order.getProduct() != null ? order.getProduct().getNumber() : null) + ", instruction="
-                    + (order.getInstruction() != null ? order.getInstruction().getNumber() : null) + ", defaultInstruction="
-                    + (order.getDefaultInstruction() != null ? order.getDefaultInstruction().getNumber() : null) + ", dateFrom="
+                    + ", product=" + (order.getProduct() != null ? order.getProduct().getNumber() : null) + ", technology="
+                    + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", defaultTechnology="
+                    + (order.getDefaultTechnology() != null ? order.getDefaultTechnology().getNumber() : null) + ", dateFrom="
                     + order.getDateFrom() + ", dateTo=" + order.getDateTo() + ", effectiveDateFrom="
                     + order.getEffectiveDateFrom() + ", effectiveDateTo=" + order.getEffectiveDateTo() + ", doneQuantity="
                     + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", machine="
@@ -346,10 +408,8 @@ public final class TestDataLoader {
     }
 
     private ProductsSubstitute addSubstitute(final String name, final String number, final ProductsProduct product,
-            final Date effectiveDateFrom, final Date effectiveDateTo, final int priority) {
+            final int priority) {
         ProductsSubstitute substitute = new ProductsSubstitute();
-        substitute.setEffectiveDateFrom(effectiveDateFrom);
-        substitute.setEffectiveDateTo(effectiveDateTo);
         substitute.setName(name);
         substitute.setNumber(number);
         substitute.setPriority(priority);
@@ -357,8 +417,7 @@ public final class TestDataLoader {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test substitute {name=" + substitute.getName() + ", number=" + substitute.getNumber() + ", priority="
-                    + substitute.getPriority() + ", product=" + substitute.getProduct().getNumber() + ", effectiveDateFrom="
-                    + substitute.getEffectiveDateFrom() + ", effectiveDateTo=" + substitute.getEffectiveDateTo() + "}");
+                    + substitute.getPriority() + ", product=" + substitute.getProduct().getNumber() + "}");
         }
 
         sessionFactory.getCurrentSession().save(substitute);
@@ -387,64 +446,58 @@ public final class TestDataLoader {
         return substituteComponent;
     }
 
-    private void addInstruction(final Map<String, String> values) {
+    private void addTechnology(final Map<String, String> values) {
         ProductsProduct product = getProductByNumber(values.get("product_nr"));
 
         if (product != null) {
-            ProductsInstruction defaultInstruction = getDefaultInstructionForProduct(product);
+            ProductsTechnology defaultTechnology = getDefaultTechnologyForProduct(product);
 
-            long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
-            long endDate = startDate + (MILLIS_IN_DAY * RANDOM.nextInt(50));
-            Date dateFrom = RANDOM.nextDouble() > 0.3 ? new Date(startDate) : null;
-            Date dateTo = RANDOM.nextDouble() > 0.3 ? new Date(endDate) : null;
-            ProductsInstruction instruction = new ProductsInstruction();
-            instruction.setId(Long.valueOf(values.get("bom_id")));
-            instruction.setDateFrom(dateFrom);
-            instruction.setDateTo(dateTo);
+            ProductsTechnology technology = new ProductsTechnology();
+            technology.setId(Long.valueOf(values.get("bom_id")));
             if (!values.get("description").isEmpty()) {
-                instruction.setDescription(values.get("description"));
+                technology.setDescription(values.get("description"));
             }
-            instruction.setMaster(defaultInstruction == null);
-            instruction.setName(values.get("name"));
-            instruction.setNumber(values.get("bom_nr"));
-            instruction.setProduct(product);
+            technology.setMaster(defaultTechnology == null);
+            technology.setName(values.get("name"));
+            technology.setNumber(values.get("bom_nr"));
+            technology.setProduct(product);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test instruction {id=" + instruction.getId() + ", name=" + instruction.getName() + ", number="
-                        + instruction.getNumber() + ", product=" + instruction.getProduct().getNumber() + ", dateFrom="
-                        + instruction.getDateFrom() + ", dateTo=" + instruction.getDateTo() + ", description="
-                        + instruction.getDescription() + ", master=" + instruction.getMaster() + "}");
+                LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getName() + ", number="
+                        + technology.getNumber() + ", product=" + technology.getProduct().getNumber() + ", description="
+                        + technology.getDescription() + ", master=" + technology.getMaster() + "}");
             }
 
-            sessionFactory.getCurrentSession().save(instruction);
+            sessionFactory.getCurrentSession().save(technology);
 
-            addInstructionBomComponents(instruction, null, 3);
+            addTechnologyOperationComponents(technology, null, 3);
         }
     }
 
-    private void addInstructionBomComponents(final ProductsInstruction instruction, final ProductsInstructionBomComponent parent,
-            final int depth) {
+    private void addTechnologyOperationComponents(final ProductsTechnology technology,
+            final ProductsTechnologyOperationComponent parent, final int depth) {
         if (depth <= 0) {
             return;
         }
 
         for (int i = 0; i < RANDOM.nextInt(4) + 1; i++) {
-            ProductsInstructionBomComponent component = new ProductsInstructionBomComponent();
-            component.setInstruction(instruction);
+            ProductsTechnologyOperationComponent component = new ProductsTechnologyOperationComponent();
+            component.setTechnology(technology);
             component.setParent(parent);
-            component.setProduct(getRandomProduct());
-            component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Add test bom component {product=" + component.getProduct().getNumber() + ", instruction="
-                        + component.getInstruction().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0)
-                        + ", quantity=" + component.getQuantity() + "}");
-            }
+            component.setOperation(getRandomOperation());
+            // component.setProduct(getRandomProduct());
+            // component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
+            // TODO MADY refactor test data loader
+            /*
+             * if (LOG.isDebugEnabled()) { LOG.debug("Add test operation component {product=" + component.getProduct().getNumber()
+             * + ", technology=" + component.getTechnology().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0) +
+             * ", quantity=" + component.getQuantity() + "}"); }
+             */
 
             sessionFactory.getCurrentSession().save(component);
 
             if (RANDOM.nextDouble() > 0.2) {
-                addInstructionBomComponents(instruction, component, depth - 1);
+                addTechnologyOperationComponents(technology, component, depth - 1);
             }
         }
     }
@@ -485,16 +538,16 @@ public final class TestDataLoader {
         }
     }
 
-    private ProductsInstruction getInstructionByName(final String name) {
-        return (ProductsInstruction) sessionFactory.getCurrentSession().createCriteria(ProductsInstruction.class)
+    private ProductsTechnology getTechnologyByName(final String name) {
+        return (ProductsTechnology) sessionFactory.getCurrentSession().createCriteria(ProductsTechnology.class)
                 .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
     }
 
-    private ProductsInstruction getDefaultInstructionForProduct(final ProductsProduct product) {
+    private ProductsTechnology getDefaultTechnologyForProduct(final ProductsProduct product) {
         if (product == null) {
             return null;
         }
-        return (ProductsInstruction) sessionFactory.getCurrentSession().createCriteria(ProductsInstruction.class)
+        return (ProductsTechnology) sessionFactory.getCurrentSession().createCriteria(ProductsTechnology.class)
                 .add(Restrictions.eq("product", product)).add(Restrictions.eq("master", true)).setMaxResults(1).uniqueResult();
     }
 
@@ -525,6 +578,13 @@ public final class TestDataLoader {
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
 
+    private ProductsOperation getRandomOperation() {
+        Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return (ProductsOperation) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
+                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
+    }
+
     private ProductsOrder getRandomOrder() {
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsOrder.class)
                 .setProjection(Projections.rowCount()).uniqueResult();
@@ -541,6 +601,11 @@ public final class TestDataLoader {
 
     private DictionariesDictionary getDictionaryByName(final String name) {
         return (DictionariesDictionary) sessionFactory.getCurrentSession().createCriteria(DictionariesDictionary.class)
+                .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
+    }
+
+    private ProductsOperation getOperationByName(final String name) {
+        return (ProductsOperation) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
                 .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
     }
 

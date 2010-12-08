@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -24,10 +24,7 @@
 
 package com.qcadoo.mes.products.print.pdf;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,8 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,56 +39,28 @@ import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.products.print.MaterialRequirementDocumentService;
-import com.qcadoo.mes.products.print.pdf.util.PdfPageNumbering;
+import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 @Service
-public final class MaterialRequirementPdfService extends MaterialRequirementDocumentService {
+public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     @Autowired
     private SecurityService securityService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementPdfService.class);
-
-    private DecimalFormat df;
+    @Autowired
+    private ReportDataService reportDataService;
 
     @Override
-    public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
-        Document document = new Document(PageSize.A4);
-        try {
-            df = (DecimalFormat) DecimalFormat.getInstance(locale);
-            String fileName = getFileName((Date) entity.getField("date")) + PdfUtil.PDF_EXTENSION;
-            FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-            PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
-            writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
-                    getTranslationService().translate("products.report.in", locale), getFontsPath()));
-            document.setMargins(8, 80, 40, 100);
-            buildPdfMetadata(document, locale);
-            writer.createXmpMetadata();
-            document.open();
-            buildPdfContent(document, entity, locale);
-            String text = getTranslationService().translate("products.report.endOfReport", locale);
-            PdfUtil.addEndOfDocument(document, writer, text);
-            document.close();
-        } catch (DocumentException e) {
-            LOG.error("Problem with generating document - " + e.getMessage());
-            document.close();
-            throw e;
-        }
-    }
-
-    private void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
+    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documenTitle = getTranslationService().translate("products.materialRequirement.report.title", locale);
         String documentAuthor = getTranslationService().translate("products.materialRequirement.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
@@ -115,53 +82,20 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         productHeader.add(getTranslationService().translate("products.product.number.label", locale));
         productHeader.add(getTranslationService().translate("products.product.name.label", locale));
         productHeader.add(getTranslationService().translate("products.product.unit.label", locale));
-        productHeader.add(getTranslationService().translate("products.instructionBomComponent.quantity.label", locale));
-        addBomSeries(document, (DefaultEntity) entity, productHeader);
+        productHeader.add(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
+        addTechnologySeries(document, (DefaultEntity) entity, productHeader);
     }
 
-    private void buildPdfMetadata(final Document document, final Locale locale) {
+    @Override
+    protected void buildPdfMetadata(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("products.materialRequirement.report.title", locale));
         PdfUtil.addMetaData(document);
     }
 
-    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
+    private void addTechnologySeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
-        PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader);
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
-            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            Entity product = (Entity) order.getField("product");
-            if (product != null) {
-                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-            }
-            if (product != null) {
-                Object unit = product.getField("unit");
-                if (unit != null) {
-                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
-                } else {
-                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                }
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-            }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity.stripTrailingZeros();
-            table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-        }
-        document.add(table);
-
-    }
-
-    private void addBomSeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
-            throws DocumentException {
-        List<Entity> orders = entity.getHasManyField("orders");
-        Map<ProxyEntity, BigDecimal> products = getBomSeries(entity, orders);
+        Map<ProxyEntity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
@@ -178,4 +112,10 @@ public final class MaterialRequirementPdfService extends MaterialRequirementDocu
         }
         document.add(table);
     }
+
+    @Override
+    protected String getFileName() {
+        return "MaterialRequirement";
+    }
+
 }

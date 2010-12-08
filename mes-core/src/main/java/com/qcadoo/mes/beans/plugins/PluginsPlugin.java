@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.beans.plugins;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -46,12 +45,9 @@ public class PluginsPlugin {
 
     private String description;
 
-    private boolean deleted;
-
     private String status;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean base;
+    private boolean base = false;
 
     private String identifier;
 
@@ -73,14 +69,6 @@ public class PluginsPlugin {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getDescription() {

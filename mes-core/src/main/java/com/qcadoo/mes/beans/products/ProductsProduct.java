@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -34,6 +34,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "products_product")
 public class ProductsProduct {
@@ -57,19 +60,18 @@ public class ProductsProduct {
 
     private String unit;
 
-    private boolean deleted;
-
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<ProductsSubstitute> substitutes;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<ProductsInstruction> instructions;
+    private List<ProductsTechnology> technologies;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<ProductsInstructionBomComponent> instructionBomComponents;
+    private List<ProductsOperationProductComponent> operationProductComponents;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsSubstituteComponent> substituteComponents;
@@ -130,14 +132,6 @@ public class ProductsProduct {
         this.unit = unit;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public List<ProductsSubstitute> getSubstitutes() {
         return substitutes;
     }
@@ -146,12 +140,12 @@ public class ProductsProduct {
         this.substitutes = substitutes;
     }
 
-    public List<ProductsInstruction> getInstructions() {
-        return instructions;
+    public List<ProductsTechnology> getTechnologies() {
+        return technologies;
     }
 
-    public void setInstructions(final List<ProductsInstruction> instructions) {
-        this.instructions = instructions;
+    public void setTechnologies(final List<ProductsTechnology> technologies) {
+        this.technologies = technologies;
     }
 
     public List<ProductsOrder> getOrders() {
@@ -162,20 +156,20 @@ public class ProductsProduct {
         this.orders = orders;
     }
 
-    public List<ProductsInstructionBomComponent> getInstructionBomComponents() {
-        return instructionBomComponents;
-    }
-
-    public void setInstructionBomComponents(final List<ProductsInstructionBomComponent> instructionBomComponents) {
-        this.instructionBomComponents = instructionBomComponents;
-    }
-
     public List<ProductsSubstituteComponent> getSubstituteComponents() {
         return substituteComponents;
     }
 
     public void setSubstituteComponents(final List<ProductsSubstituteComponent> substituteComponents) {
         this.substituteComponents = substituteComponents;
+    }
+
+    public List<ProductsOperationProductComponent> getOperationProductComponents() {
+        return operationProductComponents;
+    }
+
+    public void setOperationProductComponents(final List<ProductsOperationProductComponent> operationProductComponents) {
+        this.operationProductComponents = operationProductComponents;
     }
 
 }

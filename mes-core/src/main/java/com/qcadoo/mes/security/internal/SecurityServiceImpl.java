@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -49,7 +49,7 @@ public final class SecurityServiceImpl implements SecurityService {
     public UsersUser getCurrentUser() {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         UsersUser user = (UsersUser) sessionFactory.getCurrentSession().createCriteria(UsersUser.class)
-                .add(Restrictions.eq("userName", login)).add(Restrictions.eq("deleted", false)).uniqueResult();
+                .add(Restrictions.eq("userName", login)).uniqueResult();
         checkNotNull(user, "Current user with login %s cannot be found", login);
         return user;
     }

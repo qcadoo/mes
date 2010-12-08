@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -68,9 +68,8 @@ public class SecurityServiceTest {
 
         UsersUser user = new UsersUser();
 
-        given(
-                sessionFactory.getCurrentSession().createCriteria(UsersUser.class).add(Mockito.any(Criterion.class))
-                        .add(Mockito.any(Criterion.class)).uniqueResult()).willReturn(user);
+        given(sessionFactory.getCurrentSession().createCriteria(UsersUser.class).add(Mockito.any(Criterion.class)).uniqueResult())
+                .willReturn(user);
 
         // when
         UsersUser currentUser = securityService.getCurrentUser();

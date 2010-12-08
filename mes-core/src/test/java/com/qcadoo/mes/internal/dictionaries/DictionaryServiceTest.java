@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -93,8 +93,8 @@ public class DictionaryServiceTest {
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(DictionariesDictionaryItem.class)
-                        .createAlias("dictionary", "dc").add(Mockito.any(Criterion.class)).add(Mockito.any(Criterion.class))
-                        .addOrder(Mockito.any(Order.class)).list()).willReturn(newArrayList(item1, item3, item2));
+                        .createAlias("dictionary", "dc").add(Mockito.any(Criterion.class)).addOrder(Mockito.any(Order.class))
+                        .list()).willReturn(newArrayList(item1, item3, item2));
 
         // when
         List<String> values = dictionaryService.values("dict");

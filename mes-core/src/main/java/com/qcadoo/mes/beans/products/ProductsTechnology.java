@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.beans.products;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -35,12 +34,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 @Entity
-@Table(name = "products_instruction")
-public class ProductsInstruction {
+@Table(name = "products_technology")
+public class ProductsTechnology {
 
     @Id
     @GeneratedValue
@@ -52,12 +52,6 @@ public class ProductsInstruction {
     @Column(nullable = false)
     private String name;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateFrom;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateTo;
-
     @ManyToOne(fetch = FetchType.EAGER)
     private ProductsProduct product;
 
@@ -66,13 +60,12 @@ public class ProductsInstruction {
 
     private Boolean master;
 
-    @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
-    private List<ProductsInstructionBomComponent> bomComponents;
+    @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
+    private List<ProductsTechnologyOperationComponent> operationComponents;
 
-    @OneToMany(mappedBy = "instruction", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
-
-    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -96,22 +89,6 @@ public class ProductsInstruction {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public Date getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(final Date dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public Date getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(final Date dateTo) {
-        this.dateTo = dateTo;
     }
 
     public ProductsProduct getProduct() {
@@ -138,20 +115,12 @@ public class ProductsInstruction {
         this.master = master;
     }
 
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
+    public List<ProductsTechnologyOperationComponent> getOperationComponents() {
+        return operationComponents;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public List<ProductsInstructionBomComponent> getBomComponents() {
-        return bomComponents;
-    }
-
-    public void setBomComponents(final List<ProductsInstructionBomComponent> bomComponents) {
-        this.bomComponents = bomComponents;
+    public void setOperationComponents(final List<ProductsTechnologyOperationComponent> operationComponents) {
+        this.operationComponents = operationComponents;
     }
 
     public List<ProductsOrder> getOrders() {

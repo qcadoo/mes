@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -24,10 +24,8 @@
 
 package com.qcadoo.mes.beans.products;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -36,86 +34,80 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
-@Table(name = "products_instruction_bom_component")
-public class ProductsInstructionBomComponent {
+@Table(name = "products_technology_operation_component")
+public class ProductsTechnologyOperationComponent {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstruction instruction;
+    private ProductsTechnology technology;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsProduct product;
-
-    @Column(scale = 3, precision = 10)
-    private BigDecimal quantity;
+    private ProductsOperation operation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstructionBomComponent parent;
+    private ProductsTechnologyOperationComponent parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    private List<ProductsInstructionBomComponent> children;
+    @Cascade({ CascadeType.DELETE })
+    private List<ProductsTechnologyOperationComponent> children;
 
-    @Column(nullable = false)
-    private boolean deleted;
+    @OneToMany(mappedBy = "operationComponent", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
+    private List<ProductsOperationProductComponent> operationProductComponents;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
-    public ProductsInstruction getInstruction() {
-        return instruction;
+    public ProductsTechnology getTechnology() {
+        return technology;
     }
 
-    public void setInstruction(ProductsInstruction instruction) {
-        this.instruction = instruction;
+    public void setTechnology(final ProductsTechnology technology) {
+        this.technology = technology;
     }
 
-    public ProductsProduct getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductsProduct product) {
-        this.product = product;
-    }
-
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
-
-    public ProductsInstructionBomComponent getParent() {
+    public ProductsTechnologyOperationComponent getParent() {
         return parent;
     }
 
-    public void setParent(ProductsInstructionBomComponent parent) {
+    public void setParent(final ProductsTechnologyOperationComponent parent) {
         this.parent = parent;
     }
 
-    public List<ProductsInstructionBomComponent> getChildren() {
+    public List<ProductsTechnologyOperationComponent> getChildren() {
         return children;
     }
 
-    public void setChildren(List<ProductsInstructionBomComponent> children) {
+    public void setChildren(final List<ProductsTechnologyOperationComponent> children) {
         this.children = children;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public ProductsOperation getOperation() {
+        return operation;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setOperation(final ProductsOperation operation) {
+        this.operation = operation;
+    }
+
+    public List<ProductsOperationProductComponent> getOperationProductComponents() {
+        return operationProductComponents;
+    }
+
+    public void setOperationProductComponents(final List<ProductsOperationProductComponent> operationProductComponents) {
+        this.operationProductComponents = operationProductComponents;
     }
 
 }

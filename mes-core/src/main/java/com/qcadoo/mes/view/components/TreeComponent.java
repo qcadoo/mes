@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -163,14 +163,14 @@ public final class TreeComponent extends AbstractComponent<TreeData> implements 
             searchCriteriaBuilder = getDataDefinition().find();
         }
 
-        List<Entity> instructionComponents = searchCriteriaBuilder.list().getEntities();
+        List<Entity> technologyComponents = searchCriteriaBuilder.list().getEntities();
 
         TreeNode rootNode = new TreeNode(Long.valueOf(0), getRootLabel(locale));
 
         Map<Long, TreeNode> createdNodes = new HashMap<Long, TreeNode>();
-        while (instructionComponents.size() > 0) {
+        while (technologyComponents.size() > 0) {
             boolean somethingChange = false;
-            Iterator<Entity> entityIterator = instructionComponents.iterator();
+            Iterator<Entity> entityIterator = technologyComponents.iterator();
             while (entityIterator.hasNext()) {
                 Entity e = entityIterator.next();
                 TreeNode parent = null;
@@ -188,7 +188,7 @@ public final class TreeComponent extends AbstractComponent<TreeData> implements 
                 }
             }
             if (!somethingChange) {
-                throw new IllegalStateException("error in instruction components database");
+                throw new IllegalStateException("error in technology components database");
             }
         }
 

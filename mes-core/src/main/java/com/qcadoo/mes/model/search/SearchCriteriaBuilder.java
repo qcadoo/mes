@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -81,13 +81,5 @@ public interface SearchCriteriaBuilder {
      * @see SearchCriteria#getFirstResult()
      */
     SearchCriteriaBuilder withFirstResult(int firstResult);
-
-    /**
-     * Set that deleted entities should be included, by default they aren't included.
-     * 
-     * @return this search builder
-     * @see SearchCriteria#isIncludeDeleted()
-     */
-    SearchCriteriaBuilder includeDeleted();
 
 }

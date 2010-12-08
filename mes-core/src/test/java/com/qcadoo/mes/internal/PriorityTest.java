@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -27,12 +27,14 @@ package com.qcadoo.mes.internal;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.util.Assert.notNull;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
@@ -84,7 +86,7 @@ public class PriorityTest extends DataAccessTest {
         SampleSimpleDatabaseObject existingDatabaseObject = new SampleSimpleDatabaseObject(1L);
         existingDatabaseObject.setPriority(11);
 
-        given(criteria.uniqueResult()).willReturn(existingDatabaseObject);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(existingDatabaseObject);
 
         // when
         entity = dataDefinition.save(entity);
@@ -109,16 +111,15 @@ public class PriorityTest extends DataAccessTest {
         dataDefinition.delete(1L);
 
         // then
-        SampleSimpleDatabaseObject deletedDatabaseObject = new SampleSimpleDatabaseObject(1L);
-        deletedDatabaseObject.setPriority(11);
-        deletedDatabaseObject.setDeleted(true);
-
-        verify(session).update(deletedDatabaseObject);
-
         SampleSimpleDatabaseObject updatedDatabaseObject = new SampleSimpleDatabaseObject(2L);
         updatedDatabaseObject.setPriority(11);
 
         verify(session).update(updatedDatabaseObject);
+
+        SampleSimpleDatabaseObject deletedDatabaseObject = new SampleSimpleDatabaseObject(1L);
+        deletedDatabaseObject.setPriority(11);
+
+        verify(session).delete(deletedDatabaseObject);
     }
 
     @Test
@@ -130,7 +131,8 @@ public class PriorityTest extends DataAccessTest {
         SampleSimpleDatabaseObject otherDatabaseObject = new SampleSimpleDatabaseObject(2L);
         otherDatabaseObject.setPriority(6);
 
-        given(criteria.uniqueResult()).willReturn(existingDatabaseObject, 6);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(existingDatabaseObject);
+        given(criteria.uniqueResult()).willReturn(6);
         given(criteria.list()).willReturn(Lists.newArrayList(otherDatabaseObject));
 
         // when
@@ -157,7 +159,8 @@ public class PriorityTest extends DataAccessTest {
         SampleSimpleDatabaseObject otherDatabaseObject = new SampleSimpleDatabaseObject(2L);
         otherDatabaseObject.setPriority(6);
 
-        given(criteria.uniqueResult()).willReturn(existingDatabaseObject, 6);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(existingDatabaseObject);
+        given(criteria.uniqueResult()).willReturn(6);
         given(criteria.list()).willReturn(Lists.newArrayList(otherDatabaseObject));
 
         // when
@@ -187,7 +190,7 @@ public class PriorityTest extends DataAccessTest {
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
         databaseObject.setPriority(11);
 
-        given(criteria.uniqueResult()).willReturn(databaseObject);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
         given(criteria.list()).willReturn(Lists.newArrayList());
 
         // when
@@ -206,7 +209,8 @@ public class PriorityTest extends DataAccessTest {
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
         databaseObject.setPriority(11);
 
-        given(criteria.uniqueResult()).willReturn(databaseObject, 5);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
+        given(criteria.uniqueResult()).willReturn(5);
         given(criteria.list()).willReturn(Lists.newArrayList());
 
         // when
@@ -241,7 +245,8 @@ public class PriorityTest extends DataAccessTest {
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
         databaseObject.setPriority(11);
 
-        given(criteria.uniqueResult()).willReturn(databaseObject, 15);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(databaseObject);
+        given(criteria.uniqueResult()).willReturn(15);
         given(criteria.list()).willReturn(Lists.newArrayList());
 
         // when

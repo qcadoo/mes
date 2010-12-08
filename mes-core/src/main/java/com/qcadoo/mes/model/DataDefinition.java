@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -64,20 +64,12 @@ public interface DataDefinition {
     Entity get(final Long id);
 
     /**
-     * Mark as deleted the entity related with this data definition, by its id.
-     * 
-     * @param id
-     *            id
-     */
-    void delete(final Long id);
-
-    /**
      * Delete the entity related with this data definition, by its id.
      * 
      * @param id
      *            id
      */
-    void deleteHard(final Long id);
+    void delete(final Long id);
 
     /**
      * Save the entity related with this data definition.

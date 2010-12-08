@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.1
+    Version: 0.2.0
 
     This file is part of Qcadoo.
 
@@ -135,8 +135,6 @@
 				<component type="textarea" name="name" field="name" />
 				<component type="input" name="priority" field="priority"
 					enabled="false" />
-				<component type="input" name="effectiveDateFrom" field="effectiveDateFrom" />
-				<component type="input" name="effectiveDateTo" field="effectiveDateTo" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
@@ -177,23 +175,73 @@
 			</component>
 		</component>
 	</view>
-	<view name="instructionGridView" model="instruction" menuable="true">
+	<view name="operationGridView" model="operation" menuable="true">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" icon="newIcon24.png" 
+						action="#{mainWindow.operationsGrid}.performNew;"/>
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.operationsGrid}.performDelete;"/>
+				</group>
+			</ribbon>
+			<component type="grid" name="operationsGrid">
+				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="name" fields="name" link="true"/>
+				<option type="header" value="false"/>
+				<option type="correspondingView" value="products/operationDetailsView"/>
+				<option type="paginable" value="true"/>
+				<option type="searchable" value="number, name"/>
+				<option type="orderable" value="number, name"/>
+				<option type="multiselect" value="true"/>
+				<option type="fullScreen" value="true" />
+			</component>
+			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />			
+		</component>
+	</view>
+	<view name="operationDetailsView" model="operation">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack;"/>
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{mainWindow.operationDetailsForm}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{mainWindow.operationDetailsForm}.performSave;#{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.operationDetailsForm}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{mainWindow.operationDetailsForm}.performDelete; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="operationDetailsForm">
+				<component type="input" name="number" field="number" />
+				<component type="textarea" name="name" field="name" />
+				<option type="expression" value="#name" />
+				<option type="header" value="false" />
+			</component>
+		</component>
+	</view>
+	<view name="technologyGridView" model="technology" menuable="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.instructionsGrid}.performNew;" />
+						action="#{mainWindow.technologiesGrid}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.instructionsGrid}.performDelete;" />
+						action="#{mainWindow.technologiesGrid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="instructionsGrid">
+			<component type="grid" name="technologiesGrid">
 				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
 				<option type="header" value="false" />
-				<option type="correspondingView" value="products/instructionDetailsView" />
+				<option type="correspondingView" value="products/technologyDetailsView" />
 				<option type="paginable" value="true" />
 				<option type="searchable" value="name,number,product" />
 				<option type="orderable" value="name,number,product" />
@@ -205,7 +253,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="instructionDetailsView" model="instruction">
+	<view name="technologyDetailsView" model="technology">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
@@ -213,15 +261,15 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.instructionDetailsForm}.performSave;" />
+						action="#{mainWindow.technologyDetailsForm}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.instructionDetailsForm}.performSave;#{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.instructionDetailsForm}.performCancel;" />
+						action="#{mainWindow.technologyDetailsForm}.performSave;#{mainWindow}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.technologyDetailsForm}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.instructionDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{mainWindow.technologyDetailsForm}.performDelete; #{mainWindow}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="instructionDetailsForm">
+			<component type="form" name="technologyDetailsForm">
 				<component type="checkbox" name="master" field="master" />
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
@@ -237,25 +285,42 @@
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
-				<component type="calendar" name="dateFrom" field="dateFrom" />
-				<component type="calendar" name="dateTo" field="dateTo" />
 				<component type="textarea" name="description" field="description">
 					<option type="rows" value="5" />
 				</component>
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="tree" name="bomTree" source="#{mainWindow.instructionDetailsForm}.bomComponents">
+			<component type="tree" name="technologyTree" source="#{mainWindow.technologyDetailsForm}.operationComponents">
 				<option type="height" value="200" />
 				<option type="width" value="500" />
-				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #quantity + ' x &lt;/span&gt;' + #product['name']" />
+				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 				<option type="rootExpression" value="#number" />
-				<option type="correspondingView" value="products/instructionComponentDetailsView" />
+				<option type="correspondingView" value="products/technologyComponentDetailsView" />
 				<option type="multiselect" value="false" />
 			</component>
+			<!--  
+			<component type="grid" name="productsGrid" source="product">
+				<option type="column" name="number" fields="number" link="true"
+					width="200" />
+				<option type="column" name="name" fields="name" link="true"
+					width="300" />
+				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+					width="100" />
+				<option type="column" name="ean" fields="ean" width="100" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,number,typeOfMaterial,ean" />
+				<option type="orderable" value="name,number,ean" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="200" />
+				<option type="width" value="350" />
+				<option type="creatable" value="false" />
+				<option type="deletable" value="false" />
+				<option type="updatable" value="false" />
+			</component>-->
 		</component>
 	</view>
-	<view name="instructionComponentDetailsView" model="instructionBomComponent">
+	<view name="technologyComponentDetailsView" model="technologyOperationComponent">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">
@@ -269,21 +334,18 @@
 				</group>
 			</ribbon>
 			<component type="form" name="detailsForm">
-				<component type="lookup" name="product" field="product">
-					<option type="column" name="name" fields="name" link="true"
+				<component type="lookup" name="operation" field="operation">
+					<option type="column" name="name" fields="name"
 						width="300" />
-					<option type="column" name="category" fields="category"
-						width="100" />
 					<option type="paginable" value="true" />
-					<option type="searchable" value="name,category" />
-					<option type="orderable" value="name,category" />
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
 					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
-				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
-				<option type="expression" value="#product['name']" />
+				<option type="expression" value="#operation['name']" />
 			</component>
 		</component>
 	</view>
@@ -353,10 +415,10 @@
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
-				<component type="input" name="defaultInstruction" field="defaultInstruction"
+				<component type="input" name="defaultTechnology" field="defaultTechnology"
 					enabled="false" />
-				<component type="lookup" name="instruction" field="instruction"
-					source="#{mainWindow.orderDetailsForm.product}.instructions">
+				<component type="lookup" name="technology" field="technology"
+					source="#{mainWindow.orderDetailsForm.product}.technologies">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
 					<option type="column" name="number" fields="number" link="true"
@@ -464,6 +526,124 @@
 		<onView bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
 	</view>	
 	<view name="materialRequirementComponentDetailsView" model="materialRequirementComponent">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveBackIcon24.png"
+						action="#{mainWindow.form}.performSave; #{mainWindow}.performBack" />
+				</group>
+			</ribbon>		
+			<component type="form" name="form">
+				<component type="lookup" name="order" field="order">
+					<option type="column" name="name" fields="name" link="true"
+						width="300" />
+					<option type="paginable" value="true" />
+					<option type="searchable" value="number,name" />
+					<option type="orderable" value="number,name" />
+					<option type="fullScreen" value="true" />
+					<option type="expression" value="#name + ' - ' + #number" />
+					<option type="fieldCode" value="number" />
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#name" />
+			</component>
+		</component>
+		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
+	</view>
+	<view name="workPlanGridView" model="workPlan" menuable="true">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="actions">
+					<bigButton name="new" icon="newIcon24.png"
+						action="#{mainWindow.workPlansGrid}.performNew;" />
+				</group>
+				<group name="exportWorker">
+					<smallButton name="pdfWorker" icon="printIcon16.png"
+						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
+					<smallButton name="xlsWorker" icon="printIcon16.png"
+						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
+				</group>
+				<group name="exportMachine">
+					<smallButton name="pdfMachine" icon="printIcon16.png"
+						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
+					<smallButton name="xlsMachine" icon="printIcon16.png"
+						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
+				</group>
+			</ribbon>		
+			<component type="grid" name="workPlansGrid">
+				<option type="column" name="name" fields="name" link="true" width="300" />
+				<option type="column" name="generated" fields="generated" link="false" width="100" />
+				<option type="column" name="worker" fields="worker" width="300" />
+				<option type="header" value="false" />
+				<option type="correspondingView" value="products/workPlanDetailsView" />
+				<option type="paginable" value="true" />
+				<option type="searchable" value="name,generated,worker" />
+				<option type="orderable" value="name,generated,worker" />
+				<option type="multiselect" value="true" />
+				<option type="fullScreen" value="true" />
+			</component>
+			<option type="backButton" value="false" />
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+	</view>
+	<view name="workPlanDetailsView" model="workPlan">
+		<component type="window" name="mainWindow">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{mainWindow.workPlanDetailsForm}.performSave;" />
+					<bigButton name="generate" icon="generateIcon24.png"
+						action="#{mainWindow.workPlanDetailsForm.generated}.setSelected(true); #{mainWindow.workPlanDetailsForm}.performSave;" />
+				</group>
+				<group name="exportWorker">
+					<smallButton name="pdfWorker" icon="printIcon16.png"
+						action="#{mainWindow.workPlanDetailsForm}.performCallFunction(printWorkPlanPdf,pdf);" />
+					<smallButton name="xlsWorker" icon="printIcon16.png"
+						action="#{mainWindow.workPlanDetailsForm}.performCallFunction(printWorkPlanXls,xls);" />
+				</group>
+				<group name="exportMachine">
+					<smallButton name="pdfMachine" icon="printIcon16.png"
+						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
+					<smallButton name="xlsMachine" icon="printIcon16.png"
+						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
+				</group>
+			</ribbon>
+			<component type="form" name="workPlanDetailsForm">
+				<component type="checkbox" name="generated" field="generated" enabled="false">
+					<option type="textRepresentationOnDisabled" value="true" />
+				</component>
+				<component type="input" name="date" field="date" enabled="false">
+					<option type="textRepresentationOnDisabled" value="true" />
+				</component>
+				<component type="input" name="worker" field="worker" enabled="false">
+					<option type="textRepresentationOnDisabled" value="true" />
+				</component>
+				<component type="textarea" name="name" field="name" />
+				<option type="header" value="false" />
+				<option type="expression" value="#name" />
+			</component>
+			<component type="grid" name="ordersGrid" source="#{mainWindow.workPlanDetailsForm}.orders">
+				<option type="column" name="number" fields="order" expression="#order['number']"/>
+				<option type="column" name="name" fields="order" expression="#order['name']"/>
+				<option type="correspondingView" value="products/workPlanComponentDetailsView" />
+				<option type="paginable" value="false" />
+				<option type="multiselect" value="false" />
+				<option type="height" value="200" />
+				<option type="width" value="350" />
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
+			</component>
+		</component>
+		<onView bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingWorkPlan" />
+	</view>	
+	<view name="workPlanComponentDetailsView" model="workPlanComponent">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="navigation">

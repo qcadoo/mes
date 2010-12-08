@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -74,14 +74,6 @@ public interface PluginManagementService {
      * @return the plugin, or null if not found
      */
     PluginsPlugin getByNameAndVendor(final String name, final String vendor);
-
-    /**
-     * Save given plugin.
-     * 
-     * @param plugin
-     *            plugin to save
-     */
-    void save(PluginsPlugin plugin);
 
     /**
      * Download the plugin and save it into the database with status "downloaded".

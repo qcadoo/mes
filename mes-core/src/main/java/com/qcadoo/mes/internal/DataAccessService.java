@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -36,8 +36,6 @@ public interface DataAccessService {
     Entity get(InternalDataDefinition dataDefinition, Long entityId);
 
     void delete(InternalDataDefinition dataDefinition, Long... entityId);
-
-    void deleteHard(InternalDataDefinition dataDefinition, Long... entityId);
 
     SearchResult find(SearchCriteria searchCriteria);
 

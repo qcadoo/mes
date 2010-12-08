@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -27,8 +27,10 @@ package com.qcadoo.mes.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 
 import org.junit.Test;
+import org.mockito.Matchers;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.sample.SampleSimpleDatabaseObject;
@@ -58,7 +60,7 @@ public final class DataAccessServiceGetTest extends DataAccessTest {
         simpleDatabaseObject.setName("Mr T");
         simpleDatabaseObject.setAge(66);
 
-        given(criteria.uniqueResult()).willReturn(simpleDatabaseObject);
+        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(simpleDatabaseObject);
 
         // when
         Entity entity = dataDefinition.get(1L);

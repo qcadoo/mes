@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -27,11 +27,13 @@ package com.qcadoo.mes.internal;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.PluginManagementService;
@@ -50,6 +52,8 @@ import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
 @Service
 public final class MenuServiceImpl implements MenuService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MenuServiceImpl.class);
+
     @Autowired
     private TranslationService translationService;
 
@@ -61,6 +65,9 @@ public final class MenuServiceImpl implements MenuService {
 
     @Autowired
     private ViewDefinitionService viewDefinitionService;
+
+    @Value("${showAdministrationMenu}")
+    private boolean showAdministrationMenu;
 
     @Override
     @Transactional
@@ -86,7 +93,7 @@ public final class MenuServiceImpl implements MenuService {
             ViewDefinition vd = viewDefinitionService.getWithoutSession(viewDefinitionEntity.getStringField("pluginIdentifier"),
                     viewDefinitionEntity.getStringField("viewName"));
             if (vd == null || !vd.isMenuable()) {
-                viewDefinitionDD.deleteHard(viewDefinitionEntity.getId());
+                viewDefinitionDD.delete(viewDefinitionEntity.getId());
             }
         }
     }
@@ -145,7 +152,7 @@ public final class MenuServiceImpl implements MenuService {
             menuDef.addItem(category);
         }
 
-        if (!hasMenuCategoryGridView && !SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+        if (!hasMenuCategoryGridView && showAdministrationMenu) {
             if (administrationCategory == null) {
                 administrationCategory = new MenulItemsGroup("administration", getLabel("administration",
                         "core.menu.administration", locale));

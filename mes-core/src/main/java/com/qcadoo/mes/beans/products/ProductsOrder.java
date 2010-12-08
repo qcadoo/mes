@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -32,19 +32,22 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
+@SequenceGenerator(name = "SEQ_STORE", sequenceName = "products_order_sequence")
 @Table(name = "products_order")
 public class ProductsOrder {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STORE")
     private Long id;
 
     @Column(nullable = false, length = 40)
@@ -55,8 +58,6 @@ public class ProductsOrder {
 
     @Column(nullable = false)
     private String state;
-
-    private boolean deleted;
 
     @Temporal(TemporalType.DATE)
     private Date effectiveDateFrom;
@@ -81,10 +82,10 @@ public class ProductsOrder {
     private BigDecimal plannedQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstruction defaultInstruction;
+    private ProductsTechnology defaultTechnology;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsInstruction instruction;
+    private ProductsTechnology technology;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal doneQuantity;
@@ -118,14 +119,6 @@ public class ProductsOrder {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getState() {
@@ -192,20 +185,20 @@ public class ProductsOrder {
         this.plannedQuantity = plannedQuantity;
     }
 
-    public ProductsInstruction getDefaultInstruction() {
-        return defaultInstruction;
+    public ProductsTechnology getDefaultTechnology() {
+        return defaultTechnology;
     }
 
-    public void setDefaultInstruction(final ProductsInstruction defaultInstruction) {
-        this.defaultInstruction = defaultInstruction;
+    public void setDefaultTechnology(final ProductsTechnology defaultTechnology) {
+        this.defaultTechnology = defaultTechnology;
     }
 
-    public ProductsInstruction getInstruction() {
-        return instruction;
+    public ProductsTechnology getTechnology() {
+        return technology;
     }
 
-    public void setInstruction(final ProductsInstruction instruction) {
-        this.instruction = instruction;
+    public void setTechnology(final ProductsTechnology technology) {
+        this.technology = technology;
     }
 
     public BigDecimal getDoneQuantity() {

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -28,8 +28,6 @@ import java.util.Collections;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,22 +47,12 @@ public final class EntityService {
 
     public static final String FIELD_ID = "id";
 
-    public static final String FIELD_DELETED = "deleted";
-
     public Long getId(final Object databaseEntity) {
         return (Long) getField(databaseEntity, FIELD_ID);
     }
 
     public void setId(final Object databaseEntity, final Long id) {
         setField(databaseEntity, FIELD_ID, id);
-    }
-
-    public void setDeleted(final Object databaseEntity) {
-        setField(databaseEntity, FIELD_DELETED, true);
-    }
-
-    public void addDeletedRestriction(final Criteria criteria) {
-        criteria.add(Restrictions.ne(EntityService.FIELD_DELETED, true));
     }
 
     public void setField(final Object databaseEntity, final FieldDefinition fieldDefinition, final Object value) {

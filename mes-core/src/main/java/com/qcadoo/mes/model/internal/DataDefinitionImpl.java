@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -86,11 +86,6 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public void delete(final Long id) {
         dataAccessService.delete(this, id);
-    }
-
-    @Override
-    public void deleteHard(final Long id) {
-        dataAccessService.deleteHard(this, id);
     }
 
     @Override

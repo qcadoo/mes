@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -526,7 +526,8 @@ public class ValidatorTest extends DataAccessTest {
 
         SampleSimpleDatabaseObject databaseObject = new SampleSimpleDatabaseObject(1L);
 
-        given(criteria.uniqueResult()).willReturn(databaseObject, 0);
+        given(session.get(SampleSimpleDatabaseObject.class, 1L)).willReturn(databaseObject);
+        given(criteria.uniqueResult()).willReturn(0);
 
         fieldDefinitionName.withValidator(fieldValidatorFactory.unique());
 

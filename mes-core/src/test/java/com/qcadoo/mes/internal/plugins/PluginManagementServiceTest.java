@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -29,7 +29,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -58,19 +57,17 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setDeleted(false);
         plugin.setStatus("active");
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
-                        .add(any(Criterion.class)).add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
+                        .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
         PluginsPlugin databasePlugin = pluginManagementService.getByIdentifierAndStatus("plugins", "active");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals(false, databasePlugin.isDeleted());
         assertEquals("active", databasePlugin.getStatus());
     }
 
@@ -79,19 +76,16 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setDeleted(false);
         plugin.setStatus("active");
 
-        given(
-                sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
-                        .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
+        given(sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class)).uniqueResult())
+                .willReturn(plugin);
 
         // when
         PluginsPlugin databasePlugin = pluginManagementService.getByIdentifier("plugins");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals(false, databasePlugin.isDeleted());
         assertEquals("active", databasePlugin.getStatus());
     }
 
@@ -100,19 +94,16 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setDeleted(false);
         plugin.setStatus("active");
 
-        given(
-                sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
-                        .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
+        given(sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class)).uniqueResult())
+                .willReturn(plugin);
 
         // when
         PluginsPlugin databasePlugin = pluginManagementService.get(1L);
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals(false, databasePlugin.isDeleted());
         assertEquals("active", databasePlugin.getStatus());
     }
 
@@ -121,60 +112,18 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setDeleted(false);
         plugin.setStatus("active");
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
-                        .add(any(Criterion.class)).add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
+                        .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
         PluginsPlugin databasePlugin = pluginManagementService.getByNameAndVendor("name", "vendor");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals(false, databasePlugin.isDeleted());
         assertEquals("active", databasePlugin.getStatus());
-    }
-
-    @Test
-    public void shouldSaveNewPlugin() throws Exception {
-        // given
-        PluginsPlugin plugin = new PluginsPlugin();
-        plugin.setName("plugins");
-        plugin.setDeleted(false);
-        plugin.setStatus("active");
-
-        // when
-        pluginManagementService.save(plugin);
-
-        // then
-        verify(sessionFactory.getCurrentSession()).save(plugin);
-
-    }
-
-    @Test
-    public void shouldSaveExistingPlugin() throws Exception {
-        // given
-        PluginsPlugin databasePlugin = new PluginsPlugin();
-        databasePlugin.setName("plugins");
-        databasePlugin.setDeleted(false);
-        databasePlugin.setStatus("active");
-
-        given(
-                sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
-                        .add(any(Criterion.class)).uniqueResult()).willReturn(databasePlugin);
-
-        PluginsPlugin plugin = new PluginsPlugin();
-        plugin.setName("products");
-        plugin.setDeleted(false);
-        plugin.setStatus("active");
-
-        // when
-        pluginManagementService.save(plugin);
-
-        // then
-        verify(sessionFactory.getCurrentSession()).save(plugin);
     }
 
     @Test(expected = NullPointerException.class)
@@ -213,9 +162,4 @@ public final class PluginManagementServiceTest {
         pluginManagementService.getByNameAndVendor("name", null);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrownAnExceptionIfPluginIsNull() {
-        // when
-        pluginManagementService.save(null);
-    }
 }

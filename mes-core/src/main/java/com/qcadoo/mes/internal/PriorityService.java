@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -161,10 +161,6 @@ public final class PriorityService {
             final Object databaseEntity) {
 
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
-
-        if (dataDefinition.isDeletable()) {
-            entityService.addDeletedRestriction(criteria);
-        }
 
         FieldDefinition scopeFieldDefinition = getScopeForPriority(fieldDefinition);
 

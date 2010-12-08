@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 0.1
+    Version: 0.2.0
 
     This file is part of Qcadoo.
 
@@ -42,9 +42,9 @@
 		<dictionary name="category" dictionary="categories" />
 		<string name="unit" />
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
-		<hasMany name="instructions" model="instruction" joinField="product" cascade="nullify" />
+		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
-		<hasMany name="instructionBomComponents" model="instructionBomComponent" joinField="product" cascade="nullify"/>
+		<hasMany name="operationProductComponents" model="operationProductComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
 	</model>
 	<model name="substitute">
@@ -56,14 +56,11 @@
 		<string name="name">
 			<validatesPresence />
 		</string>
-		<date name="effectiveDateFrom" />
-		<date name="effectiveDateTo" />
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
 		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" />
 		<priority name="priority" scope="product" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
 	<model name="substituteComponent">
@@ -82,7 +79,18 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfSubstituteIsNotRemoved" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkSubstituteComponentUniqueness" />
 	</model>
-	<model name="instruction">
+	<model name="operation">
+		<string name="number">
+			<validatesPresence/>
+			<validatesUniqueness/>
+			<validatesLength max="255"/>
+		</string>
+		<string name="name">
+			<validatesLength max="2048"/>
+		</string>
+		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="nullify" />
+	</model>
+	<model name="technology">
 		<string name="number">
 			<validatesPresence />
 			<validatesUniqueness />
@@ -95,17 +103,25 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<boolean name="master" />
-		<date name="dateFrom" />
-		<date name="dateTo" />
 		<string name="description" />
-		<hasMany name="bomComponents" model="instructionBomComponent" joinField="instruction" cascade="delete" />
-		<hasMany name="orders" model="order" joinField="instruction" cascade="nullify"/>
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDefault" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkInstructionDates" />
+		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" />
+		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkTechnologyDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>
-	<model name="instructionBomComponent">
-		<belongsTo name="instruction" model="instruction" lookupField="name">
+	<model name="technologyOperationComponent">
+		<belongsTo name="technology" model="technology" lookupField="name">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="operation" model="operation" lookupField="name">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
+		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
+		<hasMany name="operationProductComponents" model="operationProductComponent" joinField="operationComponent" cascade="delete" />
+	</model>
+	<model name="operationProductComponent">
+		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">
 			<validatesPresence /> 
 		</belongsTo>
 		<belongsTo name="product" model="product" lookupField="name">
@@ -117,8 +133,9 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<belongsTo name="parent" model="instructionBomComponent" lookupField="name" />
-		<hasMany name="children" model="instructionBomComponent" joinField="parent" cascade="delete" />
+		<boolean name="inParameter">
+			<validatesPresence />
+		</boolean>
 	</model>
 	<model name="order">
 		<string name="number">
@@ -135,13 +152,13 @@
 		<date name="dateTo">
 			<validatesPresence />
 		</date>
-		<enum name="state" values="started,pending,done">
+		<enum name="state" values="pending,inProgress,done">
 			<validatesPresence />
 		</enum>
 		<dictionary name="machine" dictionary="machines" />
 		<belongsTo name="product" model="product" lookupField="name" />
-		<belongsTo name="defaultInstruction" model="instruction" lookupField="name" readonly="true" />
-		<belongsTo name="instruction" model="instruction" lookupField="name" />
+		<belongsTo name="defaultTechnology" model="technology" lookupField="name" readonly="true" />
+		<belongsTo name="technology" model="technology" lookupField="name" />
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" inclusive="false" />
 			<validatesPrecision max="7" />
@@ -160,9 +177,9 @@
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfStateChangeIsCorrect" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderPlannedQuantity" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderInstruction" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderTechnology" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfInstructionIsNotRemoved" />
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
 		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
 	</model>
 	<model name="materialRequirement">	
@@ -176,7 +193,7 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" />
-		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillMaterialRequirementDateAndWorker" />
+		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillDateAndWorkerOnGenerate" />
 	</model>
 	<model name="materialRequirementComponent">	
 		<belongsTo name="materialRequirement" model="materialRequirement" lookupField="name" lazy="false">
@@ -186,5 +203,26 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkMaterialRequirementComponentUniqueness" />
+	</model>
+	<model name="workPlan">	
+		<string name="name">
+			<validatesPresence />
+			<validatesLength max="255"/>
+		</string>
+		<datetime name="date" readonly="true" />
+		<string name="worker" readonly="true" />
+		<boolean name="generated" />
+		<string name="fileName" />
+		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" />
+		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillDateAndWorkerOnGenerate" />
+	</model>
+	<model name="workPlanComponent">	
+		<belongsTo name="workPlan" model="workPlan" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="order" model="order" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkWorkPlanComponentUniqueness" />
 	</model>
 </qcd:models>

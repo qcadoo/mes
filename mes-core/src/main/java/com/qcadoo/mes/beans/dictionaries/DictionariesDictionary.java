@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 0.1
+ * Version: 0.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -34,6 +34,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "dictionaries_dictionary")
 public class DictionariesDictionary {
@@ -62,6 +65,7 @@ public class DictionariesDictionary {
     }
 
     @OneToMany(mappedBy = "dictionary", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
     private List<DictionariesDictionaryItem> dictionaryItems;
 
     public List<DictionariesDictionaryItem> getDictionaryItems() {
