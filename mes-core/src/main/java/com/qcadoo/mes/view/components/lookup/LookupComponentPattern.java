@@ -185,13 +185,13 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         RibbonActionItem ribbonActionItem = new RibbonActionItem();
         ribbonActionItem.setName("select");
         ribbonActionItem.setIcon("acceptIcon24.png");
-        ribbonActionItem.setAction("#{window.grid}.performLookupSelect; #{window}.performClose");
+        ribbonActionItem.setAction("#{window.grid}.performLinkClicked();");
         ribbonActionItem.setType(Type.BIG_BUTTON);
 
         RibbonActionItem ribbonCancelActionItem = new RibbonActionItem();
         ribbonCancelActionItem.setName("cancel");
         ribbonCancelActionItem.setIcon("cancelIcon24.png");
-        ribbonCancelActionItem.setAction("#{window}.performClose");
+        ribbonCancelActionItem.setAction("#{window}.performCloseWindow");
         ribbonCancelActionItem.setType(Type.BIG_BUTTON);
 
         RibbonGroup ribbonGroup = new RibbonGroup();

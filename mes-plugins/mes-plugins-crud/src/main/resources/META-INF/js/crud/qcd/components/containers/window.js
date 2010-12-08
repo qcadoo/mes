@@ -108,5 +108,12 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		}
 	}
 	
+	this.performCloseWindow = function(actionsPerformer) {
+		mainController.closeWindow();
+		if (actionsPerformer) {
+			actionsPerformer.performNext();
+		}
+	}
+	
 	constructor(this);
 }

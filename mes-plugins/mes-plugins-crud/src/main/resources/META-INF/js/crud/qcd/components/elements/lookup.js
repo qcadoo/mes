@@ -26,7 +26,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var openLookupButtonElement = $("#"+this.elementSearchName+"_openLookupButton");
 	
 	var labelNormal = labelElement.html();
-	var labelFocus = "";
+	var labelFocus = this.options.translations.labelOnFocus;
 	
 	var currentData = new Object();
 	
@@ -36,6 +36,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var listeners = this.options.listeners;
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
+	
+	QCD.info(this.elementPath);
+	QCD.info(this.options);
 	
 	var _this = this;
 	
@@ -79,23 +82,21 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		QCD.info(data);
-//		currentData.selectedEntityId = data.selectedEntityId;
-//		currentData.selectedEntityValue = data.selectedEntityValue;
-//		currentData.selectedEntityCode = data.selectedEntityCode;
+		
+		currentData.selectedEntityId = data.value;
+		currentData.selectedEntityValue = data.selectedEntityValue;
+		currentData.selectedEntityCode = data.selectedEntityCode;
 //		currentData.contextEntityId = data.contextEntityId;
-//		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
-//			currentData.isError = true;
-//		} else {
-//			currentData.isError = false;
-//		}
+		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
+			currentData.isError = true;
+		} else {
+			currentData.isError = false;
+		}
 		updateData();
 	}
 	
 	this.getComponentData = function() {
-		return {
-			value : currentData
-		}
+		return currentData;
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {
@@ -214,7 +215,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		
 		
 		
-		lookupWindow = mainController.openPopup("order.html?test=aa", _this, "lookup");
+		lookupWindow = mainController.openPopup(_this.options.viewName+".html", _this, "lookup");
 //		
 //		var elementName = elementPath.replace(/-/g,".");
 //		var location = mainController.getViewName()+".html?lookupComponent="+elementName;
@@ -233,10 +234,19 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	this.onPopupInit = function() {
 		QCD.info("onPopupInit");
+		var grid = lookupWindow.getComponent("window.grid");
+		grid.setLinkListener(this);
+		//grid.setFilterState("lookupCodeVisible", currentData.selectedEntityCode);	
 		lookupWindow.init();
 	}
 	this.onPopupClose = function() {
 		QCD.info("onPopupClose");
+	}
+	
+	this.onGridLinkClicked = function(entityId) {
+		var grid = lookupWindow.getComponent("window.grid");
+		var lookupData = grid.getLookupData(entityId);
+		mainController.closePopup();
 	}
 	
 	constructor(this);

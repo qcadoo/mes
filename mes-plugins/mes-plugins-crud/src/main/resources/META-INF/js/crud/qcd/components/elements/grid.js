@@ -31,6 +31,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var currentGridHeight;
 	
+	var linkListener;
+	
 	var currentState = {
 		selectedEntityId: null,
 		filtersEnabled: false
@@ -112,7 +114,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.canDelete = options.deletable;
 		gridParameters.paging = options.paginable;
 		gridParameters.filter = isfiltersEnabled;
-		gridParameters.isLookup = options.lookup ? true : false;
 		gridParameters.orderable = options.prioritizable;
 		
 		gridParameters.fullScreen = options.fullscreen;
@@ -156,10 +157,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 	}
 	
+	this.setLinkListener = function(_linkListener) {
+		linkListener = _linkListener;
+	}
+	
 	function linkClicked(entityId) {
-		if (gridParameters.isLookup) {
-			performLookupSelect(null, entityId);
-			mainController.closeWindow();
+		if (linkListener) {
+			linkListener.onGridLinkClicked(entityId);
 		} else {
 			var params = new Object();
 			params[gridParameters.correspondingComponent+".id"] = entityId;
@@ -556,6 +560,27 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}, args, actionsPerformer);
 	}
 	
+	this.performLinkClicked = function(actionsPerformer) {
+		if (currentState.selectedEntityId) {
+			
+			linkClicked(currentState.selectedEntityId);
+			
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
+		} else {
+			mainController.showMessage("error", translations.noRowSelectedError);
+		}	
+	}
+	
+	this.getLookupData = function(entityId) {
+		var result = Object();
+		result.lookupValue = hiddenColumnValues["lookupValue"][entityId];
+		//result.lookupCode = hiddenColumnValues["lookupCode"][entityId];
+		result.lookupCode = 123;
+		return result;
+//		mainController.performLookupSelect(entityId, lookupValue, lookupCode, actionsPerformer);
+	}
 
 	this.performLookupSelect = function(actionsPerformer, entityId) {
 //		if (!entityId) {

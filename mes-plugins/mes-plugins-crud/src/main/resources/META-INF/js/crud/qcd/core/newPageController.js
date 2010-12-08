@@ -256,12 +256,20 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	function onWindowClick() {
 		if (popup) {
-			QCD.info(popup);
 			popup.parentComponent.onPopupClose();
 			popup.window.close();
 			popup = null;
 		}
 	}
+	
+	this.closePopup = function() {
+		if (popup) {
+			popup.parentComponent.onPopupClose();
+			popup.window.close();
+			popup = null;
+		}
+	}
+	
 	this.openPopup = function(url, parentComponent, title) {
 		if (popup) {
 			
@@ -319,10 +327,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		}
 	}
 	
-//	this.closeWindow = function() {
-//		window.close();
-//	}
-//	
+	this.closeWindow = function() {
+		window.close();
+	}
+	
 	this.onSessionExpired = function() {
 		var serializationObject = {
 			components: getValueData()
