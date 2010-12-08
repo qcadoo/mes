@@ -196,7 +196,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		}
 		var url = _this.options.viewName+".html";
 		if (currentData.contextEntityId) {
-//			location += "&entityId="+currentData.contextEntityId;
 			url += "?window.grid.belongsToEntityId=" + currentData.contextEntityId;
 	}		
 		lookupWindow = mainController.openPopup(url, _this, "lookup");
@@ -224,9 +223,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		currentData.selectedEntityCode = lookupData.lookupCode;
 		currentData.isError = false;
 		updateData();
-//		if (hasListeners) {
-//			mainController.getUpdate(elementPath, entityId, listeners);
-//		}
+		if (hasListeners) {
+		mainController.callEvent("search", elementPath, null, null, null);
+		}
 		mainController.closePopup();
 	}
 	
