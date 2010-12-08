@@ -43,6 +43,7 @@ import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
+import com.qcadoo.mes.beans.products.ProductsWorkPlan;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Order;
@@ -51,6 +52,7 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
+import com.qcadoo.mes.products.print.pdf.WorkPlanPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ViewDefinition;
@@ -77,6 +79,9 @@ public final class ProductService {
 
     @Autowired
     private MaterialRequirementXlsService materialRequirementXlsService;
+
+    @Autowired
+    private WorkPlanPdfService workPlanPdfService;
 
     @Autowired
     private TranslationService translationService;
@@ -185,6 +190,47 @@ public final class ProductService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void disableFormForExistingWorkPlan(final ViewValue<Long> value, final String triggerComponentName,
+            final Entity entity, final Locale locale) throws IOException, DocumentException {
+
+        if (value.lookupValue("mainWindow.workPlanDetailsForm") == null
+                || value.lookupValue("mainWindow.workPlanDetailsForm").getValue() == null
+                || ((FormValue) value.lookupValue("mainWindow.workPlanDetailsForm").getValue()).getId() == null) {
+
+            return;
+        }
+
+        String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.workPlanDetailsForm.generated").getValue())
+                .getValue().toString();
+
+        boolean isGenerated = true;
+        if ("0".equals(generatedStringValue)) {
+            isGenerated = false;
+        }
+
+        if (isGenerated) {
+            value.lookupValue("mainWindow.workPlanDetailsForm.name").setEnabled(false);
+            value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
+
+            if ("mainWindow.workPlanDetailsForm".equals(triggerComponentName)) {
+                Entity workPlan = dataDefinitionService.get("products", "workPlan").get(
+                        ((FormValue) value.lookupValue("mainWindow.workPlanDetailsForm").getValue()).getId());
+
+                if (workPlan.getField("fileName") == null || "".equals(workPlan.getField("fileName").toString().trim())) {
+                    workPlanPdfService.generateDocument(workPlan, locale);
+                    // workPlanXlsService.generateDocument(workPlan, locale);
+                } else {
+                    // FIXME KRNA remove override
+                    value.addInfoMessage("override:"
+                            + translationService.translate(
+                                    "products.workPlanDetailsView.mainWindow.workPlanDetailsForm.documentsWasGenerated", locale));
+                }
+
+            }
+        }
+    }
+
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
         ProductsProduct product = (ProductsProduct) entity.getField("product");
@@ -224,6 +270,27 @@ public final class ProductService {
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("order"), "products.validate.global.error.materialRequirementDuplicated");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkWorkPlanComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
+        // TODO masz why we get hibernate entities here?
+        ProductsOrder order = (ProductsOrder) entity.getField("order");
+        ProductsWorkPlan workPlan = (ProductsWorkPlan) entity.getField("workPlan");
+
+        if (workPlan == null || order == null) {
+            return false;
+        }
+
+        SearchResult searchResult = dataDefinition.find()
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("workPlan"), workPlan.getId())).list();
+
+        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+            entity.addError(dataDefinition.getField("order"), "products.validate.global.error.workPlanDuplicated");
             return false;
         } else {
             return true;
@@ -495,7 +562,7 @@ public final class ProductService {
         }
     }
 
-    public void fillMaterialRequirementDateAndWorker(final DataDefinition dataDefinition, final Entity entity) {
+    public void fillDateAndWorkerOnGenerate(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("fileName") != null && !"".equals(entity.getField("fileName").toString().trim())) {
             entity.setField("generated", true);
         }

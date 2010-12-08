@@ -38,17 +38,22 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.products.print.MaterialRequirementDocumentService;
+import com.qcadoo.mes.products.print.DocumentService;
+import com.qcadoo.mes.products.print.ReportDataService;
 import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
 @Service
-public final class MaterialRequirementXlsService extends MaterialRequirementDocumentService {
+public final class MaterialRequirementXlsService extends DocumentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementXlsService.class);
+
+    @Autowired
+    private ReportDataService reportDataService;
 
     @Override
     public void generateDocument(final Entity entity, final Locale locale) throws IOException {
@@ -59,7 +64,8 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
         addSeries(sheet, entity);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream(getFileName((Date) entity.getField("date")) + XlsCopyUtil.XLS_EXTENSION);
+            outputStream = new FileOutputStream(getFullFileName((Date) entity.getField("date"), getFileName())
+                    + XlsCopyUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
@@ -69,7 +75,7 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
             throw e;
         }
         outputStream.close();
-        updateFileName(entity, getFileName((Date) entity.getField("date")));
+        updateFileName(entity, getFullFileName((Date) entity.getField("date"), getFileName()), "materialRequirement");
     }
 
     private void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -84,7 +90,7 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
     private void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         List<Entity> orders = entity.getHasManyField("orders");
-        Map<ProxyEntity, BigDecimal> products = getTechnologySeries(entity, orders);
+        Map<ProxyEntity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
         for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
@@ -97,5 +103,10 @@ public final class MaterialRequirementXlsService extends MaterialRequirementDocu
                 row.createCell(3).setCellValue("");
             }
         }
+    }
+
+    @Override
+    protected String getFileName() {
+        return "MaterialRequirement";
     }
 }
