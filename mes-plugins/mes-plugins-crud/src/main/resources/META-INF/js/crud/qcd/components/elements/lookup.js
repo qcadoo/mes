@@ -65,7 +65,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		currentData.value = data.value ? data.value : null;
 		currentData.selectedEntityValue = data.selectedEntityValue;
 		currentData.selectedEntityCode = data.selectedEntityCode;
-//		currentData.contextEntityId = data.contextEntityId;
+		currentData.contextEntityId = data.contextEntityId;
 		if (currentData.value == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
 			currentData.isError = true;
 		} else {
@@ -194,10 +194,12 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (! openLookupButtonElement.hasClass("enabled")) {
 			return;
 		}
-//		if (currentData.contextEntityId) {
-//		location += "&entityId="+currentData.contextEntityId;
-//	}		
-		lookupWindow = mainController.openPopup(_this.options.viewName+".html", _this, "lookup");
+		var url = _this.options.viewName+".html";
+		if (currentData.contextEntityId) {
+//			location += "&entityId="+currentData.contextEntityId;
+			url += "?window.grid.belongsToEntityId=" + currentData.contextEntityId;
+	}		
+		lookupWindow = mainController.openPopup(url, _this, "lookup");
 	}
 	
 	this.onPopupInit = function() {
