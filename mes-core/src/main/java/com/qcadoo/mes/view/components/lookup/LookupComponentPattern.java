@@ -1,9 +1,13 @@
 package com.qcadoo.mes.view.components.lookup;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.ViewDefinitionService;
@@ -68,7 +72,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
             }
         }
 
-        String viewName = getViewDefinition().getName() + ".lookup." + getPath();
+        String viewName = getViewName();
 
         lookupViewDefinition = new ViewDefinitionImpl(viewName, getViewDefinition().getPluginIdentifier(), getDataDefinition(),
                 false, getTranslationService());
@@ -104,11 +108,26 @@ public final class LookupComponentPattern extends FieldComponentPattern {
     }
 
     @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("viewName", getViewName());
+
+        JSONObject translations = new JSONObject();
+
+        List<String> codes = new LinkedList<String>();
+        codes.add(getTranslationPath() + ".label.focus");
+        codes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getFieldDefinition().getName())
+                + ".label.focus");
+        translations.put("labelOnFocus", getTranslationService().translate(codes, locale));
+
+        json.put("translations", translations);
+
+        return json;
+    }
+
+    @Override
     protected void registerComponentViews(final ViewDefinitionService viewDefinitionService) {
-        // if (lookupViewDefinition != null) {
-        System.out.println(" -----> " + lookupViewDefinition.getName());
         viewDefinitionService.save(lookupViewDefinition);
-        // }
     }
 
     private GridComponentPattern createGridComponentPattern(final ViewDefinition lookupViewDefinition,
@@ -184,6 +203,10 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         ribbon.addGroup(ribbonGroup);
 
         return ribbon;
+    }
+
+    private String getViewName() {
+        return getViewDefinition().getName() + getPath() + ".lookup";
     }
 
 }
