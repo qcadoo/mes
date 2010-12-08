@@ -10,9 +10,9 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.utils.ExpressionUtil;
-import com.qcadoo.mes.view.states.AbstractComponentState;
+import com.qcadoo.mes.view.components.FieldComponentState;
 
-public final class LookupComponentState extends AbstractComponentState {
+public final class LookupComponentState extends FieldComponentState {
 
     public static final String JSON_REQUIRED = "required";
 
@@ -26,10 +26,6 @@ public final class LookupComponentState extends AbstractComponentState {
 
     private final FieldDefinition belongsToFieldDefinition;
 
-    private Long value;
-
-    private boolean required;
-
     private Long belongsToEntityId;
 
     private String code;
@@ -41,6 +37,7 @@ public final class LookupComponentState extends AbstractComponentState {
     private final String expression;
 
     public LookupComponentState(final FieldDefinition scopeField, final String fieldCode, final String expression) {
+        super(false);
         this.belongsToFieldDefinition = scopeField;
         this.fieldCode = fieldCode;
         this.expression = expression;
@@ -50,7 +47,7 @@ public final class LookupComponentState extends AbstractComponentState {
 
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
-        value = convertToLong(json.getString(JSON_VALUE));
+        super.initializeContent(json);
 
         if (json.has(JSON_TEXT) && !json.isNull(JSON_TEXT)) {
             text = json.getString(JSON_TEXT);
@@ -69,9 +66,7 @@ public final class LookupComponentState extends AbstractComponentState {
 
     @Override
     protected JSONObject renderContent() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(JSON_VALUE, value);
-        json.put(JSON_REQUIRED, required);
+        JSONObject json = super.renderContent();
         json.put(JSON_TEXT, text);
         json.put(JSON_CODE, code);
         json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);
@@ -85,10 +80,10 @@ public final class LookupComponentState extends AbstractComponentState {
 
     @Override
     public void setFieldValue(final Object value) {
-        this.value = convertToLong(value);
-        requestRender();
+        Long entityId = convertToLong(value);
+        super.setFieldValue(entityId);
         requestUpdateState();
-        notifyEntityIdChangeListeners(this.value);
+        notifyEntityIdChangeListeners(entityId);
     }
 
     private Long convertToLong(final Object value) {
@@ -114,14 +109,6 @@ public final class LookupComponentState extends AbstractComponentState {
         }
     }
 
-    public final boolean isRequired() {
-        return required;
-    }
-
-    public final void setRequired(final boolean required) {
-        this.required = required;
-    }
-
     protected class LookupEventPerformer {
 
         public void initialize(final String[] args) {
@@ -140,7 +127,7 @@ public final class LookupComponentState extends AbstractComponentState {
                 } else {
                     code = "";
                     text = "";
-                    value = null;
+                    setFieldValue(null);
                 }
             }
 
@@ -173,11 +160,11 @@ public final class LookupComponentState extends AbstractComponentState {
 
                 if (results.getTotalNumberOfEntities() == 1) {
                     Entity entity = results.getEntities().get(0);
-                    value = entity.getId();
+                    setFieldValue(entity.getId());
                     code = String.valueOf(entity.getField(fieldCode));
                     text = ExpressionUtil.getValue(entity, expression, getLocale());
                 } else {
-                    value = null;
+                    setFieldValue(null);
                     text = "";
                     addMessage(getTranslationService().translate("core.validate.field.error.lookupCodeNotFound", getLocale()),
                             MessageType.FAILURE);
@@ -185,7 +172,7 @@ public final class LookupComponentState extends AbstractComponentState {
             } else {
                 code = "";
                 text = "";
-                value = null;
+                setFieldValue(null);
             }
 
             requestRender();

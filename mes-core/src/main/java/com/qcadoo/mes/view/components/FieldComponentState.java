@@ -13,6 +13,16 @@ public class FieldComponentState extends AbstractComponentState {
 
     private boolean required;
 
+    private boolean requestUpdateState = true;
+
+    public FieldComponentState() {
+        // empty
+    }
+
+    public FieldComponentState(final boolean requestUpdateState) {
+        this.requestUpdateState = requestUpdateState;
+    }
+
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
         value = json.getString(JSON_VALUE);
@@ -30,7 +40,9 @@ public class FieldComponentState extends AbstractComponentState {
     public void setFieldValue(final Object value) {
         this.value = value != null ? value.toString() : null;
         requestRender();
-        requestUpdateState();
+        if (requestUpdateState) {
+            requestUpdateState();
+        }
     }
 
     @Override
