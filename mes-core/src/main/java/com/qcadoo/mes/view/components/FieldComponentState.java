@@ -25,7 +25,9 @@ public class FieldComponentState extends AbstractComponentState {
 
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
-        value = json.getString(JSON_VALUE);
+        if (json.has(JSON_VALUE) && !json.isNull(JSON_VALUE)) {
+            value = json.getString(JSON_VALUE);
+        }
     }
 
     @Override
