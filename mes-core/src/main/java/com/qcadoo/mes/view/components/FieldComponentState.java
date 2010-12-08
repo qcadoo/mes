@@ -27,14 +27,14 @@ public class FieldComponentState extends AbstractComponentState {
     }
 
     @Override
-    public final void setFieldValue(final Object value) {
+    public void setFieldValue(final Object value) {
         this.value = value != null ? value.toString() : null;
         requestRender();
         requestUpdateState();
     }
 
     @Override
-    public final Object getFieldValue() {
+    public Object getFieldValue() {
         return value;
     }
 

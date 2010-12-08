@@ -14,6 +14,9 @@ import org.json.JSONObject;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -47,7 +50,13 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new LookupComponentState(getScopeFieldDefinition(), fieldCode, expression);
+        if (getScopeFieldDefinition() != null) {
+            String joinFieldName = ((HasManyType) getScopeFieldDefinition().getType()).getJoinFieldName();
+            FieldDefinition fieldDefinition = getDataDefinition().getField(joinFieldName);
+            return new LookupComponentState(fieldDefinition, fieldCode, expression);
+        } else {
+            return new LookupComponentState(null, fieldCode, expression);
+        }
     }
 
     @Override
@@ -80,8 +89,14 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
         String viewName = getViewName();
 
-        lookupViewDefinition = new ViewDefinitionImpl(viewName, getViewDefinition().getPluginIdentifier(), getDataDefinition(),
-                false, getTranslationService());
+        DataDefinition dataDefinition = getDataDefinition();
+
+        if (getScopeFieldDefinition() != null) {
+            dataDefinition = getScopeFieldDefinition().getDataDefinition();
+        }
+
+        lookupViewDefinition = new ViewDefinitionImpl(viewName, getViewDefinition().getPluginIdentifier(), dataDefinition, false,
+                getTranslationService());
 
         WindowComponentPattern window = createWindowComponentPattern(lookupViewDefinition);
 
@@ -143,7 +158,10 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         gridComponentDefinition.setTranslationService(getTranslationService());
         gridComponentDefinition.setViewDefinition(lookupViewDefinition);
         gridComponentDefinition.setParent(window);
-        // gridComponentDefinition.setSourceFieldPath(sourceFieldPath)
+
+        if (getScopeFieldDefinition() != null) {
+            gridComponentDefinition.setSourceFieldPath(getScopeFieldDefinition().getName());
+        }
 
         GridComponentPattern grid = new GridComponentPattern(gridComponentDefinition);
         grid.addOption(new ComponentOption("lookup", ImmutableMap.of("value", "true")));

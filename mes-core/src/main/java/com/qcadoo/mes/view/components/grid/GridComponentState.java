@@ -86,6 +86,18 @@ public final class GridComponentState extends AbstractComponentState {
 
     @Override
     @SuppressWarnings("unchecked")
+    protected void initializeContext(final JSONObject json) throws JSONException {
+        Iterator<String> iterator = json.keys();
+        while (iterator.hasNext()) {
+            String field = iterator.next();
+            if ("belongsToEntityId".equals(field)) {
+                belongsToEntityId = json.getLong(field);
+            }
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     protected void initializeContent(final JSONObject json) throws JSONException {
         if (json.has(JSON_SELECTED_ENTITY_ID) && !json.isNull(JSON_SELECTED_ENTITY_ID)) {
             selectedEntityId = json.getLong(JSON_SELECTED_ENTITY_ID);
