@@ -79,14 +79,13 @@
 
 		var viewName = "${viewName}";
 		var pluginIdentifier = "${pluginIdentifier}";
-		//var entityId = "{entityId}";
 		var entityId = "";
 		var context = '${context}';
 		var locale = '${locale}';
 
 		var hasDataDefinition = ${model['hasDataDefinition']};
 
-		//var lookupComponentName = '{lookupComponentName}';
+		var popup = ${popup};
 
 		var controller = null;
 
@@ -102,29 +101,23 @@
 			return controller.getComponent(componentPath);
 		}
 
+		window.onPopupInit = function() {
+			return controller.onPopupInit();
+		}
+
 		jQuery(document).ready(function(){
-
-
-			//if (lookupComponentName) {
-				//lookupComponentName = $.trim(lookupComponentName);
-				//if (lookupComponentName == '') {
-					//lookupComponentName = null;
-				//}
-			//}
-
 			//if (! window.parent.getCurrentUserLogin && ! lookupComponentName) {
 				//window.location = "/main.html";
 			//}
-			controller = new QCD.PageController(viewName, pluginIdentifier, hasDataDefinition);
+			controller = new QCD.PageController(viewName, pluginIdentifier, hasDataDefinition, popup);
 			
 			context = $.trim(context);
 			if (context && context != "") {
 				controller.setContext(context);
-			} 
-			//controller = new QCD.PageController(viewName, pluginIdentifier, context, lookupComponentName, hasDataDefinition);
-			//if (window.opener) {
-				//window.opener[lookupComponentName+"_onReadyFunction"].call();
-		    //}
+			}
+			if (popup) {
+				window.opener.onPopupInit();
+			}
 		});
 
 		//window.translationsMap = new Object();

@@ -50,6 +50,13 @@ public final class CrudController {
         modelAndView.addObject("viewName", viewName);
         modelAndView.addObject("pluginIdentifier", pluginIdentifier);
         modelAndView.addObject("context", arguments.get("context"));
+
+        boolean popup = false;
+        if (arguments.containsKey("popup")) {
+            popup = Boolean.parseBoolean(arguments.get("popup"));
+        }
+        modelAndView.addObject("popup", popup);
+
         modelAndView.addObject("locale", locale.getLanguage());
 
         // String lookupComponentName = arguments.get("lookupComponent");

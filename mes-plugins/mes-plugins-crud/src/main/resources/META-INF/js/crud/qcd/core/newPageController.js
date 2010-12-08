@@ -1,10 +1,11 @@
 var QCD = QCD || {};
 
-QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition) {
+QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, _isPopup) {
 	
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
 	var hasDataDefinition = _hasDataDefinition;
+	var isPopup = _isPopup;
 	
 	var pageComponents;
 	
@@ -13,6 +14,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition) 
 	var pageOptions;
 	
 	var messagesController;
+	
+	var popup;
 	
 	function constructor(_this) {
 		
@@ -29,6 +32,12 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition) 
 		
 		$(window).bind('resize', updateSize);
 		updateSize();
+		
+		if (window.parent) {
+			$(window.parent).focus(onWindowClick);
+		} else {
+			$(window).focus(onWindowClick);
+		}
 	}
 	
 	this.init = function(entityId, serializationObject) {
@@ -211,8 +220,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition) 
 		headerComponent = component;
 	}
 	this.setWindowHeader = function(header) {
-		//QCD.info("HEADER:");
-		//QCD.info(header);
 		if (headerComponent) {
 			headerComponent.setHeader(header);
 		}
@@ -247,6 +254,39 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition) 
 		return component;
 	}
 	
+	function onWindowClick() {
+		if (popup) {
+			QCD.info(popup);
+			popup.parentComponent.onPopupClose();
+			popup.window.close();
+			popup = null;
+		}
+	}
+	this.openPopup = function(url, parentComponent, title) {
+		if (popup) {
+			
+		}
+		
+		if (url.indexOf("?") != -1) {
+			url+="&";
+		} else {
+			url+="?";
+		}
+		url+="popup=true";
+		
+		popup = new Object();
+		popup.parentComponent = parentComponent;
+		popup.window = window.open(url, title, 'width=800,height=700');
+		return popup.window;
+	}
+	
+	this.onPopupInit = function() {
+		popup.parentComponent.onPopupInit();
+	}
+	
+	this.isPopup = function() {
+		return isPopup;
+	}
 	
 	this.goToPage = function(url) {
 		//if(canClose()) {

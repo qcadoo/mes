@@ -10,7 +10,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     private static final String JSP_PATH = "elements/lookup.jsp";
 
-    private static final String JS_OBJECT = "QCD.components.elements.TextInput";
+    private static final String JS_OBJECT = "QCD.components.elements.Lookup";
 
     public LookupComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);

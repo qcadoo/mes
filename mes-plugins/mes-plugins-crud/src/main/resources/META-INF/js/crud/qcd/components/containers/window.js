@@ -50,6 +50,8 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	this.updateSize = function(_width, _height) {
 		
+		var isMinWidth = ! mainController.isPopup();
+		
 		var childrenElement = $("#"+this.elementSearchName+"_windowContent");
 		
 		var margin = Math.round(_width * 0.02);
