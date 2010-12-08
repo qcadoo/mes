@@ -33,7 +33,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
-public final class MaterialRequirementPdfView extends ProductsPdfView {
+public final class WorkPlanPdfView extends ProductsPdfView {
 
     @Override
     protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
@@ -49,7 +49,7 @@ public final class MaterialRequirementPdfView extends ProductsPdfView {
 
     @Override
     protected void addTitle(final Document document, final Locale locale) {
-        document.addTitle(getTranslationService().translate("products.materialRequirement.report.title", locale));
+        document.addTitle(getTranslationService().translate("products.workPlan.report.title", locale));
     }
 
 }

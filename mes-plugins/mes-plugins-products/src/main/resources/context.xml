@@ -46,5 +46,8 @@
   		
   	<bean id="materialRequirementXlsView"
   		class="com.qcadoo.mes.products.print.xls.MaterialRequirementXlsView"/>
+  		
+  	<bean id="workPlanPdfView"
+  		class="com.qcadoo.mes.products.print.pdf.WorkPlanPdfView"/>
 	
 </beans>
