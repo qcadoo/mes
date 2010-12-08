@@ -84,6 +84,13 @@ public final class CrudController {
         ViewDefinition viewDefinition = viewDefinitionService.get(pluginIdentifier, viewName);
 
         try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        try {
             return viewDefinition.performEvent(body, locale);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);

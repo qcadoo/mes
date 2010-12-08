@@ -75,6 +75,13 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.getComponentData = function() {
+		if (isFocused) {
+			currentData.selectedEntityCode = $.trim(inputElement.val());
+		}
+		//currentData.selectedEntityCode = $.trim(inputElement.val());
+		if (baseValue && (currentData.selectedEntityCode != baseValue.selectedEntityCode)) {
+			QCD.info(elementPath + " clear");
+		}
 		return currentData;
 	}
 	
@@ -199,7 +206,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			var params = new Object();
 			params["window.grid.belongsToEntityId"] = currentData.contextEntityId;
 			url += "?context="+JSON.stringify(params);
-			//url += "?window.grid.belongsToEntityId=" + currentData.contextEntityId;
 	}		
 		lookupWindow = mainController.openPopup(url, _this, "lookup");
 	}
@@ -207,9 +213,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	this.onPopupInit = function() {
 		var grid = lookupWindow.getComponent("window.grid");
 		grid.setLinkListener(this);
-		var selectedCode = $.trim(inputElement.val());
-		if (selectedCode) {
-			grid.setFilterState("lookupCode", selectedCode);	
+		if (currentData.selectedEntityCode) {
+			grid.setFilterState("lookupCode", currentData.selectedEntityCode);	
 		}
 		lookupWindow.init();
 	}
