@@ -70,7 +70,11 @@ public final class LookupComponentState extends FieldComponentState {
 
         public void initialize(final String[] args) {
             if (getFieldValue() != null) {
-                Entity entity = getDataDefinition().get((Long) getFieldValue());
+                String fieldValue = (String) getFieldValue();
+                Entity entity = null;
+                if (!fieldValue.trim().equals("")) {
+                    entity = getDataDefinition().get(Long.parseLong(fieldValue));
+                }
 
                 if (entity != null) {
                     code = String.valueOf(entity.getField(fieldCode));

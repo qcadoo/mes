@@ -82,7 +82,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		
+		QCD.info(this.elementPath);
+		QCD.info(data);
 		currentData.selectedEntityId = data.value;
 		currentData.selectedEntityValue = data.selectedEntityValue;
 		currentData.selectedEntityCode = data.selectedEntityCode;
@@ -96,7 +97,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.getComponentData = function() {
-		return currentData;
+		return {
+			value: currentData
+		}
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {
@@ -233,19 +236,18 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 //	}
 	
 	this.onPopupInit = function() {
-		QCD.info("onPopupInit");
 		var grid = lookupWindow.getComponent("window.grid");
 		grid.setLinkListener(this);
 		//grid.setFilterState("lookupCodeVisible", currentData.selectedEntityCode);	
 		lookupWindow.init();
 	}
 	this.onPopupClose = function() {
-		QCD.info("onPopupClose");
 	}
 	
 	this.onGridLinkClicked = function(entityId) {
 		var grid = lookupWindow.getComponent("window.grid");
 		var lookupData = grid.getLookupData(entityId);
+		QCD.info(lookupData);
 		mainController.closePopup();
 	}
 	
