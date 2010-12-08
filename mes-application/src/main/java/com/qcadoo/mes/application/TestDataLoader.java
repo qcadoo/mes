@@ -55,6 +55,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.qcadoo.mes.beans.basic.BasicMachine;
+import com.qcadoo.mes.beans.basic.BasicStaff;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
@@ -96,6 +98,10 @@ public final class TestDataLoader {
 
     private static final String[] OPERATION_ATTRIBUTES = new String[] { "name", "number" };
 
+    private static final String[] MACHINE_ATTRIBUTES = new String[] { "id", "name", "prod_line", "description" };
+
+    private static final String[] STAFF_ATTRIBUTES = new String[] { "id", "name", "surname", "post" };
+
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Autowired
@@ -115,6 +121,8 @@ public final class TestDataLoader {
         readDataFromXML("operations", OPERATION_ATTRIBUTES);
         readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
+        readDataFromXML("machines", MACHINE_ATTRIBUTES);
+        readDataFromXML("staff", STAFF_ATTRIBUTES);
         addMaterialRequirements();
     }
 
@@ -168,7 +176,46 @@ public final class TestDataLoader {
             UNITS.add(values.get("name"));
         } else if ("operations".equals(type)) {
             addOperations(values);
+        } else if ("staff".equals(type)) {
+            addStaff(values);
+        } else if ("machines".equals(type)) {
+            addMachine(values);
         }
+    }
+
+    private void addMachine(Map<String, String> values) {
+        BasicMachine machine = new BasicMachine();
+
+        LOG.debug("id: " + values.get("id") + " name " + values.get("name") + " surname " + values.get("prod_line") + " post "
+                + values.get("description"));
+        machine.setNumber(values.get("id"));
+        machine.setName(values.get("name"));
+        machine.setProductionLine(Boolean.getBoolean(values.get("prod_line")));
+        machine.setDescription(values.get("description"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test dictionary item {dictionary=" + machine.getName() + ", name=" + machine.getName() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(machine);
+    }
+
+    private void addStaff(Map<String, String> values) {
+        BasicStaff staff = new BasicStaff();
+
+        LOG.debug("id: " + values.get("id") + " name " + values.get("name") + " surname " + values.get("surname") + " post "
+                + values.get("post"));
+        staff.setNumber(values.get("id"));
+        staff.setName(values.get("name"));
+        staff.setSurname(values.get("surname"));
+        staff.setPost(values.get("post"));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test dictionary item {dictionary=" + staff.getName() + ", name=" + staff.getName() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(staff);
+
     }
 
     private void addOperations(Map<String, String> values) {
