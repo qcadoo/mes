@@ -1,5 +1,8 @@
 package com.qcadoo.mes.view.components.lookup;
 
+import static com.google.common.base.Preconditions.checkState;
+import static org.springframework.util.StringUtils.hasText;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +47,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new LookupComponentState();
+        return new LookupComponentState(null, fieldCode, expression);
     }
 
     @Override
@@ -71,6 +74,9 @@ public final class LookupComponentPattern extends FieldComponentPattern {
                 fieldCode = option.getValue();
             }
         }
+
+        checkState(hasText(fieldCode), "Missing fieldCode for lookup");
+        checkState(hasText(expression), "Missing expression for lookup");
 
         String viewName = getViewName();
 
@@ -206,7 +212,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
     }
 
     private String getViewName() {
-        return getViewDefinition().getName() + getPath() + ".lookup";
+        return getViewDefinition().getName() + "." + getPath() + ".lookup";
     }
 
 }

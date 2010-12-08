@@ -54,7 +54,6 @@ import com.qcadoo.mes.view.components.TextInputComponentPattern;
 import com.qcadoo.mes.view.components.WindowComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.grid.GridComponentPattern;
-import com.qcadoo.mes.view.components.lookup.LookupComponentPattern;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
@@ -149,7 +148,7 @@ public class ViewDefinitionParserTest {
     public void shouldParseXml() {
         // given
         ViewDefinition viewDefinition = parseAndGetViewDefinition();
-        assertEquals(3, viewDefinitionService.list().size());
+        assertEquals(2, viewDefinitionService.list().size());
 
         // then
         assertNotNull(viewDefinition);
@@ -249,7 +248,7 @@ public class ViewDefinitionParserTest {
                 CheckBoxComponentPattern.class, "active", "beanB");
 
         checkComponent(vd.getComponentByPath("mainWindow.beanBForm.selectBeanA"), vd.getComponentByPath("mainWindow.beanBForm"),
-                LookupComponentPattern.class, "selectBeanA", "beanA");
+                TextInputComponentPattern.class, "selectBeanA", "beanA");
 
         checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanM"), vd.getComponentByPath("mainWindow.beanBForm"),
                 TextAreaComponentPattern.class, "beanM", "beanB");
