@@ -46,7 +46,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		
 		//var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label.focus";
 		//labelFocus = "<span class='focusedLabel'>"+mainController.getTranslation(nameToTranslate)+"</span>";
-		labelFocus = "<span class='focusedLabel'>"+"labelFocus"+"</span>";
+		labelFocus = "<span class='focusedLabel'>"+labelFocus+"</span>";
 		
 		openLookupButtonElement.click(openLookup);
 
@@ -82,13 +82,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		QCD.info(this.elementPath);
-		QCD.info(data);
-		currentData.selectedEntityId = data.value;
+		currentData.value = data.value;
 		currentData.selectedEntityValue = data.selectedEntityValue;
 		currentData.selectedEntityCode = data.selectedEntityCode;
 //		currentData.contextEntityId = data.contextEntityId;
-		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
+		if (currentData.value == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
 			currentData.isError = true;
 		} else {
 			currentData.isError = false;
@@ -187,27 +185,27 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	function performSearch() {
-//		var newCode = $.trim(inputElement.val());
-//		if (newCode != currentData.selectedEntityCode) {
-//			currentData.selectedEntityCode = $.trim(inputElement.val());
-//			currentData.selectedEntityValue = null;
-//			currentData.selectedEntityId = null;
-//			if (currentData.selectedEntityCode == "") {
-//				if (hasListeners) {
-//					loadingElement.show();
-//					mainController.getUpdate(elementPath, entityId, listeners);
-//				} else {
-//					currentData.isError = false;
-//					updateData();
-//					element.removeClass("error");
-//				}
-//			} else {
-//				loadingElement.show();
-//				mainController.getUpdate(elementPath, entityId, listeners);
-//			}
-//		} else {
-//			updateData();
-//		}
+		var newCode = $.trim(inputElement.val());
+		if (newCode != currentData.selectedEntityCode) {
+			currentData.selectedEntityCode = $.trim(inputElement.val());
+			currentData.selectedEntityValue = null;
+			currentData.value = null;
+			if (currentData.selectedEntityCode == "") {
+				if (hasListeners) {
+					loadingElement.show();
+					mainController.callEvent("search", elementPath, null, null, null);
+				} else {
+					currentData.isError = false;
+					updateData();
+					element.removeClass("error");
+				}
+			} else {
+				loadingElement.show();
+				mainController.callEvent("search", elementPath, null, null, null);
+			}
+		} else {
+			updateData();
+		}
 	}
 	
 	
