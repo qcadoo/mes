@@ -149,7 +149,7 @@ public class ViewDefinitionParserTest {
     public void shouldParseXml() {
         // given
         ViewDefinition viewDefinition = parseAndGetViewDefinition();
-        assertEquals(2, viewDefinitionService.list().size());
+        assertEquals(3, viewDefinitionService.list().size());
 
         // then
         assertNotNull(viewDefinition);

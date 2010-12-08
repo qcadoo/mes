@@ -21,8 +21,8 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	
 	var pageUrl;
 	
-	var button = $("#"+element.attr('id')+"_buttonDiv");
-	var buttonLink = $("#"+element.attr('id')+"_buttonLink");
+	var button = $("#"+this.elementSearchName+"_buttonDiv");
+	var buttonLink = $("#"+this.elementSearchName+"_buttonLink");
 	
 	this.getComponentValue = function() {
 		return { value: {}};
@@ -37,7 +37,7 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	}
 	
 	function insertValue(value) {
-		pageUrl = value;
+		pageUrl = value.value;
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {

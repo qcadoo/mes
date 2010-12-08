@@ -144,6 +144,8 @@ public final class ViewDefinitionParser {
 
         viewDefinition.initialize();
 
+        viewDefinition.registerViews(viewDefinitionService);
+
         viewDefinitionService.save(viewDefinition);
     }
 
