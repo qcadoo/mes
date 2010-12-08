@@ -35,13 +35,4 @@
 
 	<context:component-scan base-package="com.qcadoo.mes.crud" />
 
-	<bean
-		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-				<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter" />
-			</list>
-		</property>
-	</bean>
-
 </beans>

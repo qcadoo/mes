@@ -36,19 +36,23 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	var elementPath = this.elementPath;
 	var elementName = this.elementName;
+	var elementSearchName = this.elementSearchName;
 	
 	var gridParameters;
 	var grid;
-	var contextFieldName;
-	var contextId;
+	var belongsToFieldName;
+
+	var translations;
 	
 	var componentEnabled = false;
 	
 	var currentGridHeight;
 	
+	var linkListener;
+	
 	var currentState = {
 		selectedEntityId: null,
-		searchEnabled: false
+		filtersEnabled: false
 	}
 	
 	var RESIZE_COLUMNS_ON_UPDATE_SIZE = true;
@@ -56,10 +60,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var columnModel = new Object();
 	
 	var hiddenColumnValues = new Object();
-	
-	var messages = {
-		noRowSelectedError: mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".noRowSelectedError"
-	}
 	
 	var defaultOptions = {
 		paging: true,
@@ -72,31 +72,40 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 
 		var colNames = new Array();
 		var colModel = new Array();
+		var isfiltersEnabled = false;
 		
 		for (var i in options.columns) {
-			var column = JSON.parse(options.columns[i]);
+			var column = options.columns[i];
 			columnModel[column.name] = column;
-			var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".column."+column.name;
 			var isSortable = false;
-			for (var sortColIter in options.sortColumns) {
-				if (options.sortColumns[sortColIter] == column.name) {
+			var isSerchable = false;
+			for (var sortColIter in options.orderableColumns) {
+				if (options.orderableColumns[sortColIter] == column.name) {
 					isSortable = true;
 					break;
 				}
 			}
+			for (var sortColIter in options.searchableColumns) {
+				if (options.searchableColumns[sortColIter] == column.name) {
+					isSerchable = true;
+					isfiltersEnabled = true;
+					break;
+				}
+			}
 			if (!column.hidden) {
-				colNames.push(mainController.getTranslation(nameToTranslate)+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
+				colNames.push(column.label+"<div class='sortArrow' id='"+elementPath+"_sortArrow_"+column.name+"'></div>");
 				
 				var stype = 'text';
 				var searchoptions = {};
-				if (column.values) {
+				if (column.filterValues) {
 					var possibleValues = new Object();
 					possibleValues[""] = "";
-					for (var i in column.values) {
-						possibleValues[column.values[i].key] = mainController.getTranslation(column.values[i].value);
+					for (var i in column.filterValues) {
+						possibleValues[i] = column.filterValues[i];
 					}
 					stype = 'select';
 					searchoptions.value = possibleValues;
+					searchoptions.defaultValue = "";
 				}
 				
 				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true, 
@@ -107,8 +116,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 		}
 		
-		gridParameters.sortColumns = options.sortColumns;
-		gridParameters.element = elementPath+"_grid";
+		gridParameters.sortColumns = options.orderableColumns;
+		
 		gridParameters.colNames = colNames;
 		gridParameters.colModel = colModel;
 		gridParameters.datatype = function(postdata) {
@@ -118,28 +127,31 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.shrinkToFit = true;
 		
 		gridParameters.listeners = options.listeners;
-		gridParameters.canNew = options.canNew;
-		gridParameters.canDelete = options.canDelete;
+		gridParameters.canNew = options.creatable;
+		gridParameters.canDelete = options.deletable;
 		gridParameters.paging = options.paginable;
-		gridParameters.filter = options.filter ? true : false;
-		gridParameters.isLookup = options.isLookup ? true : false;
+		gridParameters.filter = isfiltersEnabled;
 		gridParameters.orderable = options.prioritizable;
 		
-		gridParameters.fullScreen = options.fullScreen;
-		if (options.height) { gridParameters.height = parseInt(options.height); }
+		gridParameters.fullScreen = options.fullscreen;
+		if (options.height) { 
+			gridParameters.height = parseInt(options.height);
+			if (gridParameters.height <= 0) {
+				gridParameters.height = null;
+			}
+		}
 		if (options.width) { gridParameters.width = parseInt(options.width); }
 		if (! gridParameters.width && ! gridParameters.fullScreen) {
 			gridParameters.width = 300;
 		}
-
-		gridParameters.correspondingViewName = options.correspondingViewName;
+		gridParameters.correspondingViewName = options.correspondingView;
+		gridParameters.correspondingComponent = options.correspondingComponent;
 		
 		for (var opName in defaultOptions) {
 			if (gridParameters[opName] == undefined) {
 				gridParameters[opName] = defaultOptions[opName];
 			}
 		}
-		
 	};
 	function rowClicked(rowId) {
 		if (currentState.selectedEntityId == rowId) {
@@ -150,6 +162,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			currentState.selectedEntityId = rowId;
 		}
+		
 		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
 		if (rowIndex == false) {
 			rowIndex = null;
@@ -157,16 +170,21 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		headerController.onRowClicked(rowIndex);
 		
 		if (gridParameters.listeners.length > 0) {
-			mainController.getUpdate(elementPath, rowId, gridParameters.listeners);
+			onSelectChange();
 		}
 	}
 	
+	this.setLinkListener = function(_linkListener) {
+		linkListener = _linkListener;
+	}
+	
 	function linkClicked(entityId) {
-		if (gridParameters.isLookup) {
-			performLookupSelect(null, entityId);
-			mainController.closeWindow();
+		if (linkListener) {
+			linkListener.onGridLinkClicked(entityId);
 		} else {
-			redirectToCorrespondingPage("entityId="+entityId);	
+			var params = new Object();
+			params[gridParameters.correspondingComponent+".id"] = entityId;
+			redirectToCorrespondingPage(params);	
 		}
 	}
 	
@@ -174,7 +192,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (gridParameters.correspondingViewName && gridParameters.correspondingViewName != '') {
 			var url = gridParameters.correspondingViewName + ".html";
 			if (params) {
-				url += "?"+params;
+				url += "?context="+JSON.stringify(params);
 			}
 			mainController.goToPage(url);
 		}
@@ -188,42 +206,47 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (state.selectedEntityId) {
 			currentState.selectedEntityId = state.selectedEntityId;
 		}
-		if (state.paging && state.paging.first) {
-			currentState.paging = state.paging;
+		if (state.belongsToEntityId) {
+			currentState.belongsToEntityId = state.belongsToEntityId;
 		}
-		if (state.searchEnabled) {
-			currentState.searchEnabled = state.searchEnabled;
+		if (state.firstEntity) {
+			currentState.firstEntity = state.firstEntity;
+		}
+		if (state.maxEntities) {
+			currentState.maxEntities = state.maxEntities;
+		}
+		if (state.filtersEnabled) {
+			currentState.filtersEnabled = state.filtersEnabled;
 			headerController.setFilterActive();
 			grid[0].toggleToolbar();
-			if (currentState.searchEnabled) {
+			if (currentState.filtersEnabled) {
 				currentGridHeight -= 21;
 			} else {
 				currentGridHeight += 21;
 			}
 			grid.setGridHeight(currentGridHeight);
 		}
-		if (state.filters && state.filters.length > 0) {
+		if (state.filters) {
 			currentState.filters = state.filters;
 			for (var filterIndex in currentState.filters) {
-				var filter = currentState.filters[filterIndex];
-				$("#gs_"+filter.column).val(filter.value);
+				$("#gs_"+filterIndex).val(currentState.filters[filterIndex]);
 			}
 		}
-		if (state.sort) {
-			currentState.sort = state.sort;
-			$("#"+elementPath+"_grid_"+currentState.sort.column).addClass("sortColumn");
-			if (currentState.sort.order == "asc") {
-				$("#"+elementPath+"_sortArrow_"+currentState.sort.column).addClass("upArrow");
+		if (state.order) {
+			currentState.order = state.order;
+			$("#"+gridParameters.modifiedPath+"_grid_"+currentState.order.column).addClass("sortColumn");
+			if (currentState.order.direction == "asc") {
+				$("#"+elementSearchName+"_sortArrow_"+currentState.order.column).addClass("upArrow");
 			} else {
-				$("#"+elementPath+"_sortArrow_"+currentState.sort.column).addClass("downArrow");
+				$("#"+elementSearchName+"_sortArrow_"+currentState.order.column).addClass("downArrow");
 			}
 		}
 	}
 	
 	this.setComponentValue = function(value) {
-		if(value.contextFieldName || value.contextId) {
-			contextFieldName = value.contextFieldName;
-			contextId = value.contextId; 
+		
+		if (value.belongsToEntityId) {
+			currentState.belongsToEntityId = value.belongsToEntityId;
 		}
 		
 		if (value.entities == null) {
@@ -245,7 +268,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 						fields[fieldName] = entity.fields[fieldName];
 					}
 				}
-			}
+			}			
 			grid.jqGrid('addRowData', entity.id, fields);
 			if (rowCounter % 2 == 0) {
 				grid.jqGrid('setRowData', entity.id, false, "darkRow");
@@ -254,13 +277,13 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			rowCounter++;
 		}
-		$("."+elementPath+"_link").click(function(e) {
+		$("."+elementSearchName+"_link").click(function(e) {
 			var idArr = e.target.id.split("_");
 			var entityId = idArr[idArr.length-1];
 			linkClicked(entityId);
 		});
 		
-		headerController.updatePagingParameters(currentState.paging, value.totalNumberOfEntities);
+		headerController.updatePagingParameters(currentState.firstEntity, currentState.maxEntities, value.totalEntities);
 		
 		grid.setSelection(currentState.selectedEntityId, false);
 		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
@@ -271,10 +294,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		headerController.onRowClicked(rowIndex);
 		
 		unblockGrid();
-	}
-	
-	this.getUpdateMode = function() {
-		return QCD.components.Component.UPDATE_MODE_UPDATE;
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -293,7 +312,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function blockGrid() {
 		if (grid) {
-			element.block({ message: '<div class="loading_div">'+mainController.getTranslation("commons.loading")+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+			element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: {
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 
@@ -314,15 +333,22 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		parseOptions(_this.options, _this);
 		
-		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
+		gridParameters.modifiedPath = elementPath.replace(/\./g,"_");
+		gridParameters.element = gridParameters.modifiedPath+"_grid";
 		
-		headerController = new QCD.components.elements.grid.GridHeaderController(_this, mainController, gridParameters, messagesPath);
+		$("#"+elementSearchName+"_grid").attr('id', gridParameters.element);
 		
-		$("#"+gridParameters.element+"Header").append(headerController.getHeaderElement());
-		$("#"+gridParameters.element+"Footer").append(headerController.getFooterElement());
+		translations = _this.options.translations;
+		belongsToFieldName = _this.options.belongsToFieldName;	
 		
-		currentState.paging = headerController.getPagingParameters();
+		headerController = new QCD.components.elements.grid.GridHeaderController(_this, mainController, gridParameters, _this.options.translations);
 		
+		$("#"+elementSearchName+"_gridHeader").append(headerController.getHeaderElement());
+		$("#"+elementSearchName+"_gridFooter").append(headerController.getFooterElement());
+		
+		currentState.firstEntity = headerController.getPagingParameters()[0];
+		currentState.maxEntities = headerController.getPagingParameters()[1];
+
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
         }
@@ -335,7 +361,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		
 		for (var i in gridParameters.sortColumns) {
-			$("#"+elementPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
+			$("#"+gridParameters.modifiedPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
 		}
 		
 		if (gridParameters.width) {
@@ -359,40 +385,41 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		});
 		if (gridParameters.isLookup) {
 			headerController.setFilterActive();
-			currentState.searchEnabled = true;
+			currentState.filtersEnabled = true;
 		} else {
 			grid[0].toggleToolbar();
-			currentState.searchEnabled = false;
+			currentState.filtersEnabled = false;
 		}
 	}
 	
 	this.onPagingParametersChange = function() {
 		blockGrid();
-		currentState.paging = headerController.getPagingParameters();
+		currentState.firstEntity = headerController.getPagingParameters()[0];
+		currentState.maxEntities = headerController.getPagingParameters()[1];
 		onCurrentStateChange();
 	}
 	
 	function onSortColumnChange(index,iCol,sortorder) {
 		blockGrid();
-		if (currentState.sort && currentState.sort.column) {
-			$("#"+elementPath+"_grid_"+currentState.sort.column).removeClass("sortColumn");
+		if (currentState.order && currentState.order.column) {
+			$("#"+gridParameters.modifiedPath+"_grid_"+currentState.order.column).removeClass("sortColumn");
 		}
-		$("#"+elementPath+"_grid_"+index).addClass("sortColumn");
-		if (currentState.sort && currentState.sort.column == index) {
-			if (currentState.sort.order == "asc") {
-				$("#"+elementPath+"_sortArrow_"+index).removeClass("upArrow");
-				$("#"+elementPath+"_sortArrow_"+index).addClass("downArrow");
-				currentState.sort.order = "desc";
+		$("#"+gridParameters.modifiedPath+"_grid_"+index).addClass("sortColumn");
+		if (currentState.order && currentState.order.column == index) {
+			if (currentState.order.direction == "asc") {
+				$("#"+elementSearchName+"_sortArrow_"+index).removeClass("upArrow");
+				$("#"+elementSearchName+"_sortArrow_"+index).addClass("downArrow");
+				currentState.order.direction = "desc";
 			} else {
-				$("#"+elementPath+"_sortArrow_"+index).removeClass("downArrow");
-				$("#"+elementPath+"_sortArrow_"+index).addClass("upArrow");
-				currentState.sort.order = "asc";
+				$("#"+elementSearchName+"_sortArrow_"+index).removeClass("downArrow");
+				$("#"+elementSearchName+"_sortArrow_"+index).addClass("upArrow");
+				currentState.order.direction = "asc";
 			}
 		} else {
-			$("#"+elementPath+"_sortArrow_"+index).addClass("upArrow");
-			currentState.sort = {
+			$("#"+elementSearchName+"_sortArrow_"+index).addClass("upArrow");
+			currentState.order = {
 					column: index,
-					order: "asc"
+					direction: "asc"
 				}
 		}
 		onCurrentStateChange();
@@ -401,26 +428,21 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function onPostDataChange(postdata) {
 		blockGrid();
-		if (currentState.searchEnabled) {
+		if (currentState.filtersEnabled) {
 			try {
 				var postFilters = JSON.parse(postdata.filters);
 			} catch (e) {
 				QCD.info("error in filters");
 				QCD.info(postdata.filters);
-				var wrongSearchCharacterError = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".wrongSearchCharacterError";
-				mainController.showMessage("error", mainController.getTranslation(wrongSearchCharacterError));
+				mainController.showMessage("error", translations.wrongSearchCharacterError);
 				unblockGrid();
 				return;
 			}
-			var filterArray = new Array();
+			currentState.filters = new Object();
 			for (var i in postFilters.rules) {
 				var filterRule = postFilters.rules[i];
-				filterArray.push({
-					column: filterRule.field,
-					value: filterRule.data
-				});
+				currentState.filters[filterRule.field] = filterRule.data;
 			}
-			currentState.filters = filterArray;
 		} else {
 			currentState.filters = null;
 		}
@@ -429,8 +451,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.onFilterButtonClicked = function() {
 		grid[0].toggleToolbar();
-		currentState.searchEnabled = ! currentState.searchEnabled;
-		if (currentState.searchEnabled) {
+		currentState.filtersEnabled = ! currentState.filtersEnabled;
+		if (currentState.filtersEnabled) {
 			currentGridHeight -= 21;
 		} else {
 			currentGridHeight += 21;
@@ -440,18 +462,15 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setFilterState = function(column, filterText) {
-		if (! currentState.searchEnabled) {
+		if (! currentState.filtersEnabled) {
 			grid[0].toggleToolbar();
-			currentState.searchEnabled = true;
+			currentState.filtersEnabled = true;
+			headerController.setFilterActive();
+			currentGridHeight -= 21;
+			grid.setGridHeight(currentGridHeight);
 		}
-		if (! currentState.filters) {
-			currentState.filters = new Array();
-		}
-		var filter = {
-			column: column,
-			value: filterText
-		};
-		currentState.filters.push(filter);
+		currentState.filters = new Object();
+		currentState.filters[column] = filterText;
 		$("#gs_"+column).val(filterText);
 	}
 	
@@ -465,12 +484,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.onUpButtonClicked = function() {
 		blockGrid();
-		mainController.performChangePriority(elementPath, currentState.selectedEntityId, -1);
+		mainController.callEvent("moveUp", elementPath, function() {
+			unblockGrid();
+		});
 	}
 	
 	this.onDownButtonClicked = function() {
 		blockGrid();
-		mainController.performChangePriority(elementPath, currentState.selectedEntityId, 1);
+		mainController.callEvent("moveDown", elementPath, function() {
+			unblockGrid();
+		});
 	}
 	
 	this.updateSize = function(_width, _height) {
@@ -479,7 +502,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			var HEIGHT_DIFF = 140;
 			currentGridHeight = _height - HEIGHT_DIFF;
 			
-			if (currentState.searchEnabled) {
+			if (currentState.filtersEnabled) {
 				currentGridHeight -= 21;
 			}
 			grid.setGridHeight(currentGridHeight);
@@ -492,21 +515,22 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function onCurrentStateChange() {
 		if (componentEnabled) {
-			mainController.getUpdate(elementPath, currentState, gridParameters.listeners);
+			mainController.callEvent("refresh", elementPath, function() {
+				unblockGrid();
+			});
+		}
+	}
+	
+	function onSelectChange() {
+		if (componentEnabled) {
+			mainController.callEvent("select", elementPath, null);
 		}
 	}
 	
 	this.performNew = function(actionsPerformer) {
-		var context = null;
-		if (contextFieldName && contextId) {
-			var contextArray = new Array();
-			contextArray.push({
-				fieldName: contextFieldName,
-				entityId: contextId
-			});
-			context = "context="+JSON.stringify(contextArray);
-		}
-		redirectToCorrespondingPage(context);
+		var params = new Object();
+		params[gridParameters.correspondingComponent+"."+belongsToFieldName] = currentState.belongsToEntityId;
+		redirectToCorrespondingPage(params);	
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
@@ -516,48 +540,48 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	this.performDelete = function(actionsPerformer) {
 		if (currentState.selectedEntityId) {
-			confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
+			if (window.confirm(translations.confirmDeleteMessage)) {
 				blockGrid();
-				mainController.performDelete(elementPath, currentState.selectedEntityId, actionsPerformer, function(response) {
+				mainController.callEvent("remove", elementPath, function() {
 					unblockGrid();
-				});
+				}, null, actionsPerformer);
 			}
 		} else {
-			mainController.showMessage("error", mainController.getTranslation(messages.noRowSelectedError));
-		}
-		
+			mainController.showMessage("error", translations.noRowSelectedError);
+		}	
 	}
 	var performDelete = this.performDelete;
 	
-	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
-		if(functionName == 'goToUrl' && (additionalAttribute == '../remove.html' || additionalAttribute == '../deinstall.html')) {
-			// hack - confirm removing and deistalling plugins
-			if(!confirm(mainController.getTranslation('commons.messages.confirm.removeAndDeinstall'))) {
-				return;
-			}
-		}
-		
+	this.fireEvent = function(actionsPerformer, eventName, args) {
+		blockGrid();
+		mainController.callEvent(eventName, elementPath, function() {
+			unblockGrid();
+		}, args, actionsPerformer);
+	}
+	
+	this.performLinkClicked = function(actionsPerformer) {
 		if (currentState.selectedEntityId) {
-			mainController.performCallFunction(functionName, additionalAttribute, currentState.selectedEntityId, actionsPerformer);
+			
+			linkClicked(currentState.selectedEntityId);
+			
+			if (actionsPerformer) {
+				actionsPerformer.performNext();
+			}
 		} else {
-			mainController.showMessage("error", mainController.getTranslation(messages.noRowSelectedError));
-		}
+			mainController.showMessage("error", translations.noRowSelectedError);
+		}	
+	}
+	
+	this.getLookupData = function(entityId) {
+		var result = Object();
+		result.entityId = entityId;
+		result.lookupValue = hiddenColumnValues["lookupValue"][entityId];
+		var lookupCodeLink = grid.getRowData(entityId).lookupCode;
+		lookupCodeLink = lookupCodeLink.replace(/^<a[^>]*>/,"");
+		lookupCodeLink = lookupCodeLink.replace(/<\/a>$/,"");
+		result.lookupCode = lookupCodeLink;
+		return result;
 	}
 
-	this.performLookupSelect = function(actionsPerformer, entityId) {
-		if (!entityId) {
-			entityId = currentState.selectedEntityId;
-		}
-		if (entityId) {
-			var lookupValue = hiddenColumnValues["lookupValue"][entityId];
-			var lookupCode = hiddenColumnValues["lookupCode"][entityId];
-			mainController.performLookupSelect(entityId, lookupValue, lookupCode, actionsPerformer);
-		} else {
-			mainController.showMessage("error", mainController.getTranslation(messages.noRowSelectedError));
-		}
-	}
-	var performLookupSelect = this.performLookupSelect;
-	
 	constructor(this);
 }

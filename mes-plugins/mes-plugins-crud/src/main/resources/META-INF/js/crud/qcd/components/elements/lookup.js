@@ -37,51 +37,33 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var lookupWindow;
 	
 	var inputElement = this.input;
-	var valueDivElement = $("#"+this.elementPath+"_valueDiv");
-	var loadingElement = $("#"+this.elementPath+"_loadingDiv");
-	var labelElement = $("#"+this.elementPath+"_labelDiv");
-	var openLookupButtonElement = $("#"+this.elementPath+"_openLookupButton");
+	var valueDivElement = $("#"+this.elementSearchName+"_valueDiv");
+	var loadingElement = $("#"+this.elementSearchName+"_loadingDiv");
+	var labelElement = $("#"+this.elementSearchName+"_labelDiv");
+	var openLookupButtonElement = $("#"+this.elementSearchName+"_openLookupButton");
 	
 	var labelNormal = labelElement.html();
-	var labelFocus = "";
+	var labelFocus = "<span class='focusedLabel'>"+this.options.translations.labelOnFocus+"</span>";
 	
 	var currentData = new Object();
+	currentData.value = null;
+	currentData.selectedEntityValue = null;
+	currentData.selectedEntityCode = null;
 	
 	var isFocused = false;
 	
-	var currentValue;
+	var baseValue;
 	
 	var listeners = this.options.listeners;
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
+	QCD.info(this.elementPath);
+	QCD.info(this.options);
+	
+	var _this = this;
+	
 	var constructor = function(_this) {
-		
-		var nameToTranslate = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".label.focus";
-		labelFocus = "<span class='focusedLabel'>"+mainController.getTranslation(nameToTranslate)+"</span>";
-		
 		openLookupButtonElement.click(openLookup);
-		if (window.parent) {
-			$(window.parent).focus(onWindowClick);
-		} else {
-			$(window).focus(onWindowClick);
-		}
-		var elementName = elementPath.replace(/-/g,".");
-		window[elementName+"_onReadyFunction"] = function() {
-			if (currentData.selectedEntityCode) {
-				lookupWindow.getComponent("mainWindow.lookupGrid").setFilterState("lookupCodeVisible", currentData.selectedEntityCode);	
-			}
-			lookupWindow.init();
-		}
-		window[elementName+"_onSelectFunction"] = function(entityId, entityString, entityCode) {
-			currentData.selectedEntityId = entityId;
-			currentData.selectedEntityValue = entityString;
-			currentData.selectedEntityCode = entityCode;
-			currentData.isError = false;
-			updateData();
-			if (hasListeners) {
-				mainController.getUpdate(elementPath, entityId, listeners);
-			}
-		}
 		inputElement.focus(onInputFocus).blur(onInputBlur);
 		inputElement.keypress(function(e) {
 			var key=e.keyCode || e.which;
@@ -97,11 +79,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		currentData.selectedEntityId = data.selectedEntityId;
+		currentData.value = data.value ? data.value : null;
 		currentData.selectedEntityValue = data.selectedEntityValue;
 		currentData.selectedEntityCode = data.selectedEntityCode;
 		currentData.contextEntityId = data.contextEntityId;
-		if (currentData.selectedEntityId == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
+		if (currentData.value == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
 			currentData.isError = true;
 		} else {
 			currentData.isError = false;
@@ -110,11 +92,14 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.getComponentData = function() {
+		if (isFocused) {
+			currentData.selectedEntityCode = $.trim(inputElement.val());
+		}
+		//currentData.selectedEntityCode = $.trim(inputElement.val());
+		if (baseValue && (currentData.selectedEntityCode != baseValue.selectedEntityCode)) {
+			QCD.info(elementPath + " clear");
+		}
 		return currentData;
-	}
-	
-	this.isChanged = function() {
-		return false; // TODO
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {
@@ -127,12 +112,12 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		}
 	}
 	
-	this.setCurrentValue = function(data) {
-		currentValue = currentData.selectedEntityCode;
-	} 
+	this.performUpdateState = function() {
+		baseValue = currentData;
+	}
 	
-	this.isChanged = function() {
-		return currentValue != currentData.selectedEntityCode;
+	this.isComponentChanged = function() {
+		return ! (currentData.value == baseValue.value);
 	}
 	
 	function updateData() {
@@ -154,6 +139,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 				valueDivElement.attr('title', "");
 				inputElement.attr('title', "");
 				inputElement.val("");
+				if (! isFocused) {
+					labelElement.html(labelNormal);
+				}
 			}
 		}
 	}
@@ -206,11 +194,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (newCode != currentData.selectedEntityCode) {
 			currentData.selectedEntityCode = $.trim(inputElement.val());
 			currentData.selectedEntityValue = null;
-			currentData.selectedEntityId = null;
+			currentData.value = null;
 			if (currentData.selectedEntityCode == "") {
 				if (hasListeners) {
 					loadingElement.show();
-					mainController.getUpdate(elementPath, entityId, listeners);
+					mainController.callEvent("search", elementPath, null, null, null);
 				} else {
 					currentData.isError = false;
 					updateData();
@@ -218,40 +206,52 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 				}
 			} else {
 				loadingElement.show();
-				mainController.getUpdate(elementPath, entityId, listeners);
+				mainController.callEvent("search", elementPath, null, null, null);
 			}
 		} else {
 			updateData();
 		}
 	}
 	
-	function onWindowClick() {
-		closeLookup();
-	}
 	
 	function openLookup() {
 		if (! openLookupButtonElement.hasClass("enabled")) {
 			return;
 		}
-		var elementName = elementPath.replace(/-/g,".");
-		var location = mainController.getViewName()+".html?lookupComponent="+elementName;
+		var url = _this.options.viewName+".html";
 		if (currentData.contextEntityId) {
-			location += "&entityId="+currentData.contextEntityId;
-		}
-		var left = (screen.width/2)-(400);
-		var top = (screen.height/2)-(350);
-		lookupWindow = window.open(location, 'lookup', 'status=0,toolbar=0,width=800,height=700,left='+left+',top='+top);
-		//lookupWindow.moveTo(50,50);
+			var params = new Object();
+			params["window.grid.belongsToEntityId"] = currentData.contextEntityId;
+			url += "?context="+JSON.stringify(params);
+	}		
+		lookupWindow = mainController.openPopup(url, _this, "lookup");
 	}
 	
-	function closeLookup() {
-		if (lookupWindow) {
-			try {
-				lookupWindow.close();
-			} catch (e) {
-			}
-			lookupWindow = null;
+	this.onPopupInit = function() {
+		var grid = lookupWindow.getComponent("window.grid");
+		grid.setLinkListener(this);
+		if (currentData.selectedEntityCode) {
+			grid.setFilterState("lookupCode", currentData.selectedEntityCode);	
 		}
+		lookupWindow.init();
+	}
+	
+	this.onPopupClose = function() {
+		lookupWindow = null;
+	}
+	
+	this.onGridLinkClicked = function(entityId) {
+		var grid = lookupWindow.getComponent("window.grid");
+		var lookupData = grid.getLookupData(entityId);
+		currentData.value = lookupData.entityId;
+		currentData.selectedEntityValue = lookupData.lookupValue;
+		currentData.selectedEntityCode = lookupData.lookupCode;
+		currentData.isError = false;
+		updateData();
+		if (hasListeners) {
+			mainController.callEvent("search", elementPath, null, null, null);
+		}
+		mainController.closePopup();
 	}
 	
 	constructor(this);

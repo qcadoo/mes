@@ -105,9 +105,16 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     }
 
     @Override
-    public SearchCriteriaBuilder orderBy(final Order order) {
-        checkNotNull(order);
-        this.order = order;
+    public SearchCriteriaBuilder orderAscBy(final String fieldName) {
+        checkNotNull(fieldName);
+        this.order = Order.asc(fieldName);
+        return this;
+    }
+
+    @Override
+    public SearchCriteriaBuilder orderDescBy(final String fieldName) {
+        checkNotNull(fieldName);
+        this.order = Order.desc(fieldName);
         return this;
     }
 

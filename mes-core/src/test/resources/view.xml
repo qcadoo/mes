@@ -26,7 +26,7 @@
 -->
 
 <qcd:views plugin="sample" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="simpleView" model="beanB">
+	<view name="simpleView" model="beanB" menuAccessible="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="first">
@@ -42,43 +42,43 @@
 				</group>
 			</ribbon>
 			<component type="form" name="beanBForm">
-				<component type="textarea" name="name" field="name" />
-				<component type="checkbox" name="active" field="name" enabled="false" visible="false" />
-				<component type="lookup" name="selectBeanA" field="beanA" />
-				<component type="textarea" name="beanM" field="name" />
-				<component type="textarea" name="beanB" field="beanA.name" />
+				<component type="checkbox" name="active" field="active" defaultEnabled="false" defaultVisible="false" />
+				<component type="input" name="selectBeanA" field="beanA" />
+				<component type="textarea" name="beanM" field="beanM" />
 				<component type="grid" name="beansBGrig"
 					source="#{mainWindow.beanBForm.selectBeanA}.beansB">
 					<option type="column" name="name" fields="name" />
 					<option type="correspondingView" value="products/form" />
+					<option type="correspondingComponent" value="window.form" />
 				</component>
 				<component type="form" name="beanAForm" field="beanA">
-					<component type="textarea" name="name" field="name" />
+					<component type="input" name="name" field="name" />
 				</component>
-				<option type="header" value="false" />
+				<option type="header" value="false" />	
+				<listener event="save" bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="saveForm" />
+				<listener event="generate" bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="generate" />
 			</component>
+			<component type="textarea" name="name" field="#{mainWindow.beanBForm}.name" reference="referenceToTextarea" />
 			<component type="grid" name="beansBGrig"
 				source="#{mainWindow.beanBForm.selectBeanA}.beansB">
 				<option type="column" name="name" fields="name" />
 				<option type="column" name="multicolumn" aggregation="sum"
 					expression="2 + 2" width="20" fields="name,beanA" />
-				<option type="header" value="true" />
 				<option type="searchable" value="name,beanA" />
 				<option type="orderable" value="name" />
-				<option type="paginable" value="true" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
-				<option type="multiselect" value="true" />
 				<option type="height" value="450" />
 				<option type="correspondingView" value="products/form" />
+				<option type="correspondingComponent" value="window.form" />
 			</component>
 			<component type="button" name="link">
 				<option type="url" value="download.html" />
 			</component>
-			<option type="backButton" value="false" />
 		</component>
-		<onView bean="com.qcadoo.mes.beans.sample.CustomEntityService"
-			method="onView" />
+		<preInitializeHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />
+		<postInitializeHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />
+		<preRenderHook bean="com.qcadoo.mes.beans.sample.CustomEntityService" method="onView" />
 	</view>
 	<view name="simpleView2" model="beanA">
 		<component type="window" name="mainWindow" />

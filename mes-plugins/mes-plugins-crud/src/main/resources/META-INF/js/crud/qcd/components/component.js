@@ -27,114 +27,120 @@ QCD.components = QCD.components || {};
 
 QCD.components.Component = function(_element, _mainController) {
 	
-	QCD.components.Component.UPDATE_MODE_UPDATE = "update";
-	QCD.components.Component.UPDATE_MODE_IGNORE = "ignore";
-	
 	var mainController = _mainController;
 	var element = _element;
-	this.elementPath = element.attr('id');
-	var elementName = this.elementPath.split("-")[this.elementPath.split("-").length - 1];
+	
+	var elementPath = element.attr('id');
+	var elementSearchName = elementPath.replace(/\./g,"\\.");
+	var elementName = elementPath.split(".")[elementPath.split(".").length - 1];
+	
+	this.elementPath = elementPath;
+	this.elementSearchName = elementSearchName;
 	this.elementName = elementName;
 	
-	var options;
+	var isVisible = true;
+	var isEnabled = true;
 	
-	var isVisible = null;
-	var isEnabled = null;
+	this.contextObject = null;
 	
-	var updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
 	
 	function constructor(_this) {
-		options = QCDOptions.getElementOptions(_this.elementPath);
-		_this.options = options;
-	}
-	
-	this.changeUpdateModeToUpdate = function() {
-		QCD.error("TODO");
+		var optionsElement = $("#"+elementSearchName+" > .element_options");
+		if (!optionsElement.html() || $.trim(optionsElement.html()) == "") {
+			_this.options = new Object();
+		} else {
+			_this.options = jsonParse(optionsElement.html());
+		}
+		optionsElement.remove();
 	}
 	
 	this.getValue = function() {
-		var mode = updateMode;
-		updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
-		if (this.getUpdateMode) {
-			mode = this.getUpdateMode();
+		var valueObject = new Object();
+		
+		valueObject.enabled = isEnabled;
+		valueObject.visible = isVisible;
+		
+		if (this.getComponentValue) {
+			valueObject.content = this.getComponentValue();
+		} else {
+			valueObject.content = null;
 		}
-		return {
-			enabled: this.isEnabled(),
-			visible: this.isVisible(),
-			value: this.getComponentValue(),
-			updateMode: mode,
-			components: this.getComponentsValue()
+		if (this.contextObject) {
+			valueObject.context = this.contextObject;
 		}
+		if (this.getComponentsValue) {
+			valueObject.components = this.getComponentsValue();
+		}
+		return valueObject;
 	}
 	
 	this.setValue = function(value) {
 		this.setEnabled(value.enabled);
 		this.setVisible(value.visible);
-		if (value.value != null) {
-			this.setComponentValue(value.value);
-		} else {
-			this.setComponentLoading(false);
+		
+		if (value.content != null) {
+			this.setComponentValue(value.content);
 		}
-		this.setMessages({
-			error: value.errorMessages,
-			info: value.infoMessages,
-			success: value.successMessages
-		});
+		this.setMessages(value.messages);
 		if (value.components) {
 			this.setComponentsValue(value);
 		}
-		updateMode = QCD.components.Component.UPDATE_MODE_UPDATE;
+		if (value.updateState) {
+			this.performUpdateState();
+		}
+	}
+	
+	this.performUpdateState = function() {
+	}
+	
+	this.addContext = function(contextField, contextValue) {
+		if (! this.contextObject) {
+			this.contextObject = new Object;
+		}
+		this.contextObject[contextField] = contextValue;
+	}
+	
+	this.fireEvent = function(eventName, args) {
+		this.beforeEventFunction();
+		mainController.callEvent(eventName, elementPath, null, args);
 	}
 	
 	this.setState = function(state) {
 		this.setEnabled(state.enabled);
 		this.setVisible(state.visible);
 		if (this.setComponentState) {
-			this.setComponentState(state.value);
+			this.setComponentState(state.content);
 		} else {
 			QCD.error(this.elementPath+".setComponentState() no implemented");
 		}
 		if (state.components) {
 			this.setComponentsState(state);
 		}
-		updateMode = QCD.components.Component.UPDATE_MODE_IGNORE;
 	}
 	
-	this.setLoading = function(isLoadingVisible) {
-		var listeners = options.listeners;
-		if (listeners) {
-			for (var i in listeners) {
-				mainController.getComponent(listeners[i]).setLoading(isLoadingVisible);
-			}
-		}
-		if (this.setComponentLoading) {
-			this.setComponentLoading(isLoadingVisible);
-		} else {
-			QCD.error(this.elementPath+".setLoading() no implemented");
-		}
-	}
-	
-	this.getComponent = function(componentName) {
-		if (! componentName || $.trim(componentName) == "") {
-			return this;
-		} else {
-			QCD.error("no component");
-		}
-	}
+//	this.setLoading = function(isLoadingVisible) {
+//		var listeners = options.listeners;
+//		if (listeners) {
+//			for (var i in listeners) {
+//				mainController.getComponent(listeners[i]).setLoading(isLoadingVisible);
+//			}
+//		}
+//		if (this.setComponentLoading) {
+//			this.setComponentLoading(isLoadingVisible);
+//		} else {
+//			QCD.error(this.elementPath+".setLoading() no implemented");
+//		}
+//	}
 	
 	this.updateSize = function(width, height) {
 	}
-	
+
 	this.setMessages = function(messages) {
+		for ( var i in messages) {
+			mainController.showMessage(messages[i]);
+		}
 	}
-	
-	this.getComponentsValue = function() {
-		return null;
-	}
-	this.setComponentsValue = function() {
-		
-	}
-	
+
 	this.setEnabled = function(_isEnabled) {
 		isEnabled = _isEnabled;
 		this.setComponentEnabled(isEnabled);
@@ -162,8 +168,12 @@ QCD.components.Component = function(_element, _mainController) {
 	this.isVisible = function() {
 		return isVisible;
 	}
-	
+
 	this.isChanged = function() {
+		return this.isComponentChanged();
+	}
+	
+	this.isComponentChanged = function() {
 		return false;
 	}
 	

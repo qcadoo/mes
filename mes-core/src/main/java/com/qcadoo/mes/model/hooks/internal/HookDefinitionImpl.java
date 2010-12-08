@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
-import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.ViewDefinitionState;
 
 public final class HookDefinitionImpl implements HookDefinition {
 
@@ -92,9 +92,16 @@ public final class HookDefinitionImpl implements HookDefinition {
     }
 
     @Override
-    public void callWithViewValue(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
-            final Locale locale) {
-        call(new Object[] { value, triggerComponentName, entity, locale }, new Class[] { ViewValue.class, String.class,
-                Entity.class, Locale.class });
+    public void callWithViewState(final ViewDefinitionState viewDefinitionState, final Locale locale) {
+        call(new Object[] { viewDefinitionState, locale }, new Class[] { ViewDefinitionState.class, Locale.class });
     }
+
+    public String getMethod() {
+        return methodName;
+    }
+
+    public Object getObject() {
+        return bean;
+    }
+
 }

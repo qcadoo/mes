@@ -28,7 +28,7 @@
 	background: #fff;
 }
 
-.component_container_form .component_element {
+.component_container_form > .component {
 	padding: 0;
 	width: 31.5%;
 	margin-bottom: 19px;
@@ -67,7 +67,7 @@
 	font-weight: bold;
 }
 
-.component_element_textArea .label {
+.component_element_textarea .label {
 	vertical-align: top;
 	padding-top: 3px;
 }
@@ -150,10 +150,6 @@
 .disabled .component_container_form_inner textarea,
 .disabled select {
 	color: #818181;
-}
-
-.component_container_form input[type='text'], .component_container_form input[type='password'], .component_container_form textarea {
-	
 }
 
 .component_element_checkbox .component_container_form_w {

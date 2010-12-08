@@ -31,24 +31,26 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	var element = _element;
-	var elementName = element.attr('id');
 	
 	var elementPath = this.elementPath;
 	
-	var buttons = new Object();
-	
-	buttons.saveButton = $("#"+elementName+"_saveButton");
-	
 	var formValue = null;
 	
+	var baseValue = null; 
+	
+	translations = this.options.translations;
+	
 	function constructor(_this) {
-		var childrenElement = $("#"+_this.elementPath+"_formComponents");
+		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
 		block();
 	}
 
 	this.getComponentValue = function() {
-		return formValue;
+		return {
+			entityId: formValue,
+			baseValue: baseValue
+		};
 	}
 	
 	this.setComponentValue = function(value) {
@@ -59,7 +61,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 				mainController.setWindowHeader(value.header);
 			}
 		}
-		formValue = value;
+		formValue = value.entityId;
 		unblock();
 	}
 	
@@ -69,19 +71,14 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		} else {
 			mainController.setWindowHeader(state.header);
 		}
-		formValue = state;
+		formValue = state.entityId;
+		if (state.baseValue) {
+			baseValue = state.baseValue;
+		}
 		unblock();
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
-		if (buttons.saveButton) {
-			if (isEnabled) {
-				buttons.saveButton.removeAttr('disabled');
-			} else {
-				buttons.saveButton.attr('disabled', 'true');
-				unblock();
-			}
-		}
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
@@ -92,40 +89,39 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		}
 	}
 	
+	this.performUpdateState = function() {
+		baseValue = formValue;
+	}
+	
+	this.isComponentChanged = function() {
+		return ! (baseValue == formValue);
+	}
+	
 	this.performSave = function(actionsPerformer) {
-		block();
-		mainController.performSave(elementName, actionsPerformer, function() {
-			unblock();
-		});
+		callEvent("save", actionsPerformer);
 	}
 	
 	this.performDelete = function(actionsPerformer) {
-		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-		if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
-			block();
-			mainController.performDelete(elementPath, formValue ? formValue.id : null, actionsPerformer, function() {unblock();});
+		if (window.confirm(translations.confirmDeleteMessage)) {
+			callEvent("delete", actionsPerformer);
 		}
 	}
 	
 	this.performCancel = function(actionsPerformer) {
-		var confirmCancelMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmCancelMessage";
-		if (window.confirm(mainController.getTranslation(confirmCancelMessage))) {
-			block();
-			mainController.performCancel(formValue ? formValue.id : null, actionsPerformer);
+		if (window.confirm(translations.confirmCancelMessage)) {
+			callEvent("reset", actionsPerformer);
 		}
 	}
 	
-	this.callUpdateFunction = function(actionsPerformer, functionTriggerName) {
-		mainController.performCallUpdateFunction(functionTriggerName, actionsPerformer);
+	this.fireEvent = function(actionsPerformer, eventName, args) {
+		callEvent(eventName, actionsPerformer, args);
 	}
 	
-	this.performCallFunction = function(actionsPerformer, functionName, additionalAttribute) {
-		if (formValue && formValue.id) {
-			mainController.performCallFunction(functionName, additionalAttribute, formValue.id, actionsPerformer);
-		} else {
-			entityWithoutIdentifier = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".entityWithoutIdentifier";
-			mainController.showMessage("error", mainController.getTranslation(entityWithoutIdentifier)); 
-		}
+	function callEvent(eventName, actionsPerformer, args) {
+		block();
+		mainController.callEvent(eventName, elementPath, function() {
+			unblock();
+		}, args, actionsPerformer);
 	}
 	
 	this.updateSize = function(_width, _height) {
@@ -140,7 +136,7 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	function block() {
-		element.block({ message: '<div class="loading_div">'+mainController.getTranslation("commons.loading")+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+		element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
             border: 'none', 
             padding: '15px', 
             backgroundColor: '#000', 
@@ -152,12 +148,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	function unblock() {
 		element.unblock();
-	}
-	
-	this.setMessages = function(messages) {
-		for ( var i in messages.error) {
-			mainController.showMessage("error", messages.error[i]);
-		}
 	}
 	
 	constructor(this);

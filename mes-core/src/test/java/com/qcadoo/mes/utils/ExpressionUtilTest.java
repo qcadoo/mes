@@ -29,13 +29,13 @@ import static junit.framework.Assert.assertNull;
 
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.types.internal.StringType;
-import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 
 public class ExpressionUtilTest {
 
@@ -47,11 +47,8 @@ public class ExpressionUtilTest {
 
         FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name").withType(new StringType());
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
-        columnDefinition.addField(fieldDefinition);
-
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
+        String value = ExpressionUtil.getValue(entity, Lists.newArrayList(fieldDefinition), null);
 
         // then
         assertEquals("Mr T", value);
@@ -69,13 +66,9 @@ public class ExpressionUtilTest {
         FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl(null, "age").withType(new IntegerType());
         FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex").withType(new StringType());
 
-        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
-        columnDefinition.addField(fieldDefinitionName);
-        columnDefinition.addField(fieldDefinitionAge);
-        columnDefinition.addField(fieldDefinitionSex);
-
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
+        String value = ExpressionUtil.getValue(entity,
+                Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex), null);
 
         // then
         assertEquals("Mr T, 33, F", value);
@@ -87,14 +80,8 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("name", "Mr T");
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name");
-
-        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
-        columnDefinition.addField(fieldDefinition);
-        columnDefinition.setExpression("#name.toUpperCase()");
-
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
+        String value = ExpressionUtil.getValue(entity, "#name.toUpperCase()", null);
 
         // then
         assertEquals("MR T", value);
@@ -106,14 +93,8 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("name", null);
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "name");
-
-        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
-        columnDefinition.addField(fieldDefinition);
-        columnDefinition.setExpression("#name");
-
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
+        String value = ExpressionUtil.getValue(entity, "#name", null);
 
         // then
         assertNull(value);
@@ -127,18 +108,9 @@ public class ExpressionUtilTest {
         entity.setField("age", 33);
         entity.setField("sex", "F");
 
-        FieldDefinition fieldDefinitionName = new FieldDefinitionImpl(null, "name");
-        FieldDefinition fieldDefinitionAge = new FieldDefinitionImpl(null, "age");
-        FieldDefinition fieldDefinitionSex = new FieldDefinitionImpl(null, "sex");
-
-        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
-        columnDefinition.addField(fieldDefinitionName);
-        columnDefinition.addField(fieldDefinitionAge);
-        columnDefinition.addField(fieldDefinitionSex);
-        columnDefinition.setExpression("#name + \" -> (\" + (#age+1) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")");
-
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
+        String value = ExpressionUtil.getValue(entity,
+                "#name + \" -> (\" + (#age+1) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")", null);
 
         // then
         assertEquals("Mr T -> (34) -> female", value);
@@ -153,14 +125,8 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("product", product);
 
-        FieldDefinition fieldDefinition = new FieldDefinitionImpl(null, "product");
-
-        ColumnDefinition columnDefinition = new ColumnDefinition("col", null);
-        columnDefinition.addField(fieldDefinition);
-        columnDefinition.setExpression("#product['name']");
-
         // when
-        String value = ExpressionUtil.getValue(entity, columnDefinition, null);
+        String value = ExpressionUtil.getValue(entity, "#product['name']", null);
 
         // then
         assertEquals("P1", value);

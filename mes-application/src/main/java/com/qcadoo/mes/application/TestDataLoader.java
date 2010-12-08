@@ -115,7 +115,10 @@ public final class TestDataLoader {
 
     public void loadTestData() {
         readDataFromXML("units", new String[] { "name" });
-        readDataFromXML("users", USER_ATTRIBUTES);
+        // TODO mina
+        // if (!SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
+        // readDataFromXML("users", USER_ATTRIBUTES);
+        // }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
         readDataFromXML("operations", OPERATION_ATTRIBUTES);

@@ -40,11 +40,13 @@
 	<xs:complexType name="viewType">
 		<xs:sequence>
 			<xs:element name="component" type="componentType" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="onView" type="hookType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="preInitializeHook" type="hookType" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="postInitializeHook" type="hookType" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="preRenderHook" type="hookType" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attribute name="name" type="identifierType" use="required" />
-		<xs:attribute name="menuable" type="xs:boolean" default="false" />
-		<xs:attribute name="model" type="identifierType" use="required" />
+		<xs:attribute name="name" type="identifierType" use="required" />		
+		<xs:attribute name="menuAccessible" type="xs:boolean" default="false" />
+		<xs:attribute name="model" type="identifierType" use="optional" />
 	</xs:complexType>
 	
 	<xs:complexType name="ribbonType">
@@ -88,13 +90,15 @@
 			<xs:element name="ribbon" type="ribbonType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="component" type="componentType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="listener" type="listenerType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="type" type="identifierType" use="required" />
 		<xs:attribute name="name" type="identifierType" use="required" />
+		<xs:attribute name="reference" type="identifierType" use="optional" />
 		<xs:attribute name="field" type="xs:string" />
 		<xs:attribute name="source" type="xs:string" />
-		<xs:attribute name="enabled" type="xs:boolean" />
-		<xs:attribute name="visible" type="xs:boolean" />
+		<xs:attribute name="defaultEnabled" type="xs:boolean" />
+		<xs:attribute name="defaultVisible" type="xs:boolean" />
 		<xs:attribute name="hasDescription" type="xs:boolean" default="false" />
 	</xs:complexType>
 
@@ -110,6 +114,14 @@
 		<xs:attribute name="link" type="xs:string" />
 		<xs:attribute name="hidden" type="xs:boolean" />
 		<xs:anyAttribute/>
+	</xs:complexType>
+	
+	<xs:complexType name="listenerType">
+		<xs:complexContent>
+			<xs:extension base="hookType">
+				<xs:attribute name="event" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="hookType">

@@ -26,54 +26,50 @@
 -->
 
 <qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="productGridView" model="product" menuable="true">
-		<component type="window" name="mainWindow">
+	<view name="products" model="product" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{mainWindow.productsGrid}.performNew;" />
+					<bigButton name="new" icon="newIcon24.png" action="#{window.products}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.productsGrid}.performDelete;" />
+						action="#{window.products}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="productsGrid">
+			<component type="grid" name="products">
 				<option type="column" name="number" fields="number" link="true"
 					width="200" />
 				<option type="column" name="name" fields="name" link="true"
 					width="300" />
-				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
-					width="100" />
-				<option type="column" name="ean" fields="ean" width="100" />
-				<option type="header" value="false" />
-				<option type="correspondingView" value="products/productDetailsView" />
-				<option type="paginable" value="true" />
+				<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
+				<option type="column" name="ean" fields="ean" />
+				<option type="correspondingView" value="products/product" />
+				<option type="correspondingComponent" value="window.product" />
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
 				<option type="orderable" value="name,number,ean" />
-				<option type="multiselect" value="true" />
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="productDetailsView" model="product">
-		<component type="window" name="mainWindow">
+	<view name="product" model="product">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.productDetailsForm}.performSave;" />
+						action="#{window.product}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.productDetailsForm}.performSave; #{mainWindow}.performBack" />
+						action="#{window.product}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{mainWindow.productDetailsForm}.performCancel;" />
+						action="#{window.product}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.productDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.product}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="productDetailsForm">
+			<component type="form" name="product">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" hasDescription="true" />					
 				<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
@@ -82,90 +78,85 @@
 				<component type="input" name="unit" field="unit" />
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
-				<option type="height" value="300" />
-				<option type="fullScreen" value="true" />
 			</component>
-			<component type="grid" name="substitutesGrid" source="#{mainWindow.productDetailsForm}.substitutes">
+			<component type="grid" name="substitutes" source="#{window.product}.substitutes">
 				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="priority" fields="priority" />
-				<option type="correspondingView" value="products/substituteDetailsView" />
+				<option type="correspondingView" value="products/substitute" />
+				<option type="correspondingComponent" value="window.substitute" />
 				<option type="paginable" value="false" />
-				<option type="multiselect" value="false" />
-				<option type="height" value="200" />
-				<option type="width" value="350" />
 				<option type="creatable" value="true" />
 				<option type="deletable" value="true" />
+				<option type="height" value="200" />
+				<option type="width" value="350" />
 			</component>
-			<component type="grid" name="substitutesComponentGrid"
-				source="#{mainWindow.substitutesGrid}.components">
+			<component type="grid" name="substituteComponents"
+				source="#{window.substitutes}.components">
 				<option type="column" name="number" fields="product"
 					expression="#product['number']" link="true" />
 				<option type="column" name="name" fields="product"
 					expression="#product['name']" link="true" />
 				<option type="column" name="quantity" fields="quantity" />
-				<option type="correspondingView" value="products/substituteComponentDetailsView" />
+				<option type="correspondingView" value="products/substituteComponent" />
+				<option type="correspondingComponent" value="window.substituteComponent" />
 				<option type="paginable" value="false" />
-				<option type="multiselect" value="false" />
-				<option type="height" value="150" />
 				<option type="creatable" value="true" />
 				<option type="deletable" value="true" />
+				<option type="height" value="150" />
 				<option type="width" value="350" />
 			</component>
 		</component>
 	</view>
-	<view name="substituteDetailsView" model="substitute">
-		<component type="window" name="mainWindow">
+	<view name="substitute" model="substitute">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.substitutesDetailsForm}.performSave;" />
+						action="#{window.substitute}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.substitutesDetailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.substitutesDetailsForm}.performCancel;" />
+						action="#{window.substitute}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.substitute}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.substitutesDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.substitute}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="substitutesDetailsForm">
+			<component type="form" name="substitute">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="input" name="priority" field="priority"
-					enabled="false" />
+					defaultEnabled="false" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
 		</component>
 	</view>
-	<view name="substituteComponentDetailsView" model="substituteComponent">
-		<component type="window" name="mainWindow">
+	<view name="substituteComponent" model="substituteComponent">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.substitutesComponentDetailsForm}.performSave;" />
+						action="#{window.substituteComponent}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.substitutesComponentDetailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.substitutesComponentDetailsForm}.performCancel;" />
+						action="#{window.substituteComponent}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.substituteComponent}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.substitutesComponentDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.substituteComponent}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="substitutesComponentDetailsForm">
+			<component type="form" name="substituteComponent">
 				<component type="lookup" name="product" field="product">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="column" name="category" fields="category"
-						width="100" />
-					<option type="paginable" value="true" />
+					<option type="column" name="category" fields="category" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
-					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
@@ -175,46 +166,43 @@
 			</component>
 		</component>
 	</view>
-	<view name="operationGridView" model="operation" menuable="true">
-		<component type="window" name="mainWindow">
+	<view name="operationGridView" model="operation" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png" 
-						action="#{mainWindow.operationsGrid}.performNew;"/>
+						action="#{window.operationsGrid}.performNew;"/>
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.operationsGrid}.performDelete;"/>
+						action="#{window.operationsGrid}.performDelete;"/>
 				</group>
 			</ribbon>
 			<component type="grid" name="operationsGrid">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
-				<option type="header" value="false"/>
 				<option type="correspondingView" value="products/operationDetailsView"/>
-				<option type="paginable" value="true"/>
+				<option type="correspondingComponent" value="window.operationDetailsForm" />
 				<option type="searchable" value="number, name"/>
 				<option type="orderable" value="number, name"/>
-				<option type="multiselect" value="true"/>
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />			
 		</component>
 	</view>
 	<view name="operationDetailsView" model="operation">
-		<component type="window" name="mainWindow">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack;"/>
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack;"/>
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.operationDetailsForm}.performSave;" />
+						action="#{window.operationDetailsForm}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.operationDetailsForm}.performSave;#{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.operationDetailsForm}.performCancel;" />
+						action="#{window.operationDetailsForm}.performSave;#{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.operationDetailsForm}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.operationDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.operationDetailsForm}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
 			<component type="form" name="operationDetailsForm">
@@ -225,63 +213,57 @@
 			</component>
 		</component>
 	</view>
-	<view name="technologyGridView" model="technology" menuable="true">
-		<component type="window" name="mainWindow">
+	<view name="technologies" model="technology" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.technologiesGrid}.performNew;" />
+						action="#{window.technologies}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.technologiesGrid}.performDelete;" />
+						action="#{window.technologies}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="technologiesGrid">
+			<component type="grid" name="technologies">
 				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
-				<option type="header" value="false" />
-				<option type="correspondingView" value="products/technologyDetailsView" />
-				<option type="paginable" value="true" />
+				<option type="correspondingView" value="products/technology" />
+				<option type="correspondingComponent" value="window.technology" />
 				<option type="searchable" value="name,number,product" />
 				<option type="orderable" value="name,number,product" />
-				<option type="multiselect" value="true" />
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="technologyDetailsView" model="technology">
-		<component type="window" name="mainWindow">
+	<view name="technology" model="technology">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.technologyDetailsForm}.performSave;" />
+						action="#{window.technology}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.technologyDetailsForm}.performSave;#{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.technologyDetailsForm}.performCancel;" />
+						action="#{window.technology}.performSave;#{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.technology}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.technologyDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.technology}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="technologyDetailsForm">
+			<component type="form" name="technology">
 				<component type="checkbox" name="master" field="master" />
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="lookup" name="product" field="product">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="column" name="category" fields="category"
-						width="100" />
-					<option type="paginable" value="true" />
+					<option type="column" name="category" fields="category" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
-					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
@@ -291,13 +273,13 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="tree" name="technologyTree" source="#{mainWindow.technologyDetailsForm}.operationComponents">
+			<component type="tree" name="technologyTree" source="#{window.technology}.operationComponents">
 				<option type="height" value="200" />
 				<option type="width" value="500" />
 				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 				<option type="rootExpression" value="#number" />
-				<option type="correspondingView" value="products/technologyComponentDetailsView" />
-				<option type="multiselect" value="false" />
+				<option type="correspondingView" value="products/technologyOperationComponent" />
+				<option type="correspondingComponent" value="window.technologyOperationComponent" />
 			</component>
 			<!--  
 			<component type="grid" name="productsGrid" source="product">
@@ -320,27 +302,25 @@
 			</component>-->
 		</component>
 	</view>
-	<view name="technologyComponentDetailsView" model="technologyOperationComponent">
-		<component type="window" name="mainWindow">
+	<view name="technologyOperationComponent" model="technologyOperationComponent">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png" action="#{mainWindow.detailsForm}.performSave;"/>
-					<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{mainWindow.detailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.detailsForm}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png" action="#{mainWindow.detailsForm}.performDelete; #{mainWindow}.performBack" />
+					<bigButton name="save" icon="saveIcon24.png" action="#{window.technologyOperationComponent}.performSave;"/>
+					<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{window.technologyOperationComponent}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.technologyOperationComponent}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png" action="#{window.technologyOperationComponent}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="detailsForm">
+			<component type="form" name="technologyOperationComponent">
 				<component type="lookup" name="operation" field="operation">
 					<option type="column" name="name" fields="name"
 						width="300" />
-					<option type="paginable" value="true" />
-					<option type="searchable" value="name,number" />
-					<option type="orderable" value="name,number" />
-					<option type="fullScreen" value="true" />
+					<option type="searchable" value="name" />
+					<option type="orderable" value="name" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
@@ -349,54 +329,52 @@
 			</component>
 		</component>
 	</view>
-	<view name="orderGridView" model="order" menuable="true">
-		<component type="window" name="mainWindow">
+	<view name="orders" model="order" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.ordersGrid}.performNew;" />
+						action="#{window.orders}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.ordersGrid}.performDelete;" />
+						action="#{window.orders}.performDelete;" />
 				</group>
 				<group name="export">
 					<smallButton name="print" icon="printIcon16.png"
-						action="#{mainWindow.ordersGrid}.performCallFunction(printOrder,pdf);" />
+						action="#{window.orders}.fireEvent(printOrder,pdf);" />
 				</group>
 			</ribbon>		
-			<component type="grid" name="ordersGrid">
+			<component type="grid" name="orders">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="state" fields="state" />
-				<option type="header" value="false" />
-				<option type="correspondingView" value="products/orderDetailsView" />
-				<option type="paginable" value="true" />
+				<option type="correspondingView" value="products/order" />
+				<option type="correspondingComponent" value="window.order" />
 				<option type="searchable" value="name,number,state" />
 				<option type="orderable" value="name,number,state" />
-				<option type="multiselect" value="true" />
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
+				<listener event="printOrder" bean="com.qcadoo.mes.products.ProductService" method="printOrder" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="orderDetailsView" model="order">
-		<component type="window" name="mainWindow">
+	<view name="order" model="order">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.orderDetailsForm}.performSave;" />
+						action="#{window.order}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{mainWindow.orderDetailsForm}.performSave; #{mainWindow}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{mainWindow.orderDetailsForm}.performCancel;" />
+						action="#{window.order}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.order}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{mainWindow.orderDetailsForm}.performDelete; #{mainWindow}.performBack" />
+						action="#{window.order}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="orderDetailsForm">
+			<component type="form" name="order">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="calendar" name="dateFrom" field="dateFrom" />
@@ -406,144 +384,134 @@
 				<component type="lookup" name="product" field="product">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="column" name="category" fields="category"
-						width="100" />
-					<option type="paginable" value="true" />
+					<option type="column" name="category" fields="category" />
 					<option type="searchable" value="name,category" />
 					<option type="orderable" value="name,category" />
-					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
 				<component type="input" name="defaultTechnology" field="defaultTechnology"
-					enabled="false" />
+					defaultEnabled="false" />
 				<component type="lookup" name="technology" field="technology"
-					source="#{mainWindow.orderDetailsForm.product}.technologies">
+					source="#{window.order.product}.technologies">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="column" name="number" fields="number" link="true"
-						width="100" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="name,number" />
 					<option type="orderable" value="name,number" />
-					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
 				<component type="input" name="plannedQuantity" field="plannedQuantity" />
 				<component type="input" name="doneQuantity" field="doneQuantity" />
 				<component type="calendar" name="effectiveDateFrom" field="effectiveDateFrom"
-					enabled="false" />
+					defaultEnabled="false" />
 				<component type="calendar" name="effectiveDateTo" field="effectiveDateTo"
-					enabled="false" />
+					defaultEnabled="false" />
 				<component type="input" name="startWorker" field="startWorker"
-					enabled="false" />
+					defaultEnabled="false" />
 				<component type="input" name="endWorker" field="endWorker"
-					enabled="false" />
+					defaultEnabled="false" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name + ' - ' + #number" />
 			</component>
 		</component>
-		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
+		<postInitializeHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="selectDefaultInstruction" />
 	</view>
-	<view name="materialRequirementGridView" model="materialRequirement" menuable="true">
-		<component type="window" name="mainWindow">
+	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.materialRequirementsGrid}.performNew;" />
+						action="#{window.materialRequirements}.performNew;" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementPdf,pdf);" />
+						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementsGrid}.performCallFunction(printMaterialRequirementXls,xls);" />
+						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>		
-			<component type="grid" name="materialRequirementsGrid">
+			<component type="grid" name="materialRequirements">
 				<option type="column" name="name" fields="name" link="true" width="300" />
-				<option type="column" name="generated" fields="generated" link="false" width="100" />
+				<option type="column" name="generated" fields="generated" link="false" />
 				<option type="column" name="worker" fields="worker" width="300" />
-				<option type="header" value="false" />
-				<option type="correspondingView" value="products/materialRequirementDetailsView" />
-				<option type="paginable" value="true" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
-				<option type="multiselect" value="true" />
-				<option type="fullScreen" value="true" />
+				<option type="correspondingView" value="products/materialRequirement" />
+				<option type="correspondingComponent" value="window.materialRequirement" />
+				<option type="fullscreen" value="true" />
+				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement"/>
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="materialRequirementDetailsView" model="materialRequirement">
-		<component type="window" name="mainWindow">
+	<view name="materialRequirement" model="materialRequirement">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performSave;" />
-					<bigButton name="generate" icon="generateIcon24.png"
-						action="#{mainWindow.materialRequirementDetailsForm.generated}.setSelected(true); #{mainWindow.materialRequirementDetailsForm}.performSave;" />
+						action="#{window.materialRequirement}.performSave;" />
+					<bigButton name="generate"  icon="generateIcon24.png" action="#{window.materialRequirement}.fireEvent(generateMaterialRequirement);" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementPdf,pdf);" />
+						action="#{window.materialRequirement}.fireEvent(printMaterialRequirement,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{mainWindow.materialRequirementDetailsForm}.performCallFunction(printMaterialRequirementXls,xls);" />
+						action="#{window.materialRequirement}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>
-			<component type="form" name="materialRequirementDetailsForm">
-				<component type="checkbox" name="generated" field="generated" enabled="false">
+			<component type="form" name="materialRequirement">
+				<component type="checkbox" name="generated" field="generated" defaultEnabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
-				<component type="input" name="date" field="date" enabled="false">
+				<component type="input" name="date" field="date" defaultEnabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
-				<component type="input" name="worker" field="worker" enabled="false">
+				<component type="input" name="worker" field="worker" defaultEnabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
 				<component type="textarea" name="name" field="name" />
 				<component type="checkbox" name="onlyComponents" field="onlyComponents" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
+				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement" />
+				<listener event="generateMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="generateMaterialRequirement" />
 			</component>
-			<component type="grid" name="ordersGrid" source="#{mainWindow.materialRequirementDetailsForm}.orders">
+			<component type="grid" name="materialRequirementComponents" source="#{window.materialRequirement}.orders">
 				<option type="column" name="number" fields="order" expression="#order['number']"/>
 				<option type="column" name="name" fields="order" expression="#order['name']"/>
-				<option type="correspondingView" value="products/materialRequirementComponentDetailsView" />
+				<option type="correspondingView" value="products/materialRequirementComponent" />
+				<option type="correspondingComponent" value="window.materialRequirementComponent" />
 				<option type="paginable" value="false" />
-				<option type="multiselect" value="false" />
+				<option type="creatable" value="true" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
 			</component>
 		</component>
-		<onView bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
 	</view>	
-	<view name="materialRequirementComponentDetailsView" model="materialRequirementComponent">
-		<component type="window" name="mainWindow">
+	<view name="materialRequirementComponent" model="materialRequirementComponent">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveBackIcon24.png"
-						action="#{mainWindow.form}.performSave; #{mainWindow}.performBack" />
+						action="#{window.materialRequirementComponent}.performSave; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="form">
+			<component type="form" name="materialRequirementComponent">
 				<component type="lookup" name="order" field="order">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="number,name" />
 					<option type="orderable" value="number,name" />
-					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>
@@ -551,68 +519,66 @@
 				<option type="expression" value="#name" />
 			</component>
 		</component>
-		<onView bean="com.qcadoo.mes.products.ProductService" method="afterOrderDetailsLoad" />
+		<postInitializeHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="selectDefaultInstruction" />
 	</view>
-	<view name="workPlanGridView" model="workPlan" menuable="true">
-		<component type="window" name="mainWindow">
+	<view name="workPlanGridView" model="workPlan" menuAccessible="true">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{mainWindow.workPlansGrid}.performNew;" />
+						action="#{window.workPlansGrid}.performNew;" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="printIcon16.png"
-						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
+						action="#{window.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
 					<smallButton name="xlsWorker" icon="printIcon16.png"
-						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
+						action="#{window.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
+						action="#{window.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
+						action="#{window.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="workPlansGrid">
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" width="100" />
 				<option type="column" name="worker" fields="worker" width="300" />
-				<option type="header" value="false" />
 				<option type="correspondingView" value="products/workPlanDetailsView" />
-				<option type="paginable" value="true" />
+				<option type="correspondingComponent" value="window.workPlanDetailsForm" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
-				<option type="multiselect" value="true" />
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="workPlanDetailsView" model="workPlan">
-		<component type="window" name="mainWindow">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{mainWindow.workPlanDetailsForm}.performSave;" />
+						action="#{window.workPlanDetailsForm}.performSave;" />
 					<bigButton name="generate" icon="generateIcon24.png"
-						action="#{mainWindow.workPlanDetailsForm.generated}.setSelected(true); #{mainWindow.workPlanDetailsForm}.performSave;" />
+						action="#{window.workPlanDetailsForm.generated}.setSelected(true); #{window.workPlanDetailsForm}.performSave;" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="printIcon16.png"
-						action="#{mainWindow.workPlanDetailsForm}.performCallFunction(printWorkPlanPdf,pdf);" />
+						action="#{window.workPlanDetailsForm}.performCallFunction(printWorkPlanPdf,pdf);" />
 					<smallButton name="xlsWorker" icon="printIcon16.png"
-						action="#{mainWindow.workPlanDetailsForm}.performCallFunction(printWorkPlanXls,xls);" />
+						action="#{window.workPlanDetailsForm}.performCallFunction(printWorkPlanXls,xls);" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
+						action="#{window.workPlansGrid}.performCallFunction(printWorkPlanPdf,pdf);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{mainWindow.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
+						action="#{window.workPlansGrid}.performCallFunction(printWorkPlanXls,xls);" />
 				</group>
 			</ribbon>
 			<component type="form" name="workPlanDetailsForm">
@@ -629,12 +595,12 @@
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
-			<component type="grid" name="ordersGrid" source="#{mainWindow.workPlanDetailsForm}.orders">
+			<component type="grid" name="ordersGrid" source="#{window.workPlanDetailsForm}.orders">
 				<option type="column" name="number" fields="order" expression="#order['number']"/>
 				<option type="column" name="name" fields="order" expression="#order['name']"/>
 				<option type="correspondingView" value="products/workPlanComponentDetailsView" />
+				<option type="correspondingComponent" value="window.form" />
 				<option type="paginable" value="false" />
-				<option type="multiselect" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
 				<option type="creatable" value="true" />
@@ -644,24 +610,22 @@
 		<onView bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingWorkPlan" />
 	</view>	
 	<view name="workPlanComponentDetailsView" model="workPlanComponent">
-		<component type="window" name="mainWindow">
+		<component type="window" name="window">
 			<ribbon>
 				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{mainWindow}.performBack" />
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveBackIcon24.png"
-						action="#{mainWindow.form}.performSave; #{mainWindow}.performBack" />
+						action="#{window.form}.performSave; #{window}.performBack" />
 				</group>
 			</ribbon>		
 			<component type="form" name="form">
 				<component type="lookup" name="order" field="order">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
-					<option type="paginable" value="true" />
 					<option type="searchable" value="number,name" />
 					<option type="orderable" value="number,name" />
-					<option type="fullScreen" value="true" />
 					<option type="expression" value="#name + ' - ' + #number" />
 					<option type="fieldCode" value="number" />
 				</component>

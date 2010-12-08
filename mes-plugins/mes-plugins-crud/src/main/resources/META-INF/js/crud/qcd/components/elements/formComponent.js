@@ -33,23 +33,18 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 
 	var element = _element;
 	
-	var component = $("#" + element.attr('id'));
+	var errorIcon = $("#" + this.elementSearchName + "_error_icon");
+	var errorMessages = $("#" + this.elementSearchName + "_error_messages");
 
-	var errorIcon = $("#" + element.attr('id') + "_error_icon");
+	var descriptionIcon = $("#" + this.elementSearchName + "_description_icon");
+	var descriptionMessage = $("#" + this.elementSearchName + "_description_message");
 	
-	var errorMessages = $("#" + element.attr('id') + "_error_messages");
-
-	var descriptionIcon = $("#" + element.attr('id') + "_description_icon");
-
-	var descriptionMessage = $("#" + element.attr('id') + "_description_message");
+	var baseValue;
 	
-	var currentValue;
-	
-	this.input = $("#" + element.attr('id') + "_input");
+	this.input = $("#" + this.elementSearchName + "_input");
 
 	function constructor(_this) {
 		_this.registerCallbacks();
-		currentValue = _this.input.val();
 	}
 	
 	this.registerCallbacks = function() {
@@ -68,7 +63,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	
 	this.getComponentData = function() {
 		return {
-			value : this.input.val()
+			value : this.input.val(),
 		}
 	}
 
@@ -79,29 +74,33 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	}
 
 	this.getComponentValue = function() {
-		value = this.getComponentData();
-		value.required = component.hasClass("required");
+		var value = this.getComponentData();
+		value.required = element.hasClass("required");
+		value.baseValue = baseValue;
 		return value;
 	}
 
 	this.setComponentValue = function(value) {
 		this.setComponentData(value);
 		setComponentRequired(value.required);
-		this.setCurrentValue(value);
 	}
 
 	this.setComponentState = function(state) {
 		this.setComponentData(state);
 		setComponentRequired(state.required);
-		this.setCurrentValue(state);
+		if (state.baseValue) {
+			baseValue = state.baseValue;
+		}
 	}
 	
-	this.setCurrentValue = function(data) {
-		currentValue = data.value ? data.value : "";
-	} 
-	
-	this.isChanged = function() {
-		return currentValue != this.input.val();
+	this.performUpdateState = function() {
+		baseValue = this.getComponentData().value;
+	}
+	this.isComponentChanged = function() {
+		if (! (baseValue == this.getComponentData().value)) {
+			baseValue
+		}
+		return ! (baseValue == this.getComponentData().value);
 	}
 
 	this.setComponentEnabled = function(isEnabled) {
@@ -119,30 +118,19 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	
 	function setComponentRequired(isRequired) {
 		if (isRequired) {
-			component.addClass("required");
+			element.addClass("required");
 		} else {
-			component.removeClass("required");
-		}
-	}
-
-	function setComponentError(isError) {
-		if (isError) {
-			component.addClass("error");
-		} else {
-			component.removeClass("error");
+			element.removeClass("required");
 		}
 	}
 	
 	this.setMessages = function(messages) {
 		errorMessages.html("");
-
-		for ( var i in messages.error) {
-			messageDiv = $('<div>')
-
-			message = QCD.MessagesController.split(messages.error[i], 'error');
-
-			messageDiv.append('<span>' + message[0] + '</span>');
-			messageDiv.append('<p>' + message[1] + '</p>');
+		for ( var i in messages) {
+			messageDiv = $('<div>');
+			
+			messageDiv.append('<span>' + messages[i].title + '</span>');
+			messageDiv.append('<p>' + messages[i].content + '</p>');
 
 			errorMessages.append(messageDiv);
 
@@ -160,8 +148,17 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 			}
 			
 		}
-
-		setComponentError(messages.error.length != 0);
+		if (messages) {
+			setComponentError(messages.length != 0);
+		}
+	}
+	
+	function setComponentError(isError) {
+		if (isError) {
+			element.addClass("error");
+		} else {
+			element.removeClass("error");
+		}
 	}
 
 	this.setComponentLoading = function(isLoadingVisible) {}

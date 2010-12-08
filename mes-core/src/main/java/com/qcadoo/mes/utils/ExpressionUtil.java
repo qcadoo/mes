@@ -48,7 +48,6 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.internal.BooleanType;
 import com.qcadoo.mes.model.types.internal.EnumType;
-import com.qcadoo.mes.view.components.grid.ColumnDefinition;
 
 /**
  * Helper class that contains methods to evaluate expression value.
@@ -83,13 +82,8 @@ public final class ExpressionUtil {
      * @param locale
      * @return text to display in grid cell
      */
-    public static String getValue(final Entity entity, final ColumnDefinition columnDefinition, final Locale locale) {
-        String value = null;
-        if (StringUtils.isEmpty(columnDefinition.getExpression())) {
-            value = getValueWithoutExpression(entity, columnDefinition, locale);
-        } else {
-            value = getValueWithExpression(entity, columnDefinition.getExpression());
-        }
+    public static String getValue(final Entity entity, final List<FieldDefinition> fieldDefinitions, final Locale locale) {
+        String value = getValueWithoutExpression(entity, fieldDefinitions, locale);
 
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
@@ -105,7 +99,7 @@ public final class ExpressionUtil {
      * @param expression
      * @return result of expression evaluation
      */
-    public static String getValue(final Entity entity, final String expression) {
+    public static String getValue(final Entity entity, final String expression, final Locale locale) {
         checkState(!isEmpty(expression), "Expression must be defined");
 
         String value = getValueWithExpression(entity, expression);
@@ -145,12 +139,12 @@ public final class ExpressionUtil {
         return value;
     }
 
-    private static String getValueWithoutExpression(final Entity entity, final ColumnDefinition columnDefinition,
+    private static String getValueWithoutExpression(final Entity entity, final List<FieldDefinition> fieldDefinitions,
             final Locale locale) {
         String value = null;
 
-        if (columnDefinition.getFields().size() == 1) {
-            FieldDefinition field = columnDefinition.getFields().get(0);
+        if (fieldDefinitions.size() == 1) {
+            FieldDefinition field = fieldDefinitions.get(0);
             value = field.getValue(entity.getField(field.getName()));
             if (field.getType() instanceof BooleanType) {
                 if ("0".equals(value)) {
@@ -165,14 +159,14 @@ public final class ExpressionUtil {
             }
         } else {
             List<String> values = new ArrayList<String>();
-            for (FieldDefinition fieldDefinition : columnDefinition.getFields()) {
+            for (FieldDefinition fieldDefinition : fieldDefinitions) {
                 values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName())));
             }
             value = StringUtils.join(values, ", ");
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Calculating value of column " + columnDefinition.getName() + " for " + entity + " : " + value);
+            LOG.debug("Calculating value of fields " + fieldDefinitions + " for " + entity + " : " + value);
         }
 
         return value;

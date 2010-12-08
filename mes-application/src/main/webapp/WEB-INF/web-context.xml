@@ -79,9 +79,9 @@
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
 			<list>
-				<bean
-					class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
-					<property name="objectMapper" ref="jacksonObjectMapper" />
+				<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter" />
+				<bean id="jsonConverter" class="com.qcadoo.mes.application.JsonHttpMessageConverter">
+					<property name="supportedMediaTypes" value="application/json" />
 				</bean>
 			</list>
 		</property>

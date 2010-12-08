@@ -89,19 +89,19 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addMenus() {
-        MenuViewDefinition menuCategoryGridView = getMenuViewDefinition("menuCategoryGridView");
-        MenuViewDefinition technologyGridView = getMenuViewDefinition("technologyGridView");
-        MenuViewDefinition orderGridView = getMenuViewDefinition("orderGridView");
-        MenuViewDefinition pluginGridView = getMenuViewDefinition("pluginGridView");
-        MenuViewDefinition userGridView = getMenuViewDefinition("userGridView");
-        MenuViewDefinition dictionaryGridView = getMenuViewDefinition("dictionaryGridView");
-        MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirementGridView");
-        MenuViewDefinition operationGridView = getMenuViewDefinition("operationGridView");
-        MenuViewDefinition productGridView = getMenuViewDefinition("productGridView");
-        MenuViewDefinition groupGridView = getMenuViewDefinition("groupGridView");
+        MenuViewDefinition menuCategoryGridView = getMenuViewDefinition("menuCategories");
+        MenuViewDefinition technologyGridView = getMenuViewDefinition("technologies");
+        MenuViewDefinition orderGridView = getMenuViewDefinition("orders");
+        MenuViewDefinition pluginGridView = getMenuViewDefinition("plugins");
+        MenuViewDefinition userGridView = getMenuViewDefinition("users");
+        MenuViewDefinition dictionaryGridView = getMenuViewDefinition("dictionaries");
+        MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirements");
+        MenuViewDefinition productGridView = getMenuViewDefinition("products");
+        MenuViewDefinition groupGridView = getMenuViewDefinition("groups");
         MenuViewDefinition machineGridView = getMenuViewDefinition("machineGridView");
         MenuViewDefinition staffGridView = getMenuViewDefinition("staffGridView");
         MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlanGridView");
+        MenuViewDefinition operationGridView = getMenuViewDefinition("operationGridView");
 
         MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
