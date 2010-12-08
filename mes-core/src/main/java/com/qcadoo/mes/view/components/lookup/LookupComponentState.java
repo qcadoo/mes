@@ -9,6 +9,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.components.FieldComponentState;
 
@@ -55,6 +56,10 @@ public final class LookupComponentState extends FieldComponentState {
         if (json.has(JSON_BELONGS_TO_ENTITY_ID) && !json.isNull(JSON_BELONGS_TO_ENTITY_ID)) {
             belongsToEntityId = json.getLong(JSON_BELONGS_TO_ENTITY_ID);
         }
+
+        if (belongsToFieldDefinition != null && belongsToEntityId == null) {
+            setEnabled(false);
+        }
     }
 
     @Override
@@ -66,14 +71,55 @@ public final class LookupComponentState extends FieldComponentState {
         return json;
     }
 
+    public Long getEntityId() {
+        Object value = getFieldValue();
+
+        if (value == null) {
+            return null;
+        } else if (value instanceof Long) {
+            return (Long) value;
+        } else if (StringUtils.hasText(value.toString())) {
+            return Long.parseLong(value.toString());
+        } else {
+            return null;
+        }
+    }
+
+    public void setEntityId(final Long entityId) {
+        setFieldValue(entityId);
+        notifyEntityIdChangeListeners(entityId);
+    }
+
+    @Override
+    public void onScopeEntityIdChange(final Long scopeEntityId) {
+        if (belongsToFieldDefinition != null) {
+            this.belongsToEntityId = scopeEntityId;
+            setEnabled(scopeEntityId != null);
+            eventPerformer.initialize(new String[0]);
+        } else {
+            throw new IllegalStateException("Lookup doesn't have scopeField, it cannot set scopeEntityId");
+        }
+    }
+
     protected class LookupEventPerformer {
 
         public void initialize(final String[] args) {
-            if (getFieldValue() != null) {
-                String fieldValue = (String) getFieldValue();
-                Entity entity = null;
-                if (!fieldValue.trim().equals("")) {
-                    entity = getDataDefinition().get(Long.parseLong(fieldValue));
+            if (belongsToFieldDefinition != null) {
+                System.out.println(" #1 --> " + getTranslationPath() + " : " + getDataDefinition().getName());
+                System.out.println(" #2 --> " + getTranslationPath() + " : " + belongsToFieldDefinition.getName());
+                System.out.println(" #3 --> " + getTranslationPath() + " : "
+                        + ((HasManyType) belongsToFieldDefinition.getType()).getJoinFieldName());
+                System.out.println(" #4 --> " + getTranslationPath() + " : "
+                        + ((HasManyType) belongsToFieldDefinition.getType()).getDataDefinition().getName());
+            }
+
+            Long entityId = getEntityId();
+            if (entityId != null) {
+
+                Entity entity = getDataDefinition().get(entityId);
+
+                if (!entityBelongsToEntityId(entity)) {
+                    entity = null;
                 }
 
                 if (entity != null) {
@@ -82,15 +128,28 @@ public final class LookupComponentState extends FieldComponentState {
                 } else {
                     code = "";
                     text = "";
-                    setFieldValue(null);
+                    setEntityId(null);
                 }
             }
 
             requestRender();
         }
 
+        private boolean entityBelongsToEntityId(final Entity entity) {
+            if (belongsToFieldDefinition != null) {
+                if (belongsToEntityId == null) {
+                    return false;
+                }
+
+                // TODO
+                return true;
+            } else {
+                return true;
+            }
+        }
+
         public void search(final String[] args) {
-            if (StringUtils.hasText(code)) {
+            if (StringUtils.hasText(code) && (belongsToFieldDefinition == null || belongsToEntityId != null)) {
                 SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find().restrictedWith(
                         Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*"));
 
@@ -101,17 +160,20 @@ public final class LookupComponentState extends FieldComponentState {
                 SearchResult results = searchCriteriaBuilder.list();
 
                 if (results.getTotalNumberOfEntities() == 1) {
-                    setFieldValue(results.getEntities().get(0));
+                    Entity entity = results.getEntities().get(0);
+                    setEntityId(entity.getId());
+                    code = String.valueOf(entity.getField(fieldCode));
+                    text = ExpressionUtil.getValue(entity, expression, getLocale());
                 } else {
+                    setEntityId(null);
+                    text = "";
                     addMessage(getTranslationService().translate("core.validate.field.error.lookupCodeNotFound", getLocale()),
                             MessageType.FAILURE);
                 }
-
-                initialize(args);
             } else {
                 code = "";
                 text = "";
-                setFieldValue(null);
+                setEntityId(null);
             }
 
             requestRender();

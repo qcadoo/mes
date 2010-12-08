@@ -301,6 +301,7 @@ public class InitializationTest extends AbstractPatternTest {
         BelongsToType belongsToType = mock(BelongsToType.class);
         HasManyType hasManyType = mock(HasManyType.class);
         given(dataDefinition.getField("hasMany")).willReturn(hasManyFieldDefinition);
+        given(belongsToDataDefinition.getField("hasMany")).willReturn(hasManyFieldDefinition);
         given(dataDefinition.getField("belongsTo")).willReturn(belongsToFieldDefinition);
         given(dataDefinition.getField("field")).willReturn(fieldDefinition);
         given(fieldDefinition.getType()).willReturn(fieldType);

@@ -28,7 +28,6 @@
 				<component type="checkbox" name="active" field="active" defaultEnabled="false" defaultVisible="false" />
 				<component type="input" name="selectBeanA" field="beanA" />
 				<component type="textarea" name="beanM" field="beanM" />
-				<component type="textarea" name="beanB" field="beanA.name" />
 				<component type="grid" name="beansBGrig"
 					source="#{mainWindow.beanBForm.selectBeanA}.beansB">
 					<option type="column" name="name" fields="name" />

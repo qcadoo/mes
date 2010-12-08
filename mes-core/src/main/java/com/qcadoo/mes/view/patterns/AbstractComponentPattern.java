@@ -214,7 +214,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
         getDataDefinition(viewDefinition, fieldComponent, scopeFieldComponent);
 
-        getFieldAndScopeFieldDefinitions(field, scopeField);
+        getFieldAndScopeFieldDefinitions(field, fieldComponent, scopeField, scopeFieldComponent);
 
         getDataDefinitionFromFieldDefinition();
 
@@ -342,14 +342,17 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         }
     }
 
-    private void getFieldAndScopeFieldDefinitions(final String[] field, final String[] scopeField) {
+    private void getFieldAndScopeFieldDefinitions(final String[] field, final AbstractComponentPattern fieldComponent,
+            final String[] scopeField, final AbstractComponentPattern scopeFieldComponent) {
         if (dataDefinition != null) {
-            if (fieldPath != null) {
-                fieldDefinition = dataDefinition.getField(field[1]);
+            if (fieldPath != null && field[1] != null) {
+                fieldDefinition = fieldComponent.getDataDefinition().getField(field[1]);
+                checkNotNull(fieldDefinition, "Cannot find field definition for " + getPath() + ": " + fieldPath);
             }
 
-            if (scopeFieldPath != null) {
-                scopeFieldDefinition = dataDefinition.getField(scopeField[1]);
+            if (scopeFieldPath != null && scopeField[1] != null) {
+                scopeFieldDefinition = scopeFieldComponent.getDataDefinition().getField(scopeField[1]);
+                checkNotNull(scopeFieldDefinition, "Cannot find sourceField definition for " + getPath() + ": " + scopeFieldPath);
             }
         }
     }
@@ -376,12 +379,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     private String[] getComponentAndField(final String path) {
-        Pattern p = Pattern.compile("^#\\{.+\\}\\.");
+        Pattern p = Pattern.compile("^#\\{(.+)\\}(\\.(\\w+))?");
         Matcher m = p.matcher(path);
         if (m.find()) {
-            String field = path.substring(m.end());
-            String component = path.substring(2, m.end() - 2);
-            return new String[] { component, field };
+            return new String[] { m.group(1), m.group(3) };
         } else {
             return new String[] { null, path };
         }

@@ -9,8 +9,6 @@ public class FieldComponentState extends AbstractComponentState {
 
     public static final String JSON_REQUIRED = "required";
 
-    public static final String JSON_VALID = "valid";
-
     private String value;
 
     private boolean required;
@@ -25,7 +23,6 @@ public class FieldComponentState extends AbstractComponentState {
         JSONObject json = new JSONObject();
         json.put(JSON_VALUE, value);
         json.put(JSON_REQUIRED, required);
-        json.put(JSON_VALID, required);
         return json;
     }
 

@@ -47,7 +47,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new LookupComponentState(null, fieldCode, expression);
+        return new LookupComponentState(getScopeFieldDefinition(), fieldCode, expression);
     }
 
     @Override

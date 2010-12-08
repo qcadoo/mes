@@ -198,6 +198,7 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         FieldDefinition belongsToFieldDefinition = mock(FieldDefinition.class);
         given(belongsToFieldDefinition.getName()).willReturn("joinName");
         given(belongsToFieldDefinition.getType()).willReturn(belongsToFieldType);
+        given(belongsToFieldDefinition.getDataDefinition()).willReturn(dataDefinition);
 
         HasManyType hasManyFieldType = mock(HasManyType.class);
         given(hasManyFieldType.getJoinFieldName()).willReturn("joinName");
@@ -206,6 +207,7 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         FieldDefinition hasManyFieldDefinition = mock(FieldDefinition.class);
         given(hasManyFieldDefinition.getName()).willReturn("fieldName");
         given(hasManyFieldDefinition.getType()).willReturn(hasManyFieldType);
+        given(hasManyFieldDefinition.getDataDefinition()).willReturn(dataDefinition);
 
         given(dataDefinition.getField("field")).willReturn(hasManyFieldDefinition);
         given(dataDefinition.getField("joinName")).willReturn(belongsToFieldDefinition);

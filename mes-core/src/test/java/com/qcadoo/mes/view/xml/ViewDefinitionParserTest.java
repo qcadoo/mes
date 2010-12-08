@@ -134,7 +134,10 @@ public class ViewDefinitionParserTest {
         given(belongToAType.getDataDefinition()).willReturn(dataDefinitionA);
         given(dataDefinitionA.getField("beansB")).willReturn(hasManyB);
         given(dataDefinitionA.getField("name")).willReturn(nameA);
+        given(dataDefinitionB.getField("active")).willReturn(nameA);
         given(dataDefinitionB.getField("beanA")).willReturn(belongToA);
+        given(dataDefinitionB.getField("beanM")).willReturn(belongToA);
+        given(dataDefinitionB.getField("beanB")).willReturn(belongToA);
         given(dataDefinitionB.getField("name")).willReturn(nameB);
         given(dataDefinitionA.getName()).willReturn("beanA");
         given(dataDefinitionB.getName()).willReturn("beanB");
