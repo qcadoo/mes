@@ -75,15 +75,30 @@ public final class LookupComponentState extends FieldComponentState {
 
     @Override
     public Long getFieldValue() {
+        Long entityId = getFieldValueWithoutSearching();
+
+        if (entityId == null && StringUtils.hasText(code)) {
+            eventPerformer.search(new String[0]);
+            return getFieldValueWithoutSearching();
+        } else {
+            return entityId;
+        }
+    }
+
+    public Long getFieldValueWithoutSearching() {
         return convertToLong(super.getFieldValue());
     }
 
     @Override
     public void setFieldValue(final Object value) {
-        Long entityId = convertToLong(value);
-        super.setFieldValue(entityId);
+        setFieldValueWithoutUpdateStateRequest(convertToLong(value));
         requestUpdateState();
-        notifyEntityIdChangeListeners(entityId);
+    }
+
+    public void setFieldValueWithoutUpdateStateRequest(final Long value) {
+        super.setFieldValue(value);
+        notifyEntityIdChangeListeners(value);
+        eventPerformer.refresh();
     }
 
     private Long convertToLong(final Object value) {
@@ -103,7 +118,8 @@ public final class LookupComponentState extends FieldComponentState {
         if (belongsToFieldDefinition != null) {
             belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
-            eventPerformer.initialize(new String[0]);
+            eventPerformer.refresh();
+            requestRender();
         } else {
             throw new IllegalStateException("Lookup doesn't have scopeField, it cannot set scopeEntityId");
         }
@@ -112,25 +128,7 @@ public final class LookupComponentState extends FieldComponentState {
     protected class LookupEventPerformer {
 
         public void initialize(final String[] args) {
-            Long entityId = getFieldValue();
-            if (entityId != null) {
-
-                Entity entity = getDataDefinition().get(entityId);
-
-                if (!entityBelongsToEntityId(entity)) {
-                    entity = null;
-                }
-
-                if (entity != null) {
-                    code = String.valueOf(entity.getField(fieldCode));
-                    text = ExpressionUtil.getValue(entity, expression, getLocale());
-                } else {
-                    code = "";
-                    text = "";
-                    setFieldValue(null);
-                }
-            }
-
+            refresh();
             requestRender();
         }
 
@@ -140,7 +138,7 @@ public final class LookupComponentState extends FieldComponentState {
                     return false;
                 }
 
-                // TODO
+                // TODO masz
                 return true;
             } else {
                 return true;
@@ -160,11 +158,11 @@ public final class LookupComponentState extends FieldComponentState {
 
                 if (results.getTotalNumberOfEntities() == 1) {
                     Entity entity = results.getEntities().get(0);
-                    setFieldValue(entity.getId());
+                    setFieldValueWithoutUpdateStateRequest(entity.getId());
                     code = String.valueOf(entity.getField(fieldCode));
                     text = ExpressionUtil.getValue(entity, expression, getLocale());
                 } else {
-                    setFieldValue(null);
+                    setFieldValueWithoutUpdateStateRequest(null);
                     text = "";
                     addMessage(getTranslationService().translate("core.validate.field.error.lookupCodeNotFound", getLocale()),
                             MessageType.FAILURE);
@@ -172,10 +170,31 @@ public final class LookupComponentState extends FieldComponentState {
             } else {
                 code = "";
                 text = "";
-                setFieldValue(null);
+                setFieldValueWithoutUpdateStateRequest(null);
             }
 
             requestRender();
+        }
+
+        private void refresh() {
+            Long entityId = getFieldValueWithoutSearching();
+            if (entityId != null) {
+
+                Entity entity = getDataDefinition().get(entityId);
+
+                if (!entityBelongsToEntityId(entity)) {
+                    entity = null;
+                }
+
+                if (entity != null) {
+                    code = String.valueOf(entity.getField(fieldCode));
+                    text = ExpressionUtil.getValue(entity, expression, getLocale());
+                } else {
+                    code = "";
+                    text = "";
+                    setFieldValueWithoutUpdateStateRequest(null);
+                }
+            }
         }
 
     }

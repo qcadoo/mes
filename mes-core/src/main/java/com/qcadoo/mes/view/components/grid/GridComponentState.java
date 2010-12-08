@@ -90,8 +90,8 @@ public final class GridComponentState extends AbstractComponentState {
         Iterator<String> iterator = json.keys();
         while (iterator.hasNext()) {
             String field = iterator.next();
-            if ("belongsToEntityId".equals(field)) {
-                belongsToEntityId = json.getLong(field);
+            if (JSON_BELONGS_TO_ENTITY_ID.equals(field)) {
+                onScopeEntityIdChange(json.getLong(field));
             }
         }
     }

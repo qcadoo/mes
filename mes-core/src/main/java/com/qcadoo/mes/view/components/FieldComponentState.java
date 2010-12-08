@@ -13,14 +13,14 @@ public class FieldComponentState extends AbstractComponentState {
 
     private boolean required;
 
-    private boolean requestUpdateState = true;
+    private boolean requestUpdateStateOnSetFieldValue = true;
 
     public FieldComponentState() {
         // empty
     }
 
-    public FieldComponentState(final boolean requestUpdateState) {
-        this.requestUpdateState = requestUpdateState;
+    public FieldComponentState(final boolean requestUpdateStateOnSetFieldValue) {
+        this.requestUpdateStateOnSetFieldValue = requestUpdateStateOnSetFieldValue;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class FieldComponentState extends AbstractComponentState {
     public void setFieldValue(final Object value) {
         this.value = value != null ? value.toString() : null;
         requestRender();
-        if (requestUpdateState) {
+        if (requestUpdateStateOnSetFieldValue) {
             requestUpdateState();
         }
     }
