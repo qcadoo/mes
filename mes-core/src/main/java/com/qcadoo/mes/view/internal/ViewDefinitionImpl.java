@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
@@ -140,6 +141,12 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         callHooks(preRenderHooks, viewDefinitionState, locale);
 
         return viewDefinitionState.render();
+    }
+
+    public void registerViews(final ViewDefinitionService viewDefinitionService) {
+        for (ComponentPattern cp : patterns.values()) {
+            cp.registerViews(viewDefinitionService);
+        }
     }
 
     public void addComponentPattern(final ComponentPattern componentPattern) {

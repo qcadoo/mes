@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
@@ -28,6 +29,15 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
         }
 
         return componentState;
+    }
+
+    @Override
+    public final void registerViews(final ViewDefinitionService viewDefinitionService) {
+        registerComponentViews(viewDefinitionService);
+
+        for (ComponentPattern componentPattern : children.values()) {
+            componentPattern.registerViews(viewDefinitionService);
+        }
     }
 
     @Override

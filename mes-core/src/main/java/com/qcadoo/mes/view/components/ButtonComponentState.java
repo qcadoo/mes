@@ -15,7 +15,7 @@ public class ButtonComponentState extends AbstractComponentState {
 
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
-        requestRender(); // empty
+        requestRender();
     }
 
     @Override

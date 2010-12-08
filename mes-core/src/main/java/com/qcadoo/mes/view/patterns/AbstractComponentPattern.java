@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
@@ -111,6 +112,15 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     protected void initializeComponent() throws JSONException {
         // implement me if you want
+    }
+
+    protected void registerComponentViews(final ViewDefinitionService viewDefinitionService) {
+        // implement me if you want
+    }
+
+    @Override
+    public void registerViews(final ViewDefinitionService viewDefinitionService) {
+        registerComponentViews(viewDefinitionService);
     }
 
     @Override
