@@ -601,11 +601,6 @@ public final class TestDataLoader {
                 .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
     }
 
-    private ProductsOperation getOperationByName(final String name) {
-        return (ProductsOperation) sessionFactory.getCurrentSession().createCriteria(ProductsOperation.class)
-                .add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();
-    }
-
     private String getRandomTypeOfMaterial() {
         return TYPE_OF_MATERIALS[RANDOM.nextInt(TYPE_OF_MATERIALS.length)];
     }
