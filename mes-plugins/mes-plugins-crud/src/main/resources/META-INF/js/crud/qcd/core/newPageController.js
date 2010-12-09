@@ -88,7 +88,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 				if (response.redirect.openInNewWindow) {
 					window.open(response.redirect.url);
 				} else {
-					goToPage(response.redirect.url);
+					goToPage(response.redirect.url, false);
 					return;
 				}
 			} else {
@@ -301,12 +301,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		return isPopup;
 	}
 	
-	this.goToPage = function(url) {
+	this.goToPage = function(url, isPage) {
+		if (isPage == undefined || isPage == null) {
+			isPage = true;
+		}
 		//if(canClose()) {
 			var serializationObject = {
 				components: getValueData()
 			}
-			window.parent.goToPage(url, serializationObject);
+			window.parent.goToPage(url, serializationObject, isPage);
 		//}
 	}
 	var goToPage = this.goToPage;

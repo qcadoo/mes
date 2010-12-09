@@ -64,13 +64,17 @@ QCD.WindowController = function(_menuStructure) {
 		window.location = "j_spring_security_logout";
 	}
 	
-	this.goToPage = function(url, serializationObject) {
+	this.goToPage = function(url, serializationObject, isPage) {
 		var stateObject = {
 			url: iframe.attr('src'),
 			serializationObject: serializationObject
 		};
 		statesStack.push(stateObject);
-		currentPage = "page/"+url;
+		if (isPage) {
+			currentPage = "page/"+url;	
+		} else {
+			currentPage = url;
+		}
 		performGoToPage(currentPage);
 	}
 	
