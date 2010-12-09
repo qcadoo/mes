@@ -88,7 +88,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
                 JSONObject item = owner.getJSONArray("items").getJSONObject(j);
                 String label = getTranslationService().translate(getTranslationCodes(prefix + item.getString("name")), locale);
                 item.put("label", label);
-                translateRibbonItems(item, prefix + item.getString("name"), locale);
+                translateRibbonItems(item, prefix + item.getString("name") + ".", locale);
             }
         }
     }

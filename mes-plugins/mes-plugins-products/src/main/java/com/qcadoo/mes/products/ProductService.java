@@ -25,6 +25,7 @@
 package com.qcadoo.mes.products;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -50,6 +51,7 @@ import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
@@ -405,18 +407,6 @@ public final class ProductService {
         }
     }
 
-    public void fillDateAndWorkerOnGenerate(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("fileName") != null && !"".equals(entity.getField("fileName").toString().trim())) {
-            entity.setField("generated", true);
-        }
-        if ((Boolean) entity.getField("generated") && entity.getField("date") == null) {
-            entity.setField("date", new Date());
-        }
-        if ((Boolean) entity.getField("generated") && entity.getField("worker") == null) {
-            entity.setField("worker", getLoginOfLoggedUser());
-        }
-    }
-
     private boolean compareDates(final DataDefinition dataDefinition, final Entity entity, final String dateFromField,
             final String dateToField) {
         Date dateFrom = (Date) entity.getField(dateFromField);
@@ -437,7 +427,24 @@ public final class ProductService {
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponentState) {
+            ComponentState generated = viewDefinitionState.getComponentByPath("window.materialRequirement.generated");
+            ComponentState date = viewDefinitionState.getComponentByPath("window.materialRequirement.date");
+            ComponentState worker = viewDefinitionState.getComponentByPath("window.materialRequirement.worker");
+
+            if ("0".equals(generated.getFieldValue())) {
+                worker.setFieldValue(getLoginOfLoggedUser());
+                generated.setFieldValue("1");
+                date.setFieldValue(new SimpleDateFormat(DateTimeType.DATE_TIME_FORMAT).format(new Date()));
+            }
+
             state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            if (state.getFieldValue() == null || !((FormComponentState) state).isValid()) {
+                worker.setFieldValue(null);
+                generated.setFieldValue("0");
+                date.setFieldValue(null);
+                return;
+            }
 
             Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                     (Long) state.getFieldValue());
@@ -531,7 +538,24 @@ public final class ProductService {
 
     public void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponentState) {
+            ComponentState generated = viewDefinitionState.getComponentByPath("window.workPlan.generated");
+            ComponentState date = viewDefinitionState.getComponentByPath("window.workPlan.date");
+            ComponentState worker = viewDefinitionState.getComponentByPath("window.workPlan.worker");
+
+            if ("0".equals(generated.getFieldValue())) {
+                worker.setFieldValue(getLoginOfLoggedUser());
+                generated.setFieldValue("1");
+                date.setFieldValue(new SimpleDateFormat(DateTimeType.DATE_TIME_FORMAT).format(new Date()));
+            }
+
             state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            if (state.getFieldValue() == null || !((FormComponentState) state).isValid()) {
+                worker.setFieldValue(null);
+                generated.setFieldValue("0");
+                date.setFieldValue(null);
+                return;
+            }
 
             Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
 
