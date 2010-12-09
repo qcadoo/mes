@@ -150,14 +150,18 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         map.put("jspFilePath", getJspFilePath());
         map.put("jsFilePath", getJsFilePath());
         map.put("jsObjectName", getJsObjectName());
-        map.put("jspOptions", getJspOptions(locale));
-        map.put("defaultEnabled", isDefaultEnabled());
-        map.put("defaultVisible", isDefaultVisible());
         map.put("hasDescription", isHasDescription());
+
+        Map<String, Object> jspOptions = getJspOptions(locale);
+        jspOptions.put("defaultEnabled", isDefaultEnabled());
+        jspOptions.put("defaultVisible", isDefaultVisible());
+        map.put("jspOptions", jspOptions);
 
         try {
             JSONObject jsOptions = getJsOptions(locale);
             addListenersToJsOptions(jsOptions);
+            jsOptions.put("defaultEnabled", isDefaultEnabled());
+            jsOptions.put("defaultVisible", isDefaultVisible());
             map.put("jsOptions", jsOptions);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
