@@ -493,7 +493,7 @@ public final class ProductService {
 
     public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
-            viewDefinitionState.redirectTo("products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+            viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
         } else {
             if (state instanceof FormComponentState) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
