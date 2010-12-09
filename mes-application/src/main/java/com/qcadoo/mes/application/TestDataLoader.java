@@ -121,11 +121,11 @@ public final class TestDataLoader {
         // }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
+        readDataFromXML("machines", MACHINE_ATTRIBUTES);
+        readDataFromXML("staff", STAFF_ATTRIBUTES);
         readDataFromXML("operations", OPERATION_ATTRIBUTES);
         readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
-        readDataFromXML("machines", MACHINE_ATTRIBUTES);
-        readDataFromXML("staff", STAFF_ATTRIBUTES);
         addMaterialRequirements();
     }
 
@@ -226,6 +226,8 @@ public final class TestDataLoader {
 
         operation.setName(values.get("name"));
         operation.setNumber(values.get("number"));
+        operation.setMachine(getRandomMachine());
+        operation.setStaff(getRandomStaff());
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test dictionary item {dictionary=" + operation.getName() + ", name=" + operation.getName() + "}");
@@ -536,6 +538,20 @@ public final class TestDataLoader {
 
             sessionFactory.getCurrentSession().save(component);
         }
+    }
+
+    private BasicStaff getRandomStaff() {
+        Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicStaff.class)
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return (BasicStaff) sessionFactory.getCurrentSession().createCriteria(BasicStaff.class)
+                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
+    }
+
+    private BasicMachine getRandomMachine() {
+        Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
 
     private ProductsTechnology getTechnologyByName(final String name) {
