@@ -100,7 +100,7 @@ public final class MainPageController {
 
     @RequestMapping(value = "systemInfo", method = RequestMethod.GET)
     public ModelAndView getSystemInfoView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        ModelAndView mav = crudController.prepareView("core", "systemInfoView", arguments, locale);
+        ModelAndView mav = crudController.prepareView("core", "systemInfo", arguments, locale);
 
         Map<String, String> translationsMap = new HashMap<String, String>();
         translationsMap.put("core.systemInfo.header", translationService.translate("core.systemInfo.header", locale));
