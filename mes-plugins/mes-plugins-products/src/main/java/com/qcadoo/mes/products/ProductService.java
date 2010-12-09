@@ -54,6 +54,7 @@ import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
+import com.qcadoo.mes.products.print.xls.WorkPlanXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -79,6 +80,9 @@ public final class ProductService {
 
     @Autowired
     private WorkPlanPdfService workPlanPdfService;
+
+    @Autowired
+    private WorkPlanXlsService workPlanXlsService;
 
     @Autowired
     private TranslationService translationService;
@@ -566,8 +570,7 @@ public final class ProductService {
             } else {
                 try {
                     workPlanPdfService.generateDocument(workPlan, state.getLocale());
-                    // TODO krna
-                    // workPlanXlsService.generateDocument(workPlan, state.getLocale());
+                    workPlanXlsService.generateDocument(workPlan, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     new IllegalStateException(e.getMessage(), e);

@@ -83,7 +83,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     }
 
     @Override
-    protected final Document newDocument() {
+    protected Document newDocument() {
         Document doc = super.newDocument();
         doc.setMargins(40, 40, 60, 60);
         return doc;

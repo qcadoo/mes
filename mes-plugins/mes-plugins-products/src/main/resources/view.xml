@@ -636,7 +636,7 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveBackIcon24.png"
-						action="#{window.form}.performSave; #{window}.performBack" />
+						action="#{window.workPlanComponent}.performSave; #{window}.performBack" />
 				</group>
 			</ribbon>		
 			<component type="form" name="workPlanComponent">

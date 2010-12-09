@@ -62,4 +62,11 @@ public final class MaterialRequirementPdfView extends ProductsPdfView {
         writer.setPageEvent(null);
     }
 
+    @Override
+    protected Document newDocument() {
+        Document doc = super.newDocument();
+        doc.setMargins(0, 0, 0, 0);
+        return doc;
+    }
+
 }

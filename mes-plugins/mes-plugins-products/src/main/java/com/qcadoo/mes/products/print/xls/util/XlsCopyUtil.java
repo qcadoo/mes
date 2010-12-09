@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.products.print.xls.util;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,8 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 public final class XlsCopyUtil {
@@ -143,6 +147,19 @@ public final class XlsCopyUtil {
     private static boolean isNewMergedRegion(final CellRangeAddress newMergedRegion,
             final Collection<CellRangeAddress> mergedRegions) {
         return !mergedRegions.contains(newMergedRegion);
+    }
+
+    public static void copyWorkbook(final HSSFWorkbook newWorkbook, final String existingWorkbookFileName) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(existingWorkbookFileName + XLS_EXTENSION);
+        POIFSFileSystem fs = new POIFSFileSystem(fileInputStream);
+        HSSFWorkbook existingWorkbook = new HSSFWorkbook(fs);
+        fileInputStream.close();
+        int n = existingWorkbook.getNumberOfSheets();
+        for (int i = 0; i < n; i++) {
+            HSSFSheet existingSheet = existingWorkbook.getSheetAt(i);
+            HSSFSheet sheet = newWorkbook.createSheet(existingSheet.getSheetName());
+            copySheets(sheet, existingSheet);
+        }
     }
 
 }

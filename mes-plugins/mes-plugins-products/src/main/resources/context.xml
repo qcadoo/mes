@@ -49,5 +49,8 @@
   		
   	<bean id="workPlanPdfView"
   		class="com.qcadoo.mes.products.print.pdf.WorkPlanPdfView"/>
+  		
+  	<bean id="workPlanXlsView"
+  		class="com.qcadoo.mes.products.print.xls.WorkPlanXlsView"/>
 	
 </beans>
