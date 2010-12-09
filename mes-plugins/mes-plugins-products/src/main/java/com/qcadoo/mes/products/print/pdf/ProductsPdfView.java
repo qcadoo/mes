@@ -74,7 +74,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     }
 
     @Override
-    protected final void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
             throws DocumentException {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         super.prepareWriter(model, writer, request);

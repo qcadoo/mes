@@ -26,6 +26,9 @@ package com.qcadoo.mes.products.print.pdf;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -50,6 +53,12 @@ public final class MaterialRequirementPdfView extends ProductsPdfView {
     @Override
     protected void addTitle(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("products.materialRequirement.report.title", locale));
+    }
+
+    @Override
+    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+            throws DocumentException {
+        super.prepareWriter(model, writer, request);
     }
 
 }
