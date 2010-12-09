@@ -115,7 +115,6 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
             if ("ribbon".equals(child.getNodeName())) {
                 setRibbon(parseRibbon(child, parser));
-                System.out.println(ribbon.getAsJson());
                 break;
             }
         }
