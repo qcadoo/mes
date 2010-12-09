@@ -52,4 +52,13 @@ public class ProductController {
         return mav;
     }
 
+    @RequestMapping(value = "products/workPlan.xls", method = RequestMethod.GET)
+    public ModelAndView workPlanXls(@RequestParam("id") final String id) {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("workPlanXlsView");
+        mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
+        return mav;
+    }
+
 }
