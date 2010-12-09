@@ -225,6 +225,7 @@ public final class ProductService {
         SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).orderDescBy("id").list();
 
         long longValue = 0;
+
         if (results.getEntities().isEmpty()) {
             longValue++;
         } else {
@@ -246,36 +247,35 @@ public final class ProductService {
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        LookupComponentState product = (LookupComponentState) viewDefinitionState.getComponentByPath("window.order.product");
-        LookupComponentState instruction = (LookupComponentState) viewDefinitionState
-                .getComponentByPath("window.order.instruction");
-        FieldComponentState defaultInstruction = (FieldComponentState) viewDefinitionState
-                .getComponentByPath("window.order.defaultInstruction");
+        LookupComponentState product = (LookupComponentState) state;
+        LookupComponentState technology = (LookupComponentState) viewDefinitionState
+                .getComponentByPath("window.order.technology");
+        FieldComponentState defaultTechnology = (FieldComponentState) viewDefinitionState
+                .getComponentByPath("window.order.defaultTechnology");
         FieldComponentState plannedQuantity = (FieldComponentState) viewDefinitionState
                 .getComponentByPath("window.order.plannedQuantity");
 
-        if (product.getFieldValue() == null || hasAnyTechnologies(product.getFieldValue())) {
-            instruction.setEnabled(false);
-            instruction.setRequired(false);
-            defaultInstruction.setEnabled(false);
+        defaultTechnology.setFieldValue("");
+        technology.setFieldValue(null);
+
+        if (product.getFieldValue() == null || !hasAnyTechnologies(product.getFieldValue())) {
+            technology.setEnabled(false);
+            technology.setRequired(false);
             plannedQuantity.setEnabled(false);
             plannedQuantity.setRequired(false);
         } else {
-            instruction.setEnabled(true);
-            instruction.setRequired(true);
-            defaultInstruction.setEnabled(true);
+            technology.setEnabled(true);
+            technology.setRequired(true);
             plannedQuantity.setEnabled(true);
             plannedQuantity.setRequired(true);
 
             Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
 
             if (defaultTechnologyEntity != null) {
-                defaultInstruction.setFieldValue("");
-                instruction.setFieldValue(defaultTechnologyEntity.getId());
-            } else {
                 String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
                         state.getLocale());
-                defaultInstruction.setFieldValue(defaultTechnologyValue);
+                defaultTechnology.setFieldValue(defaultTechnologyValue);
+                technology.setFieldValue(defaultTechnologyEntity.getId());
             }
         }
     }
