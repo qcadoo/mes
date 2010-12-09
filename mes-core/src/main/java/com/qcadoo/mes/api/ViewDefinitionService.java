@@ -33,7 +33,7 @@ import com.qcadoo.mes.view.ViewDefinition;
 /**
  * Service for manipulating view definitions.
  * 
- * @see com.qcadoo.mes.view.xml.internal.ViewDefinitionParser
+ * @see com.qcadoo.mes.view.xml.ViewDefinitionParserImpl.ViewDefinitionParser
  * @apiviz.uses com.qcadoo.mes.view.ViewDefinition
  */
 public interface ViewDefinitionService {

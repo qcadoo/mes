@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
@@ -15,6 +17,10 @@ import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
 import com.qcadoo.mes.view.ribbon.Ribbon;
+import com.qcadoo.mes.view.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.ribbon.RibbonComboItem;
+import com.qcadoo.mes.view.ribbon.RibbonGroup;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @ViewComponent("window")
 public final class WindowComponentPattern extends AbstractContainerPattern {
@@ -86,6 +92,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         if (owner.has("items")) {
             for (int j = 0; j < owner.getJSONArray("items").length(); j++) {
                 JSONObject item = owner.getJSONArray("items").getJSONObject(j);
+
                 String label = getTranslationService().translate(getTranslationCodes(prefix + item.getString("name")), locale);
                 item.put("label", label);
                 translateRibbonItems(item, prefix + item.getString("name") + ".", locale);
@@ -97,8 +104,25 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return Arrays.asList(new String[] { getTranslationPath() + ".ribbon." + key, "core.ribbon." + key });
     }
 
+    @Override
+    public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        super.parse(componentNode, parser);
+
+        NodeList childNodes = componentNode.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+
+            if ("ribbon".equals(child.getNodeName())) {
+                setRibbon(parseRibbon(child, parser));
+                System.out.println(ribbon.getAsJson());
+                break;
+            }
+        }
+
+    }
+
     public void setRibbon(final Ribbon ribbon) {
-        // TODO masz ribbon should be a window option
         this.ribbon = ribbon;
     }
 
@@ -115,6 +139,80 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     @Override
     public String getJsObjectName() {
         return JS_OBJECT;
+    }
+
+    private Ribbon parseRibbon(final Node ribbonNode, final ViewDefinitionParser parser) {
+        Ribbon ribbon = new Ribbon();
+
+        NodeList childNodes = ribbonNode.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+
+            if ("group".equals(child.getNodeName())) {
+                ribbon.addGroup(parseRibbonGroup(child, parser));
+            }
+        }
+
+        return ribbon;
+    }
+
+    private RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinitionParser parser) {
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName(parser.getStringAttribute(groupNode, "name"));
+
+        NodeList childNodes = groupNode.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                ribbonGroup.addItem(parseRibbonItem(child, parser));
+            }
+        }
+
+        return ribbonGroup;
+    }
+
+    private RibbonActionItem parseRibbonItem(final Node itemNode, final ViewDefinitionParser parser) {
+        String stringType = itemNode.getNodeName();
+
+        boolean combo = ("bigButtons".equals(stringType) || "smallButtons".equals(stringType));
+
+        RibbonActionItem.Type type = null;
+        if ("bigButtons".equals(stringType) || "bigButton".equals(stringType)) {
+            type = RibbonActionItem.Type.BIG_BUTTON;
+        } else if ("smallButtons".equals(stringType) || "smallButton".equals(stringType)) {
+            type = RibbonActionItem.Type.SMALL_BUTTON;
+        }
+
+        RibbonActionItem item = null;
+        if (combo) {
+            item = new RibbonComboItem();
+        } else {
+            item = new RibbonActionItem();
+        }
+
+        item.setIcon(parser.getStringAttribute(itemNode, "icon"));
+        item.setName(parser.getStringAttribute(itemNode, "name"));
+        item.setAction(parser.getStringAttribute(itemNode, "action"));
+        item.setType(type);
+
+        if (combo) {
+            NodeList childNodes = itemNode.getChildNodes();
+
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node child = childNodes.item(i);
+
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    ((RibbonComboItem) item).addItem(parseRibbonItem(child, parser));
+                }
+            }
+        } else {
+            (item).setAction(parser.getStringAttribute(itemNode, "action"));
+        }
+
+        return item;
     }
 
 }

@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
@@ -32,6 +34,7 @@ import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.states.AbstractComponentState;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
 
@@ -314,7 +317,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return translationService;
     }
 
-    protected final ViewDefinition getViewDefinition() {
+    public final ViewDefinition getViewDefinition() {
         return viewDefinition;
     }
 
@@ -399,6 +402,27 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     public void addCustomEvent(final ComponentCustomEvent customEvent) {
         customEvents.add(customEvent);
+    }
+
+    @Override
+    public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        NodeList childNodes = componentNode.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+
+            if ("option".equals(child.getNodeName())) {
+                addOption(parser.parseOption(child));
+            }
+        }
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+
+            if ("listener".equals(child.getNodeName())) {
+                addCustomEvent(parser.parseCustomEvent(child));
+            }
+        }
     }
 
 }

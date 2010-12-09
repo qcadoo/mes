@@ -75,9 +75,9 @@ import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
 
-public class ViewDefinitionParserTest {
+public class ViewDefinitionParserImplTest {
 
-    private ViewDefinitionParser viewDefinitionParser;
+    private ViewDefinitionParserImpl viewDefinitionParser;
 
     private DataDefinitionService dataDefinitionService;
 
@@ -119,7 +119,7 @@ public class ViewDefinitionParserTest {
         hookFactory = new HookFactory();
         setField(hookFactory, "applicationContext", applicationContext);
 
-        viewDefinitionParser = new ViewDefinitionParser();
+        viewDefinitionParser = new ViewDefinitionParserImpl();
         setField(viewDefinitionParser, "dataDefinitionService", dataDefinitionService);
         setField(viewDefinitionParser, "viewDefinitionService", viewDefinitionService);
         setField(viewDefinitionParser, "hookFactory", hookFactory);
