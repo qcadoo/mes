@@ -137,8 +137,16 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
         List<String> codes = new LinkedList<String>();
         codes.add(getTranslationPath() + ".label.focus");
-        codes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getFieldDefinition().getName())
-                + ".label.focus");
+
+        if (getFieldDefinition() != null) {
+            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getFieldDefinition().getDataDefinition(),
+                    getFieldDefinition().getName())
+                    + ".label.focus");
+        } else {
+            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getFieldDefinition().getName())
+                    + ".label.focus");
+        }
+
         translations.put("labelOnFocus", getTranslationService().translate(codes, locale));
 
         json.put("translations", translations);

@@ -75,7 +75,7 @@
 					<bigButton name="update" icon="updateIcon24.png" action="#{window.plugin}.performCallFunction(goToUrl,../update.html);" />
 				</group>
 			</ribbon>
-			<component type="form" name="pluginDetailsForm">
+			<component type="form" name="plugin">
 				<component type="textarea" name="name" field="name" defaultEnabled="false" />
 				<component type="input" name="version" field="version" defaultEnabled="false" />
 				<component type="input" name="vendor" field="vendor" defaultEnabled="false" />

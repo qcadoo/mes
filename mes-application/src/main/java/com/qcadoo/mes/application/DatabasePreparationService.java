@@ -100,8 +100,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition groupGridView = getMenuViewDefinition("groups");
         MenuViewDefinition machineGridView = getMenuViewDefinition("machineGridView");
         MenuViewDefinition staffGridView = getMenuViewDefinition("staffGridView");
-        MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlanGridView");
-        MenuViewDefinition operationGridView = getMenuViewDefinition("operationGridView");
+        MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlans");
+        MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
 
         MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
