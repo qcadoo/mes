@@ -53,12 +53,13 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
+import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
-import com.qcadoo.mes.view.components.grid.GridComponentState;
+import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @Service
 public final class ProductService {
@@ -137,46 +138,6 @@ public final class ProductService {
             return true;
         }
     }
-
-    // @SuppressWarnings("unchecked")
-    // public void disableFormForExistingWorkPlan(final ViewValue<Long> value, final String triggerComponentName,
-    // final Entity entity, final Locale locale) throws IOException, DocumentException {
-    // if (value.lookupValue("mainWindow.workPlanDetailsForm") == null
-    // || value.lookupValue("mainWindow.workPlanDetailsForm").getValue() == null
-    // || ((FormValue) value.lookupValue("mainWindow.workPlanDetailsForm").getValue()).getId() == null) {
-    //
-    // return;
-    // }
-    //
-    // String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.workPlanDetailsForm.generated").getValue())
-    // .getValue().toString();
-    //
-    // boolean isGenerated = true;
-    // if ("0".equals(generatedStringValue)) {
-    // isGenerated = false;
-    // }
-    //
-    // if (isGenerated) {
-    // value.lookupValue("mainWindow.workPlanDetailsForm.name").setEnabled(false);
-    // value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
-    //
-    // if ("mainWindow.workPlanDetailsForm".equals(triggerComponentName)) {
-    // Entity workPlan = dataDefinitionService.get("products", "workPlan").get(
-    // ((FormValue) value.lookupValue("mainWindow.workPlanDetailsForm").getValue()).getId());
-    //
-    // if (workPlan.getField("fileName") == null || "".equals(workPlan.getField("fileName").toString().trim())) {
-    // workPlanPdfService.generateDocument(workPlan, locale);
-    // // workPlanXlsService.generateDocument(workPlan, locale);
-    // } else {
-    // // FIXME KRNA remove override
-    // value.addInfoMessage("override:"
-    // + translationService.translate(
-    // "products.workPlanDetailsView.mainWindow.workPlanDetailsForm.documentsWasGenerated", locale));
-    // }
-    //
-    // }
-    // }
-    // }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
@@ -276,110 +237,56 @@ public final class ProductService {
         number.setFieldValue(generatedNumber);
     }
 
-    // @SuppressWarnings("unchecked")
-    // public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
-    // final Locale locale) {
-    // generateOrderNumber(value, triggerComponentName, locale);
-    //
-    // ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
-    // ViewValue<SimpleValue> defaultTechnologyValue = (ViewValue<SimpleValue>) value
-    // .lookupValue("mainWindow.orderDetailsForm.defaultTechnology");
-    // ViewValue<LookupData> technologyValue = (ViewValue<LookupData>) value
-    // .lookupValue("mainWindow.orderDetailsForm.technology");
-    // ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
-    // ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
-    // ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
-    // .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
-    //
-    // if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
-    // && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
-    // formValue.setEnabled(false);
-    // }
-    //
-    // if (formValue == null) {
-    // return;
-    // }
-    //
-    // if (defaultTechnologyValue == null) {
-    // defaultTechnologyValue = new ViewValue<SimpleValue>(new SimpleValue(""));
-    // defaultTechnologyValue.setVisible(true);
-    // formValue.addComponent("defaultTechnology", defaultTechnologyValue);
-    // }
-    // if (plannedQuantityValue == null) {
-    // plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
-    // plannedQuantityValue.setVisible(true);
-    // plannedQuantityValue.setEnabled(true);
-    // formValue.addComponent("plannedQuantity", plannedQuantityValue);
-    // }
-    //
-    // defaultTechnologyValue.setEnabled(false);
-    // defaultTechnologyValue.setValue(new SimpleValue(""));
-    // technologyValue.setEnabled(true);
-    //
-    // Long selectedProductId = null;
-    //
-    // if (productValue.getValue() != null && productValue.getValue().getSelectedEntityId() != null) {
-    // selectedProductId = productValue.getValue().getSelectedEntityId();
-    // }
-    //
-    // Entity selectedTechnology = null;
-    //
-    // if (selectedProductId != null && technologyValue.getValue() != null
-    // && technologyValue.getValue().getSelectedEntityId() != null
-    // && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-    // selectedTechnology = dataDefinitionService.get("products", "technology").get(
-    // technologyValue.getValue().getSelectedEntityId());
-    // } else {
-    // technologyValue.getValue().setSelectedEntityId(null);
-    // technologyValue.getValue().setSelectedEntityCode("");
-    // technologyValue.getValue().setSelectedEntityValue("");
-    // }
-    //
-    // if (selectedProductId == null) {
-    // technologyValue.setEnabled(false);
-    // technologyValue.getValue().setSelectedEntityId(null);
-    // technologyValue.getValue().setSelectedEntityCode("");
-    // technologyValue.getValue().setSelectedEntityValue("");
-    // technologyValue.getValue().setRequired(false);
-    // plannedQuantityValue.getValue().setRequired(false);
-    // } else {
-    // plannedQuantityValue.getValue().setRequired(true);
-    // if (!hasAnyTechnologies(selectedProductId)) {
-    // technologyValue.setEnabled(false);
-    // technologyValue.getValue().setRequired(false);
-    // technologyValue.getValue().setSelectedEntityId(null);
-    // technologyValue.getValue().setSelectedEntityCode("");
-    // technologyValue.getValue().setSelectedEntityValue("");
-    // } else {
-    // technologyValue.getValue().setRequired(true);
-    // Entity defaultTechnologyEntity = getDefaultTechnology(selectedProductId);
-    // if (defaultTechnologyEntity != null) {
-    // String defaultTechnologyName = defaultTechnologyEntity.getField("name").toString();
-    // defaultTechnologyValue.getValue().setValue(defaultTechnologyName);
-    // if (selectedTechnology == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-    // selectDefaultTechnology(technologyValue, defaultTechnologyEntity);
-    // }
-    // }
-    // }
-    // }
-    // }
+    public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState order = (FormComponentState) state.getComponentByPath("window.order.state");
+        FieldComponentState status = (FieldComponentState) state.getComponentByPath("window.order.state");
 
-    // private void selectDefaultTechnology(final ViewValue<LookupData> technologyValue, final Entity defaultTechnologyEntity) {
-    // ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
-    // LookupComponent lookupTechnology = (LookupComponent) viewDefinition
-    // .lookupComponent("mainWindow.orderDetailsForm.technology");
-    // technologyValue.getValue().setValue(defaultTechnologyEntity.getId());
-    // technologyValue.getValue().setSelectedEntityCode(defaultTechnologyEntity.getStringField(lookupTechnology.getFieldCode()));
-    // technologyValue.getValue().setSelectedEntityValue(
-    // ExpressionUtil.getValue(defaultTechnologyEntity, lookupTechnology.getExpression()));
-    // }
+        if ("done".equals(status.getFieldValue()) && order.isValid()) {
+            order.setEnabled(false);
+        }
+    }
+
+    public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        LookupComponentState product = (LookupComponentState) viewDefinitionState.getComponentByPath("window.order.product");
+        LookupComponentState instruction = (LookupComponentState) viewDefinitionState
+                .getComponentByPath("window.order.instruction");
+        FieldComponentState defaultInstruction = (FieldComponentState) viewDefinitionState
+                .getComponentByPath("window.order.defaultInstruction");
+        FieldComponentState plannedQuantity = (FieldComponentState) viewDefinitionState
+                .getComponentByPath("window.order.plannedQuantity");
+
+        if (product.getFieldValue() == null || hasAnyTechnologies(product.getFieldValue())) {
+            instruction.setEnabled(false);
+            instruction.setRequired(false);
+            defaultInstruction.setEnabled(false);
+            plannedQuantity.setEnabled(false);
+            plannedQuantity.setRequired(false);
+        } else {
+            instruction.setEnabled(true);
+            instruction.setRequired(true);
+            defaultInstruction.setEnabled(true);
+            plannedQuantity.setEnabled(true);
+            plannedQuantity.setRequired(true);
+
+            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
+
+            if (defaultTechnologyEntity != null) {
+                defaultInstruction.setFieldValue("");
+                instruction.setFieldValue(defaultTechnologyEntity.getId());
+            } else {
+                String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
+                        state.getLocale());
+                defaultInstruction.setFieldValue(defaultTechnologyValue);
+            }
+        }
+    }
 
     private Entity getDefaultTechnology(final Long selectedProductId) {
-        DataDefinition technologyDD = dataDefinitionService.get("products", "technology");
+        DataDefinition instructionDD = dataDefinitionService.get("products", "technology");
 
-        SearchCriteriaBuilder searchCriteria = technologyDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.eq(technologyDD.getField("master"), true))
-                .restrictedWith(Restrictions.belongsTo(technologyDD.getField("product"), selectedProductId));
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
+                .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
+                .restrictedWith(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
 
         SearchResult searchResult = searchCriteria.list();
 
@@ -389,118 +296,6 @@ public final class ProductService {
             return null;
         }
     }
-
-    public void selectDefaultInstruction(final ViewDefinitionState state, final Locale locale) {
-        // ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
-        // ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
-        // .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
-        // ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
-        // .lookupValue("mainWindow.orderDetailsForm.instruction");
-        // ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
-        // ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
-        // ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
-        // .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
-        //
-        // if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
-        // && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
-        // formValue.setEnabled(false);
-        // }
-        //
-        // if (formValue == null) {
-        // return;
-        // }
-        //
-        // if (defaultInstructionValue == null) {
-        // defaultInstructionValue = new ViewValue<SimpleValue>(new SimpleValue(""));
-        // defaultInstructionValue.setVisible(true);
-        // formValue.addComponent("defaultInstruction", defaultInstructionValue);
-        // }
-        // if (plannedQuantityValue == null) {
-        // plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
-        // plannedQuantityValue.setVisible(true);
-        // plannedQuantityValue.setEnabled(true);
-        // formValue.addComponent("plannedQuantity", plannedQuantityValue);
-        // }
-        //
-        // defaultInstructionValue.setEnabled(false);
-        // defaultInstructionValue.setValue(new SimpleValue(""));
-        // instructionValue.setEnabled(true);
-        //
-        // Long selectedProductId = null;
-        //
-        // if (productValue.getValue() != null && productValue.getValue().getSelectedEntityId() != null) {
-        // selectedProductId = productValue.getValue().getSelectedEntityId();
-        // }
-        //
-        // Entity selectedInstruction = null;
-        //
-        // if (selectedProductId != null && instructionValue.getValue() != null
-        // && instructionValue.getValue().getSelectedEntityId() != null
-        // && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-        // selectedInstruction = dataDefinitionService.get("products", "instruction").get(
-        // instructionValue.getValue().getSelectedEntityId());
-        // } else {
-        // instructionValue.getValue().setSelectedEntityId(null);
-        // instructionValue.getValue().setSelectedEntityCode("");
-        // instructionValue.getValue().setSelectedEntityValue("");
-        // }
-        //
-        // if (selectedProductId == null) {
-        // instructionValue.setEnabled(false);
-        // instructionValue.getValue().setSelectedEntityId(null);
-        // instructionValue.getValue().setSelectedEntityCode("");
-        // instructionValue.getValue().setSelectedEntityValue("");
-        // instructionValue.getValue().setRequired(false);
-        // plannedQuantityValue.getValue().setRequired(false);
-        // } else {
-        // plannedQuantityValue.getValue().setRequired(true);
-        // if (!hasAnyInstructions(selectedProductId)) {
-        // instructionValue.setEnabled(false);
-        // instructionValue.getValue().setRequired(false);
-        // instructionValue.getValue().setSelectedEntityId(null);
-        // instructionValue.getValue().setSelectedEntityCode("");
-        // instructionValue.getValue().setSelectedEntityValue("");
-        // } else {
-        // instructionValue.getValue().setRequired(true);
-        // Entity defaultInstructionEntity = getDefaultInstruction(selectedProductId);
-        // if (defaultInstructionEntity != null) {
-        // String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
-        // defaultInstructionValue.getValue().setValue(defaultInstructionName);
-        // if (selectedInstruction == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-        // selectDefaultInstruction(instructionValue, defaultInstructionEntity);
-        // }
-        // }
-        // }
-        // }
-    }
-
-    // private void selectDefaultInstruction(final ViewValue<LookupData> instructionValue, final Entity defaultInstructionEntity)
-    // {
-    // ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
-    // LookupComponent lookupInstruction = (LookupComponent) viewDefinition
-    // .lookupComponent("mainWindow.orderDetailsForm.instruction");
-    // instructionValue.getValue().setValue(defaultInstructionEntity.getId());
-    // instructionValue.getValue().setSelectedEntityCode(
-    // defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
-    // instructionValue.getValue().setSelectedEntityValue(
-    // ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
-    // }
-    //
-    // private Entity getDefaultInstruction(final Long selectedProductId) {
-    // DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
-    //
-    // SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-    // .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
-    // .restrictedWith(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
-    //
-    // SearchResult searchResult = searchCriteria.list();
-    //
-    // if (searchResult.getTotalNumberOfEntities() == 1) {
-    // return searchResult.getEntities().get(0);
-    // } else {
-    // return null;
-    // }
-    // }
 
     private boolean hasAnyTechnologies(final Long selectedProductId) {
         DataDefinition technologyDD = dataDefinitionService.get("products", "technology");
@@ -514,7 +309,6 @@ public final class ProductService {
     }
 
     public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {
-
         SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
                 .restrictedWith(Restrictions.eq(dataDefinition.getField("state"), "inProgress"))
                 .restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.EQ));
@@ -672,11 +466,6 @@ public final class ProductService {
     public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        GridComponentState gridState = (GridComponentState) state;
-        if (gridState.getSelectedEntityId() == null) {
-            gridState.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO mina i18n
-        }
-
         if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
             Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                     (Long) state.getFieldValue());
@@ -704,7 +493,7 @@ public final class ProductService {
 
     public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
-            viewDefinitionState.redirectTo("products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+            viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
         } else {
             if (state instanceof FormComponentState) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
@@ -717,17 +506,79 @@ public final class ProductService {
     }
 
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state, final Locale locale) {
-        FieldComponentState name = (FieldComponentState) state.getComponentByPath(("window.materialRequirement.name"));
-        FieldComponentState onlyComponents = (FieldComponentState) state
-                .getComponentByPath(("window.materialRequirement.onlyComponents"));
+        ComponentState name = state.getComponentByPath(("window.materialRequirement.name"));
+        ComponentState onlyComponents = state.getComponentByPath(("window.materialRequirement.onlyComponents"));
+        ComponentState materialRequirementComponents = state.getComponentByPath(("window.materialRequirementComponents"));
         FieldComponentState generated = (FieldComponentState) state.getComponentByPath(("window.materialRequirement.generated"));
-        FieldComponentState materialRequirementComponents = (FieldComponentState) state
-                .getComponentByPath(("window.materialRequirementComponents"));
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
             onlyComponents.setEnabled(false);
             materialRequirementComponents.setEnabled(false);
+        }
+    }
+
+    public void disableFormForExistingWorkPlan(final ViewDefinitionState state, final Locale locale) {
+        ComponentState name = state.getComponentByPath(("window.workPlan.name"));
+        ComponentState workPlanComponents = state.getComponentByPath(("window.workPlanComponents"));
+        FieldComponentState generated = (FieldComponentState) state.getComponentByPath(("window.workPlan.generated"));
+
+        if ("1".equals(generated.getFieldValue())) {
+            name.setEnabled(false);
+            workPlanComponents.setEnabled(false);
+        }
+    }
+
+    public void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (state instanceof FormComponentState) {
+            state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
+
+            if (workPlan == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
+                String message = translationService.translate("products.workPlan.window.workPlan.documentsWasGenerated",
+                        state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+            } else {
+                try {
+                    workPlanPdfService.generateDocument(workPlan, state.getLocale());
+                    // TODO krna
+                    // workPlanXlsService.generateDocument(workPlan, state.getLocale());
+                    state.performEvent(viewDefinitionState, "reset", new String[0]);
+                } catch (IOException e) {
+                    new IllegalStateException(e.getMessage(), e);
+                } catch (DocumentException e) {
+                    new IllegalStateException(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+
+        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+            Entity materialRequirement = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
+            if (materialRequirement == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+                state.addMessage(
+                        translationService.translate("products.workPlan.window.workPlan.documentsWasNotGenerated",
+                                state.getLocale()), MessageType.FAILURE);
+            } else {
+                viewDefinitionState.redirectTo("/products/workPlan." + args[0] + "?id=" + state.getFieldValue(), false);
+            }
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
         }
     }
 

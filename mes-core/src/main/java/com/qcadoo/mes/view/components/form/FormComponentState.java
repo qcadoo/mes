@@ -256,7 +256,9 @@ public final class FormComponentState extends AbstractContainerState {
         }
 
         private String convertFieldToString(final Object value, final String field) {
-            if (value != null) {
+            if (value instanceof String) {
+                return (String) value;
+            } else if (value != null) {
                 return getDataDefinition().getField(field).getType().toString(value);
             } else {
                 return "";
