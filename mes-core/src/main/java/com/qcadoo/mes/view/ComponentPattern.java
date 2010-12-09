@@ -3,7 +3,10 @@ package com.qcadoo.mes.view;
 import java.util.Locale;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+
 import com.qcadoo.mes.api.ViewDefinitionService;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 public interface ComponentPattern {
 
@@ -18,5 +21,7 @@ public interface ComponentPattern {
     String getName();
 
     String getPath();
+
+    void parse(Node componentNode, ViewDefinitionParser parser);
 
 }

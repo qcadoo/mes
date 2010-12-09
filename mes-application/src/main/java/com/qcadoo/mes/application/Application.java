@@ -34,7 +34,7 @@ import com.qcadoo.mes.internal.MenuService;
 import com.qcadoo.mes.internal.TranslationServiceImpl;
 import com.qcadoo.mes.model.internal.DataDefinitionParser;
 import com.qcadoo.mes.view.internal.ViewComponentsResolver;
-import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
 
 @Service
 public final class Application {
@@ -43,7 +43,7 @@ public final class Application {
     private DataDefinitionParser dataDefinitionParser;
 
     @Autowired
-    private ViewDefinitionParser viewDefinitionParser;
+    private ViewDefinitionParserImpl viewDefinitionParser;
 
     @Autowired
     private TranslationService translationService;

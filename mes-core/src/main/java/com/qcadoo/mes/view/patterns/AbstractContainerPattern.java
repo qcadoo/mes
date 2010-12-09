@@ -4,6 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
@@ -11,6 +14,7 @@ import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 public abstract class AbstractContainerPattern extends AbstractComponentPattern implements ContainerPattern {
 
@@ -76,4 +80,20 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
             ((AbstractComponentPattern) child).updateComponentStateListeners(viewDefinitionState);
         }
     }
+
+    @Override
+    public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        super.parse(componentNode, parser);
+
+        NodeList childNodes = componentNode.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+
+            if ("component".equals(child.getNodeName())) {
+                addChild(parser.parseComponent(child, this));
+            }
+        }
+    }
+
 }

@@ -533,7 +533,7 @@ public final class TestDataLoader {
         requirement.setGenerated(false);
         requirement.setDate(null);
         requirement.setOnlyComponents(RANDOM.nextBoolean());
-        requirement.setWorker("");
+        requirement.setWorker(null);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + requirement.getName() + ", date=" + requirement.getDate()

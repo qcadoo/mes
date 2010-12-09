@@ -63,7 +63,7 @@ public abstract class PdfDocumentService extends DocumentService {
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
                     getTranslationService().translate("products.report.in", locale), getFontsPath()));
-            document.setMargins(8, 80, 40, 100);
+            document.setMargins(40, 40, 60, 60);
             buildPdfMetadata(document, locale);
             writer.createXmpMetadata();
             document.open();
