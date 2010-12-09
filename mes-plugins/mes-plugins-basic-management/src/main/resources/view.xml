@@ -36,8 +36,8 @@
 				</group>			
 			</ribbon>				
 			<component type="grid" name="machinesGrid">
-				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="number" fields="number" link="true"/>
+				<option type="column" name="name" fields="name" link="true"/>
 				<option type="searchable" value="name,number" />
 				<option type="orderable" value="name,number" />
 				<option type="correspondingView" value="basic/machineDetailsView" />
