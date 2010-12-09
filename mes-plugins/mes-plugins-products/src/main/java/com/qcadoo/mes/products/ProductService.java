@@ -38,7 +38,6 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
@@ -68,9 +67,6 @@ public final class ProductService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ViewDefinitionService viewDefinitionService;
 
     @Autowired
     private SecurityService securityService;
@@ -234,6 +230,7 @@ public final class ProductService {
         } else {
             longValue = results.getEntities().get(0).getId() + 1;
         }
+
         String generatedNumber = String.format("%06d", longValue);
 
         number.setFieldValue(generatedNumber);

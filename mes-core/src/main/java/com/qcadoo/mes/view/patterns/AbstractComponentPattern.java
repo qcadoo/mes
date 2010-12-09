@@ -5,7 +5,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.springframework.util.StringUtils.hasText;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -107,7 +106,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     protected Map<String, Object> getJspOptions(final Locale locale) {
         // reimplement me if you want
-        return Collections.emptyMap();
+        return new HashMap<String, Object>();
     }
 
     protected void initializeComponent() throws JSONException {
@@ -150,12 +149,18 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         map.put("jspFilePath", getJspFilePath());
         map.put("jsFilePath", getJsFilePath());
         map.put("jsObjectName", getJsObjectName());
-        map.put("jspOptions", getJspOptions(locale));
         map.put("hasDescription", isHasDescription());
+
+        Map<String, Object> jspOptions = getJspOptions(locale);
+        jspOptions.put("defaultEnabled", isDefaultEnabled());
+        jspOptions.put("defaultVisible", isDefaultVisible());
+        map.put("jspOptions", jspOptions);
 
         try {
             JSONObject jsOptions = getJsOptions(locale);
             addListenersToJsOptions(jsOptions);
+            jsOptions.put("defaultEnabled", isDefaultEnabled());
+            jsOptions.put("defaultVisible", isDefaultVisible());
             map.put("jsOptions", jsOptions);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
