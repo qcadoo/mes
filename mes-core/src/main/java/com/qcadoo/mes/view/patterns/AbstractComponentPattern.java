@@ -118,6 +118,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         // implement me if you want
     }
 
+    protected ComponentPattern getParent() {
+        return parent;
+    }
+
     @Override
     public void registerViews(final ViewDefinitionService viewDefinitionService) {
         registerComponentViews(viewDefinitionService);
@@ -227,11 +231,11 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return true;
     }
 
-    public final void addFieldEntityIdChangeListener(final String field, final ComponentPattern listener) {
+    public void addFieldEntityIdChangeListener(final String field, final ComponentPattern listener) {
         fieldEntityIdChangeListeners.put(field, listener);
     }
 
-    public final void addScopeEntityIdChangeListener(final String field, final ComponentPattern listener) {
+    public void addScopeEntityIdChangeListener(final String field, final ComponentPattern listener) {
         scopeEntityIdChangeListeners.put(field, listener);
     }
 

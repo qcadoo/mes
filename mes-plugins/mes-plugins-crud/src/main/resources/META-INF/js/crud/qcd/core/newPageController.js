@@ -83,7 +83,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	function performEvent(parameters, completeFunction, actionsPerformer) {
 		var parametersJson = JSON.stringify(parameters);
 		QCDConnector.sendPost(parametersJson, function(response) {
-			
+			if (completeFunction) {
+				completeFunction();
+			}
 			if (response.redirect) {
 				if (response.redirect.openInNewWindow) {
 					window.open(response.redirect.url);
@@ -93,10 +95,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 				}
 			} else {
 				setValueData(response);
-			}
-			
-			if (completeFunction) {
-				completeFunction();
 			}
 			if (actionsPerformer && response.content.status == "ok") {
 				actionsPerformer.performNext();
