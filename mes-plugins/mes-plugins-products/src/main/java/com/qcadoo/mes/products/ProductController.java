@@ -43,4 +43,13 @@ public class ProductController {
         return mav;
     }
 
+    @RequestMapping(value = "products/workPlan.pdf", method = RequestMethod.GET)
+    public ModelAndView workPlanPdf(@RequestParam("id") final String id) {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("workPlanPdfView");
+        mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
+        return mav;
+    }
+
 }

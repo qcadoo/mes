@@ -59,6 +59,7 @@ public final class MaterialRequirementPdfView extends ProductsPdfView {
     protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
             throws DocumentException {
         super.prepareWriter(model, writer, request);
+        writer.setPageEvent(null);
     }
 
 }

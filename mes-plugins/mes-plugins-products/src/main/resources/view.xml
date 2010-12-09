@@ -434,7 +434,7 @@
 			</component>
 		</component>
 		<postInitializeHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />
-		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="selectDefaultInstruction" />
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="selectDefaultTechnology" />
 	</view>
 	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
 		<component type="window" name="window">
@@ -593,9 +593,9 @@
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlanPdf,pdf);" />
+						action="#{window.workPlans}.performCallFunction(printWorkPlan,pdf);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlanXls,xls);" />
+						action="#{window.workPlans}.performCallFunction(printWorkPlan,xls);" />
 				</group>
 			</ribbon>
 			<component type="form" name="workPlan">

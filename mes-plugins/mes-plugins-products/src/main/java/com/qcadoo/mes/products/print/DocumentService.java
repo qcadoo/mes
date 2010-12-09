@@ -38,7 +38,7 @@ public abstract class DocumentService {
     private String path;
 
     protected final String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_";// + D_F.format(date);
+        return path + fileName + "_" + D_F.format(date);
     }
 
     protected final void updateFileName(final Entity entity, final String fileName, final String entityName) {

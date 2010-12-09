@@ -26,6 +26,7 @@ package com.qcadoo.mes.products.print.pdf;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -63,7 +64,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         String documenTitle = getTranslationService().translate("products.materialRequirement.report.title", locale);
         String documentAuthor = getTranslationService().translate("products.materialRequirement.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
-        // PdfUtil.addDocumentHeader(document, entity, documenTitle, documentAuthor, (Date) entity.getField("date"), user);
+        PdfUtil.addDocumentHeader(document, entity, documenTitle, documentAuthor, (Date) entity.getField("date"), user);
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah", locale),
                 PdfUtil.getArialBold11Dark()));
