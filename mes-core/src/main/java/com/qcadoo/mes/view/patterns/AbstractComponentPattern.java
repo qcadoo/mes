@@ -151,6 +151,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         map.put("jsFilePath", getJsFilePath());
         map.put("jsObjectName", getJsObjectName());
         map.put("jspOptions", getJspOptions(locale));
+        map.put("defaultEnabled", isDefaultEnabled());
+        map.put("defaultVisible", isDefaultVisible());
         map.put("hasDescription", isHasDescription());
 
         try {
