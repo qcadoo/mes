@@ -302,7 +302,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	}
 	
 	this.goToPage = function(url, isPage) {
-		if (isPage == undefined) {
+		if (isPage == undefined || isPage == null) {
 			isPage = true;
 		}
 		//if(canClose()) {

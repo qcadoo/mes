@@ -67,8 +67,8 @@
 			});
 		});
 
-		window.goToPage = function(url, serializationObject) {
-			windowController.goToPage(url, serializationObject);
+		window.goToPage = function(url, serializationObject, isPage) {
+			windowController.goToPage(url, serializationObject, isPage);
 		}
 
 		window.goBack = function() {
