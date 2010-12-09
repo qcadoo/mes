@@ -62,6 +62,7 @@ import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirementComponent;
 import com.qcadoo.mes.beans.products.ProductsOperation;
+import com.qcadoo.mes.beans.products.ProductsOperationProductComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
@@ -113,12 +114,15 @@ public final class TestDataLoader {
     @Value("${loadTestDataLocale}")
     private String locale;
 
+    @Value("${addOtherUsers}")
+    private boolean addOtherUsers;
+
     public void loadTestData() {
         readDataFromXML("units", new String[] { "name" });
-        // TODO mina
-        // if (!SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
-        // readDataFromXML("users", USER_ATTRIBUTES);
-        // }
+
+        if (addOtherUsers) {
+            readDataFromXML("users", USER_ATTRIBUTES);
+        }
         readDataFromXML("dictionaries", DICTIONARY_ATTRIBUTES);
         readDataFromXML("products", PRODUCT_ATTRIBUTES);
         readDataFromXML("operations", OPERATION_ATTRIBUTES);
@@ -186,24 +190,24 @@ public final class TestDataLoader {
         }
     }
 
-    private void addMachine(Map<String, String> values) {
+    private void addMachine(final Map<String, String> values) {
         BasicMachine machine = new BasicMachine();
 
-        LOG.debug("id: " + values.get("id") + " name " + values.get("name") + " surname " + values.get("prod_line") + " post "
-                + values.get("description"));
+        LOG.debug("id: " + values.get("id") + " name " + values.get("name") + " prod_line " + values.get("prod_line")
+                + " description " + values.get("description"));
         machine.setNumber(values.get("id"));
         machine.setName(values.get("name"));
         machine.setProductionLine(Boolean.getBoolean(values.get("prod_line")));
         machine.setDescription(values.get("description"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + machine.getName() + ", name=" + machine.getName() + "}");
+            LOG.debug("Add test machine item {machine=" + machine.getName() + ", number=" + machine.getNumber() + "}");
         }
 
         sessionFactory.getCurrentSession().save(machine);
     }
 
-    private void addStaff(Map<String, String> values) {
+    private void addStaff(final Map<String, String> values) {
         BasicStaff staff = new BasicStaff();
 
         LOG.debug("id: " + values.get("id") + " name " + values.get("name") + " surname " + values.get("surname") + " post "
@@ -214,21 +218,21 @@ public final class TestDataLoader {
         staff.setPost(values.get("post"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + staff.getName() + ", name=" + staff.getName() + "}");
+            LOG.debug("Add test staff item {staff=" + staff.getName() + ", surName=" + staff.getSurname() + "}");
         }
 
         sessionFactory.getCurrentSession().save(staff);
 
     }
 
-    private void addOperations(Map<String, String> values) {
+    private void addOperations(final Map<String, String> values) {
         ProductsOperation operation = new ProductsOperation();
 
         operation.setName(values.get("name"));
         operation.setNumber(values.get("number"));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test dictionary item {dictionary=" + operation.getName() + ", name=" + operation.getName() + "}");
+            LOG.debug("Add test operation item {name=" + operation.getName() + ", number=" + operation.getNumber() + "}");
         }
 
         sessionFactory.getCurrentSession().save(operation);
@@ -485,16 +489,29 @@ public final class TestDataLoader {
             component.setTechnology(technology);
             component.setParent(parent);
             component.setOperation(getRandomOperation());
-            // component.setProduct(getRandomProduct());
-            // component.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
-            // TODO MADY refactor test data loader
-            /*
-             * if (LOG.isDebugEnabled()) { LOG.debug("Add test operation component {product=" + component.getProduct().getNumber()
-             * + ", technology=" + component.getTechnology().getNumber() + ", parent=" + (parent != null ? parent.getId() : 0) +
-             * ", quantity=" + component.getQuantity() + "}"); }
-             */
 
             sessionFactory.getCurrentSession().save(component);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Add test operation component {technology=" + component.getTechnology().getNumber() + ", parent="
+                        + (parent != null ? parent.getId() : 0) + ", operation=" + component.getOperation().getNumber() + "}");
+            }
+
+            for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
+                ProductsOperationProductComponent productComponent = new ProductsOperationProductComponent();
+                productComponent.setOperationComponent(component);
+                productComponent.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
+                productComponent.setProduct(getRandomProduct());
+                productComponent.setInParameter(RANDOM.nextBoolean());
+
+                sessionFactory.getCurrentSession().save(productComponent);
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Add test product component {product=" + productComponent.getProduct().getNumber() + ", operation="
+                            + productComponent.getOperationComponent().getOperation().getNumber() + ", in="
+                            + productComponent.isInParameter() + ", quantity=" + productComponent.getQuantity() + "}");
+                }
+            }
 
             if (RANDOM.nextDouble() > 0.2) {
                 addTechnologyOperationComponents(technology, component, depth - 1);
@@ -512,9 +529,9 @@ public final class TestDataLoader {
         ProductsMaterialRequirement requirement = new ProductsMaterialRequirement();
         requirement.setName(getRandomProduct().getName());
         requirement.setGenerated(false);
-        requirement.setDate(new Date(System.currentTimeMillis() - MILLIS_IN_DAY * RANDOM.nextInt(50)));
+        requirement.setDate(null);
         requirement.setOnlyComponents(RANDOM.nextBoolean());
-        requirement.setWorker(getRandomUser().getUserName());
+        requirement.setWorker("");
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + requirement.getName() + ", date=" + requirement.getDate()
