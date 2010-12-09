@@ -27,13 +27,13 @@ package com.qcadoo.mes.controller;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.SystemProperties;
 import com.qcadoo.mes.api.TranslationService;
 
 @Controller
@@ -41,6 +41,9 @@ public final class LoginController {
 
     @Autowired
     private TranslationService translationService;
+
+    @Value("${showUserAndPassword}")
+    private boolean showUserAndPassword;
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public ModelAndView getLoginPageView(@RequestParam(required = false) final String loginError,
@@ -69,10 +72,10 @@ public final class LoginController {
             mav.addObject("messageContent", "security.message.errorContent");
         }
 
-        if (SystemProperties.getEnviroment().equals(SystemProperties.env.AMAZON)) {
-            mav.addObject("isInAmazon", true);
+        if (showUserAndPassword) {
+            mav.addObject("showUserAndPassword", true);
         } else {
-            mav.addObject("isInAmazon", false);
+            mav.addObject("showUserAndPassword", false);
         }
 
         return mav;

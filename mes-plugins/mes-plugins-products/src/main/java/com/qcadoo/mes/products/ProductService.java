@@ -43,22 +43,22 @@ import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
+import com.qcadoo.mes.beans.products.ProductsWorkPlan;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
+import com.qcadoo.mes.products.print.pdf.WorkPlanPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
-import com.qcadoo.mes.utils.ExpressionUtil;
-import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.ViewValue;
-import com.qcadoo.mes.view.components.LookupComponent;
-import com.qcadoo.mes.view.components.LookupData;
-import com.qcadoo.mes.view.components.SimpleValue;
-import com.qcadoo.mes.view.containers.FormValue;
+import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ComponentState.MessageType;
+import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.FieldComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 
 @Service
 public final class ProductService {
@@ -77,6 +77,9 @@ public final class ProductService {
 
     @Autowired
     private MaterialRequirementXlsService materialRequirementXlsService;
+
+    @Autowired
+    private WorkPlanPdfService workPlanPdfService;
 
     @Autowired
     private TranslationService translationService;
@@ -135,55 +138,45 @@ public final class ProductService {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void disableFormForExistingMaterialRequirement(final ViewValue<Long> value, final String triggerComponentName,
-            final Entity entity, final Locale locale) throws IOException, DocumentException {
-
-        if (value.lookupValue("mainWindow.materialRequirementDetailsForm") == null
-                || value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue() == null
-                || ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId() == null) {
-
-            ViewValue<SimpleValue> onlyComponentsValue = (ViewValue<SimpleValue>) value
-                    .lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents");
-            if (onlyComponentsValue != null && onlyComponentsValue.getValue() != null) {
-                onlyComponentsValue.getValue().setValue("1");
-            }
-            return;
-        }
-
-        String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.materialRequirementDetailsForm.generated")
-                .getValue()).getValue().toString();
-
-        boolean isGenerated = true;
-        if ("0".equals(generatedStringValue)) {
-            isGenerated = false;
-        }
-
-        if (isGenerated) {
-            value.lookupValue("mainWindow.materialRequirementDetailsForm.name").setEnabled(false);
-            value.lookupValue("mainWindow.materialRequirementDetailsForm.onlyComponents").setEnabled(false);
-            value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
-
-            if ("mainWindow.materialRequirementDetailsForm".equals(triggerComponentName)) {
-                Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
-                        ((FormValue) value.lookupValue("mainWindow.materialRequirementDetailsForm").getValue()).getId());
-
-                if (materialRequirement.getField("fileName") == null
-                        || "".equals(materialRequirement.getField("fileName").toString().trim())) {
-                    materialRequirementPdfService.generateDocument(materialRequirement, locale);
-                    materialRequirementXlsService.generateDocument(materialRequirement, locale);
-                } else {
-                    // FIXME KRNA remove override
-                    value.addInfoMessage("override:"
-                            + translationService
-                                    .translate(
-                                            "products.materialRequirementDetailsView.mainWindow.materialRequirementDetailsForm.documentsWasGenerated",
-                                            locale));
-                }
-
-            }
-        }
-    }
+    // @SuppressWarnings("unchecked")
+    // public void disableFormForExistingWorkPlan(final ViewValue<Long> value, final String triggerComponentName,
+    // final Entity entity, final Locale locale) throws IOException, DocumentException {
+    // if (value.lookupValue("mainWindow.workPlanDetailsForm") == null
+    // || value.lookupValue("mainWindow.workPlanDetailsForm").getValue() == null
+    // || ((FormValue) value.lookupValue("mainWindow.workPlanDetailsForm").getValue()).getId() == null) {
+    //
+    // return;
+    // }
+    //
+    // String generatedStringValue = ((SimpleValue) value.lookupValue("mainWindow.workPlanDetailsForm.generated").getValue())
+    // .getValue().toString();
+    //
+    // boolean isGenerated = true;
+    // if ("0".equals(generatedStringValue)) {
+    // isGenerated = false;
+    // }
+    //
+    // if (isGenerated) {
+    // value.lookupValue("mainWindow.workPlanDetailsForm.name").setEnabled(false);
+    // value.lookupValue("mainWindow.ordersGrid").setEnabled(false);
+    //
+    // if ("mainWindow.workPlanDetailsForm".equals(triggerComponentName)) {
+    // Entity workPlan = dataDefinitionService.get("products", "workPlan").get(
+    // ((FormValue) value.lookupValue("mainWindow.workPlanDetailsForm").getValue()).getId());
+    //
+    // if (workPlan.getField("fileName") == null || "".equals(workPlan.getField("fileName").toString().trim())) {
+    // workPlanPdfService.generateDocument(workPlan, locale);
+    // // workPlanXlsService.generateDocument(workPlan, locale);
+    // } else {
+    // // FIXME KRNA remove override
+    // value.addInfoMessage("override:"
+    // + translationService.translate(
+    // "products.workPlanDetailsView.mainWindow.workPlanDetailsForm.documentsWasGenerated", locale));
+    // }
+    //
+    // }
+    // }
+    // }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
@@ -230,32 +223,47 @@ public final class ProductService {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void generateOrderNumber(final ViewValue<Long> value, final String triggerComponentName, final Locale locale) {
-        ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
-        ViewValue<SimpleValue> numberValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.number");
+    public boolean checkWorkPlanComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
+        // TODO masz why we get hibernate entities here?
+        ProductsOrder order = (ProductsOrder) entity.getField("order");
+        ProductsWorkPlan workPlan = (ProductsWorkPlan) entity.getField("workPlan");
 
-        if (formValue == null || numberValue == null) {
-            return;
+        if (workPlan == null || order == null) {
+            return false;
         }
 
-        if (formValue.getValue() != null && formValue.getValue().getId() != null) {
+        SearchResult searchResult = dataDefinition.find()
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("order"), order.getId()))
+                .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("workPlan"), workPlan.getId())).list();
+
+        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+            entity.addError(dataDefinition.getField("order"), "products.validate.global.error.workPlanDuplicated");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByPath("window.order");
+        FieldComponentState number = (FieldComponentState) state.getComponentByPath("window.order.number");
+
+        if (form.getEntityId() != null) {
             // form is already saved
             return;
         }
 
-        if (numberValue.getValue() != null && StringUtils.hasText((String) numberValue.getValue().getValue())) {
+        if (StringUtils.hasText((String) number.getFieldValue())) {
             // number is already choosen
             return;
         }
 
-        if (numberValue.getMessages().size() > 0) {
+        if (number.isHasError()) {
             // there is a validation message for that field
             return;
         }
 
-        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).orderBy(Order.desc("id"))
-                .list();
+        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).orderDescBy("id").list();
 
         long longValue = 0;
         if (results.getEntities().isEmpty()) {
@@ -263,112 +271,108 @@ public final class ProductService {
         } else {
             longValue = results.getEntities().get(0).getId() + 1;
         }
-        String number = String.format("%06d", longValue);
+        String generatedNumber = String.format("%06d", longValue);
 
-        if (numberValue.getValue() == null) {
-            numberValue.setValue(new SimpleValue(number));
-        } else {
-            numberValue.getValue().setValue(number);
-        }
+        number.setFieldValue(generatedNumber);
     }
 
-    @SuppressWarnings("unchecked")
-    public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
-            final Locale locale) {
-        generateOrderNumber(value, triggerComponentName, locale);
+    // @SuppressWarnings("unchecked")
+    // public void afterOrderDetailsLoad(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
+    // final Locale locale) {
+    // generateOrderNumber(value, triggerComponentName, locale);
+    //
+    // ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
+    // ViewValue<SimpleValue> defaultTechnologyValue = (ViewValue<SimpleValue>) value
+    // .lookupValue("mainWindow.orderDetailsForm.defaultTechnology");
+    // ViewValue<LookupData> technologyValue = (ViewValue<LookupData>) value
+    // .lookupValue("mainWindow.orderDetailsForm.technology");
+    // ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
+    // ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
+    // ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
+    // .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
+    //
+    // if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
+    // && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
+    // formValue.setEnabled(false);
+    // }
+    //
+    // if (formValue == null) {
+    // return;
+    // }
+    //
+    // if (defaultTechnologyValue == null) {
+    // defaultTechnologyValue = new ViewValue<SimpleValue>(new SimpleValue(""));
+    // defaultTechnologyValue.setVisible(true);
+    // formValue.addComponent("defaultTechnology", defaultTechnologyValue);
+    // }
+    // if (plannedQuantityValue == null) {
+    // plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
+    // plannedQuantityValue.setVisible(true);
+    // plannedQuantityValue.setEnabled(true);
+    // formValue.addComponent("plannedQuantity", plannedQuantityValue);
+    // }
+    //
+    // defaultTechnologyValue.setEnabled(false);
+    // defaultTechnologyValue.setValue(new SimpleValue(""));
+    // technologyValue.setEnabled(true);
+    //
+    // Long selectedProductId = null;
+    //
+    // if (productValue.getValue() != null && productValue.getValue().getSelectedEntityId() != null) {
+    // selectedProductId = productValue.getValue().getSelectedEntityId();
+    // }
+    //
+    // Entity selectedTechnology = null;
+    //
+    // if (selectedProductId != null && technologyValue.getValue() != null
+    // && technologyValue.getValue().getSelectedEntityId() != null
+    // && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+    // selectedTechnology = dataDefinitionService.get("products", "technology").get(
+    // technologyValue.getValue().getSelectedEntityId());
+    // } else {
+    // technologyValue.getValue().setSelectedEntityId(null);
+    // technologyValue.getValue().setSelectedEntityCode("");
+    // technologyValue.getValue().setSelectedEntityValue("");
+    // }
+    //
+    // if (selectedProductId == null) {
+    // technologyValue.setEnabled(false);
+    // technologyValue.getValue().setSelectedEntityId(null);
+    // technologyValue.getValue().setSelectedEntityCode("");
+    // technologyValue.getValue().setSelectedEntityValue("");
+    // technologyValue.getValue().setRequired(false);
+    // plannedQuantityValue.getValue().setRequired(false);
+    // } else {
+    // plannedQuantityValue.getValue().setRequired(true);
+    // if (!hasAnyTechnologies(selectedProductId)) {
+    // technologyValue.setEnabled(false);
+    // technologyValue.getValue().setRequired(false);
+    // technologyValue.getValue().setSelectedEntityId(null);
+    // technologyValue.getValue().setSelectedEntityCode("");
+    // technologyValue.getValue().setSelectedEntityValue("");
+    // } else {
+    // technologyValue.getValue().setRequired(true);
+    // Entity defaultTechnologyEntity = getDefaultTechnology(selectedProductId);
+    // if (defaultTechnologyEntity != null) {
+    // String defaultTechnologyName = defaultTechnologyEntity.getField("name").toString();
+    // defaultTechnologyValue.getValue().setValue(defaultTechnologyName);
+    // if (selectedTechnology == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+    // selectDefaultTechnology(technologyValue, defaultTechnologyEntity);
+    // }
+    // }
+    // }
+    // }
+    // }
 
-        ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
-        ViewValue<SimpleValue> defaultTechnologyValue = (ViewValue<SimpleValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.defaultTechnology");
-        ViewValue<LookupData> technologyValue = (ViewValue<LookupData>) value
-                .lookupValue("mainWindow.orderDetailsForm.technology");
-        ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
-        ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
-        ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
-                .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
-
-        if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
-                && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
-            formValue.setEnabled(false);
-        }
-
-        if (formValue == null) {
-            return;
-        }
-
-        if (defaultTechnologyValue == null) {
-            defaultTechnologyValue = new ViewValue<SimpleValue>(new SimpleValue(""));
-            defaultTechnologyValue.setVisible(true);
-            formValue.addComponent("defaultTechnology", defaultTechnologyValue);
-        }
-        if (plannedQuantityValue == null) {
-            plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
-            plannedQuantityValue.setVisible(true);
-            plannedQuantityValue.setEnabled(true);
-            formValue.addComponent("plannedQuantity", plannedQuantityValue);
-        }
-
-        defaultTechnologyValue.setEnabled(false);
-        defaultTechnologyValue.setValue(new SimpleValue(""));
-        technologyValue.setEnabled(true);
-
-        Long selectedProductId = null;
-
-        if (productValue.getValue() != null && productValue.getValue().getSelectedEntityId() != null) {
-            selectedProductId = productValue.getValue().getSelectedEntityId();
-        }
-
-        Entity selectedTechnology = null;
-
-        if (selectedProductId != null && technologyValue.getValue() != null
-                && technologyValue.getValue().getSelectedEntityId() != null
-                && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-            selectedTechnology = dataDefinitionService.get("products", "technology").get(
-                    technologyValue.getValue().getSelectedEntityId());
-        } else {
-            technologyValue.getValue().setSelectedEntityId(null);
-            technologyValue.getValue().setSelectedEntityCode("");
-            technologyValue.getValue().setSelectedEntityValue("");
-        }
-
-        if (selectedProductId == null) {
-            technologyValue.setEnabled(false);
-            technologyValue.getValue().setSelectedEntityId(null);
-            technologyValue.getValue().setSelectedEntityCode("");
-            technologyValue.getValue().setSelectedEntityValue("");
-            technologyValue.getValue().setRequired(false);
-            plannedQuantityValue.getValue().setRequired(false);
-        } else {
-            plannedQuantityValue.getValue().setRequired(true);
-            if (!hasAnyTechnologies(selectedProductId)) {
-                technologyValue.setEnabled(false);
-                technologyValue.getValue().setRequired(false);
-                technologyValue.getValue().setSelectedEntityId(null);
-                technologyValue.getValue().setSelectedEntityCode("");
-                technologyValue.getValue().setSelectedEntityValue("");
-            } else {
-                technologyValue.getValue().setRequired(true);
-                Entity defaultTechnologyEntity = getDefaultTechnology(selectedProductId);
-                if (defaultTechnologyEntity != null) {
-                    String defaultTechnologyName = defaultTechnologyEntity.getField("name").toString();
-                    defaultTechnologyValue.getValue().setValue(defaultTechnologyName);
-                    if (selectedTechnology == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
-                        selectDefaultTechnology(technologyValue, defaultTechnologyEntity);
-                    }
-                }
-            }
-        }
-    }
-
-    private void selectDefaultTechnology(final ViewValue<LookupData> technologyValue, final Entity defaultTechnologyEntity) {
-        ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
-        LookupComponent lookupTechnology = (LookupComponent) viewDefinition
-                .lookupComponent("mainWindow.orderDetailsForm.technology");
-        technologyValue.getValue().setValue(defaultTechnologyEntity.getId());
-        technologyValue.getValue().setSelectedEntityCode(defaultTechnologyEntity.getStringField(lookupTechnology.getFieldCode()));
-        technologyValue.getValue().setSelectedEntityValue(
-                ExpressionUtil.getValue(defaultTechnologyEntity, lookupTechnology.getExpression()));
-    }
+    // private void selectDefaultTechnology(final ViewValue<LookupData> technologyValue, final Entity defaultTechnologyEntity) {
+    // ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
+    // LookupComponent lookupTechnology = (LookupComponent) viewDefinition
+    // .lookupComponent("mainWindow.orderDetailsForm.technology");
+    // technologyValue.getValue().setValue(defaultTechnologyEntity.getId());
+    // technologyValue.getValue().setSelectedEntityCode(defaultTechnologyEntity.getStringField(lookupTechnology.getFieldCode()));
+    // technologyValue.getValue().setSelectedEntityValue(
+    // ExpressionUtil.getValue(defaultTechnologyEntity, lookupTechnology.getExpression()));
+    // }
 
     private Entity getDefaultTechnology(final Long selectedProductId) {
         DataDefinition technologyDD = dataDefinitionService.get("products", "technology");
@@ -385,6 +389,118 @@ public final class ProductService {
             return null;
         }
     }
+
+    public void selectDefaultInstruction(final ViewDefinitionState state, final Locale locale) {
+        // ViewValue<LookupData> productValue = (ViewValue<LookupData>) value.lookupValue("mainWindow.orderDetailsForm.product");
+        // ViewValue<SimpleValue> defaultInstructionValue = (ViewValue<SimpleValue>) value
+        // .lookupValue("mainWindow.orderDetailsForm.defaultInstruction");
+        // ViewValue<LookupData> instructionValue = (ViewValue<LookupData>) value
+        // .lookupValue("mainWindow.orderDetailsForm.instruction");
+        // ViewValue<SimpleValue> stateValue = (ViewValue<SimpleValue>) value.lookupValue("mainWindow.orderDetailsForm.state");
+        // ViewValue<FormValue> formValue = (ViewValue<FormValue>) value.lookupValue("mainWindow.orderDetailsForm");
+        // ViewValue<SimpleValue> plannedQuantityValue = (ViewValue<SimpleValue>) value
+        // .lookupValue("mainWindow.orderDetailsForm.plannedQuantity");
+        //
+        // if (stateValue != null && stateValue.getValue() != null && stateValue.getValue().getValue() != null
+        // && stateValue.getValue().getValue().equals("done") && entity.isValid()) {
+        // formValue.setEnabled(false);
+        // }
+        //
+        // if (formValue == null) {
+        // return;
+        // }
+        //
+        // if (defaultInstructionValue == null) {
+        // defaultInstructionValue = new ViewValue<SimpleValue>(new SimpleValue(""));
+        // defaultInstructionValue.setVisible(true);
+        // formValue.addComponent("defaultInstruction", defaultInstructionValue);
+        // }
+        // if (plannedQuantityValue == null) {
+        // plannedQuantityValue = new ViewValue<SimpleValue>(new SimpleValue(null));
+        // plannedQuantityValue.setVisible(true);
+        // plannedQuantityValue.setEnabled(true);
+        // formValue.addComponent("plannedQuantity", plannedQuantityValue);
+        // }
+        //
+        // defaultInstructionValue.setEnabled(false);
+        // defaultInstructionValue.setValue(new SimpleValue(""));
+        // instructionValue.setEnabled(true);
+        //
+        // Long selectedProductId = null;
+        //
+        // if (productValue.getValue() != null && productValue.getValue().getSelectedEntityId() != null) {
+        // selectedProductId = productValue.getValue().getSelectedEntityId();
+        // }
+        //
+        // Entity selectedInstruction = null;
+        //
+        // if (selectedProductId != null && instructionValue.getValue() != null
+        // && instructionValue.getValue().getSelectedEntityId() != null
+        // && !"mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+        // selectedInstruction = dataDefinitionService.get("products", "instruction").get(
+        // instructionValue.getValue().getSelectedEntityId());
+        // } else {
+        // instructionValue.getValue().setSelectedEntityId(null);
+        // instructionValue.getValue().setSelectedEntityCode("");
+        // instructionValue.getValue().setSelectedEntityValue("");
+        // }
+        //
+        // if (selectedProductId == null) {
+        // instructionValue.setEnabled(false);
+        // instructionValue.getValue().setSelectedEntityId(null);
+        // instructionValue.getValue().setSelectedEntityCode("");
+        // instructionValue.getValue().setSelectedEntityValue("");
+        // instructionValue.getValue().setRequired(false);
+        // plannedQuantityValue.getValue().setRequired(false);
+        // } else {
+        // plannedQuantityValue.getValue().setRequired(true);
+        // if (!hasAnyInstructions(selectedProductId)) {
+        // instructionValue.setEnabled(false);
+        // instructionValue.getValue().setRequired(false);
+        // instructionValue.getValue().setSelectedEntityId(null);
+        // instructionValue.getValue().setSelectedEntityCode("");
+        // instructionValue.getValue().setSelectedEntityValue("");
+        // } else {
+        // instructionValue.getValue().setRequired(true);
+        // Entity defaultInstructionEntity = getDefaultInstruction(selectedProductId);
+        // if (defaultInstructionEntity != null) {
+        // String defaultInstructionName = defaultInstructionEntity.getField("name").toString();
+        // defaultInstructionValue.getValue().setValue(defaultInstructionName);
+        // if (selectedInstruction == null && "mainWindow.orderDetailsForm.product".equals(triggerComponentName)) {
+        // selectDefaultInstruction(instructionValue, defaultInstructionEntity);
+        // }
+        // }
+        // }
+        // }
+    }
+
+    // private void selectDefaultInstruction(final ViewValue<LookupData> instructionValue, final Entity defaultInstructionEntity)
+    // {
+    // ViewDefinition viewDefinition = viewDefinitionService.get("products", "orderDetailsView");
+    // LookupComponent lookupInstruction = (LookupComponent) viewDefinition
+    // .lookupComponent("mainWindow.orderDetailsForm.instruction");
+    // instructionValue.getValue().setValue(defaultInstructionEntity.getId());
+    // instructionValue.getValue().setSelectedEntityCode(
+    // defaultInstructionEntity.getStringField(lookupInstruction.getFieldCode()));
+    // instructionValue.getValue().setSelectedEntityValue(
+    // ExpressionUtil.getValue(defaultInstructionEntity, lookupInstruction.getExpression()));
+    // }
+    //
+    // private Entity getDefaultInstruction(final Long selectedProductId) {
+    // DataDefinition instructionDD = dataDefinitionService.get("products", "instruction");
+    //
+    // SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
+    // .restrictedWith(Restrictions.eq(instructionDD.getField("master"), true))
+    // .restrictedWith(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
+    //
+    // SearchResult searchResult = searchCriteria.list();
+    //
+    // if (searchResult.getTotalNumberOfEntities() == 1) {
+    // return searchResult.getEntities().get(0);
+    // } else {
+    // return null;
+    // }
+    // }
 
     private boolean hasAnyTechnologies(final Long selectedProductId) {
         DataDefinition technologyDD = dataDefinitionService.get("products", "technology");
@@ -495,7 +611,7 @@ public final class ProductService {
         }
     }
 
-    public void fillMaterialRequirementDateAndWorker(final DataDefinition dataDefinition, final Entity entity) {
+    public void fillDateAndWorkerOnGenerate(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("fileName") != null && !"".equals(entity.getField("fileName").toString().trim())) {
             entity.setField("generated", true);
         }
@@ -521,6 +637,97 @@ public final class ProductService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (state instanceof FormComponentState) {
+            state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                    (Long) state.getFieldValue());
+
+            if (materialRequirement == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+                String message = translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.documentsWasGenerated", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+            } else {
+                try {
+                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
+                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
+                    state.performEvent(viewDefinitionState, "reset", new String[0]);
+                } catch (IOException e) {
+                    new IllegalStateException(e.getMessage(), e);
+                } catch (DocumentException e) {
+                    new IllegalStateException(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+
+        GridComponentState gridState = (GridComponentState) state;
+        if (gridState.getSelectedEntityId() == null) {
+            gridState.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO mina i18n
+        }
+
+        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                    (Long) state.getFieldValue());
+            if (materialRequirement == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+                state.addMessage(translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.documentsWasNotGenerated", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                viewDefinitionState
+                        .redirectTo("/products/materialRequirement." + args[0] + "?id=" + state.getFieldValue(), false);
+            }
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
+
+    public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+            viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
+
+    public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state, final Locale locale) {
+        FieldComponentState name = (FieldComponentState) state.getComponentByPath(("window.materialRequirement.name"));
+        FieldComponentState onlyComponents = (FieldComponentState) state
+                .getComponentByPath(("window.materialRequirement.onlyComponents"));
+        FieldComponentState generated = (FieldComponentState) state.getComponentByPath(("window.materialRequirement.generated"));
+        FieldComponentState materialRequirementComponents = (FieldComponentState) state
+                .getComponentByPath(("window.materialRequirementComponents"));
+
+        if ("1".equals(generated.getFieldValue())) {
+            name.setEnabled(false);
+            onlyComponents.setEnabled(false);
+            materialRequirementComponents.setEnabled(false);
         }
     }
 

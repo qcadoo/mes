@@ -46,12 +46,15 @@ import com.lowagie.text.Element;
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.mes.api.Entity;
@@ -303,5 +306,17 @@ public final class PdfUtil {
             }
         }
         return locale;
+    }
+
+    public static void copyPdf(final Document document, final PdfWriter writer, final String existingWorkbookFileName)
+            throws IOException, DocumentException {
+        PdfReader reader = new PdfReader(existingWorkbookFileName + PdfUtil.PDF_EXTENSION);
+        int n = reader.getNumberOfPages();
+        PdfImportedPage page;
+        for (int i = 1; i <= n; i++) {
+            page = writer.getImportedPage(reader, i);
+            Image instance = Image.getInstance(page);
+            document.add(instance);
+        }
     }
 }

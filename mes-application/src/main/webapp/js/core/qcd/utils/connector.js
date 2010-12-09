@@ -60,7 +60,7 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 				}
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
 					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.mainController.showMessage("error", message);
+					QCDConnector.showErrorMessage(message);
 					if (errorFunction) {
 						errorFunction(message);
 					}
@@ -75,7 +75,7 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 					}
 				}
 			} else {
-				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
+				QCDConnector.showErrorMessage("connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);
 				}
@@ -84,11 +84,11 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 	});
 }
 
-QCDConnector.sendPost = function(type, parameters, responseFunction, errorFunction) {
+QCDConnector.sendPost = function(parameters, responseFunction, errorFunction) {
 	if (!QCDConnector.windowName) {
 		throw("no window name defined in conector");
 	}
-	var url = QCDConnector.windowName+"/"+type+".html";
+	var url = QCDConnector.windowName+".html";
 	
 	$.ajax({
 		url: url,
@@ -106,7 +106,7 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 				//alert(responseText);
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
 					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.mainController.showMessage("error", message);
+					QCDConnector.showErrorMessage(message);
 					if (errorFunction) {
 						errorFunction(message);
 					}
@@ -121,11 +121,18 @@ QCDConnector.sendPost = function(type, parameters, responseFunction, errorFuncti
 					}
 				}
 			} else {
-				QCDConnector.mainController.showMessage("error", "connection error: "+XMLHttpRequest.statusText);
+				QCDConnector.showErrorMessage("connection error: "+XMLHttpRequest.statusText);
 				if (errorFunction) {
 					errorFunction(XMLHttpRequest.statusText);
 				}
 			}
 		}
+	});
+}
+
+QCDConnector.showErrorMessage = function(messageContent) {
+	QCDConnector.mainController.showMessage({
+		type: "failure",
+		content: messageContent
 	});
 }

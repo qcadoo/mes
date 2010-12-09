@@ -135,6 +135,8 @@ public final class ValidationService {
                 }
             } else if (value instanceof Long) {
                 referencedEntityId = (Long) value;
+            } else if (value instanceof Integer) {
+                referencedEntityId = Long.valueOf((Integer) value);
             } else if (value instanceof Entity) {
                 referencedEntityId = ((Entity) value).getId();
             } else {

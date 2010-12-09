@@ -26,7 +26,7 @@
 -->
 
 <qcd:views plugin="basic" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="machineGridView" model="machine" menuable="true">
+	<view name="machineGridView" model="machine" menuAccessible="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
@@ -38,17 +38,14 @@
 			<component type="grid" name="machinesGrid">
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="number" fields="number" link="true"/>
-				<option type="header" value="false" />
 				<option type="searchable" value="name,number" />
 				<option type="orderable" value="name,number" />
-				<option type="paginable" value="true" />
-				<option type="multiselect" value="false" />
 				<option type="correspondingView" value="basic/machineDetailsView" />
+				<option type="correspondingComponent" value="mainWindow.machineDetailsForm" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
@@ -80,7 +77,7 @@
 			</component>
 		</component>
 	</view>
-	<view name="staffGridView" model="staff" menuable="true">
+	<view name="staffGridView" model="staff" menuAccessible="true">
 		<component type="window" name="mainWindow">
 			<ribbon>
 				<group name="actions">
@@ -94,17 +91,14 @@
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="surname" fields="surname" link="true"/>
 				<option type="column" name="post" fields="post" link="true"/>
-				<option type="header" value="false" />
 				<option type="searchable" value="name,number,surname,post" />
 				<option type="orderable" value="name,number,surname,post" />
-				<option type="paginable" value="true" />
-				<option type="multiselect" value="false" />
 				<option type="correspondingView" value="basic/staffDetailsView" />
+				<option type="correspondingComponent" value="mainWindow.staffDetailsForm" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
-				<option type="fullScreen" value="true" />
+				<option type="fullscreen" value="true" />
 			</component>
-			<option type="backButton" value="false" />
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>

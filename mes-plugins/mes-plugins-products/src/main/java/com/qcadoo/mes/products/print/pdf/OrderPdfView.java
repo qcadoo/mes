@@ -35,6 +35,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
@@ -48,7 +49,7 @@ public final class OrderPdfView extends ProductsPdfView {
     private SecurityService securityService;
 
     @Override
-    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale)
+    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("products.order.report.order", locale);
         String documentAuthor = getTranslationService().translate("products.order.report.author", locale);
@@ -56,6 +57,8 @@ public final class OrderPdfView extends ProductsPdfView {
         PdfUtil.addDocumentHeader(document, entity, documentTitle, documentAuthor, new Date(), user);
         addMainTable(document, entity, locale);
         addDetailTable(document, entity, locale);
+        String text = getTranslationService().translate("products.report.endOfReport", locale);
+        PdfUtil.addEndOfDocument(document, writer, text);
         return "Order" + entity.getField("number");
     }
 

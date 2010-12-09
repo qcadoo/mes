@@ -33,25 +33,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <tiles:useAttribute name="component" />
-<tiles:useAttribute name="componentFullName"/>
-<tiles:useAttribute name="componentFullNameWithDots"/>
-<tiles:useAttribute name="viewName" ignore="true"/>
-<tiles:useAttribute name="pluginIdentifier" ignore="true"/>
 
 <div style="display: none;">
 	<div class="calendar" id="calendar"></div>
 </div>
 
-
 <tiles:insertTemplate template="formComponent.jsp">
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="calendar" />
-	<tiles:putAttribute name="componentFullName" value="${componentFullName}" />
-	<tiles:putAttribute name="componentFullNameWithDots" value="${componentFullNameWithDots}" />
-	<tiles:putAttribute name="viewName" value="${viewName}" />
-	<tiles:putAttribute name="pluginIdentifier" value="${pluginIdentifier}" />
 	<tiles:putAttribute name="componentBody">
-		<input type="text" id="${componentFullName}_input" name="fields[${component.name}]" />
-		<div id="${componentFullName}_calendar" class="calendar"></div>
+			<input id="${component['path']}_input" type="text" />
+			<div id="${component['path']}_calendar" class="calendar"></div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

@@ -55,15 +55,27 @@ public final class BooleanType implements FieldType {
         if (value instanceof Boolean) {
             return value;
         }
-        return "1".equals(String.valueOf(value));
+        return parseStringToBoolean(String.valueOf(value));
+    }
+
+    private Boolean parseStringToBoolean(final String value) {
+        return "1".equals(value) || "true".equals(value) || "yes".equals(value);
+    }
+
+    private String parseBooleanToString(final Boolean value) {
+        if (value) {
+            return "1";
+        } else {
+            return "0";
+        }
     }
 
     @Override
     public String toString(final Object value) {
-        if ((Boolean) value) {
-            return "1";
+        if (value instanceof Boolean) {
+            return parseBooleanToString((Boolean) value);
         } else {
-            return "0";
+            return parseBooleanToString(parseStringToBoolean(String.valueOf(value)));
         }
     }
 

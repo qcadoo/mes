@@ -65,13 +65,10 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         df = (DecimalFormat) DecimalFormat.getInstance(locale);
         DefaultEntity entity = (DefaultEntity) model.get("entity");
-        String fileName = addContent(document, entity, locale);
-        String text = translationService.translate("products.report.endOfReport", locale);
-        PdfUtil.addEndOfDocument(document, writer, text);
+        String fileName = addContent(document, entity, locale, writer);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);
         writer.addJavaScript("this.print(false);", false);
     }
@@ -99,7 +96,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         PdfUtil.addMetaData(document);
     }
 
-    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale)
+    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
         document.add(new Paragraph("", PdfUtil.getArialRegular9Dark()));
         return "document";

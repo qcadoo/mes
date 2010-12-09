@@ -193,7 +193,7 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" />
-		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillMaterialRequirementDateAndWorker" />
+		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillDateAndWorkerOnGenerate" />
 	</model>
 	<model name="materialRequirementComponent">	
 		<belongsTo name="materialRequirement" model="materialRequirement" lookupField="name" lazy="false">
@@ -203,5 +203,26 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkMaterialRequirementComponentUniqueness" />
+	</model>
+	<model name="workPlan">	
+		<string name="name">
+			<validatesPresence />
+			<validatesLength max="255"/>
+		</string>
+		<datetime name="date" readonly="true" />
+		<string name="worker" readonly="true" />
+		<boolean name="generated" />
+		<string name="fileName" />
+		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" />
+		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillDateAndWorkerOnGenerate" />
+	</model>
+	<model name="workPlanComponent">	
+		<belongsTo name="workPlan" model="workPlan" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="order" model="order" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkWorkPlanComponentUniqueness" />
 	</model>
 </qcd:models>

@@ -24,46 +24,174 @@
 
 package com.qcadoo.mes.view.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
-import com.qcadoo.mes.view.Component;
-import com.qcadoo.mes.view.RootComponent;
+import com.qcadoo.mes.view.ComponentPattern;
+import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.ViewValue;
+import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 public final class ViewDefinitionImpl implements ViewDefinition {
 
-    private final String pluginIdentifier;
-
     private final String name;
 
-    private HookDefinition viewHook;
+    private final String pluginIdentifier;
 
-    private RootComponent root;
+    private final DataDefinition dataDefinition;
 
-    private boolean menuable = false;
+    private final boolean menuAccessible;
 
-    public ViewDefinitionImpl(final String pluginIdentifier, final String name) {
+    private final List<HookDefinition> postInitializeHooks = new ArrayList<HookDefinition>();
+
+    private final List<HookDefinition> preInitializeHooks = new ArrayList<HookDefinition>();
+
+    private final List<HookDefinition> preRenderHooks = new ArrayList<HookDefinition>();
+
+    private final Set<String> jsFilePaths = new HashSet<String>();
+
+    private final Map<String, ComponentPattern> patterns = new LinkedHashMap<String, ComponentPattern>();
+
+    private final TranslationService translationService;
+
+    public ViewDefinitionImpl(final String name, final String pluginIdentifier, final DataDefinition dataDefinition,
+            final boolean menuAccessible, final TranslationService translationService) {
         this.name = name;
+        this.dataDefinition = dataDefinition;
         this.pluginIdentifier = pluginIdentifier;
+        this.menuAccessible = menuAccessible;
+        this.translationService = translationService;
+    }
+
+    public void initialize() {
+        List<ComponentPattern> list = getPatternsAsList(patterns.values());
+
+        int lastNotInitialized = 0;
+
+        while (true) {
+            int notInitialized = 0;
+
+            for (ComponentPattern pattern : list) {
+                if (!pattern.initialize()) {
+                    notInitialized++;
+                }
+            }
+
+            if (notInitialized == 0) {
+                break;
+            }
+
+            if (notInitialized == lastNotInitialized) {
+                throw new IllegalStateException("There is cyclic dependency between components");
+            }
+
+            lastNotInitialized = notInitialized;
+        }
     }
 
     @Override
-    public String getPluginIdentifier() {
-        return pluginIdentifier;
+    public Map<String, Object> prepareView(final Locale locale) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> childrenModels = new HashMap<String, Object>();
+
+        for (ComponentPattern componentPattern : patterns.values()) {
+            childrenModels.put(componentPattern.getName(), componentPattern.prepareView(locale));
+        }
+
+        model.put(JSON_COMPONENTS, childrenModels);
+        model.put(JSON_JS_FILE_PATHS, getJsFilePaths());
+
+        model.put("hasDataDefinition", getDataDefinition() != null);
+
+        try {
+            JSONObject json = new JSONObject();
+            JSONObject translations = new JSONObject();
+            translations.put("backWithChangesConfirmation",
+                    translationService.translate("commons.backWithChangesConfirmation", locale));
+            json.put("translations", translations);
+            model.put("jsOptions", json);
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        return model;
     }
 
-    public void setRoot(final RootComponent root) {
-        this.root = root;
+    @Override
+    public JSONObject performEvent(final JSONObject object, final Locale locale) throws JSONException {
+        ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
+
+        for (ComponentPattern cp : patterns.values()) {
+            viewDefinitionState.addChild(cp.createComponentState());
+        }
+
+        callHooks(preInitializeHooks, viewDefinitionState, locale);
+
+        viewDefinitionState.initialize(object, locale);
+
+        for (ComponentPattern cp : patterns.values()) {
+            ((AbstractComponentPattern) cp).updateComponentStateListeners(viewDefinitionState);
+        }
+
+        callHooks(postInitializeHooks, viewDefinitionState, locale);
+
+        JSONObject eventJson = object.getJSONObject(JSON_EVENT);
+        String eventName = eventJson.getString(JSON_EVENT_NAME);
+        String eventComponent = eventJson.has(JSON_EVENT_COMPONENT) ? eventJson.getString(JSON_EVENT_COMPONENT) : null;
+        JSONArray eventArgsArray = eventJson.has(JSON_EVENT_ARGS) ? eventJson.getJSONArray(JSON_EVENT_ARGS) : new JSONArray();
+        String[] eventArgs = new String[eventArgsArray.length()];
+        for (int i = 0; i < eventArgsArray.length(); i++) {
+            eventArgs[i] = eventArgsArray.getString(i);
+        }
+
+        viewDefinitionState.performEvent(eventComponent, eventName, eventArgs);
+
+        callHooks(preRenderHooks, viewDefinitionState, locale);
+
+        return viewDefinitionState.render();
+    }
+
+    public void registerViews(final ViewDefinitionService viewDefinitionService) {
+        for (ComponentPattern cp : patterns.values()) {
+            cp.registerViews(viewDefinitionService);
+        }
+    }
+
+    public void addComponentPattern(final ComponentPattern componentPattern) {
+        patterns.put(componentPattern.getName(), componentPattern);
+    }
+
+    @Override
+    public ComponentPattern getComponentByPath(final String path) {
+        String[] pathParts = path.split("\\.");
+        ComponentPattern componentPattern = patterns.get(pathParts[0]);
+        if (componentPattern == null) {
+            return null;
+        }
+        for (int i = 1; i < pathParts.length; i++) {
+            ContainerPattern container = (ContainerPattern) componentPattern;
+            componentPattern = container.getChild(pathParts[i]);
+            if (componentPattern == null) {
+                return null;
+            }
+        }
+        return componentPattern;
     }
 
     @Override
@@ -71,96 +199,57 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         return name;
     }
 
-    public void setViewHook(final HookDefinition viewHook) {
-        this.viewHook = viewHook;
+    @Override
+    public String getPluginIdentifier() {
+        return pluginIdentifier;
     }
 
     @Override
-    public ViewValue<Long> castValue(final Map<String, Entity> selectedEntities, final JSONObject viewObject) {
-        try {
-            return wrapIntoViewValue(root.castValue(selectedEntities,
-                    viewObject != null ? viewObject.getJSONObject(root.getName()) : null));
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private void cleanSelectedEntities(final Map<String, Entity> selectedEntities, final Set<String> pathsToUpdate) {
-        if (selectedEntities != null) {
-            for (String pathToUpdate : pathsToUpdate) {
-                selectedEntities.remove(pathToUpdate);
-            }
-        }
-    }
-
-    @Override
-    public ViewValue<Long> getValue(final Entity entity, final Map<String, Entity> selectedEntities,
-            final ViewValue<Long> globalViewValue, final String triggerComponentName, final boolean saveOrDelete,
-            final Locale locale) {
-
-        Set<String> pathsToUpdate = null;
-
-        if (triggerComponentName != null) {
-            pathsToUpdate = root.lookupListeners(triggerComponentName);
-            cleanSelectedEntities(selectedEntities, pathsToUpdate);
-            if (saveOrDelete || pathsToUpdate.isEmpty()) {
-                pathsToUpdate.add(triggerComponentName);
-            }
-        } else {
-            pathsToUpdate = new HashSet<String>();
-        }
-
-        ViewValue<Long> value = wrapIntoViewValue(root.getValue(entity, selectedEntities,
-                globalViewValue != null ? globalViewValue.getComponent(root.getName()) : null, pathsToUpdate, locale));
-        if (value != null) {
-            callOnViewHook(value, triggerComponentName, entity, locale);
-        }
-        if (entity != null) {
-            value.setValue(entity.getId());
-        }
-        return value;
-    }
-
-    private void callOnViewHook(final ViewValue<Long> value, final String triggerComponentName, final Entity entity,
-            final Locale locale) {
-        if (viewHook != null) {
-            viewHook.callWithViewValue(value, triggerComponentName, entity, locale);
-        }
-    }
-
-    @Override
-    public void updateTranslations(final Map<String, String> translationsMap, final Locale locale) {
-        root.updateTranslations(translationsMap, locale);
-    }
-
-    private ViewValue<Long> wrapIntoViewValue(final ViewValue<?> viewValue) {
-        ViewValue<Long> value = new ViewValue<Long>();
-        value.addComponent(root.getName(), viewValue);
-        return value;
+    public boolean isMenuAccessible() {
+        return menuAccessible;
     }
 
     @Override
     public DataDefinition getDataDefinition() {
-        return root.getDataDefinition();
+        return dataDefinition;
+    };
+
+    public Set<String> getJsFilePaths() {
+        return jsFilePaths;
     }
 
     @Override
-    public Component<?> lookupComponent(final String path) {
-        return root.lookupComponent(path);
+    public void addJsFilePath(final String jsFilePath) {
+        jsFilePaths.add(jsFilePath);
     }
 
-    @Override
-    public RootComponent getRoot() {
-        return root;
+    public void addPostInitializeHook(final HookDefinition hookDefinition) {
+        postInitializeHooks.add(hookDefinition);
     }
 
-    @Override
-    public boolean isMenuable() {
-        return menuable;
+    public void addPreRenderHook(final HookDefinition hookDefinition) {
+        preRenderHooks.add(hookDefinition);
     }
 
-    public void setMenuable(final boolean menuable) {
-        this.menuable = menuable;
+    public void addPreInitializeHook(final HookDefinition hookDefinition) {
+        preInitializeHooks.add(hookDefinition);
+    }
+
+    private void callHooks(final List<HookDefinition> hooks, final ViewDefinitionState viewDefinitionState, final Locale locale) {
+        for (HookDefinition hook : hooks) {
+            hook.callWithViewState(viewDefinitionState, locale);
+        }
+    }
+
+    private List<ComponentPattern> getPatternsAsList(final Collection<ComponentPattern> patterns) {
+        List<ComponentPattern> list = new ArrayList<ComponentPattern>();
+        list.addAll(patterns);
+        for (ComponentPattern pattern : patterns) {
+            if (pattern instanceof ContainerPattern) {
+                list.addAll(getPatternsAsList(((ContainerPattern) pattern).getChildren().values()));
+            }
+        }
+        return list;
     }
 
 }

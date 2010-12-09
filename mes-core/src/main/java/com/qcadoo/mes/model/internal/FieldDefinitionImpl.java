@@ -200,4 +200,9 @@ public final class FieldDefinitionImpl implements FieldDefinition {
                 .append(readOnly, other.readOnly).append(requiredOnCreate, other.requiredOnCreate).isEquals();
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }
