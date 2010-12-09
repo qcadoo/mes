@@ -254,7 +254,7 @@ public final class GridComponentState extends AbstractComponentState {
         }
 
         private void reload() {
-            if (isEnabled() && (belongsToFieldDefinition == null || belongsToEntityId != null)) {
+            if (belongsToFieldDefinition == null || belongsToEntityId != null) {
                 SearchCriteriaBuilder criteria = getDataDefinition().find();
                 if (belongsToFieldDefinition != null) {
                     criteria.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
