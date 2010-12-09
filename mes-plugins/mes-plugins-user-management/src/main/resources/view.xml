@@ -117,8 +117,10 @@
 					<option type="fieldCode" value="name" />
 				</component>
 				<component type="input" name="email" field="email" />
-				<component type="input" name="firstName" field="firstName" />
-				<component type="input" name="lastName" field="lastName" />
+				<component type="borderLayout" name="borderLayout">
+					<component type="input" name="firstName" field="firstName" />
+					<component type="input" name="lastName" field="lastName" />
+				</component>
 				<component type="textarea" name="description" field="description" />
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
