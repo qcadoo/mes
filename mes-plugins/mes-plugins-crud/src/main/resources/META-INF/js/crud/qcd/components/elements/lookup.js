@@ -57,9 +57,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var listeners = this.options.listeners;
 	var hasListeners = (this.options.listeners.length > 0) ? true : false;
 	
-	QCD.info(this.elementPath);
-	QCD.info(this.options);
-	
 	var _this = this;
 	
 	var constructor = function(_this) {
@@ -96,9 +93,9 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			currentData.selectedEntityCode = $.trim(inputElement.val());
 		}
 		//currentData.selectedEntityCode = $.trim(inputElement.val());
-		if (baseValue && (currentData.selectedEntityCode != baseValue.selectedEntityCode)) {
-			QCD.info(elementPath + " clear");
-		}
+		//if (baseValue && (currentData.selectedEntityCode != baseValue.selectedEntityCode)) {
+		//	QCD.info(elementPath + " clear");
+		//}
 		return currentData;
 	}
 	
@@ -113,7 +110,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	this.performUpdateState = function() {
-		baseValue = currentData;
+		baseValue = new Object();
+		baseValue.value = currentData.value;
 	}
 	
 	this.isComponentChanged = function() {
