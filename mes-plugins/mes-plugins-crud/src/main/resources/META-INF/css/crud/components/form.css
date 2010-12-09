@@ -30,8 +30,9 @@
 
 .component_container_form > .component {
 	padding: 0;
-	width: 31.5%;
-	margin-bottom: 19px;
+	//width: 31.5%;
+	width: 100%;
+	//margin-bottom: 19px;
 	vertical-align: middle;
 	display: block;
 	text-align: left;

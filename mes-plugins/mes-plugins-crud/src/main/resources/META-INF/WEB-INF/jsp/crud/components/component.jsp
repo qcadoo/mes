@@ -34,7 +34,12 @@
 
 <tiles:useAttribute name="component" />
 
-<div id="${component['path']}" class="component" style="height: 100%">
+<c:set var="isVisibleStyle" value=""/>
+<c:if test="${component.defaultVisible}">
+	<c:set var="isVisibleStyle" value=" display: none;"/>
+</c:if>
+
+<div id="${component['path']}" class="component" style="height: 100%; ${isVisibleStyle}">
 	<div class="element_js_object" style="display: none">${component['jsObjectName']}</div>
 	<div class="element_options" style="display: none">${component['jsOptions']}</div>
 	

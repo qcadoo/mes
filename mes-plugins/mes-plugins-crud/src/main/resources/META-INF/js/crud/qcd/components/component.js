@@ -52,6 +52,8 @@ QCD.components.Component = function(_element, _mainController) {
 			_this.options = jsonParse(optionsElement.html());
 		}
 		optionsElement.remove();
+		isVisible = _this.options.defaultVisible;
+		isEnabled = _this.options.defaultEnabled;
 	}
 	
 	this.getValue = function() {

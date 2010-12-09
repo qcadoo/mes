@@ -1,0 +1,15 @@
+.gridLayoutTable {
+	width: 100%;
+	border: 0;
+	padding: 0;
+}
+
+.gridLayoutTable > tbody > tr {
+	background: green;
+}
+
+.gridLayoutTable > tbody > tr > td {
+	height: 40px;	
+	border: solid black 1px;
+	text-align: center;
+}

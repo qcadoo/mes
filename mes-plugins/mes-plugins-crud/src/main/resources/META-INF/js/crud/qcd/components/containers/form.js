@@ -125,12 +125,13 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
-		width = _width - 40;
-		if(width > 1380) {
-			width = 1380;
-		} 
-		element.width(width);
+//		width = _width - 40;
+//		if(width > 1380) {
+//			width = 1380;
+//		} 
+//		element.width(width);
 		for (var i in this.components) {
+			QCD.info(this.components[i])
 			this.components[i].updateSize(width, height);
 		}
 	}

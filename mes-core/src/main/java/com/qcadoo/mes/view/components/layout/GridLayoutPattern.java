@@ -1,5 +1,8 @@
 package com.qcadoo.mes.view.components.layout;
 
+import java.util.Locale;
+import java.util.Map;
+
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
@@ -17,10 +20,40 @@ public class GridLayoutPattern extends AbstractContainerPattern {
 
     private static final String JS_PATH = "/js/crud/qcd/components/containers/layout/gridLayout.js";
 
-    private GridLayoutCell[][] cells = new GridLayoutCell[44][];
+    private GridLayoutCell[][] cells;
 
     public GridLayoutPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
+
+        cells = new GridLayoutCell[10][];
+        for (int row = 0; row < cells.length; row++) {
+            cells[row] = new GridLayoutCell[3];
+            for (int col = 0; col < cells[row].length; col++) {
+                cells[row][col] = new GridLayoutCell();
+            }
+        }
+
+        cells[2][2].setRowspan(2);
+        cells[3][2].setAvailable(false);
+
+        cells[1][0].setColspan(3);
+        cells[1][1].setAvailable(false);
+        cells[1][2].setAvailable(false);
+
+        cells[5][0].setColspan(2);
+        cells[5][0].setRowspan(3);
+        cells[5][1].setAvailable(false);
+        cells[6][0].setAvailable(false);
+        cells[6][1].setAvailable(false);
+        cells[7][0].setAvailable(false);
+        cells[7][1].setAvailable(false);
+    }
+
+    @Override
+    public final Map<String, Object> prepareView(final Locale locale) {
+        Map<String, Object> model = super.prepareView(locale);
+        model.put("cells", cells);
+        return model;
     }
 
     public final void addFieldEntityIdChangeListener(final String field, final ComponentPattern listener) {
@@ -51,50 +84,6 @@ public class GridLayoutPattern extends AbstractContainerPattern {
     @Override
     public String getJsObjectName() {
         return JS_OBJECT;
-    }
-
-}
-
-class GridLayoutCell {
-
-    private ComponentPattern component;
-
-    private int rowspan = 1;
-
-    private int colspan = 1;
-
-    private boolean isAvalible = true;
-
-    public ComponentPattern getComponent() {
-        return component;
-    }
-
-    public void setComponent(ComponentPattern component) {
-        this.component = component;
-    }
-
-    public int getRowspan() {
-        return rowspan;
-    }
-
-    public void setRowspan(int rowspan) {
-        this.rowspan = rowspan;
-    }
-
-    public int getColspan() {
-        return colspan;
-    }
-
-    public void setColspan(int colspan) {
-        this.colspan = colspan;
-    }
-
-    public boolean isAvalible() {
-        return isAvalible;
-    }
-
-    public void setAvalible(boolean isAvalible) {
-        this.isAvalible = isAvalible;
     }
 
 }

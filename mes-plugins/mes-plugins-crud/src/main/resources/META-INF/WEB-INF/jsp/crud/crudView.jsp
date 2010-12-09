@@ -44,6 +44,7 @@
 	<link rel="stylesheet" href="../../css/crud/components/window.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/grid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/form.css" type="text/css" />
+	<link rel="stylesheet" href="../../css/crud/components/layout.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/tree.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/elementHeader.css" type="text/css" />
 	
@@ -68,6 +69,7 @@
 	<script type="text/javascript" src="../../js/crud/qcd/core/newPageController.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/component.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/container.js"></script>
+	<script type="text/javascript" src="../../js/crud/qcd/components/containers/layout/layout.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/containers/window.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/containers/form.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/utils/elementHeaderUtils.js"></script>
