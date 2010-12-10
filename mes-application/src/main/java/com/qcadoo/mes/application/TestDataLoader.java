@@ -396,13 +396,10 @@ public final class TestDataLoader {
 
         order.setProduct(product);
 
-        order.setDefaultTechnology(getDefaultTechnologyForProduct(product));
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test order {id=" + order.getId() + ", name=" + order.getName() + ", number=" + order.getNumber()
                     + ", product=" + (order.getProduct() != null ? order.getProduct().getNumber() : null) + ", technology="
-                    + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", defaultTechnology="
-                    + (order.getDefaultTechnology() != null ? order.getDefaultTechnology().getNumber() : null) + ", dateFrom="
+                    + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", dateFrom="
                     + order.getDateFrom() + ", dateTo=" + order.getDateTo() + ", effectiveDateFrom="
                     + order.getEffectiveDateFrom() + ", effectiveDateTo=" + order.getEffectiveDateTo() + ", doneQuantity="
                     + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", machine="
