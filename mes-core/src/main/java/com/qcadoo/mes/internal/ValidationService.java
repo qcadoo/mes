@@ -39,6 +39,7 @@ import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
 import com.qcadoo.mes.model.validators.EntityValidator;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
 @Service
@@ -50,9 +51,24 @@ public final class ValidationService {
     public void validateGenericEntity(final InternalDataDefinition dataDefinition, final Entity genericEntity,
             final Entity existingGenericEntity) {
 
+        System.out.println(" #1 ---> " + genericEntity);
+
         copyReadOnlyAndMissingFields(dataDefinition, genericEntity, existingGenericEntity);
 
+        System.out.println(" #2.1 ---> " + genericEntity);
+        System.out.println(" #2.2 ---> " + existingGenericEntity);
+
         parseAndValidateEntity(dataDefinition, genericEntity);
+
+        System.out.println(" #3 ---> " + genericEntity);
+
+        for (ErrorMessage error : genericEntity.getGlobalErrors()) {
+            System.out.println(" #4 ---> " + error.getMessage());
+        }
+
+        for (Map.Entry<String, ErrorMessage> error : genericEntity.getErrors().entrySet()) {
+            System.out.println(" #5 ---> " + error.getKey() + " > " + error.getValue().getMessage());
+        }
 
         if (genericEntity.getId() != null) {
             dataDefinition.callUpdateHook(genericEntity);

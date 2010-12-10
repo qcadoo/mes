@@ -22,29 +22,56 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.viewold.containers;
+package com.qcadoo.mes.view.components.tree;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * View value of Form component.
+ * Node of ViewValue of TreeComponent.
  * 
- * @see com.qcadoo.mes.viewold.containers.FormComponent
+ * @see com.qcadoo.mes.viewold.components.TreeComponent
  * @see com.qcadoo.mes.viewold.ViewValue
  */
-public final class FormValue {
+public final class TreeNode {
 
     private Long id;
 
-    private String header;
+    private String label;
 
-    private String headerEntityIdentifier;
+    private List<TreeNode> children;
 
-    private boolean valid = true;
+    public TreeNode() {
 
-    public FormValue() {
     }
 
-    public FormValue(final Long id) {
+    public TreeNode(final Long id, final String label) {
+        this();
         this.id = id;
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(final String label) {
+        this.label = label;
+    }
+
+    public List<TreeNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(final List<TreeNode> children) {
+        this.children = children;
+    }
+
+    public void addChild(final TreeNode child) {
+        if (children == null) {
+            children = new LinkedList<TreeNode>();
+        }
+        children.add(child);
     }
 
     public Long getId() {
@@ -53,38 +80,6 @@ public final class FormValue {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(final String header) {
-        this.header = header;
-    }
-
-    public void setHeaderEntityIdentifier(final String headerEntityIdentifier) {
-        this.headerEntityIdentifier = headerEntityIdentifier;
-    }
-
-    public String getHeaderEntityIdentifier() {
-        return headerEntityIdentifier;
-    }
-
-    public void setValid(final boolean valid) {
-        this.valid = valid;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public String toString() {
-        if (id == null) {
-            return ""; // FIXME masz toString cannot return null
-        }
-        return id.toString();
     }
 
 }

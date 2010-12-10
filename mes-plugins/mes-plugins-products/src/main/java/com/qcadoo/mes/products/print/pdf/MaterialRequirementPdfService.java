@@ -47,7 +47,7 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.products.print.ReportDataService;
+import com.qcadoo.mes.products.print.ProductReportService;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 @Service
@@ -57,7 +57,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private ReportDataService reportDataService;
+    private ProductReportService reportDataService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -113,9 +113,47 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         document.add(table);
     }
 
+    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
+            throws DocumentException {
+        List<Entity> orders = entity.getHasManyField("orders");
+        PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader);
+        for (Entity component : orders) {
+            Entity order = (Entity) component.getField("order");
+            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+            Entity product = (Entity) order.getField("product");
+            if (product != null) {
+                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+            } else {
+                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            }
+            if (product != null) {
+                Object unit = product.getField("unit");
+                if (unit != null) {
+                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
+                } else {
+                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+                }
+            } else {
+                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+            }
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity.stripTrailingZeros();
+            table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+        }
+        document.add(table);
+    }
+
     @Override
     protected String getFileName() {
         return "MaterialRequirement";
+    }
+
+    @Override
+    protected String getSuffix() {
+        return "";
     }
 
 }

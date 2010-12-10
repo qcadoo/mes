@@ -372,6 +372,9 @@ public final class TestDataLoader {
         order.setDateTo(new Date(endDate));
         order.setDoneQuantity(values.get("quantity_completed").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
                 : new BigDecimal(values.get("quantity_completed")));
+        if (order.getDoneQuantity().intValue() == 0) {
+            order.setDoneQuantity(null);
+        }
         order.setEffectiveDateFrom(new Date(effectiveStartDate));
         order.setEffectiveDateTo(new Date(effectiveEndDate));
         order.setEndWorker(getRandomUser().getUserName());
@@ -381,6 +384,9 @@ public final class TestDataLoader {
         order.setNumber(values.get("order_nr"));
         order.setPlannedQuantity(values.get("quantity_scheduled").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
                 : new BigDecimal(values.get("quantity_scheduled")));
+        if (order.getPlannedQuantity().intValue() == 0) {
+            order.setPlannedQuantity(null);
+        }
         order.setStartWorker(getRandomUser().getUserName());
 
         String state = (RANDOM.nextDouble() > 0.4) ? "done" : "pending";
@@ -396,13 +402,10 @@ public final class TestDataLoader {
 
         order.setProduct(product);
 
-        order.setDefaultTechnology(getDefaultTechnologyForProduct(product));
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test order {id=" + order.getId() + ", name=" + order.getName() + ", number=" + order.getNumber()
                     + ", product=" + (order.getProduct() != null ? order.getProduct().getNumber() : null) + ", technology="
-                    + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", defaultTechnology="
-                    + (order.getDefaultTechnology() != null ? order.getDefaultTechnology().getNumber() : null) + ", dateFrom="
+                    + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", dateFrom="
                     + order.getDateFrom() + ", dateTo=" + order.getDateTo() + ", effectiveDateFrom="
                     + order.getEffectiveDateFrom() + ", effectiveDateTo=" + order.getEffectiveDateTo() + ", doneQuantity="
                     + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", machine="

@@ -78,7 +78,7 @@ public final class PluginManagementController {
     public ModelAndView getUpdatePageView(@RequestParam(required = false, value = "entityId") final Long pluginId,
             final Locale locale) {
         if (pluginId == null) {
-            return getDownloadPageView("download.html", pluginId, locale);
+            return getDownloadPageView("download.html", null, locale);
         } else {
             return getDownloadPageView("update.html", pluginId, locale);
         }

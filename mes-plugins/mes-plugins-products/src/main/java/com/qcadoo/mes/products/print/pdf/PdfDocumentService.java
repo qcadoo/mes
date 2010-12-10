@@ -26,10 +26,8 @@ package com.qcadoo.mes.products.print.pdf;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import org.slf4j.Logger;
@@ -37,10 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
 import com.lowagie.text.PageSize;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.DocumentService;
@@ -54,11 +49,12 @@ public abstract class PdfDocumentService extends DocumentService {
     protected DecimalFormat df;
 
     @Override
-    public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
+    public void generateDocument(final Entity entity, final Locale locale, final boolean save) throws IOException,
+            DocumentException {
         Document document = new Document(PageSize.A4);
         try {
             df = (DecimalFormat) DecimalFormat.getInstance(locale);
-            String fileName = getFullFileName((Date) entity.getField("date"), getFileName()) + PdfUtil.PDF_EXTENSION;
+            String fileName = getFullFileName((Date) entity.getField("date"), getFileName(), getSuffix()) + PdfUtil.PDF_EXTENSION;
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
@@ -82,38 +78,5 @@ public abstract class PdfDocumentService extends DocumentService {
 
     protected abstract void buildPdfContent(final Document document, final Entity entity, final Locale locale)
             throws DocumentException;
-
-    protected void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
-            throws DocumentException {
-        List<Entity> orders = entity.getHasManyField("orders");
-        PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader);
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
-            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            Entity product = (Entity) order.getField("product");
-            if (product != null) {
-                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-            }
-            if (product != null) {
-                Object unit = product.getField("unit");
-                if (unit != null) {
-                    table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
-                } else {
-                    table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-                }
-            } else {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-            }
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity.stripTrailingZeros();
-            table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-        }
-        document.add(table);
-    }
 
 }

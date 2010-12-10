@@ -22,33 +22,33 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.viewold.components;
+package com.qcadoo.mes.products.print.pdf;
 
-import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.viewold.ContainerComponent;
+import java.io.IOException;
+import java.util.Locale;
 
-/**
- * Represents password input element.
- */
-public final class PasswordInputComponent extends SimpleFieldComponent {
+import org.springframework.beans.factory.annotation.Autowired;
 
-    public PasswordInputComponent(final String name, final ContainerComponent<?> parent, final String fieldName,
-            final String dataSource, final TranslationService translationService) {
-        super(name, parent, fieldName, dataSource, translationService);
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.products.print.ProductReportService;
+
+public final class WorkPlanForMachinePdfView extends ProductsPdfView {
+
+    @Autowired
+    private ProductReportService productReportService;
+
+    @Override
+    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
+            throws DocumentException, IOException {
+        return productReportService.copyPdfContent(document, entity, writer, "ForMachine");
     }
 
     @Override
-    public String getType() {
-        return "passwordInput";
+    protected void addTitle(final Document document, final Locale locale) {
+        document.addTitle(getTranslationService().translate("products.workPlan.report.title", locale));
     }
 
-    @Override
-    public String convertToViewValue(final Object value) {
-        return "";
-    }
-
-    @Override
-    public Object convertToDatabaseValue(final String value) {
-        return value;
-    }
 }

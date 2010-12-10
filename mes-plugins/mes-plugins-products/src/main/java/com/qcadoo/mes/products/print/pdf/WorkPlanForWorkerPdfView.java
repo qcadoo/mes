@@ -22,46 +22,33 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.viewold.components;
+package com.qcadoo.mes.products.print.pdf;
 
-/**
- * View value of SimpleFieldComponent.
- * 
- * @see com.qcadoo.mes.viewold.components.SimpleFieldComponent
- * @see com.qcadoo.mes.viewold.ViewValue
- */
-public class SimpleValue {
+import java.io.IOException;
+import java.util.Locale;
 
-    private Object value;
+import org.springframework.beans.factory.annotation.Autowired;
 
-    private boolean required;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.products.print.ProductReportService;
 
-    public SimpleValue() {
-    }
+public final class WorkPlanForWorkerPdfView extends ProductsPdfView {
 
-    public SimpleValue(final Object value) {
-        this.value = value;
-    }
+    @Autowired
+    private ProductReportService productReportService;
 
-    public final boolean isRequired() {
-        return required;
-    }
-
-    public final void setRequired(final boolean required) {
-        this.required = required;
-    }
-
-    public final Object getValue() {
-        return value;
-    }
-
-    public final void setValue(final Object value) {
-        this.value = value;
+    @Override
+    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
+            throws DocumentException, IOException {
+        return productReportService.copyPdfContent(document, entity, writer, "ForWorker");
     }
 
     @Override
-    public final String toString() {
-        return String.valueOf(value);
+    protected void addTitle(final Document document, final Locale locale) {
+        document.addTitle(getTranslationService().translate("products.workPlan.report.title", locale));
     }
 
 }

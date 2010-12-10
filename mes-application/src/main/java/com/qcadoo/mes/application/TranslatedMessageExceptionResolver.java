@@ -50,55 +50,71 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     private final Map<String, String> messageTranslations = new HashMap<String, String>();
 
-    private final Map<Exception, String> exceptionTranslations = new HashMap<Exception, String>();
+    private final Map<Class<?>, String> exceptionTranslations = new HashMap<Class<?>, String>();
 
     @Autowired
     private ErrorController errorController;
 
     @PostConstruct
     public void init() {
-        exceptionTranslations.put(new DataIntegrityViolationException(""), "dataIntegrityViolationException.objectInUse");
+        exceptionTranslations.put(DataIntegrityViolationException.class, "dataIntegrityViolationException.objectInUse");
         messageTranslations.put("Entity.+ cannot be found", "illegalStateException.entityNotFound");
         messageTranslations.put("PrintError:DocumentNotGenerated", "illegalStateException.printErrorDocumentNotGenerated");
     }
 
     @Override
     protected ModelAndView doResolveException(final HttpServletRequest request, final HttpServletResponse response,
-            final Object handler, final Exception ex) {
-        ModelAndView mv = super.doResolveException(request, response, handler, ex);
+            final Object handler, final Exception exception) {
+        ModelAndView mv = super.doResolveException(request, response, handler, exception);
+
         if (mv != null) {
 
             String codeStr = mv.getViewName();
             int code = Integer.parseInt(codeStr);
-            boolean found = false;
 
-            String exceptionMessage = ex.getMessage();
-            String predefinedExceptionMessage = null;
-            for (Map.Entry<Exception, String> translation : exceptionTranslations.entrySet()) {
-                if (translation.getKey().getClass().isInstance(ex)) {
-                    predefinedExceptionMessage = translation.getValue();
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                for (Map.Entry<String, String> translation : messageTranslations.entrySet()) {
-                    if (exceptionMessage.matches(translation.getKey())) {
-                        predefinedExceptionMessage = translation.getValue();
-                        break;
-                    }
-                }
-            }
+            String customExceptionMessage = getCustomExceptionMessage(exception);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Adding exception message to view: " + predefinedExceptionMessage);
+                LOG.debug("Adding exception message to view: " + customExceptionMessage);
             }
 
-            return errorController.getAccessDeniedPageView(code, ex, predefinedExceptionMessage,
+            return errorController.getAccessDeniedPageView(code, exception, customExceptionMessage,
                     retrieveLocaleFromRequestCookie(request));
         }
+
         return mv;
+    }
+
+    private String getCustomExceptionMessage(final Throwable throwable) {
+        String exceptionMessage = getCustomExceptionMessageForClass(throwable);
+
+        if (exceptionMessage != null) {
+            return exceptionMessage;
+        }
+
+        exceptionMessage = throwable.getMessage();
+
+        for (Map.Entry<String, String> translation : messageTranslations.entrySet()) {
+            if (exceptionMessage.matches(translation.getKey())) {
+                return translation.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    private String getCustomExceptionMessageForClass(final Throwable throwable) {
+        for (Map.Entry<Class<?>, String> translation : exceptionTranslations.entrySet()) {
+            if (translation.getKey().isInstance(throwable)) {
+                return translation.getValue();
+            }
+        }
+
+        if (throwable.getCause() != null) {
+            return getCustomExceptionMessageForClass(throwable.getCause());
+        } else {
+            return null;
+        }
     }
 
     private Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {

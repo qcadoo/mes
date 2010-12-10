@@ -82,9 +82,6 @@ public class ProductsOrder {
     private BigDecimal plannedQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsTechnology defaultTechnology;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTechnology technology;
 
     @Column(scale = 3, precision = 10)
@@ -96,6 +93,9 @@ public class ProductsOrder {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<ProductsMaterialRequirementComponent> materialRequirements;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    private List<ProductsWorkPlanComponent> workPlans;
 
     public Long getId() {
         return id;
@@ -185,14 +185,6 @@ public class ProductsOrder {
         this.plannedQuantity = plannedQuantity;
     }
 
-    public ProductsTechnology getDefaultTechnology() {
-        return defaultTechnology;
-    }
-
-    public void setDefaultTechnology(final ProductsTechnology defaultTechnology) {
-        this.defaultTechnology = defaultTechnology;
-    }
-
     public ProductsTechnology getTechnology() {
         return technology;
     }
@@ -231,6 +223,14 @@ public class ProductsOrder {
 
     public void setMaterialRequirements(final List<ProductsMaterialRequirementComponent> materialRequirements) {
         this.materialRequirements = materialRequirements;
+    }
+
+    public List<ProductsWorkPlanComponent> getWorkPlans() {
+        return workPlans;
+    }
+
+    public void setWorkPlans(final List<ProductsWorkPlanComponent> workPlans) {
+        this.workPlans = workPlans;
     }
 
 }

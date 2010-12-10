@@ -52,9 +52,11 @@ import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
-import com.qcadoo.mes.products.print.pdf.WorkPlanPdfService;
+import com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfService;
+import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
-import com.qcadoo.mes.products.print.xls.WorkPlanXlsService;
+import com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsService;
+import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -79,10 +81,16 @@ public final class ProductService {
     private MaterialRequirementXlsService materialRequirementXlsService;
 
     @Autowired
-    private WorkPlanPdfService workPlanPdfService;
+    private WorkPlanForWorkerPdfService workPlanForWorkerPdfService;
 
     @Autowired
-    private WorkPlanXlsService workPlanXlsService;
+    private WorkPlanForMachinePdfService workPlanForMachinePdfService;
+
+    @Autowired
+    private WorkPlanForWorkerXlsService workPlanForWorkerXlsService;
+
+    @Autowired
+    private WorkPlanForMachineXlsService workPlanForMachineXlsService;
 
     @Autowired
     private TranslationService translationService;
@@ -251,16 +259,47 @@ public final class ProductService {
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (!(state instanceof LookupComponentState)) {
+            return;
+        }
+
         LookupComponentState product = (LookupComponentState) state;
         LookupComponentState technology = (LookupComponentState) viewDefinitionState
                 .getComponentByPath("window.order.technology");
         FieldComponentState defaultTechnology = (FieldComponentState) viewDefinitionState
                 .getComponentByPath("window.order.defaultTechnology");
-        FieldComponentState plannedQuantity = (FieldComponentState) viewDefinitionState
-                .getComponentByPath("window.order.plannedQuantity");
 
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
+
+        if (product.getFieldValue() != null) {
+            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
+
+            if (defaultTechnologyEntity != null) {
+                technology.setFieldValue(defaultTechnologyEntity.getId());
+            }
+        }
+    }
+
+    public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {
+        LookupComponentState product = (LookupComponentState) state.getComponentByPath("window.order.product");
+        FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByPath("window.order.defaultTechnology");
+
+        if (product.getFieldValue() != null) {
+            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
+
+            if (defaultTechnologyEntity != null) {
+                String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
+                        locale);
+                defaultTechnology.setFieldValue(defaultTechnologyValue);
+            }
+        }
+    }
+
+    public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state, final Locale locale) {
+        LookupComponentState product = (LookupComponentState) state.getComponentByPath("window.order.product");
+        LookupComponentState technology = (LookupComponentState) state.getComponentByPath("window.order.technology");
+        FieldComponentState plannedQuantity = (FieldComponentState) state.getComponentByPath("window.order.plannedQuantity");
 
         if (product.getFieldValue() == null || !hasAnyTechnologies(product.getFieldValue())) {
             technology.setEnabled(false);
@@ -272,15 +311,6 @@ public final class ProductService {
             technology.setRequired(true);
             plannedQuantity.setEnabled(true);
             plannedQuantity.setRequired(true);
-
-            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
-
-            if (defaultTechnologyEntity != null) {
-                String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
-                        state.getLocale());
-                defaultTechnology.setFieldValue(defaultTechnologyValue);
-                technology.setFieldValue(defaultTechnologyEntity.getId());
-            }
         }
     }
 
@@ -459,13 +489,13 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
-                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
+                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale(), false);
+                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale(), true);
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 } catch (DocumentException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 }
             }
         }
@@ -569,13 +599,15 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    workPlanPdfService.generateDocument(workPlan, state.getLocale());
-                    workPlanXlsService.generateDocument(workPlan, state.getLocale());
+                    workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale(), false);
+                    workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale(), false);
+                    workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale(), false);
+                    workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale(), true);
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 } catch (DocumentException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 }
             }
         }
@@ -584,16 +616,17 @@ public final class ProductService {
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
-            Entity materialRequirement = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
-            if (materialRequirement == null) {
+            Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
+            if (workPlan == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
-            } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+            } else if (!StringUtils.hasText(workPlan.getStringField("fileName"))) {
                 state.addMessage(
                         translationService.translate("products.workPlan.window.workPlan.documentsWasNotGenerated",
                                 state.getLocale()), MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/products/workPlan." + args[0] + "?id=" + state.getFieldValue(), false);
+                viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
+                        false);
             }
         } else {
             if (state instanceof FormComponentState) {

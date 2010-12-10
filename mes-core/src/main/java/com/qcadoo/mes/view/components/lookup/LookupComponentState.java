@@ -132,19 +132,6 @@ public final class LookupComponentState extends FieldComponentState {
             requestRender();
         }
 
-        private boolean entityBelongsToEntityId(final Entity entity) {
-            if (belongsToFieldDefinition != null) {
-                if (belongsToEntityId == null) {
-                    return false;
-                }
-
-                // TODO masz
-                return true;
-            } else {
-                return true;
-            }
-        }
-
         public void search(final String[] args) {
             if (StringUtils.hasText(code) && (belongsToFieldDefinition == null || belongsToEntityId != null)) {
                 SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find().restrictedWith(
@@ -178,13 +165,10 @@ public final class LookupComponentState extends FieldComponentState {
 
         private void refresh() {
             Long entityId = getFieldValueWithoutSearching();
+
             if (entityId != null) {
 
                 Entity entity = getDataDefinition().get(entityId);
-
-                if (!entityBelongsToEntityId(entity)) {
-                    entity = null;
-                }
 
                 if (entity != null) {
                     code = String.valueOf(entity.getField(fieldCode));
@@ -194,6 +178,10 @@ public final class LookupComponentState extends FieldComponentState {
                     text = "";
                     setFieldValueWithoutUpdateStateRequest(null);
                 }
+
+            } else {
+                code = "";
+                text = "";
             }
         }
 

@@ -174,7 +174,8 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         return getStringAttribute(node, "plugin");
     }
 
-    private boolean getBooleanAttribute(final Node node, final String name, final boolean defaultValue) {
+    @Override
+    public Boolean getBooleanAttribute(final Node node, final String name, final boolean defaultValue) {
         Node attribute = getAttribute(node, name);
         if (attribute != null) {
             return Boolean.valueOf(attribute.getNodeValue());

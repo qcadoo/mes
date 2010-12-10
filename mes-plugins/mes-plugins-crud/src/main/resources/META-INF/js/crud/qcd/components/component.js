@@ -161,11 +161,9 @@ QCD.components.Component = function(_element, _mainController) {
 			if (isVisible) {
 				element.show();
 			} else {
-				QCD.info("hide: "+this.elementPath);
 				element.hide();
 			}
 		}
-		
 	}
 	
 	this.isVisible = function() {
@@ -181,5 +179,5 @@ QCD.components.Component = function(_element, _mainController) {
 	}
 	
 	constructor(this);
-	
+
 }

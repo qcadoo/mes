@@ -70,6 +70,8 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.setComponentData = function(data) {
 		if (data.value) {
 			this.input.val(data.value);
+		} else {
+			this.input.val("");
 		}
 	}
 

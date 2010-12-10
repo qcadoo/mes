@@ -37,13 +37,13 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.products.print.ReportDataService;
+import com.qcadoo.mes.products.print.ProductReportService;
 
 @Service
 public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
-    private ReportDataService reportDataService;
+    private ProductReportService reportDataService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -87,5 +87,10 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("products.materialRequirement.report.title", locale);
+    }
+
+    @Override
+    protected String getSuffix() {
+        return "";
     }
 }
