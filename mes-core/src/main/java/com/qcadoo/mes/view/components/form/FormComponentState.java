@@ -186,7 +186,7 @@ public final class FormComponentState extends AbstractContainerState {
                 copyMessages(entity.getGlobalErrors());
             }
 
-            copyEntityToFields(entity);
+            copyEntityToFields(entity, entity.isValid());
 
             if (entity.isValid()) {
                 setFieldValue(entity.getId());
@@ -211,7 +211,7 @@ public final class FormComponentState extends AbstractContainerState {
             Entity entity = getFormEntity();
 
             if (entity != null) {
-                copyEntityToFields(entity);
+                copyEntityToFields(entity, true);
                 setFieldValue(entity.getId());
             } else {
                 clear(args);
@@ -240,17 +240,21 @@ public final class FormComponentState extends AbstractContainerState {
                 FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
                 if (fieldDefinition.getDefaultValue() != null) {
                     field.getValue().setFieldValue(convertFieldToString(fieldDefinition.getDefaultValue(), field.getKey()));
+                    field.getValue().requestComponentUpdateState();
                 }
             }
         }
 
-        private void copyEntityToFields(final Entity entity) {
+        private void copyEntityToFields(final Entity entity, final boolean requestUpdateState) {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 ErrorMessage message = entity.getError(field.getKey());
-                if (message == null) {
-                    field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
-                } else {
+                if (message != null) {
                     copyMessage(field.getValue(), message);
+                } else {
+                    field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
+                    if (requestUpdateState) {
+                        field.getValue().requestComponentUpdateState();
+                    }
                 }
             }
         }
@@ -281,6 +285,7 @@ public final class FormComponentState extends AbstractContainerState {
         private void clearFields() {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 field.getValue().setFieldValue(null);
+                field.getValue().requestComponentUpdateState();
             }
         }
 

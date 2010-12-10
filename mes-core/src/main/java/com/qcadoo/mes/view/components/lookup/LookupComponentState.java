@@ -30,6 +30,8 @@ public final class LookupComponentState extends FieldComponentState {
 
     private String code;
 
+    private boolean codeNotValid;
+
     private String text;
 
     private final String fieldCode;
@@ -37,7 +39,6 @@ public final class LookupComponentState extends FieldComponentState {
     private final String expression;
 
     public LookupComponentState(final FieldDefinition scopeField, final String fieldCode, final String expression) {
-        super(false);
         this.belongsToFieldDefinition = scopeField;
         this.fieldCode = fieldCode;
         this.expression = expression;
@@ -91,14 +92,15 @@ public final class LookupComponentState extends FieldComponentState {
 
     @Override
     public void setFieldValue(final Object value) {
-        setFieldValueWithoutUpdateStateRequest(convertToLong(value));
-        requestUpdateState();
+        text = "";
+        code = "";
+        setFieldValueWithoutRefreshing(convertToLong(value));
+        eventPerformer.refresh();
     }
 
-    public void setFieldValueWithoutUpdateStateRequest(final Long value) {
+    private void setFieldValueWithoutRefreshing(final Long value) {
         super.setFieldValue(value);
-        notifyEntityIdChangeListeners(value);
-        eventPerformer.refresh();
+        notifyEntityIdChangeListeners(convertToLong(value));
     }
 
     private Long convertToLong(final Object value) {
@@ -145,19 +147,23 @@ public final class LookupComponentState extends FieldComponentState {
 
                 if (results.getTotalNumberOfEntities() == 1) {
                     Entity entity = results.getEntities().get(0);
-                    setFieldValueWithoutUpdateStateRequest(entity.getId());
+                    setFieldValue(entity.getId());
+                    notifyEntityIdChangeListeners(null);
                     code = String.valueOf(entity.getField(fieldCode));
                     text = ExpressionUtil.getValue(entity, expression, getLocale());
                 } else {
-                    setFieldValueWithoutUpdateStateRequest(null);
+                    setFieldValueWithoutRefreshing(null);
                     text = "";
-                    addMessage(getTranslationService().translate("core.validate.field.error.lookupCodeNotFound", getLocale()),
-                            MessageType.FAILURE);
+                    if (!codeNotValid) {
+                        addMessage(
+                                getTranslationService().translate("core.validate.field.error.lookupCodeNotFound", getLocale()),
+                                MessageType.FAILURE);
+                    }
+                    codeNotValid = true;
                 }
             } else {
-                code = "";
+                setFieldValueWithoutRefreshing(null);
                 text = "";
-                setFieldValueWithoutUpdateStateRequest(null);
             }
 
             requestRender();
@@ -174,13 +180,11 @@ public final class LookupComponentState extends FieldComponentState {
                     code = String.valueOf(entity.getField(fieldCode));
                     text = ExpressionUtil.getValue(entity, expression, getLocale());
                 } else {
-                    code = "";
+                    setFieldValueWithoutRefreshing(null);
                     text = "";
-                    setFieldValueWithoutUpdateStateRequest(null);
                 }
 
             } else {
-                code = "";
                 text = "";
             }
         }

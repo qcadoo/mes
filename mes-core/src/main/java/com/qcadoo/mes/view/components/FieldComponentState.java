@@ -13,16 +13,6 @@ public class FieldComponentState extends AbstractComponentState {
 
     private boolean required;
 
-    private boolean requestUpdateStateOnSetFieldValue = true;
-
-    public FieldComponentState() {
-        // empty
-    }
-
-    public FieldComponentState(final boolean requestUpdateStateOnSetFieldValue) {
-        this.requestUpdateStateOnSetFieldValue = requestUpdateStateOnSetFieldValue;
-    }
-
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
         if (json.has(JSON_VALUE) && !json.isNull(JSON_VALUE)) {
@@ -42,9 +32,6 @@ public class FieldComponentState extends AbstractComponentState {
     public void setFieldValue(final Object value) {
         this.value = value != null ? value.toString() : null;
         requestRender();
-        if (requestUpdateStateOnSetFieldValue) {
-            requestUpdateState();
-        }
     }
 
     @Override
@@ -58,6 +45,10 @@ public class FieldComponentState extends AbstractComponentState {
 
     public final void setRequired(final boolean required) {
         this.required = required;
+    }
+
+    public void requestComponentUpdateState() {
+        requestUpdateState();
     }
 
 }

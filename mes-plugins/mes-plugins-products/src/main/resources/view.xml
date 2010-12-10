@@ -45,7 +45,7 @@
 				<option type="correspondingView" value="products/product" />
 				<option type="correspondingComponent" value="window.product" />
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
-				<option type="orderable" value="name,number,ean" />
+				<option type="orderable" value="name,number,typeOfMaterial,ean" />
 				<option type="fullscreen" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -437,6 +437,7 @@
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />		
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="fillDefaultTechnology" />		
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableTechnologiesIfProductDoesNotAny" />		
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForDoneOrder" />		
 	</view>
 	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
 		<component type="window" name="window">
