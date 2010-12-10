@@ -76,8 +76,8 @@
 				<option type="column" name="itemOrder" fields="itemOrder" />
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="active" fields="active" link="false" />
-				<option type="correspondingView" value="menu/menuItem" />
-				<option type="correspondingComponent" value="window.menuItem" />
+				<option type="correspondingView" value="menu/menuViewDefinitionItem" />
+				<option type="correspondingComponent" value="window.menuViewDefinitionItem" />
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="400" />
