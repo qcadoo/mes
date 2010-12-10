@@ -43,7 +43,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.products.print.pdf.util.PdfPageNumbering;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 public abstract class ProductsPdfView extends AbstractPdfView {
@@ -74,18 +73,9 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     }
 
     @Override
-    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
-            throws DocumentException {
-        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
-        super.prepareWriter(model, writer, request);
-        writer.setPageEvent(new PdfPageNumbering(translationService.translate("products.report.page", locale), translationService
-                .translate("products.report.in", locale), getFontsPath()));
-    }
-
-    @Override
     protected Document newDocument() {
         Document doc = super.newDocument();
-        doc.setMargins(40, 40, 60, 60);
+        doc.setMargins(0, 0, 0, 0);
         return doc;
     }
 

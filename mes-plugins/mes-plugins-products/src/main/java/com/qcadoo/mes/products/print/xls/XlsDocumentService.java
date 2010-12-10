@@ -45,7 +45,7 @@ public abstract class XlsDocumentService extends DocumentService {
     private static final Logger LOG = LoggerFactory.getLogger(XlsDocumentService.class);
 
     @Override
-    public void generateDocument(final Entity entity, final Locale locale) throws IOException {
+    public void generateDocument(final Entity entity, final Locale locale, final boolean save) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
         addHeader(sheet, locale);
@@ -63,7 +63,10 @@ public abstract class XlsDocumentService extends DocumentService {
             throw e;
         }
         outputStream.close();
-        updateFileName(entity, getFullFileName((Date) entity.getField("date"), getFileName()), getEntityName());
+        if (save) {
+            // TODO KRNA save fileName
+            updateFileName(entity, getFullFileName((Date) entity.getField("date"), getFileNameWithoutSuffix()), getEntityName());
+        }
     }
 
     protected abstract void addHeader(final HSSFSheet sheet, final Locale locale);
@@ -73,4 +76,6 @@ public abstract class XlsDocumentService extends DocumentService {
     protected abstract String getEntityName();
 
     protected abstract String getReportTitle(final Locale locale);
+
+    protected abstract String getFileNameWithoutSuffix();
 }

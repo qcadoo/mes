@@ -178,6 +178,7 @@
 		<string name="startWorker" readonly="true" />
 		<string name="endWorker" readonly="true" />
 		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
+		<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="nullify" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfStateChangeIsCorrect" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderPlannedQuantity" />
