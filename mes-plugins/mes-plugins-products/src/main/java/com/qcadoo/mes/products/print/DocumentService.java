@@ -37,8 +37,8 @@ public abstract class DocumentService {
     @Value("${reportPath}")
     private String path;
 
-    protected final String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + D_T_F.format(date);
+    protected final String getFullFileName(final Date date, final String fileName, final String suffix) {
+        return path + fileName + "_" + D_T_F.format(date) + suffix;
     }
 
     protected final void updateFileName(final Entity entity, final String fileName, final String entityName) {
@@ -50,6 +50,8 @@ public abstract class DocumentService {
             DocumentException;
 
     protected abstract String getFileName();
+
+    protected abstract String getSuffix();
 
     protected final TranslationService getTranslationService() {
         return translationService;

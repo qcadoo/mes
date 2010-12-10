@@ -151,4 +151,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         return "MaterialRequirement";
     }
 
+    @Override
+    protected String getSuffix() {
+        return "";
+    }
+
 }

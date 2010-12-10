@@ -43,7 +43,7 @@ public final class MaterialRequirementPdfView extends ProductsPdfView {
     @Override
     protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
-        return productReportService.copyContent(document, entity, writer);
+        return productReportService.copyPdfContent(document, entity, writer, "");
     }
 
     @Override

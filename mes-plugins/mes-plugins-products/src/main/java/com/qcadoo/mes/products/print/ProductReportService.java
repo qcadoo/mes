@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
+import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
 @Service
 public class ProductReportService {
@@ -183,14 +187,26 @@ public class ProductReportService {
         return table;
     }
 
-    public final String copyContent(final Document document, final DefaultEntity entity, final PdfWriter writer)
-            throws IOException, DocumentException {
+    public final String copyPdfContent(final Document document, final DefaultEntity entity, final PdfWriter writer,
+            final String fileSuffix) throws IOException, DocumentException {
         Object fileName = entity.getField("fileName");
         String fileNameWithoutPath = "";
         if (fileName != null && !"".equals(fileName.toString().trim())) {
-            PdfUtil.copyPdf(document, writer, (String) fileName);
+            PdfUtil.copyPdf(document, writer, (String) fileName + fileSuffix);
             fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
         }
         return fileNameWithoutPath;
+    }
+
+    public final void copyXlsContent(final Map<String, Object> model, final HSSFWorkbook workbook,
+            final HttpServletResponse response, final String fileSuffix) throws IOException {
+        DefaultEntity entity = (DefaultEntity) model.get("entity");
+        Object fileName = entity.getField("fileName");
+        if (fileName != null && !"".equals(fileName.toString().trim())) {
+            XlsCopyUtil.copyWorkbook(workbook, (String) fileName + fileSuffix);
+            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XlsCopyUtil.XLS_EXTENSION);
+        }
+
     }
 }

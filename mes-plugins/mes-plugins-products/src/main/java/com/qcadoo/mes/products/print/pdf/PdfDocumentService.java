@@ -54,7 +54,7 @@ public abstract class PdfDocumentService extends DocumentService {
         Document document = new Document(PageSize.A4);
         try {
             df = (DecimalFormat) DecimalFormat.getInstance(locale);
-            String fileName = getFullFileName((Date) entity.getField("date"), getFileName()) + PdfUtil.PDF_EXTENSION;
+            String fileName = getFullFileName((Date) entity.getField("date"), getFileName(), getSuffix()) + PdfUtil.PDF_EXTENSION;
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),

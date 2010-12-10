@@ -595,9 +595,9 @@
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.fireEvent(printWorkPlan,pdf,ForMachine);" />
+						action="#{window.workPlan}.fireEvent(printWorkPlan,pdf,ForMachine);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.fireEvent(printWorkPlan,xls,ForMachine);" />
+						action="#{window.workPlan}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>
 			<component type="form" name="workPlan">
