@@ -159,6 +159,10 @@ public final class GridComponentState extends AbstractComponentState {
             eventPerformer.reload();
         }
 
+        if (entities == null) {
+            throw new IllegalStateException("Cannot load entities for grid component");
+        }
+
         JSONObject json = new JSONObject();
         json.put(JSON_SELECTED_ENTITY_ID, selectedEntityId);
         json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);

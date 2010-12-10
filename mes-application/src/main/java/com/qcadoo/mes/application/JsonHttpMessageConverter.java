@@ -42,9 +42,15 @@ public final class JsonHttpMessageConverter extends AbstractHttpMessageConverter
 
     @Override
     protected void writeInternal(final JSONObject json, final HttpOutputMessage outputMessage) throws IOException {
-        Writer writer = new OutputStreamWriter(outputMessage.getBody(), CHARSET);
-        writer.write(json.toString());
-        writer.flush();
+        Writer writer = null;
+
+        try {
+            writer = new OutputStreamWriter(outputMessage.getBody(), CHARSET);
+            writer.write(json.toString());
+            writer.flush();
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
     }
 
 }

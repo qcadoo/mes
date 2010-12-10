@@ -94,7 +94,11 @@ public final class BelongsToEntityType implements BelongsToType {
 
     @Override
     public String toString(final Object value) {
-        return String.valueOf(((Entity) value).getId());
+        if (value instanceof Entity) {
+            return String.valueOf(((Entity) value).getId());
+        } else {
+            return String.valueOf(value);
+        }
     }
 
     @Override
