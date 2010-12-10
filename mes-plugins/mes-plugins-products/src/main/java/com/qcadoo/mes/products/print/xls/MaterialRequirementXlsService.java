@@ -90,7 +90,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getFileNameWithoutSuffix() {
-        return "MaterialRequirement";
+    protected String getSuffix() {
+        return "";
     }
 }

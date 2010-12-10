@@ -30,23 +30,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
+import com.qcadoo.mes.products.print.ProductReportService;
 
 public final class WorkPlanForMachineXlsView extends AbstractExcelView {
+
+    @Autowired
+    private ProductReportService productReportService;
 
     @Override
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        DefaultEntity entity = (DefaultEntity) model.get("entity");
-        Object fileName = entity.getField("fileName");
-        if (fileName != null && !"".equals(fileName.toString().trim())) {
-            XlsCopyUtil.copyWorkbook(workbook, (String) fileName);
-            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
-            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XlsCopyUtil.XLS_EXTENSION);
-        }
+        productReportService.copyXlsContent(model, workbook, response, "ForMachine");
     }
 
 }

@@ -172,6 +172,8 @@
 				<component type="input" name="email" field="email" />
 				<component type="input" name="firstName" field="firstName" />
 				<component type="input" name="lastName" field="lastName" />
+				
+				
 				<component type="textarea" name="description" field="description" />
 				<option type="header" value="false" />
 				<option type="expression" value="' '"/>

@@ -59,7 +59,7 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
     }
 
     @Override
-    public final Map<String, Object> prepareView(final Locale locale) {
+    public Map<String, Object> prepareView(final Locale locale) {
         Map<String, Object> model = super.prepareView(locale);
         Map<String, Object> childrenModels = new LinkedHashMap<String, Object>();
 

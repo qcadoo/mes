@@ -34,6 +34,7 @@ QCD.components.Component = function(_element, _mainController) {
 	var elementSearchName = elementPath.replace(/\./g,"\\.");
 	var elementName = elementPath.split(".")[elementPath.split(".").length - 1];
 	
+	this.element = element;
 	this.elementPath = elementPath;
 	this.elementSearchName = elementSearchName;
 	this.elementName = elementName;

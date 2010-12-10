@@ -52,7 +52,7 @@ public abstract class XlsDocumentService extends DocumentService {
         addSeries(sheet, entity);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream(getFullFileName((Date) entity.getField("date"), getFileName())
+            outputStream = new FileOutputStream(getFullFileName((Date) entity.getField("date"), getFileName(), getSuffix())
                     + XlsCopyUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {
@@ -65,7 +65,7 @@ public abstract class XlsDocumentService extends DocumentService {
         outputStream.close();
         if (save) {
             // TODO KRNA save fileName
-            updateFileName(entity, getFullFileName((Date) entity.getField("date"), getFileNameWithoutSuffix()), getEntityName());
+            updateFileName(entity, getFullFileName((Date) entity.getField("date"), getFileName(), ""), getEntityName());
         }
     }
 
@@ -77,5 +77,4 @@ public abstract class XlsDocumentService extends DocumentService {
 
     protected abstract String getReportTitle(final Locale locale);
 
-    protected abstract String getFileNameWithoutSuffix();
 }

@@ -1,15 +1,21 @@
 package com.qcadoo.mes.view.components.layout;
 
+import java.util.Locale;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.google.common.base.Preconditions;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
-import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
-import com.qcadoo.mes.view.components.EmptyContainerState;
-import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
-import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @ViewComponent("gridLayout")
-public class GridLayoutPattern extends AbstractContainerPattern {
+public class GridLayoutPattern extends AbstractLayoutPattern {
 
     private static final String JS_OBJECT = "QCD.components.containers.layout.GridLayout";
 
@@ -17,25 +23,116 @@ public class GridLayoutPattern extends AbstractContainerPattern {
 
     private static final String JS_PATH = "/js/crud/qcd/components/containers/layout/gridLayout.js";
 
-    private GridLayoutCell[][] cells = new GridLayoutCell[44][];
+    private GridLayoutCell[][] cells;
 
     public GridLayoutPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
     }
 
-    public final void addFieldEntityIdChangeListener(final String field, final ComponentPattern listener) {
-        AbstractComponentPattern parent = (AbstractComponentPattern) this.getParent();
-        parent.addFieldEntityIdChangeListener(field, listener);
+    @Override
+    public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        super.parse(componentNode, parser);
+
+        Integer columns = getIntAttribute(componentNode, "columns", parser);
+        Integer rows = getIntAttribute(componentNode, "rows", parser);
+
+        Preconditions.checkNotNull(columns, "columns nod definied");
+        Preconditions.checkNotNull(rows, "rows nod definied");
+
+        cells = new GridLayoutCell[rows][];
+        for (int row = 0; row < cells.length; row++) {
+            cells[row] = new GridLayoutCell[columns];
+            for (int col = 0; col < cells[row].length; col++) {
+                cells[row][col] = new GridLayoutCell();
+            }
+        }
+
+        NodeList childNodes = componentNode.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if (child.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            Preconditions.checkState("layoutElement".equals(child.getNodeName()), "gridlayout can contains only layoutElements");
+            Integer column = getIntAttribute(child, "column", parser);
+            Integer row = getIntAttribute(child, "row", parser);
+
+            GridLayoutCell cell = createGridLayoutCell(child, parser);
+
+            insertCell(cell, column, row);
+        }
     }
 
-    public final void addScopeEntityIdChangeListener(final String field, final ComponentPattern listener) {
-        AbstractComponentPattern parent = (AbstractComponentPattern) this.getParent();
-        parent.addScopeEntityIdChangeListener(field, listener);
+    private GridLayoutCell createGridLayoutCell(final Node child, final ViewDefinitionParser parser) {
+
+        Integer colspan = getIntAttribute(child, "width", parser);
+        Integer rowspan = getIntAttribute(child, "height", parser);
+
+        ComponentPattern elementComponent = null;
+        NodeList elementComponentNodes = child.getChildNodes();
+        for (int elementComponentNodesIter = 0; elementComponentNodesIter < elementComponentNodes.getLength(); elementComponentNodesIter++) {
+            Node elementComponentNode = elementComponentNodes.item(elementComponentNodesIter);
+            if (elementComponentNode.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            Preconditions.checkState(elementComponent == null, "layoutElement cant contain more than one component");
+            Preconditions.checkState("component".equals(elementComponentNode.getNodeName()),
+                    "layoutElement can contains only components");
+            elementComponent = parser.parseComponent(elementComponentNode, this);
+            this.addChild(elementComponent);
+        }
+
+        GridLayoutCell cell = new GridLayoutCell();
+        cell.setComponent(elementComponent);
+        if (colspan != null) {
+            cell.setColspan(colspan);
+        }
+        if (rowspan != null) {
+            cell.setRowspan(rowspan);
+        }
+        return cell;
+    }
+
+    private void insertCell(final GridLayoutCell cell, final int column, final int row) {
+        Preconditions.checkState(column > 0, "column number less than zero");
+        Preconditions.checkState(row > 0, "row number less than zero");
+        Preconditions.checkState(column <= cells[0].length, "column number to large");
+        Preconditions.checkState(row <= cells.length, "row number to large");
+        Preconditions.checkState(column + cell.getColspan() - 1 <= cells[0].length, "width number to large");
+        Preconditions.checkState(row + cell.getRowspan() - 1 <= cells.length, "height number to large");
+
+        for (int rowIter = row; rowIter < row + cell.getRowspan(); rowIter++) {
+            for (int colIter = column; colIter < column + cell.getColspan(); colIter++) {
+                GridLayoutCell beforeCell = cells[rowIter - 1][colIter - 1];
+                Preconditions.checkState(beforeCell.isAvailable(), "cell [" + rowIter + "x" + colIter + "] is not available");
+                beforeCell.setAvailable(false);
+            }
+        }
+
+        cells[row - 1][column - 1] = cell;
+    }
+
+    private Integer getIntAttribute(final Node node, final String attribute, final ViewDefinitionParser parser) {
+        String valueStr = parser.getStringAttribute(node, attribute);
+        if (valueStr == null) {
+            return null;
+        }
+        return Integer.parseInt(valueStr);
     }
 
     @Override
-    protected ComponentState getComponentStateInstance() {
-        return new EmptyContainerState();
+    public final Map<String, Object> prepareView(final Locale locale) {
+        Map<String, Object> model = super.prepareView(locale);
+        model.put("cells", cells);
+        return model;
+    }
+
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("colsNumber", cells[0].length);
+        return json;
     }
 
     @Override
@@ -51,50 +148,6 @@ public class GridLayoutPattern extends AbstractContainerPattern {
     @Override
     public String getJsObjectName() {
         return JS_OBJECT;
-    }
-
-}
-
-class GridLayoutCell {
-
-    private ComponentPattern component;
-
-    private int rowspan = 1;
-
-    private int colspan = 1;
-
-    private boolean isAvalible = true;
-
-    public ComponentPattern getComponent() {
-        return component;
-    }
-
-    public void setComponent(ComponentPattern component) {
-        this.component = component;
-    }
-
-    public int getRowspan() {
-        return rowspan;
-    }
-
-    public void setRowspan(int rowspan) {
-        this.rowspan = rowspan;
-    }
-
-    public int getColspan() {
-        return colspan;
-    }
-
-    public void setColspan(int colspan) {
-        this.colspan = colspan;
-    }
-
-    public boolean isAvalible() {
-        return isAvalible;
-    }
-
-    public void setAvalible(boolean isAvalible) {
-        this.isAvalible = isAvalible;
     }
 
 }

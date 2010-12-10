@@ -4,30 +4,20 @@ QCD.components.containers = QCD.components.containers || {};
 QCD.components.containers.layout = QCD.components.containers.layout || {};
 
 QCD.components.containers.layout.BorderLayout = function(_element, _mainController) {
-	$.extend(this, new QCD.components.Container(_element, _mainController));
-	
+	$.extend(this, new QCD.components.containers.layout.Layout(_element, _mainController));
+
 	function constructor(_this) {
-		var childrenElement = $("#"+_this.elementSearchName+"_layoutComponents");
-		_this.constructChildren(childrenElement.children());
+		_this.constructChildren(_this.getLayoutChildren());
 	}
 	
-	this.getComponentValue = function() {
-		return {};
-	}
-	this.setComponentValue = function(value) {
-	}
-	this.setComponentState = function(state) {
+	this.getLayoutChildren = function() {
+		return $("#"+this.elementSearchName+"_layoutComponents").children();
 	}
 	
-	this.setMessages = function(messages) {
-	}
-	
-	this.setComponentEnabled = function(isEnabled) {
-		
-	}
-	
-	this.setComponentLoading = function() {
-		
+	this.updateSize = function(_width, _height) {
+		for (var i in this.components) {
+			this.components[i].updateSize(_width, _height);
+		}
 	}
 	
 	constructor(this);

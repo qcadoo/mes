@@ -67,8 +67,14 @@
 				</group>
 			</ribbon>
 			<component type="form" name="menuCategory">
-				<component type="input" name="name" field="name" hasDescription="false" />
-				<component type="checkbox" name="active" field="active" defaultEnabled="true" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="input" name="name" field="name" hasDescription="false" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="checkbox" name="active" field="active" defaultEnabled="true" />
+					</layoutElement>
+				</component>
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>

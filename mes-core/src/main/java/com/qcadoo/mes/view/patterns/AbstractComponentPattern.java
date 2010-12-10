@@ -191,6 +191,15 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     @Override
+    public String getFunctionalPath() {
+        if (parent == null) {
+            return name;
+        } else {
+            return parent.getFunctionalPath() + "." + name;
+        }
+    }
+
+    @Override
     public final boolean initialize() {
         if (initialized) {
             return true;
@@ -322,7 +331,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     protected final String getTranslationPath() {
-        return getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getPath();
+        return getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "." + getFunctionalPath();
     }
 
     private void addListenersToJsOptions(final JSONObject jsOptions) throws JSONException {

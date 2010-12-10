@@ -165,6 +165,11 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 
 	this.setComponentLoading = function(isLoadingVisible) {}
 	
+	this.updateSize = function(_width, _height) {
+		var height = _height ? _height-10 : 40;
+		this.input.parent().parent().parent().height(height);
+	}
+	
 	constructor(this);
 
 }

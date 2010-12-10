@@ -364,9 +364,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			$("#"+gridParameters.modifiedPath+"_grid_"+gridParameters.sortColumns[i]).addClass("sortableColumn");
 		}
 		
+		element.width("100%");
 		if (gridParameters.width) {
 			element.width(gridParameters.width);
 		}
+		
 		if (gridParameters.fullScreen) {
 			if (! gridParameters.height) {
 				element.height("100%");
@@ -499,7 +501,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	this.updateSize = function(_width, _height) {
 		if (! gridParameters.height && gridParameters.fullScreen) {
 			element.height(_height - 40);
+			//element.height(_height - 100);
 			var HEIGHT_DIFF = 140;
+			//var HEIGHT_DIFF = 200;
 			currentGridHeight = _height - HEIGHT_DIFF;
 			
 			if (currentState.filtersEnabled) {

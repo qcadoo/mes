@@ -40,6 +40,7 @@ QCDPageConstructor.getChildrenComponents = function(elements, mainController) {
 			var jsObjectClassName = $.trim(jsObjectElement.html());
 			jsObjectElement.remove();
 			
+			QCD.info(jsObjectClassName);
 			component = eval("new "+jsObjectClassName+"(element, mainController);");
 			
 //			var elementName = elementFullName.split("-")[elementFullName.split("-").length - 1];

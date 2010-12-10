@@ -44,6 +44,6 @@
 		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
 			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
 		</c:if>
-		<span id="${component['path']}_textHeight">&nbsp;</span>
+		<span id="${component['path']}_textHeight" style="display: inline-block; height: 100%; vertical-align: middle;">&nbsp;</span>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

@@ -239,7 +239,8 @@
 				<form id="loginForm" name="loginForm" action="<c:url value='j_spring_security_check'/>" method="POST">
 			 		<div>
 			 			<label>${translation["security.form.label.login"]}</label>
-			 			<div class="component_container_form_w" id="usernameInput_component_container_form_w" >
+			 			<div class="component_form_element" style="height: 20px; width: 200px; vertical-align: middle; display: inline-block;">
+			 			<div class="component_container_form_w" id="usernameInput_component_container_form_w" style="left: 0; right: 0;">
 							<div class="component_container_form_inner">
 								<div class="component_container_form_x"></div>
 								<div class="component_container_form_y"></div>
@@ -250,10 +251,12 @@
 					 				<span id="loginMessage" class="login_failed_message">${translation["security.message.wrongLogin"]}</span>
 					 			</div>
 						</div>
+						</div>
 			 		</div>
 			 		<div>
 			 			<label>${translation["security.form.label.password"]}</label>
-			 			<div class="component_container_form_w">
+			 			<div class="component_form_element" style="height: 20px; width: 200px; vertical-align: middle; display: inline-block;">
+			 			<div class="component_container_form_w" style="left: 0; right: 0;">
 							<div class="component_container_form_inner">
 								<div class="component_container_form_x"></div>
 								<div class="component_container_form_y"></div>
@@ -263,6 +266,7 @@
 				 					<span id="passwordMessage" class="login_failed_message">${translation["security.message.wrongPassword"]}</span>								
 								</div>
 							</div>
+						</div>
 						</div>
 					</div>
 			 		<div id="rememberMeRow">

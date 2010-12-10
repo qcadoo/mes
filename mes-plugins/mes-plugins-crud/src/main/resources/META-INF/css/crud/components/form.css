@@ -23,58 +23,68 @@
  */
 
 .component_container_form {
-	margin: 20px 20px 0;
+	margin: 20px 20px;
 	padding: 0;
 	background: #fff;
 }
 
-.component_container_form > .component {
+.component_form_element {
 	padding: 0;
-	width: 31.5%;
-	margin-bottom: 19px;
-	vertical-align: middle;
+	//width: 31.5%;
+	width: 100%;
+	//height: 40px;
+	//margin-bottom: 19px;
+	//vertical-align: middle;
 	display: block;
 	text-align: left;
+	position: relative;
 }
 
 /** labels **/
 
-.component_container_form .labelbox {
-	width: 31%;
-	display: block;
+.component_form_element .labelbox {
+	//width: 31%;
+	width: 150px;
+	height: 100%;
+	//display: block;
+	display: inline-block;
 	vertical-align: middle;
 	text-align: left;
-	float: left;
-	height: 22px;
+	//float: left;
+	//height: 22px;
 	font: 11px arial;
+	position: absolute;
+	left: 10px;
+	top:0;
 }
 
-.component_container_form .label_h {
-	vertical-align: middle;
-	height: 22px;
-	width: 0px;
+.component_form_element .label_h {
+	//height: 22px;
+	height: 100%;
+	width: 10px;
 	display: inline-block;
 	vertical-align: middle;
 }
 	
-.component_container_form .label {
+.component_form_element .label {
 	display: inline-block;
 	vertical-align: middle;
 	margin-right: 10px;
 }
 
-.component_container_form .required .label {
+.required .component_form_element .label {
 	font-weight: bold;
 }
 
 .component_element_textarea .label {
-	vertical-align: top;
-	padding-top: 3px;
+	//vertical-align: top;
+	//padding-top: 3px;
 }
 
 .component_container_form .component_container_form_textRepresentation {
 	vertical-align: middle;
 	font: 11px arial;
+	height: 100%;
 }
 
 .component_container_form .component_container_form_textHeight {
@@ -87,14 +97,29 @@
 .component_container_form_w {
 	margin: 0;
 	padding: 0;
-	width: 65.5%;
+	vertical-align: middle;
+	//width: 65.5%;
 	display: inline-block;
-	position: relative;
+	//position: relative;
+	position: absolute;
+	left: 170px;
+	right: 10px;
+	height: 100%;
 }
-
+.component_container_form_inner_h {
+	height: 100%;
+	width: 0px;
+	display: inline-block;
+	vertical-align: middle;
+	margin:0;
+	padding:0;
+}
 .component_container_form_inner {
 	position: relative;
-	display: block;
+	width: 100%;
+	display: inline-block;
+	vertical-align: middle;
+	margin:0;
 }
 
 .disabled .component_container_form_inner {
@@ -158,8 +183,7 @@
 
 .component_container_form select {
 	width: 100%;
-	vertical-align: middle;
-	padding: 0;
+	margin-top: 11px;
 }
 
 .component_container_form select option .empty {
@@ -402,11 +426,14 @@
 	display: none;
 }
 
+.component_element_linkButton {
+	width: 100%;
+	height: 100%;
+}
 
 .linkButton {
-	width: 300px;
 	margin-left: 20px;
-	margin-bottom: 20px;
+	margin-right: 20px;
 	padding: 0;
 	text-align: center;
 	font-family:Tahoma, Arial, Helvetica, sans-serif;

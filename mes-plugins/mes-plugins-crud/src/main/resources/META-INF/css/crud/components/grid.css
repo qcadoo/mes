@@ -69,6 +69,16 @@
 	margin-right: 10px;
 }
 
+.gridTable .grid_paging .grid_paging_pageInfo {
+	
+}
+
+.gridTable .grid_paging .grid_paging_pageInfo .component_container_form_w {
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
 .gridTable .grid_footer {
 	background: #f2f2f2;
 	height: 30px;

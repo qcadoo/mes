@@ -22,6 +22,8 @@ public interface ComponentPattern {
 
     String getPath();
 
+    String getFunctionalPath();
+
     void parse(Node componentNode, ViewDefinitionParser parser);
 
 }

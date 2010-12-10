@@ -36,7 +36,7 @@
 <tiles:useAttribute name="componentType" />
 <tiles:useAttribute name="componentBody"/>
 
-<div class="component_element component_element_${componentType}">
+<div class="component_element component_form_element component_element_${componentType}">
 
 	<c:set var="isInputBox" value="${'textarea' == componentType || 'input' == componentType || 'password' == componentType || 'calendar' == componentType || 'lookup' == componentType}"/>
 
@@ -48,8 +48,7 @@
 	
 	<c:choose>
 		<c:when test="${isInputBox && !component['jspOptions']['textRepresentationOnDisabled']}">
-			<div class="component_container_form_w">
-				<div class="component_container_form_inner">
+			<div class="component_container_form_w"><div class="component_container_form_inner_h"></div><div class="component_container_form_inner">
 					<div class="component_container_form_x"></div>
 					<div class="component_container_form_y"></div>
 					${componentBody}
