@@ -128,7 +128,8 @@
 				<option type="expression" value="#userName"/>
 			</component>
 			<component type="button" name="changePasswordButton" source="#{window.user}">
-				<option type="url" value="users/userChangePassword.html" />
+				<option type="correspondingView" value="users/userChangePassword" />
+				<option type="correspondingComponent" value="window.user" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.users.UserService" method="hidePasswordOnUpdateForm" />
@@ -176,10 +177,10 @@
 				<option type="expression" value="' '"/>
 			</component>
 			<component type="button" name="changePasswordButton" source="#{window.user}">
-				<option type="url" value="users/profileChangePassword.html" />
+				<option type="correspondingView" value="users/profileChangePassword" />
+				<option type="correspondingComponent" value="window.user" />
 			</component>
 		</component>
-		<onView bean="com.qcadoo.mes.users.UserService" method="onUserProfileView" />
 	</view>
 	<view name="profileChangePassword" model="user">
 		<component type="window" name="window">

@@ -101,33 +101,42 @@ public final class UserService {
         String oldPassword = entity.getStringField("oldPassword");
         String viewIdentifier = entity.getStringField("viewIdentifier");
 
+        System.out.println(" @0 ---> " + viewIdentifier);
+
         if (!"profileChangePassword".equals(viewIdentifier) && !"userChangePassword".equals(viewIdentifier)) {
             return true;
         }
 
+        System.out.println(" @1");
+
         if ("profileChangePassword".equals(viewIdentifier)) {
             if (oldPassword == null) {
+                System.out.println(" @2");
                 entity.addError(dataDefinition.getField("oldPassword"), "users.validate.global.error.noOldPassword");
                 return false;
             }
             Object currentPassword = dataDefinition.get(entity.getId()).getField("password");
             if (!currentPassword.equals(oldPassword)) {
+                System.out.println(" @3 ---> " + currentPassword + " <> " + oldPassword);
                 entity.addError(dataDefinition.getField("oldPassword"), "users.validate.global.error.wrongOldPassword");
                 return false;
             }
         }
 
         if (password == null) {
+            System.out.println(" @4");
             entity.addError(dataDefinition.getField("password"), "users.validate.global.error.noPassword");
             return false;
         }
 
         if (passwordConfirmation == null) {
+            System.out.println(" @5");
             entity.addError(dataDefinition.getField("passwordConfirmation"), "users.validate.global.error.noPasswordConfirmation");
             return false;
         }
 
         if (!password.equals(passwordConfirmation)) {
+            System.out.println(" @6 ---> " + password + " <> " + passwordConfirmation);
             entity.addError(dataDefinition.getField("password"), "users.validate.global.error.notMatch");
             entity.addError(dataDefinition.getField("passwordConfirmation"), "users.validate.global.error.notMatch");
             return false;
