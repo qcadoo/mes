@@ -435,6 +435,7 @@
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />		
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableTechnologiesIfProductDoesNotAny" />		
 	</view>
 	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
 		<component type="window" name="window">

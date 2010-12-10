@@ -22,46 +22,64 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.viewold.components;
+package com.qcadoo.mes.view.components.tree;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * View value of SimpleFieldComponent.
+ * Node of ViewValue of TreeComponent.
  * 
- * @see com.qcadoo.mes.viewold.components.SimpleFieldComponent
+ * @see com.qcadoo.mes.viewold.components.TreeComponent
  * @see com.qcadoo.mes.viewold.ViewValue
  */
-public class SimpleValue {
+public final class TreeNode {
 
-    private Object value;
+    private Long id;
 
-    private boolean required;
+    private String label;
 
-    public SimpleValue() {
+    private List<TreeNode> children;
+
+    public TreeNode() {
+
     }
 
-    public SimpleValue(final Object value) {
-        this.value = value;
+    public TreeNode(final Long id, final String label) {
+        this();
+        this.id = id;
+        this.label = label;
     }
 
-    public final boolean isRequired() {
-        return required;
+    public String getLabel() {
+        return label;
     }
 
-    public final void setRequired(final boolean required) {
-        this.required = required;
+    public void setLabel(final String label) {
+        this.label = label;
     }
 
-    public final Object getValue() {
-        return value;
+    public List<TreeNode> getChildren() {
+        return children;
     }
 
-    public final void setValue(final Object value) {
-        this.value = value;
+    public void setChildren(final List<TreeNode> children) {
+        this.children = children;
     }
 
-    @Override
-    public final String toString() {
-        return String.valueOf(value);
+    public void addChild(final TreeNode child) {
+        if (children == null) {
+            children = new LinkedList<TreeNode>();
+        }
+        children.add(child);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
 }

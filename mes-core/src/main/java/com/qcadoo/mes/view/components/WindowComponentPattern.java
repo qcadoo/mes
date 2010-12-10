@@ -176,8 +176,6 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     private RibbonActionItem parseRibbonItem(final Node itemNode, final ViewDefinitionParser parser) {
         String stringType = itemNode.getNodeName();
 
-        boolean combo = ("bigButtons".equals(stringType) || "smallButtons".equals(stringType));
-
         RibbonActionItem.Type type = null;
         if ("bigButtons".equals(stringType) || "bigButton".equals(stringType)) {
             type = RibbonActionItem.Type.BIG_BUTTON;
@@ -186,7 +184,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         }
 
         RibbonActionItem item = null;
-        if (combo) {
+        if ("bigButtons".equals(stringType) || "smallButtons".equals(stringType)) {
             item = new RibbonComboItem();
         } else {
             item = new RibbonActionItem();
@@ -197,7 +195,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         item.setAction(parser.getStringAttribute(itemNode, "action"));
         item.setType(type);
 
-        if (combo) {
+        if (item instanceof RibbonComboItem) {
             NodeList childNodes = itemNode.getChildNodes();
 
             for (int i = 0; i < childNodes.getLength(); i++) {

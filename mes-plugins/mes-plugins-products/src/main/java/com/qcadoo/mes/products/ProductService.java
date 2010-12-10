@@ -251,16 +251,35 @@ public final class ProductService {
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (!(state instanceof LookupComponentState)) {
+            return;
+        }
+
         LookupComponentState product = (LookupComponentState) state;
         LookupComponentState technology = (LookupComponentState) viewDefinitionState
                 .getComponentByPath("window.order.technology");
         FieldComponentState defaultTechnology = (FieldComponentState) viewDefinitionState
                 .getComponentByPath("window.order.defaultTechnology");
-        FieldComponentState plannedQuantity = (FieldComponentState) viewDefinitionState
-                .getComponentByPath("window.order.plannedQuantity");
 
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
+
+        if (product.getFieldValue() != null && hasAnyTechnologies(product.getFieldValue())) {
+            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
+
+            if (defaultTechnologyEntity != null) {
+                String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
+                        state.getLocale());
+                defaultTechnology.setFieldValue(defaultTechnologyValue);
+                technology.setFieldValue(defaultTechnologyEntity.getId());
+            }
+        }
+    }
+
+    public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state, final Locale locale) {
+        LookupComponentState product = (LookupComponentState) state.getComponentByPath("window.order.product");
+        LookupComponentState technology = (LookupComponentState) state.getComponentByPath("window.order.technology");
+        FieldComponentState plannedQuantity = (FieldComponentState) state.getComponentByPath("window.order.plannedQuantity");
 
         if (product.getFieldValue() == null || !hasAnyTechnologies(product.getFieldValue())) {
             technology.setEnabled(false);
@@ -272,15 +291,6 @@ public final class ProductService {
             technology.setRequired(true);
             plannedQuantity.setEnabled(true);
             plannedQuantity.setRequired(true);
-
-            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
-
-            if (defaultTechnologyEntity != null) {
-                String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
-                        state.getLocale());
-                defaultTechnology.setFieldValue(defaultTechnologyValue);
-                technology.setFieldValue(defaultTechnologyEntity.getId());
-            }
         }
     }
 
@@ -463,9 +473,9 @@ public final class ProductService {
                     materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 } catch (DocumentException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 }
             }
         }
@@ -573,9 +583,9 @@ public final class ProductService {
                     workPlanXlsService.generateDocument(workPlan, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 } catch (DocumentException e) {
-                    new IllegalStateException(e.getMessage(), e);
+                    throw new IllegalStateException(e.getMessage(), e);
                 }
             }
         }
