@@ -182,14 +182,6 @@ public class ProductsOrder {
         this.plannedQuantity = plannedQuantity;
     }
 
-    public ProductsTechnology getDefaultTechnology() {
-        return defaultTechnology;
-    }
-
-    public void setDefaultTechnology(final ProductsTechnology defaultTechnology) {
-        this.defaultTechnology = defaultTechnology;
-    }
-
     public ProductsTechnology getTechnology() {
         return technology;
     }
