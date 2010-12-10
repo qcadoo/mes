@@ -264,14 +264,26 @@ public final class ProductService {
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
 
-        if (product.getFieldValue() != null && hasAnyTechnologies(product.getFieldValue())) {
+        if (product.getFieldValue() != null) {
+            Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
+
+            if (defaultTechnologyEntity != null) {
+                technology.setFieldValue(defaultTechnologyEntity.getId());
+            }
+        }
+    }
+
+    public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {
+        LookupComponentState product = (LookupComponentState) state.getComponentByPath("window.order.product");
+        FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByPath("window.order.defaultTechnology");
+
+        if (product.getFieldValue() != null) {
             Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
 
             if (defaultTechnologyEntity != null) {
                 String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
-                        state.getLocale());
+                        locale);
                 defaultTechnology.setFieldValue(defaultTechnologyValue);
-                technology.setFieldValue(defaultTechnologyEntity.getId());
             }
         }
     }

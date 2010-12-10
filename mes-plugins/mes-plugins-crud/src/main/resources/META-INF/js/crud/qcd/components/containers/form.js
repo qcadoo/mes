@@ -38,6 +38,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	var baseValue = null; 
 	
+	var headerEntityIdentifier = null;
+	
+	var header = null;
+	
 	translations = this.options.translations;
 	
 	function constructor(_this) {
@@ -49,7 +53,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	this.getComponentValue = function() {
 		return {
 			entityId: formValue,
-			baseValue: baseValue
+			baseValue: baseValue,
+			headerEntityIdentifier: headerEntityIdentifier,
+			header : header
 		};
 	}
 	
@@ -61,6 +67,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 				mainController.setWindowHeader(value.header);
 			}
 		}
+		headerEntityIdentifier = value.headerEntityIdentifier;
+		header = value.header;
 		formValue = value.entityId;
 		unblock();
 	}
@@ -71,6 +79,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		} else {
 			mainController.setWindowHeader(state.header);
 		}
+		headerEntityIdentifier = state.headerEntityIdentifier;
+		header = state.header;
 		formValue = state.entityId;
 		if (state.baseValue) {
 			baseValue = state.baseValue;

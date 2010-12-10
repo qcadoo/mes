@@ -161,7 +161,7 @@
 		</enum>
 		<dictionary name="machine" dictionary="machines" />
 		<belongsTo name="product" model="product" lookupField="name" />
-		<belongsTo name="defaultTechnology" model="technology" lookupField="name" /> <!-- readonly -->
+		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" model="technology" lookupField="name" />
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" inclusive="false" />

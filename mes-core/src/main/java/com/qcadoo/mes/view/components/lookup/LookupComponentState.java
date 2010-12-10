@@ -62,10 +62,22 @@ public final class LookupComponentState extends FieldComponentState {
         if (belongsToFieldDefinition != null && belongsToEntityId == null) {
             setEnabled(false);
         }
+
+        System.out.println(" #i1 " + getTranslationPath() + " ---> " + text);
+        System.out.println(" #i2 " + getTranslationPath() + " ---> " + code);
+        System.out.println(" #i3 " + getTranslationPath() + " ---> " + belongsToEntityId);
+        System.out.println(" #i4 " + getTranslationPath() + " ---> " + belongsToFieldDefinition);
+        System.out.println(" #i5 " + getTranslationPath() + " ---> " + getFieldValue());
     }
 
     @Override
     protected JSONObject renderContent() throws JSONException {
+        System.out.println(" #r1 " + getTranslationPath() + " ---> " + text);
+        System.out.println(" #r2 " + getTranslationPath() + " ---> " + code);
+        System.out.println(" #r3 " + getTranslationPath() + " ---> " + belongsToEntityId);
+        System.out.println(" #r4 " + getTranslationPath() + " ---> " + belongsToFieldDefinition);
+        System.out.println(" #r5 " + getTranslationPath() + " ---> " + getFieldValue());
+
         JSONObject json = super.renderContent();
         json.put(JSON_TEXT, text);
         json.put(JSON_CODE, code);
@@ -86,6 +98,7 @@ public final class LookupComponentState extends FieldComponentState {
     }
 
     public Long getFieldValueWithoutSearching() {
+        System.out.println(" #x1 " + getTranslationPath() + " ---> " + super.getFieldValue());
         return convertToLong(super.getFieldValue());
     }
 
@@ -96,6 +109,7 @@ public final class LookupComponentState extends FieldComponentState {
     }
 
     public void setFieldValueWithoutUpdateStateRequest(final Long value) {
+        System.out.println(" #x2 " + getTranslationPath() + " ---> " + value);
         super.setFieldValue(value);
         notifyEntityIdChangeListeners(value);
         eventPerformer.refresh();
@@ -115,6 +129,7 @@ public final class LookupComponentState extends FieldComponentState {
 
     @Override
     public void onScopeEntityIdChange(final Long scopeEntityId) {
+        System.out.println(" #x3 " + getTranslationPath() + " ---> " + scopeEntityId);
         if (belongsToFieldDefinition != null) {
             belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
@@ -130,19 +145,6 @@ public final class LookupComponentState extends FieldComponentState {
         public void initialize(final String[] args) {
             refresh();
             requestRender();
-        }
-
-        private boolean entityBelongsToEntityId(final Entity entity) {
-            if (belongsToFieldDefinition != null) {
-                if (belongsToEntityId == null) {
-                    return false;
-                }
-
-                // TODO masz
-                return true;
-            } else {
-                return true;
-            }
         }
 
         public void search(final String[] args) {
@@ -178,13 +180,14 @@ public final class LookupComponentState extends FieldComponentState {
 
         private void refresh() {
             Long entityId = getFieldValueWithoutSearching();
+
+            System.out.println(" #x4 " + getTranslationPath() + " ---> " + entityId);
+
             if (entityId != null) {
 
                 Entity entity = getDataDefinition().get(entityId);
 
-                if (!entityBelongsToEntityId(entity)) {
-                    entity = null;
-                }
+                System.out.println(" #x6 " + getTranslationPath() + " ---> " + entity);
 
                 if (entity != null) {
                     code = String.valueOf(entity.getField(fieldCode));
@@ -194,6 +197,8 @@ public final class LookupComponentState extends FieldComponentState {
                     text = "";
                     setFieldValueWithoutUpdateStateRequest(null);
                 }
+
+                System.out.println(" #x7 " + getTranslationPath() + " ---> " + text);
             }
         }
 

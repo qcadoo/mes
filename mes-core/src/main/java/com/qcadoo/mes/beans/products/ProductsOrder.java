@@ -82,9 +82,6 @@ public class ProductsOrder {
     private BigDecimal plannedQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsTechnology defaultTechnology;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTechnology technology;
 
     @Column(scale = 3, precision = 10)
