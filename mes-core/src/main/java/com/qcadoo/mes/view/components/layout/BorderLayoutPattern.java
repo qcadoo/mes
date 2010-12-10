@@ -1,15 +1,10 @@
 package com.qcadoo.mes.view.components.layout;
 
 import com.qcadoo.mes.view.ComponentDefinition;
-import com.qcadoo.mes.view.ComponentPattern;
-import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
-import com.qcadoo.mes.view.components.EmptyContainerState;
-import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
-import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
 
 @ViewComponent("borderLayout")
-public class BorderLayoutPattern extends AbstractContainerPattern {
+public class BorderLayoutPattern extends AbstractLayoutPattern {
 
     private static final String JS_OBJECT = "QCD.components.containers.layout.BorderLayout";
 
@@ -19,21 +14,6 @@ public class BorderLayoutPattern extends AbstractContainerPattern {
 
     public BorderLayoutPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
-    }
-
-    public final void addFieldEntityIdChangeListener(final String field, final ComponentPattern listener) {
-        AbstractComponentPattern parent = (AbstractComponentPattern) this.getParent();
-        parent.addFieldEntityIdChangeListener(field, listener);
-    }
-
-    public final void addScopeEntityIdChangeListener(final String field, final ComponentPattern listener) {
-        AbstractComponentPattern parent = (AbstractComponentPattern) this.getParent();
-        parent.addScopeEntityIdChangeListener(field, listener);
-    }
-
-    @Override
-    protected ComponentState getComponentStateInstance() {
-        return new EmptyContainerState();
     }
 
     @Override

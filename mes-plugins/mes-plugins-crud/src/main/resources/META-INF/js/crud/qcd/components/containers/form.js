@@ -131,8 +131,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 //		} 
 //		element.width(width);
 		for (var i in this.components) {
-			QCD.info(this.components[i])
-			this.components[i].updateSize(width, height);
+			//QCD.info(this.components[i])
+			this.components[i].updateSize(_width, _height);
 		}
 	}
 	

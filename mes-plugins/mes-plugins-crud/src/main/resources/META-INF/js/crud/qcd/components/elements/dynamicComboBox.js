@@ -73,4 +73,9 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 			input.val(selected);
 		}
 	}
+	
+	this.updateSize = function(_width, _height) {
+		var height = _height ? _height-10 : 40;
+		this.input.parent().parent().height(height);
+	}
 }

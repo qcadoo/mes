@@ -6,14 +6,6 @@ QCD.components.containers.layout = QCD.components.containers.layout || {};
 QCD.components.containers.layout.Layout = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Container(_element, _mainController));
 	
-	function constructor(_this) {
-		_this.constructChildren(_this.getLayoutChildren());
-	}
-	
-	this.getLayoutChildren = function() {
-		return $("#"+this.elementSearchName+"_layoutComponents").children();
-	}
-	
 	this.getComponentValue = function() {
 		return {};
 	}
@@ -31,8 +23,4 @@ QCD.components.containers.layout.Layout = function(_element, _mainController) {
 	this.setComponentLoading = function() {
 	}
 	
-	this.updateSize = function(_width, _height) {
-	}
-	
-	constructor(this);
 }

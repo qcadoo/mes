@@ -75,4 +75,9 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 		currentValue = this.input.attr('checked');
 	} 
 	
+	this.updateSize = function(_width, _height) {
+		var height = _height ? _height-10 : 40;
+		this.input.parent().parent().height(height);
+	}
+	
 }

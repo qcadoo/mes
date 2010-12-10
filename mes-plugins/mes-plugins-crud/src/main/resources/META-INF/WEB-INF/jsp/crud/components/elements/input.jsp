@@ -18,7 +18,7 @@
 		<input type="text" id="${component['path']}_input" style="${displayHiddenIfTextRepresentationOnDisabled}" />
 		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
 			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
-			<span id="${componentFullName}_textHeight" style="display: inline-block">&nbsp;</span>
+			<span id="${componentFullName}_textHeight" style="display: inline-block; height: 100%; vertical-align: middle;">&nbsp;</span>
 		</c:if>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

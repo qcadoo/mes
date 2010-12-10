@@ -1,3 +1,10 @@
+
+.borderLayout {
+	//background: #99CCFF;
+	background: #EBEBEB;
+	border: solid #A7A7A7 1px;	
+}
+
 .gridLayoutTable {
 	width: 100%;
 	border: 0;
@@ -5,11 +12,13 @@
 }
 
 .gridLayoutTable > tbody > tr {
-	background: green;
+	height: 40px;
 }
 
 .gridLayoutTable > tbody > tr > td {
-	height: 40px;	
-	border: solid black 1px;
+		
+	//width: 200px;
+	//border: solid black 1px;
+	//border-left: solid black 1px;
 	text-align: center;
 }

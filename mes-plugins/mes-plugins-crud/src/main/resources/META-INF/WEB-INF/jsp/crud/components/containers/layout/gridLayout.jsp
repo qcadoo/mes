@@ -14,8 +14,14 @@
 		<c:forEach items="${component['cells']}" var="row">
 			<tr>
 				<c:forEach items="${row}" var="cell">
-					<c:if test="${cell.available}">
-						<td rowspan="${cell.rowspan}" colspan="${cell.colspan}">CELL</td>
+					<c:if test="${cell.available || cell.component != null}">
+						<td rowspan="${cell.rowspan}" colspan="${cell.colspan}">
+							<c:if test="${cell.component != null}">
+								<tiles:insertTemplate template="../../component.jsp">
+									<tiles:putAttribute name="component" value="${component.children[cell.component.name]}" />
+								</tiles:insertTemplate>
+							</c:if>
+						</td>
 					</c:if>
 				</c:forEach>
 			</tr>

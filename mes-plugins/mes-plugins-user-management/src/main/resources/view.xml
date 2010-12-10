@@ -122,7 +122,6 @@
 					<component type="input" name="lastName" field="lastName" />
 				</component>
 				<component type="textarea" name="description" field="description" />
-				<component type="gridLayout" name="gridLayout" />
 				<component type="password" name="password" field="password" />
 				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
 				<option type="header" value="false" />
@@ -173,7 +172,6 @@
 				<component type="input" name="firstName" field="firstName" />
 				<component type="input" name="lastName" field="lastName" />
 				
-				<component type="gridLayout" name="gridLayout" />
 				
 				<component type="textarea" name="description" field="description" />
 				<option type="header" value="false" />
