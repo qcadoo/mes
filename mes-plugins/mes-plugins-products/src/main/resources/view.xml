@@ -550,15 +550,15 @@
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlan,pdf);" />
+						action="#{window.workPlans}.fireEvent(printWorkPlan,pdf,ForWorker);" />
 					<smallButton name="xlsWorker" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlan,xls);" />
+						action="#{window.workPlans}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlan,pdf);" />
+						action="#{window.workPlans}.fireEvent(printWorkPlan,pdf,ForMachine);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlan,xls);" />
+						action="#{window.workPlans}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="workPlans">
@@ -589,15 +589,15 @@
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="printIcon16.png"
-						action="#{window.workPlan}.performCallFunction(printWorkPlan,pdf);" />
+						action="#{window.workPlan}.fireEvent(printWorkPlan,pdf,ForWorker);" />
 					<smallButton name="xlsWorker" icon="printIcon16.png"
-						action="#{window.workPlan}.performCallFunction(printWorkPlan,xls);" />
+						action="#{window.workPlan}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlan,pdf);" />
+						action="#{window.workPlans}.fireEvent(printWorkPlan,pdf,ForMachine);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.performCallFunction(printWorkPlan,xls);" />
+						action="#{window.workPlans}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>
 			<component type="form" name="workPlan">

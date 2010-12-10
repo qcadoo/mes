@@ -52,9 +52,11 @@ import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
-import com.qcadoo.mes.products.print.pdf.WorkPlanPdfService;
+import com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfService;
+import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
-import com.qcadoo.mes.products.print.xls.WorkPlanXlsService;
+import com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsService;
+import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -79,10 +81,16 @@ public final class ProductService {
     private MaterialRequirementXlsService materialRequirementXlsService;
 
     @Autowired
-    private WorkPlanPdfService workPlanPdfService;
+    private WorkPlanForWorkerPdfService workPlanForWorkerPdfService;
 
     @Autowired
-    private WorkPlanXlsService workPlanXlsService;
+    private WorkPlanForMachinePdfService workPlanForMachinePdfService;
+
+    @Autowired
+    private WorkPlanForWorkerXlsService workPlanForWorkerXlsService;
+
+    @Autowired
+    private WorkPlanForMachineXlsService workPlanForMachineXlsService;
 
     @Autowired
     private TranslationService translationService;
@@ -481,8 +489,8 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
-                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
+                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale(), false);
+                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale(), true);
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
@@ -591,8 +599,10 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    workPlanPdfService.generateDocument(workPlan, state.getLocale());
-                    workPlanXlsService.generateDocument(workPlan, state.getLocale());
+                    workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale(), false);
+                    workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale(), false);
+                    workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale(), false);
+                    workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale(), true);
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
@@ -606,16 +616,17 @@ public final class ProductService {
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
-            Entity materialRequirement = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
-            if (materialRequirement == null) {
+            Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
+            if (workPlan == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
-            } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+            } else if (!StringUtils.hasText(workPlan.getStringField("fileName"))) {
                 state.addMessage(
                         translationService.translate("products.workPlan.window.workPlan.documentsWasNotGenerated",
                                 state.getLocale()), MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/products/workPlan." + args[0] + "?id=" + state.getFieldValue(), false);
+                viewDefinitionState.redirectTo("/products/workPlan" + args[1] + "." + args[0] + "?id=" + state.getFieldValue(),
+                        false);
             }
         } else {
             if (state instanceof FormComponentState) {

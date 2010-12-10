@@ -43,20 +43,38 @@ public class ProductController {
         return mav;
     }
 
-    @RequestMapping(value = "products/workPlan.pdf", method = RequestMethod.GET)
-    public ModelAndView workPlanPdf(@RequestParam("id") final String id) {
+    @RequestMapping(value = "products/workPlanForWorker.pdf", method = RequestMethod.GET)
+    public ModelAndView workPlanForWorkerPdf(@RequestParam("id") final String id) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("workPlanPdfView");
+        mav.setViewName("workPlanForWorkerPdfView");
         mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
         return mav;
     }
 
-    @RequestMapping(value = "products/workPlan.xls", method = RequestMethod.GET)
-    public ModelAndView workPlanXls(@RequestParam("id") final String id) {
+    @RequestMapping(value = "products/workPlanForMachine.pdf", method = RequestMethod.GET)
+    public ModelAndView workPlanForMachinePdf(@RequestParam("id") final String id) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("workPlanXlsView");
+        mav.setViewName("workPlanForMachinePdfView");
+        mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
+        return mav;
+    }
+
+    @RequestMapping(value = "products/workPlanForWorker.xls", method = RequestMethod.GET)
+    public ModelAndView workPlanForWorkerXls(@RequestParam("id") final String id) {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("workPlanForWorkerXlsView");
+        mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
+        return mav;
+    }
+
+    @RequestMapping(value = "products/workPlanForMachine.xls", method = RequestMethod.GET)
+    public ModelAndView workPlanForMachineXls(@RequestParam("id") final String id) {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("workPlanForMachineXlsView");
         mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
         return mav;
     }

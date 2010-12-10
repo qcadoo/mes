@@ -47,10 +47,16 @@
   	<bean id="materialRequirementXlsView"
   		class="com.qcadoo.mes.products.print.xls.MaterialRequirementXlsView"/>
   		
-  	<bean id="workPlanPdfView"
-  		class="com.qcadoo.mes.products.print.pdf.WorkPlanPdfView"/>
+  	<bean id="workPlanForWorkerPdfView"
+  		class="com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfView"/>
   		
-  	<bean id="workPlanXlsView"
-  		class="com.qcadoo.mes.products.print.xls.WorkPlanXlsView"/>
+  	<bean id="workPlanForMachinePdfView"
+  		class="com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfView"/>
+  		
+  	<bean id="workPlanForWorkerXlsView"
+  		class="com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsView"/>
+  		
+  	<bean id="workPlanForMachineXlsView"
+  		class="com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsView"/>
 	
 </beans>

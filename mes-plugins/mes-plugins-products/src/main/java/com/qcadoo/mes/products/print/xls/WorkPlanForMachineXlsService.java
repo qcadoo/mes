@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.api.Entity;
 
 @Service
-public final class WorkPlanXlsService extends XlsDocumentService {
+public final class WorkPlanForMachineXlsService extends XlsDocumentService {
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -52,7 +52,7 @@ public final class WorkPlanXlsService extends XlsDocumentService {
 
     @Override
     protected String getFileName() {
-        return "WorkPlan";
+        return "WorkPlanForMachine";
     }
 
     @Override
@@ -63,5 +63,10 @@ public final class WorkPlanXlsService extends XlsDocumentService {
     @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("products.workPlan.report.title", locale);
+    }
+
+    @Override
+    protected String getFileNameWithoutSuffix() {
+        return "WorkPlan";
     }
 }

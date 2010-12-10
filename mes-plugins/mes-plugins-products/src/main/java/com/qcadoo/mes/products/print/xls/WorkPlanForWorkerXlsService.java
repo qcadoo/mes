@@ -24,26 +24,16 @@
 
 package com.qcadoo.mes.products.print.xls;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.ProxyEntity;
-import com.qcadoo.mes.products.print.ProductReportService;
 
 @Service
-public final class MaterialRequirementXlsService extends XlsDocumentService {
-
-    @Autowired
-    private ProductReportService reportDataService;
+public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -57,40 +47,26 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
-        int rowNum = 1;
-        List<Entity> orders = entity.getHasManyField("orders");
-        Map<ProxyEntity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
-        for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
-            HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
-            row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
-            row.createCell(2).setCellValue(entry.getValue().doubleValue());
-            Object unit = entry.getKey().getField("unit");
-            if (unit != null) {
-                row.createCell(3).setCellValue(unit.toString());
-            } else {
-                row.createCell(3).setCellValue("");
-            }
-        }
+
     }
 
     @Override
     protected String getFileName() {
-        return "MaterialRequirement";
+        return "WorkPlanForWorker";
     }
 
     @Override
     protected String getEntityName() {
-        return "materialRequirement";
+        return "workPlan";
     }
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("products.materialRequirement.report.title", locale);
+        return getTranslationService().translate("products.workPlan.report.title", locale);
     }
 
     @Override
     protected String getFileNameWithoutSuffix() {
-        return "MaterialRequirement";
+        return "WorkPlan";
     }
 }

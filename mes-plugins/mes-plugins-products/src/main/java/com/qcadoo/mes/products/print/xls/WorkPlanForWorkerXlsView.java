@@ -35,7 +35,7 @@ import org.springframework.web.servlet.view.document.AbstractExcelView;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
-public final class WorkPlanXlsView extends AbstractExcelView {
+public final class WorkPlanForWorkerXlsView extends AbstractExcelView {
 
     @Override
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,

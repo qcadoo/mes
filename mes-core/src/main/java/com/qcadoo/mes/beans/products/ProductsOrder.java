@@ -94,6 +94,9 @@ public class ProductsOrder {
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<ProductsMaterialRequirementComponent> materialRequirements;
 
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    private List<ProductsWorkPlanComponent> workPlans;
+
     public Long getId() {
         return id;
     }
@@ -220,6 +223,14 @@ public class ProductsOrder {
 
     public void setMaterialRequirements(final List<ProductsMaterialRequirementComponent> materialRequirements) {
         this.materialRequirements = materialRequirements;
+    }
+
+    public List<ProductsWorkPlanComponent> getWorkPlans() {
+        return workPlans;
+    }
+
+    public void setWorkPlans(final List<ProductsWorkPlanComponent> workPlans) {
+        this.workPlans = workPlans;
     }
 
 }
