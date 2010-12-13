@@ -98,7 +98,6 @@
 
 		var viewName = "${viewName}";
 		var pluginIdentifier = "${pluginIdentifier}";
-		var entityId = "";
 		var context = '${context}';
 		var locale = '${locale}';
 
@@ -109,7 +108,7 @@
 		var controller = null;
 
 		window.init = function(serializationObject) {
-			controller.init(entityId, serializationObject);
+			controller.init(serializationObject);
 		}
 
 		window.canClose = function() {

@@ -301,7 +301,7 @@ public final class ProductService {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByReference("window.order.product");
+        LookupComponentState product = (LookupComponentState) state.getComponentByReference("product");
         FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByReference("defaultTechnology");
 
         if (product.getFieldValue() != null) {
@@ -316,7 +316,7 @@ public final class ProductService {
     }
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state, final Locale locale) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByReference("window.order.product");
+        LookupComponentState product = (LookupComponentState) state.getComponentByReference("product");
         LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
         FieldComponentState plannedQuantity = (FieldComponentState) state.getComponentByReference("plannedQuantity");
 
