@@ -26,6 +26,7 @@ package com.qcadoo.mes.products;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
@@ -62,6 +63,7 @@ import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
+import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
@@ -263,6 +265,16 @@ public final class ProductService {
 
         if (entity != null && "done".equals(entity.getStringField("state")) && order.isValid()) {
             order.setEnabled(false);
+            setChildrenEnabled(order.getChildren().values(), false);
+        }
+    }
+
+    private void setChildrenEnabled(final Collection<ComponentState> children, final boolean isEnabled) {
+        for (ComponentState child : children) {
+            child.setEnabled(isEnabled);
+            if (child instanceof ContainerState) {
+                setChildrenEnabled(((ContainerState) child).getChildren().values(), isEnabled);
+            }
         }
     }
 

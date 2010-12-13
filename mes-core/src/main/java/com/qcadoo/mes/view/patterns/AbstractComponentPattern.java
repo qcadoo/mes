@@ -32,6 +32,7 @@ import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.layout.AbstractLayoutPattern;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
@@ -141,7 +142,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         for (ComponentCustomEvent customEvent : customEvents) {
             state.registerCustomEvent(customEvent.getEvent(), customEvent.getObject(), customEvent.getMethod());
         }
-        viewDefinitionState.registerComponent(getFunctionalPath(), state);
+        if(!(this instanceof AbstractLayoutPattern)) {
+            viewDefinitionState.registerComponent(getFunctionalPath(), state);
+        }
         return state;
     }
 
