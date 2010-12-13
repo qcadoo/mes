@@ -255,6 +255,9 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     @Override
     @SuppressWarnings("unchecked")
     public String translateContextReferences(final String context) {
+        if (context == null) {
+            return null;
+        }
         try {
             JSONObject oldContext = new JSONObject(context);
             JSONObject newContext = new JSONObject();
