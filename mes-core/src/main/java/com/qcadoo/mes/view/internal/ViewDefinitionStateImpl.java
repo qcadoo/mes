@@ -2,7 +2,9 @@ package com.qcadoo.mes.view.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +19,8 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     private String redirectToUrl;
 
     private boolean openInNewWindow;
+
+    private final Map<String, ComponentState> components = new HashMap<String, ComponentState>();
 
     public ViewDefinitionStateImpl() {
         requestRender();
@@ -77,11 +81,17 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
         for (int i = 0; i < pathParts.length; i++) {
             ContainerState container = (ContainerState) componentState;
             componentState = container.getChild(pathParts[i]);
+
             if (componentState == null) {
                 return null;
             }
         }
         return componentState;
+    }
+
+    @Override
+    public ComponentState getComponentByFunctionalPath(final String path) {
+        return components.get(path);
     }
 
     private void performEventOnChildren(final Collection<ComponentState> components, final String event, final String... args) {
@@ -108,6 +118,11 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     public void redirectTo(final String redirectToUrl, final boolean openInNewWindow) {
         this.redirectToUrl = redirectToUrl;
         this.openInNewWindow = openInNewWindow;
+    }
+
+    @Override
+    public void registerComponent(final String path, final ComponentState state) {
+        components.put(path, state);
     }
 
 }

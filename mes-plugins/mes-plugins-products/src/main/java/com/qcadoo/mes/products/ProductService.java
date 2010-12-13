@@ -26,10 +26,12 @@ package com.qcadoo.mes.products;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -51,6 +53,7 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
+import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
@@ -60,6 +63,7 @@ import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
+import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
@@ -67,6 +71,8 @@ import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @Service
 public final class ProductService {
+
+    private static final SimpleDateFormat D_T_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -91,6 +97,9 @@ public final class ProductService {
 
     @Autowired
     private WorkPlanForMachineXlsService workPlanForMachineXlsService;
+
+    @Value("${reportPath}")
+    private String path;
 
     @Autowired
     private TranslationService translationService;
@@ -216,8 +225,8 @@ public final class ProductService {
     }
 
     public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByPath("window.order");
-        FieldComponentState number = (FieldComponentState) state.getComponentByPath("window.order.number");
+        FormComponentState form = (FormComponentState) state.getComponentByFunctionalPath("window.order");
+        FieldComponentState number = (FieldComponentState) state.getComponentByFunctionalPath("window.order.number");
 
         if (form.getEntityId() != null) {
             // form is already saved
@@ -250,12 +259,22 @@ public final class ProductService {
     }
 
     public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState order = (FormComponentState) state.getComponentByPath("window.order");
+        FormComponentState order = (FormComponentState) state.getComponentByFunctionalPath("window.order");
 
         Entity entity = dataDefinitionService.get("products", "order").get(order.getEntityId());
 
-        if (entity != null && "done".equals(entity.getStringField("status")) && order.isValid()) {
+        if (entity != null && "done".equals(entity.getStringField("state")) && order.isValid()) {
             order.setEnabled(false);
+            setChildrenEnabled(order.getChildren().values(), false);
+        }
+    }
+
+    private void setChildrenEnabled(final Collection<ComponentState> children, final boolean isEnabled) {
+        for (ComponentState child : children) {
+            child.setEnabled(isEnabled);
+            if (child instanceof ContainerState) {
+                setChildrenEnabled(((ContainerState) child).getChildren().values(), isEnabled);
+            }
         }
     }
 
@@ -266,9 +285,9 @@ public final class ProductService {
 
         LookupComponentState product = (LookupComponentState) state;
         LookupComponentState technology = (LookupComponentState) viewDefinitionState
-                .getComponentByPath("window.order.technology");
+                .getComponentByFunctionalPath("window.order.technology");
         FieldComponentState defaultTechnology = (FieldComponentState) viewDefinitionState
-                .getComponentByPath("window.order.defaultTechnology");
+                .getComponentByFunctionalPath("window.order.defaultTechnology");
 
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
@@ -283,8 +302,9 @@ public final class ProductService {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByPath("window.order.product");
-        FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByPath("window.order.defaultTechnology");
+        LookupComponentState product = (LookupComponentState) state.getComponentByFunctionalPath("window.order.product");
+        FieldComponentState defaultTechnology = (FieldComponentState) state
+                .getComponentByFunctionalPath("window.order.defaultTechnology");
 
         if (product.getFieldValue() != null) {
             Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
@@ -298,9 +318,10 @@ public final class ProductService {
     }
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state, final Locale locale) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByPath("window.order.product");
-        LookupComponentState technology = (LookupComponentState) state.getComponentByPath("window.order.technology");
-        FieldComponentState plannedQuantity = (FieldComponentState) state.getComponentByPath("window.order.plannedQuantity");
+        LookupComponentState product = (LookupComponentState) state.getComponentByFunctionalPath("window.order.product");
+        LookupComponentState technology = (LookupComponentState) state.getComponentByFunctionalPath("window.order.technology");
+        FieldComponentState plannedQuantity = (FieldComponentState) state
+                .getComponentByFunctionalPath("window.order.plannedQuantity");
 
         if (product.getFieldValue() == null || !hasAnyTechnologies(product.getFieldValue())) {
             technology.setEnabled(false);
@@ -459,9 +480,9 @@ public final class ProductService {
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponentState) {
-            ComponentState generated = viewDefinitionState.getComponentByPath("window.materialRequirement.generated");
-            ComponentState date = viewDefinitionState.getComponentByPath("window.materialRequirement.date");
-            ComponentState worker = viewDefinitionState.getComponentByPath("window.materialRequirement.worker");
+            ComponentState generated = viewDefinitionState.getComponentByFunctionalPath("window.materialRequirement.generated");
+            ComponentState date = viewDefinitionState.getComponentByFunctionalPath("window.materialRequirement.date");
+            ComponentState worker = viewDefinitionState.getComponentByFunctionalPath("window.materialRequirement.worker");
 
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(getLoginOfLoggedUser());
@@ -490,8 +511,12 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale(), false);
-                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale(), true);
+
+                    materialRequirement = updateFileName(materialRequirement,
+                            getFullFileName((Date) materialRequirement.getField("date"), "MaterialRequirement"),
+                            "materialRequirement");
+                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
+                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
@@ -545,10 +570,12 @@ public final class ProductService {
     }
 
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state, final Locale locale) {
-        ComponentState name = state.getComponentByPath(("window.materialRequirement.name"));
-        ComponentState onlyComponents = state.getComponentByPath(("window.materialRequirement.onlyComponents"));
-        ComponentState materialRequirementComponents = state.getComponentByPath(("window.materialRequirementComponents"));
-        FieldComponentState generated = (FieldComponentState) state.getComponentByPath(("window.materialRequirement.generated"));
+        ComponentState name = state.getComponentByFunctionalPath(("window.materialRequirement.name"));
+        ComponentState onlyComponents = state.getComponentByFunctionalPath(("window.materialRequirement.onlyComponents"));
+        ComponentState materialRequirementComponents = state
+                .getComponentByFunctionalPath(("window.materialRequirementComponents"));
+        FieldComponentState generated = (FieldComponentState) state
+                .getComponentByFunctionalPath(("window.materialRequirement.generated"));
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
@@ -558,9 +585,9 @@ public final class ProductService {
     }
 
     public void disableFormForExistingWorkPlan(final ViewDefinitionState state, final Locale locale) {
-        ComponentState name = state.getComponentByPath(("window.workPlan.name"));
-        ComponentState workPlanComponents = state.getComponentByPath(("window.workPlanComponents"));
-        FieldComponentState generated = (FieldComponentState) state.getComponentByPath(("window.workPlan.generated"));
+        ComponentState name = state.getComponentByFunctionalPath(("window.workPlan.name"));
+        ComponentState workPlanComponents = state.getComponentByFunctionalPath(("window.workPlanComponents"));
+        FieldComponentState generated = (FieldComponentState) state.getComponentByFunctionalPath(("window.workPlan.generated"));
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
@@ -570,9 +597,9 @@ public final class ProductService {
 
     public void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponentState) {
-            ComponentState generated = viewDefinitionState.getComponentByPath("window.workPlan.generated");
-            ComponentState date = viewDefinitionState.getComponentByPath("window.workPlan.date");
-            ComponentState worker = viewDefinitionState.getComponentByPath("window.workPlan.worker");
+            ComponentState generated = viewDefinitionState.getComponentByFunctionalPath("window.workPlan.generated");
+            ComponentState date = viewDefinitionState.getComponentByFunctionalPath("window.workPlan.date");
+            ComponentState worker = viewDefinitionState.getComponentByFunctionalPath("window.workPlan.worker");
 
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(getLoginOfLoggedUser());
@@ -600,10 +627,12 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale(), false);
-                    workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale(), false);
-                    workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale(), false);
-                    workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale(), true);
+
+                    workPlan = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "WorkPlan"), "workPlan");
+                    workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale());
+                    workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale());
+                    workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale());
+                    workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
@@ -638,6 +667,15 @@ public final class ProductService {
                         MessageType.FAILURE);
             }
         }
+    }
+
+    private final String getFullFileName(final Date date, final String fileName) {
+        return path + fileName + "_" + D_T_F.format(date);
+    }
+
+    private final Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
+        entity.setField("fileName", fileName);
+        return dataDefinitionService.get("products", entityName).save(entity);
     }
 
 }

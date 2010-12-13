@@ -6,6 +6,10 @@ public interface ViewDefinitionState extends ContainerState {
 
     ComponentState getComponentByPath(String path);
 
+    ComponentState getComponentByFunctionalPath(String path);
+
     void redirectTo(String redirectToUrl, boolean openInNewWindow);
+
+    void registerComponent(String path, ComponentState state);
 
 }
