@@ -44,13 +44,12 @@ public final class UserService {
     private boolean showChangePasswordButton;
 
     public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state, final Locale locale) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByPath("window.user.viewIdentifier");
-        PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByPath("window.user.oldPassword");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByPath("window.user.password");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
+        PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByReference("oldPasswordTextInput");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByPath("window.user.passwordConfirmation");
-        ButtonComponentState changePasswordButton = (ButtonComponentState) state
-                .getComponentByPath("window.changePasswordButton");
+                .getComponentByReference("passwordConfirmationTextInput");
+        ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
 
         oldPassword.setRequired(true);
         password.setRequired(true);
@@ -63,10 +62,10 @@ public final class UserService {
     }
 
     public void setPasswordAsRequired(final ViewDefinitionState state, final Locale locale) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByPath("window.user.viewIdentifier");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByPath("window.user.password");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByPath("window.user.passwordConfirmation");
+                .getComponentByReference("passwordConfirmationTextInput");
 
         password.setRequired(true);
         passwordConfirmation.setRequired(true);
@@ -74,12 +73,11 @@ public final class UserService {
     }
 
     public void hidePasswordOnUpdateForm(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByPath("window.user");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByPath("window.user.password");
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByPath("window.user.passwordConfirmation");
-        ButtonComponentState changePasswordButton = (ButtonComponentState) state
-                .getComponentByPath("window.changePasswordButton");
+                .getComponentByReference("passwordConfirmationTextInput");
+        ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
 
         password.setRequired(true);
         passwordConfirmation.setRequired(true);
@@ -101,42 +99,33 @@ public final class UserService {
         String oldPassword = entity.getStringField("oldPassword");
         String viewIdentifier = entity.getStringField("viewIdentifier");
 
-        System.out.println(" @0 ---> " + viewIdentifier);
-
         if (!"profileChangePassword".equals(viewIdentifier) && !"userChangePassword".equals(viewIdentifier)) {
             return true;
         }
 
-        System.out.println(" @1");
-
         if ("profileChangePassword".equals(viewIdentifier)) {
             if (oldPassword == null) {
-                System.out.println(" @2");
                 entity.addError(dataDefinition.getField("oldPassword"), "users.validate.global.error.noOldPassword");
                 return false;
             }
             Object currentPassword = dataDefinition.get(entity.getId()).getField("password");
             if (!currentPassword.equals(oldPassword)) {
-                System.out.println(" @3 ---> " + currentPassword + " <> " + oldPassword);
                 entity.addError(dataDefinition.getField("oldPassword"), "users.validate.global.error.wrongOldPassword");
                 return false;
             }
         }
 
         if (password == null) {
-            System.out.println(" @4");
             entity.addError(dataDefinition.getField("password"), "users.validate.global.error.noPassword");
             return false;
         }
 
         if (passwordConfirmation == null) {
-            System.out.println(" @5");
             entity.addError(dataDefinition.getField("passwordConfirmation"), "users.validate.global.error.noPasswordConfirmation");
             return false;
         }
 
         if (!password.equals(passwordConfirmation)) {
-            System.out.println(" @6 ---> " + password + " <> " + passwordConfirmation);
             entity.addError(dataDefinition.getField("password"), "users.validate.global.error.notMatch");
             entity.addError(dataDefinition.getField("passwordConfirmation"), "users.validate.global.error.notMatch");
             return false;

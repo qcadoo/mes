@@ -40,7 +40,7 @@
 		<div class=lookupValueWrapper>
 			<div class="lookupValue" id="${component['path']}_valueDiv"></div>
 			<div class="lookupLoading" id="${component['path']}_loadingDiv"></div>
-			<input type="text" id="${component['path']}_input" class="hasDatepick"/>
+			<input type="text" id="${component['path']}_input" class="hasDatepick" tabindex="${component['indexOrder']}"/>
 		</div>
 		<div class="lookupIcon" id="${component['path']}_openLookupButton"></div>
 	</tiles:putAttribute>

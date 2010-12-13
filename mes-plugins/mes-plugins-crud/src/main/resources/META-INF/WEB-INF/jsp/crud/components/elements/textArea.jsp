@@ -38,6 +38,6 @@
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="textarea" />
 	<tiles:putAttribute name="componentBody">
-		<textarea id="${component['path']}_input" rows="${component['jspOptions']['rows']}"></textarea>
+		<textarea id="${component['path']}_input" rows="${component['jspOptions']['rows']}" tabindex="${component['indexOrder']}"></textarea>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

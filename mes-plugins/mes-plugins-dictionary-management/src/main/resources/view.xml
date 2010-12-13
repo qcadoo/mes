@@ -36,7 +36,7 @@
 				<option type="orderable" value="name" />
 				<option type="paginable" value="true" />
 				<option type="correspondingView" value="dictionaries/dictionary" />
-				<option type="correspondingComponent" value="window.dictionary" />
+				<option type="correspondingComponent" value="form" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
@@ -52,22 +52,22 @@
 					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="newValue" icon="newIcon24.png" action="#{window.dictionaryItems}.performNew;" />
+					<bigButton name="newValue" icon="newIcon24.png" action="#{grid}.performNew;" />
 					<smallButton name="deleteValue" icon="deleteIcon16.png"
-						action="#{window.dictionaryItems}.performDelete;" />
+						action="#{grid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="form" name="dictionary">
+			<component type="form" reference="form" name="dictionary">
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>		
-			<component type="grid" name="dictionaryItems" source="#{window.dictionary}.dictionaryItems">
+			<component type="grid" name="dictionaryItems" reference="grid" source="#{form}.dictionaryItems">
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="description" fields="description" />
 				<option type="paginable" value="false" />
 				<option type="height" value="250" />
 				<option type="correspondingView" value="dictionaries/dictionaryItem" />
-				<option type="correspondingComponent" value="window.dictionaryItem" />
+				<option type="correspondingComponent" value="form" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 			</component>
@@ -81,16 +81,16 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.dictionaryItem}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.dictionaryItem}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{window.dictionaryItem}.performCancel;" />
+						action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.dictionaryItem}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="dictionaryItem">
+			<component type="form" name="dictionaryItem" reference="form">
 				<component type="textarea" name="name" field="name" />
 				<component type="textarea" name="description" field="description" />
 				<option type="header" value="false" />

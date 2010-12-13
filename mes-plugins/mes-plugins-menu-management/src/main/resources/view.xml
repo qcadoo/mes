@@ -30,19 +30,19 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{window.menuCategories}.performNew;" />
+					<bigButton name="new" icon="newIcon24.png" action="#{grid}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.menuCategories}.performDelete;" />
+						action="#{grid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="menuCategories">
+			<component type="grid" name="menuCategories" reference="grid">
 				<option type="column" name="categoryOrder" fields="categoryOrder" />
 				<option type="column" name="name" fields="name" link="true" width="600" />
 				<option type="column" name="active" fields="active" />
 				<option type="orderable" value="name" />
 				<option type="searchable" value="name" />
 				<option type="correspondingView" value="menu/menuCategory" />
-				<option type="correspondingComponent" value="window.menuCategory" />
+				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -57,16 +57,16 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.menuCategory}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.menuCategory}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{window.menuCategory}.performCancel;" />
+						action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.menuCategory}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="menuCategory">
+			<component type="form" name="menuCategory" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="input" name="name" field="name" hasDescription="false" />
@@ -78,12 +78,12 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="grid" name="menuViewDefinitionItems" source="#{window.menuCategory}.viewDefinitionItems">
+			<component type="grid" name="menuViewDefinitionItems" source="#{form}.viewDefinitionItems">
 				<option type="column" name="itemOrder" fields="itemOrder" />
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="active" fields="active" link="false" />
 				<option type="correspondingView" value="menu/menuViewDefinitionItem" />
-				<option type="correspondingComponent" value="window.menuViewDefinitionItem" />
+				<option type="correspondingComponent" value="form" />
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="400" />
@@ -100,16 +100,16 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.menuViewDefinitionItem}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.menuViewDefinitionItem}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{window.menuViewDefinitionItem}.performCancel;" />
+						action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.menuViewDefinitionItem}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="menuViewDefinitionItem">
+			<component type="form" name="menuViewDefinitionItem" reference="form">
 				<component type="input" name="name" field="name" hasDescription="false" />
 				<component type="lookup" name="viewDefinition" field="viewDefinition">
 					<option type="column" name="pluginIdentifier" fields="pluginIdentifier" />

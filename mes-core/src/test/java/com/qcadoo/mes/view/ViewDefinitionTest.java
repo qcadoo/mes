@@ -78,37 +78,14 @@ public class ViewDefinitionTest extends AbstractPatternTest {
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
         ComponentPattern pattern = Mockito.mock(ComponentPattern.class);
-        given(pattern.getName()).willReturn("name");
 
-        viewDefinition.addComponentPattern(pattern);
+        viewDefinition.registerComponent("reference", "path", pattern);
 
         // when
-        ComponentPattern actualPattern = viewDefinition.getComponentByPath("name");
+        ComponentPattern actualPattern = viewDefinition.getComponentByReference("reference");
 
         // then
         Assert.assertEquals(pattern, actualPattern);
-    }
-
-    @Test
-    public void shouldReturnPatternByPath() throws Exception {
-        // given
-        ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
-
-        ContainerPattern pattern1 = Mockito.mock(ContainerPattern.class);
-        ContainerPattern pattern2 = Mockito.mock(ContainerPattern.class);
-        ContainerPattern pattern3 = Mockito.mock(ContainerPattern.class);
-
-        given(pattern1.getName()).willReturn("name1");
-        given(pattern1.getChild("name2")).willReturn(pattern2);
-        given(pattern2.getChild("name3")).willReturn(pattern3);
-
-        viewDefinition.addComponentPattern(pattern1);
-
-        // when
-        ComponentPattern actualPattern = viewDefinition.getComponentByPath("name1.name2.name3");
-
-        // then
-        Assert.assertEquals(pattern3, actualPattern);
     }
 
     @Test
@@ -116,13 +93,8 @@ public class ViewDefinitionTest extends AbstractPatternTest {
         // given
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl("name", "plugin", mock(DataDefinition.class), true, null);
 
-        ContainerPattern pattern = Mockito.mock(ContainerPattern.class);
-        given(pattern.getName()).willReturn("name");
-
-        viewDefinition.addComponentPattern(pattern);
-
         // when
-        ComponentPattern actualPattern = viewDefinition.getComponentByPath("name.name2.name3");
+        ComponentPattern actualPattern = viewDefinition.getComponentByReference("xxx");
 
         // then
         assertNull(actualPattern);

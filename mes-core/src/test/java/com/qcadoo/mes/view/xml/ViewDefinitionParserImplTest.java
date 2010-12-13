@@ -182,7 +182,7 @@ public class ViewDefinitionParserImplTest {
         // then
         assertEquals("simpleView", viewDefinition.getName());
         assertEquals("sample", viewDefinition.getPluginIdentifier());
-        assertThat(viewDefinition.getComponentByPath("mainWindow"), instanceOf(WindowComponentPattern.class));
+        assertThat(viewDefinition.getComponentByReference("mainWindow"), instanceOf(WindowComponentPattern.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -211,7 +211,7 @@ public class ViewDefinitionParserImplTest {
         assertEquals("test", item11.getString("name"));
         assertFalse(item11.has("icon"));
         assertEquals(RibbonActionItem.Type.BIG_BUTTON.toString(), item11.getString("type"));
-        assertEquals("#{mainWindow.beanBForm}.save,#{mainWindow}.back", item11.getString("clickAction"));
+        // assertEquals("#{mainWindow.beanBForm}.save,#{mainWindow}.back", item11.getString("clickAction"));
 
         JSONObject item12 = ribbon.getJSONArray("groups").getJSONObject(0).getJSONArray("items").getJSONObject(1);
 
@@ -256,57 +256,58 @@ public class ViewDefinitionParserImplTest {
         ViewDefinition vd = parseAndGetViewDefinition();
 
         // then
-        checkComponent(vd.getComponentByPath("mainWindow"), null, WindowComponentPattern.class, "mainWindow", "beanB");
+        checkComponent(vd.getComponentByReference("mainWindow"), null, WindowComponentPattern.class, "mainWindow", "beanB");
 
-        checkComponent(vd.getComponentByPath("mainWindow.beanBForm"), vd.getComponentByPath("mainWindow"),
+        checkComponent(vd.getComponentByReference("mainWindow.beanBForm"), vd.getComponentByReference("mainWindow"),
                 FormComponentPattern.class, "beanBForm", "beanB");
 
-        checkComponent(vd.getComponentByPath("mainWindow.name"), vd.getComponentByPath("mainWindow"),
+        checkComponent(vd.getComponentByReference("referenceToTextarea"), vd.getComponentByReference("mainWindow"),
                 TextAreaComponentPattern.class, "name", "beanB");
 
-        checkComponent(vd.getComponentByPath("mainWindow.beanBForm.active"), vd.getComponentByPath("mainWindow.beanBForm"),
-                CheckBoxComponentPattern.class, "active", "beanB");
+        checkComponent(vd.getComponentByReference("mainWindow.beanBForm.active"),
+                vd.getComponentByReference("mainWindow.beanBForm"), CheckBoxComponentPattern.class, "active", "beanB");
 
-        checkComponent(vd.getComponentByPath("mainWindow.beanBForm.selectBeanA"), vd.getComponentByPath("mainWindow.beanBForm"),
-                TextInputComponentPattern.class, "selectBeanA", "beanA");
+        checkComponent(vd.getComponentByReference("mainWindow.beanBForm.selectBeanA"),
+                vd.getComponentByReference("mainWindow.beanBForm"), TextInputComponentPattern.class, "selectBeanA", "beanA");
 
-        checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanM"), vd.getComponentByPath("mainWindow.beanBForm"),
-                TextAreaComponentPattern.class, "beanM", "beanB");
+        checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beanM"),
+                vd.getComponentByReference("mainWindow.beanBForm"), TextAreaComponentPattern.class, "beanM", "beanB");
 
-        checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beansBGrig"), vd.getComponentByPath("mainWindow.beanBForm"),
+        checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beansBGrig"),
+                vd.getComponentByReference("mainWindow.beanBForm"), GridComponentPattern.class, "beansBGrig", "beanB");
+
+        checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beanAForm"),
+                vd.getComponentByReference("mainWindow.beanBForm"), FormComponentPattern.class, "beanAForm", "beanA");
+
+        checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beanAForm.name"),
+                vd.getComponentByReference("mainWindow.beanBForm.beanAForm"), TextInputComponentPattern.class, "name", "beanA");
+
+        checkComponent(vd.getComponentByReference("mainWindow.beansBGrig"), vd.getComponentByReference("mainWindow"),
                 GridComponentPattern.class, "beansBGrig", "beanB");
 
-        checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanAForm"), vd.getComponentByPath("mainWindow.beanBForm"),
-                FormComponentPattern.class, "beanAForm", "beanA");
-
-        checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanAForm.name"),
-                vd.getComponentByPath("mainWindow.beanBForm.beanAForm"), TextInputComponentPattern.class, "name", "beanA");
-
-        checkComponent(vd.getComponentByPath("mainWindow.beansBGrig"), vd.getComponentByPath("mainWindow"),
-                GridComponentPattern.class, "beansBGrig", "beanB");
-
-        checkComponent(vd.getComponentByPath("mainWindow.link"), vd.getComponentByPath("mainWindow"),
+        checkComponent(vd.getComponentByReference("mainWindow.link"), vd.getComponentByReference("mainWindow"),
                 ButtonComponentPattern.class, "link", "beanB");
 
-        checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"), vd.getComponentByPath("mainWindow.name"), "name");
-        checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"), vd.getComponentByPath("mainWindow.beanBForm.active"),
-                "active");
-        checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"),
-                vd.getComponentByPath("mainWindow.beanBForm.beanAForm"), "beanA");
-        checkFieldListener(vd.getComponentByPath("mainWindow.beanBForm"), vd.getComponentByPath("mainWindow.beanBForm.beanM"),
-                "beanM");
+        checkFieldListener(vd.getComponentByReference("mainWindow.beanBForm"), vd.getComponentByReference("referenceToTextarea"),
+                "name");
+        checkFieldListener(vd.getComponentByReference("mainWindow.beanBForm"),
+                vd.getComponentByReference("mainWindow.beanBForm.active"), "active");
+        checkFieldListener(vd.getComponentByReference("mainWindow.beanBForm"),
+                vd.getComponentByReference("mainWindow.beanBForm.beanAForm"), "beanA");
+        checkFieldListener(vd.getComponentByReference("mainWindow.beanBForm"),
+                vd.getComponentByReference("mainWindow.beanBForm.beanM"), "beanM");
         //
         // checkComponent(root, WindowComponent.class, "mainWindow", "window", "beanB", null, null, null,
         // Sets.<String> newHashSet(), 3, ImmutableMap.<String, Object> of("backButton", false, "header", true));
         //
-        // checkComponent(vd.getComponentByPath("mainWindow.beanBForm"), FormComponent.class, "mainWindow.beanBForm", "form",
+        // checkComponent(vd.getComponentByReference("mainWindow.beanBForm"), FormComponent.class, "mainWindow.beanBForm", "form",
         // "beanB", null, null, null, Sets.<String> newHashSet(), 7, ImmutableMap.<String, Object> of("header", false));
         //
-        // checkComponent(vd.getComponentByPath("mainWindow.beanBForm.name"), TextAreaComponent.class,
+        // checkComponent(vd.getComponentByReference("mainWindow.beanBForm.name"), TextAreaComponent.class,
         // "mainWindow.beanBForm.name",
         // "textArea", "beanB", "name", null, null, Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
         //
-        // ComponentPattern selectBeanA = vd.getComponentByPath("mainWindow.beanBForm.selectBeanA");
+        // ComponentPattern selectBeanA = vd.getComponentByReference("mainWindow.beanBForm.selectBeanA");
         // checkComponent(selectBeanA, LookupComponent.class, "mainWindow.beanBForm.selectBeanA", "lookupComponent", "beanA",
         // "beanA", null, null, Sets.newHashSet("mainWindow.beanBForm.beansBGrig", "mainWindow.beansBGrig"), 0,
         // Maps.<String, Object> newHashMap());
@@ -314,30 +315,30 @@ public class ViewDefinitionParserImplTest {
         // assertTrue(selectBeanA.isDefaultEnabled());
         // assertTrue(selectBeanA.isDefaultVisible());
         //
-        // ComponentPattern active = vd.getComponentByPath("mainWindow.beanBForm.active");
+        // ComponentPattern active = vd.getComponentByReference("mainWindow.beanBForm.active");
         // checkComponent(active, CheckBoxComponent.class, "mainWindow.beanBForm.active", "checkBox", "beanB", "name", null, null,
         // Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
         //
         // assertFalse(active.isDefaultEnabled());
         // assertFalse(active.isDefaultVisible());
         //
-        // checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanM"), TextAreaComponent.class,
+        // checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beanM"), TextAreaComponent.class,
         // "mainWindow.beanBForm.beanM", "textArea", "beanB", "name", null, null, Sets.<String> newHashSet(), 0,
         // Maps.<String, Object> newHashMap());
         //
-        // checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanB"), TextAreaComponent.class,
+        // checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beanB"), TextAreaComponent.class,
         // "mainWindow.beanBForm.beanB", "textArea", "beanA", "beanA.name", null, null, Sets.<String> newHashSet(), 0,
         // Maps.<String, Object> newHashMap());
         //
-        // checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanAForm"), FormComponent.class,
+        // checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beanAForm"), FormComponent.class,
         // "mainWindow.beanBForm.beanAForm", "form", "beanA", "beanA", null, null, Sets.<String> newHashSet(), 1,
         // Maps.<String, Object> newHashMap());
         //
-        // checkComponent(vd.getComponentByPath("mainWindow.beanBForm.beanAForm.name"), TextAreaComponent.class,
+        // checkComponent(vd.getComponentByReference("mainWindow.beanBForm.beanAForm.name"), TextAreaComponent.class,
         // "mainWindow.beanBForm.beanAForm.name", "textArea", "beanA", "name", null, null, Sets.<String> newHashSet(), 0,
         // Maps.<String, Object> newHashMap());
         //
-        // GridComponentPattern grid = (GridComponentPattern) vd.getComponentByPath("mainWindow.beanBForm.beansBGrig");
+        // GridComponentPattern grid = (GridComponentPattern) vd.getComponentByReference("mainWindow.beanBForm.beansBGrig");
         // checkComponent(grid, GridComponentPattern.class, "mainWindow.beanBForm.beansBGrig", "grid", "beanB", null,
         // "mainWindow.beanBForm.selectBeanA", "beansB", Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
         // List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>(grid.getColumns());
@@ -362,7 +363,7 @@ public class ViewDefinitionParserImplTest {
         // assertEquals(1, columns.get(0).getFields().size());
         // assertThat(columns.get(0).getFields(), hasItems(dataDefinitionB.getField("name")));
         //
-        // GridComponentPattern grid2 = (GridComponentPattern) vd.getComponentByPath("mainWindow.beansBGrig");
+        // GridComponentPattern grid2 = (GridComponentPattern) vd.getComponentByReference("mainWindow.beansBGrig");
         // checkComponent(grid2, GridComponentPattern.class, "mainWindow.beansBGrig", "grid", "beanB", null,
         // "mainWindow.beanBForm.selectBeanA", "beansB", Sets.<String> newHashSet(), 0, Maps.<String, Object> newHashMap());
         // List<ColumnDefinition> columns2 = new ArrayList<ColumnDefinition>(grid2.getColumns());
@@ -390,7 +391,8 @@ public class ViewDefinitionParserImplTest {
         // assertEquals(2, columns2.get(1).getFields().size());
         // assertThat(columns2.get(1).getFields(), hasItems(dataDefinitionB.getField("name"), dataDefinitionB.getField("beanA")));
         //
-        // checkComponent(vd.getComponentByPath("mainWindow.link"), LinkButtonComponent.class, "mainWindow.link", "linkButton",
+        // checkComponent(vd.getComponentByReference("mainWindow.link"), LinkButtonComponent.class, "mainWindow.link",
+        // "linkButton",
         // "beanB", null, null, null, Sets.<String> newHashSet(), 0,
         // ImmutableMap.<String, Object> of("url", "download.html"));
     }
@@ -441,7 +443,7 @@ public class ViewDefinitionParserImplTest {
     @Test
     public void shouldSetListeners() throws Exception {
         // given
-        ComponentPattern component = parseAndGetViewDefinition().getComponentByPath("mainWindow.beanBForm");
+        ComponentPattern component = parseAndGetViewDefinition().getComponentByReference("mainWindow.beanBForm");
 
         // then
         List<ComponentCustomEvent> customEvents = (List<ComponentCustomEvent>) getField(component, "customEvents");

@@ -16,40 +16,19 @@ import com.qcadoo.mes.view.states.AbstractStateTest;
 public class ViewDefinitionStateTest extends AbstractStateTest {
 
     @Test
-    public void shouldReturnState() throws Exception {
+    public void shouldReturnStateByFunctionalPath() throws Exception {
         // given
         ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
 
         ContainerState state = mock(ContainerState.class);
-        given(state.getName()).willReturn("name");
 
-        viewDefinitionState.addChild(state);
+        viewDefinitionState.registerComponent("reference", "path", state);
 
         // when
-        ComponentState actualState = viewDefinitionState.getComponentByPath("name");
+        ComponentState actualState = viewDefinitionState.getComponentByReference("reference");
 
         // then
         assertEquals(state, actualState);
-    }
-
-    @Test
-    public void shouldReturnStateByPath() throws Exception {
-        // given
-        ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
-
-        ContainerState state1 = mock(ContainerState.class);
-        given(state1.getName()).willReturn("name1");
-
-        ContainerState state2 = mock(ContainerState.class);
-
-        viewDefinitionState.addChild(state1);
-        given(state1.getChild("name2")).willReturn(state2);
-
-        // when
-        ComponentState actualState = viewDefinitionState.getComponentByPath("name1.name2");
-
-        // then
-        assertEquals(state2, actualState);
     }
 
     @Test
@@ -57,13 +36,8 @@ public class ViewDefinitionStateTest extends AbstractStateTest {
         // given
         ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
 
-        ContainerState state = mock(ContainerState.class);
-        given(state.getName()).willReturn("name");
-
-        viewDefinitionState.addChild(state);
-
         // when
-        ComponentState actualState = viewDefinitionState.getComponentByPath("name.name2");
+        ComponentState actualState = viewDefinitionState.getComponentByReference("xxx");
 
         // then
         assertNull(actualState);

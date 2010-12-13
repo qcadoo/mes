@@ -14,13 +14,15 @@ public interface ComponentPattern {
 
     void registerViews(ViewDefinitionService viewDefinitionService);
 
-    ComponentState createComponentState();
+    ComponentState createComponentState(ViewDefinitionState viewDefinitionState);
 
     Map<String, Object> prepareView(Locale locale);
 
     String getName();
 
     String getPath();
+
+    String getReference();
 
     String getFunctionalPath();
 

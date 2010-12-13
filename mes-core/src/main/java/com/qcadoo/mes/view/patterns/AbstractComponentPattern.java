@@ -32,9 +32,11 @@ import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.layout.AbstractLayoutPattern;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
 
@@ -80,6 +82,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private boolean initialized;
 
+    private int indexOrder;
+
     public AbstractComponentPattern(final ComponentDefinition componentDefinition) {
         checkArgument(hasText(componentDefinition.getName()), "Component name must be specified");
         this.name = componentDefinition.getName();
@@ -92,6 +96,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         this.defaultVisible = componentDefinition.isDefaultVisible();
         this.translationService = componentDefinition.getTranslationService();
         this.viewDefinition = componentDefinition.getViewDefinition();
+        this.viewDefinition.registerComponent(getReference(), getPath(), this);
     }
 
     protected abstract String getJspFilePath();
@@ -130,7 +135,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     @Override
-    public ComponentState createComponentState() {
+    public ComponentState createComponentState(final ViewDefinitionState viewDefinitionState) {
         AbstractComponentState state = (AbstractComponentState) getComponentStateInstance();
         state.setDataDefinition(dataDefinition);
         state.setName(name);
@@ -141,6 +146,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         for (ComponentCustomEvent customEvent : customEvents) {
             state.registerCustomEvent(customEvent.getEvent(), customEvent.getObject(), customEvent.getMethod());
         }
+        if (!(this instanceof AbstractLayoutPattern)) {
+            viewDefinitionState.registerComponent(getReference(), getPath(), state);
+        }
         return state;
     }
 
@@ -149,6 +157,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", getName());
         map.put("path", getPath());
+        map.put("indexOrder", indexOrder);
         map.put("jspFilePath", getJspFilePath());
         map.put("jsFilePath", getJsFilePath());
         map.put("jsObjectName", getJsObjectName());
@@ -214,7 +223,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
         if (fieldPath != null) {
             field = getComponentAndField(fieldPath);
-            fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition.getComponentByPath(field[0]));
+            fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition
+                    .getComponentByReference(field[0]));
             checkNotNull(fieldComponent, "Cannot find field component for " + getPath() + ": " + fieldPath);
             fieldComponent.addFieldEntityIdChangeListener(field[1], this);
         }
@@ -222,7 +232,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         if (scopeFieldPath != null) {
             scopeField = getComponentAndField(scopeFieldPath);
             scopeFieldComponent = (AbstractComponentPattern) (scopeField[0] == null ? parent : viewDefinition
-                    .getComponentByPath(scopeField[0]));
+                    .getComponentByReference(scopeField[0]));
             checkNotNull(scopeFieldComponent, "Cannot find sourceField component for " + getPath() + ": " + scopeFieldPath);
             scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
         }
@@ -260,18 +270,20 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         // TODO masz?
         if (fieldEntityIdChangeListeners.size() > 0) {
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
-                    .getComponentByPath(getPath());
+                    .getComponentByReference(getReference());
             for (Map.Entry<String, ComponentPattern> listenerPattern : fieldEntityIdChangeListeners.entrySet()) {
-                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPath());
+                ComponentState listenerState = viewDefinitionState.getComponentByReference(listenerPattern.getValue()
+                        .getReference());
                 thisComponentState.addFieldEntityIdChangeListener(listenerPattern.getKey(),
                         (FieldEntityIdChangeListener) listenerState);
             }
         }
         if (scopeEntityIdChangeListeners.size() > 0) {
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
-                    .getComponentByPath(getPath());
+                    .getComponentByReference(getReference());
             for (Map.Entry<String, ComponentPattern> listenerPattern : scopeEntityIdChangeListeners.entrySet()) {
-                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPath());
+                ComponentState listenerState = viewDefinitionState.getComponentByReference(listenerPattern.getValue()
+                        .getReference());
                 thisComponentState.addScopeEntityIdChangeListener(listenerPattern.getKey(),
                         (ScopeEntityIdChangeListener) listenerState);
             }
@@ -306,8 +318,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return options;
     }
 
-    protected final String getReference() {
-        return reference;
+    @Override
+    public final String getReference() {
+        return reference != null ? reference : getPath();
     }
 
     protected final FieldDefinition getFieldDefinition() {
@@ -344,7 +357,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
                 listeners.put(listener.getPath());
             }
             if (customEvents.size() > 0) {
-                // TODO masz
                 listeners.put(getPath());
             }
         }
@@ -415,6 +427,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     @Override
     public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        indexOrder = ((ViewDefinitionParserImpl) parser).getCurrentIndexOrder();
+
         NodeList childNodes = componentNode.getChildNodes();
 
         for (int i = 0; i < childNodes.getLength(); i++) {

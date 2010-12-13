@@ -5,6 +5,7 @@ import org.w3c.dom.Node;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
+import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 
 public interface ViewDefinitionParser {

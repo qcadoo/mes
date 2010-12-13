@@ -1,5 +1,7 @@
 package com.qcadoo.mes.view.patterns;
 
+import static org.mockito.Mockito.mock;
+
 import java.lang.reflect.Method;
 import java.util.Locale;
 
@@ -28,7 +30,11 @@ public abstract class AbstractPatternTest {
         componentDefinition.setFieldPath(fieldPath);
         componentDefinition.setSourceFieldPath(sourceFieldPath);
         componentDefinition.setParent(parent);
-        componentDefinition.setViewDefinition(viewDefinition);
+        if (viewDefinition != null) {
+            componentDefinition.setViewDefinition(viewDefinition);
+        } else {
+            componentDefinition.setViewDefinition(mock(ViewDefinition.class));
+        }
         return componentDefinition;
     }
 

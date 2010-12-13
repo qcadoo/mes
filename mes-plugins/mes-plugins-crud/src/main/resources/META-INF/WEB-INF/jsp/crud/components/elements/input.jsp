@@ -15,7 +15,7 @@
 		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
 			<c:set var="displayHiddenIfTextRepresentationOnDisabled" value="display: none" />
 		</c:if>
-		<input type="text" id="${component['path']}_input" style="${displayHiddenIfTextRepresentationOnDisabled}" />
+		<input type="text" id="${component['path']}_input" style="${displayHiddenIfTextRepresentationOnDisabled}" tabindex="${component['indexOrder']}" />
 		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
 			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
 			<span id="${componentFullName}_textHeight" style="display: inline-block; height: 100%; vertical-align: middle;">&nbsp;</span>

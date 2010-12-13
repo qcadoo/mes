@@ -2,7 +2,9 @@ package com.qcadoo.mes.view.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +19,8 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     private String redirectToUrl;
 
     private boolean openInNewWindow;
+
+    private final Map<String, ComponentState> registry = new HashMap<String, ComponentState>();
 
     public ViewDefinitionStateImpl() {
         requestRender();
@@ -70,18 +74,23 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
         }
     }
 
-    @Override
-    public ComponentState getComponentByPath(final String path) {
+    private ComponentState getComponentByPath(final String path) {
         ComponentState componentState = this;
         String[] pathParts = path.split("\\.");
         for (int i = 0; i < pathParts.length; i++) {
             ContainerState container = (ContainerState) componentState;
             componentState = container.getChild(pathParts[i]);
+
             if (componentState == null) {
                 return null;
             }
         }
         return componentState;
+    }
+
+    @Override
+    public ComponentState getComponentByReference(final String reference) {
+        return registry.get(reference);
     }
 
     private void performEventOnChildren(final Collection<ComponentState> components, final String event, final String... args) {
@@ -108,6 +117,14 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     public void redirectTo(final String redirectToUrl, final boolean openInNewWindow) {
         this.redirectToUrl = redirectToUrl;
         this.openInNewWindow = openInNewWindow;
+    }
+
+    @Override
+    public void registerComponent(final String reference, final String path, final ComponentState state) {
+        if (registry.containsKey(reference)) {
+            throw new IllegalStateException("Duplicated state reference : " + reference);
+        }
+        registry.put(reference, state);
     }
 
 }

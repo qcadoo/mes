@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +15,7 @@ import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
+import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
@@ -192,7 +195,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
         item.setIcon(parser.getStringAttribute(itemNode, "icon"));
         item.setName(parser.getStringAttribute(itemNode, "name"));
-        item.setAction(parser.getStringAttribute(itemNode, "action"));
+        item.setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action"), parser));
         item.setType(type);
 
         if (item instanceof RibbonComboItem) {
@@ -206,10 +209,33 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
                 }
             }
         } else {
-            (item).setAction(parser.getStringAttribute(itemNode, "action"));
+            (item).setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action"), parser));
         }
 
         return item;
     }
 
+    private String translateRibbonAction(final String action, final ViewDefinitionParser parser) {
+        if (action == null) {
+            return null;
+        }
+
+        Pattern p = Pattern.compile("#\\{([^\\}]+)\\}");
+        Matcher m = p.matcher(action);
+
+        String translateAction = action;
+
+        while (m.find()) {
+            ComponentPattern actionComponentPattern = getViewDefinition().getComponentByReference(m.group(1));
+
+            if (actionComponentPattern == null) {
+                throw new IllegalStateException("Cannot find action component for " + getTranslationPath() + " : " + action
+                        + " [" + m.group(1) + "]");
+            }
+
+            translateAction = translateAction.replace("#{" + m.group(1) + "}", "#{" + actionComponentPattern.getPath() + "}");
+        }
+
+        return translateAction;
+    }
 }

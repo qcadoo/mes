@@ -1,8 +1,10 @@
 
 .borderLayout {
-	//background: #99CCFF;
+	//background: #35AE0D;
 	background: #EBEBEB;
+	//background: #FAFAFA;
 	border: solid #A7A7A7 1px;	
+	//margin: 10px;
 }
 
 .gridLayoutTable {
@@ -16,9 +18,8 @@
 }
 
 .gridLayoutTable > tbody > tr > td {
-	//border: solid black 1px;
-	//border-left: solid black 1px;
 	text-align: center;
+	//border: solid red 1px;
 }
 
 .gridLayoutTable > tbody > tr > td.rightBorder {
