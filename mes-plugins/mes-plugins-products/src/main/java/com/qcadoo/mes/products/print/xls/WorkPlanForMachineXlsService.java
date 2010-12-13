@@ -32,7 +32,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.ProxyEntity;
 
 @Service
 public final class WorkPlanForMachineXlsService extends XlsDocumentService {
@@ -70,7 +69,7 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
                     StringBuilder productsOut = new StringBuilder();
                     StringBuilder productsIn = new StringBuilder();
                     for (Entity operationProductComponent : operationProductComponents) {
-                        ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
+                        Entity product = (Entity) operationProductComponent.getField("product");
                         if ((Boolean) operationProductComponent.getField("inParameter")) {
                             productsIn.append(product.getField("number").toString() + " ");
                             productsIn.append(product.getField("name").toString() + ", ");

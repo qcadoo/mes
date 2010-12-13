@@ -6,12 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,8 +75,8 @@ public class ProductReportService {
         return products;
     }
 
-    private Map<Entity, Set<Entity>> getOperationSeries(final Entity entity, final boolean isMachine) {
-        Map<Entity, Set<Entity>> operations = new HashMap<Entity, Set<Entity>>();
+    private Map<Entity, Map<Entity, Entity>> getOperationSeries(final Entity entity, final boolean isMachine) {
+        Map<Entity, Map<Entity, Entity>> operations = new HashMap<Entity, Map<Entity, Entity>>();
         List<Entity> orders = entity.getHasManyField("orders");
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
@@ -94,12 +92,12 @@ public class ProductReportService {
                         entityKey = (Entity) operation.getField("staff");
                     }
                     if (operations.containsKey(entityKey)) {
-                        Set<Entity> operationSet = operations.get(entityKey);
-                        operationSet.add(operationComponent);
+                        Map<Entity, Entity> operationMap = operations.get(entityKey);
+                        operationMap.put(operationComponent, order);
                     } else {
-                        Set<Entity> operationSet = new HashSet<Entity>();
-                        operationSet.add(operationComponent);
-                        operations.put(entityKey, operationSet);
+                        Map<Entity, Entity> operationMap = new HashMap<Entity, Entity>();
+                        operationMap.put(operationComponent, order);
+                        operations.put(entityKey, operationMap);
                     }
                 }
             }
@@ -111,8 +109,8 @@ public class ProductReportService {
             throws DocumentException {
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         boolean firstPage = true;
-        Map<Entity, Set<Entity>> operations = getOperationSeries(entity, isMachine);
-        for (Entry<Entity, Set<Entity>> entry : operations.entrySet()) {
+        Map<Entity, Map<Entity, Entity>> operations = getOperationSeries(entity, isMachine);
+        for (Entry<Entity, Map<Entity, Entity>> entry : operations.entrySet()) {
             if (!firstPage) {
                 document.newPage();
             }
@@ -131,13 +129,13 @@ public class ProductReportService {
             }
             PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale));
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
-            Set<Entity> operationSet = entry.getValue();
-            for (Entity operationComponent : operationSet) {
-                Entity operation = (Entity) operationComponent.getField("operation");
+            Map<Entity, Entity> operationMap = entry.getValue();
+            for (Entry<Entity, Entity> entryComponent : operationMap.entrySet()) {
+                Entity operation = (Entity) entryComponent.getKey().getField("operation");
                 table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-                table.addCell("");// new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
+                table.addCell(new Phrase(entryComponent.getValue().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+                List<Entity> operationProductComponents = entryComponent.getKey().getHasManyField("operationProductComponents");
                 addProductSeries(table, operationProductComponents, false, decimalFormat);
                 addProductSeries(table, operationProductComponents, true, decimalFormat);
             }
