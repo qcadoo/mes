@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -39,6 +41,8 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.util.CellRangeAddress;
+
+import com.qcadoo.mes.internal.DefaultEntity;
 
 public final class XlsCopyUtil {
 
@@ -159,6 +163,17 @@ public final class XlsCopyUtil {
             HSSFSheet existingSheet = existingWorkbook.getSheetAt(i);
             HSSFSheet sheet = newWorkbook.createSheet(existingSheet.getSheetName());
             copySheets(sheet, existingSheet);
+        }
+    }
+
+    public static void copyXlsContent(final Map<String, Object> model, final HSSFWorkbook workbook,
+            final HttpServletResponse response, final String fileSuffix) throws IOException {
+        DefaultEntity entity = (DefaultEntity) model.get("entity");
+        Object fileName = entity.getField("fileName");
+        if (fileName != null && !"".equals(fileName.toString().trim())) {
+            copyWorkbook(workbook, (String) fileName + fileSuffix + XLS_EXTENSION);
+            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XLS_EXTENSION);
         }
     }
 

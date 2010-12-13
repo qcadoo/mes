@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.products.print.pdf;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,6 @@ import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.ProductReportService;
@@ -48,47 +44,13 @@ public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        addOperationSeries(document, (DefaultEntity) entity, locale);
+        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, false);
     }
 
     @Override
     protected void buildPdfMetadata(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("products.workPlan.report.title", locale));
         PdfUtil.addMetaData(document);
-    }
-
-    private void addOperationSeries(final Document document, final DefaultEntity entity, final Locale locale)
-            throws DocumentException {
-        boolean firstPage = true;
-        List<Entity> orders = entity.getHasManyField("orders");
-        for (Entity component : orders) {
-            Entity order = (Entity) component.getField("order");
-            Entity technology = (Entity) order.getField("technology");
-            if (technology != null) {
-                List<Entity> operationComponents = technology.getHasManyField("operationComponents");
-                for (Entity operationComponent : operationComponents) {
-                    if (!firstPage) {
-                        document.newPage();
-                    }
-                    productReportService.addOrderHeader(document, entity, locale, getDecimalFormat());
-                    Entity operation = (Entity) operationComponent.getField("operation");
-                    Entity staff = (Entity) operation.getField("staff");
-                    document.add(new Paragraph(getTranslationService().translate("products.workPlan.report.paragrah2", locale)
-                            + " " + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold11Dark()));
-                    PdfPTable table = PdfUtil.createTableWithHeader(5, productReportService.addOperationHeader(locale));
-                    table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                    table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-                    table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                    List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
-                    productReportService.addProductOutSeries(table, operationProductComponents);
-                    productReportService.addProductInSeries(table, operationProductComponents);
-                    document.add(table);
-                    firstPage = false;
-                }
-            }
-
-        }
-
     }
 
     @Override
