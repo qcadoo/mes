@@ -14,7 +14,7 @@ import com.qcadoo.mes.view.ViewComponent;
 @ViewComponent("checkbox")
 public final class CheckBoxComponentPattern extends FieldComponentPattern {
 
-    private static final String JSP_PATH = "elements/checkbox.jsp";
+    private static final String JSP_PATH = "elements/checkBox.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.CheckBox";
 

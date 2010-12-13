@@ -78,7 +78,7 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="grid" name="menuViewDefinitionItem" source="#{window.menuCategory}.viewDefinitionItems">
+			<component type="grid" name="menuViewDefinitionItems" source="#{window.menuCategory}.viewDefinitionItems">
 				<option type="column" name="itemOrder" fields="itemOrder" />
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="active" fields="active" link="false" />
@@ -87,6 +87,8 @@
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="400" />
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
 			</component>
 		</component>
 	</view>
