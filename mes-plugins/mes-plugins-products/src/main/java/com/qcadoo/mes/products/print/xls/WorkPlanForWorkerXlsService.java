@@ -40,10 +40,14 @@ public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
-        header.createCell(0).setCellValue(getTranslationService().translate("products.operation.number.label", locale));
-        header.createCell(1).setCellValue(getTranslationService().translate("products.operation.name.label", locale));
-        header.createCell(2).setCellValue(
+        header.createCell(0).setCellValue(
+                getTranslationService().translate("products.workPlan.report.operationTable.worker.column", locale));
+        header.createCell(1).setCellValue(getTranslationService().translate("products.operation.number.label", locale));
+        header.createCell(2).setCellValue(getTranslationService().translate("products.operation.name.label", locale));
+        header.createCell(3).setCellValue(
                 getTranslationService().translate("products.workPlan.report.operationTable.productsOut.column", locale));
+        header.createCell(4).setCellValue(
+                getTranslationService().translate("products.workPlan.report.operationTable.productsIn.column", locale));
     }
 
     @Override
@@ -57,19 +61,26 @@ public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
                 List<Entity> operationComponents = technology.getHasManyField("operationComponents");
                 for (Entity operationComponent : operationComponents) {
                     Entity operation = (Entity) operationComponent.getField("operation");
+                    Entity staff = (Entity) operation.getField("staff");
                     HSSFRow row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(operation.getField("number").toString());
-                    row.createCell(1).setCellValue(operation.getField("name").toString());
+                    row.createCell(0).setCellValue(staff.getField("name") + " " + staff.getField("surname"));
+                    row.createCell(1).setCellValue(operation.getField("number").toString());
+                    row.createCell(2).setCellValue(operation.getField("name").toString());
                     List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
-                    StringBuilder products = new StringBuilder();
+                    StringBuilder productsOut = new StringBuilder();
+                    StringBuilder productsIn = new StringBuilder();
                     for (Entity operationProductComponent : operationProductComponents) {
-                        if (!(Boolean) operationProductComponent.getField("inParameter")) {
-                            ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
-                            products.append(product.getField("number").toString() + " ");
-                            products.append(product.getField("name").toString() + ", ");
+                        ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
+                        if ((Boolean) operationProductComponent.getField("inParameter")) {
+                            productsIn.append(product.getField("number").toString() + " ");
+                            productsIn.append(product.getField("name").toString() + ", ");
+                        } else {
+                            productsOut.append(product.getField("number").toString() + " ");
+                            productsOut.append(product.getField("name").toString() + ", ");
                         }
                     }
-                    row.createCell(2).setCellValue(products.toString());
+                    row.createCell(3).setCellValue(productsOut.toString());
+                    row.createCell(4).setCellValue(productsIn.toString());
                 }
             }
         }

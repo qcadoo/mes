@@ -1,19 +1,18 @@
 package com.qcadoo.mes.products.print;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +23,13 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.internal.ProxyEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
-import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
 @Service
 public class ProductReportService {
@@ -48,8 +44,8 @@ public class ProductReportService {
 
     private static final String MATERIAL_COMPONENT = "component";
 
-    public final Map<ProxyEntity, BigDecimal> getTechnologySeries(final Entity entity, final List<Entity> orders) {
-        Map<ProxyEntity, BigDecimal> products = new HashMap<ProxyEntity, BigDecimal>();
+    public final Map<Entity, BigDecimal> getTechnologySeries(final Entity entity, final List<Entity> orders) {
+        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
@@ -60,7 +56,7 @@ public class ProductReportService {
                     List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
                     for (Entity operationProductComponent : operationProductComponents) {
                         if ((Boolean) operationProductComponent.getField("inParameter")) {
-                            ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
+                            Entity product = (Entity) operationProductComponent.getField("product");
                             if (!(Boolean) entity.getField("onlyComponents")
                                     || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
                                 if (products.containsKey(product)) {
@@ -81,7 +77,92 @@ public class ProductReportService {
         return products;
     }
 
-    public final void addOrderHeader(final Document document, final Entity entity, final Locale locale, final DecimalFormat df)
+    private Map<Entity, Set<Entity>> getOperationSeries(final Entity entity, final boolean isMachine) {
+        Map<Entity, Set<Entity>> operations = new HashMap<Entity, Set<Entity>>();
+        List<Entity> orders = entity.getHasManyField("orders");
+        for (Entity component : orders) {
+            Entity order = (Entity) component.getField("order");
+            Entity technology = (Entity) order.getField("technology");
+            if (technology != null) {
+                List<Entity> operationComponents = technology.getHasManyField("operationComponents");
+                for (Entity operationComponent : operationComponents) {
+                    Entity operation = (Entity) operationComponent.getField("operation");
+                    Entity entityKey = null;
+                    if (isMachine) {
+                        entityKey = (Entity) operation.getField("machine");
+                    } else {
+                        entityKey = (Entity) operation.getField("staff");
+                    }
+                    if (operations.containsKey(entityKey)) {
+                        Set<Entity> operationSet = operations.get(entityKey);
+                        operationSet.add(operationComponent);
+                    } else {
+                        Set<Entity> operationSet = new HashSet<Entity>();
+                        operationSet.add(operationComponent);
+                        operations.put(entityKey, operationSet);
+                    }
+                }
+            }
+        }
+        return operations;
+    }
+
+    public void addOperationSeries(final Document document, final Entity entity, final Locale locale, final boolean isMachine)
+            throws DocumentException {
+        DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
+        boolean firstPage = true;
+        Map<Entity, Set<Entity>> operations = getOperationSeries(entity, isMachine);
+        for (Entry<Entity, Set<Entity>> entry : operations.entrySet()) {
+            if (!firstPage) {
+                document.newPage();
+            }
+            PdfPTable orderTable = PdfUtil.createTableWithHeader(6, getOrderHeader(document, entity, locale));
+            addOrderSeries(orderTable, entity, decimalFormat);
+            document.add(orderTable);
+            document.add(Chunk.NEWLINE);
+            if (isMachine) {
+                Entity machine = entry.getKey();
+                document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah3", locale) + " "
+                        + machine.getField("name"), PdfUtil.getArialBold11Dark()));
+            } else {
+                Entity staff = entry.getKey();
+                document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah2", locale) + " "
+                        + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold11Dark()));
+            }
+            PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale));
+            table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
+            Set<Entity> operationSet = entry.getValue();
+            for (Entity operationComponent : operationSet) {
+                Entity operation = (Entity) operationComponent.getField("operation");
+                table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell("");// new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+                List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
+                addProductSeries(table, operationProductComponents, false, decimalFormat);
+                addProductSeries(table, operationProductComponents, true, decimalFormat);
+            }
+            document.add(table);
+            firstPage = false;
+        }
+    }
+
+    private void addProductSeries(final PdfPTable table, final List<Entity> operationProductComponents,
+            final boolean inParameter, final DecimalFormat df) {
+        StringBuilder products = new StringBuilder();
+        for (Entity operationProductComponent : operationProductComponents) {
+            if ((Boolean) operationProductComponent.getField("inParameter") && !inParameter || inParameter
+                    && !(Boolean) operationProductComponent.getField("inParameter")) {
+                ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
+                Object unit = product.getField("unit");
+                products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
+                        + df.format(((BigDecimal) operationProductComponent.getField("quantity")).stripTrailingZeros()) + " ["
+                        + (unit != null ? unit.toString() : "") + "] \n\n");
+            }
+        }
+        table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
+    }
+
+    private List<String> getOrderHeader(final Document document, final Entity entity, final Locale locale)
             throws DocumentException {
         String documenTitle = translationService.translate("products.workPlan.report.title", locale);
         String documentAuthor = translationService.translate("products.materialRequirement.report.author", locale);
@@ -97,24 +178,21 @@ public class ProductReportService {
         orderHeader.add(translationService.translate("products.order.plannedQuantity.label", locale));
         orderHeader.add(translationService.translate("products.product.unit.label", locale));
         orderHeader.add(translationService.translate("products.order.dateTo.label", locale));
-        addOrderSeries(document, entity, orderHeader, df);
-        document.add(Chunk.NEWLINE);
+        return orderHeader;
     }
 
-    public final List<String> addOperationHeader(final Locale locale) {
-        List<String> machineHeader = new ArrayList<String>();
-        machineHeader.add(translationService.translate("products.operation.number.label", locale));
-        machineHeader.add(translationService.translate("products.operation.name.label", locale));
-        machineHeader.add(translationService.translate("products.workPlan.report.operationTable.order.column", locale));
-        machineHeader.add(translationService.translate("products.workPlan.report.operationTable.productsOut.column", locale));
-        machineHeader.add(translationService.translate("products.workPlan.report.operationTable.productsIn.column", locale));
-        return machineHeader;
+    private List<String> getOperationHeader(final Locale locale) {
+        List<String> operationHeader = new ArrayList<String>();
+        operationHeader.add(translationService.translate("products.operation.number.label", locale));
+        operationHeader.add(translationService.translate("products.operation.name.label", locale));
+        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.order.column", locale));
+        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.productsOut.column", locale));
+        operationHeader.add(translationService.translate("products.workPlan.report.operationTable.productsIn.column", locale));
+        return operationHeader;
     }
 
-    public final void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader,
-            final DecimalFormat df) throws DocumentException {
+    private void addOrderSeries(final PdfPTable table, final Entity entity, final DecimalFormat df) throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
-        PdfPTable table = PdfUtil.createTableWithHeader(6, orderHeader);
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
@@ -142,71 +220,6 @@ public class ProductReportService {
             }
             table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
         }
-        document.add(table);
     }
 
-    public final PdfPTable addProductOutSeries(final PdfPTable table, final List<Entity> operationProductComponents) {
-        boolean firstRow = true;
-        for (Entity operationProductComponent : operationProductComponents) {
-            if (!(Boolean) operationProductComponent.getField("inParameter")) {
-                ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
-                Object unit = product.getField("unit");
-                if (!firstRow) {
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
-                }
-                table.addCell(new Phrase(product.getField("number").toString() + " " + product.getField("name").toString()
-                        + " x " + operationProductComponent.getField("quantity").toString() + " ["
-                        + (unit != null ? unit.toString() : "") + "]", PdfUtil.getArialRegular9Dark()));
-                table.addCell("");
-                firstRow = false;
-            }
-        }
-        if (firstRow) {
-            table.addCell("");
-            table.addCell("");
-        }
-        return table;
-    }
-
-    public final PdfPTable addProductInSeries(final PdfPTable table, final List<Entity> operationProductComponents) {
-        for (Entity operationProductComponent : operationProductComponents) {
-            if ((Boolean) operationProductComponent.getField("inParameter")) {
-                ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
-                Object unit = product.getField("unit");
-                table.addCell("");
-                table.addCell("");
-                table.addCell("");
-                table.addCell("");
-                table.addCell(new Phrase(product.getField("number").toString() + " " + product.getField("name").toString()
-                        + " x " + operationProductComponent.getField("quantity").toString() + " ["
-                        + (unit != null ? unit.toString() : "") + "]", PdfUtil.getArialRegular9Dark()));
-            }
-        }
-        return table;
-    }
-
-    public final String copyPdfContent(final Document document, final DefaultEntity entity, final PdfWriter writer,
-            final String fileSuffix) throws IOException, DocumentException {
-        Object fileName = entity.getField("fileName");
-        String fileNameWithoutPath = "";
-        if (fileName != null && !"".equals(fileName.toString().trim())) {
-            PdfUtil.copyPdf(document, writer, (String) fileName + fileSuffix + PdfUtil.PDF_EXTENSION);
-            fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
-        }
-        return fileNameWithoutPath;
-    }
-
-    public final void copyXlsContent(final Map<String, Object> model, final HSSFWorkbook workbook,
-            final HttpServletResponse response, final String fileSuffix) throws IOException {
-        DefaultEntity entity = (DefaultEntity) model.get("entity");
-        Object fileName = entity.getField("fileName");
-        if (fileName != null && !"".equals(fileName.toString().trim())) {
-            XlsCopyUtil.copyWorkbook(workbook, (String) fileName + fileSuffix + XlsCopyUtil.XLS_EXTENSION);
-            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
-            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XlsCopyUtil.XLS_EXTENSION);
-        }
-
-    }
 }

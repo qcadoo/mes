@@ -27,23 +27,18 @@ package com.qcadoo.mes.products.print.pdf;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.products.print.ProductReportService;
+import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 public final class WorkPlanForWorkerPdfView extends ProductsPdfView {
-
-    @Autowired
-    private ProductReportService productReportService;
 
     @Override
     protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
-        return productReportService.copyPdfContent(document, entity, writer, "ForWorker");
+        return PdfUtil.copyPdfContent(document, entity, writer, "ForWorker");
     }
 
     @Override

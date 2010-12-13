@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.ProxyEntity;
 import com.qcadoo.mes.products.print.ProductReportService;
 
 @Service
@@ -59,8 +58,8 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         List<Entity> orders = entity.getHasManyField("orders");
-        Map<ProxyEntity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
-        for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
+        Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
+        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
             row.createCell(1).setCellValue(entry.getKey().getField("name").toString());

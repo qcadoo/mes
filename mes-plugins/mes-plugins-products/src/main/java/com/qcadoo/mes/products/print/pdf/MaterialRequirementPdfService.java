@@ -46,7 +46,6 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.internal.ProxyEntity;
 import com.qcadoo.mes.products.print.ProductReportService;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
@@ -95,9 +94,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private void addTechnologySeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
-        Map<ProxyEntity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
+        Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader);
-        for (Entry<ProxyEntity, BigDecimal> entry : products.entrySet()) {
+        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField("name").toString(), PdfUtil.getArialRegular9Dark()));
             Object unit = entry.getKey().getField("unit");
