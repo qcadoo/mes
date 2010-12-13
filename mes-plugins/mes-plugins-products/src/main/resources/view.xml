@@ -153,10 +153,23 @@
 				</group>
 			</ribbon>
 			<component type="form" name="substitute" reference="form">
-				<component type="input" name="number" field="number" />
-				<component type="textarea" name="name" field="name" />
-				<component type="input" name="priority" field="priority"
-					defaultEnabled="false" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
+				<layoutElement column="1" row="1" height="4">
+				<component type="borderLayout" name="borderLayout">
+					<component type="gridLayout" name="gridLayout" columns="1" rows="4">
+						<layoutElement column="1" row="1">
+							<component type="input" name="number" field="number" />
+						</layoutElement>
+						<layoutElement column="1" row="2" height="2">
+							<component type="textarea" name="name" field="name" />
+						</layoutElement>
+						<layoutElement column="1" row="4">
+							<component type="input" name="priority" field="priority" defaultEnabled="false" />
+						</layoutElement>
+					</component>
+				</component>
+				</layoutElement>
+				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
@@ -421,7 +434,7 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="order" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="10">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="8">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" reference="number" field="number" />
 					</layoutElement>
@@ -473,16 +486,16 @@
 					<layoutElement column="2" row="8">
 						<component type="input" name="doneQuantity" field="doneQuantity" />
 					</layoutElement>
-					<layoutElement column="1" row="9">
+					<layoutElement column="3" row="1">
 						<component type="calendar" name="effectiveDateFrom" field="effectiveDateFrom" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="2" row="9">
+					<layoutElement column="3" row="2">
 						<component type="calendar" name="effectiveDateTo" field="effectiveDateTo" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="10">
+					<layoutElement column="3" row="3">
 						<component type="input" name="startWorker" field="startWorker" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="2" row="10">
+					<layoutElement column="3" row="4">
 						<component type="input" name="endWorker" field="endWorker" defaultEnabled="false" />
 					</layoutElement>
 				</component>

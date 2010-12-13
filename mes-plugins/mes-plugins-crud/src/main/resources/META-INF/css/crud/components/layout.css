@@ -1,10 +1,7 @@
 
 .borderLayout {
-	//background: #35AE0D;
 	background: #EBEBEB;
-	//background: #FAFAFA;
 	border: solid #A7A7A7 1px;	
-	//margin: 10px;
 }
 
 .gridLayoutTable {
@@ -19,7 +16,6 @@
 
 .gridLayoutTable > tbody > tr > td {
 	text-align: center;
-	//border: solid red 1px;
 }
 
 .gridLayoutTable > tbody > tr > td.rightBorder {

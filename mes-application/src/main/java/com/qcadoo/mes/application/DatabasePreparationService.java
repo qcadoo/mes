@@ -98,8 +98,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition materialRequirementGridView = getMenuViewDefinition("materialRequirements");
         MenuViewDefinition productGridView = getMenuViewDefinition("products");
         MenuViewDefinition groupGridView = getMenuViewDefinition("groups");
-        MenuViewDefinition machineGridView = getMenuViewDefinition("machineGridView");
-        MenuViewDefinition staffGridView = getMenuViewDefinition("staffGridView");
+        MenuViewDefinition machineGridView = getMenuViewDefinition("machines");
+        MenuViewDefinition staffGridView = getMenuViewDefinition("staffs");
         MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlans");
         MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
 

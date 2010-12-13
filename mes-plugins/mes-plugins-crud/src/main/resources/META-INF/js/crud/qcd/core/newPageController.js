@@ -40,7 +40,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		}
 	}
 	
-	this.init = function(entityId, serializationObject) {
+	this.init = function(serializationObject) {
 		if (serializationObject) {
 			setComponentState(serializationObject);
 			if (hasDataDefinition) {
