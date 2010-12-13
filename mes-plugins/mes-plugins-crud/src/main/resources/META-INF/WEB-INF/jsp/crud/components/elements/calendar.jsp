@@ -42,7 +42,7 @@
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="calendar" />
 	<tiles:putAttribute name="componentBody">
-			<input id="${component['path']}_input" type="text" />
+			<input id="${component['path']}_input" type="text" tabindex="${component['indexOrder']}"/>
 			<div id="${component['path']}_calendar" class="calendar"></div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

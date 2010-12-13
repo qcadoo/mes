@@ -8,10 +8,8 @@
 
 <tiles:useAttribute name="component" />
 
-<tiles:insertTemplate template="formComponent.jsp">
-	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="password" />
-	<tiles:putAttribute name="componentBody">
-		<input type="password" id="${component['path']}_input" tabindex="${component['indexOrder']}"/>
-	</tiles:putAttribute>
-</tiles:insertTemplate>
+<div class="component" id="${component['path']}">
+
+	<hr class="separatorLine" />
+	
+</div>

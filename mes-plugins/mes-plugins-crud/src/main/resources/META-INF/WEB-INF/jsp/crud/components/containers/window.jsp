@@ -51,7 +51,6 @@
 							<tiles:putAttribute name="component" value="${component.value}" />
 						</tiles:insertTemplate>
 					</c:forEach>
-				</div>
-			</div>
+				</div></div>
 		</div>
 	</div>

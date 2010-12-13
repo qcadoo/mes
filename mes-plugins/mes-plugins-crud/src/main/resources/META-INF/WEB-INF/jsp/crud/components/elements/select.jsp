@@ -12,6 +12,6 @@
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="select" />
 	<tiles:putAttribute name="componentBody">
-		<select id="${component['path']}_input"><option></option></select>
+		<select id="${component['path']}_input" tabindex="${component['indexOrder']}"><option></option></select>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

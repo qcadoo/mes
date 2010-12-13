@@ -70,7 +70,7 @@
 				</group>
 			</ribbon>
 			<component type="form" name="product">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 					<layoutElement column="1" row="1" width="2" height="3">
 						<component type="borderLayout" name="borderLayout">
 							<component type="gridLayout" name="gridLayout" columns="2" rows="3">
@@ -99,6 +99,9 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
+			
+			<component type="separatorLine" name="separatorLine" />
+			
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="10">
 				<layoutElement column="1" row="1" height="10">
 					<component type="grid" name="substitutes" source="#{window.product}.substitutes">
@@ -107,6 +110,7 @@
 						<option type="column" name="priority" fields="priority" />
 						<option type="correspondingView" value="products/substitute" />
 						<option type="correspondingComponent" value="window.substitute" />
+						<option type="searchable" value="name,number,priority" />
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
@@ -417,7 +421,7 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="order">
-				<component type="gridLayout" name="gridLayout" columns="4" rows="10">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="10">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" />
 					</layoutElement>
@@ -427,9 +431,7 @@
 					<layoutElement column="1" row="3">
 						<component type="calendar" name="dateFrom" field="dateFrom" />
 					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="calendar" name="dateTo" field="dateTo" />
-					</layoutElement>
+					
 					<layoutElement column="1" row="4">
 						<component type="select" name="state" field="state" />
 					</layoutElement>
@@ -460,6 +462,11 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
+					
+					<layoutElement column="2" row="3">
+						<component type="calendar" name="dateTo" field="dateTo" />
+					</layoutElement>
+					
 					<layoutElement column="1" row="8">
 						<component type="input" name="plannedQuantity" field="plannedQuantity" />
 					</layoutElement>

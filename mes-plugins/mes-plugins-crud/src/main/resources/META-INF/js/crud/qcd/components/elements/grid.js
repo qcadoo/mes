@@ -365,20 +365,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 		element.width("100%");
-		if (gridParameters.width) {
-			element.width(gridParameters.width);
-		}
-		
-		if (gridParameters.fullScreen) {
-			if (! gridParameters.height) {
-				element.height("100%");
-			}
-		} else {
-			grid.setGridWidth(gridParameters.width, true);
-			grid.setGridHeight(gridParameters.height);
-			$("#"+gridParameters.element+"Header").width(gridParameters.width);
-			element.addClass("gridNotFullScreen");
-		}
 		
 		blockGrid();
 		
@@ -455,9 +441,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		grid[0].toggleToolbar();
 		currentState.filtersEnabled = ! currentState.filtersEnabled;
 		if (currentState.filtersEnabled) {
-			currentGridHeight -= 21;
+			currentGridHeight -= 23;
 		} else {
-			currentGridHeight += 21;
+			currentGridHeight += 23;
 		}
 		grid.setGridHeight(currentGridHeight);
 		onCurrentStateChange();
@@ -499,22 +485,26 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
-		if (! gridParameters.height && gridParameters.fullScreen) {
-			element.height(_height - 40);
-			//element.height(_height - 100);
-			var HEIGHT_DIFF = 140;
-			//var HEIGHT_DIFF = 200;
-			currentGridHeight = _height - HEIGHT_DIFF;
-			
-			if (currentState.filtersEnabled) {
-				currentGridHeight -= 21;
-			}
-			grid.setGridHeight(currentGridHeight);
+		if (! _width) {
+			_width = 300;
 		}
-		if (! gridParameters.width && gridParameters.fullScreen) {
-			grid.setGridWidth(_width-45, RESIZE_COLUMNS_ON_UPDATE_SIZE);
-			element.width(_width - 40);
+		if (! _height) {
+			_height = 300;
 		}
+		
+		element.css("height",_height+"px")
+		
+		var HEIGHT_DIFF = 120;
+		currentGridHeight = _height - HEIGHT_DIFF;
+		if (currentState.filtersEnabled) {
+			currentGridHeight -= 21;
+		}
+		if (! gridParameters.paging) {
+			currentGridHeight += 35;
+		}
+		grid.setGridHeight(currentGridHeight);
+		
+		grid.setGridWidth(_width-26, RESIZE_COLUMNS_ON_UPDATE_SIZE);
 	}
 	
 	function onCurrentStateChange() {

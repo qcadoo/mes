@@ -87,6 +87,8 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
     @Autowired
     private ApplicationContext applicationContext;
 
+    private int currentIndexOrder;
+
     public void parse() {
         LOG.info("Reading view definitions ...");
 
@@ -129,6 +131,7 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
 
     private void parseView(final Node viewNode, final String pluginIdentifier) {
         String name = getStringAttribute(viewNode, "name");
+        currentIndexOrder = 1;
 
         LOG.info("Reading view " + name + " for plugin " + pluginIdentifier);
 
@@ -262,6 +265,10 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         Preconditions.checkState(StringUtils.hasText(fullyQualifiedClassName), "Hook bean name is required");
         Preconditions.checkState(StringUtils.hasText(methodName), "Hook method name is required");
         return hookFactory.getHook(fullyQualifiedClassName, methodName);
+    }
+
+    public int getCurrentIndexOrder() {
+        return currentIndexOrder++;
     }
 
 }

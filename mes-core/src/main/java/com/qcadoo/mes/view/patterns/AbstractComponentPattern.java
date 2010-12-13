@@ -35,6 +35,7 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
 
 public abstract class AbstractComponentPattern implements ComponentPattern {
 
@@ -79,6 +80,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     private DataDefinition dataDefinition;
 
     private boolean initialized;
+
+    private int indexOrder;
 
     public AbstractComponentPattern(final ComponentDefinition componentDefinition) {
         checkArgument(hasText(componentDefinition.getName()), "Component name must be specified");
@@ -149,6 +152,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", getName());
         map.put("path", getPath());
+        map.put("indexOrder", indexOrder);
         map.put("jspFilePath", getJspFilePath());
         map.put("jsFilePath", getJsFilePath());
         map.put("jsObjectName", getJsObjectName());
@@ -415,6 +419,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     @Override
     public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        indexOrder = ((ViewDefinitionParserImpl) parser).getCurrentIndexOrder();
+
         NodeList childNodes = componentNode.getChildNodes();
 
         for (int i = 0; i < childNodes.getLength(); i++) {
