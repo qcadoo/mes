@@ -27,6 +27,7 @@ import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
 import com.qcadoo.mes.view.components.grid.GridComponentPattern;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
@@ -237,6 +238,7 @@ public class GridComponentPatternTest extends AbstractPatternTest {
     @Test
     public void shouldReturnState() throws Exception {
         // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
         TranslationService translationService = mock(TranslationService.class);
 
@@ -273,7 +275,7 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         pattern.initialize();
 
         // when
-        ComponentState state = pattern.createComponentState();
+        ComponentState state = pattern.createComponentState(viewDefinitionState);
 
         // then
         assertTrue(state instanceof GridComponentState);

@@ -33,6 +33,22 @@ public class ViewDefinitionStateTest extends AbstractStateTest {
     }
 
     @Test
+    public void shouldReturnStateByFunctionalPath() throws Exception {
+        // given
+        ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
+
+        ContainerState state = mock(ContainerState.class);
+
+        viewDefinitionState.registerComponent("name", state);
+
+        // when
+        ComponentState actualState = viewDefinitionState.getComponentByFunctionalPath("name");
+
+        // then
+        assertEquals(state, actualState);
+    }
+
+    @Test
     public void shouldReturnStateByPath() throws Exception {
         // given
         ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();

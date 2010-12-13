@@ -138,7 +138,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
 
         for (ComponentPattern cp : patterns.values()) {
-            viewDefinitionState.addChild(cp.createComponentState());
+            viewDefinitionState.addChild(cp.createComponentState(viewDefinitionState));
         }
 
         callHooks(preInitializeHooks, viewDefinitionState, locale);

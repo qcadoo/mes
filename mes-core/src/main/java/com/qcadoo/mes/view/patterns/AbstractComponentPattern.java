@@ -130,7 +130,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     @Override
-    public ComponentState createComponentState() {
+    public ComponentState createComponentState(final ViewDefinitionState viewDefinitionState) {
         AbstractComponentState state = (AbstractComponentState) getComponentStateInstance();
         state.setDataDefinition(dataDefinition);
         state.setName(name);
@@ -141,6 +141,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         for (ComponentCustomEvent customEvent : customEvents) {
             state.registerCustomEvent(customEvent.getEvent(), customEvent.getObject(), customEvent.getMethod());
         }
+        viewDefinitionState.registerComponent(getFunctionalPath(), state);
         return state;
     }
 

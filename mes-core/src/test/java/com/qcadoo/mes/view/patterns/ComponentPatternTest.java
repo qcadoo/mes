@@ -25,6 +25,7 @@ import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
 import com.qcadoo.mes.view.components.WindowComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
@@ -38,6 +39,7 @@ public class ComponentPatternTest extends AbstractPatternTest {
     @SuppressWarnings("unchecked")
     public void shouldHaveValidInstance() throws Exception {
         // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         TranslationService translationService = mock(TranslationService.class);
         ViewDefinition viewDefinition = mock(ViewDefinition.class);
         ComponentDefinition componentDefinition = getComponentDefinition("testName", null);
@@ -48,7 +50,7 @@ public class ComponentPatternTest extends AbstractPatternTest {
         pattern.addCustomEvent(new ComponentCustomEvent("save", object, "saveForm"));
 
         // when
-        ComponentState state = pattern.createComponentState();
+        ComponentState state = pattern.createComponentState(viewDefinitionState);
 
         // then
         assertTrue(state instanceof FormComponentState);
@@ -79,11 +81,12 @@ public class ComponentPatternTest extends AbstractPatternTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithoutName() throws Exception {
         // given
+        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         ComponentDefinition componentDefinition = new ComponentDefinition();
         ComponentPattern pattern = new FormComponentPattern(componentDefinition);
 
         // when
-        pattern.createComponentState();
+        pattern.createComponentState(viewDefinitionState);
     }
 
     @Test
