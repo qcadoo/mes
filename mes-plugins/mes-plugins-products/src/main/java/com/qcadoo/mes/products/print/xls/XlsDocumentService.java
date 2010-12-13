@@ -26,7 +26,6 @@ package com.qcadoo.mes.products.print.xls;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Locale;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -45,15 +44,14 @@ public abstract class XlsDocumentService extends DocumentService {
     private static final Logger LOG = LoggerFactory.getLogger(XlsDocumentService.class);
 
     @Override
-    public void generateDocument(final Entity entity, final Locale locale, final boolean save) throws IOException {
+    public void generateDocument(final Entity entity, final Locale locale) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream(getFullFileName((Date) entity.getField("date"), getFileName(), getSuffix())
-                    + XlsCopyUtil.XLS_EXTENSION);
+            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix() + XlsCopyUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
@@ -63,17 +61,11 @@ public abstract class XlsDocumentService extends DocumentService {
             throw e;
         }
         outputStream.close();
-        if (save) {
-            // TODO KRNA save fileName
-            updateFileName(entity, getFullFileName((Date) entity.getField("date"), getFileName(), ""), getEntityName());
-        }
     }
 
     protected abstract void addHeader(final HSSFSheet sheet, final Locale locale);
 
     protected abstract void addSeries(final HSSFSheet sheet, final Entity entity);
-
-    protected abstract String getEntityName();
 
     protected abstract String getReportTitle(final Locale locale);
 

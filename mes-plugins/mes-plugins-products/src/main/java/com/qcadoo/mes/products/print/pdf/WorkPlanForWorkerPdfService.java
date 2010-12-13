@@ -92,11 +92,6 @@ public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getFileName() {
-        return "WorkPlan";
-    }
-
-    @Override
     protected String getSuffix() {
         return "ForWorker";
     }

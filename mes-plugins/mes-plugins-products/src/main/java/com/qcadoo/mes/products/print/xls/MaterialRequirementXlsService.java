@@ -75,16 +75,6 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getFileName() {
-        return "MaterialRequirement";
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "materialRequirement";
-    }
-
-    @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("products.materialRequirement.report.title", locale);
     }

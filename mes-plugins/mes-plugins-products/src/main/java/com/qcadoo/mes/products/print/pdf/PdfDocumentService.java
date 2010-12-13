@@ -27,11 +27,11 @@ package com.qcadoo.mes.products.print.pdf;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -48,17 +48,26 @@ public abstract class PdfDocumentService extends DocumentService {
 
     protected DecimalFormat df;
 
+    @Value("${windowsFonts}")
+    private String windowsFontsPath;
+
+    @Value("${macosFonts}")
+    private String macosFontsPath;
+
+    @Value("${linuxFonts}")
+    private String linuxFontsPath;
+
     @Override
-    public void generateDocument(final Entity entity, final Locale locale, final boolean save) throws IOException,
-            DocumentException {
+    public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
         try {
             df = (DecimalFormat) DecimalFormat.getInstance(locale);
-            String fileName = getFullFileName((Date) entity.getField("date"), getFileName(), getSuffix()) + PdfUtil.PDF_EXTENSION;
-            FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
+                    + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
-                    getTranslationService().translate("products.report.in", locale), getFontsPath()));
+                    getTranslationService().translate("products.report.in", locale), PdfUtil.getFontsPath(windowsFontsPath,
+                            macosFontsPath, linuxFontsPath)));
             document.setMargins(40, 40, 60, 60);
             buildPdfMetadata(document, locale);
             writer.createXmpMetadata();

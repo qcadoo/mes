@@ -162,6 +162,7 @@ public final class OrderPdfView extends ProductsPdfView {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         super.prepareWriter(model, writer, request);
         writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
-                getTranslationService().translate("products.report.in", locale), getFontsPath()));
+                getTranslationService().translate("products.report.in", locale), PdfUtil.getFontsPath(windowsFontsPath,
+                        macosFontsPath, linuxFontsPath)));
     }
 }

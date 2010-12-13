@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
@@ -53,13 +52,13 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     protected DecimalFormat df;
 
     @Value("${windowsFonts}")
-    private String windowsFontsPath;
+    protected String windowsFontsPath;
 
     @Value("${macosFonts}")
-    private String macosFontsPath;
+    protected String macosFontsPath;
 
     @Value("${linuxFonts}")
-    private String linuxFontsPath;
+    protected String linuxFontsPath;
 
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
@@ -98,14 +97,4 @@ public abstract class ProductsPdfView extends AbstractPdfView {
 
     protected abstract void addTitle(final Document document, final Locale locale);
 
-    protected final String getFontsPath() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return windowsFontsPath;
-        } else if (SystemUtils.IS_OS_MAC_OSX) {
-            return macosFontsPath;
-        } else if (SystemUtils.IS_OS_LINUX) {
-            return linuxFontsPath;
-        }
-        return null;
-    }
 }

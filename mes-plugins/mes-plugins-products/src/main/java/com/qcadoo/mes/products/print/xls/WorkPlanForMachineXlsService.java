@@ -76,16 +76,6 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getFileName() {
-        return "WorkPlan";
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "workPlan";
-    }
-
-    @Override
     protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("products.workPlan.report.title", locale);
     }

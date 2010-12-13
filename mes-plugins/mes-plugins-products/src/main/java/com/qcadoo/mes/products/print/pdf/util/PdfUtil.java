@@ -36,6 +36,7 @@ import java.util.Locale;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -310,7 +311,7 @@ public final class PdfUtil {
 
     public static void copyPdf(final Document document, final PdfWriter writer, final String existingWorkbookFileName)
             throws IOException, DocumentException {
-        PdfReader reader = new PdfReader(existingWorkbookFileName + PdfUtil.PDF_EXTENSION);
+        PdfReader reader = new PdfReader(existingWorkbookFileName);
         int n = reader.getNumberOfPages();
         PdfImportedPage page;
         for (int i = 1; i <= n; i++) {
@@ -318,5 +319,17 @@ public final class PdfUtil {
             Image instance = Image.getInstance(page);
             document.add(instance);
         }
+    }
+
+    public static final String getFontsPath(final String windowsFontsPath, final String macosFontsPath,
+            final String linuxFontsPath) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return windowsFontsPath;
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
+            return macosFontsPath;
+        } else if (SystemUtils.IS_OS_LINUX) {
+            return linuxFontsPath;
+        }
+        return null;
     }
 }

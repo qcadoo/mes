@@ -150,7 +150,7 @@ public final class XlsCopyUtil {
     }
 
     public static void copyWorkbook(final HSSFWorkbook newWorkbook, final String existingWorkbookFileName) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(existingWorkbookFileName + XLS_EXTENSION);
+        FileInputStream fileInputStream = new FileInputStream(existingWorkbookFileName);
         POIFSFileSystem fs = new POIFSFileSystem(fileInputStream);
         HSSFWorkbook existingWorkbook = new HSSFWorkbook(fs);
         fileInputStream.close();
