@@ -498,7 +498,7 @@ public final class ProductService {
             } else {
                 try {
 
-                    updateFileName(materialRequirement,
+                    materialRequirement = updateFileName(materialRequirement,
                             getFullFileName((Date) materialRequirement.getField("date"), "MaterialRequirement"),
                             "materialRequirement");
                     materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
@@ -612,7 +612,7 @@ public final class ProductService {
             } else {
                 try {
 
-                    updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "WorkPlan"), "workPlan");
+                    workPlan = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "WorkPlan"), "workPlan");
                     workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale());
                     workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale());
                     workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale());
@@ -657,9 +657,9 @@ public final class ProductService {
         return path + fileName + "_" + D_T_F.format(date);
     }
 
-    private final void updateFileName(final Entity entity, final String fileName, final String entityName) {
+    private final Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
         entity.setField("fileName", fileName);
-        dataDefinitionService.get("products", entityName).save(entity);
+        return dataDefinitionService.get("products", entityName).save(entity);
     }
 
 }
