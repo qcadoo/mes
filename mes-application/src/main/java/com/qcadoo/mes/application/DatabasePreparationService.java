@@ -107,13 +107,14 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 1);
         MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 2);
         MenuMenuCategory menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 3);
-        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 4);
+        MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.reports", 4);
+        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 5);
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
                 technologyGridView, 1);
-        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryBasicData , productGridView, 2);
-        addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryTechnology,
-                orderGridView, 3);
+        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryTechnology , productGridView, 4);
+        addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryOrders,
+                orderGridView, 1);
         addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryReports ,
                 materialRequirementGridView, 1);
         addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryTechnology, operationGridView, 5);
