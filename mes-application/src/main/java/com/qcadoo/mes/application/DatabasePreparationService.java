@@ -103,19 +103,20 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlans");
         MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
 
-        MenuMenuCategory menuCategoryProducts = addMenuCategory("products", "core.menu.products", 1);
-        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
+
+        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 1);
+        MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 2);
         MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 3);
 
-        addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryProducts,
+        addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
                 technologyGridView, 1);
-        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryProducts, productGridView, 2);
-        addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryProducts,
+        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryBasicData , productGridView, 2);
+        addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryTechnology,
                 orderGridView, 3);
-        addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryProducts,
+        addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryTechnology,
                 materialRequirementGridView, 4);
-        addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryProducts, operationGridView, 5);
-        addMenuViewDefinitionItem("workPlans", "products.menu.products.workPlans", menuCategoryProducts, workPlanGridView, 6);
+        addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryTechnology, operationGridView, 5);
+        addMenuViewDefinitionItem("workPlans", "products.menu.products.workPlans", menuCategoryTechnology, workPlanGridView, 6);
 
         if (addAdministrationMenuToDatabase) {
             addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
