@@ -57,7 +57,7 @@
 						action="#{grid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="form" name="dictionary">
+			<component type="form" reference="form" name="dictionary">
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>		

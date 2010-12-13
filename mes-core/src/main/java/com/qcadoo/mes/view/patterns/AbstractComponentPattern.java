@@ -93,6 +93,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         this.defaultVisible = componentDefinition.isDefaultVisible();
         this.translationService = componentDefinition.getTranslationService();
         this.viewDefinition = componentDefinition.getViewDefinition();
+        this.viewDefinition.registerComponent(getReference(), getPath(), this);
     }
 
     protected abstract String getJspFilePath();
@@ -218,7 +219,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
         if (fieldPath != null) {
             field = getComponentAndField(fieldPath);
-            fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition.getComponentByPath(field[0]));
+            fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition
+                    .getComponentByReference(field[0]));
             checkNotNull(fieldComponent, "Cannot find field component for " + getPath() + ": " + fieldPath);
             fieldComponent.addFieldEntityIdChangeListener(field[1], this);
         }
@@ -226,7 +228,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         if (scopeFieldPath != null) {
             scopeField = getComponentAndField(scopeFieldPath);
             scopeFieldComponent = (AbstractComponentPattern) (scopeField[0] == null ? parent : viewDefinition
-                    .getComponentByPath(scopeField[0]));
+                    .getComponentByReference(scopeField[0]));
             checkNotNull(scopeFieldComponent, "Cannot find sourceField component for " + getPath() + ": " + scopeFieldPath);
             scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
         }

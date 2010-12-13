@@ -35,7 +35,7 @@
 						action="#{grid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="menuCategories">
+			<component type="grid" name="menuCategories" reference="grid">
 				<option type="column" name="categoryOrder" fields="categoryOrder" />
 				<option type="column" name="name" fields="name" link="true" width="600" />
 				<option type="column" name="active" fields="active" />
@@ -66,7 +66,7 @@
 						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="menuCategory">
+			<component type="form" name="menuCategory" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="input" name="name" field="name" hasDescription="false" />

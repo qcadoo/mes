@@ -104,7 +104,7 @@ public class FieldAndScopeListenerPatternTest extends AbstractPatternTest {
 
         ComponentPatternMock testComponent = new ComponentPatternMock(getComponentDefinition("name", viewDefinition));
 
-        given(viewDefinition.getComponentByPath("testComponent")).willReturn(testComponent);
+        given(viewDefinition.getComponentByReference("testComponent")).willReturn(testComponent);
 
         // when
         pattern.initialize();
@@ -192,7 +192,7 @@ public class FieldAndScopeListenerPatternTest extends AbstractPatternTest {
                 "#{testComponent}.testField", parent, viewDefinition));
 
         ComponentPatternMock testComponent = new ComponentPatternMock(getComponentDefinition("name", viewDefinition));
-        given(viewDefinition.getComponentByPath("testComponent")).willReturn(testComponent);
+        given(viewDefinition.getComponentByReference("testComponent")).willReturn(testComponent);
 
         // when
         pattern.initialize();

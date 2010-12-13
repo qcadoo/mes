@@ -73,7 +73,7 @@ public class InitializationTest extends AbstractPatternTest {
         setField(fieldComponent, "dataDefinition", dataDefinition);
         setField(fieldComponent, "initialized", true);
 
-        given(viewDefinition.getComponentByPath("component")).willReturn(fieldComponent);
+        given(viewDefinition.getComponentByReference("component")).willReturn(fieldComponent);
 
         AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", "#{component}.field",
                 null, null, viewDefinition));
@@ -126,7 +126,7 @@ public class InitializationTest extends AbstractPatternTest {
         setField(sourceComponent, "dataDefinition", dataDefinition);
         setField(sourceComponent, "initialized", true);
 
-        given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);
+        given(viewDefinition.getComponentByReference("component")).willReturn(sourceComponent);
 
         AbstractComponentPattern pattern = new TextInputComponentPattern(getComponentDefinition("test", null,
                 "#{component}.field", null, viewDefinition));

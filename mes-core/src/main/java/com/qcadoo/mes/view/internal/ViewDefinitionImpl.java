@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,7 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.api.ViewDefinitionService;
@@ -67,6 +69,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     private final Set<String> jsFilePaths = new HashSet<String>();
 
     private final Map<String, ComponentPattern> patterns = new LinkedHashMap<String, ComponentPattern>();
+
+    private final Map<String, ComponentPattern> registry = new LinkedHashMap<String, ComponentPattern>();
 
     private final TranslationService translationService;
 
@@ -178,20 +182,16 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public ComponentPattern getComponentByPath(final String path) {
-        String[] pathParts = path.split("\\.");
-        ComponentPattern componentPattern = patterns.get(pathParts[0]);
-        if (componentPattern == null) {
-            return null;
+    public ComponentPattern getComponentByReference(final String reference) {
+        return registry.get(reference);
+    }
+
+    @Override
+    public void registerComponent(final String reference, final String path, final ComponentPattern pattern) {
+        if (registry.containsKey(reference)) {
+            throw new IllegalStateException("Duplicated pattern reference : " + reference);
         }
-        for (int i = 1; i < pathParts.length; i++) {
-            ContainerPattern container = (ContainerPattern) componentPattern;
-            componentPattern = container.getChild(pathParts[i]);
-            if (componentPattern == null) {
-                return null;
-            }
-        }
-        return componentPattern;
+        registry.put(reference, pattern);
     }
 
     @Override
@@ -252,4 +252,33 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         return list;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public String translateContextReferences(final String context) {
+        try {
+            JSONObject oldContext = new JSONObject(context);
+            JSONObject newContext = new JSONObject();
+            Iterator<String> paths = oldContext.keys();
+
+            while (paths.hasNext()) {
+                String oldPath = paths.next();
+                String[] newPath = oldPath.split("\\.");
+
+                ComponentPattern pattern = getComponentByReference(newPath[0]);
+
+                if (pattern == null) {
+                    throw new IllegalStateException("Cannot find component for " + getPluginIdentifier() + "." + getName() + ": "
+                            + newPath[0]);
+                }
+
+                newPath[0] = pattern.getPath();
+
+                newContext.put(StringUtils.arrayToDelimitedString(newPath, "."), oldContext.get(oldPath));
+            }
+
+            return newContext.toString();
+        } catch (JSONException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
 }

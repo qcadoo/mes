@@ -220,7 +220,7 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         setField(sourceComponent, "dataDefinition", dataDefinition);
         setField(sourceComponent, "initialized", true);
 
-        given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);
+        given(viewDefinition.getComponentByReference("component")).willReturn(sourceComponent);
 
         ComponentDefinition componentDefinition = getComponentDefinition("grid", null, "#{component}.field", null, viewDefinition);
         componentDefinition.setTranslationService(translationService);
@@ -266,7 +266,7 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         setField(sourceComponent, "dataDefinition", dataDefinition);
         setField(sourceComponent, "initialized", true);
 
-        given(viewDefinition.getComponentByPath("component")).willReturn(sourceComponent);
+        given(viewDefinition.getComponentByReference("component")).willReturn(sourceComponent);
 
         ComponentDefinition componentDefinition = getComponentDefinition("grid", null, "#{component}.field", null, viewDefinition);
         componentDefinition.setTranslationService(translationService);

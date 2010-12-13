@@ -122,8 +122,8 @@
 					<component type="input" name="lastName" field="lastName" />
 				</component>
 				<component type="textarea" name="description" field="description" />
-				<component type="password" name="password" reference="password" field="password" />
-				<component type="password" name="passwordConfirmation" reference="passwordConfirmation" field="passwordConfirmation" />
+				<component type="password" name="password" reference="passwordTextInput" field="password" />
+				<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
 				<option type="header" value="false" />
 				<option type="expression" value="#userName"/>
 			</component>
@@ -146,9 +146,9 @@
 				</group>
 			</ribbon>
 			<component type="form" name="user" reference="form">
-				<component type="password" name="password" reference="password" field="password" />
-				<component type="password" name="passwordConfirmation" reference="passwordConfirmation" field="passwordConfirmation" />
-				<component type="input" name="viewIdentifier" reference="viewIdentifier" field="viewIdentifier" defaultVisible="false"/>
+				<component type="password" name="password" reference="passwordTextInput" field="password" />
+				<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
+				<component type="input" name="viewIdentifier" reference="viewIdentifierHiddenInput" field="viewIdentifier" defaultVisible="false"/>
 				<option type="header" value="false" />
 				<option type="expression" value="#userName"/>
 			</component>
@@ -194,10 +194,10 @@
 				</group>
 			</ribbon>
 			<component type="form" name="user" reference="form">
-				<component type="password" name="oldPassword" reference="oldPassword" field="oldPassword" />
-				<component type="password" name="password" reference="password" field="password" />
-				<component type="password" name="passwordConfirmation" reference="passwordConfirmation" field="passwordConfirmation" />
-				<component type="input" name="viewIdentifier" reference="viewIdentifier" field="viewIdentifier" defaultVisible="false"/>
+				<component type="password" name="oldPassword" reference="oldPasswordTextInput" field="oldPassword" />
+				<component type="password" name="password" reference="passwordTextInput" field="password" />
+				<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
+				<component type="input" name="viewIdentifier" reference="viewIdentifierHiddenInput" field="viewIdentifier" defaultVisible="false"/>
 				<option type="header" value="false" />
 				<option type="expression" value="' '"/>
 			</component>

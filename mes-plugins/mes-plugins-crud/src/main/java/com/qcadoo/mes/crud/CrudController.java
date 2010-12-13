@@ -66,7 +66,7 @@ public final class CrudController {
         modelAndView.addObject("model", viewDefinition.prepareView(locale));
         modelAndView.addObject("viewName", viewName);
         modelAndView.addObject("pluginIdentifier", pluginIdentifier);
-        modelAndView.addObject("context", arguments.get("context"));
+        modelAndView.addObject("context", viewDefinition.translateContextReferences(arguments.get("context")));
 
         boolean popup = false;
         if (arguments.containsKey("popup")) {

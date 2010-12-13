@@ -54,12 +54,16 @@ public interface ViewDefinition {
 
     JSONObject performEvent(JSONObject object, Locale locale) throws JSONException;
 
-    ComponentPattern getComponentByPath(String path);
+    ComponentPattern getComponentByReference(String reference);
 
     boolean isMenuAccessible();
 
     DataDefinition getDataDefinition();
 
     void addJsFilePath(String jsFilePath);
+
+    void registerComponent(String reference, String path, ComponentPattern pattern);
+
+    String translateContextReferences(String context);
 
 }

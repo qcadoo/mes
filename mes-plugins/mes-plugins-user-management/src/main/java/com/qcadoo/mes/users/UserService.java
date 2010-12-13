@@ -44,11 +44,11 @@ public final class UserService {
     private boolean showChangePasswordButton;
 
     public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state, final Locale locale) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifier");
-        PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByReference("oldPassword");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("password");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
+        PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByReference("oldPasswordTextInput");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByReference("passwordConfirmation");
+                .getComponentByReference("passwordConfirmationTextInput");
         ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
 
         oldPassword.setRequired(true);
@@ -62,10 +62,10 @@ public final class UserService {
     }
 
     public void setPasswordAsRequired(final ViewDefinitionState state, final Locale locale) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifier");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("password");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifierHiddenInput");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByReference("passwordConfirmation");
+                .getComponentByReference("passwordConfirmationTextInput");
 
         password.setRequired(true);
         passwordConfirmation.setRequired(true);
@@ -74,9 +74,9 @@ public final class UserService {
 
     public void hidePasswordOnUpdateForm(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("password");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByReference("passwordConfirmation");
+                .getComponentByReference("passwordConfirmationTextInput");
         ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
 
         password.setRequired(true);

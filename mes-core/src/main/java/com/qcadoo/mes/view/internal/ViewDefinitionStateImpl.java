@@ -20,7 +20,7 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
 
     private boolean openInNewWindow;
 
-    private final Map<String, ComponentState> components = new HashMap<String, ComponentState>();
+    private final Map<String, ComponentState> registry = new HashMap<String, ComponentState>();
 
     public ViewDefinitionStateImpl() {
         requestRender();
@@ -90,7 +90,7 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
 
     @Override
     public ComponentState getComponentByReference(final String reference) {
-        return components.get(reference);
+        return registry.get(reference);
     }
 
     private void performEventOnChildren(final Collection<ComponentState> components, final String event, final String... args) {
@@ -121,7 +121,10 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
 
     @Override
     public void registerComponent(final String reference, final String path, final ComponentState state) {
-        components.put(reference, state);
+        if (registry.containsKey(reference)) {
+            throw new IllegalStateException("Duplicated state reference : " + reference);
+        }
+        registry.put(reference, state);
     }
 
 }
