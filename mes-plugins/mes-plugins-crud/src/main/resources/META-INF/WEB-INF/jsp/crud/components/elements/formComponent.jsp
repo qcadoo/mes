@@ -49,9 +49,9 @@
 	<c:choose>
 		<c:when test="${isInputBox && !component['jspOptions']['textRepresentationOnDisabled']}">
 			<div class="component_container_form_w"><div class="component_container_form_inner_h"></div><div class="component_container_form_inner">
+					${componentBody}
 					<div class="component_container_form_x"></div>
 					<div class="component_container_form_y"></div>
-					${componentBody}
 				</div>
 			</div>
 		</c:when>

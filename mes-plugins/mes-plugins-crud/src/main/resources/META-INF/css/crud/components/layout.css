@@ -16,9 +16,11 @@
 }
 
 .gridLayoutTable > tbody > tr > td {
-		
-	//width: 200px;
 	//border: solid black 1px;
 	//border-left: solid black 1px;
 	text-align: center;
+}
+
+.gridLayoutTable > tbody > tr > td.rightBorder {
+	border-right: solid #A7A7A7 1px;
 }

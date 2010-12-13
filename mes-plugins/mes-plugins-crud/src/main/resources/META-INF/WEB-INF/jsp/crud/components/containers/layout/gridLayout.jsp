@@ -15,12 +15,20 @@
 			<tr>
 				<c:forEach items="${row}" var="cell">
 					<c:if test="${cell.available || cell.component != null}">
-						<td rowspan="${cell.rowspan}" colspan="${cell.colspan}">
+					
+						<c:set var="borderClass" value=""/>
+						<c:if test="${cell.rightBorder}">
+							<c:set var="borderClass" value="rightBorder"/>
+						</c:if>
+					
+						<td rowspan="${cell.rowspan}" colspan="${cell.colspan}" class="${borderClass}">
+						
 							<c:if test="${cell.component != null}">
 								<tiles:insertTemplate template="../../component.jsp">
 									<tiles:putAttribute name="component" value="${component.children[cell.component.name]}" />
 								</tiles:insertTemplate>
 							</c:if>
+							
 						</td>
 					</c:if>
 				</c:forEach>

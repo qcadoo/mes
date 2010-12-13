@@ -12,6 +12,8 @@ public class GridLayoutCell {
 
     private boolean available = true;
 
+    private boolean rightBorder = false;
+
     public ComponentPattern getComponent() {
         return component;
     }
@@ -42,6 +44,14 @@ public class GridLayoutCell {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public boolean isRightBorder() {
+        return rightBorder;
+    }
+
+    public void setRightBorder(boolean rightBorder) {
+        this.rightBorder = rightBorder;
     }
 
 }

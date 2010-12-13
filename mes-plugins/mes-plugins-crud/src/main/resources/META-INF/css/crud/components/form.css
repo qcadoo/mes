@@ -30,11 +30,7 @@
 
 .component_form_element {
 	padding: 0;
-	//width: 31.5%;
 	width: 100%;
-	//height: 40px;
-	//margin-bottom: 19px;
-	//vertical-align: middle;
 	display: block;
 	text-align: left;
 	position: relative;
@@ -43,15 +39,11 @@
 /** labels **/
 
 .component_form_element .labelbox {
-	//width: 31%;
 	width: 150px;
 	height: 100%;
-	//display: block;
 	display: inline-block;
 	vertical-align: middle;
 	text-align: left;
-	//float: left;
-	//height: 22px;
 	font: 11px arial;
 	position: absolute;
 	left: 10px;
@@ -59,9 +51,8 @@
 }
 
 .component_form_element .label_h {
-	//height: 22px;
 	height: 100%;
-	width: 10px;
+	width: 0px;
 	display: inline-block;
 	vertical-align: middle;
 }
@@ -77,8 +68,6 @@
 }
 
 .component_element_textarea .label {
-	//vertical-align: top;
-	//padding-top: 3px;
 }
 
 .component_container_form .component_container_form_textRepresentation {
@@ -98,9 +87,7 @@
 	margin: 0;
 	padding: 0;
 	vertical-align: middle;
-	//width: 65.5%;
 	display: inline-block;
-	//position: relative;
 	position: absolute;
 	left: 170px;
 	right: 10px;
@@ -165,7 +152,7 @@
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	border: 1px solid #959595;	
-	background: transparent url(../images/form/input_c_transparent.png) no-repeat 0 0;
+	background: white url(../images/form/input_c_transparent.png) no-repeat 0 0;
 	padding-left: 6px;
 	width: 100%;
 }
@@ -379,7 +366,6 @@
 	top: 3px; right: 22px;
 	width: 16px;
 	height: 16px;
-	//background: transparent url(/css/core/images/loading.gif) no-repeat right center;
 	background: transparent url(/img/core/loading_indicator16.gif) no-repeat right center;
 	display: none;
 }

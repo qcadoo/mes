@@ -62,6 +62,40 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
 
             insertCell(cell, column, row);
         }
+
+        updateBorders();
+    }
+
+    private void updateBorders() {
+        int colsNumber = cells[0].length;
+        boolean[] bordersArray = new boolean[colsNumber];
+        for (int i = 0; i < colsNumber; i++) {
+            bordersArray[i] = false;
+        }
+
+        for (int row = 0; row < cells.length; row++) {
+            for (int col = 0; col < cells[row].length; col++) {
+                if (cells[row][col].getComponent() != null) {
+                    bordersArray[col + cells[row][col].getColspan() - 1] = true;
+                }
+            }
+        }
+
+        // remove last border
+        for (int i = colsNumber - 1; i >= 0; i--) {
+            if (bordersArray[i]) {
+                bordersArray[i] = false;
+                break;
+            }
+        }
+
+        for (int row = 0; row < cells.length; row++) {
+            for (int col = 0; col < cells[row].length; col++) {
+                if (bordersArray[col + cells[row][col].getColspan() - 1]) {
+                    cells[row][col].setRightBorder(true);
+                }
+            }
+        }
     }
 
     private GridLayoutCell createGridLayoutCell(final Node child, final ViewDefinitionParser parser) {
