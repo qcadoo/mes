@@ -31,6 +31,8 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	
+	this.element.css("height","100%");
+	
 	function constructor(_this) {
 		
 		var childrenElement = $("#"+_this.elementSearchName+"_windowComponents");
@@ -102,7 +104,8 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		}
 		
 		for (var i in this.components) {
-			this.components[i].updateSize(width, height);
+			var componentsHeight = height ? height-20 : null;
+			this.components[i].updateSize(width-20, componentsHeight);
 		}
 		
 		var innerWidth = $("#"+this.elementSearchName+"_windowContainerContentBodyWidthMarker").innerWidth();

@@ -23,7 +23,7 @@
  */
 
 .component_container_form {
-	margin: 20px 20px;
+	//margin: 20px 20px;
 	padding: 0;
 	background: #fff;
 }
@@ -68,6 +68,8 @@
 }
 
 .component_element_textarea .label {
+	vertical-align:top;
+	margin-top: 16px;
 }
 
 .component_container_form .component_container_form_textRepresentation {
@@ -162,6 +164,7 @@
 .disabled .component_container_form_inner textarea,
 .disabled select {
 	color: #818181;
+	background-color: #F0F0F0;
 }
 
 .component_element_checkbox .component_container_form_w {
@@ -482,4 +485,13 @@
 }
 .linkButton.activeButton:hover a span div {
 	background-image:url('/css/core/menu/images/lt_activ_c.png');
+}
+
+.separatorLine {
+	height: 1px;
+	color: #A7A7A7;
+	border-color: #A7A7A7;
+	border: none;
+	background-color: #A7A7A7;
+	margin: 5px 0;
 }
