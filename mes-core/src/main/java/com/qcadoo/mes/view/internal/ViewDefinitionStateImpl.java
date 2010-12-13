@@ -74,8 +74,7 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
         }
     }
 
-    @Override
-    public ComponentState getComponentByPath(final String path) {
+    private ComponentState getComponentByPath(final String path) {
         ComponentState componentState = this;
         String[] pathParts = path.split("\\.");
         for (int i = 0; i < pathParts.length; i++) {
@@ -90,8 +89,8 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     }
 
     @Override
-    public ComponentState getComponentByFunctionalPath(final String path) {
-        return components.get(path);
+    public ComponentState getComponentByReference(final String reference) {
+        return components.get(reference);
     }
 
     private void performEventOnChildren(final Collection<ComponentState> components, final String event, final String... args) {
@@ -121,8 +120,8 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     }
 
     @Override
-    public void registerComponent(final String path, final ComponentState state) {
-        components.put(path, state);
+    public void registerComponent(final String reference, final String path, final ComponentState state) {
+        components.put(reference, state);
     }
 
 }

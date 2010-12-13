@@ -30,25 +30,25 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" icon="downloadIcon24.png" action="#{window.plugins}.fireEvent(download);" />
-					<bigButton name="update" icon="updateIcon24.png" action="#{window.plugins}.fireEvent(update);" />
+					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" />
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{window.plugins}.fireEvent(enable);" />
-					<smallButtons name="disable" icon="disableIcon16.png" action="#{window.plugins}.fireEvent(disable);">
-						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{window.plugins}.fireEvent(deinstall);" />
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{window.plugins}.fireEvent(remove);" />
+					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" />
+					<smallButtons name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);">
+						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{grid}.fireEvent(deinstall);" />
+						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(remove);" />
 					</smallButtons>
 				</group>
 			</ribbon>
-			<component type="grid" name="plugins">
+			<component type="grid" name="plugins" reference="grid">
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="description" fields="description" />
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
 				<option type="column" name="status" fields="status" />
 				<option type="correspondingView" value="plugins/plugin" />
-				<option type="correspondingComponent" value="window.plugin" />
+				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,vendor,status" />
 				<option type="orderable" value="name,description,version,vendor,status" />
 				<option type="deletable" value="false" />
@@ -72,10 +72,10 @@
 					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="plugins">
-					<bigButton name="update" icon="updateIcon24.png" action="#{window.plugin}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{form}.performCallFunction(goToUrl,../update.html);" />
 				</group>
 			</ribbon>
-			<component type="form" name="plugin">
+			<component type="form" name="plugin" reference="form">
 				<component type="textarea" name="name" field="name" defaultEnabled="false" />
 				<component type="input" name="version" field="version" defaultEnabled="false" />
 				<component type="input" name="vendor" field="vendor" defaultEnabled="false" />

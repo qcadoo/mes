@@ -132,7 +132,7 @@ public class ContainerPatternTest extends AbstractPatternTest {
         assertEquals(state, actualState);
         verify(pattern1).createComponentState(viewDefinitionState);
         verify(pattern2).createComponentState(viewDefinitionState);
-        verify(viewDefinitionState).registerComponent("name", actualState);
+        verify(viewDefinitionState).registerComponent("name", "name", actualState);
         assertEquals(state1, state.getChild("name1"));
         assertEquals(state2, state.getChild("name2"));
     }

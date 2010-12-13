@@ -142,8 +142,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         for (ComponentCustomEvent customEvent : customEvents) {
             state.registerCustomEvent(customEvent.getEvent(), customEvent.getObject(), customEvent.getMethod());
         }
-        if(!(this instanceof AbstractLayoutPattern)) {
-            viewDefinitionState.registerComponent(getFunctionalPath(), state);
+        if (!(this instanceof AbstractLayoutPattern)) {
+            viewDefinitionState.registerComponent(getReference(), getPath(), state);
         }
         return state;
     }
@@ -264,18 +264,20 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         // TODO masz?
         if (fieldEntityIdChangeListeners.size() > 0) {
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
-                    .getComponentByPath(getPath());
+                    .getComponentByReference(getReference());
             for (Map.Entry<String, ComponentPattern> listenerPattern : fieldEntityIdChangeListeners.entrySet()) {
-                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPath());
+                ComponentState listenerState = viewDefinitionState.getComponentByReference(listenerPattern.getValue()
+                        .getReference());
                 thisComponentState.addFieldEntityIdChangeListener(listenerPattern.getKey(),
                         (FieldEntityIdChangeListener) listenerState);
             }
         }
         if (scopeEntityIdChangeListeners.size() > 0) {
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
-                    .getComponentByPath(getPath());
+                    .getComponentByReference(getReference());
             for (Map.Entry<String, ComponentPattern> listenerPattern : scopeEntityIdChangeListeners.entrySet()) {
-                ComponentState listenerState = viewDefinitionState.getComponentByPath(listenerPattern.getValue().getPath());
+                ComponentState listenerState = viewDefinitionState.getComponentByReference(listenerPattern.getValue()
+                        .getReference());
                 thisComponentState.addScopeEntityIdChangeListener(listenerPattern.getKey(),
                         (ScopeEntityIdChangeListener) listenerState);
             }
@@ -310,8 +312,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         return options;
     }
 
-    protected final String getReference() {
-        return reference;
+    @Override
+    public final String getReference() {
+        return reference != null ? reference : getPath();
     }
 
     protected final FieldDefinition getFieldDefinition() {
@@ -348,7 +351,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
                 listeners.put(listener.getPath());
             }
             if (customEvents.size() > 0) {
-                // TODO masz
                 listeners.put(getPath());
             }
         }

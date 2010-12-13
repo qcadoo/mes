@@ -3,7 +3,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo MES"
     Version: 0.2.0
 
     This file is part of Qcadoo.
@@ -35,7 +35,7 @@
 				<option type="orderable" value="name,role" />
 				<option type="searchable" value="name" />
 				<option type="correspondingView" value="users/group" />
-				<option type="correspondingComponent" value="window.group" />
+				<option type="correspondingComponent" value="form" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
@@ -52,14 +52,14 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.group}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.group}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{window.group}.performCancel;" />
+						action="#{form}.performCancel;" />
 				</group>
 			</ribbon>		
-			<component type="form" name="group">
+			<component type="form" name="group" reference="form">
 				<component type="input" name="name" field="name" defaultEnabled="false"/>
 				<component type="textarea" name="description" field="description" /> 
 				<option type="header" value="false" />
@@ -71,12 +71,12 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{window.users}.performNew;" />
+					<bigButton name="new" icon="newIcon24.png" action="#{grid}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.users}.performDelete;" />
+						action="#{grid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="users">
+			<component type="grid" name="users" reference="grid">
 				<option type="column" name="login" fields="userName" link="true" />
 				<option type="column" name="email" fields="email" />
 				<option type="column" name="firstName" fields="firstName" link="true" />
@@ -86,7 +86,7 @@
 				<option type="orderable" value="login,email,firstName,lastName,userGroup" />
 				<option type="searchable" value="login,email,firstName,lastName,userGroup" />
 				<option type="correspondingView" value="users/user" />
-				<option type="correspondingComponent" value="window.user" />
+				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -101,16 +101,16 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.user}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.user}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{window.user}.performCancel;" />
+						action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.user}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="user">
+			<component type="form" name="user" reference="form">
 				<component type="input" name="login" field="userName" />
 				<component type="lookup" name="userGroup" field="userGroup">
 					<option type="expression" value="#name" />
@@ -122,14 +122,14 @@
 					<component type="input" name="lastName" field="lastName" />
 				</component>
 				<component type="textarea" name="description" field="description" />
-				<component type="password" name="password" field="password" />
-				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
+				<component type="password" name="password" reference="password" field="password" />
+				<component type="password" name="passwordConfirmation" reference="passwordConfirmation" field="passwordConfirmation" />
 				<option type="header" value="false" />
 				<option type="expression" value="#userName"/>
 			</component>
-			<component type="button" name="changePasswordButton" source="#{window.user}">
+			<component type="button" name="changePasswordButton" reference="changePasswordButton" source="#{form}">
 				<option type="correspondingView" value="users/userChangePassword" />
-				<option type="correspondingComponent" value="window.user" />
+				<option type="correspondingComponent" value="form" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.users.UserService" method="hidePasswordOnUpdateForm" />
@@ -142,13 +142,13 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.user}.performSave;" />
+						action="#{form}.performSave;" />
 				</group>
 			</ribbon>
-			<component type="form" name="user">
-				<component type="password" name="password" field="password" />
-				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
-				<component type="input" name="viewIdentifier" field="viewIdentifier" defaultVisible="false"/>
+			<component type="form" name="user" reference="form">
+				<component type="password" name="password" reference="password" field="password" />
+				<component type="password" name="passwordConfirmation" reference="passwordConfirmation" field="passwordConfirmation" />
+				<component type="input" name="viewIdentifier" reference="viewIdentifier" field="viewIdentifier" defaultVisible="false"/>
 				<option type="header" value="false" />
 				<option type="expression" value="#userName"/>
 			</component>
@@ -160,10 +160,10 @@
 			<ribbon>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.user}.performSave;" />
+						action="#{form}.performSave;" />
 				</group>
 			</ribbon>
-			<component type="form" name="user">
+			<component type="form" name="user" reference="form">
 				<component type="input" name="login" field="userName" defaultEnabled="false" />
 				<component type="lookup" name="userGroup" field="userGroup" defaultEnabled="false" >
 					<option type="expression" value="#name" />
@@ -172,15 +172,13 @@
 				<component type="input" name="email" field="email" />
 				<component type="input" name="firstName" field="firstName" />
 				<component type="input" name="lastName" field="lastName" />
-				
-				
 				<component type="textarea" name="description" field="description" />
 				<option type="header" value="false" />
 				<option type="expression" value="' '"/>
 			</component>
-			<component type="button" name="changePasswordButton" source="#{window.user}">
+			<component type="button" name="changePasswordButton" reference="changePasswordButton" source="#{form}">
 				<option type="correspondingView" value="users/profileChangePassword" />
-				<option type="correspondingComponent" value="window.user" />
+				<option type="correspondingComponent" value="form" />
 			</component>
 		</component>
 	</view>
@@ -192,14 +190,14 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.user}.performSave;" />
+						action="#{form}.performSave;" />
 				</group>
 			</ribbon>
-			<component type="form" name="user">
-				<component type="password" name="oldPassword" field="oldPassword" />
-				<component type="password" name="password" field="password" />
-				<component type="password" name="passwordConfirmation" field="passwordConfirmation" />
-				<component type="input" name="viewIdentifier" field="viewIdentifier" defaultVisible="false"/>
+			<component type="form" name="user" reference="form">
+				<component type="password" name="oldPassword" reference="oldPassword" field="oldPassword" />
+				<component type="password" name="password" reference="password" field="password" />
+				<component type="password" name="passwordConfirmation" reference="passwordConfirmation" field="passwordConfirmation" />
+				<component type="input" name="viewIdentifier" reference="viewIdentifier" field="viewIdentifier" defaultVisible="false"/>
 				<option type="header" value="false" />
 				<option type="expression" value="' '"/>
 			</component>

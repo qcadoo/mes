@@ -30,12 +30,12 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{window.products}.performNew;" />
+					<bigButton name="new" icon="newIcon24.png" action="#{grid}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.products}.performDelete;" />
+						action="#{grid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="products">
+			<component type="grid" name="products" reference="grid">
 				<option type="column" name="number" fields="number" link="true"
 					width="200" />
 				<option type="column" name="name" fields="name" link="true"
@@ -43,7 +43,7 @@
 				<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
 				<option type="column" name="ean" fields="ean" />
 				<option type="correspondingView" value="products/product" />
-				<option type="correspondingComponent" value="window.product" />
+				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
 				<option type="orderable" value="name,number,typeOfMaterial,ean" />
 				<option type="fullscreen" value="true" />
@@ -60,16 +60,16 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.product}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.product}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{window.product}.performCancel;" />
+						action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.product}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="product">
+			<component type="form" name="product" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
 					<layoutElement column="1" row="1" width="2" height="3">
 						<component type="borderLayout" name="borderLayout">
@@ -101,12 +101,12 @@
 			</component>
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="10">
 				<layoutElement column="1" row="1" height="10">
-					<component type="grid" name="substitutes" source="#{window.product}.substitutes">
+					<component type="grid" name="substitutes" reference="substitutes" source="#{form}.substitutes">
 						<option type="column" name="number" fields="number" link="true" />
 						<option type="column" name="name" fields="name" link="true" />
 						<option type="column" name="priority" fields="priority" />
 						<option type="correspondingView" value="products/substitute" />
-						<option type="correspondingComponent" value="window.substitute" />
+						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
@@ -115,14 +115,14 @@
 				</layoutElement>
 				<layoutElement column="2" row="1" height="8" width="2">
 					<component type="grid" name="substituteComponents"
-						source="#{window.gridsLayout.substitutes}.components">
+						source="#{substitutes}.components">
 						<option type="column" name="number" fields="product"
 							expression="#product['number']" link="true" />
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
 						<option type="column" name="quantity" fields="quantity" />
 						<option type="correspondingView" value="products/substituteComponent" />
-						<option type="correspondingComponent" value="window.substituteComponent" />
+						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
@@ -140,15 +140,15 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.substitute}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.substitute}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.substitute}.performCancel;" />
+						action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.substitute}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="substitute">
+			<component type="form" name="substitute" reference="form">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="input" name="priority" field="priority"
@@ -166,15 +166,15 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.substituteComponent}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.substituteComponent}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.substituteComponent}.performCancel;" />
+						action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.substituteComponent}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="substituteComponent">
+			<component type="form" name="substituteComponent" reference="form">
 				<component type="lookup" name="product" field="product">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
@@ -195,16 +195,16 @@
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png" 
-						action="#{window.operations}.performNew;"/>
+						action="#{grid}.performNew;"/>
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.operations}.performDelete;"/>
+						action="#{grid}.performDelete;"/>
 				</group>
 			</ribbon>
-			<component type="grid" name="operations">
+			<component type="grid" name="operations" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="correspondingView" value="products/operation"/>
-				<option type="correspondingComponent" value="window.operation" />
+				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="number, name"/>
 				<option type="orderable" value="number, name"/>
 				<option type="fullscreen" value="true" />
@@ -221,15 +221,15 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.operation}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.operation}.performSave;#{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.operation}.performCancel;" />
+						action="#{form}.performSave;#{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.operation}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="operation">
+			<component type="form" name="operation" reference="form">
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
 				<component type="lookup" name="staff" field="staff">
@@ -260,18 +260,18 @@
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{window.technologies}.performNew;" />
+						action="#{grid}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.technologies}.performDelete;" />
+						action="#{grid}.performDelete;" />
 				</group>
 			</ribbon>
-			<component type="grid" name="technologies">
+			<component type="grid" name="technologies" reference="grid">
 				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
 				<option type="correspondingView" value="products/technology" />
-				<option type="correspondingComponent" value="window.technology" />
+				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,product" />
 				<option type="orderable" value="name,number,product" />
 				<option type="fullscreen" value="true" />
@@ -288,15 +288,15 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.technology}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.technology}.performSave;#{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.technology}.performCancel;" />
+						action="#{form}.performSave;#{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.technology}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="technology">
+			<component type="form" name="technology" reference="form">
 				<component type="checkbox" name="master" field="master" />
 				<component type="input" name="number" field="number" />
 				<component type="textarea" name="name" field="name" />
@@ -315,13 +315,13 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="tree" name="technologyTree" source="#{window.technology}.operationComponents">
+			<component type="tree" name="technologyTree" source="#{form}.operationComponents">
 				<option type="height" value="200" />
 				<option type="width" value="500" />
 				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
 				<option type="rootExpression" value="#number" />
 				<option type="correspondingView" value="products/technologyOperationComponent" />
-				<option type="correspondingComponent" value="window.technologyOperationComponent" />
+				<option type="correspondingComponent" value="form" />
 			</component>
 			<!--  
 			<component type="grid" name="productsGrid" source="product">
@@ -351,13 +351,13 @@
 					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png" action="#{window.technologyOperationComponent}.performSave;"/>
-					<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{window.technologyOperationComponent}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.technologyOperationComponent}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png" action="#{window.technologyOperationComponent}.performDelete; #{window}.performBack" />
+					<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
+					<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png" action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="technologyOperationComponent">
+			<component type="form" name="technologyOperationComponent" reference="form">
 				<component type="lookup" name="operation" field="operation">
 					<option type="column" name="name" fields="name"
 						width="300" />
@@ -376,21 +376,21 @@
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{window.orders}.performNew;" />
+						action="#{grid}.performNew;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.orders}.performDelete;" />
+						action="#{grid}.performDelete;" />
 				</group>
 				<group name="export">
 					<smallButton name="print" icon="printIcon16.png"
-						action="#{window.orders}.fireEvent(printOrder,pdf);" />
+						action="#{grid}.fireEvent(printOrder,pdf);" />
 				</group>
 			</ribbon>		
-			<component type="grid" name="orders">
+			<component type="grid" name="orders" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="state" fields="state" />
 				<option type="correspondingView" value="products/order" />
-				<option type="correspondingComponent" value="window.order" />
+				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,state" />
 				<option type="orderable" value="name,number,state" />
 				<option type="fullscreen" value="true" />
@@ -408,18 +408,18 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.order}.performSave;" />
+						action="#{form}.performSave;" />
 					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{window.order}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png" action="#{window.order}.performCancel;" />
+						action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
 					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{window.order}.performDelete; #{window}.performBack" />
+						action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="order">
+			<component type="form" name="order" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="4" rows="10">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" />
+						<component type="input" name="number" reference="number" field="number" />
 					</layoutElement>
 					<layoutElement column="2" row="1" height="2">
 						<component type="textarea" name="name" field="name" />
@@ -437,7 +437,7 @@
 						<component type="select" name="machine" field="machine" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="lookup" name="product" field="product">
+						<component type="lookup" name="product" reference="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
 							<option type="column" name="category" fields="category" />
@@ -449,10 +449,10 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="6">
-						<component type="input" name="defaultTechnology" field="defaultTechnology" defaultEnabled="false" />
+						<component type="input" name="defaultTechnology" reference="defaultTechnology" field="defaultTechnology" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="2" row="7">
-						<component type="lookup" name="technology" field="technology" source="#{window.order.gridLayout.product}.technologies">
+						<component type="lookup" name="technology" reference="technology" field="technology" source="#{product}.technologies">
 							<option type="column" name="name" fields="name" link="true" width="300" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
@@ -461,7 +461,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="8">
-						<component type="input" name="plannedQuantity" field="plannedQuantity" />
+						<component type="input" name="plannedQuantity" reference="plannedQuantity" field="plannedQuantity" />
 					</layoutElement>
 					<layoutElement column="2" row="8">
 						<component type="input" name="doneQuantity" field="doneQuantity" />
@@ -493,23 +493,23 @@
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{window.materialRequirements}.performNew;" />
+						action="#{grid}.performNew;" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,pdf);" />
+						action="#{grid}.fireEvent(printMaterialRequirement,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{window.materialRequirements}.fireEvent(printMaterialRequirement,xls);" />
+						action="#{grid}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>		
-			<component type="grid" name="materialRequirements">
+			<component type="grid" name="materialRequirements" reference="grid">
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" />
 				<option type="column" name="worker" fields="worker" width="300" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
 				<option type="correspondingView" value="products/materialRequirement" />
-				<option type="correspondingComponent" value="window.materialRequirement" />
+				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
 				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement"/>
 			</component>
@@ -525,39 +525,38 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.materialRequirement}.performSave;" />
-					<bigButton name="generate"  icon="generateIcon24.png" action="#{window.materialRequirement}.fireEvent(generateMaterialRequirement);" />
+						action="#{form}.performSave;" />
+					<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateMaterialRequirement);" />
 				</group>
 				<group name="export">
 					<smallButton name="pdf" icon="printIcon16.png"
-						action="#{window.materialRequirement}.fireEvent(printMaterialRequirement,pdf);" />
+						action="#{form}.fireEvent(printMaterialRequirement,pdf);" />
 					<smallButton name="xls" icon="printIcon16.png"
-						action="#{window.materialRequirement}.fireEvent(printMaterialRequirement,xls);" />
+						action="#{form}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>
-			<component type="form" name="materialRequirement">
-			
+			<component type="form" name="materialRequirement" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="4" rows="6">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="generated" field="generated" defaultEnabled="false">
+						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="date" field="date" defaultEnabled="false">
+						<component type="input" name="date" reference="date" field="date" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="worker" field="worker" defaultEnabled="false">
+						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" width="2" height="2">
-						<component type="textarea" name="name" field="name" />
+						<component type="textarea" name="name" reference="name" field="name" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="checkbox" name="onlyComponents" field="onlyComponents" />
+						<component type="checkbox" name="onlyComponents" reference="onlyComponents" field="onlyComponents" />
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />
@@ -565,11 +564,11 @@
 				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement" />
 				<listener event="generateMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="generateMaterialRequirement" />
 			</component>
-			<component type="grid" name="materialRequirementComponents" source="#{window.materialRequirement}.orders">
+			<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
 				<option type="column" name="number" fields="order" expression="#order['number']"/>
 				<option type="column" name="name" fields="order" expression="#order['name']"/>
 				<option type="correspondingView" value="products/materialRequirementComponent" />
-				<option type="correspondingComponent" value="window.materialRequirementComponent" />
+				<option type="correspondingComponent" value="form" />
 				<option type="paginable" value="false" />
 				<option type="creatable" value="true" />
 				<option type="deletable" value="true" />
@@ -587,10 +586,10 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveBackIcon24.png"
-						action="#{window.materialRequirementComponent}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="materialRequirementComponent">
+			<component type="form" name="materialRequirementComponent" reference="form">
 				<component type="lookup" name="order" field="order">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />
@@ -609,27 +608,27 @@
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png"
-						action="#{window.workPlans}.performNew;" />
+						action="#{grid}.performNew;" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="printIcon16.png"
-						action="#{window.workPlans}.fireEvent(printWorkPlan,pdf,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" />
 					<smallButton name="xlsWorker" icon="printIcon16.png"
-						action="#{window.workPlans}.fireEvent(printWorkPlan,xls,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.fireEvent(printWorkPlan,pdf,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{window.workPlans}.fireEvent(printWorkPlan,xls,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>		
-			<component type="grid" name="workPlans">
+			<component type="grid" name="workPlans" reference="grid">
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" width="100" />
 				<option type="column" name="worker" fields="worker" width="300" />
 				<option type="correspondingView" value="products/workPlan" />
-				<option type="correspondingComponent" value="window.workPlan" />
+				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
 				<option type="fullscreen" value="true" />
@@ -647,43 +646,43 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{window.workPlan}.performSave;" />
-						<bigButton name="generate"  icon="generateIcon24.png" action="#{window.workPlan}.fireEvent(generateWorkPlan);" />
+						action="#{form}.performSave;" />
+						<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="printIcon16.png"
-						action="#{window.workPlan}.fireEvent(printWorkPlan,pdf,ForWorker);" />
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" />
 					<smallButton name="xlsWorker" icon="printIcon16.png"
-						action="#{window.workPlan}.fireEvent(printWorkPlan,xls,ForWorker);" />
+						action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="printIcon16.png"
-						action="#{window.workPlan}.fireEvent(printWorkPlan,pdf,ForMachine);" />
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" />
 					<smallButton name="xlsMachine" icon="printIcon16.png"
-						action="#{window.workPlan}.fireEvent(printWorkPlan,xls,ForMachine);" />
+						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>
-			<component type="form" name="workPlan">
-				<component type="checkbox" name="generated" field="generated" defaultEnabled="false">
+			<component type="form" name="workPlan" reference="form">
+				<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
-				<component type="input" name="date" field="date" defaultEnabled="false">
+				<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
-				<component type="input" name="worker" field="worker" defaultEnabled="false">
+				<component type="input" name="worker" field="worker" reference="worker" defaultEnabled="false">
 					<option type="textRepresentationOnDisabled" value="true" />
 				</component>
-				<component type="textarea" name="name" field="name" />
+				<component type="textarea" name="name" reference="name" field="name" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.ProductService" method="printWorkPlan" />
 				<listener event="generateWorkPlan" bean="com.qcadoo.mes.products.ProductService" method="generateWorkPlan" />
 			</component>
-			<component type="grid" name="workPlanComponents" source="#{window.workPlan}.orders">
+			<component type="grid" name="workPlanComponents" reference="workPlanComponents" source="#{form}.orders">
 				<option type="column" name="number" fields="order" expression="#order['number']"/>
 				<option type="column" name="name" fields="order" expression="#order['name']"/>
 				<option type="correspondingView" value="products/workPlanComponent" />
-				<option type="correspondingComponent" value="window.workPlanComponent" />
+				<option type="correspondingComponent" value="form" />
 				<option type="paginable" value="false" />
 				<option type="height" value="200" />
 				<option type="width" value="350" />
@@ -701,10 +700,10 @@
 				</group>
 				<group name="actions">
 					<bigButton name="save" icon="saveBackIcon24.png"
-						action="#{window.workPlanComponent}.performSave; #{window}.performBack" />
+						action="#{form}.performSave; #{window}.performBack" />
 				</group>
 			</ribbon>		
-			<component type="form" name="workPlanComponent">
+			<component type="form" name="workPlanComponent" reference="form">
 				<component type="lookup" name="order" field="order">
 					<option type="column" name="name" fields="name" link="true"
 						width="300" />

@@ -44,15 +44,12 @@ public final class UserService {
     private boolean showChangePasswordButton;
 
     public void setPasswordAndOldPasswordAdRequired(final ViewDefinitionState state, final Locale locale) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state
-                .getComponentByFunctionalPath("window.user.viewIdentifier");
-        PasswordComponentState oldPassword = (PasswordComponentState) state
-                .getComponentByFunctionalPath("window.user.oldPassword");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByFunctionalPath("window.user.password");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifier");
+        PasswordComponentState oldPassword = (PasswordComponentState) state.getComponentByReference("oldPassword");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("password");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByFunctionalPath("window.user.passwordConfirmation");
-        ButtonComponentState changePasswordButton = (ButtonComponentState) state
-                .getComponentByFunctionalPath("window.changePasswordButton");
+                .getComponentByReference("passwordConfirmation");
+        ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
 
         oldPassword.setRequired(true);
         password.setRequired(true);
@@ -65,11 +62,10 @@ public final class UserService {
     }
 
     public void setPasswordAsRequired(final ViewDefinitionState state, final Locale locale) {
-        FieldComponentState viewIdentifier = (FieldComponentState) state
-                .getComponentByFunctionalPath("window.user.viewIdentifier");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByFunctionalPath("window.user.password");
+        FieldComponentState viewIdentifier = (FieldComponentState) state.getComponentByReference("viewIdentifier");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("password");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByFunctionalPath("window.user.passwordConfirmation");
+                .getComponentByReference("passwordConfirmation");
 
         password.setRequired(true);
         passwordConfirmation.setRequired(true);
@@ -77,12 +73,11 @@ public final class UserService {
     }
 
     public void hidePasswordOnUpdateForm(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByFunctionalPath("window.user");
-        PasswordComponentState password = (PasswordComponentState) state.getComponentByFunctionalPath("window.user.password");
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("password");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
-                .getComponentByFunctionalPath("window.user.passwordConfirmation");
-        ButtonComponentState changePasswordButton = (ButtonComponentState) state
-                .getComponentByFunctionalPath("window.changePasswordButton");
+                .getComponentByReference("passwordConfirmation");
+        ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
 
         password.setRequired(true);
         passwordConfirmation.setRequired(true);

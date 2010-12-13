@@ -225,8 +225,8 @@ public final class ProductService {
     }
 
     public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByFunctionalPath("window.order");
-        FieldComponentState number = (FieldComponentState) state.getComponentByFunctionalPath("window.order.number");
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        FieldComponentState number = (FieldComponentState) state.getComponentByReference("number");
 
         if (form.getEntityId() != null) {
             // form is already saved
@@ -259,7 +259,7 @@ public final class ProductService {
     }
 
     public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState order = (FormComponentState) state.getComponentByFunctionalPath("window.order");
+        FormComponentState order = (FormComponentState) state.getComponentByReference("form");
 
         Entity entity = dataDefinitionService.get("products", "order").get(order.getEntityId());
 
@@ -284,10 +284,9 @@ public final class ProductService {
         }
 
         LookupComponentState product = (LookupComponentState) state;
-        LookupComponentState technology = (LookupComponentState) viewDefinitionState
-                .getComponentByFunctionalPath("window.order.technology");
+        LookupComponentState technology = (LookupComponentState) viewDefinitionState.getComponentByReference("technology");
         FieldComponentState defaultTechnology = (FieldComponentState) viewDefinitionState
-                .getComponentByFunctionalPath("window.order.defaultTechnology");
+                .getComponentByReference("defaultTechnology");
 
         defaultTechnology.setFieldValue("");
         technology.setFieldValue(null);
@@ -302,9 +301,8 @@ public final class ProductService {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByFunctionalPath("window.order.product");
-        FieldComponentState defaultTechnology = (FieldComponentState) state
-                .getComponentByFunctionalPath("window.order.defaultTechnology");
+        LookupComponentState product = (LookupComponentState) state.getComponentByReference("window.order.product");
+        FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByReference("defaultTechnology");
 
         if (product.getFieldValue() != null) {
             Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
@@ -318,10 +316,9 @@ public final class ProductService {
     }
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state, final Locale locale) {
-        LookupComponentState product = (LookupComponentState) state.getComponentByFunctionalPath("window.order.product");
-        LookupComponentState technology = (LookupComponentState) state.getComponentByFunctionalPath("window.order.technology");
-        FieldComponentState plannedQuantity = (FieldComponentState) state
-                .getComponentByFunctionalPath("window.order.plannedQuantity");
+        LookupComponentState product = (LookupComponentState) state.getComponentByReference("window.order.product");
+        LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
+        FieldComponentState plannedQuantity = (FieldComponentState) state.getComponentByReference("plannedQuantity");
 
         if (product.getFieldValue() == null || !hasAnyTechnologies(product.getFieldValue())) {
             technology.setEnabled(false);
@@ -480,9 +477,9 @@ public final class ProductService {
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponentState) {
-            ComponentState generated = viewDefinitionState.getComponentByFunctionalPath("window.materialRequirement.generated");
-            ComponentState date = viewDefinitionState.getComponentByFunctionalPath("window.materialRequirement.date");
-            ComponentState worker = viewDefinitionState.getComponentByFunctionalPath("window.materialRequirement.worker");
+            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
+            ComponentState date = viewDefinitionState.getComponentByReference("date");
+            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(getLoginOfLoggedUser());
@@ -570,12 +567,10 @@ public final class ProductService {
     }
 
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state, final Locale locale) {
-        ComponentState name = state.getComponentByFunctionalPath(("window.materialRequirement.name"));
-        ComponentState onlyComponents = state.getComponentByFunctionalPath(("window.materialRequirement.onlyComponents"));
-        ComponentState materialRequirementComponents = state
-                .getComponentByFunctionalPath(("window.materialRequirementComponents"));
-        FieldComponentState generated = (FieldComponentState) state
-                .getComponentByFunctionalPath(("window.materialRequirement.generated"));
+        ComponentState name = state.getComponentByReference("name");
+        ComponentState onlyComponents = state.getComponentByReference("onlyComponents");
+        ComponentState materialRequirementComponents = state.getComponentByReference("materialRequirementComponents");
+        FieldComponentState generated = (FieldComponentState) state.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
@@ -585,9 +580,9 @@ public final class ProductService {
     }
 
     public void disableFormForExistingWorkPlan(final ViewDefinitionState state, final Locale locale) {
-        ComponentState name = state.getComponentByFunctionalPath(("window.workPlan.name"));
-        ComponentState workPlanComponents = state.getComponentByFunctionalPath(("window.workPlanComponents"));
-        FieldComponentState generated = (FieldComponentState) state.getComponentByFunctionalPath(("window.workPlan.generated"));
+        ComponentState name = state.getComponentByReference("name");
+        ComponentState workPlanComponents = state.getComponentByReference("workPlanComponents");
+        FieldComponentState generated = (FieldComponentState) state.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
@@ -597,9 +592,9 @@ public final class ProductService {
 
     public void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state instanceof FormComponentState) {
-            ComponentState generated = viewDefinitionState.getComponentByFunctionalPath("window.workPlan.generated");
-            ComponentState date = viewDefinitionState.getComponentByFunctionalPath("window.workPlan.date");
-            ComponentState worker = viewDefinitionState.getComponentByFunctionalPath("window.workPlan.worker");
+            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
+            ComponentState date = viewDefinitionState.getComponentByReference("date");
+            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(getLoginOfLoggedUser());

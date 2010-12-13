@@ -79,9 +79,9 @@ public class FieldAndScopeListenerPatternTest extends AbstractPatternTest {
                 withSettings().extraInterfaces(FieldEntityIdChangeListener.class));
 
         ViewDefinitionState viewDefinitions = Mockito.mock(ViewDefinitionState.class);
-        BDDMockito.given(viewDefinitions.getComponentByPath("f1")).willReturn(f1State);
-        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t1")).willReturn(t1State);
-        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t2")).willReturn(t2State);
+        BDDMockito.given(viewDefinitions.getComponentByReference("f1")).willReturn(f1State);
+        BDDMockito.given(viewDefinitions.getComponentByReference("f1.t1")).willReturn(t1State);
+        BDDMockito.given(viewDefinitions.getComponentByReference("f1.t2")).willReturn(t2State);
 
         // when
         parent.updateComponentStateListeners(viewDefinitions);
@@ -169,9 +169,9 @@ public class FieldAndScopeListenerPatternTest extends AbstractPatternTest {
                 withSettings().extraInterfaces(ScopeEntityIdChangeListener.class));
 
         ViewDefinitionState viewDefinitions = Mockito.mock(ViewDefinitionState.class);
-        BDDMockito.given(viewDefinitions.getComponentByPath("f1")).willReturn(f1State);
-        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t1")).willReturn(t1State);
-        BDDMockito.given(viewDefinitions.getComponentByPath("f1.t2")).willReturn(t2State);
+        BDDMockito.given(viewDefinitions.getComponentByReference("f1")).willReturn(f1State);
+        BDDMockito.given(viewDefinitions.getComponentByReference("f1.t1")).willReturn(t1State);
+        BDDMockito.given(viewDefinitions.getComponentByReference("f1.t2")).willReturn(t2State);
 
         // when
         parent.updateComponentStateListeners(viewDefinitions);
