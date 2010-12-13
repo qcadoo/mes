@@ -23,7 +23,6 @@
  */
 
 .component_container_form {
-	//margin: 20px 20px;
 	padding: 0;
 	background: #fff;
 }
@@ -161,9 +160,7 @@
 
 .disabled .component_container_form_inner input[type='text'],
 .disabled .component_container_form_inner input[type='password'],
-.disabled .component_container_form_inner textarea,
-.disabled select {
-	color: #818181;
+.disabled .component_container_form_inner textarea {
 	background-color: #F0F0F0;
 }
 
