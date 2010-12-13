@@ -106,8 +106,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 1);
         MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 2);
-        MenuMenuCategory menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 3);
-        MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.reports", 4);
+        MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 3);
+        MenuMenuCategory menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 4);
         MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 5);
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
