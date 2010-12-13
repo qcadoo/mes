@@ -70,7 +70,7 @@ public final class WorkPlanForMachinePdfService extends PdfDocumentService {
                     if (!firstPage) {
                         document.newPage();
                     }
-                    productReportService.addOrderHeader(document, entity, locale, df);
+                    productReportService.addOrderHeader(document, entity, locale, getDecimalFormat());
                     Entity operation = (Entity) operationComponent.getField("operation");
                     Entity machine = (Entity) operation.getField("machine");
                     document.add(new Paragraph(getTranslationService().translate("products.workPlan.report.paragrah3", locale)

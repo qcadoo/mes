@@ -296,7 +296,7 @@ public final class PdfUtil {
 
     public static Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {
         Locale locale = request.getLocale();
-        Cookie cookies[] = request.getCookies();
+        Cookie[] cookies = request.getCookies();
         if ((cookies != null) && (cookies.length > 0)) {
             for (int i = 0; i < cookies.length; i++) {
                 Cookie c = cookies[i];
@@ -321,8 +321,7 @@ public final class PdfUtil {
         }
     }
 
-    public static final String getFontsPath(final String windowsFontsPath, final String macosFontsPath,
-            final String linuxFontsPath) {
+    public static String getFontsPath(final String windowsFontsPath, final String macosFontsPath, final String linuxFontsPath) {
         if (SystemUtils.IS_OS_WINDOWS) {
             return windowsFontsPath;
         } else if (SystemUtils.IS_OS_MAC_OSX) {

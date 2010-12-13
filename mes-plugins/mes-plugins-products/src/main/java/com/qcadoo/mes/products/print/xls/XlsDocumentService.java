@@ -44,7 +44,7 @@ public abstract class XlsDocumentService extends DocumentService {
     private static final Logger LOG = LoggerFactory.getLogger(XlsDocumentService.class);
 
     @Override
-    public void generateDocument(final Entity entity, final Locale locale) throws IOException {
+    public final void generateDocument(final Entity entity, final Locale locale) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
         addHeader(sheet, locale);

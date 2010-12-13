@@ -49,22 +49,22 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Autowired
     private TranslationService translationService;
 
-    protected DecimalFormat df;
+    private DecimalFormat decimalFormat;
 
     @Value("${windowsFonts}")
-    protected String windowsFontsPath;
+    private String windowsFontsPath;
 
     @Value("${macosFonts}")
-    protected String macosFontsPath;
+    private String macosFontsPath;
 
     @Value("${linuxFonts}")
-    protected String linuxFontsPath;
+    private String linuxFontsPath;
 
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
-        df = (DecimalFormat) DecimalFormat.getInstance(locale);
+        decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         DefaultEntity entity = (DefaultEntity) model.get("entity");
         String fileName = addContent(document, entity, locale, writer);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);
@@ -96,5 +96,21 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     }
 
     protected abstract void addTitle(final Document document, final Locale locale);
+
+    public final DecimalFormat getDecimalFormat() {
+        return decimalFormat;
+    }
+
+    public final String getWindowsFontsPath() {
+        return windowsFontsPath;
+    }
+
+    public final String getMacosFontsPath() {
+        return macosFontsPath;
+    }
+
+    public final String getLinuxFontsPath() {
+        return linuxFontsPath;
+    }
 
 }

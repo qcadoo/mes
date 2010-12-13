@@ -46,7 +46,7 @@ public abstract class PdfDocumentService extends DocumentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PdfDocumentService.class);
 
-    protected DecimalFormat df;
+    private DecimalFormat decimalFormat;
 
     @Value("${windowsFonts}")
     private String windowsFontsPath;
@@ -61,7 +61,7 @@ public abstract class PdfDocumentService extends DocumentService {
     public void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException {
         Document document = new Document(PageSize.A4);
         try {
-            df = (DecimalFormat) DecimalFormat.getInstance(locale);
+            decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
             FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
                     + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
@@ -87,5 +87,9 @@ public abstract class PdfDocumentService extends DocumentService {
 
     protected abstract void buildPdfContent(final Document document, final Entity entity, final Locale locale)
             throws DocumentException;
+
+    public final DecimalFormat getDecimalFormat() {
+        return decimalFormat;
+    }
 
 }
