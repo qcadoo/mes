@@ -238,7 +238,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
     }
 
     private String getViewName() {
-        return getViewDefinition().getName() + "." + getPath() + ".lookup";
+        return getViewDefinition().getName() + "." + getFunctionalPath() + ".lookup";
     }
 
 }
