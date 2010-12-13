@@ -111,14 +111,16 @@ public final class OrderPdfView extends ProductsPdfView {
                 entity.getField("effectiveDateFrom"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.plannedQuantity.label", locale),
-                entity.getField("plannedQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark(), df);
+                entity.getField("plannedQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark(),
+                getDecimalFormat());
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.effectiveDateTo.label", locale),
                 entity.getField("effectiveDateTo"),
                 getTranslationService().translate("products.order.report.effectiveDateToState", locale),
                 PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.doneQuantity.label", locale),
-                entity.getField("doneQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark(), df);
+                entity.getField("doneQuantity"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark(),
+                getDecimalFormat());
         PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.startWorker.label", locale),
                 entity.getField("startWorker"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         Entity technology = (Entity) entity.getField("technology");
@@ -145,23 +147,24 @@ public final class OrderPdfView extends ProductsPdfView {
     }
 
     @Override
-    protected final void addTitle(final Document document, final Locale locale) {
+    protected void addTitle(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("products.order.report.title", locale));
     }
 
     @Override
-    protected final Document newDocument() {
+    protected Document newDocument() {
         Document doc = super.newDocument();
         doc.setMargins(40, 40, 60, 60);
         return doc;
     }
 
     @Override
-    protected final void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
             throws DocumentException {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         super.prepareWriter(model, writer, request);
         writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
-                getTranslationService().translate("products.report.in", locale), getFontsPath()));
+                getTranslationService().translate("products.report.in", locale), PdfUtil.getFontsPath(getWindowsFontsPath(),
+                        getMacosFontsPath(), getLinuxFontsPath())));
     }
 }

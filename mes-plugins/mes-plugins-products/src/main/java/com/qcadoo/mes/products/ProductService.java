@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -51,6 +52,7 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.internal.DateTimeType;
+import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
@@ -67,6 +69,8 @@ import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @Service
 public final class ProductService {
+
+    private static final SimpleDateFormat D_T_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -91,6 +95,9 @@ public final class ProductService {
 
     @Autowired
     private WorkPlanForMachineXlsService workPlanForMachineXlsService;
+
+    @Value("${reportPath}")
+    private String path;
 
     @Autowired
     private TranslationService translationService;
@@ -492,8 +499,12 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale(), false);
-                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale(), true);
+
+                    materialRequirement = updateFileName(materialRequirement,
+                            getFullFileName((Date) materialRequirement.getField("date"), "MaterialRequirement"),
+                            "materialRequirement");
+                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
+                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
@@ -604,10 +615,12 @@ public final class ProductService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
-                    workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale(), false);
-                    workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale(), false);
-                    workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale(), false);
-                    workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale(), true);
+
+                    workPlan = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "WorkPlan"), "workPlan");
+                    workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale());
+                    workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale());
+                    workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale());
+                    workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
@@ -642,6 +655,15 @@ public final class ProductService {
                         MessageType.FAILURE);
             }
         }
+    }
+
+    private final String getFullFileName(final Date date, final String fileName) {
+        return path + fileName + "_" + D_T_F.format(date);
+    }
+
+    private final Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
+        entity.setField("fileName", fileName);
+        return dataDefinitionService.get("products", entityName).save(entity);
     }
 
 }

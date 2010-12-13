@@ -13,7 +13,7 @@ import com.qcadoo.mes.view.ViewComponent;
 @ViewComponent("textarea")
 public final class TextAreaComponentPattern extends FieldComponentPattern {
 
-    private static final String JSP_PATH = "elements/textarea.jsp";
+    private static final String JSP_PATH = "elements/textArea.jsp";
 
     private static final String JS_OBJECT = "QCD.components.elements.TextArea";
 

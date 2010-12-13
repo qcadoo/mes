@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
@@ -50,7 +49,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Autowired
     private TranslationService translationService;
 
-    protected DecimalFormat df;
+    private DecimalFormat decimalFormat;
 
     @Value("${windowsFonts}")
     private String windowsFontsPath;
@@ -65,7 +64,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
-        df = (DecimalFormat) DecimalFormat.getInstance(locale);
+        decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         DefaultEntity entity = (DefaultEntity) model.get("entity");
         String fileName = addContent(document, entity, locale, writer);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);
@@ -98,14 +97,20 @@ public abstract class ProductsPdfView extends AbstractPdfView {
 
     protected abstract void addTitle(final Document document, final Locale locale);
 
-    protected final String getFontsPath() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return windowsFontsPath;
-        } else if (SystemUtils.IS_OS_MAC_OSX) {
-            return macosFontsPath;
-        } else if (SystemUtils.IS_OS_LINUX) {
-            return linuxFontsPath;
-        }
-        return null;
+    public final DecimalFormat getDecimalFormat() {
+        return decimalFormat;
     }
+
+    public final String getWindowsFontsPath() {
+        return windowsFontsPath;
+    }
+
+    public final String getMacosFontsPath() {
+        return macosFontsPath;
+    }
+
+    public final String getLinuxFontsPath() {
+        return linuxFontsPath;
+    }
+
 }

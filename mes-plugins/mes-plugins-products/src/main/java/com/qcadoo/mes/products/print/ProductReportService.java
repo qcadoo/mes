@@ -192,7 +192,7 @@ public class ProductReportService {
         Object fileName = entity.getField("fileName");
         String fileNameWithoutPath = "";
         if (fileName != null && !"".equals(fileName.toString().trim())) {
-            PdfUtil.copyPdf(document, writer, (String) fileName + fileSuffix);
+            PdfUtil.copyPdf(document, writer, (String) fileName + fileSuffix + PdfUtil.PDF_EXTENSION);
             fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
         }
         return fileNameWithoutPath;
@@ -203,7 +203,7 @@ public class ProductReportService {
         DefaultEntity entity = (DefaultEntity) model.get("entity");
         Object fileName = entity.getField("fileName");
         if (fileName != null && !"".equals(fileName.toString().trim())) {
-            XlsCopyUtil.copyWorkbook(workbook, (String) fileName + fileSuffix);
+            XlsCopyUtil.copyWorkbook(workbook, (String) fileName + fileSuffix + XlsCopyUtil.XLS_EXTENSION);
             String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
             response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XlsCopyUtil.XLS_EXTENSION);
         }
