@@ -322,7 +322,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	function canClose() {
 		changed = false;
 		for (var i in pageComponents) {
-			if(pageComponents[i].isChanged()) {
+			if(pageComponents[i].isChanged()) {				
 				changed = true;
 			}
 		}
