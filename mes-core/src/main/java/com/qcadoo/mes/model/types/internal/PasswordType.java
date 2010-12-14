@@ -60,6 +60,7 @@ public final class PasswordType implements FieldType {
 
     @Override
     public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
+        System.out.println(" @ ---> " + value);
         return passwordEncoder.encodePassword(String.valueOf(value), null);
     }
 
