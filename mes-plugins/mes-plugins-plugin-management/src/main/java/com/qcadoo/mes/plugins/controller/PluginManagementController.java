@@ -95,7 +95,7 @@ public final class PluginManagementController {
         return getInfoMessageView(pluginManagementService.updatePlugin(Long.parseLong(entityId), file), locale);
     }
 
-    @RequestMapping(value = "restartInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "pluginPages/restartInfo", method = RequestMethod.GET)
     public ModelAndView getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
         return getInfoMessageView(new PluginManagementOperationStatusImpl(false, message), locale);
     }
@@ -196,8 +196,7 @@ public final class PluginManagementController {
             final String[] args) {
         Long pluginId = getPluginId(triggerState);
         if (pluginId != null) {
-            PluginManagementOperationStatus operationStatus = pluginManagementService.removePlugin(pluginId);
-            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
+            pluginManagementService.removePlugin(pluginId);
         }
     }
 

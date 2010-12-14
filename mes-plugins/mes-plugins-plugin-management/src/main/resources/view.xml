@@ -37,7 +37,7 @@
 					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" />
 					<smallButtons name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);">
 						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{grid}.fireEvent(deinstall);" />
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(remove);" />
+						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" />
 					</smallButtons>
 				</group>
 			</ribbon>
@@ -59,7 +59,7 @@
 				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginEnableClick" />
 				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDisableClick" />
 				<listener event="deinstall" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDeinstallClick" />
-				<listener event="remove" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
+				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
