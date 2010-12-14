@@ -45,10 +45,10 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 	this.setComponentData = function(data) {
 		if (data != null && data.value == 1) {
 			this.input.attr('checked', true);
-			textRepresentation.html(translations.true);
+			textRepresentation.html(translations["true"]);
 		} else {
 			this.input.attr('checked', false);
-			textRepresentation.html(translations.false);
+			textRepresentation.html(translations["false"]);
 		}
 	}
 	

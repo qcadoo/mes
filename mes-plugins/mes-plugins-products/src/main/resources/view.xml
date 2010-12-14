@@ -247,26 +247,36 @@
 				</group>
 			</ribbon>
 			<component type="form" name="operation" reference="form">
-				<component type="input" name="number" field="number" />
-				<component type="textarea" name="name" field="name" />
-				<component type="lookup" name="staff" field="staff">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="column" name="surname" fields="surname" link="true"/>
-					<option type="column" name="post" fields="post" link="true"/>
-					<option type="searchable" value="name,number,surname,post" />
-					<option type="orderable" value="name,number,surname,post" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="lookup" name="staff" field="staff">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="surname" fields="surname" link="true"/>
+							<option type="column" name="post" fields="post" link="true"/>
+							<option type="searchable" value="name,number,surname,post" />
+							<option type="orderable" value="name,number,surname,post" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="lookup" name="machine" field="machine">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
 				</component>
-				<component type="lookup" name="machine" field="machine">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="searchable" value="name,number" />
-					<option type="orderable" value="name,number" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
-				</component>				
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
@@ -444,7 +454,9 @@
 					<layoutElement column="1" row="3">
 						<component type="calendar" name="dateFrom" field="dateFrom" />
 					</layoutElement>
-					
+					<layoutElement column="2" row="3">
+						<component type="calendar" name="dateTo" field="dateTo" />
+					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="select" name="state" field="state" />
 					</layoutElement>
@@ -475,11 +487,6 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					
-					<layoutElement column="2" row="3">
-						<component type="calendar" name="dateTo" field="dateTo" />
-					</layoutElement>
-					
 					<layoutElement column="1" row="8">
 						<component type="input" name="plannedQuantity" reference="plannedQuantity" field="plannedQuantity" />
 					</layoutElement>
@@ -516,9 +523,9 @@
 						action="#{grid}.performNew;" />
 				</group>
 				<group name="export">
-					<smallButton name="pdf" icon="printIcon16.png"
+					<smallButton name="pdf" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printMaterialRequirement,pdf);" />
-					<smallButton name="xls" icon="printIcon16.png"
+					<smallButton name="xls" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>		
