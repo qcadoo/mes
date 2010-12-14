@@ -39,13 +39,13 @@
 	<script type="text/javascript">
 
 		jQuery(document).ready(function(){
-			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.productionOrders')) {
+			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('orders.productionOrders')) {
 				$("#productionOrdersLink").show();
 			}
-			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.technologies')) {
+			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('technology.technologies')) {
 				$("#technologiesLink").show();
 			}
-			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.materialRequirements')) {
+			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('reports.materialRequirements')) {
 				$("#materialRequirementsLink").show();
 			}
 		});
