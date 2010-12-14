@@ -39,6 +39,8 @@
 	<script type="text/javascript" src="js/core/qcd/utils/serializator.js"></script>
 	
 	<link rel="shortcut icon" href="/img/core/icons/favicon.png">
+	
+	<title>QCADOO :: login</title>
 		
 	<script type="text/javascript">
 

@@ -192,6 +192,7 @@
 .component_container_form textarea {
 	height: auto;
 	padding-left: 6px;
+	padding-top: 4px;
 }
 
 /** error icons **/
