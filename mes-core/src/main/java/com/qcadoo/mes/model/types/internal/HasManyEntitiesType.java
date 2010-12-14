@@ -70,7 +70,7 @@ public final class HasManyEntitiesType implements HasManyType {
 
     @Override
     public Class<?> getType() {
-        return Set.class; // TODO masz - was ListData ???
+        return Set.class; // TODO masz it was ListData here, why?
     }
 
     @Override

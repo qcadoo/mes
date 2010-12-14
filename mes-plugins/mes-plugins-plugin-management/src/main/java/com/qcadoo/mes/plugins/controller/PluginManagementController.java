@@ -201,10 +201,12 @@ public final class PluginManagementController {
     }
 
     private Long getPluginId(final ComponentState triggerState) {
-        if (triggerState.getFieldValue() != null && triggerState.getFieldValue() instanceof Long) {
+        if (triggerState.getFieldValue() instanceof Long) {
             return (Long) triggerState.getFieldValue();
         } else {
-            triggerState.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO mina i18n
+            triggerState.addMessage(
+                    translationService.translate("plugins.messages.error.pluginNotFound", triggerState.getLocale()),
+                    MessageType.FAILURE);
             return null;
         }
     }

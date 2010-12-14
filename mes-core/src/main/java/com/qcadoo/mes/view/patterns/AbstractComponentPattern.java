@@ -267,7 +267,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
-        // TODO masz?
+        // TODO masz is this really neccessary?
         if (fieldEntityIdChangeListeners.size() > 0) {
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
                     .getComponentByReference(getReference());
