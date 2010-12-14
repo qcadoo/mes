@@ -72,7 +72,7 @@
 					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="plugins">
-					<bigButton name="update" icon="updateIcon24.png" action="#{form}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{form}.fireEvent(update);" />
 				</group>
 			</ribbon>
 			<component type="form" name="plugin" reference="form">
@@ -84,6 +84,7 @@
 				<component type="checkbox" name="base" field="base" defaultEnabled="false" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
+				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
 			</component>
 		</component>
 	</view>
