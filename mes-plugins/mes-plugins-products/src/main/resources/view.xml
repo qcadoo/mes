@@ -408,7 +408,7 @@
 						action="#{grid}.performDelete;" />
 				</group>
 				<group name="export">
-					<smallButton name="print" icon="printIcon16.png"
+					<smallButton name="print" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printOrder,pdf);" />
 				</group>
 			</ribbon>		
@@ -556,9 +556,9 @@
 					<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateMaterialRequirement);" />
 				</group>
 				<group name="export">
-					<smallButton name="pdf" icon="printIcon16.png"
+					<smallButton name="pdf" icon="pdfIcon16.png"
 						action="#{form}.fireEvent(printMaterialRequirement,pdf);" />
-					<smallButton name="xls" icon="printIcon16.png"
+					<smallButton name="xls" icon="xlsIcon16.png"
 						action="#{form}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>
@@ -638,15 +638,15 @@
 						action="#{grid}.performNew;" />
 				</group>
 				<group name="exportWorker">
-					<smallButton name="pdfWorker" icon="printIcon16.png"
+					<smallButton name="pdfWorker" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" />
-					<smallButton name="xlsWorker" icon="printIcon16.png"
+					<smallButton name="xlsWorker" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
-					<smallButton name="pdfMachine" icon="printIcon16.png"
+					<smallButton name="pdfMachine" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" />
-					<smallButton name="xlsMachine" icon="printIcon16.png"
+					<smallButton name="xlsMachine" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>		
@@ -677,15 +677,15 @@
 						<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" />
 				</group>
 				<group name="exportWorker">
-					<smallButton name="pdfWorker" icon="printIcon16.png"
+					<smallButton name="pdfWorker" icon="pdfIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" />
-					<smallButton name="xlsWorker" icon="printIcon16.png"
+					<smallButton name="xlsWorker" icon="xlsIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
-					<smallButton name="pdfMachine" icon="printIcon16.png"
+					<smallButton name="pdfMachine" icon="pdfIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" />
-					<smallButton name="xlsMachine" icon="printIcon16.png"
+					<smallButton name="xlsMachine" icon="xlsIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>
