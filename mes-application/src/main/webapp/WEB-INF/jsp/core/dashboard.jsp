@@ -39,13 +39,13 @@
 	<script type="text/javascript">
 
 		jQuery(document).ready(function(){
-			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.productionOrders')) {
+			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('orders.productionOrders')) {
 				$("#productionOrdersLink").show();
 			}
-			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.technologies')) {
+			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('technology.technologies')) {
 				$("#technologiesLink").show();
 			}
-			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('products.materialRequirements')) {
+			if (window.parent.hasMenuPosition && window.parent.hasMenuPosition('reports.materialRequirements')) {
 				$("#materialRequirementsLink").show();
 			}
 		});
@@ -97,7 +97,7 @@
 					 	${translationsMap['core.dashboard.organize.content']}
 					</div>
 					<div class="dashboardButtonContentLink" id="productionOrdersLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('products.productionOrders')">${translationsMap['core.dashboard.organize.link']}</a>
+						<a href="#" onclick="goToMenuPosition('orders.productionOrders')">${translationsMap['core.dashboard.organize.link']}</a>
 					</div>
 				</div>
 			</div>
@@ -111,7 +111,7 @@
 					 	${translationsMap['core.dashboard.define.content']}
 					</div>
 					<div class="dashboardButtonContentLink" id="technologiesLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('products.technologies')">${translationsMap['core.dashboard.define.link']}</a>
+						<a href="#" onclick="goToMenuPosition('orders.technologies')">${translationsMap['core.dashboard.define.link']}</a>
 					</div>
 				</div>
 			</div>
@@ -125,7 +125,7 @@
 					 	${translationsMap['core.dashboard.react.content']}
 					</div>
 					<div class="dashboardButtonContentLink" id="materialRequirementsLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('products.materialRequirements')">${translationsMap['core.dashboard.react.link']}</a>
+						<a href="#" onclick="goToMenuPosition('reports.materialRequirements')">${translationsMap['core.dashboard.react.link']}</a>
 					</div>
 				</div>
 			</div>

@@ -7,13 +7,13 @@ public class ContainerStateMock extends AbstractContainerState {
 
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
-        // TODO Auto-generated method stub
+        // empty
 
     }
 
     @Override
     protected JSONObject renderContent() throws JSONException {
-        // TODO Auto-generated method stub
+        // empty
         return null;
     }
 

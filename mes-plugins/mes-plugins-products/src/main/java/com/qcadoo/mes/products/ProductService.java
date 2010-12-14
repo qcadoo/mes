@@ -527,7 +527,7 @@ public final class ProductService {
     public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+        if (state.getFieldValue() instanceof Long) {
             Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                     (Long) state.getFieldValue());
             if (materialRequirement == null) {
@@ -553,7 +553,7 @@ public final class ProductService {
     }
 
     public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+        if (state.getFieldValue() instanceof Long) {
             viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
         } else {
             if (state instanceof FormComponentState) {
@@ -640,7 +640,7 @@ public final class ProductService {
 
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
-        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+        if (state.getFieldValue() instanceof Long) {
             Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
             if (workPlan == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),

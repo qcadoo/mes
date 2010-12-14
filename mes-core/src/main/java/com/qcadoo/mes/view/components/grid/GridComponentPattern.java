@@ -111,7 +111,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         json.put("creatable", creatable);
         json.put("height", height);
         json.put("width", width);
-        json.put("fullscreen", width == 0 || height == 0); // TODO masz
+        json.put("fullscreen", width == 0 || height == 0);
         json.put("lookup", lookup);
         json.put("correspondingView", correspondingView);
         json.put("correspondingComponent", correspondingComponent);

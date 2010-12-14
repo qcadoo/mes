@@ -67,7 +67,7 @@ public final class PluginManagementController {
         return mav;
     }
 
-    @RequestMapping(value = "handleRestart", method = RequestMethod.POST)
+    @RequestMapping(value = "pluginPages/handleRestart", method = RequestMethod.POST)
     @ResponseBody
     public String handleRestart() {
         pluginManagementService.restartServer();
@@ -80,7 +80,7 @@ public final class PluginManagementController {
         if (pluginId == null) {
             return getDownloadPageView("download.html", null, locale);
         } else {
-            return getDownloadPageView("update.html", pluginId, locale);
+            return getDownloadPageView("pluginPages/update.html", pluginId, locale);
         }
     }
 
@@ -89,18 +89,17 @@ public final class PluginManagementController {
         return getInfoMessageView(pluginManagementService.downloadPlugin(file), locale);
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @RequestMapping(value = "pluginPages/update", method = RequestMethod.POST)
     public ModelAndView handleUpdate(@RequestParam("entityId") final String entityId,
             @RequestParam("file") final MultipartFile file, final Locale locale) {
         return getInfoMessageView(pluginManagementService.updatePlugin(Long.parseLong(entityId), file), locale);
     }
 
-    @RequestMapping(value = "restartInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "pluginPages/restartInfo", method = RequestMethod.GET)
     public ModelAndView getRestartInfoView(@RequestParam("message") final String message, final Locale locale) {
         return getInfoMessageView(new PluginManagementOperationStatusImpl(false, message), locale);
     }
 
-    // TODO mina
     private ModelAndView getDownloadPageView(final String downloadAction, final Long entityId, final Locale locale) {
 
         if (entityId != null && !pluginManagementService.pluginIsInstalled(entityId)) {
@@ -202,10 +201,12 @@ public final class PluginManagementController {
     }
 
     private Long getPluginId(final ComponentState triggerState) {
-        if (triggerState.getFieldValue() != null && triggerState.getFieldValue() instanceof Long) {
+        if (triggerState.getFieldValue() instanceof Long) {
             return (Long) triggerState.getFieldValue();
         } else {
-            triggerState.addMessage("Nie ma takiego numeru", MessageType.FAILURE); // TODO mina i18n
+            triggerState.addMessage(
+                    translationService.translate("plugins.messages.error.pluginNotFound", triggerState.getLocale()),
+                    MessageType.FAILURE);
             return null;
         }
     }
@@ -214,7 +215,8 @@ public final class PluginManagementController {
             final ComponentState triggerState, final PluginManagementOperationStatus operationStatus, final Locale locale) {
 
         if (operationStatus.isRestartRequired()) {
-            viewDefinitionState.redirectTo("../pluginPages/restart.html?message=TODO", false);
+            String message = translationService.translate("plugins.messages.success.restartSucces", triggerState.getLocale());
+            viewDefinitionState.redirectTo("../pluginPages/restart.html?message=" + message, false);
             return;
         }
 

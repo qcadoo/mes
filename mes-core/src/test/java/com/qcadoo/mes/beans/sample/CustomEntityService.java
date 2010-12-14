@@ -63,15 +63,15 @@ public class CustomEntityService {
     }
 
     public void onView(final ViewDefinitionState state, final Locale locale) {
-        // TODO Auto-generated method stub
+        // empty
     }
 
     public void saveForm(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        // TODO Auto-generated method stub
+        // empty
     }
 
     public void generate(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        // TODO Auto-generated method stub
+        // empty
     }
 
 }
