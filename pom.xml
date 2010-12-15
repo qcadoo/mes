@@ -29,6 +29,7 @@
 		<slf4j.version>1.5.8</slf4j.version>
 		<hibernate.version>3.5.5-Final</hibernate.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<profile.name>default</profile.name>
 	</properties>
 
 	<dependencyManagement>
@@ -383,7 +384,18 @@
 
 	<profiles>
 		<profile>
-			<id>installer</id>
+			<id>profile</id>
+			<activation>
+				<property>
+					<name>profile</name>
+				</property>
+			</activation>
+			<properties>
+				<profile.name>cd${profile}</profile.name>
+			</properties>
+		</profile>
+		<profile>
+			<id>package</id>
 			<modules>
 				<module>mes-tomcat</module>
 			</modules>

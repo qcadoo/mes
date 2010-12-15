@@ -115,7 +115,7 @@
 				</executions>
 				<configuration>
 					<descriptor>tomcat.xml</descriptor>
-					<finalName>qcadoo</finalName>
+					<finalName>${profile.name}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
@@ -137,7 +137,7 @@
 								<phase>install</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/qcadoo.zip" tofile="/Users/tomcat/deploy/${profile}.zip" />
+										<copy file="${basedir}/target/${profile.name}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>
