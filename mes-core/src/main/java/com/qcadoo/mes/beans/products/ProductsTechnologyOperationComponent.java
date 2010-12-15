@@ -60,7 +60,11 @@ public class ProductsTechnologyOperationComponent {
 
     @OneToMany(mappedBy = "operationComponent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<ProductsOperationProductComponent> operationProductComponents;
+    private List<ProductsOperationProductInComponent> operationProductInComponents;
+
+    @OneToMany(mappedBy = "operationComponent", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
+    private List<ProductsOperationProductOutComponent> operationProductOutComponents;
 
     public Long getId() {
         return id;
@@ -102,12 +106,20 @@ public class ProductsTechnologyOperationComponent {
         this.operation = operation;
     }
 
-    public List<ProductsOperationProductComponent> getOperationProductComponents() {
-        return operationProductComponents;
+    public List<ProductsOperationProductInComponent> getOperationProductInComponents() {
+        return operationProductInComponents;
     }
 
-    public void setOperationProductComponents(final List<ProductsOperationProductComponent> operationProductComponents) {
-        this.operationProductComponents = operationProductComponents;
+    public List<ProductsOperationProductOutComponent> getOperationProductOutComponents() {
+        return operationProductOutComponents;
+    }
+
+    public void setOperationProductInComponents(final List<ProductsOperationProductInComponent> operationProductInComponents) {
+        this.operationProductInComponents = operationProductInComponents;
+    }
+
+    public void setOperationProductOutComponents(final List<ProductsOperationProductOutComponent> operationProductOutComponents) {
+        this.operationProductOutComponents = operationProductOutComponents;
     }
 
 }

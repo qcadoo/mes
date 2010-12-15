@@ -5,7 +5,7 @@
 
 	<groupId>com.qcadoo.mes</groupId>
 	<artifactId>mes</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES</name>
@@ -251,25 +251,25 @@
 				</configuration>
 			</plugin>
 			<plugin>
-	            <groupId>com.mycila.maven-license-plugin</groupId>
-	            <artifactId>maven-license-plugin</artifactId>
-	            <configuration>
-        	        <header>licence_include.txt</header>
-        	        <strictCheck>true</strictCheck>
-        	        <aggregate>true</aggregate>
-        	        <keywords>
-        	        	<keyword>copyright</keyword>
-        	        	<keyword>qcadoo</keyword>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<header>licence_include.txt</header>
+					<strictCheck>true</strictCheck>
+					<aggregate>true</aggregate>
+					<keywords>
+						<keyword>copyright</keyword>
+						<keyword>qcadoo</keyword>
 					</keywords>
-        	        <includes>
-	                    <include>src/**</include>
-        	        </includes>
-        	        <excludes>
-	        	        <exclude>**/lib/**</exclude>
-	        	        <exclude>mes-tomcat/**</exclude>
-        	        </excludes>
-    	        </configuration>
-	        </plugin>
+					<includes>
+						<include>src/**</include>
+					</includes>
+					<excludes>
+						<exclude>**/lib/**</exclude>
+						<exclude>mes-tomcat/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -356,30 +356,32 @@
 			<url>http://repository.codehaus.org/</url>
 		</repository>
 		<repository>
-    		<id>mc-release</id>
-		    <name>Local Maven repository of releases</name>
-		    <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
-		    <snapshots>
-		        <enabled>false</enabled>
-		    </snapshots>
-		    <releases>
-		        <enabled>true</enabled>
-		    </releases>
+			<id>mc-release</id>
+			<name>Local Maven repository of releases</name>
+			<url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</repository>
 	</repositories>
 
 	<scm>
-		<connection>scm:git:git://emhyr.qcadoo.private/Users/git/mes.git</connection>
-		<developerConnection>scm:git:git://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
+		<connection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</connection>
+		<developerConnection>scm:git:ssh://emhyr.qcadoo.private/Users/git/mes.git</developerConnection>
 	</scm>
 
+	<distributionManagement>
+		<repository>
+			<id>qcadoo</id>
+			<!-- TODO -->
+			<url>file://target</url>
+		</repository>
+	</distributionManagement>
+
 	<profiles>
-		<profile>
-			<id>release</id>
-			<modules>
-				<module>mes-tomcat</module>
-			</modules>
-		</profile>
 		<profile>
 			<id>installer</id>
 			<modules>

@@ -11,8 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "products_operation_product_component")
-public class ProductsOperationProductComponent {
+@Table(name = "products_operation_product_in_component")
+public class ProductsOperationProductInComponent {
 
     @Id
     @GeneratedValue
@@ -26,8 +26,6 @@ public class ProductsOperationProductComponent {
 
     @Column(scale = 3, precision = 10)
     private BigDecimal quantity;
-
-    private boolean inParameter = true;
 
     public BigDecimal getQuantity() {
         return quantity;
@@ -60,13 +58,4 @@ public class ProductsOperationProductComponent {
     public void setProduct(final ProductsProduct product) {
         this.product = product;
     }
-
-    public boolean isInParameter() {
-        return inParameter;
-    }
-
-    public void setInParameter(final boolean inParameter) {
-        this.inParameter = inParameter;
-    }
-
 }

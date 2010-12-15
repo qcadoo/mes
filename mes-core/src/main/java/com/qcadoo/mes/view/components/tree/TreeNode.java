@@ -27,12 +27,6 @@ package com.qcadoo.mes.view.components.tree;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Node of ViewValue of TreeComponent.
- * 
- * @see com.qcadoo.mes.viewold.components.TreeComponent
- * @see com.qcadoo.mes.viewold.ViewValue
- */
 public final class TreeNode {
 
     private Long id;
