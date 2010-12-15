@@ -65,18 +65,21 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
                     row.createCell(0).setCellValue((String) machine.getField("name"));
                     row.createCell(1).setCellValue(operation.getField("number").toString());
                     row.createCell(2).setCellValue(operation.getField("name").toString());
-                    List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
+                    List<Entity> operationProductInComponents = operationComponent
+                            .getHasManyField("operationProductInComponents");
+                    List<Entity> operationProductOutComponents = operationComponent
+                            .getHasManyField("operationProductOutComponents");
                     StringBuilder productsOut = new StringBuilder();
                     StringBuilder productsIn = new StringBuilder();
-                    for (Entity operationProductComponent : operationProductComponents) {
+                    for (Entity operationProductComponent : operationProductInComponents) {
                         Entity product = (Entity) operationProductComponent.getField("product");
-                        if ((Boolean) operationProductComponent.getField("inParameter")) {
-                            productsIn.append(product.getField("number").toString() + " ");
-                            productsIn.append(product.getField("name").toString() + ", ");
-                        } else {
-                            productsOut.append(product.getField("number").toString() + " ");
-                            productsOut.append(product.getField("name").toString() + ", ");
-                        }
+                        productsIn.append(product.getField("number").toString() + " ");
+                        productsIn.append(product.getField("name").toString() + ", ");
+                    }
+                    for (Entity operationProductComponent : operationProductOutComponents) {
+                        Entity product = (Entity) operationProductComponent.getField("product");
+                        productsOut.append(product.getField("number").toString() + " ");
+                        productsOut.append(product.getField("name").toString() + ", ");
                     }
                     row.createCell(3).setCellValue(productsOut.toString());
                     row.createCell(4).setCellValue(productsIn.toString());
