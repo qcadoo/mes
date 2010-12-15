@@ -589,17 +589,17 @@
 				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="date" reference="date" field="date" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="2">
@@ -720,17 +720,17 @@
 				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="worker" field="worker" reference="worker" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="2">

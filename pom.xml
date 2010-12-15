@@ -391,7 +391,7 @@
 				</property>
 			</activation>
 			<properties>
-				<profile.name>cd${profile}</profile.name>
+				<profile.name>${profile}</profile.name>
 			</properties>
 		</profile>
 		<profile>
