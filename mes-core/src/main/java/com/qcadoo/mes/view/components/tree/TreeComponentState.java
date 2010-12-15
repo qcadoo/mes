@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +24,8 @@ public final class TreeComponentState extends AbstractComponentState {
     public static final String JSON_BELONGS_TO_ENTITY_ID = "belongsToEntityId";
 
     public static final String JSON_ROOT_NODE_ID = "root";
+
+    public static final String JSON_OPENED_NODES_ID = "openedNodes";
 
     private final TreeEventPerformer eventPerformer = new TreeEventPerformer();
 
@@ -55,6 +58,12 @@ public final class TreeComponentState extends AbstractComponentState {
         if (json.has(JSON_BELONGS_TO_ENTITY_ID) && !json.isNull(JSON_BELONGS_TO_ENTITY_ID)) {
             belongsToEntityId = json.getLong(JSON_BELONGS_TO_ENTITY_ID);
         }
+        if (json.has(JSON_OPENED_NODES_ID) && !json.isNull(JSON_OPENED_NODES_ID)) {
+            JSONArray openNodesArray = json.getJSONArray(JSON_OPENED_NODES_ID);
+            for (int i = 0; i < openNodesArray.length(); i++) {
+                addOpenedNode(openNodesArray.getLong(i));
+            }
+        }
 
         if (belongsToFieldDefinition != null && belongsToEntityId == null) {
             setEnabled(false);
@@ -73,6 +82,14 @@ public final class TreeComponentState extends AbstractComponentState {
         JSONObject json = new JSONObject();
         json.put(JSON_SELECTED_ENTITY_ID, selectedEntityId);
         json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);
+
+        if (openedNodes != null) {
+            JSONArray openedNodesArray = new JSONArray();
+            for (Long openedNodeId : openedNodes) {
+                openedNodesArray.put(openedNodeId);
+            }
+            json.put(JSON_OPENED_NODES_ID, openedNodesArray);
+        }
 
         json.put(JSON_ROOT_NODE_ID, rootNode.toJson());
         return json;
@@ -120,7 +137,9 @@ public final class TreeComponentState extends AbstractComponentState {
 
     public void setValue(final Long selectedEntityId) {
         this.selectedEntityId = selectedEntityId;
-        notifyEntityIdChangeListeners(selectedEntityId);
+        if (selectedEntityId != 0) {
+            notifyEntityIdChangeListeners(selectedEntityId);
+        }
     }
 
     public TreeNode getRootNode() {

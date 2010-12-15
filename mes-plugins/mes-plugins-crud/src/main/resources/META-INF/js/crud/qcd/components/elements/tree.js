@@ -51,8 +51,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var isEnabled = false;
 	
 	
-//	var openedArrayToInstert;
-//	var selectedEntityIdToInstert;
+	var openedNodesArrayToInsert;
+	var selectedNodeToInstert;
 	
 	function constructor(_this) {
 //		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
@@ -110,47 +110,44 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}).bind("select_node.jstree", function (e, data) {
 			updateButtons();
 		});
-//		openedArrayToInstert = new Array();
-//		openedArrayToInstert.push("0");
+//		openedNodesArrayToInsert = new Array();
+//		openedNodesArrayToInsert.push("0");
 		
 		block();
 	}
 	
 	this.setComponentState = function(state) {
-//		QCD.info("setComponentState");
-//		openedArrayToInstert = state.opened;
-//		selectedEntityIdToInstert = state.selectedEntityId;
+		openedNodesArrayToInsert = state.openedNodes;
+		selectedNodeToInstert = state.selectedNode;
 	}
 	
 	this.getComponentValue = function() {
-//		var entityId = null;
-//		if (tree.jstree("get_selected")) {
-//			entityId = tree.jstree("get_selected").attr("id");
-//			if (entityId) {
-//				entityId = entityId.substring(elementPath.length + 6);
-//			}
-//		}
-//		var openedArray = new Array();
-//		tree.find(".jstree-open").each(function () { 
-//			openedArray.push(this.id.substring(elementPath.length + 6));
-//		});
-//		return {
-//			opened: openedArray,
-//			selectedEntityId: entityId
-//		}
-		return new Object();
+		var openedNodesArray;
+		if (openedNodesArrayToInsert) {
+			openedNodesArray = openedNodesArrayToInsert;
+			openedNodesArrayToInsert = null;
+		} else {
+			openedNodesArray = new Array();
+			tree.find(".jstree-open").each(function () { 
+				openedNodesArray.push(getEntityId(this.id));
+			});
+		}
+		var selectedNode;
+		if (selectedNodeToInstert) {
+			selectedNode = selectedNodeToInstert;
+			selectedNodeToInstert = null;
+		} else {
+			selectedNode = getSelectedEntityId();
+		}
+		return {
+			openedNodes: openedNodesArray,
+			selectedNode: selectedNode
+		}
 	}
 	
 	this.setComponentValue = function(value) {
-		QCD.info("TREE VALUE");
-		QCD.info(value);
-//		if (value == null) {
-//			return;
-//		}
-//		if(value.contextFieldName || value.contextId) {
-//			contextFieldName = value.contextFieldName;
-//			contextId = value.contextId; 
-//		}
+		//QCD.info("TREE VALUE");
+		//QCD.info(value);
 		
 		if (value.belongsToEntityId) {
 			belongsToEntityId = value.belongsToEntityId;
@@ -162,17 +159,19 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			}
 			root = addNode(value.root, -1);
 		}
-//		tree.jstree("close_all", root, true);
-//		if (openedArrayToInstert) {
-//			for (var i in openedArrayToInstert) {
-//				tree.jstree("open_node", $("#"+elementPath+"_node_"+openedArrayToInstert[i]), false, true);
-//			}
-//			openedArrayToInstert = null;
-//		} else {
-//			for (var i in value.openedNodes) {
-//				tree.jstree("open_node", $("#"+elementPath+"_node_"+value.openedNodes[i]), false, true);
-//			}
-//		}
+		
+			// open nodes
+		tree.jstree("close_all", root, true);
+		if (openedNodesArrayToInsert) {
+			for (var i in openedNodesArrayToInsert) {
+				tree.jstree("open_node", $("#"+elementPath+"_node_"+openedNodesArrayToInsert[i]), false, true);
+			}
+			openedNodesArrayToInsert = null;
+		} else {
+			for (var i in value.openedNodes) {
+				tree.jstree("open_node", $("#"+elementPath+"_node_"+value.openedNodes[i]), false, true);
+			}
+		}
 //		if (selectedEntityIdToInstert) {
 //			tree.jstree("select_node", $("#"+elementPath+"_node_"+selectedEntityIdToInstert), false);
 //			selectedEntityIdToInstert = null;
@@ -195,9 +194,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function addNode(data, node) {
-		var nodeId = data.id ? data.id : "root";
+		var nodeId = data.id ? data.id : "0";
 		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+nodeId }}, false, true);
-		newNode.bind("onselect", function() {alert("aa")})
+		//newNode.bind("onselect", function() {alert("aa")})
 		for (var i in data.children) {
 			addNode(data.children[i], newNode, false);
 		}
@@ -207,7 +206,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function updateButtons() {
 		buttons.newButton.addClass("headerButtonEnabled");
-		if (getSelectedEntityId() != "root") {
+		if (getSelectedEntityId() != "0") {
 			buttons.editButton.addClass("headerButtonEnabled");
 			buttons.deleteButton.addClass("headerButtonEnabled");
 		} else {
@@ -263,7 +262,14 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}	
 	
 	function getSelectedEntityId() {
-		return tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
+		var selected = tree.jstree("get_selected");
+		if (selected && selected.length > 0) {
+			return getEntityId(selected.attr("id"));
+		}
+		return null;
+	}
+	function getEntityId(nodeId) {
+		return nodeId.substring(elementPath.length + 6);
 	}
 	
 	function redirectToCorrespondingPage(params) {
