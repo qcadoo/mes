@@ -45,6 +45,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var correspondingComponent = this.options.correspondingComponent;
 
 	var elementPath = this.elementPath;
+	var elementSearchName = this.elementSearchName;
 
 	var root;
 	
@@ -118,7 +119,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	this.setComponentState = function(state) {
 		openedNodesArrayToInsert = state.openedNodes;
-		selectedNodeToInstert = state.selectedNode;
+		selectedNodeToInstert = state.selectedEntityId;
+		belongsToEntityId = state.belongsToEntityId;
 	}
 	
 	this.getComponentValue = function() {
@@ -141,13 +143,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 		return {
 			openedNodes: openedNodesArray,
-			selectedNode: selectedNode
+			selectedEntityId: selectedNode,
+			belongsToEntityId: belongsToEntityId
 		}
 	}
 	
 	this.setComponentValue = function(value) {
-		//QCD.info("TREE VALUE");
-		//QCD.info(value);
 		
 		if (value.belongsToEntityId) {
 			belongsToEntityId = value.belongsToEntityId;
@@ -160,36 +161,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			root = addNode(value.root, -1);
 		}
 		
-			// open nodes
 		tree.jstree("close_all", root, true);
-		if (openedNodesArrayToInsert) {
-			for (var i in openedNodesArrayToInsert) {
-				tree.jstree("open_node", $("#"+elementPath+"_node_"+openedNodesArrayToInsert[i]), false, true);
-			}
-			openedNodesArrayToInsert = null;
-		} else {
-			for (var i in value.openedNodes) {
-				tree.jstree("open_node", $("#"+elementPath+"_node_"+value.openedNodes[i]), false, true);
-			}
+		for (var i in value.openedNodes) {
+			tree.jstree("open_node", $("#"+elementSearchName+"_node_"+value.openedNodes[i]), false, true);
 		}
-//		if (selectedEntityIdToInstert) {
-//			tree.jstree("select_node", $("#"+elementPath+"_node_"+selectedEntityIdToInstert), false);
-//			selectedEntityIdToInstert = null;
-//		}
-//		if (tree.jstree("get_selected").length > 0) {
-//			buttons.newButton.addClass("headerButtonEnabled");
-//			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
-//				buttons.editButton.addClass("headerButtonEnabled");
-//				buttons.deleteButton.addClass("headerButtonEnabled");
-//			} else {
-//				buttons.editButton.removeClass("headerButtonEnabled");
-//				buttons.deleteButton.removeClass("headerButtonEnabled");
-//			}
-//		} else {
-//			buttons.newButton.removeClass("headerButtonEnabled");
-//			buttons.editButton.removeClass("headerButtonEnabled");
-//			buttons.deleteButton.removeClass("headerButtonEnabled");
-//		}
+		
+		if (value.selectedEntityId != null) {
+			tree.jstree("select_node", $("#"+elementSearchName+"_node_"+value.selectedEntityId), false);
+		}
+		
+		updateButtons();
 		unblock();
 	}
 	

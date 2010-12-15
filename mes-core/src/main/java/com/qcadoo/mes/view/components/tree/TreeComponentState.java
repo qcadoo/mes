@@ -45,6 +45,7 @@ public final class TreeComponentState extends AbstractComponentState {
     public TreeComponentState(final FieldDefinition scopeField, final String nodeLabelExpression) {
         belongsToFieldDefinition = scopeField;
         this.nodeLabelExpression = nodeLabelExpression;
+        registerEvent("initialize", eventPerformer, "onInitialize");
         registerEvent("refresh", eventPerformer, "refresh");
         registerEvent("select", eventPerformer, "selectEntity");
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
@@ -222,6 +223,10 @@ public final class TreeComponentState extends AbstractComponentState {
 
         public void refresh(final String[] args) {
             // nothing interesting here
+        }
+
+        public void onInitialize(final String[] args) {
+            addOpenedNode(0L);
         }
 
         public void selectEntity(final String[] args) {
