@@ -76,12 +76,26 @@
 				</group>
 			</ribbon>
 			<component type="form" name="plugin" reference="form">
-				<component type="textarea" name="name" field="name" defaultEnabled="false" />
-				<component type="input" name="version" field="version" defaultEnabled="false" />
-				<component type="input" name="vendor" field="vendor" defaultEnabled="false" />
-				<component type="textarea" name="description" field="description" defaultEnabled="false" />
-				<component type="select" name="status" field="status" defaultEnabled="false" />
-				<component type="checkbox" name="base" field="base" defaultEnabled="false" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="8">
+					<layoutElement column="1" row="1" height="2">
+						<component type="textarea" name="name" field="name" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="version" field="version" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="vendor" field="vendor" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="5" height="2">
+						<component type="textarea" name="description" field="description" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="select" name="status" field="status" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="checkbox" name="base" field="base" defaultEnabled="false" />
+					</layoutElement>
+				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />

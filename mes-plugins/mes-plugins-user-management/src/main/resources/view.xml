@@ -60,8 +60,14 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="group" reference="form">
-				<component type="input" name="name" field="name" defaultEnabled="false"/>
-				<component type="textarea" name="description" field="description" /> 
+				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
+					<layoutElement column="1" row="1">
+						<component type="input" name="name" field="name" defaultEnabled="false"/>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="description" field="description" />
+					</layoutElement>
+				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name"/>
 			</component>
@@ -111,25 +117,43 @@
 				</group>
 			</ribbon>
 			<component type="form" name="user" reference="form">
-				<component type="input" name="login" field="userName" />
-				<component type="lookup" name="userGroup" field="userGroup">
-					<option type="expression" value="#name" />
-					<option type="fieldCode" value="name" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="10">
+					<layoutElement column="1" row="1">
+						<component type="input" name="login" field="userName" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="lookup" name="userGroup" field="userGroup">
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="email" field="email" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="firstName" field="firstName" />
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="input" name="lastName" field="lastName" />
+					</layoutElement>
+					<layoutElement column="1" row="6" height="2">
+						<component type="textarea" name="description" field="description" />
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="password" name="password" reference="passwordTextInput" field="password" />
+					</layoutElement>
+					<layoutElement column="1" row="9">
+						<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
+					</layoutElement>
+					<layoutElement column="1" row="10">
+						<component type="button" name="changePasswordButton" reference="changePasswordButton" source="#{form}">
+							<option type="correspondingView" value="users/userChangePassword" />
+							<option type="correspondingComponent" value="form" />
+						</component>
+					</layoutElement>
 				</component>
-				<component type="input" name="email" field="email" />
-				<component type="borderLayout" name="borderLayout">
-					<component type="input" name="firstName" field="firstName" />
-					<component type="input" name="lastName" field="lastName" />
-				</component>
-				<component type="textarea" name="description" field="description" />
-				<component type="password" name="password" reference="passwordTextInput" field="password" />
-				<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
 				<option type="header" value="false" />
 				<option type="expression" value="#userName"/>
-			</component>
-			<component type="button" name="changePasswordButton" reference="changePasswordButton" source="#{form}">
-				<option type="correspondingView" value="users/userChangePassword" />
-				<option type="correspondingComponent" value="form" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.users.UserService" method="hidePasswordOnUpdateForm" />
@@ -146,8 +170,14 @@
 				</group>
 			</ribbon>
 			<component type="form" name="user" reference="form">
-				<component type="password" name="password" reference="passwordTextInput" field="password" />
-				<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="password" name="password" reference="passwordTextInput" field="password" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
+					</layoutElement>
+				</component>
 				<component type="input" name="viewIdentifier" reference="viewIdentifierHiddenInput" field="viewIdentifier" defaultVisible="false"/>
 				<option type="header" value="false" />
 				<option type="expression" value="#userName"/>
@@ -164,21 +194,37 @@
 				</group>
 			</ribbon>
 			<component type="form" name="user" reference="form">
-				<component type="input" name="login" field="userName" defaultEnabled="false" />
-				<component type="lookup" name="userGroup" field="userGroup" defaultEnabled="false" >
-					<option type="expression" value="#name" />
-					<option type="fieldCode" value="name" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="8">
+					<layoutElement column="1" row="1">
+						<component type="input" name="login" field="userName" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="lookup" name="userGroup" field="userGroup" defaultEnabled="false" >
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="email" field="email" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="firstName" field="firstName" />
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="input" name="lastName" field="lastName" />
+					</layoutElement>
+					<layoutElement column="1" row="6" height="2">
+						<component type="textarea" name="description" field="description" />
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="button" name="changePasswordButton" reference="changePasswordButton" source="#{form}">
+							<option type="correspondingView" value="users/profileChangePassword" />
+							<option type="correspondingComponent" value="form" />
+						</component>
+					</layoutElement>
 				</component>
-				<component type="input" name="email" field="email" />
-				<component type="input" name="firstName" field="firstName" />
-				<component type="input" name="lastName" field="lastName" />
-				<component type="textarea" name="description" field="description" />
 				<option type="header" value="false" />
 				<option type="expression" value="' '"/>
-			</component>
-			<component type="button" name="changePasswordButton" reference="changePasswordButton" source="#{form}">
-				<option type="correspondingView" value="users/profileChangePassword" />
-				<option type="correspondingComponent" value="form" />
 			</component>
 		</component>
 	</view>
@@ -194,9 +240,17 @@
 				</group>
 			</ribbon>
 			<component type="form" name="user" reference="form">
-				<component type="password" name="oldPassword" reference="oldPasswordTextInput" field="oldPassword" />
-				<component type="password" name="password" reference="passwordTextInput" field="password" />
-				<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
+					<layoutElement column="1" row="1">
+						<component type="password" name="oldPassword" reference="oldPasswordTextInput" field="oldPassword" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="password" name="password" reference="passwordTextInput" field="password" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="password" name="passwordConfirmation" reference="passwordConfirmationTextInput" field="passwordConfirmation" />
+					</layoutElement>
+				</component>
 				<component type="input" name="viewIdentifier" reference="viewIdentifierHiddenInput" field="viewIdentifier" defaultVisible="false"/>
 				<option type="header" value="false" />
 				<option type="expression" value="' '"/>

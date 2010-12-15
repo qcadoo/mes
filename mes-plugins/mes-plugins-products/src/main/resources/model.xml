@@ -44,7 +44,8 @@
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
-		<hasMany name="operationProductComponents" model="operationProductComponent" joinField="product" cascade="nullify"/>
+		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="product" cascade="nullify"/>
+		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>
 	</model>
 	<model name="substitute">
@@ -122,9 +123,10 @@
 		</belongsTo>
 		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
 		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
-		<hasMany name="operationProductComponents" model="operationProductComponent" joinField="operationComponent" cascade="delete" />
+		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" />
+		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" />
 	</model>
-	<model name="operationProductComponent">
+	<model name="operationProductInComponent">
 		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">
 			<validatesPresence /> 
 		</belongsTo>
@@ -137,9 +139,20 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<boolean name="inParameter">
+	</model>
+	<model name="operationProductOutComponent">
+		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="product" model="product" lookupField="name">
+			<validatesPresence /> 
+		</belongsTo>
+		<decimal name="quantity">
 			<validatesPresence />
-		</boolean>
+			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
 	</model>
 	<model name="order">
 		<string name="number">
