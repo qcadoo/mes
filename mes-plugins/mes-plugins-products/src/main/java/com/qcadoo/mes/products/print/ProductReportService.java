@@ -51,21 +51,19 @@ public class ProductReportService {
             if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 List<Entity> operationComponents = technology.getHasManyField("operationComponents");
                 for (Entity operationComponent : operationComponents) {
-                    List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
+                    List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductInComponents");
                     for (Entity operationProductComponent : operationProductComponents) {
-                        if ((Boolean) operationProductComponent.getField("inParameter")) {
-                            Entity product = (Entity) operationProductComponent.getField("product");
-                            if (!(Boolean) entity.getField("onlyComponents")
-                                    || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
-                                if (products.containsKey(product)) {
-                                    BigDecimal quantity = products.get(product);
-                                    quantity = ((BigDecimal) operationProductComponent.getField("quantity")).multiply(
-                                            plannedQuantity).add(quantity);
-                                    products.put(product, quantity);
-                                } else {
-                                    products.put(product, ((BigDecimal) operationProductComponent.getField("quantity"))
-                                            .multiply(plannedQuantity));
-                                }
+                        Entity product = (Entity) operationProductComponent.getField("product");
+                        if (!(Boolean) entity.getField("onlyComponents")
+                                || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
+                            if (products.containsKey(product)) {
+                                BigDecimal quantity = products.get(product);
+                                quantity = ((BigDecimal) operationProductComponent.getField("quantity"))
+                                        .multiply(plannedQuantity).add(quantity);
+                                products.put(product, quantity);
+                            } else {
+                                products.put(product,
+                                        ((BigDecimal) operationProductComponent.getField("quantity")).multiply(plannedQuantity));
                             }
                         }
                     }
@@ -135,27 +133,26 @@ public class ProductReportService {
                 table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(entryComponent.getValue().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                List<Entity> operationProductComponents = entryComponent.getKey().getHasManyField("operationProductComponents");
-                addProductSeries(table, operationProductComponents, false, decimalFormat);
-                addProductSeries(table, operationProductComponents, true, decimalFormat);
+                List<Entity> operationProductOutComponents = entryComponent.getKey().getHasManyField(
+                        "operationProductOutComponents");
+                List<Entity> operationProductInComponents = entryComponent.getKey().getHasManyField(
+                        "operationProductInComponents");
+                addProductSeries(table, operationProductOutComponents, decimalFormat);
+                addProductSeries(table, operationProductInComponents, decimalFormat);
             }
             document.add(table);
             firstPage = false;
         }
     }
 
-    private void addProductSeries(final PdfPTable table, final List<Entity> operationProductComponents,
-            final boolean inParameter, final DecimalFormat df) {
+    private void addProductSeries(final PdfPTable table, final List<Entity> operationProductComponents, final DecimalFormat df) {
         StringBuilder products = new StringBuilder();
         for (Entity operationProductComponent : operationProductComponents) {
-            if ((Boolean) operationProductComponent.getField("inParameter") && !inParameter || inParameter
-                    && !(Boolean) operationProductComponent.getField("inParameter")) {
-                ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
-                Object unit = product.getField("unit");
-                products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
-                        + df.format(((BigDecimal) operationProductComponent.getField("quantity")).stripTrailingZeros()) + " ["
-                        + (unit != null ? unit.toString() : "") + "] \n\n");
-            }
+            ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
+            Object unit = product.getField("unit");
+            products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
+                    + df.format(((BigDecimal) operationProductComponent.getField("quantity")).stripTrailingZeros()) + " ["
+                    + (unit != null ? unit.toString() : "") + "] \n\n");
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
