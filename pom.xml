@@ -5,7 +5,7 @@
 
 	<groupId>com.qcadoo.mes</groupId>
 	<artifactId>mes</artifactId>
-	<version>0.2.1-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Qcadoo MES</name>
@@ -374,6 +374,12 @@
 	</scm>
 
 	<profiles>
+		<profile>
+			<id>release</id>
+			<modules>
+				<module>mes-tomcat</module>
+			</modules>
+		</profile>
 		<profile>
 			<id>installer</id>
 			<modules>
