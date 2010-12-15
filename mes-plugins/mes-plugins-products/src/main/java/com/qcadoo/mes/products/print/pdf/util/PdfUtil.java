@@ -339,7 +339,7 @@ public final class PdfUtil {
         String fileNameWithoutPath = "";
         if (fileName != null && !"".equals(fileName.toString().trim())) {
             copyPdf(document, writer, (String) fileName + fileSuffix + PDF_EXTENSION);
-            fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
+            fileNameWithoutPath = ((String) fileName + "_" + fileSuffix).substring(((String) fileName).lastIndexOf("/") + 1);
         }
         return fileNameWithoutPath;
     }
