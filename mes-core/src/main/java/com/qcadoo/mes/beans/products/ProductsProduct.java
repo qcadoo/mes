@@ -71,7 +71,10 @@ public class ProductsProduct {
     private List<ProductsOrder> orders;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<ProductsOperationProductComponent> operationProductComponents;
+    private List<ProductsOperationProductInComponent> operationProductInComponents;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<ProductsOperationProductOutComponent> operationProductOutComponents;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsSubstituteComponent> substituteComponents;
@@ -164,12 +167,20 @@ public class ProductsProduct {
         this.substituteComponents = substituteComponents;
     }
 
-    public List<ProductsOperationProductComponent> getOperationProductComponents() {
-        return operationProductComponents;
+    public List<ProductsOperationProductInComponent> getOperationProductInComponents() {
+        return operationProductInComponents;
     }
 
-    public void setOperationProductComponents(final List<ProductsOperationProductComponent> operationProductComponents) {
-        this.operationProductComponents = operationProductComponents;
+    public List<ProductsOperationProductOutComponent> getOperationProductOutComponents() {
+        return operationProductOutComponents;
+    }
+
+    public void setOperationProductInComponents(final List<ProductsOperationProductInComponent> operationProductInComponents) {
+        this.operationProductInComponents = operationProductInComponents;
+    }
+
+    public void setOperationProductOutComponents(final List<ProductsOperationProductOutComponent> operationProductOutComponents) {
+        this.operationProductOutComponents = operationProductOutComponents;
     }
 
 }
