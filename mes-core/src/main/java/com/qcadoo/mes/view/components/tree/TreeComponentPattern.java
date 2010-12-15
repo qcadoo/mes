@@ -8,9 +8,9 @@ import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 @ViewComponent("tree")
 public final class TreeComponentPattern extends AbstractComponentPattern {
 
-    private static final String JSP_PATH = "elements/input.jsp";
+    private static final String JSP_PATH = "elements/tree.jsp";
 
-    private static final String JS_OBJECT = "QCD.components.elements.TextInput";
+    private static final String JS_OBJECT = "QCD.components.elements.Tree";
 
     public TreeComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);

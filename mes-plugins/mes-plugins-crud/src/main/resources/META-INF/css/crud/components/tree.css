@@ -25,6 +25,7 @@
 .tree_wrapper {
 	margin: 10px;
 	border: solid #9b9b9b 1px;
+	text-align: left;
 }
 
 .tree_wrapper .tree_header .tree_title {

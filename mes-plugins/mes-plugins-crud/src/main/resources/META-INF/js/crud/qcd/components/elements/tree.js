@@ -36,35 +36,40 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var header;
 	var buttons = new Object();
 	
-	var contextFieldName;
-	var contextId;
+	var contentElement;
 	
-	var elementPath = this.elementPath;
-	
-	var correspondingViewName = this.options.correspondingView;
-	
-	var root;
+//	var contextFieldName;
+//	var contextId;
+//	
+//	var elementPath = this.elementPath;
+//	
+//	var correspondingViewName = this.options.correspondingView;
+//	
+//	var root;
 	
 	var isEnabled = false;
 	
-	var openedArrayToInstert;
-	var selectedEntityIdToInstert;
+//	var openedArrayToInstert;
+//	var selectedEntityIdToInstert;
 	
 	function constructor(_this) {
-		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
-		
+//		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
+//		
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
-			var treeName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+_this.elementPath.replace(/-/g,".")+".header";
-			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(mainController.getTranslation(treeName));
+			//var treeName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+_this.elementPath.replace(/-/g,".")+".header";
+			var treeName = "TREE";
+			var messagesPath = "TREE";
+			
+			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(treeName);
 			header.append(title);
 			
-			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.new') ,function(e) {
+			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(messagesPath + '.new' ,function(e) {
 				newClicked();
 			}, "newIcon16_dis.png");
-			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.edit') ,function(e) {
+			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(messagesPath + '.edit' ,function(e) {
 				editClicked();
 			}, "editIcon16_dis.png");
-			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.delete'),function(e) {
+			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(messagesPath + '.delete',function(e) {
 				deleteClicked();
 			}, "deleteIcon16_dis.png");
 			
@@ -72,21 +77,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			header.append(buttons.editButton);
 			header.append(buttons.deleteButton);
 		
-		var content = $("<div>").addClass('tree_content');
+		contentElement = $("<div>").addClass('tree_content');
 		
-		var container = $("#"+_this.elementPath+"_treeContent");
-		container.addClass('tree_wrapper');
+		var container = $("<div>").addClass('tree_wrapper');
 		
-		if (_this.options.width) {
-			container.width(_this.options.width);
-		}
-		if (_this.options.height) {
-			content.height(_this.options.height - 30);
-		}
 		container.append(header);
-		container.append(content);
+		container.append(contentElement);
 		
-		tree = content.jstree({ plugins : ["json_data", "themes", "crrm", "ui" ],
+		_this.element.append(container);
+		
+		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui" ],
 			"themes" : {
 				"theme": "classic",
 				"dots" : true,
@@ -115,160 +115,156 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				buttons.deleteButton.removeClass("headerButtonEnabled");
 			}
 		});
-		openedArrayToInstert = new Array();
-		openedArrayToInstert.push("0");
+//		openedArrayToInstert = new Array();
+//		openedArrayToInstert.push("0");
 		
 		block();
 	}
 	
 	this.setComponentState = function(state) {
-		QCD.info("setComponentState");
-		openedArrayToInstert = state.opened;
-		selectedEntityIdToInstert = state.selectedEntityId;
-	}
-	
-	this.getUpdateMode = function() {
-		return QCD.components.Component.UPDATE_MODE_UPDATE;
+//		QCD.info("setComponentState");
+//		openedArrayToInstert = state.opened;
+//		selectedEntityIdToInstert = state.selectedEntityId;
 	}
 	
 	this.getComponentValue = function() {
-		var entityId = null;
-		if (tree.jstree("get_selected")) {
-			entityId = tree.jstree("get_selected").attr("id");
-			if (entityId) {
-				entityId = entityId.substring(elementPath.length + 6);
-			}
-		}
-		var openedArray = new Array();
-		tree.find(".jstree-open").each(function () { 
-			openedArray.push(this.id.substring(elementPath.length + 6));
-		});
-		return {
-			opened: openedArray,
-			selectedEntityId: entityId
-		}
+//		var entityId = null;
+//		if (tree.jstree("get_selected")) {
+//			entityId = tree.jstree("get_selected").attr("id");
+//			if (entityId) {
+//				entityId = entityId.substring(elementPath.length + 6);
+//			}
+//		}
+//		var openedArray = new Array();
+//		tree.find(".jstree-open").each(function () { 
+//			openedArray.push(this.id.substring(elementPath.length + 6));
+//		});
+//		return {
+//			opened: openedArray,
+//			selectedEntityId: entityId
+//		}
 	}
 	
 	this.setComponentValue = function(value) {
-		if (value == null) {
-			return;
-		}
-		if(value.contextFieldName || value.contextId) {
-			contextFieldName = value.contextFieldName;
-			contextId = value.contextId; 
-		}
-		if (value.rootNode) {
-			if (root) {
-				tree.jstree("remove", root); 
-			}
-			root = addNode(value.rootNode, -1);
-		}
-		tree.jstree("close_all", root, true);
-		if (openedArrayToInstert) {
-			for (var i in openedArrayToInstert) {
-				tree.jstree("open_node", $("#"+elementPath+"_node_"+openedArrayToInstert[i]), false, true);
-			}
-			openedArrayToInstert = null;
-		} else {
-			for (var i in value.openedNodes) {
-				tree.jstree("open_node", $("#"+elementPath+"_node_"+value.openedNodes[i]), false, true);
-			}
-		}
-		if (selectedEntityIdToInstert) {
-			tree.jstree("select_node", $("#"+elementPath+"_node_"+selectedEntityIdToInstert), false);
-			selectedEntityIdToInstert = null;
-		}
-		if (tree.jstree("get_selected").length > 0) {
-			buttons.newButton.addClass("headerButtonEnabled");
-			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
-				buttons.editButton.addClass("headerButtonEnabled");
-				buttons.deleteButton.addClass("headerButtonEnabled");
-			} else {
-				buttons.editButton.removeClass("headerButtonEnabled");
-				buttons.deleteButton.removeClass("headerButtonEnabled");
-			}
-		} else {
-			buttons.newButton.removeClass("headerButtonEnabled");
-			buttons.editButton.removeClass("headerButtonEnabled");
-			buttons.deleteButton.removeClass("headerButtonEnabled");
-		}
-		unblock();
+//		if (value == null) {
+//			return;
+//		}
+//		if(value.contextFieldName || value.contextId) {
+//			contextFieldName = value.contextFieldName;
+//			contextId = value.contextId; 
+//		}
+//		if (value.rootNode) {
+//			if (root) {
+//				tree.jstree("remove", root); 
+//			}
+//			root = addNode(value.rootNode, -1);
+//		}
+//		tree.jstree("close_all", root, true);
+//		if (openedArrayToInstert) {
+//			for (var i in openedArrayToInstert) {
+//				tree.jstree("open_node", $("#"+elementPath+"_node_"+openedArrayToInstert[i]), false, true);
+//			}
+//			openedArrayToInstert = null;
+//		} else {
+//			for (var i in value.openedNodes) {
+//				tree.jstree("open_node", $("#"+elementPath+"_node_"+value.openedNodes[i]), false, true);
+//			}
+//		}
+//		if (selectedEntityIdToInstert) {
+//			tree.jstree("select_node", $("#"+elementPath+"_node_"+selectedEntityIdToInstert), false);
+//			selectedEntityIdToInstert = null;
+//		}
+//		if (tree.jstree("get_selected").length > 0) {
+//			buttons.newButton.addClass("headerButtonEnabled");
+//			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
+//				buttons.editButton.addClass("headerButtonEnabled");
+//				buttons.deleteButton.addClass("headerButtonEnabled");
+//			} else {
+//				buttons.editButton.removeClass("headerButtonEnabled");
+//				buttons.deleteButton.removeClass("headerButtonEnabled");
+//			}
+//		} else {
+//			buttons.newButton.removeClass("headerButtonEnabled");
+//			buttons.editButton.removeClass("headerButtonEnabled");
+//			buttons.deleteButton.removeClass("headerButtonEnabled");
+//		}
+//		unblock();
 	}
 	
-	function addNode(data, node) {
-		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+data.id }}, false, true);
-		newNode.bind("onselect", function() {alert("aa")})
-		for (var i in data.children) {
-			addNode(data.children[i], newNode, false);
-		}
-		tree.jstree("close_node", newNode, true);
-		return newNode;
-	}
+//	function addNode(data, node) {
+//		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+data.id }}, false, true);
+//		newNode.bind("onselect", function() {alert("aa")})
+//		for (var i in data.children) {
+//			addNode(data.children[i], newNode, false);
+//		}
+//		tree.jstree("close_node", newNode, true);
+//		return newNode;
+//	}
 	
 	this.setComponentEnabled = function(_isEnabled) {
-		isEnabled = _isEnabled;
-		if (isEnabled) {
-			tree.removeClass("treeDisabled");
-			header.removeClass("elementHeaderDisabled");
-		} else {
-			tree.addClass("treeDisabled");
-			header.addClass("elementHeaderDisabled");
-			buttons.newButton.removeClass("headerButtonEnabled");
-			buttons.editButton.removeClass("headerButtonEnabled");
-			buttons.deleteButton.removeClass("headerButtonEnabled");
-		}
+//		isEnabled = _isEnabled;
+//		if (isEnabled) {
+//			tree.removeClass("treeDisabled");
+//			header.removeClass("elementHeaderDisabled");
+//		} else {
+//			tree.addClass("treeDisabled");
+//			header.addClass("elementHeaderDisabled");
+//			buttons.newButton.removeClass("headerButtonEnabled");
+//			buttons.editButton.removeClass("headerButtonEnabled");
+//			buttons.deleteButton.removeClass("headerButtonEnabled");
+//		}
 	}
 	
-	function newClicked() {
-		if (buttons.newButton.hasClass("headerButtonEnabled")) {
-			QCD.info("new");
-			var contextArray = new Array();
-			var parentId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-			contextArray.push({
-				fieldName: "parent",
-				entityId: (parentId == 0) ? null : parentId
-			});
-			if (contextFieldName && contextId) {
-				contextArray.push({
-					fieldName: contextFieldName,
-					entityId: contextId
-				});
-			}
-			context = "context="+JSON.stringify(contextArray);
-			QCD.info("newClicked");
-			QCD.info(context);
-			redirectToCorrespondingPage(context);
-		}
-	}
-	
-	function editClicked() {
-		if (buttons.editButton.hasClass("headerButtonEnabled")) {
-			QCD.info("edit");
-			var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-			redirectToCorrespondingPage("entityId="+entityId);
-		}
-	}
-	
-	function deleteClicked() {
-		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
-			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
-				block();
-				var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-				mainController.performDelete(elementPath, entityId, null);	
-			}
-		}
-	}	
-	
-	function redirectToCorrespondingPage(params) {
-		if (correspondingViewName && correspondingViewName != '') {
-			var url = correspondingViewName + ".html";
-			if (params) {
-				url += "?"+params;
-			}
-			mainController.goToPage(url);
-		}
-	}
+//	function newClicked() {
+//		if (buttons.newButton.hasClass("headerButtonEnabled")) {
+//			QCD.info("new");
+//			var contextArray = new Array();
+//			var parentId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
+//			contextArray.push({
+//				fieldName: "parent",
+//				entityId: (parentId == 0) ? null : parentId
+//			});
+//			if (contextFieldName && contextId) {
+//				contextArray.push({
+//					fieldName: contextFieldName,
+//					entityId: contextId
+//				});
+//			}
+//			context = "context="+JSON.stringify(contextArray);
+//			QCD.info("newClicked");
+//			QCD.info(context);
+//			redirectToCorrespondingPage(context);
+//		}
+//	}
+//	
+//	function editClicked() {
+//		if (buttons.editButton.hasClass("headerButtonEnabled")) {
+//			QCD.info("edit");
+//			var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
+//			redirectToCorrespondingPage("entityId="+entityId);
+//		}
+//	}
+//	
+//	function deleteClicked() {
+//		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
+//		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
+//			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
+//				block();
+//				var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
+//				mainController.performDelete(elementPath, entityId, null);	
+//			}
+//		}
+//	}	
+//	
+//	function redirectToCorrespondingPage(params) {
+//		if (correspondingViewName && correspondingViewName != '') {
+//			var url = correspondingViewName + ".html";
+//			if (params) {
+//				url += "?"+params;
+//			}
+//			mainController.goToPage(url);
+//		}
+//	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {
@@ -278,9 +274,19 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 	}
 	
+	this.updateSize = function(_width, _height) {
+		if (! _width) {
+			_width = 300;
+		}
+		if (! _height) {
+			_height = 300;
+		}
+		contentElement.height(_height - 20);
+	}
+	
 	function block() {
 		if (tree) {
-			tree.block({ message: '<div class="loading_div">'+mainController.getTranslation("commons.loading")+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+			tree.block({ message: '<div class="loading_div">'+"commons.loading"+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 

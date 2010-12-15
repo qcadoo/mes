@@ -53,7 +53,7 @@ String ctx = request.getContextPath();
         <title>${headerLabel}</title>
     </head>
     <body>
-	    	<div style="margin: 20px;">
+	    	<div style="margin: 0;">
 		        <h4>${headerLabel}</h4>
 		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
 		        	<input type="hidden" name="entityId" value="${entityId}" />
