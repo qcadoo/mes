@@ -173,7 +173,7 @@ public final class XlsCopyUtil {
         if (fileName != null && !"".equals(fileName.toString().trim())) {
             copyWorkbook(workbook, (String) fileName + fileSuffix + XLS_EXTENSION);
             String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
-            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XLS_EXTENSION);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + fileSuffix + XLS_EXTENSION);
         }
     }
 

@@ -94,7 +94,7 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
-        return "ForMachine";
+    protected String getSuffix(final Locale locale) {
+        return getTranslationService().translate("products.workPlan.report.fileName.suffix.forMachine", locale);
     }
 }
