@@ -34,9 +34,9 @@ package com.qcadoo.mes.utils;
  */
 public final class Pair<A, B> {
 
-    private final A key;
+    private A key;
 
-    private final B value;
+    private B value;
 
     public Pair(final A key, final B value) {
         this.key = key;
@@ -92,6 +92,14 @@ public final class Pair<A, B> {
     @Override
     public String toString() {
         return String.format("Pair[%s,%s]", key, value);
+    }
+
+    public void setKey(A key) {
+        this.key = key;
+    }
+
+    public void setValue(B value) {
+        this.value = value;
     }
 
 }
