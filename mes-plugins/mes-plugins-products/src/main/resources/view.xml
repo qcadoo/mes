@@ -362,10 +362,8 @@
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
 				<layoutElement column="1" row="1" height="5">
 					<component type="tree" name="technologyTree" source="#{form}.operationComponents">
-						<option type="height" value="200" />
-						<option type="width" value="500" />
-						<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
-						<option type="rootExpression" value="#number" />
+						<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+						<!--<option type="rootExpression" value="#number" />-->
 						<option type="correspondingView" value="products/technologyOperationComponent" />
 						<option type="correspondingComponent" value="form" />
 					</component>

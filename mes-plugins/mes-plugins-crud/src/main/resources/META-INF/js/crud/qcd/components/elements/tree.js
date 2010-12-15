@@ -147,6 +147,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		QCD.info("TREE VALUE");
+		QCD.info(value);
 //		if (value == null) {
 //			return;
 //		}

@@ -27,6 +27,10 @@ package com.qcadoo.mes.view.components.tree;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public final class TreeNode {
 
     private Long id;
@@ -76,6 +80,20 @@ public final class TreeNode {
         this.id = id;
     }
 
+    public JSONObject toJson() throws JSONException {
+        JSONObject jsonNode = new JSONObject();
+        jsonNode.put("id", id);
+        jsonNode.put("label", label);
+        if (children != null) {
+            JSONArray childrenArray = new JSONArray();
+            for (TreeNode kid : children) {
+                childrenArray.put(kid.toJson());
+            }
+            jsonNode.put("children", childrenArray);
+        }
+        return jsonNode;
+    }
+
     @Override
     public String toString() {
         return toStringWithTabs(0);
@@ -86,7 +104,7 @@ public final class TreeNode {
         for (int i = 0; i < tabs; i++) {
             sb.append("    ");
         }
-        sb.append("[" + id + "] " + label + "/n");
+        sb.append("[" + id + "] " + label + "\n");
         if (children != null) {
             for (TreeNode kid : children) {
                 sb.append(kid.toStringWithTabs(tabs + 1));
