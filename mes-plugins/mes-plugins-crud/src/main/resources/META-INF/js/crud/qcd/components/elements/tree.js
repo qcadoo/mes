@@ -38,16 +38,18 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var contentElement;
 	
-//	var contextFieldName;
-//	var contextId;
-//	
-//	var elementPath = this.elementPath;
-//	
-//	var correspondingViewName = this.options.correspondingView;
-//	
-//	var root;
+	var belongsToEntityId;
+	var belongsToFieldName = this.options.belongsToFieldName;
+	
+	var correspondingView = this.options.correspondingView;
+	var correspondingComponent = this.options.correspondingComponent;
+
+	var elementPath = this.elementPath;
+
+	var root;
 	
 	var isEnabled = false;
+	
 	
 //	var openedArrayToInstert;
 //	var selectedEntityIdToInstert;
@@ -106,14 +108,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		    	return false;
 			}
 		}).bind("select_node.jstree", function (e, data) {
-			buttons.newButton.addClass("headerButtonEnabled");
-			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
-				buttons.editButton.addClass("headerButtonEnabled");
-				buttons.deleteButton.addClass("headerButtonEnabled");
-			} else {
-				buttons.editButton.removeClass("headerButtonEnabled");
-				buttons.deleteButton.removeClass("headerButtonEnabled");
-			}
+			updateButtons();
 		});
 //		openedArrayToInstert = new Array();
 //		openedArrayToInstert.push("0");
@@ -156,12 +151,17 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 //			contextFieldName = value.contextFieldName;
 //			contextId = value.contextId; 
 //		}
-//		if (value.rootNode) {
-//			if (root) {
-//				tree.jstree("remove", root); 
-//			}
-//			root = addNode(value.rootNode, -1);
-//		}
+		
+		if (value.belongsToEntityId) {
+			belongsToEntityId = value.belongsToEntityId;
+		}
+		
+		if (value.root) {
+			if (root) {
+				tree.jstree("remove", root); 
+			}
+			root = addNode(value.root, -1);
+		}
 //		tree.jstree("close_all", root, true);
 //		if (openedArrayToInstert) {
 //			for (var i in openedArrayToInstert) {
@@ -191,83 +191,90 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 //			buttons.editButton.removeClass("headerButtonEnabled");
 //			buttons.deleteButton.removeClass("headerButtonEnabled");
 //		}
-//		unblock();
+		unblock();
 	}
 	
-//	function addNode(data, node) {
-//		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+data.id }}, false, true);
-//		newNode.bind("onselect", function() {alert("aa")})
-//		for (var i in data.children) {
-//			addNode(data.children[i], newNode, false);
-//		}
-//		tree.jstree("close_node", newNode, true);
-//		return newNode;
-//	}
+	function addNode(data, node) {
+		var nodeId = data.id ? data.id : "root";
+		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+nodeId }}, false, true);
+		newNode.bind("onselect", function() {alert("aa")})
+		for (var i in data.children) {
+			addNode(data.children[i], newNode, false);
+		}
+		tree.jstree("close_node", newNode, true);
+		return newNode;
+	}
+	
+	function updateButtons() {
+		buttons.newButton.addClass("headerButtonEnabled");
+		if (getSelectedEntityId() != "root") {
+			buttons.editButton.addClass("headerButtonEnabled");
+			buttons.deleteButton.addClass("headerButtonEnabled");
+		} else {
+			buttons.editButton.removeClass("headerButtonEnabled");
+			buttons.deleteButton.removeClass("headerButtonEnabled");
+		}
+	}
 	
 	this.setComponentEnabled = function(_isEnabled) {
-//		isEnabled = _isEnabled;
-//		if (isEnabled) {
-//			tree.removeClass("treeDisabled");
-//			header.removeClass("elementHeaderDisabled");
-//		} else {
-//			tree.addClass("treeDisabled");
-//			header.addClass("elementHeaderDisabled");
+		isEnabled = _isEnabled;
+		if (isEnabled) {
+			tree.removeClass("treeDisabled");
+			header.removeClass("elementHeaderDisabled");
+		} else {
+			tree.addClass("treeDisabled");
+			header.addClass("elementHeaderDisabled");
 //			buttons.newButton.removeClass("headerButtonEnabled");
 //			buttons.editButton.removeClass("headerButtonEnabled");
 //			buttons.deleteButton.removeClass("headerButtonEnabled");
-//		}
+		}
 	}
 	
-//	function newClicked() {
-//		if (buttons.newButton.hasClass("headerButtonEnabled")) {
-//			QCD.info("new");
-//			var contextArray = new Array();
-//			var parentId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-//			contextArray.push({
-//				fieldName: "parent",
-//				entityId: (parentId == 0) ? null : parentId
-//			});
-//			if (contextFieldName && contextId) {
-//				contextArray.push({
-//					fieldName: contextFieldName,
-//					entityId: contextId
-//				});
-//			}
-//			context = "context="+JSON.stringify(contextArray);
-//			QCD.info("newClicked");
-//			QCD.info(context);
-//			redirectToCorrespondingPage(context);
-//		}
-//	}
-//	
-//	function editClicked() {
-//		if (buttons.editButton.hasClass("headerButtonEnabled")) {
-//			QCD.info("edit");
-//			var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-//			redirectToCorrespondingPage("entityId="+entityId);
-//		}
-//	}
-//	
-//	function deleteClicked() {
+	function newClicked() {
+		if (buttons.newButton.hasClass("headerButtonEnabled")) {
+			var params = new Object();
+			if (belongsToFieldName) {
+				params[correspondingComponent+"."+belongsToFieldName] = belongsToEntityId;
+			}
+			params[correspondingComponent+".parent"] = getSelectedEntityId();
+			redirectToCorrespondingPage(params);
+		}
+	}
+	
+	function editClicked() {
+		if (buttons.editButton.hasClass("headerButtonEnabled")) {
+			var params = new Object();
+			params[correspondingComponent+".id"] = getSelectedEntityId();
+			redirectToCorrespondingPage(params);
+		}
+	}
+	
+	function deleteClicked() {
 //		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-//		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
-//			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
-//				block();
-//				var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-//				mainController.performDelete(elementPath, entityId, null);	
-//			}
-//		}
-//	}	
-//	
-//	function redirectToCorrespondingPage(params) {
-//		if (correspondingViewName && correspondingViewName != '') {
-//			var url = correspondingViewName + ".html";
-//			if (params) {
-//				url += "?"+params;
-//			}
-//			mainController.goToPage(url);
-//		}
-//	}
+		var confirmDeleteMessage = "TODO delete?"
+		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
+			if (window.confirm(confirmDeleteMessage)) {
+				block();
+				mainController.callEvent("remove", elementPath, function() {
+					unblock();
+				}, null, null);
+			}
+		}
+	}	
+	
+	function getSelectedEntityId() {
+		return tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
+	}
+	
+	function redirectToCorrespondingPage(params) {
+		if (correspondingView && correspondingView != '') {
+			var url = correspondingView + ".html";
+			if (params) {
+				url += "?context="+JSON.stringify(params);
+			}
+			mainController.goToPage(url);
+		}
+	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
 		if (isLoadingVisible) {

@@ -403,14 +403,18 @@
 					<smallButton name="delete" icon="deleteIcon16.png" action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="technologyOperationComponent" reference="form">
-				<component type="lookup" name="operation" field="operation">
-					<option type="column" name="name" fields="name"
-						width="300" />
-					<option type="searchable" value="name" />
-					<option type="orderable" value="name" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="operation" field="operation">
+							<option type="column" name="name" fields="name"
+								width="300" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#operation['name']" />

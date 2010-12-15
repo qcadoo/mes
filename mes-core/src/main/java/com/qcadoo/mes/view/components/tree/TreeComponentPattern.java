@@ -59,6 +59,9 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         JSONObject json = new JSONObject();
         json.put("correspondingView", correspondingView);
         json.put("correspondingComponent", correspondingComponent);
+        if (belongsToFieldDefinition != null) {
+            json.put("belongsToFieldName", belongsToFieldDefinition.getName());
+        }
         return json;
     }
 
