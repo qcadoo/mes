@@ -76,4 +76,23 @@ public final class TreeNode {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return toStringWithTabs(0);
+    }
+
+    public String toStringWithTabs(int tabs) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tabs; i++) {
+            sb.append("    ");
+        }
+        sb.append("[" + id + "] " + label + "/n");
+        if (children != null) {
+            for (TreeNode kid : children) {
+                sb.append(kid.toStringWithTabs(tabs + 1));
+            }
+        }
+        return sb.toString();
+    }
+
 }
