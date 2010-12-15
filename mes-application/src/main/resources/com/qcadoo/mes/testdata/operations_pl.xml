@@ -30,4 +30,8 @@
 	<row NAME="operacja1" NUMBER="1" />
 	<row NAME="operacja2" NUMBER="2" />
 	<row NAME="operacja3" NUMBER="3" />
+	<row NAME="heblowanie" NUMBER="4" />
+	<row NAME="toczenie" NUMBER="5" />
+	<row NAME="spawanie" NUMBER="6" />
+	<row NAME="rozdrabnianie" NUMBER="7" />
 </operations>

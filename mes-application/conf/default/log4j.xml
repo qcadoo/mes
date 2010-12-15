@@ -9,7 +9,7 @@
 	<appender name="file" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/qcadoo.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="1" />
+		<param name="MaxBackupIndex" value="5" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
