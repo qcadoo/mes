@@ -16,7 +16,7 @@ public abstract class DocumentService {
 
     public abstract void generateDocument(final Entity entity, final Locale locale) throws IOException, DocumentException;
 
-    protected abstract String getSuffix();
+    protected abstract String getSuffix(final Locale locale);
 
     protected final TranslationService getTranslationService() {
         return translationService;

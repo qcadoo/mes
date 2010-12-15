@@ -147,7 +147,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
+    protected String getSuffix(final Locale locale) {
         return "";
     }
 

@@ -62,7 +62,7 @@ public abstract class PdfDocumentService extends DocumentService {
         Document document = new Document(PageSize.A4);
         try {
             decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
+            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(locale)
                     + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),

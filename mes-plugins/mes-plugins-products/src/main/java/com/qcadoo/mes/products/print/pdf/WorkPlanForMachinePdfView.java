@@ -38,7 +38,8 @@ public final class WorkPlanForMachinePdfView extends ProductsPdfView {
     @Override
     protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
-        return PdfUtil.copyPdfContent(document, entity, writer, "ForMachine");
+        return PdfUtil.copyPdfContent(document, entity, writer,
+                getTranslationService().translate("products.workPlan.report.fileName.suffix.forMachine", locale));
     }
 
     @Override

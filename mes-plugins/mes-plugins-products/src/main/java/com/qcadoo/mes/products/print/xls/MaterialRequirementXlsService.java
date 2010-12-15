@@ -79,7 +79,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
+    protected String getSuffix(final Locale locale) {
         return "";
     }
 }

@@ -63,7 +63,7 @@ public final class OrderPdfView extends ProductsPdfView {
         addDetailTable(document, entity, locale);
         String text = getTranslationService().translate("products.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
-        return "Order" + entity.getField("number");
+        return getTranslationService().translate("products.order.report.fileName", locale) + entity.getField("number");
     }
 
     private void addMainTable(final Document document, final Entity entity, final Locale locale) throws DocumentException {
