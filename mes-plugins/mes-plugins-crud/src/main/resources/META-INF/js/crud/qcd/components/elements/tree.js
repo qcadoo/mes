@@ -143,6 +143,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 //			opened: openedArray,
 //			selectedEntityId: entityId
 //		}
+		return new Object();
 	}
 	
 	this.setComponentValue = function(value) {

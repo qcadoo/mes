@@ -87,8 +87,10 @@ public final class TreeNode {
             sb.append("    ");
         }
         sb.append("[" + id + "] " + label + "/n");
-        for (TreeNode kid : children) {
-            sb.append(kid.toStringWithTabs(tabs + 1));
+        if (children != null) {
+            for (TreeNode kid : children) {
+                sb.append(kid.toStringWithTabs(tabs + 1));
+            }
         }
         return sb.toString();
     }

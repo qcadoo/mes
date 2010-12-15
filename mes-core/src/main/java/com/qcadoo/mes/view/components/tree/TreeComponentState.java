@@ -159,7 +159,7 @@ public final class TreeComponentState extends AbstractComponentState {
             }
             Entity ent = entityPair.getKey();
             if (ent.getField("parent") == parent.getId()) {
-                TreeNode childNode = new TreeNode(ent.getId(), ent.getField("name").toString());
+                TreeNode childNode = new TreeNode(ent.getId(), ent.getId().toString());
                 rootNode.addChild(childNode);
                 entityPair.setValue(true);
                 createChildrenNodes(entities, childNode);
