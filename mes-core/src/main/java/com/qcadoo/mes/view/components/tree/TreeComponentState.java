@@ -128,8 +128,7 @@ public final class TreeComponentState extends AbstractComponentState {
 
     @Override
     public void setFieldValue(final Object value) {
-        selectedEntityId = (Long) value;
-        notifyEntityIdChangeListeners(selectedEntityId);
+        setValue((Long) value);
     }
 
     public Long getSelectedEntityId() {
@@ -138,9 +137,7 @@ public final class TreeComponentState extends AbstractComponentState {
 
     public void setValue(final Long selectedEntityId) {
         this.selectedEntityId = selectedEntityId;
-        if (selectedEntityId != 0) {
-            notifyEntityIdChangeListeners(selectedEntityId);
-        }
+        notifyEntityIdChangeListeners(parseSelectedIdForListeners(selectedEntityId));
     }
 
     public TreeNode getRootNode() {
@@ -154,6 +151,13 @@ public final class TreeComponentState extends AbstractComponentState {
     private String translateMessage(final String key) {
         List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.message." + key });
         return getTranslationService().translate(codes, getLocale());
+    }
+
+    private Long parseSelectedIdForListeners(final Long selectedEntityId) {
+        if (selectedEntityId == null || selectedEntityId == 0) {
+            return null;
+        }
+        return selectedEntityId;
     }
 
     private void reload() {
@@ -230,7 +234,7 @@ public final class TreeComponentState extends AbstractComponentState {
         }
 
         public void selectEntity(final String[] args) {
-            notifyEntityIdChangeListeners(getSelectedEntityId());
+            notifyEntityIdChangeListeners(parseSelectedIdForListeners(getSelectedEntityId()));
         }
 
         public void removeSelectedEntity(final String[] args) {

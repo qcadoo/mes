@@ -51,9 +51,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var isEnabled = false;
 	
+	var listeners = this.options.listeners;
 	
 	var openedNodesArrayToInsert;
 	var selectedNodeToInstert;
+	
+	var fireSelectEvent = true;
 	
 	function constructor(_this) {
 //		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
@@ -109,7 +112,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		    	return false;
 			}
 		}).bind("select_node.jstree", function (e, data) {
-			updateButtons();
+			if (fireSelectEvent) {
+				updateButtons();
+				if (listeners.length > 0) {
+					onSelectChange();
+				}
+			}
 		});
 //		openedNodesArrayToInsert = new Array();
 //		openedNodesArrayToInsert.push("0");
@@ -167,7 +175,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 		
 		if (value.selectedEntityId != null) {
+			fireSelectEvent = false;
 			tree.jstree("select_node", $("#"+elementSearchName+"_node_"+value.selectedEntityId), false);
+			fireSelectEvent = true;
 		}
 		
 		updateButtons();
@@ -242,6 +252,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 	}	
 	
+	function onSelectChange() {
+		if (isEnabled) {
+			mainController.callEvent("select", elementPath, null);
+		}
+	}
+	
 	function getSelectedEntityId() {
 		var selected = tree.jstree("get_selected");
 		if (selected && selected.length > 0) {
@@ -282,6 +298,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function block() {
+		isEnabled = false;
 		if (tree) {
 			tree.block({ message: '<div class="loading_div">'+"commons.loading"+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
@@ -297,6 +314,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function unblock() {
 		if (tree) {
 			tree.unblock();
+			isEnabled = true;
 		}
 	}
 	
