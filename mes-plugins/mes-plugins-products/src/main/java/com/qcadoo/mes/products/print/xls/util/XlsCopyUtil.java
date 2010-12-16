@@ -163,6 +163,7 @@ public final class XlsCopyUtil {
             HSSFSheet existingSheet = existingWorkbook.getSheetAt(i);
             HSSFSheet sheet = newWorkbook.createSheet(existingSheet.getSheetName());
             copySheets(sheet, existingSheet);
+            sheet.setZoom(4, 3);
         }
     }
 
