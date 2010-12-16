@@ -113,7 +113,7 @@
 			<component type="staticPage" name="pluginDownload">
 				<option type="page" value="plugins/pluginDownload.jsp" />
 			</component>
-			<option type="header" value="false" />
+			<option type="header" value="true" />
 		</component>
 	</view>
 	

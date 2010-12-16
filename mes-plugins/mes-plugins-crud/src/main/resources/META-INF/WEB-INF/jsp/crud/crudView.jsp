@@ -136,6 +136,8 @@
 			if (popup) {
 				window.opener.onPopupInit();
 			}
+
+			window.mainController = controller;
 		});
 
 		//window.translationsMap = new Object();
