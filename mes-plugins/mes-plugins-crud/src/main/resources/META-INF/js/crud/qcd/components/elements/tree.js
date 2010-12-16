@@ -294,7 +294,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (! _height) {
 			_height = 300;
 		}
-		contentElement.height(_height - 20);
+		contentElement.height(_height - 52);
 	}
 	
 	function block() {

@@ -375,7 +375,7 @@
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
 						<option type="column" name="quantity" fields="quantity" />
-						<option type="correspondingView" value="products/substituteComponent" />
+						<option type="correspondingView" value="products/operationProductInComponent" />
 						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
@@ -390,7 +390,7 @@
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
 						<option type="column" name="quantity" fields="quantity" />
-						<option type="correspondingView" value="products/substituteComponent" />
+						<option type="correspondingView" value="products/operationProductOutComponent" />
 						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
@@ -448,6 +448,82 @@
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#operation['name']" />
+			</component>
+		</component>
+	</view>
+	<view name="operationProductInComponent" model="operationProductInComponent">
+		<component type="window" name="window">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{form}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{form}.performDelete; #{window}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="product" field="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="category" fields="category" />
+							<option type="searchable" value="name,category" />
+							<option type="orderable" value="name,category" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
+			</component>
+		</component>
+	</view>
+	<view name="operationProductOutComponent" model="operationProductOutComponent">
+		<component type="window" name="window">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{form}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{form}.performDelete; #{window}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="product" field="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="category" fields="category" />
+							<option type="searchable" value="name,category" />
+							<option type="orderable" value="name,category" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
 	</view>
