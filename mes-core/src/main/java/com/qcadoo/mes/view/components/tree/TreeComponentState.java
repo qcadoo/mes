@@ -161,7 +161,7 @@ public final class TreeComponentState extends AbstractComponentState {
     }
 
     private void reload() {
-        rootNode = new TreeNode(null, "ROOT");
+        rootNode = new TreeNode(null, getTranslationService().translate(getTranslationPath() + ".rootLabel", getLocale()));
 
         if (belongsToFieldDefinition == null || belongsToEntityId != null) {
             SearchCriteriaBuilder criteria = getDataDefinition().find();
