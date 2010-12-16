@@ -66,7 +66,7 @@
 	<script type="text/javascript" src="../../js/core/qcd/utils/options.js"></script>
 	<script type="text/javascript" src="../../js/core/qcd/utils/pageConstructor.js"></script>
 	<script type="text/javascript" src="../../js/core/qcd/core/messagesController.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/core/newPageController.js"></script>
+	<script type="text/javascript" src="../../js/crud/qcd/core/pageController.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/component.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/container.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/containers/layout/layout.js"></script>
