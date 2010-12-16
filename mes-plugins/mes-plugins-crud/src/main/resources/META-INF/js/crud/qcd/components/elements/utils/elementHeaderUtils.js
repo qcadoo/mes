@@ -45,6 +45,10 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 	}
 
 	itemElementSpan.append(itemElementLabel);
+	if (label == "") {
+		itemElementLabel.css("paddingLeft", "0px");
+		itemElementLabel.css("paddingRight", "3px");
+	}
 	itemElementButton.click(function() {
 		itemElementButton.blur();
 		clickAction.call();
