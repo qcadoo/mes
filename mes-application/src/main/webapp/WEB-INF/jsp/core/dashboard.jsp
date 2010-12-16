@@ -111,7 +111,7 @@
 					 	${translationsMap['core.dashboard.define.content']}
 					</div>
 					<div class="dashboardButtonContentLink" id="technologiesLink" style="display: none;">
-						<a href="#" onclick="goToMenuPosition('orders.technologies')">${translationsMap['core.dashboard.define.link']}</a>
+						<a href="#" onclick="goToMenuPosition('technology.technologies')">${translationsMap['core.dashboard.define.link']}</a>
 					</div>
 				</div>
 			</div>

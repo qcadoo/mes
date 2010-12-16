@@ -58,24 +58,21 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var fireSelectEvent = true;
 	
+	var translations = this.options.translations;
+	
 	function constructor(_this) {
-//		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
-//		
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
-			//var treeName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+_this.elementPath.replace(/-/g,".")+".header";
-			var treeName = "TREE";
-			var messagesPath = "TREE";
 			
-			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(treeName);
+			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
 			header.append(title);
 			
-			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(messagesPath + '.new' ,function(e) {
+			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.newButton, function(e) {
 				newClicked();
 			}, "newIcon16_dis.png");
-			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(messagesPath + '.edit' ,function(e) {
+			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.editButton, function(e) {
 				editClicked();
 			}, "editIcon16_dis.png");
-			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(messagesPath + '.delete',function(e) {
+			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.deleteButton, function(e) {
 				deleteClicked();
 			}, "deleteIcon16_dis.png");
 			
@@ -119,8 +116,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				}
 			}
 		});
-//		openedNodesArrayToInsert = new Array();
-//		openedNodesArrayToInsert.push("0");
 		
 		block();
 	}
@@ -187,7 +182,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function addNode(data, node) {
 		var nodeId = data.id ? data.id : "0";
 		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+nodeId }}, false, true);
-		//newNode.bind("onselect", function() {alert("aa")})
 		for (var i in data.children) {
 			addNode(data.children[i], newNode, false);
 		}
@@ -196,13 +190,20 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function updateButtons() {
-		buttons.newButton.addClass("headerButtonEnabled");
-		if (getSelectedEntityId() != "0") {
-			buttons.editButton.addClass("headerButtonEnabled");
-			buttons.deleteButton.addClass("headerButtonEnabled");
-		} else {
+		var selected = getSelectedEntityId();
+		if (!selected) {
+			buttons.newButton.removeClass("headerButtonEnabled");
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
+		} else {
+			buttons.newButton.addClass("headerButtonEnabled");
+			if (selected != "0") {
+				buttons.editButton.addClass("headerButtonEnabled");
+				buttons.deleteButton.addClass("headerButtonEnabled");
+			} else {
+				buttons.editButton.removeClass("headerButtonEnabled");
+				buttons.deleteButton.removeClass("headerButtonEnabled");
+			}
 		}
 	}
 	
@@ -214,9 +215,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		} else {
 			tree.addClass("treeDisabled");
 			header.addClass("elementHeaderDisabled");
-//			buttons.newButton.removeClass("headerButtonEnabled");
-//			buttons.editButton.removeClass("headerButtonEnabled");
-//			buttons.deleteButton.removeClass("headerButtonEnabled");
+			buttons.newButton.removeClass("headerButtonEnabled");
+			buttons.editButton.removeClass("headerButtonEnabled");
+			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
 	}
 	
@@ -240,8 +241,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	}
 	
 	function deleteClicked() {
-//		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
-		var confirmDeleteMessage = "TODO delete?"
+		var confirmDeleteMessage = translations.confirmDeleteMessage;
 		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
 			if (window.confirm(confirmDeleteMessage)) {
 				block();
@@ -300,7 +300,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function block() {
 		isEnabled = false;
 		if (tree) {
-			tree.block({ message: '<div class="loading_div">'+"commons.loading"+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+			tree.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 
