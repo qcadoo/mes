@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.security.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,7 @@ public final class SecurityServiceImpl implements SecurityService {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         UsersUser user = (UsersUser) sessionFactory.getCurrentSession().createCriteria(UsersUser.class)
                 .add(Restrictions.eq("userName", login)).uniqueResult();
+        checkNotNull(user, "Current user with login %s cannot be found", login);
         return user;
     }
 
