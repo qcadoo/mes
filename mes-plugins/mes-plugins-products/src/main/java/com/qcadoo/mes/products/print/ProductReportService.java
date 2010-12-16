@@ -122,13 +122,13 @@ public class ProductReportService {
                 Entity machine = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah3",
                         locale), PdfUtil.getArialBold11Light()));
-                title.add(new Phrase(" " + machine.getField("name"), PdfUtil.getArialBold11Dark()));
+                title.add(new Phrase(" " + machine.getField("name"), PdfUtil.getArialBold19Dark()));
                 document.add(title);
             } else {
                 Entity staff = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah2",
                         locale), PdfUtil.getArialBold11Light()));
-                title.add(new Phrase(" " + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold11Dark()));
+                title.add(new Phrase(" " + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold19Dark()));
                 document.add(title);
             }
             PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale), false);

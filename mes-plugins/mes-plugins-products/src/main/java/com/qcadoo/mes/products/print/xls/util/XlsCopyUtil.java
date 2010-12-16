@@ -36,10 +36,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -177,6 +179,16 @@ public final class XlsCopyUtil {
             response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + "_" + fileSuffix
                     + XLS_EXTENSION);
         }
+    }
+
+    public static HSSFCellStyle getHeaderStyle(final HSSFWorkbook workbook) {
+        HSSFCellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short) 12);
+        font.setFontName(HSSFFont.FONT_ARIAL);
+        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        style.setFont(font);
+        return style;
     }
 
 }
