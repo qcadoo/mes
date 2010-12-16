@@ -42,7 +42,11 @@
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="calendar" />
 	<tiles:putAttribute name="componentBody">
-			<input id="${component['path']}_input" type="text" tabindex="${component['indexOrder']}"/>
-			<div id="${component['path']}_calendar" class="calendar"></div>
+		<div class=lookupValueWrapper>
+			<div class="lookupInputWrapper">
+				<input type="text" id="${component['path']}_input" tabindex="${component['indexOrder']}"/>
+			</div>
+			<div class="lookupButton calendarButton" id="${component['path']}_calendar"></div>
+		</div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

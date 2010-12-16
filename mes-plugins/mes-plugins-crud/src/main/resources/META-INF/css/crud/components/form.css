@@ -157,6 +157,7 @@
 	border: 1px solid #959595;	
 	background: white url(../images/form/input_c_transparent.png) no-repeat 0 0;
 	padding-left: 6px;
+	padding-top: 3px;
 	width: 100%;
 }
 
@@ -320,40 +321,56 @@
 
 /** lookup **/
 
-.component_element_lookup input[type='text'] {
-	padding-right: 25px;
-}
-
-.component_container_form .lookupIcon {
-	height: 20px;
-	width: 20px;
-	display: inline-block;
-	position: absolute;
-	top: 1px;
-	right: 1px;
-	background: url(../images/form/input_icon.png) no-repeat -20px 0;
-	vertical-align: middle;
-}
-
-.component_container_form .lookupIcon.enabled {
-	cursor: pointer;
-	background-position: 0 0;
-}
-
-.component_container_form .component_container_form_w:hover .lookupIcon.enabled {
-	background-position: -40px 0;
-}
-
-.component_container_form .component_container_form_w:hover .lookupIcon.enabled:hover {
-	background-position: -60px 0;
-}
-
 .component_container_form_w .lookupValueWrapper {
 	margin: 0;
 	padding: 0;
 	display: block;
 	position: relative;
+	width: 100%;
+	height: 20px;
+	border: solid #959595 1px;
 }
+.component_container_form .error .component_container_form_w .lookupValueWrapper {
+	border: 1px solid #ec1c24;
+}
+.component_container_form .required .component_container_form_w .lookupValueWrapper {
+	border: 1px solid #464646;	
+}
+
+.component_container_form_w .lookupValueWrapper .lookupInputWrapper {
+	position: absolute;
+	display: block;
+	top: 0px; left: 0px; right: 25px;
+}
+
+.component_container_form_w .lookupValueWrapper .lookupInputWrapper input{
+	border: none;
+	height: 20px;
+}
+
+.component_container_form .lookupValueWrapper .lookupButton {
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	background: url(../images/form/input_icon.png) no-repeat -20px 0;
+	vertical-align: middle;
+}
+.component_container_form .lookupValueWrapper .lookupButton.enabled {
+	background-position: 0px 0;
+	cursor: pointer;
+}
+.component_container_form .lookupValueWrapper:hover .lookupButton.enabled,
+.component_container_form .lookupValueWrapper .lookupButton.enabled.lightHover {
+	background-position: -40px 0;
+}
+.component_container_form .lookupValueWrapper .lookupButton.enabled:hover,
+.component_container_form .lookupValueWrapper .lookupButton.enabled.lightHover:hover {
+	background-position: -60px 0;
+}
+
 .labelbox .focusedLabel {
 	color: #005ec5;
 }
@@ -379,36 +396,24 @@
 	font-size: 0.7em;
 }
 
-.component_element_calendar input[type='text'] {
-	padding-right: 25px;
+.component_container_form .lookupValueWrapper .lookupButton.calendarButton {
+	background-position: -20px -20px;
+}
+.component_container_form .lookupValueWrapper .lookupButton.calendarButton.enabled {
+	background-position: 0px -20px;
+	cursor: pointer;
+}
+.component_container_form .lookupValueWrapper:hover .lookupButton.calendarButton.enabled,
+.component_container_form .lookupValueWrapper .lookupButton.calendarButton.enabled.lightHover {
+	background-position: -40px -20px;
+}
+.component_container_form .lookupValueWrapper .lookupButton.calendarButton.enabled:hover,
+.component_container_form .lookupValueWrapper .lookupButton.enabled.calendarButton.lightHover:hover {
+	background-position: -60px -20px;
 }
 
 .component_element_calendar button {
 	display: none;	
-}
-
-.component_container_form .calendar {
-	height: 20px;
-	width: 20px;
-	display: inline-block;
-	position: absolute;
-	top: 1px;
-	right: 1px;
-	background: url(../images/form/input_icon.png) no-repeat -20px -20px;
-	vertical-align: middle;
-}
-
-.component_container_form .calendar.enabled {
-	cursor: pointer;
-	background-position: 0 -20px;
-}
-
-.component_container_form .component_container_form_w:hover .calendar.enabled {
-	background-position: -40px -20px;
-}
-
-.component_container_form .component_container_form_w:hover .calendar.enabled:hover {
-	background-position: -60px -20px;
 }
 
 .component_container_form .datepick-trigger.disabled {

@@ -114,15 +114,15 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 					
 					var top = input.offset().top;
 					var calendarHeight = datepickerElement.outerHeight();
-					var inputHeight = input.outerHeight() - 1;
+					var inputHeight = input.outerHeight() + 10;
 					var viewHeight = document.documentElement.clientHeight + $(document).scrollTop();
 					
 					if ((top+calendarHeight+inputHeight) > viewHeight) {
 						datepickerElement.css("top", "");
-						datepickerElement.css("bottom", inputHeight+"px");
+						datepickerElement.css("bottom", inputHeight +"px");
 						isOnTop = true;
 					} else {
-						datepickerElement.css("top", inputHeight+"px");
+						datepickerElement.css("top", inputHeight +"px");
 						datepickerElement.css("bottom", "");
 						isOnTop = false;
 					}
@@ -145,6 +145,11 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 			calendar.removeClass("enabled");
 			input.datepicker("disable")
 		}
+	}
+	
+	this.updateSize = function(_width, _height) {
+		var height = _height ? _height-10 : 40;
+		this.input.parent().parent().parent().parent().parent().height(height);
 	}
 	
 	constructor(this);

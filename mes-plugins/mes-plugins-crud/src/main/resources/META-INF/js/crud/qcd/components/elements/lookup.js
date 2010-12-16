@@ -164,6 +164,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	function onInputFocus() {
 		isFocused = true;
+		openLookupButtonElement.addClass("lightHover");
 		valueDivElement.hide();
 		labelElement.html(labelFocus);
 		if (currentData.selectedEntityCode) {
@@ -185,6 +186,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	function onInputBlur() {
 		isFocused = false;
+		openLookupButtonElement.removeClass("lightHover");
 		performSearch();
 	}
 	
@@ -255,7 +257,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	this.updateSize = function(_width, _height) {
 		var height = _height ? _height-10 : 40;
-		this.input.parent().parent().parent().parent().height(height);
+		this.input.parent().parent().parent().parent().parent().height(height);
 	}
 	
 	constructor(this);
