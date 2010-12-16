@@ -51,7 +51,8 @@ public abstract class XlsDocumentService extends DocumentService {
         addSeries(sheet, entity);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix() + XlsCopyUtil.XLS_EXTENSION);
+            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(locale)
+                    + XlsCopyUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
