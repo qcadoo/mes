@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.model.types.internal;
 
+import java.util.Locale;
+
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 import com.qcadoo.mes.api.Entity;
@@ -60,13 +62,17 @@ public final class PasswordType implements FieldType {
 
     @Override
     public Object toObject(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {
-        System.out.println(" @ ---> " + value);
         return passwordEncoder.encodePassword(String.valueOf(value), null);
     }
 
     @Override
-    public String toString(final Object value) {
+    public String toString(final Object value, final Locale locale) {
         return null;
+    }
+
+    @Override
+    public Object fromString(final String value, final Locale locale) {
+        return value;
     }
 
 }

@@ -24,6 +24,10 @@
 
 package com.qcadoo.mes.model.types.internal;
 
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.Locale;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
@@ -64,8 +68,20 @@ public final class IntegerType implements FieldType {
     }
 
     @Override
-    public String toString(final Object value) {
-        return String.valueOf(value);
+    public String toString(final Object value, final Locale locale) {
+        return NumberFormat.getIntegerInstance(locale).format(value);
+    }
+
+    @Override
+    public Object fromString(final String value, final Locale locale) {
+        ParsePosition parsePosition = new ParsePosition(0);
+        String trimedValue = value.replace(" ", "");
+        Object parsedValue = NumberFormat.getIntegerInstance(locale).parse(trimedValue, parsePosition);
+        if (parsePosition.getIndex() != trimedValue.length()) {
+            return value;
+        } else {
+            return parsedValue;
+        }
     }
 
 }

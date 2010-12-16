@@ -26,6 +26,7 @@ package com.qcadoo.mes.model.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -75,11 +76,11 @@ public final class FieldDefinitionImpl implements FieldDefinition {
     }
 
     @Override
-    public String getValue(final Object value) {
+    public String getValue(final Object value, final Locale locale) {
         if (value == null) {
             return null;
         } else {
-            return type.toString(value);
+            return type.toString(value, locale);
         }
     }
 

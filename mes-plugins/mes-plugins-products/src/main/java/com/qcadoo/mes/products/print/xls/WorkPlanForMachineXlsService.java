@@ -86,6 +86,11 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
                 }
             }
         }
+        sheet.autoSizeColumn((short) 0);
+        sheet.autoSizeColumn((short) 1);
+        sheet.autoSizeColumn((short) 2);
+        sheet.autoSizeColumn((short) 3);
+        sheet.autoSizeColumn((short) 4);
     }
 
     @Override

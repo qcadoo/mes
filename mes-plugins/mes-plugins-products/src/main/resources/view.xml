@@ -628,7 +628,7 @@
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />		
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="fillDefaultTechnology" />		
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableTechnologiesIfProductDoesNotAny" />		
-		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForDoneOrder" />		
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForDoneOrder" />	
 	</view>
 	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
 		<component type="window" name="window">

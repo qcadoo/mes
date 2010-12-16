@@ -106,26 +106,32 @@ public class ProductReportService {
     public void addOperationSeries(final Document document, final Entity entity, final Locale locale, final boolean isMachine)
             throws DocumentException {
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
+        decimalFormat.setMaximumFractionDigits(3);
+        decimalFormat.setMinimumFractionDigits(3);
         boolean firstPage = true;
         Map<Entity, Map<Entity, Entity>> operations = getOperationSeries(entity, isMachine);
         for (Entry<Entity, Map<Entity, Entity>> entry : operations.entrySet()) {
             if (!firstPage) {
                 document.newPage();
             }
-            PdfPTable orderTable = PdfUtil.createTableWithHeader(6, getOrderHeader(document, entity, locale));
+            PdfPTable orderTable = PdfUtil.createTableWithHeader(6, getOrderHeader(document, entity, locale), false);
             addOrderSeries(orderTable, entity, decimalFormat);
             document.add(orderTable);
             document.add(Chunk.NEWLINE);
             if (isMachine) {
                 Entity machine = entry.getKey();
-                document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah3", locale) + " "
-                        + machine.getField("name"), PdfUtil.getArialBold11Dark()));
+                Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah3",
+                        locale), PdfUtil.getArialBold11Light()));
+                title.add(new Phrase(" " + machine.getField("name"), PdfUtil.getArialBold11Dark()));
+                document.add(title);
             } else {
                 Entity staff = entry.getKey();
-                document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah2", locale) + " "
-                        + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold11Dark()));
+                Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah2",
+                        locale), PdfUtil.getArialBold11Light()));
+                title.add(new Phrase(" " + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold11Dark()));
+                document.add(title);
             }
-            PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale));
+            PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale), false);
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
             Map<Entity, Entity> operationMap = entry.getValue();
             for (Entry<Entity, Entity> entryComponent : operationMap.entrySet()) {
@@ -151,7 +157,7 @@ public class ProductReportService {
             ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
             Object unit = product.getField("unit");
             products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
-                    + df.format(((BigDecimal) operationProductComponent.getField("quantity")).stripTrailingZeros()) + " ["
+                    + df.format(((BigDecimal) operationProductComponent.getField("quantity"))) + " ["
                     + (unit != null ? unit.toString() : "") + "] \n\n");
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
@@ -200,7 +206,7 @@ public class ProductReportService {
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity.stripTrailingZeros();
+            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity;
             table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             if (product != null) {

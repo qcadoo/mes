@@ -71,6 +71,10 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                 row.createCell(3).setCellValue("");
             }
         }
+        sheet.autoSizeColumn((short) 0);
+        sheet.autoSizeColumn((short) 1);
+        sheet.autoSizeColumn((short) 2);
+        sheet.autoSizeColumn((short) 3);
     }
 
     @Override

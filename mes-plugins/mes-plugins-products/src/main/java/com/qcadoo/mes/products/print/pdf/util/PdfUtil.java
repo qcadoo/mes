@@ -75,6 +75,8 @@ public final class PdfUtil {
 
     private static Font arialBold11Dark;
 
+    private static Font arialBold11Light;
+
     private static Font arialRegular9Light;
 
     private static Font arialRegular9Dark;
@@ -140,6 +142,9 @@ public final class PdfUtil {
             arialBold11Dark = new Font(arial, 11);
             arialBold11Dark.setColor(darkColor);
             arialBold11Dark.setStyle(Font.BOLD);
+            arialBold11Light = new Font(arial, 11);
+            arialBold11Light.setColor(lightColor);
+            arialBold11Light.setStyle(Font.BOLD);
             arialRegular10Dark = new Font(arial, 10);
             arialRegular10Dark.setColor(darkColor);
             arialBold10Dark = new Font(arial, 10);
@@ -163,6 +168,10 @@ public final class PdfUtil {
 
     public static Font getArialBold11Dark() {
         return arialBold11Dark;
+    }
+
+    public static Font getArialBold11Light() {
+        return arialBold11Light;
     }
 
     public static Font getArialRegular9Light() {
@@ -222,7 +231,8 @@ public final class PdfUtil {
         document.addCreator("QCADOO");
     }
 
-    public static PdfPTable createTableWithHeader(final int numOfColumns, final List<String> header) {
+    public static PdfPTable createTableWithHeader(final int numOfColumns, final List<String> header,
+            final boolean lastColumnAligmentToLeft) {
         PdfPTable table = new PdfPTable(numOfColumns);
         table.setWidthPercentage(100f);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -235,12 +245,18 @@ public final class PdfUtil {
         int i = 0;
         for (String element : header) {
             i++;
+            if (i == header.size() && lastColumnAligmentToLeft) {
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            }
             if (i == header.size()) {
                 table.getDefaultCell().enableBorderSide(Rectangle.RIGHT);
             }
             table.addCell(new Phrase(element, arialRegular9Dark));
             if (i == 1) {
                 table.getDefaultCell().disableBorderSide(Rectangle.LEFT);
+            }
+            if (i == header.size() && lastColumnAligmentToLeft) {
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             }
         }
         table.getDefaultCell().setBackgroundColor(null);
@@ -282,7 +298,7 @@ public final class PdfUtil {
             cellTable.addCell(new Phrase(nullValue, valueFont));
         } else {
             if (value instanceof BigDecimal && df != null) {
-                cellTable.addCell(new Phrase(df.format(((BigDecimal) value).stripTrailingZeros()), valueFont));
+                cellTable.addCell(new Phrase(df.format(((BigDecimal) value)), valueFont));
             } else {
                 cellTable.addCell(new Phrase(value.toString(), valueFont));
             }

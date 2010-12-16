@@ -49,6 +49,7 @@ public abstract class XlsDocumentService extends DocumentService {
         HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
+        sheet.setZoom(4, 3);
         FileOutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(locale)

@@ -25,6 +25,7 @@
 package com.qcadoo.mes.model.types.internal;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -93,12 +94,17 @@ public final class BelongsToEntityType implements BelongsToType {
     }
 
     @Override
-    public String toString(final Object value) {
+    public String toString(final Object value, final Locale locale) {
         if (value instanceof Entity) {
             return String.valueOf(((Entity) value).getId());
         } else {
             return String.valueOf(value);
         }
+    }
+
+    @Override
+    public Object fromString(final String value, final Locale locale) {
+        return value;
     }
 
     @Override

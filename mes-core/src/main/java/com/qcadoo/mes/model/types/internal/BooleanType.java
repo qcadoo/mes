@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.model.types.internal;
 
+import java.util.Locale;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
@@ -71,12 +73,17 @@ public final class BooleanType implements FieldType {
     }
 
     @Override
-    public String toString(final Object value) {
+    public String toString(final Object value, final Locale locale) {
         if (value instanceof Boolean) {
             return parseBooleanToString((Boolean) value);
         } else {
             return parseBooleanToString(parseStringToBoolean(String.valueOf(value)));
         }
+    }
+
+    @Override
+    public Object fromString(final String value, final Locale locale) {
+        return parseStringToBoolean(value);
     }
 
 }

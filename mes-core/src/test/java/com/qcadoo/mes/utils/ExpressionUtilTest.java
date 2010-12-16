@@ -27,6 +27,8 @@ package com.qcadoo.mes.utils;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
+import java.util.Locale;
+
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -68,7 +70,7 @@ public class ExpressionUtilTest {
 
         // when
         String value = ExpressionUtil.getValue(entity,
-                Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex), null);
+                Lists.newArrayList(fieldDefinitionName, fieldDefinitionAge, fieldDefinitionSex), Locale.ENGLISH);
 
         // then
         assertEquals("Mr T, 33, F", value);
