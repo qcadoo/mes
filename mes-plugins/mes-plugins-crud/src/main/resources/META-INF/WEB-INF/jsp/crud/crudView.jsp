@@ -55,6 +55,7 @@
 	<script type="text/javascript" src="../../js/core/lib/jquery.jqGrid.min.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery.jstree.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery.cookie.js"></script>
+	<script type="text/javascript" src="../../js/core/lib/jquery.hotkeys.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery-ui-1.8.5.custom.min.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery-ui-i18n.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery.pnotify.min.js"></script>
