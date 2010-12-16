@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.ProductReportService;
+import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
 @Service
 public final class MaterialRequirementXlsService extends XlsDocumentService {
@@ -47,11 +49,18 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
-        header.createCell(0).setCellValue(getTranslationService().translate("products.product.number.label", locale));
-        header.createCell(1).setCellValue(getTranslationService().translate("products.product.name.label", locale));
-        header.createCell(2).setCellValue(
-                getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
-        header.createCell(3).setCellValue(getTranslationService().translate("products.product.unit.label", locale));
+        HSSFCell cell0 = header.createCell(0);
+        cell0.setCellValue(getTranslationService().translate("products.product.number.label", locale));
+        cell0.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell1 = header.createCell(1);
+        cell1.setCellValue(getTranslationService().translate("products.product.name.label", locale));
+        cell1.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell2 = header.createCell(2);
+        cell2.setCellValue(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
+        cell2.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell3 = header.createCell(3);
+        cell3.setCellValue(getTranslationService().translate("products.product.unit.label", locale));
+        cell3.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
     @Override
