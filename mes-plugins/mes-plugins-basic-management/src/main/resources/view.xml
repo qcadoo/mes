@@ -38,6 +38,7 @@
 			<component type="grid" name="machines" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
+				<option type="order" column="number" direction="desc"/>
 				<option type="searchable" value="name,number" />
 				<option type="orderable" value="name,number" />
 				<option type="correspondingView" value="basic/machine" />
@@ -101,6 +102,7 @@
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="surname" fields="surname" link="true"/>
 				<option type="column" name="post" fields="post" link="true"/>
+				<option type="order" column="number" direction="desc"/>
 				<option type="searchable" value="name,number,surname,post" />
 				<option type="orderable" value="name,number,surname,post" />
 				<option type="correspondingView" value="basic/staff" />

@@ -47,6 +47,7 @@
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
 				<option type="column" name="status" fields="status" />
+				<option type="order" column="name" direction="asc"/>
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,vendor,status" />

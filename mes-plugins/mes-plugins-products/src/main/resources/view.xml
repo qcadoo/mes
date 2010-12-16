@@ -42,6 +42,7 @@
 					width="300" />
 				<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
 				<option type="column" name="ean" fields="ean" />
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/product" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
@@ -100,6 +101,7 @@
 						<option type="column" name="number" fields="number" link="true" />
 						<option type="column" name="name" fields="name" link="true" />
 						<option type="column" name="priority" fields="priority" />
+						<option type="order" column="priority" direction="asc"/>
 						<option type="correspondingView" value="products/substitute" />
 						<option type="correspondingComponent" value="form" />
 						<!--<option type="searchable" value="name,number,priority" />-->
@@ -117,6 +119,7 @@
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
 						<option type="column" name="quantity" fields="quantity" />
+						<option type="order" column="number" direction="desc"/>
 						<option type="correspondingView" value="products/substituteComponent" />
 						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
@@ -212,6 +215,7 @@
 			<component type="grid" name="operations" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/operation"/>
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="number, name"/>
@@ -289,6 +293,7 @@
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/technology" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,product" />
@@ -361,6 +366,7 @@
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
 						<option type="column" name="quantity" fields="quantity" />
+						<option type="order" column="number" direction="desc"/>
 						<option type="correspondingView" value="products/operationProductInComponent" />
 						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
@@ -376,6 +382,7 @@
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
 						<option type="column" name="quantity" fields="quantity" />
+						<option type="order" column="number" direction="desc"/>
 						<option type="correspondingView" value="products/operationProductOutComponent" />
 						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
@@ -531,6 +538,7 @@
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="state" fields="state" />
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/order" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,state" />
@@ -648,6 +656,7 @@
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" />
 				<option type="column" name="worker" fields="worker" width="300" />
+				<option type="order" column="name" direction="asc"/>
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
 				<option type="correspondingView" value="products/materialRequirement" />
@@ -704,6 +713,7 @@
 						<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
 							<option type="column" name="number" fields="order" expression="#order['number']"/>
 							<option type="column" name="name" fields="order" expression="#order['name']"/>
+							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/materialRequirementComponent" />
 							<option type="correspondingComponent" value="form" />
 							<option type="paginable" value="false" />
@@ -775,6 +785,7 @@
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" width="100" />
 				<option type="column" name="worker" fields="worker" width="300" />
+				<option type="order" column="name" direction="asc"/>
 				<option type="correspondingView" value="products/workPlan" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,generated,worker" />
@@ -834,6 +845,7 @@
 						<component type="grid" name="workPlanComponents" reference="workPlanComponents" source="#{form}.orders">
 							<option type="column" name="number" fields="order" expression="#order['number']"/>
 							<option type="column" name="name" fields="order" expression="#order['name']"/>
+							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/workPlanComponent" />
 							<option type="correspondingComponent" value="form" />
 							<option type="paginable" value="false" />

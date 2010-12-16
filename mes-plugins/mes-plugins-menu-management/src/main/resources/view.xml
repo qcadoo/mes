@@ -39,6 +39,7 @@
 				<option type="column" name="categoryOrder" fields="categoryOrder" />
 				<option type="column" name="name" fields="name" link="true" width="600" />
 				<option type="column" name="active" fields="active" />
+				<option type="order" column="categoryOrder" direction="asc"/>
 				<option type="orderable" value="name" />
 				<option type="searchable" value="name" />
 				<option type="correspondingView" value="menu/menuCategory" />
@@ -84,6 +85,7 @@
 						<option type="column" name="itemOrder" fields="itemOrder" />
 						<option type="column" name="name" fields="name" link="true" width="300" />
 						<option type="column" name="active" fields="active" link="false" />
+						<option type="order" column="itemOrder" direction="asc"/>
 						<option type="correspondingView" value="menu/menuViewDefinitionItem" />
 						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />

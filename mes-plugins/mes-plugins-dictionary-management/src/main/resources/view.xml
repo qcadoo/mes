@@ -32,6 +32,7 @@
 			</ribbon>				
 			<component type="grid" name="dictionaries">
 				<option type="column" name="name" fields="name" link="true" />
+				<option type="order" column="name" direction="asc"/>
 				<option type="searchable" value="name" />
 				<option type="orderable" value="name" />
 				<option type="paginable" value="true" />
@@ -66,6 +67,7 @@
 					<component type="grid" name="dictionaryItems" reference="grid" source="#{form}.dictionaryItems">
 						<option type="column" name="name" fields="name" link="true"/>
 						<option type="column" name="description" fields="description" />
+						<option type="order" column="name" direction="asc"/>
 						<option type="paginable" value="false" />
 						<option type="height" value="250" />
 						<option type="correspondingView" value="dictionaries/dictionaryItem" />
