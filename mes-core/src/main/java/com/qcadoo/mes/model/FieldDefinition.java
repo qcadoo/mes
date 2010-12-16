@@ -25,6 +25,7 @@
 package com.qcadoo.mes.model;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.validators.FieldValidator;
@@ -48,7 +49,7 @@ public interface FieldDefinition {
     /**
      * {@link FieldType#toString(Object)}
      */
-    String getValue(final Object value);
+    String getValue(final Object value, Locale locale);
 
     /**
      * Return field's type.

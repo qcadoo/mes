@@ -263,7 +263,7 @@ public final class FormComponentState extends AbstractContainerState {
             if (value instanceof String) {
                 return (String) value;
             } else if (value != null) {
-                return getDataDefinition().getField(field).getType().toString(value);
+                return getDataDefinition().getField(field).getType().toString(value, getLocale());
             } else {
                 return "";
             }
@@ -291,14 +291,22 @@ public final class FormComponentState extends AbstractContainerState {
 
         private void copyFieldsToEntity(final Entity entity) {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
-                entity.setField(field.getKey(), field.getValue().getFieldValue());
+                entity.setField(field.getKey(), convertFieldFromString(field.getValue().getFieldValue(), field.getKey()));
+            }
+        }
+
+        private Object convertFieldFromString(final Object value, final String field) {
+            if (value instanceof String) {
+                return getDataDefinition().getField(field).getType().fromString((String) value, getLocale());
+            } else {
+                return value;
             }
         }
 
         private void copyContextToEntity(final Entity entity) {
             for (String field : getDataDefinition().getFields().keySet()) {
                 if (context.containsKey(field)) {
-                    entity.setField(field, context.get(field));
+                    entity.setField(field, convertFieldFromString(context.get(field), field));
                 }
             }
         }

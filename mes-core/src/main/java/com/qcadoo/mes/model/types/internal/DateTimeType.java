@@ -26,6 +26,7 @@ package com.qcadoo.mes.model.types.internal;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -80,8 +81,13 @@ public final class DateTimeType implements FieldType {
     }
 
     @Override
-    public String toString(final Object value) {
+    public String toString(final Object value, final Locale locale) {
         return new SimpleDateFormat(DATE_TIME_FORMAT).format((Date) value);
+    }
+
+    @Override
+    public Object fromString(final String value, final Locale locale) {
+        return value;
     }
 
 }
