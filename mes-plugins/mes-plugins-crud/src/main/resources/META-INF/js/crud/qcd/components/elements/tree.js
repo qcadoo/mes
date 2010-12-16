@@ -89,14 +89,34 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		
 		_this.element.append(container);
 		
-		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui" ],
+		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", "hotkeys" ],
 			"themes" : {
 				"theme": "classic",
-				"dots" : true,
+				"dots" : false,
 				"icons" : false
 			},
 			"json_data" : {
 				"data" : [ ]
+			},
+			"hotkeys" : {
+				"f2" : function () { },
+				"del" : function () { }
+//				"up": function(){
+//					var o = this.data.ui.last_selected || -1;
+//					this.deselect_node(o);
+//					this.select_node(this._get_prev(o));
+//					return false; 
+//				},
+//				"down" : function () { 
+//					var o = this.data.ui.last_selected || -1;
+//					this.deselect_node(o);
+//					this.select_node(this._get_next(o));
+//					//tree.jstree("select_node", this._get_next(o), false);
+//					return false;
+//				}
+			},
+			"ui": {
+				"select_limit": 1
 			},
 			core : {
 				html_titles: true,

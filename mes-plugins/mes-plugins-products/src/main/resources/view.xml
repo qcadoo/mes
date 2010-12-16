@@ -70,29 +70,23 @@
 				</group>
 			</ribbon>
 			<component type="form" name="product" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
-					<layoutElement column="1" row="1" width="2" height="3">
-						<component type="borderLayout" name="borderLayout">
-							<component type="gridLayout" name="gridLayout" columns="2" rows="3">
-								<layoutElement column="1" row="1">
-									<component type="input" name="number" field="number" />
-								</layoutElement>
-								<layoutElement column="2" row="1">
-									<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
-								</layoutElement>
-								<layoutElement column="1" row="2" width="2" height="2">
-									<component type="textarea" name="name" field="name" hasDescription="true" />
-								</layoutElement>
-							</component>
-						</component>
+				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="4">
+						<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
+					</layoutElement>
+					<layoutElement column="2" row="1">
 						<component type="input" name="ean" field="ean" />
 					</layoutElement>
-					<layoutElement column="1" row="5">
+					<layoutElement column="2" row="2">
 						<component type="select" name="category" field="category" />
 					</layoutElement>
-					<layoutElement column="2" row="4">
+					<layoutElement column="2" row="3">
 						<component type="input" name="unit" field="unit" />
 					</layoutElement>
 				</component>
@@ -100,24 +94,22 @@
 				<option type="header" value="false" />
 			</component>
 			
-			<component type="separatorLine" name="separatorLine" />
-			
-			<component type="gridLayout" name="gridsLayout" columns="3" rows="10">
-				<layoutElement column="1" row="1" height="10">
+			<component type="gridLayout" name="gridsLayout" columns="3" rows="6">
+				<layoutElement column="1" row="1" height="6">
 					<component type="grid" name="substitutes" reference="substitutes" source="#{form}.substitutes">
 						<option type="column" name="number" fields="number" link="true" />
 						<option type="column" name="name" fields="name" link="true" />
 						<option type="column" name="priority" fields="priority" />
 						<option type="correspondingView" value="products/substitute" />
 						<option type="correspondingComponent" value="form" />
-						<option type="searchable" value="name,number,priority" />
+						<!--<option type="searchable" value="name,number,priority" />-->
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="1" height="8" width="2">
+				<layoutElement column="2" row="1" height="6">
 					<component type="grid" name="substituteComponents"
 						source="#{substitutes}.components">
 						<option type="column" name="number" fields="product"
@@ -154,21 +146,15 @@
 			</ribbon>
 			<component type="form" name="substitute" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
-				<layoutElement column="1" row="1" height="4">
-				<component type="borderLayout" name="borderLayout">
-					<component type="gridLayout" name="gridLayout" columns="1" rows="4">
-						<layoutElement column="1" row="1">
-							<component type="input" name="number" field="number" />
-						</layoutElement>
-						<layoutElement column="1" row="2" height="2">
-							<component type="textarea" name="name" field="name" />
-						</layoutElement>
-						<layoutElement column="1" row="4">
-							<component type="input" name="priority" field="priority" defaultEnabled="false" />
-						</layoutElement>
-					</component>
-				</component>
-				</layoutElement>
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="priority" field="priority" defaultEnabled="false" />
+					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
@@ -573,26 +559,26 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="order" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="8">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" reference="number" field="number" />
 					</layoutElement>
-					<layoutElement column="2" row="1" height="2">
+					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" />
 					</layoutElement>
-					<layoutElement column="1" row="3">
+					<layoutElement column="1" row="4">
 						<component type="calendar" name="dateFrom" field="dateFrom" />
 					</layoutElement>
-					<layoutElement column="2" row="3">
+					<layoutElement column="1" row="5">
 						<component type="calendar" name="dateTo" field="dateTo" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
+					<layoutElement column="1" row="6">
 						<component type="select" name="state" field="state" />
 					</layoutElement>
-					<layoutElement column="1" row="5">
+					<layoutElement column="2" row="1">
 						<component type="select" name="machine" field="machine" />
 					</layoutElement>
-					<layoutElement column="1" row="6">
+					<layoutElement column="2" row="2">
 						<component type="lookup" name="product" reference="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
@@ -604,10 +590,10 @@
 							<listener event="search" bean="com.qcadoo.mes.products.ProductService" method="changeOrderProduct"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="6">
+					<layoutElement column="2" row="3">
 						<component type="input" name="defaultTechnology" reference="defaultTechnology" field="defaultTechnology" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="2" row="7">
+					<layoutElement column="2" row="4">
 						<component type="lookup" name="technology" reference="technology" field="technology" source="#{product}.technologies">
 							<option type="column" name="name" fields="name" link="true" width="300" />
 							<option type="searchable" value="name,number" />
@@ -616,10 +602,10 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="8">
+					<layoutElement column="2" row="5">
 						<component type="input" name="plannedQuantity" reference="plannedQuantity" field="plannedQuantity" />
 					</layoutElement>
-					<layoutElement column="2" row="8">
+					<layoutElement column="2" row="6">
 						<component type="input" name="doneQuantity" field="doneQuantity" />
 					</layoutElement>
 					<layoutElement column="3" row="1">
@@ -714,22 +700,24 @@
 					<layoutElement column="1" row="6">
 						<component type="checkbox" name="onlyComponents" reference="onlyComponents" field="onlyComponents" />
 					</layoutElement>
+					<layoutElement column="2" row="1" width="2" height="6">
+						<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
+							<option type="column" name="number" fields="order" expression="#order['number']"/>
+							<option type="column" name="name" fields="order" expression="#order['name']"/>
+							<option type="correspondingView" value="products/materialRequirementComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="height" value="200" />
+							<option type="width" value="350" />
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement" />
 				<listener event="generateMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="generateMaterialRequirement" />
-			</component>
-			<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
-				<option type="column" name="number" fields="order" expression="#order['number']"/>
-				<option type="column" name="name" fields="order" expression="#order['name']"/>
-				<option type="correspondingView" value="products/materialRequirementComponent" />
-				<option type="correspondingComponent" value="form" />
-				<option type="paginable" value="false" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
-				<option type="height" value="200" />
-				<option type="width" value="350" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
