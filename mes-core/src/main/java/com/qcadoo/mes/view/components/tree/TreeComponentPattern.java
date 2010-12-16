@@ -1,5 +1,7 @@
 package com.qcadoo.mes.view.components.tree;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONException;
@@ -62,7 +64,26 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         if (belongsToFieldDefinition != null) {
             json.put("belongsToFieldName", belongsToFieldDefinition.getName());
         }
+
+        JSONObject translations = new JSONObject();
+
+        translations.put("newButton", getTranslation("newButton", locale));
+        translations.put("editButton", getTranslation("editButton", locale));
+        translations.put("deleteButton", getTranslation("deleteButton", locale));
+        translations.put("confirmDeleteMessage", getTranslation("confirmDeleteMessage", locale));
+
+        translations.put("header", getTranslationService().translate(getTranslationPath() + ".header", locale));
+
+        translations.put("loading", getTranslationService().translate("commons.loading", locale));
+
+        json.put("translations", translations);
+
         return json;
+    }
+
+    private String getTranslation(final String key, final Locale locale) throws JSONException {
+        List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.tree." + key });
+        return getTranslationService().translate(codes, locale);
     }
 
     private void getBelongsToFieldDefinition() {

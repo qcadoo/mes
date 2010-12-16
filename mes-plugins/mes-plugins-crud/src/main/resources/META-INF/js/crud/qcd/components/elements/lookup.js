@@ -112,10 +112,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	this.performUpdateState = function() {
 		baseValue = new Object();
 		baseValue.value = currentData.value;
+		baseValue.selectedEntityCode = currentData.selectedEntityCode;
 	}
 	
 	this.isComponentChanged = function() {
-		return ! (currentData.value == baseValue.value);
+		return ! (currentData.selectedEntityCode == baseValue.selectedEntityCode);
 	}
 	
 	function updateData() {

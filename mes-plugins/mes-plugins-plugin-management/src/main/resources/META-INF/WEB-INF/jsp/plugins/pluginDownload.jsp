@@ -31,6 +31,11 @@
 String ctx = request.getContextPath();
 %>
 <script type="text/JavaScript">
+
+	jQuery(document).ready(function(){
+		window.mainController.setWindowHeader("${headerLabel}");	
+	});
+
 		function checkExtension(fileName, submitName, fileTypes) {
 			if (!fileName) return;
 
@@ -53,14 +58,13 @@ String ctx = request.getContextPath();
         <title>${headerLabel}</title>
     </head>
     <body>
-	    	<div style="margin: 0;">
-		        <h4>${headerLabel}</h4>
+	    	<div style="margin: 0; background: transparent url('/img/plugins/Jessica_Alba.jpg') no-repeat 0 0; padding-left: 60px; height: 100px;">
 		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
 		        	<input type="hidden" name="entityId" value="${entityId}" />
-		        	<div>
+		        	<div style="margin-top: 10px; margin-bottom: 20px; margin-left: 10px;">
 		            	<input type="file" name="file" size="50" onChange="checkExtension(this.value, this.form.upload, ['jar']);"/>
 		            </div>
-		            <div style="margin-top: 10px; margin-left: 130px;">
+		            <div style="margin-top: 10px; margin-left: 10px; margin-bottom: 10px;">
 		            	<input type="submit" name="upload" value="${buttonLabel}" style="width: 200px; cursor: pointer;"/>
 		            </div>
 		        </form>
