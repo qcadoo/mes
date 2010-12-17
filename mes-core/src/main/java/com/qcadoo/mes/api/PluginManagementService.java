@@ -151,4 +151,6 @@ public interface PluginManagementService {
 
     boolean pluginIsInstalled(final Long id);
 
+    int compareVersions(final String version, final String otherVersion);
+
 }

@@ -2,8 +2,6 @@ package com.qcadoo.mes.application;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -28,6 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.qcadoo.mes.api.PluginManagementService;
 import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 
 @Component
@@ -37,6 +36,9 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private PluginManagementService pluginManagementService;
 
     private final Set<String> identifiers = new HashSet<String>();
 
@@ -149,7 +151,11 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
             plugin.setStatus("active");
         } else {
             LOG.info("Updating plugin \"" + identifier + "\"");
-            checkVersion(plugin.getVersion(), version);
+
+            if (pluginManagementService.compareVersions(plugin.getVersion(), version) > 0) {
+                throw new IllegalStateException("Plugin cannot be automatically downgraded from " + plugin.getVersion() + " to "
+                        + version);
+            }
         }
 
         plugin.setDescription(description);
@@ -160,37 +166,6 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
         plugin.setFileName(filename);
 
         sessionFactory.getCurrentSession().save(plugin);
-    }
-
-    private void checkVersion(final String oldVersion, final String newVersion) {
-        if (oldVersion.equals(newVersion)) {
-            return;
-        }
-
-        String[] oldVersionSplitted = oldVersion.split("\\.");
-        String[] newVersionSplitted = newVersion.split("\\.");
-
-        if (oldVersionSplitted.length != newVersionSplitted.length) {
-            throw new IllegalStateException("Invalid plugin versions " + oldVersion + " and " + newVersion);
-        }
-
-        for (int i = 0; i < oldVersionSplitted.length; i++) {
-            if (!checkVersionPart(oldVersionSplitted[i], newVersionSplitted[i])) {
-                throw new IllegalStateException("Plugin cannot be automatically downgraded from " + oldVersion + " to "
-                        + newVersion);
-            }
-        }
-    }
-
-    private boolean checkVersionPart(final String oldVersion, final String newVersion) {
-        try {
-            int oldVersionInteger = NumberFormat.getIntegerInstance().parse(oldVersion).intValue();
-            int newVersionInteger = NumberFormat.getIntegerInstance().parse(newVersion).intValue();
-            return (newVersionInteger >= oldVersionInteger);
-        } catch (ParseException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-
     }
 
     private PluginsPlugin getPlugin(final String identifier) {

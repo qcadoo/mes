@@ -33,8 +33,10 @@ QCD.components.elements.TextArea = function(_element, _mainController) {
 		var height = _height ? _height-10 : 90;
 		if (height < 50) {
 			this.input.height(22); // same as input['text']
+			this.input.css('max-height', 22);
 		} else {
 			this.input.height(height-23);
+			this.input.css('max-height', height-23);
 		}
 		this.input.parent().parent().parent().height(height);
 	}
