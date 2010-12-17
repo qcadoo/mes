@@ -557,7 +557,14 @@ public final class ProductService {
 
     public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() instanceof Long) {
-            viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+            if (order == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+            }
+
         } else {
             if (state instanceof FormComponentState) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
