@@ -374,7 +374,7 @@ public final class GridComponentState extends AbstractComponentState {
 
         private boolean repeatWithFixedFirstResult(final SearchResult result) {
             if (result.getEntities().isEmpty() && result.getTotalNumberOfEntities() > 0) {
-                while (firstResult > result.getTotalNumberOfEntities()) {
+                while (firstResult >= result.getTotalNumberOfEntities()) {
                     firstResult -= maxResults;
                 }
                 return true;
