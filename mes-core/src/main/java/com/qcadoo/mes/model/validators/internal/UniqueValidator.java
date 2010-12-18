@@ -52,7 +52,9 @@ public final class UniqueValidator implements FieldValidator {
         if (entity.getId() != null) {
             searchCriteriaBuilder.restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.NE));
         }
+
         SearchResult results = searchCriteriaBuilder.list();
+
         if (results.getTotalNumberOfEntities() == 0) {
             return true;
         } else {

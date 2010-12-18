@@ -62,7 +62,8 @@ import com.qcadoo.mes.beans.dictionaries.DictionariesDictionaryItem;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirementComponent;
 import com.qcadoo.mes.beans.products.ProductsOperation;
-import com.qcadoo.mes.beans.products.ProductsOperationProductComponent;
+import com.qcadoo.mes.beans.products.ProductsOperationProductInComponent;
+import com.qcadoo.mes.beans.products.ProductsOperationProductOutComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
@@ -503,18 +504,32 @@ public final class TestDataLoader {
             }
 
             for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
-                ProductsOperationProductComponent productComponent = new ProductsOperationProductComponent();
+                ProductsOperationProductInComponent productComponent = new ProductsOperationProductInComponent();
                 productComponent.setOperationComponent(component);
                 productComponent.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
                 productComponent.setProduct(getRandomProduct());
-                productComponent.setInParameter(RANDOM.nextBoolean());
 
                 sessionFactory.getCurrentSession().save(productComponent);
 
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Add test product component {product=" + productComponent.getProduct().getNumber() + ", operation="
-                            + productComponent.getOperationComponent().getOperation().getNumber() + ", in="
-                            + productComponent.isInParameter() + ", quantity=" + productComponent.getQuantity() + "}");
+                            + productComponent.getOperationComponent().getOperation().getNumber() + ", quantity="
+                            + productComponent.getQuantity() + "}");
+                }
+            }
+
+            for (int j = 0; j < RANDOM.nextInt(4) + 1; j++) {
+                ProductsOperationProductOutComponent productComponent = new ProductsOperationProductOutComponent();
+                productComponent.setOperationComponent(component);
+                productComponent.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
+                productComponent.setProduct(getRandomProduct());
+
+                sessionFactory.getCurrentSession().save(productComponent);
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Add test product component {product=" + productComponent.getProduct().getNumber() + ", operation="
+                            + productComponent.getOperationComponent().getOperation().getNumber() + ", quantity="
+                            + productComponent.getQuantity() + "}");
                 }
             }
 

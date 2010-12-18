@@ -27,12 +27,10 @@ package com.qcadoo.mes.view.components.tree;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Node of ViewValue of TreeComponent.
- * 
- * @see com.qcadoo.mes.viewold.components.TreeComponent
- * @see com.qcadoo.mes.viewold.ViewValue
- */
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public final class TreeNode {
 
     private Long id;
@@ -80,6 +78,39 @@ public final class TreeNode {
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject jsonNode = new JSONObject();
+        jsonNode.put("id", id);
+        jsonNode.put("label", label);
+        if (children != null) {
+            JSONArray childrenArray = new JSONArray();
+            for (TreeNode kid : children) {
+                childrenArray.put(kid.toJson());
+            }
+            jsonNode.put("children", childrenArray);
+        }
+        return jsonNode;
+    }
+
+    @Override
+    public String toString() {
+        return toStringWithTabs(0);
+    }
+
+    public String toStringWithTabs(int tabs) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tabs; i++) {
+            sb.append("    ");
+        }
+        sb.append("[" + id + "] " + label + "\n");
+        if (children != null) {
+            for (TreeNode kid : children) {
+                sb.append(kid.toStringWithTabs(tabs + 1));
+            }
+        }
+        return sb.toString();
     }
 
 }

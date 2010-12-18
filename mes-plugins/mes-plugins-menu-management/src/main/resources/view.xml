@@ -39,6 +39,7 @@
 				<option type="column" name="categoryOrder" fields="categoryOrder" />
 				<option type="column" name="name" fields="name" link="true" width="600" />
 				<option type="column" name="active" fields="active" />
+				<option type="order" column="categoryOrder" direction="asc"/>
 				<option type="orderable" value="name" />
 				<option type="searchable" value="name" />
 				<option type="correspondingView" value="menu/menuCategory" />
@@ -78,17 +79,22 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="grid" name="menuViewDefinitionItems" source="#{form}.viewDefinitionItems">
-				<option type="column" name="itemOrder" fields="itemOrder" />
-				<option type="column" name="name" fields="name" link="true" width="300" />
-				<option type="column" name="active" fields="active" link="false" />
-				<option type="correspondingView" value="menu/menuViewDefinitionItem" />
-				<option type="correspondingComponent" value="form" />
-				<option type="paginable" value="false" />
-				<option type="height" value="200" />
-				<option type="width" value="400" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
+			<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+				<layoutElement column="1" row="1" height="5" width="2">
+					<component type="grid" name="menuViewDefinitionItems" source="#{form}.viewDefinitionItems">
+						<option type="column" name="itemOrder" fields="itemOrder" />
+						<option type="column" name="name" fields="name" link="true" width="300" />
+						<option type="column" name="active" fields="active" link="false" />
+						<option type="order" column="itemOrder" direction="asc"/>
+						<option type="correspondingView" value="menu/menuViewDefinitionItem" />
+						<option type="correspondingComponent" value="form" />
+						<option type="paginable" value="false" />
+						<option type="height" value="200" />
+						<option type="width" value="400" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+					</component>
+				</layoutElement>
 			</component>
 		</component>
 	</view>
@@ -110,15 +116,23 @@
 				</group>
 			</ribbon>
 			<component type="form" name="menuViewDefinitionItem" reference="form">
-				<component type="input" name="name" field="name" hasDescription="false" />
-				<component type="lookup" name="viewDefinition" field="viewDefinition">
-					<option type="column" name="pluginIdentifier" fields="pluginIdentifier" />
-					<option type="searchable" value="pluginIdentifier" />
-					<option type="orderable" value="pluginIdentifier" />
-					<option type="expression" value="#menuName + ' (' + #pluginIdentifier + ')'"/>
-					<option type="fieldCode" value="menuName" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
+					<layoutElement column="1" row="1">
+						<component type="input" name="name" field="name" hasDescription="false" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="lookup" name="viewDefinition" field="viewDefinition">
+							<option type="column" name="pluginIdentifier" fields="pluginIdentifier" />
+							<option type="searchable" value="pluginIdentifier" />
+							<option type="orderable" value="pluginIdentifier" />
+							<option type="expression" value="#menuName + ' (' + #pluginIdentifier + ')'"/>
+							<option type="fieldCode" value="menuName" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="checkbox" name="active" field="active" />
+					</layoutElement>
 				</component>
-				<component type="checkbox" name="active" field="active" />
 				<option type="expression" value="#name + ' - ' + #menuCategory['name'] + '[' + #itemOrder + ']'" />
 				<option type="header" value="false" />
 			</component>

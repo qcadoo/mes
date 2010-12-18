@@ -145,7 +145,7 @@ public final class ExpressionUtil {
 
         if (fieldDefinitions.size() == 1) {
             FieldDefinition field = fieldDefinitions.get(0);
-            value = field.getValue(entity.getField(field.getName()));
+            value = field.getValue(entity.getField(field.getName()), locale);
             if (field.getType() instanceof BooleanType) {
                 if ("0".equals(value)) {
                     value = translationService.translate("commons.false", locale);
@@ -160,7 +160,7 @@ public final class ExpressionUtil {
         } else {
             List<String> values = new ArrayList<String>();
             for (FieldDefinition fieldDefinition : fieldDefinitions) {
-                values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName())));
+                values.add(fieldDefinition.getValue(entity.getField(fieldDefinition.getName()), locale));
             }
             value = StringUtils.join(values, ", ");
         }

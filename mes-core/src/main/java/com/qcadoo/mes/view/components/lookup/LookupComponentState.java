@@ -148,7 +148,6 @@ public final class LookupComponentState extends FieldComponentState {
                 if (results.getTotalNumberOfEntities() == 1) {
                     Entity entity = results.getEntities().get(0);
                     setFieldValue(entity.getId());
-                    notifyEntityIdChangeListeners(null);
                     code = String.valueOf(entity.getField(fieldCode));
                     text = ExpressionUtil.getValue(entity, expression, getLocale());
                 } else {

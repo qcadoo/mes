@@ -509,9 +509,12 @@ public final class ProductService {
             } else {
                 try {
 
-                    materialRequirement = updateFileName(materialRequirement,
-                            getFullFileName((Date) materialRequirement.getField("date"), "MaterialRequirement"),
-                            "materialRequirement");
+                    materialRequirement = updateFileName(
+                            materialRequirement,
+                            getFullFileName(
+                                    (Date) materialRequirement.getField("date"),
+                                    translationService.translate("products.materialRequirement.report.fileName",
+                                            state.getLocale())), "materialRequirement");
                     materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
                     materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
@@ -527,7 +530,7 @@ public final class ProductService {
     public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+        if (state.getFieldValue() instanceof Long) {
             Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
                     (Long) state.getFieldValue());
             if (materialRequirement == null) {
@@ -553,8 +556,15 @@ public final class ProductService {
     }
 
     public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
-            viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+        if (state.getFieldValue() instanceof Long) {
+            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+            if (order == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+            }
+
         } else {
             if (state instanceof FormComponentState) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
@@ -623,7 +633,11 @@ public final class ProductService {
             } else {
                 try {
 
-                    workPlan = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "WorkPlan"), "workPlan");
+                    workPlan = updateFileName(
+                            workPlan,
+                            getFullFileName((Date) workPlan.getField("date"),
+                                    translationService.translate("products.workPlan.report.fileName", state.getLocale())),
+                            "workPlan");
                     workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale());
                     workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale());
                     workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale());
@@ -640,7 +654,7 @@ public final class ProductService {
 
     public void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
-        if (state.getFieldValue() != null && state.getFieldValue() instanceof Long) {
+        if (state.getFieldValue() instanceof Long) {
             Entity workPlan = dataDefinitionService.get("products", "workPlan").get((Long) state.getFieldValue());
             if (workPlan == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),

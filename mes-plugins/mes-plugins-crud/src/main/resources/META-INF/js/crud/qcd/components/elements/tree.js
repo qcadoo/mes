@@ -36,35 +36,43 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	var header;
 	var buttons = new Object();
 	
-	var contextFieldName;
-	var contextId;
+	var contentElement;
 	
+	var belongsToEntityId;
+	var belongsToFieldName = this.options.belongsToFieldName;
+	
+	var correspondingView = this.options.correspondingView;
+	var correspondingComponent = this.options.correspondingComponent;
+
 	var elementPath = this.elementPath;
-	
-	var correspondingViewName = this.options.correspondingView;
-	
+	var elementSearchName = this.elementSearchName;
+
 	var root;
 	
 	var isEnabled = false;
 	
-	var openedArrayToInstert;
-	var selectedEntityIdToInstert;
+	var listeners = this.options.listeners;
+	
+	var openedNodesArrayToInsert;
+	var selectedNodeToInstert;
+	
+	var fireSelectEvent = true;
+	
+	var translations = this.options.translations;
 	
 	function constructor(_this) {
-		var messagesPath = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".");
-		
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
-			var treeName = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+_this.elementPath.replace(/-/g,".")+".header";
-			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(mainController.getTranslation(treeName));
+			
+			var title = $("<div>").addClass('tree_title').addClass('elementHeaderTitle').html(translations.header);
 			header.append(title);
 			
-			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.new') ,function(e) {
+			buttons.newButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.newButton, function(e) {
 				newClicked();
 			}, "newIcon16_dis.png");
-			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.edit') ,function(e) {
+			buttons.editButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.editButton, function(e) {
 				editClicked();
 			}, "editIcon16_dis.png");
-			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(mainController.getTranslation(messagesPath + '.delete'),function(e) {
+			buttons.deleteButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.deleteButton, function(e) {
 				deleteClicked();
 			}, "deleteIcon16_dis.png");
 			
@@ -72,28 +80,43 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			header.append(buttons.editButton);
 			header.append(buttons.deleteButton);
 		
-		var content = $("<div>").addClass('tree_content');
+		contentElement = $("<div>").addClass('tree_content');
 		
-		var container = $("#"+_this.elementPath+"_treeContent");
-		container.addClass('tree_wrapper');
+		var container = $("<div>").addClass('tree_wrapper');
 		
-		if (_this.options.width) {
-			container.width(_this.options.width);
-		}
-		if (_this.options.height) {
-			content.height(_this.options.height - 30);
-		}
 		container.append(header);
-		container.append(content);
+		container.append(contentElement);
 		
-		tree = content.jstree({ plugins : ["json_data", "themes", "crrm", "ui" ],
+		_this.element.append(container);
+		
+		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", /*"hotkeys"*/ ],
 			"themes" : {
 				"theme": "classic",
-				"dots" : true,
+				"dots" : false,
 				"icons" : false
 			},
 			"json_data" : {
 				"data" : [ ]
+			},
+//			"hotkeys" : {
+//				"f2" : function () { },
+//				"del" : function () { }
+//				"up": function(){
+//					var o = this.data.ui.last_selected || -1;
+//					this.deselect_node(o);
+//					this.select_node(this._get_prev(o));
+//					return false; 
+//				},
+//				"down" : function () { 
+//					var o = this.data.ui.last_selected || -1;
+//					this.deselect_node(o);
+//					this.select_node(this._get_next(o));
+//					//tree.jstree("select_node", this._get_next(o), false);
+//					return false;
+//				}
+//			},
+			"ui": {
+				"select_limit": 1
 			},
 			core : {
 				html_titles: true,
@@ -106,103 +129,102 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		    	return false;
 			}
 		}).bind("select_node.jstree", function (e, data) {
-			buttons.newButton.addClass("headerButtonEnabled");
-			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
-				buttons.editButton.addClass("headerButtonEnabled");
-				buttons.deleteButton.addClass("headerButtonEnabled");
-			} else {
-				buttons.editButton.removeClass("headerButtonEnabled");
-				buttons.deleteButton.removeClass("headerButtonEnabled");
+			if (fireSelectEvent) {
+				updateButtons();
+				if (listeners.length > 0) {
+					onSelectChange();
+				}
 			}
 		});
-		openedArrayToInstert = new Array();
-		openedArrayToInstert.push("0");
 		
 		block();
 	}
 	
 	this.setComponentState = function(state) {
-		QCD.info("setComponentState");
-		openedArrayToInstert = state.opened;
-		selectedEntityIdToInstert = state.selectedEntityId;
-	}
-	
-	this.getUpdateMode = function() {
-		return QCD.components.Component.UPDATE_MODE_UPDATE;
+		openedNodesArrayToInsert = state.openedNodes;
+		selectedNodeToInstert = state.selectedEntityId;
+		belongsToEntityId = state.belongsToEntityId;
 	}
 	
 	this.getComponentValue = function() {
-		var entityId = null;
-		if (tree.jstree("get_selected")) {
-			entityId = tree.jstree("get_selected").attr("id");
-			if (entityId) {
-				entityId = entityId.substring(elementPath.length + 6);
-			}
+		var openedNodesArray;
+		if (openedNodesArrayToInsert) {
+			openedNodesArray = openedNodesArrayToInsert;
+			openedNodesArrayToInsert = null;
+		} else {
+			openedNodesArray = new Array();
+			tree.find(".jstree-open").each(function () { 
+				openedNodesArray.push(getEntityId(this.id));
+			});
 		}
-		var openedArray = new Array();
-		tree.find(".jstree-open").each(function () { 
-			openedArray.push(this.id.substring(elementPath.length + 6));
-		});
+		var selectedNode;
+		if (selectedNodeToInstert) {
+			selectedNode = selectedNodeToInstert;
+			selectedNodeToInstert = null;
+		} else {
+			selectedNode = getSelectedEntityId();
+		}
 		return {
-			opened: openedArray,
-			selectedEntityId: entityId
+			openedNodes: openedNodesArray,
+			selectedEntityId: selectedNode,
+			belongsToEntityId: belongsToEntityId
 		}
 	}
 	
 	this.setComponentValue = function(value) {
-		if (value == null) {
-			return;
+		
+		if (value.belongsToEntityId) {
+			belongsToEntityId = value.belongsToEntityId;
 		}
-		if(value.contextFieldName || value.contextId) {
-			contextFieldName = value.contextFieldName;
-			contextId = value.contextId; 
-		}
-		if (value.rootNode) {
+		
+		if (value.root) {
 			if (root) {
 				tree.jstree("remove", root); 
 			}
-			root = addNode(value.rootNode, -1);
+			root = addNode(value.root, -1);
 		}
+		
 		tree.jstree("close_all", root, true);
-		if (openedArrayToInstert) {
-			for (var i in openedArrayToInstert) {
-				tree.jstree("open_node", $("#"+elementPath+"_node_"+openedArrayToInstert[i]), false, true);
-			}
-			openedArrayToInstert = null;
+		for (var i in value.openedNodes) {
+			tree.jstree("open_node", $("#"+elementSearchName+"_node_"+value.openedNodes[i]), false, true);
+		}
+		
+		if (value.selectedEntityId != null) {
+			fireSelectEvent = false;
+			tree.jstree("select_node", $("#"+elementSearchName+"_node_"+value.selectedEntityId), false);
+			fireSelectEvent = true;
+		}
+		
+		updateButtons();
+		unblock();
+	}
+	
+	function addNode(data, node) {
+		var nodeId = data.id ? data.id : "0";
+		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+nodeId }}, false, true);
+		for (var i in data.children) {
+			addNode(data.children[i], newNode, false);
+		}
+		tree.jstree("close_node", newNode, true);
+		return newNode;
+	}
+	
+	function updateButtons() {
+		var selected = getSelectedEntityId();
+		if (!selected) {
+			buttons.newButton.removeClass("headerButtonEnabled");
+			buttons.editButton.removeClass("headerButtonEnabled");
+			buttons.deleteButton.removeClass("headerButtonEnabled");
 		} else {
-			for (var i in value.openedNodes) {
-				tree.jstree("open_node", $("#"+elementPath+"_node_"+value.openedNodes[i]), false, true);
-			}
-		}
-		if (selectedEntityIdToInstert) {
-			tree.jstree("select_node", $("#"+elementPath+"_node_"+selectedEntityIdToInstert), false);
-			selectedEntityIdToInstert = null;
-		}
-		if (tree.jstree("get_selected").length > 0) {
 			buttons.newButton.addClass("headerButtonEnabled");
-			if (tree.jstree("get_selected").attr("id").substring(elementPath.length + 6) != 0) {
+			if (selected != "0") {
 				buttons.editButton.addClass("headerButtonEnabled");
 				buttons.deleteButton.addClass("headerButtonEnabled");
 			} else {
 				buttons.editButton.removeClass("headerButtonEnabled");
 				buttons.deleteButton.removeClass("headerButtonEnabled");
 			}
-		} else {
-			buttons.newButton.removeClass("headerButtonEnabled");
-			buttons.editButton.removeClass("headerButtonEnabled");
-			buttons.deleteButton.removeClass("headerButtonEnabled");
 		}
-		unblock();
-	}
-	
-	function addNode(data, node) {
-		var newNode = tree.jstree("create", node, "last", {data: {title: data.label}, attr : { id: elementPath+"_node_"+data.id }}, false, true);
-		newNode.bind("onselect", function() {alert("aa")})
-		for (var i in data.children) {
-			addNode(data.children[i], newNode, false);
-		}
-		tree.jstree("close_node", newNode, true);
-		return newNode;
 	}
 	
 	this.setComponentEnabled = function(_isEnabled) {
@@ -221,50 +243,57 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	function newClicked() {
 		if (buttons.newButton.hasClass("headerButtonEnabled")) {
-			QCD.info("new");
-			var contextArray = new Array();
-			var parentId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-			contextArray.push({
-				fieldName: "parent",
-				entityId: (parentId == 0) ? null : parentId
-			});
-			if (contextFieldName && contextId) {
-				contextArray.push({
-					fieldName: contextFieldName,
-					entityId: contextId
-				});
+			var params = new Object();
+			if (belongsToFieldName) {
+				params[correspondingComponent+"."+belongsToFieldName] = belongsToEntityId;
 			}
-			context = "context="+JSON.stringify(contextArray);
-			QCD.info("newClicked");
-			QCD.info(context);
-			redirectToCorrespondingPage(context);
+			params[correspondingComponent+".parent"] = getSelectedEntityId();
+			redirectToCorrespondingPage(params);
 		}
 	}
 	
 	function editClicked() {
 		if (buttons.editButton.hasClass("headerButtonEnabled")) {
-			QCD.info("edit");
-			var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-			redirectToCorrespondingPage("entityId="+entityId);
+			var params = new Object();
+			params[correspondingComponent+".id"] = getSelectedEntityId();
+			redirectToCorrespondingPage(params);
 		}
 	}
 	
 	function deleteClicked() {
-		var confirmDeleteMessage = mainController.getPluginIdentifier()+"."+mainController.getViewName()+"."+elementPath.replace(/-/g,".")+".confirmDeleteMessage";
+		var confirmDeleteMessage = translations.confirmDeleteMessage;
 		if (buttons.deleteButton.hasClass("headerButtonEnabled")) {
-			if (window.confirm(mainController.getTranslation(confirmDeleteMessage))) {
+			if (window.confirm(confirmDeleteMessage)) {
 				block();
-				var entityId = tree.jstree("get_selected").attr("id").substring(elementPath.length + 6);
-				mainController.performDelete(elementPath, entityId, null);	
+				mainController.callEvent("remove", elementPath, function() {
+					unblock();
+				}, null, null);
 			}
 		}
 	}	
 	
+	function onSelectChange() {
+		if (isEnabled) {
+			mainController.callEvent("select", elementPath, null);
+		}
+	}
+	
+	function getSelectedEntityId() {
+		var selected = tree.jstree("get_selected");
+		if (selected && selected.length > 0) {
+			return getEntityId(selected.attr("id"));
+		}
+		return null;
+	}
+	function getEntityId(nodeId) {
+		return nodeId.substring(elementPath.length + 6);
+	}
+	
 	function redirectToCorrespondingPage(params) {
-		if (correspondingViewName && correspondingViewName != '') {
-			var url = correspondingViewName + ".html";
+		if (correspondingView && correspondingView != '') {
+			var url = correspondingView + ".html";
 			if (params) {
-				url += "?"+params;
+				url += "?context="+JSON.stringify(params);
 			}
 			mainController.goToPage(url);
 		}
@@ -278,9 +307,20 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		}
 	}
 	
+	this.updateSize = function(_width, _height) {
+		if (! _width) {
+			_width = 300;
+		}
+		if (! _height) {
+			_height = 300;
+		}
+		contentElement.height(_height - 52);
+	}
+	
 	function block() {
+		isEnabled = false;
 		if (tree) {
-			tree.block({ message: '<div class="loading_div">'+mainController.getTranslation("commons.loading")+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
+			tree.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
 	            border: 'none', 
 	            padding: '15px', 
 	            backgroundColor: '#000', 
@@ -294,6 +334,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	function unblock() {
 		if (tree) {
 			tree.unblock();
+			isEnabled = true;
 		}
 	}
 	

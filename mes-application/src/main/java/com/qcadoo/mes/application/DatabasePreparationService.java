@@ -39,7 +39,6 @@ import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.menu.MenuMenuCategory;
 import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
 import com.qcadoo.mes.beans.menu.MenuViewDefinition;
-import com.qcadoo.mes.beans.plugins.PluginsPlugin;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
@@ -76,8 +75,6 @@ public final class DatabasePreparationService implements ApplicationListener<Con
             addMenus();
             addGroups();
             addUsers();
-            // TODO masz plugins should be added automatically using plugin.xml
-            addPlugins();
             addDictionaries();
 
             if (addTestData) {
@@ -103,7 +100,6 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlans");
         MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
 
-
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 1);
         MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 2);
         MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 3);
@@ -112,13 +108,13 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
                 technologyGridView, 3);
-        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryTechnology , productGridView, 1);
+        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryTechnology, productGridView, 1);
         addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryOrders,
                 orderGridView, 1);
-        addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryReports ,
+        addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryReports,
                 materialRequirementGridView, 1);
         addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryTechnology, operationGridView, 2);
-        addMenuViewDefinitionItem("workPlans", "products.menu.products.workPlans", menuCategoryReports , workPlanGridView, 2);
+        addMenuViewDefinitionItem("workPlans", "products.menu.products.workPlans", menuCategoryReports, workPlanGridView, 2);
 
         if (addAdministrationMenuToDatabase) {
             addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);
@@ -217,33 +213,6 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         DictionariesDictionary dictionary = new DictionariesDictionary();
         dictionary.setName(name);
         sessionFactory.getCurrentSession().save(dictionary);
-    }
-
-    private void addPlugins() {
-        addPlugin("users", "Qcadoo MES :: Plugins :: User Management", false, "mes-plugins-user-management-0.2.0-SNAPSHOT.jar");
-        addPlugin("dictionaries", "Qcadoo MES :: Plugins :: Dictionary Management", false,
-                "mes-plugins-dictionary-management-0.2.0-SNAPSHOT.jar");
-        addPlugin("plugins", "Qcadoo MES :: Plugins :: Plugin Management", true,
-                "mes-plugins-plugin-management-0.2.0-SNAPSHOT.jar");
-        addPlugin("menu", "Qcadoo MES :: Plugins :: Menu Management", true, "mes-plugins-menu-management-0.2.0-SNAPSHOT.jar");
-        addPlugin("crud", "Qcadoo MES :: Plugins :: CRUD", true, "mes-plugins-crud-0.2.0-SNAPSHOT.jar");
-        addPlugin("products", "Qcadoo MES :: Plugins :: Products", false, "mes-plugins-products-0.2.0-SNAPSHOT.jar");
-        addPlugin("basic", "Qcadoo MES :: Plugins :: Basic", false, "mes-plugins-basic-management-0.2.0-SNAPSHOT.jar");
-    }
-
-    private void addPlugin(final String identifier, final String name, final boolean base, final String fileName) {
-        LOG.info("Adding plugin \"" + identifier + "\"");
-        PluginsPlugin plugin = new PluginsPlugin();
-        plugin.setBase(base);
-        plugin.setFileName(fileName);
-        plugin.setIdentifier(identifier);
-        plugin.setName(name);
-        plugin.setPackageName("com.qcadoo.mes." + name);
-        plugin.setStatus("active");
-        plugin.setVendor("Qcadoo Limited");
-        plugin.setVersion("0.2.0-SNAPSHOT");
-        plugin.setDescription(null);
-        sessionFactory.getCurrentSession().save(plugin);
     }
 
     private void addTestData() {

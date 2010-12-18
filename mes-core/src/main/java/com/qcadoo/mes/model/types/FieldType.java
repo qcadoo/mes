@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.model.types;
 
+import java.util.Locale;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 
@@ -80,6 +82,15 @@ public interface FieldType {
      *            value
      * @return string value
      */
-    String toString(Object value);
+    String toString(Object value, Locale locale);
+
+    /**
+     * Convert field's value to string.
+     * 
+     * @param value
+     *            value
+     * @return string value
+     */
+    Object fromString(String value, Locale locale);
 
 }

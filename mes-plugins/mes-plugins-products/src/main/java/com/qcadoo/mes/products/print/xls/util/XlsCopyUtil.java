@@ -36,10 +36,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -163,6 +165,7 @@ public final class XlsCopyUtil {
             HSSFSheet existingSheet = existingWorkbook.getSheetAt(i);
             HSSFSheet sheet = newWorkbook.createSheet(existingSheet.getSheetName());
             copySheets(sheet, existingSheet);
+            sheet.setZoom(4, 3);
         }
     }
 
@@ -173,8 +176,19 @@ public final class XlsCopyUtil {
         if (fileName != null && !"".equals(fileName.toString().trim())) {
             copyWorkbook(workbook, (String) fileName + fileSuffix + XLS_EXTENSION);
             String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
-            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + XLS_EXTENSION);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + "_" + fileSuffix
+                    + XLS_EXTENSION);
         }
+    }
+
+    public static HSSFCellStyle getHeaderStyle(final HSSFWorkbook workbook) {
+        HSSFCellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short) 12);
+        font.setFontName(HSSFFont.FONT_ARIAL);
+        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        style.setFont(font);
+        return style;
     }
 
 }

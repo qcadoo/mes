@@ -25,7 +25,7 @@
 			<fileMode>0754</fileMode>
 		</fileSet>
 		<fileSet>
-			<directory>../mes-application/conf/default/</directory>
+			<directory>../mes-application/conf/${profile.name}/</directory>
 			<outputDirectory>/qcadoo</outputDirectory>
 		</fileSet>
 	</fileSets>

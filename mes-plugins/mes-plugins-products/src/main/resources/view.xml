@@ -42,6 +42,7 @@
 					width="300" />
 				<option type="column" name="typeOfMaterial" fields="typeOfMaterial" />
 				<option type="column" name="ean" fields="ean" />
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/product" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,typeOfMaterial,ean" />
@@ -70,29 +71,23 @@
 				</group>
 			</ribbon>
 			<component type="form" name="product" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
-					<layoutElement column="1" row="1" width="2" height="3">
-						<component type="borderLayout" name="borderLayout">
-							<component type="gridLayout" name="gridLayout" columns="2" rows="3">
-								<layoutElement column="1" row="1">
-									<component type="input" name="number" field="number" />
-								</layoutElement>
-								<layoutElement column="2" row="1">
-									<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
-								</layoutElement>
-								<layoutElement column="1" row="2" width="2" height="2">
-									<component type="textarea" name="name" field="name" hasDescription="true" />
-								</layoutElement>
-							</component>
-						</component>
+				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="4">
+						<component type="select" name="typeOfMaterial" field="typeOfMaterial" />
+					</layoutElement>
+					<layoutElement column="2" row="1">
 						<component type="input" name="ean" field="ean" />
 					</layoutElement>
-					<layoutElement column="1" row="5">
+					<layoutElement column="2" row="2">
 						<component type="select" name="category" field="category" />
 					</layoutElement>
-					<layoutElement column="2" row="4">
+					<layoutElement column="2" row="3">
 						<component type="input" name="unit" field="unit" />
 					</layoutElement>
 				</component>
@@ -100,24 +95,23 @@
 				<option type="header" value="false" />
 			</component>
 			
-			<component type="separatorLine" name="separatorLine" />
-			
-			<component type="gridLayout" name="gridsLayout" columns="3" rows="10">
-				<layoutElement column="1" row="1" height="10">
+			<component type="gridLayout" name="gridsLayout" columns="3" rows="6">
+				<layoutElement column="1" row="1" height="6">
 					<component type="grid" name="substitutes" reference="substitutes" source="#{form}.substitutes">
 						<option type="column" name="number" fields="number" link="true" />
 						<option type="column" name="name" fields="name" link="true" />
 						<option type="column" name="priority" fields="priority" />
+						<option type="order" column="priority" direction="asc"/>
 						<option type="correspondingView" value="products/substitute" />
 						<option type="correspondingComponent" value="form" />
-						<option type="searchable" value="name,number,priority" />
+						<!--<option type="searchable" value="name,number,priority" />-->
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="1" height="8" width="2">
+				<layoutElement column="2" row="1" height="6">
 					<component type="grid" name="substituteComponents"
 						source="#{substitutes}.components">
 						<option type="column" name="number" fields="product"
@@ -125,6 +119,7 @@
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
 						<option type="column" name="quantity" fields="quantity" />
+						<option type="order" column="number" direction="desc"/>
 						<option type="correspondingView" value="products/substituteComponent" />
 						<option type="correspondingComponent" value="form" />
 						<option type="paginable" value="false" />
@@ -154,21 +149,15 @@
 			</ribbon>
 			<component type="form" name="substitute" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
-				<layoutElement column="1" row="1" height="4">
-				<component type="borderLayout" name="borderLayout">
-					<component type="gridLayout" name="gridLayout" columns="1" rows="4">
-						<layoutElement column="1" row="1">
-							<component type="input" name="number" field="number" />
-						</layoutElement>
-						<layoutElement column="1" row="2" height="2">
-							<component type="textarea" name="name" field="name" />
-						</layoutElement>
-						<layoutElement column="1" row="4">
-							<component type="input" name="priority" field="priority" defaultEnabled="false" />
-						</layoutElement>
-					</component>
-				</component>
-				</layoutElement>
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="priority" field="priority" defaultEnabled="false" />
+					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
@@ -192,16 +181,22 @@
 				</group>
 			</ribbon>
 			<component type="form" name="substituteComponent" reference="form">
-				<component type="lookup" name="product" field="product">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="column" name="category" fields="category" />
-					<option type="searchable" value="name,category" />
-					<option type="orderable" value="name,category" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="product" field="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="category" fields="category" />
+							<option type="searchable" value="name,category" />
+							<option type="orderable" value="name,category" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
 				</component>
-				<component type="input" name="quantity" field="quantity" />
 				<option type="header" value="false" />
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
@@ -220,6 +215,7 @@
 			<component type="grid" name="operations" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/operation"/>
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="number, name"/>
@@ -247,26 +243,36 @@
 				</group>
 			</ribbon>
 			<component type="form" name="operation" reference="form">
-				<component type="input" name="number" field="number" />
-				<component type="textarea" name="name" field="name" />
-				<component type="lookup" name="staff" field="staff">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="column" name="surname" fields="surname" link="true"/>
-					<option type="column" name="post" fields="post" link="true"/>
-					<option type="searchable" value="name,number,surname,post" />
-					<option type="orderable" value="name,number,surname,post" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="lookup" name="staff" field="staff">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="surname" fields="surname" link="true"/>
+							<option type="column" name="post" fields="post" link="true"/>
+							<option type="searchable" value="name,number,surname,post" />
+							<option type="orderable" value="name,number,surname,post" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="lookup" name="machine" field="machine">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
 				</component>
-				<component type="lookup" name="machine" field="machine">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="searchable" value="name,number" />
-					<option type="orderable" value="name,number" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
-				</component>				
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
@@ -287,6 +293,7 @@
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="product" fields="product"
 					expression="#product['name']" />
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/technology" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,product" />
@@ -314,33 +321,78 @@
 				</group>
 			</ribbon>
 			<component type="form" name="technology" reference="form">
-				<component type="checkbox" name="master" field="master" />
-				<component type="input" name="number" field="number" />
-				<component type="textarea" name="name" field="name" />
-				<component type="lookup" name="product" field="product">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="column" name="category" fields="category" />
-					<option type="searchable" value="name,category" />
-					<option type="orderable" value="name,category" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
-				</component>
-				<component type="textarea" name="description" field="description">
-					<option type="rows" value="5" />
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="master" field="master" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="number" field="number" />
+					</layoutElement>
+					<layoutElement column="1" row="3" height="2">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="lookup" name="product" field="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="category" fields="category" />
+							<option type="searchable" value="name,category" />
+							<option type="orderable" value="name,category" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="6" height="2">
+						<component type="textarea" name="description" field="description" />
+					</layoutElement>
 				</component>
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			<component type="tree" name="technologyTree" source="#{form}.operationComponents">
-				<option type="height" value="200" />
-				<option type="width" value="500" />
-				<option type="expression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
-				<option type="rootExpression" value="#number" />
-				<option type="correspondingView" value="products/technologyOperationComponent" />
-				<option type="correspondingComponent" value="form" />
+			
+			<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
+				<layoutElement column="1" row="1" height="5">
+					<component type="tree" name="technologyTree" reference="technologyTree" source="#{form}.operationComponents">
+						<option type="nodeLabelExpression" value="'&lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']" />
+						<!--<option type="rootExpression" value="#number" />-->
+						<option type="correspondingView" value="products/technologyOperationComponent" />
+						<option type="correspondingComponent" value="form" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1" height="5">
+					<component type="grid" name="inProducts" reference="inProducts" source="#{technologyTree}.operationProductInComponents">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" />
+						<option type="column" name="quantity" fields="quantity" />
+						<option type="order" column="number" direction="desc"/>
+						<option type="correspondingView" value="products/operationProductInComponent" />
+						<option type="correspondingComponent" value="form" />
+						<option type="paginable" value="false" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="3" row="1" height="5">
+					<component type="grid" name="outProducts" reference="outProducts" source="#{technologyTree}.operationProductOutComponents">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" />
+						<option type="column" name="quantity" fields="quantity" />
+						<option type="order" column="number" direction="desc"/>
+						<option type="correspondingView" value="products/operationProductOutComponent" />
+						<option type="correspondingComponent" value="form" />
+						<option type="paginable" value="false" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+					</component>
+				</layoutElement>
 			</component>
-			<!--  
+		<!--  
 			<component type="grid" name="productsGrid" source="product">
 				<option type="column" name="number" fields="number" link="true"
 					width="200" />
@@ -374,17 +426,97 @@
 					<smallButton name="delete" icon="deleteIcon16.png" action="#{form}.performDelete; #{window}.performBack" />
 				</group>
 			</ribbon>
-			<component type="form" name="technologyOperationComponent" reference="form">
-				<component type="lookup" name="operation" field="operation">
-					<option type="column" name="name" fields="name"
-						width="300" />
-					<option type="searchable" value="name" />
-					<option type="orderable" value="name" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="operation" field="operation">
+							<option type="column" name="name" fields="name"
+								width="300" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#operation['name']" />
+			</component>
+		</component>
+	</view>
+	<view name="operationProductInComponent" model="operationProductInComponent">
+		<component type="window" name="window">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{form}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{form}.performDelete; #{window}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="product" field="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="category" fields="category" />
+							<option type="searchable" value="name,category" />
+							<option type="orderable" value="name,category" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
+			</component>
+		</component>
+	</view>
+	<view name="operationProductOutComponent" model="operationProductOutComponent">
+		<component type="window" name="window">
+			<ribbon>
+				<group name="navigation">
+					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
+				</group>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{form}.performSave;" />
+					<bigButton name="saveBack" icon="saveBackIcon24.png"
+						action="#{form}.performSave; #{window}.performBack" />
+					<smallButton name="cancel" icon="cancelIcon16.png" action="#{form}.performCancel;" />
+					<smallButton name="delete" icon="deleteIcon16.png"
+						action="#{form}.performDelete; #{window}.performBack" />
+				</group>
+			</ribbon>
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="product" field="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="category" fields="category" />
+							<option type="searchable" value="name,category" />
+							<option type="orderable" value="name,category" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
 	</view>
@@ -398,7 +530,7 @@
 						action="#{grid}.performDelete;" />
 				</group>
 				<group name="export">
-					<smallButton name="print" icon="printIcon16.png"
+					<smallButton name="print" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printOrder,pdf);" />
 				</group>
 			</ribbon>		
@@ -406,6 +538,7 @@
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="state" fields="state" />
+				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/order" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,number,state" />
@@ -434,24 +567,26 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="order" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="8">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" reference="number" field="number" />
 					</layoutElement>
-					<layoutElement column="2" row="1" height="2">
+					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" />
 					</layoutElement>
-					<layoutElement column="1" row="3">
+					<layoutElement column="1" row="4">
 						<component type="calendar" name="dateFrom" field="dateFrom" />
 					</layoutElement>
-					
-					<layoutElement column="1" row="4">
-						<component type="select" name="state" field="state" />
-					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="select" name="machine" field="machine" />
+						<component type="calendar" name="dateTo" field="dateTo" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
+						<component type="select" name="state" field="state" />
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="select" name="machine" field="machine" />
+					</layoutElement>
+					<layoutElement column="2" row="2">
 						<component type="lookup" name="product" reference="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
@@ -463,10 +598,10 @@
 							<listener event="search" bean="com.qcadoo.mes.products.ProductService" method="changeOrderProduct"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="6">
+					<layoutElement column="2" row="3">
 						<component type="input" name="defaultTechnology" reference="defaultTechnology" field="defaultTechnology" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="2" row="7">
+					<layoutElement column="2" row="4">
 						<component type="lookup" name="technology" reference="technology" field="technology" source="#{product}.technologies">
 							<option type="column" name="name" fields="name" link="true" width="300" />
 							<option type="searchable" value="name,number" />
@@ -475,15 +610,10 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					
-					<layoutElement column="2" row="3">
-						<component type="calendar" name="dateTo" field="dateTo" />
-					</layoutElement>
-					
-					<layoutElement column="1" row="8">
+					<layoutElement column="2" row="5">
 						<component type="input" name="plannedQuantity" reference="plannedQuantity" field="plannedQuantity" />
 					</layoutElement>
-					<layoutElement column="2" row="8">
+					<layoutElement column="2" row="6">
 						<component type="input" name="doneQuantity" field="doneQuantity" />
 					</layoutElement>
 					<layoutElement column="3" row="1">
@@ -506,7 +636,7 @@
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="generateOrderNumber" />		
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="fillDefaultTechnology" />		
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableTechnologiesIfProductDoesNotAny" />		
-		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForDoneOrder" />		
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForDoneOrder" />	
 	</view>
 	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
 		<component type="window" name="window">
@@ -516,9 +646,9 @@
 						action="#{grid}.performNew;" />
 				</group>
 				<group name="export">
-					<smallButton name="pdf" icon="printIcon16.png"
+					<smallButton name="pdf" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printMaterialRequirement,pdf);" />
-					<smallButton name="xls" icon="printIcon16.png"
+					<smallButton name="xls" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>		
@@ -526,6 +656,7 @@
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" />
 				<option type="column" name="worker" fields="worker" width="300" />
+				<option type="order" column="name" direction="asc"/>
 				<option type="searchable" value="name,generated,worker" />
 				<option type="orderable" value="name,generated,worker" />
 				<option type="correspondingView" value="products/materialRequirement" />
@@ -549,51 +680,54 @@
 					<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateMaterialRequirement);" />
 				</group>
 				<group name="export">
-					<smallButton name="pdf" icon="printIcon16.png"
+					<smallButton name="pdf" icon="pdfIcon16.png"
 						action="#{form}.fireEvent(printMaterialRequirement,pdf);" />
-					<smallButton name="xls" icon="printIcon16.png"
+					<smallButton name="xls" icon="xlsIcon16.png"
 						action="#{form}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>
 			<component type="form" name="materialRequirement" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="4" rows="6">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="date" reference="date" field="date" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="true" />
+							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="4" width="2" height="2">
+					<layoutElement column="1" row="4" height="2">
 						<component type="textarea" name="name" reference="name" field="name" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
 						<component type="checkbox" name="onlyComponents" reference="onlyComponents" field="onlyComponents" />
+					</layoutElement>
+					<layoutElement column="2" row="1" width="2" height="6">
+						<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
+							<option type="column" name="number" fields="order" expression="#order['number']"/>
+							<option type="column" name="name" fields="order" expression="#order['name']"/>
+							<option type="order" column="number" direction="desc"/>
+							<option type="correspondingView" value="products/materialRequirementComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="height" value="200" />
+							<option type="width" value="350" />
+						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement" />
 				<listener event="generateMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="generateMaterialRequirement" />
-			</component>
-			<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
-				<option type="column" name="number" fields="order" expression="#order['number']"/>
-				<option type="column" name="name" fields="order" expression="#order['name']"/>
-				<option type="correspondingView" value="products/materialRequirementComponent" />
-				<option type="correspondingComponent" value="form" />
-				<option type="paginable" value="false" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
-				<option type="height" value="200" />
-				<option type="width" value="350" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
@@ -610,13 +744,17 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="materialRequirementComponent" reference="form">
-				<component type="lookup" name="order" field="order">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="order" field="order">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
@@ -631,15 +769,15 @@
 						action="#{grid}.performNew;" />
 				</group>
 				<group name="exportWorker">
-					<smallButton name="pdfWorker" icon="printIcon16.png"
+					<smallButton name="pdfWorker" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" />
-					<smallButton name="xlsWorker" icon="printIcon16.png"
+					<smallButton name="xlsWorker" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
-					<smallButton name="pdfMachine" icon="printIcon16.png"
+					<smallButton name="pdfMachine" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" />
-					<smallButton name="xlsMachine" icon="printIcon16.png"
+					<smallButton name="xlsMachine" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>		
@@ -647,6 +785,7 @@
 				<option type="column" name="name" fields="name" link="true" width="300" />
 				<option type="column" name="generated" fields="generated" link="false" width="100" />
 				<option type="column" name="worker" fields="worker" width="300" />
+				<option type="order" column="name" direction="asc"/>
 				<option type="correspondingView" value="products/workPlan" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,generated,worker" />
@@ -670,45 +809,59 @@
 						<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" />
 				</group>
 				<group name="exportWorker">
-					<smallButton name="pdfWorker" icon="printIcon16.png"
+					<smallButton name="pdfWorker" icon="pdfIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" />
-					<smallButton name="xlsWorker" icon="printIcon16.png"
+					<smallButton name="xlsWorker" icon="xlsIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
-					<smallButton name="pdfMachine" icon="printIcon16.png"
+					<smallButton name="pdfMachine" icon="pdfIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" />
-					<smallButton name="xlsMachine" icon="printIcon16.png"
+					<smallButton name="xlsMachine" icon="xlsIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
 			</ribbon>
 			<component type="form" name="workPlan" reference="form">
-				<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
-					<option type="textRepresentationOnDisabled" value="true" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="worker" field="worker" reference="worker" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" height="2">
+						<component type="textarea" name="name" reference="name" field="name" />
+					</layoutElement>
+					<layoutElement column="2" row="1" height="5" width="2">
+						<component type="grid" name="workPlanComponents" reference="workPlanComponents" source="#{form}.orders">
+							<option type="column" name="number" fields="order" expression="#order['number']"/>
+							<option type="column" name="name" fields="order" expression="#order['name']"/>
+							<option type="order" column="number" direction="desc"/>
+							<option type="correspondingView" value="products/workPlanComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="paginable" value="false" />
+							<option type="height" value="200" />
+							<option type="width" value="350" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+						</component>
+					</layoutElement>
 				</component>
-				<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
-					<option type="textRepresentationOnDisabled" value="true" />
-				</component>
-				<component type="input" name="worker" field="worker" reference="worker" defaultEnabled="false">
-					<option type="textRepresentationOnDisabled" value="true" />
-				</component>
-				<component type="textarea" name="name" reference="name" field="name" />
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.ProductService" method="printWorkPlan" />
 				<listener event="generateWorkPlan" bean="com.qcadoo.mes.products.ProductService" method="generateWorkPlan" />
 			</component>
-			<component type="grid" name="workPlanComponents" reference="workPlanComponents" source="#{form}.orders">
-				<option type="column" name="number" fields="order" expression="#order['number']"/>
-				<option type="column" name="name" fields="order" expression="#order['name']"/>
-				<option type="correspondingView" value="products/workPlanComponent" />
-				<option type="correspondingComponent" value="form" />
-				<option type="paginable" value="false" />
-				<option type="height" value="200" />
-				<option type="width" value="350" />
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
-			</component>
+			
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingWorkPlan" />
 	</view>	
@@ -724,13 +877,17 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="workPlanComponent" reference="form">
-				<component type="lookup" name="order" field="order">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
-					<option type="expression" value="#name + ' - ' + #number" />
-					<option type="fieldCode" value="number" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="order" field="order">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />

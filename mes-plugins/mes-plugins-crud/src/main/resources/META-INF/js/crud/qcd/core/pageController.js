@@ -1,47 +1,30 @@
-/*
- * ***************************************************************************
- * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
- * Version: 0.2.0
- *
- * This file is part of Qcadoo.
- *
- * Qcadoo is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * ***************************************************************************
- */
-
 var QCD = QCD || {};
 
-QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupComponentName, _hasDataDefinition) {
+QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, _isPopup) {
 	
-	var pageComponents;
 	var viewName = _viewName;
 	var pluginIdentifier = _pluginIdentifier;
-	var context = (_context != null && $.trim(_context) != "") ? JSON.parse(_context) : null; 
-	var lookupComponentName = _lookupComponentName;
 	var hasDataDefinition = _hasDataDefinition;
-	var rootEntityId = null;
+	var isPopup = _isPopup;
+	
+	var pageComponents;
 	
 	var headerComponent = null;
 	
+	var pageOptions;
+	
 	var messagesController;
+	
+	var popup;
 	
 	function constructor(_this) {
 		
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
 		QCDConnector.mainController = _this;
+		
+		var pageOptionsElement = $("#pageOptions");
+		pageOptions = JSON.parse($.trim(pageOptionsElement.html()));
+		pageOptionsElement.remove();
 		
 		var contentElement = $("body");
 		pageComponents = QCDPageConstructor.getChildrenComponents(contentElement.children(), _this);
@@ -49,194 +32,96 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 		
 		$(window).bind('resize', updateSize);
 		updateSize();
+		
+		if (window.parent) {
+			$(window.parent).focus(onWindowClick);
+		} else {
+			$(window).focus(onWindowClick);
+		}
 	}
 	
-	this.init = function(entityId, serializationObject) {
-		var parameters = new Object();
-		if (entityId && $.trim(entityId) != "") {
-			rootEntityId = entityId;
-		}
+	this.init = function(serializationObject) {
 		if (serializationObject) {
 			setComponentState(serializationObject);
-		}
-		if (hasDataDefinition) {
-			parameters.entityId = rootEntityId;
-			parameters.data = getValueData();
-			var valuesJson = JSON.stringify(parameters);
-			QCDConnector.sendPost("data", valuesJson, function(response) {
-				setValueData(response);
-			}, function(message) {
-				//alert(message);
-			});
-		}
-	}
-	
-	this.getViewName = function() {
-		return viewName;
-	}
-	
-	this.getPluginIdentifier = function() {
-		return pluginIdentifier;
-	}
-	
-	this.performCancel = function(entityId, actionsPerformer) {
-		var parameters = new Object();
-		parameters.entityId = entityId;
-		var valuesJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("data", valuesJson, function(response) {
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
+			if (hasDataDefinition) {
+				this.callEvent("initializeAfterBack");
 			}
-		});
-	}
-	
-	this.performNew = function(actionsPerformer) {
-		QCD.info("performNew");
-		var parameters = new Object();
-		var valuesJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("data", valuesJson, function(response) {
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-		});
-	}
-
-	this.getUpdate = function(componentName, value, listeners) {
-		QCD.info("getUpdate "+componentName+"->"+value);
-		if (listeners) {
-			for (var i in listeners) {
-				this.getComponent(listeners[i]).setLoading(true);
-			}
-		}
-		var parameters = {
-			componentName: componentName,
-			data: getValueData(),
-			entityId: rootEntityId
-		};
-		QCD.info(parameters);
-		var valuesJson = JSON.stringify(parameters);
-		var _this = this;
-		QCDConnector.sendPost("dataUpdate", valuesJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
-			if (listeners) {
-				for (var i in listeners) {
-					_this.getComponent(listeners[i]).setLoading(false);
-				}
-			}
-		});
-	}
-	
-	this.performSave = function(componentName, actionsPerformer, callback) {
-		QCD.info("save " +componentName);
-		var parameters = {
-			componentName: componentName,
-			context: context,
-			data: getValueData()
-		};
-		QCD.info(parameters);
-		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("save", parametersJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-			if(callback) {
-				callback();
-			}
-		}, function(response) {
-			if(callback) {
-				callback();
-			}
-		});
-	}
-	
-	this.performDelete = function(componentName, entityId, actionsPerformer, callback) {
-		QCD.info("delete " +componentName+" - "+entityId);
-		var parameters = {
-			componentName: componentName,
-			data: getValueData(),
-			entityId: rootEntityId
-		};
-		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("delete", parametersJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
-			if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-				actionsPerformer.performNext();
-			}
-			if(callback) {
-				callback();
-			}
-		}, function(response) {
-			if(callback) {
-				callback();
-			}
-		});
-	}
-	
-		this.performCallUpdateFunction = function(functionTriggerName, actionsPerformer) {
-			QCD.info("performCallUpdateFunction " +functionTriggerName);
-			var parameters = {
-				triggerName: functionTriggerName,
-				data: getValueData(),
-				entityId: rootEntityId
-			};
-			QCD.info(parameters);
-			var parametersJson = JSON.stringify(parameters);
-			QCDConnector.sendPost("callUpdateFunction", parametersJson, function(response) {
-				QCD.info(response);
-				setValueData(response);
-				if (actionsPerformer && !(response.errorMessages &&response.errorMessages.length > 0)) {
-					actionsPerformer.performNext();
-				}
-			});
-		}
-	
-	this.performCallFunction = function(functionName, additionalAttribute, entityId, actionsPerformer) {
-		if (functionName == "goToUrl") {
-			var url = additionalAttribute;
-			if (entityId) {
-				url += "?entityId="+entityId;
-			}
-			goToPage(url);
-		} else if (functionName == "updatePlugin") {
-			alert("updatePlugin");
 		} else {
-			if (additionalAttribute == "pdf") {
-				window.open(viewName+"/function/"+functionName+".pdf?entityId="+entityId);
-			} else if (additionalAttribute == "xls") {
-				window.open(viewName+"/function/"+functionName+".xls?entityId="+entityId);
+			if (hasDataDefinition) {
+				this.callEvent("initialize");
 			}
-		}
-		if (actionsPerformer) {
-			actionsPerformer.performNext();
 		}
 	}
 	
-	this.performChangePriority = function(componentName, entityId, direction) {
-		var parameters = {
-			componentName: componentName,
-			data: getValueData(),
-			offset: direction,
-			entityId: rootEntityId
-		};
+	this.setContext = function(contextStr) {
+		var context = JSON.parse(contextStr);
+		for (var i in context) {
+			var dotPos = i.lastIndexOf(".");
+			var contextComponentPath = i.substring(0, dotPos);
+			var contextField = i.substring(dotPos+1);
+			var contextComponent = this.getComponent(contextComponentPath);
+			contextComponent.addContext(contextField, context[i]);
+		}
+	}
+	
+	
+	this.callEvent = function(eventName, component, completeFunction, args, actionsPerformer) {
+		var initParameters = new Object();
+		initParameters.event = {
+			name: eventName
+		}
+		if (component) {
+			initParameters.event.component = component;
+			var componentObject = getComponent(component);
+			var componentListeners = componentObject.options.listeners;
+			if (componentListeners) {
+				for (var i = 0; i<componentListeners.length; i++) {
+					var listenerElement = getComponent(componentListeners[i]);
+					listenerElement.setComponentLoading(true);
+				}
+			}
+		}
+		if (args) {
+			initParameters.event.args = args;
+		}
+		initParameters.components = getValueData();
+		performEvent(initParameters, completeFunction, actionsPerformer);
+	}
+	
+	function performEvent(parameters, completeFunction, actionsPerformer) {
 		var parametersJson = JSON.stringify(parameters);
-		QCDConnector.sendPost("move", parametersJson, function(response) {
-			QCD.info(response);
-			setValueData(response);
+		QCDConnector.sendPost(parametersJson, function(response) {
+			if (completeFunction) {
+				completeFunction();
+			}
+			if (response.redirect) {
+				if (response.redirect.openInNewWindow) {
+					window.open(response.redirect.url);
+				} else {
+					goToPage(response.redirect.url, false);
+					return;
+				}
+			} else {
+				setValueData(response);
+			}
+			if (actionsPerformer && response.content.status == "ok") {
+				actionsPerformer.performNext();
+			}
+		}, function() {
+			if (completeFunction) {
+				completeFunction();
+			}
 		});
 	}
 	
-	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
-		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
-		if (actionsPerformer) {
-			actionsPerformer.performNext();
-		}
-	}
+	// TODO mina
+	
+//	this.performLookupSelect = function(entityId, entityString, entityCode, actionsPerformer) {
+//		window.opener[lookupComponentName+"_onSelectFunction"].call(null, entityId, entityString, entityCode);
+//		if (actionsPerformer) {
+//			actionsPerformer.performNext();
+//		}
+//	}
 	
 	this.performRibbonAction = function(ribbonAction) {
 		var actionParts = ribbonAction.split(";");
@@ -251,13 +136,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 					return;
 				}
 				var elementPath = action.substring(elementBegin+1, elementEnd);
-				
-				var elementPathElements = elementPath.split(".");
-				var component = pageComponents[elementPathElements[0]];
-				var componentPath = elementPath.substring(elementPathElements[0].length+1);
-				if (componentPath) {
-					component = component.getComponent(componentPath);
-				}
+				var component = this.getComponent(elementPath);
 				
 				var elementAction = action.substring(elementEnd+1);
 				if (elementAction[0] != ".") {
@@ -304,7 +183,8 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 					this.actionIter++;
 					
 					var fullArgumentList = new Array(this);
-					fullArgumentList = fullArgumentList.concat(actionObject.arguments);
+					fullArgumentList = fullArgumentList.concat(actionObject.arguments[0]);
+					fullArgumentList.push(actionObject.arguments.slice(1));
 					
 					func.apply(actionObject.component, fullArgumentList);
 				}
@@ -325,24 +205,20 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	}
 	
 	function setComponentState(state) {
-		QCD.debug(state);
-		if (state.value) {
-			rootEntityId = state.value;
-		}
 		for (var i in state.components) {
 			var component = pageComponents[i];
 			component.setState(state.components[i]);
 		}
 	}
 	
-	this.showMessage = function(type, content) {
+	this.showMessage = function(message) {
 		if (window.parent && window.parent.addMessage) {
-			window.parent.addMessage(type, content);
+			window.parent.addMessage(message);
 		} else {
 			if (!messagesController) {
 				messagesController = new QCD.MessagesController();
 			}
-			messagesController.addMessage(type, content);
+			messagesController.addMessage(message);
 		}
 	}
 	
@@ -358,56 +234,90 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	function setValueData(data) {
 		QCD.debug(data);
 		if (data.messages) {
-			var messagesToShow = new Array();
-			var isOvverideMode = false;
 			for (var i in data.messages) {
 				var message = data.messages[i];
-				if (message.message.substring(0,9) == "override:") {
-					message.message = message.message.substring(9);
-					if (!isOvverideMode) {
-						isOvverideMode= true;
-						messagesToShow = new Array();
-					}
-					messagesToShow.push(message);	
-				} else {
-					if (!isOvverideMode) {
-						messagesToShow.push(message);
-					}
-				}
-			}
-			for (var i in messagesToShow) {
-				var message = messagesToShow[i];
-				window.parent.addMessage(message.type, message.message);
+				window.parent.addMessage(message.type, message.content);
 			}
 		}
 		for (var i in data.components) {
 			var component = pageComponents[i];
 			component.setValue(data.components[i]);
 		}
-		if (data.value) {
-			rootEntityId = data.value;
-		}
 	}
 	
 	this.getComponent = function(componentPath) {
-		var componentName = componentPath.split(".")[0];
-		var path = componentPath.substring(componentName.length+1);
-		return pageComponents[componentName].getComponent(path);
+		var pathParts = componentPath.split(".");
+		var component = pageComponents[pathParts[0]];
+		if (! component) {
+			return null;
+		}
+		for (var i = 1; i<pathParts.length; i++) {
+			component = component.components[pathParts[i]];
+			if (! component) {
+				return null;
+			}
+		}
+		return component;
+	}
+	var getComponent = this.getComponent;
+	
+	function onWindowClick() {
+		if (popup) {
+			popup.parentComponent.onPopupClose();
+			popup.window.close();
+			popup = null;
+		}
 	}
 	
-	this.getTranslation = function(key) {
-		return window.translationsMap[key] ? window.translationsMap[key] : key;
+	this.closePopup = function() {
+		if (popup) {
+			popup.parentComponent.onPopupClose();
+			try {
+				popup.window.close();
+			} catch (e) {
+			}
+			popup = null;
+		}
 	}
-	var getTranslation = this.getTranslation;
 	
-	this.goToPage = function(url) {
-		if(canClose()) {
+	this.openPopup = function(url, parentComponent, title) {
+		if (popup) {
+			
+		}
+		
+		if (url.indexOf("?") != -1) {
+			url+="&";
+		} else {
+			url+="?";
+		}
+		url+="popup=true";
+		
+		popup = new Object();
+		popup.parentComponent = parentComponent;
+		var left = (screen.width/2)-(400);
+		var top = (screen.height/2)-(350);
+		popup.window = window.open(url, title, 'status=0,toolbar=0,width=800,height=700,left='+left+',top='+top);
+		return popup.window;
+	}
+	
+	this.onPopupInit = function() {
+		popup.parentComponent.onPopupInit();
+	}
+	
+	this.isPopup = function() {
+		return isPopup;
+	}
+	
+	this.goToPage = function(url, isPage) {
+		if (isPage == undefined || isPage == null) {
+			isPage = true;
+		}
+		//if(canClose()) {
 			var serializationObject = {
-				value: rootEntityId,
 				components: getValueData()
 			}
-			window.parent.goToPage(url, serializationObject);
-		}
+			window.parent.goToPage(url, serializationObject, isPage);
+		//}
 	}
 	var goToPage = this.goToPage;
 	
@@ -421,12 +331,12 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	function canClose() {
 		changed = false;
 		for (var i in pageComponents) {
-			if(pageComponents[i].isChanged()) {
+			if(pageComponents[i].isChanged()) {				
 				changed = true;
 			}
 		}
 		if(changed) {
-			return window.confirm(getTranslation('commons.backWithChangesConfirmation'));
+			return window.confirm(pageOptions.translations.backWithChangesConfirmation);
 		} else {
 			return true;
 		}
@@ -438,7 +348,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _context, _lookupCom
 	
 	this.onSessionExpired = function() {
 		var serializationObject = {
-			value: rootEntityId,
 			components: getValueData()
 		}
 		window.parent.onSessionExpired(serializationObject);

@@ -121,7 +121,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         given(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class))).willReturn("i18n");
         given(translationService.translate(Mockito.anyList(), Mockito.any(Locale.class))).willReturn("i18n");
 
-        grid = new GridComponentState(substitutesFieldDefinition, columns);
+        grid = new GridComponentState(substitutesFieldDefinition, columns, null, null);
         grid.setDataDefinition(substituteDataDefinition);
         grid.setTranslationService(translationService);
     }
@@ -156,7 +156,7 @@ public class GridComponentStateTest extends AbstractStateTest {
     @SuppressWarnings("unchecked")
     public void shouldInitializeWithoutData() throws Exception {
         // given
-        grid = new GridComponentState(null, columns);
+        grid = new GridComponentState(null, columns, null, null);
         grid.setDataDefinition(substituteDataDefinition);
 
         JSONObject json = new JSONObject(Collections.singletonMap(ComponentState.JSON_CONTENT, new JSONObject()));
@@ -606,7 +606,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         // given
         FieldDefinition field = mock(FieldDefinition.class);
         given(field.getName()).willReturn("name");
-        given(field.getValue("John")).willReturn("Johny");
+        given(field.getValue("John", Locale.ENGLISH)).willReturn("Johny");
 
         GridComponentColumn column = new GridComponentColumn("name");
         column.addField(field);
@@ -625,11 +625,11 @@ public class GridComponentStateTest extends AbstractStateTest {
         // given
         FieldDefinition field1 = mock(FieldDefinition.class);
         given(field1.getName()).willReturn("name");
-        given(field1.getValue("John")).willReturn("Johny");
+        given(field1.getValue("John", Locale.ENGLISH)).willReturn("Johny");
 
         FieldDefinition field2 = mock(FieldDefinition.class);
         given(field2.getName()).willReturn("lastname");
-        given(field2.getValue("Smith")).willReturn("Smithy");
+        given(field2.getValue("Smith", Locale.ENGLISH)).willReturn("Smithy");
 
         GridComponentColumn column = new GridComponentColumn("name");
         column.addField(field1);

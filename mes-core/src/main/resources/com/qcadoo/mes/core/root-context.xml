@@ -115,6 +115,9 @@
 		<security:custom-filter ref="mySessionExpirationFilter"
 			before="FIRST" />
 
+		<security:custom-filter ref="deletedUserFilter"
+			before="SESSION_MANAGEMENT_FILTER" />
+
 		<security:custom-filter ref="customAuthenticationFilter"
 			position="FORM_LOGIN_FILTER" />
 
@@ -183,6 +186,11 @@
 
 	<bean id="mySessionExpirationFilter"
 		class="com.qcadoo.mes.security.internal.SessionExpirationFilter" />
+
+	<bean id="deletedUserFilter"
+		class="com.qcadoo.mes.security.internal.DeletedUserFilter">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
 
 	<bean id="customAuthenticationFilter"
 		class="com.qcadoo.mes.security.internal.CustomAuthenticationFilter">

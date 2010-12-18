@@ -74,9 +74,12 @@ public final class GridComponentState extends AbstractComponentState {
 
     private final Map<String, String> filters = new HashMap<String, String>();
 
-    public GridComponentState(final FieldDefinition scopeField, final Map<String, GridComponentColumn> columns) {
+    public GridComponentState(final FieldDefinition scopeField, final Map<String, GridComponentColumn> columns,
+            final String orderColumn, final String orderDirection) {
         this.belongsToFieldDefinition = scopeField;
         this.columns = columns;
+        this.orderColumn = orderColumn;
+        this.orderDirection = orderDirection;
         registerEvent("refresh", eventPerformer, "refresh");
         registerEvent("select", eventPerformer, "selectEntity");
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
@@ -371,7 +374,7 @@ public final class GridComponentState extends AbstractComponentState {
 
         private boolean repeatWithFixedFirstResult(final SearchResult result) {
             if (result.getEntities().isEmpty() && result.getTotalNumberOfEntities() > 0) {
-                while (firstResult > result.getTotalNumberOfEntities()) {
+                while (firstResult >= result.getTotalNumberOfEntities()) {
                     firstResult -= maxResults;
                 }
                 return true;

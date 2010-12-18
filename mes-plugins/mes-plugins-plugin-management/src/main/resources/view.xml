@@ -37,7 +37,7 @@
 					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" />
 					<smallButtons name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);">
 						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{grid}.fireEvent(deinstall);" />
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(remove);" />
+						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" />
 					</smallButtons>
 				</group>
 			</ribbon>
@@ -47,6 +47,7 @@
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
 				<option type="column" name="status" fields="status" />
+				<option type="order" column="name" direction="asc"/>
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />
 				<option type="searchable" value="name,vendor,status" />
@@ -59,7 +60,7 @@
 				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginEnableClick" />
 				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDisableClick" />
 				<listener event="deinstall" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDeinstallClick" />
-				<listener event="remove" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
+				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -72,18 +73,33 @@
 					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
 				</group>
 				<group name="plugins">
-					<bigButton name="update" icon="updateIcon24.png" action="#{form}.performCallFunction(goToUrl,../update.html);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{form}.fireEvent(update);" />
 				</group>
 			</ribbon>
 			<component type="form" name="plugin" reference="form">
-				<component type="textarea" name="name" field="name" defaultEnabled="false" />
-				<component type="input" name="version" field="version" defaultEnabled="false" />
-				<component type="input" name="vendor" field="vendor" defaultEnabled="false" />
-				<component type="textarea" name="description" field="description" defaultEnabled="false" />
-				<component type="select" name="status" field="status" defaultEnabled="false" />
-				<component type="checkbox" name="base" field="base" defaultEnabled="false" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="8">
+					<layoutElement column="1" row="1" height="2">
+						<component type="textarea" name="name" field="name" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="version" field="version" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="vendor" field="vendor" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="5" height="2">
+						<component type="textarea" name="description" field="description" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="select" name="status" field="status" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="checkbox" name="base" field="base" defaultEnabled="false" />
+					</layoutElement>
+				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
+				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
 			</component>
 		</component>
 	</view>
@@ -98,7 +114,7 @@
 			<component type="staticPage" name="pluginDownload">
 				<option type="page" value="plugins/pluginDownload.jsp" />
 			</component>
-			<option type="header" value="false" />
+			<option type="header" value="true" />
 		</component>
 	</view>
 	

@@ -95,7 +95,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
         Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
-        PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader);
+        PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField("name").toString(), PdfUtil.getArialRegular9Dark()));
@@ -106,8 +106,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().stripTrailingZeros()), PdfUtil
-                    .getArialBold9Dark()));
+            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue()), PdfUtil.getArialBold9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
@@ -116,7 +115,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
-        PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader);
+        PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader, true);
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
@@ -139,7 +138,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity.stripTrailingZeros();
+            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity;
             table.addCell(new Phrase(getDecimalFormat().format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
@@ -147,7 +146,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
+    protected String getSuffix(final Locale locale) {
         return "";
     }
 

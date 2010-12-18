@@ -49,9 +49,11 @@ public abstract class XlsDocumentService extends DocumentService {
         HSSFSheet sheet = workbook.createSheet(getReportTitle(locale));
         addHeader(sheet, locale);
         addSeries(sheet, entity);
+        sheet.setZoom(4, 3);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix() + XlsCopyUtil.XLS_EXTENSION);
+            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(locale)
+                    + XlsCopyUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {
             LOG.error("Problem with generating document - " + e.getMessage());

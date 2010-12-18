@@ -27,11 +27,13 @@ package com.qcadoo.mes.products.print.xls;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
 @Service
 public final class WorkPlanForMachineXlsService extends XlsDocumentService {
@@ -39,14 +41,23 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
-        header.createCell(0).setCellValue(
-                getTranslationService().translate("products.workPlan.report.operationTable.machine.column", locale));
-        header.createCell(1).setCellValue(getTranslationService().translate("products.operation.number.label", locale));
-        header.createCell(2).setCellValue(getTranslationService().translate("products.operation.name.label", locale));
-        header.createCell(3).setCellValue(
-                getTranslationService().translate("products.workPlan.report.operationTable.productsOut.column", locale));
-        header.createCell(4).setCellValue(
-                getTranslationService().translate("products.workPlan.report.operationTable.productsIn.column", locale));
+        HSSFCell cell0 = header.createCell(0);
+        cell0.setCellValue(getTranslationService().translate("products.workPlan.report.operationTable.machine.column", locale));
+        cell0.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell1 = header.createCell(1);
+        cell1.setCellValue(getTranslationService().translate("products.operation.number.label", locale));
+        cell1.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell2 = header.createCell(2);
+        cell2.setCellValue(getTranslationService().translate("products.operation.name.label", locale));
+        cell2.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell3 = header.createCell(3);
+        cell3.setCellValue(getTranslationService()
+                .translate("products.workPlan.report.operationTable.productsOut.column", locale));
+        cell3.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        HSSFCell cell4 = header.createCell(4);
+        cell4.setCellValue(getTranslationService().translate("products.workPlan.report.operationTable.productsIn.column", locale));
+        cell4.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+
     }
 
     @Override
@@ -65,24 +76,32 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
                     row.createCell(0).setCellValue((String) machine.getField("name"));
                     row.createCell(1).setCellValue(operation.getField("number").toString());
                     row.createCell(2).setCellValue(operation.getField("name").toString());
-                    List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductComponents");
+                    List<Entity> operationProductInComponents = operationComponent
+                            .getHasManyField("operationProductInComponents");
+                    List<Entity> operationProductOutComponents = operationComponent
+                            .getHasManyField("operationProductOutComponents");
                     StringBuilder productsOut = new StringBuilder();
                     StringBuilder productsIn = new StringBuilder();
-                    for (Entity operationProductComponent : operationProductComponents) {
+                    for (Entity operationProductComponent : operationProductInComponents) {
                         Entity product = (Entity) operationProductComponent.getField("product");
-                        if ((Boolean) operationProductComponent.getField("inParameter")) {
-                            productsIn.append(product.getField("number").toString() + " ");
-                            productsIn.append(product.getField("name").toString() + ", ");
-                        } else {
-                            productsOut.append(product.getField("number").toString() + " ");
-                            productsOut.append(product.getField("name").toString() + ", ");
-                        }
+                        productsIn.append(product.getField("number").toString() + " ");
+                        productsIn.append(product.getField("name").toString() + ", ");
+                    }
+                    for (Entity operationProductComponent : operationProductOutComponents) {
+                        Entity product = (Entity) operationProductComponent.getField("product");
+                        productsOut.append(product.getField("number").toString() + " ");
+                        productsOut.append(product.getField("name").toString() + ", ");
                     }
                     row.createCell(3).setCellValue(productsOut.toString());
                     row.createCell(4).setCellValue(productsIn.toString());
                 }
             }
         }
+        sheet.autoSizeColumn((short) 0);
+        sheet.autoSizeColumn((short) 1);
+        sheet.autoSizeColumn((short) 2);
+        sheet.autoSizeColumn((short) 3);
+        sheet.autoSizeColumn((short) 4);
     }
 
     @Override
@@ -91,7 +110,7 @@ public final class WorkPlanForMachineXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getSuffix() {
-        return "ForMachine";
+    protected String getSuffix(final Locale locale) {
+        return getTranslationService().translate("products.workPlan.report.fileName.suffix.forMachine", locale);
     }
 }

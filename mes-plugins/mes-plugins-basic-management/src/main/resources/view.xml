@@ -38,6 +38,7 @@
 			<component type="grid" name="machines" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
+				<option type="order" column="number" direction="desc"/>
 				<option type="searchable" value="name,number" />
 				<option type="orderable" value="name,number" />
 				<option type="correspondingView" value="basic/machine" />
@@ -68,10 +69,20 @@
 				</group>
 			</ribbon>	
 			<component type="form" name="machine" reference="form">
-				<component type="input" name="number" field="number"/>
-				<component type="textarea" name="name" field="name" />
-				<component type="checkbox" name="productionLine" field="productionLine"/>
-				<component type="textarea" name="description" field="description" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number"/>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="checkbox" name="productionLine" field="productionLine"/>
+					</layoutElement>
+					<layoutElement column="1" row="5" height="2">
+						<component type="textarea" name="description" field="description" />
+					</layoutElement>
+				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name"/>
 			</component>
@@ -91,6 +102,7 @@
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="surname" fields="surname" link="true"/>
 				<option type="column" name="post" fields="post" link="true"/>
+				<option type="order" column="number" direction="desc"/>
 				<option type="searchable" value="name,number,surname,post" />
 				<option type="orderable" value="name,number,surname,post" />
 				<option type="correspondingView" value="basic/staff" />
@@ -121,10 +133,20 @@
 				</group>
 			</ribbon>		
 			<component type="form" name="staff" reference="form">
-				<component type="input" name="number" field="number"/>
-				<component type="input" name="name" field="name" />
-				<component type="input" name="surname" field="surname" />
-				<component type="input" name="post" field="post" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number"/>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="name" field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="surname" field="surname" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="post" field="post" />
+					</layoutElement>
+				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name"/>
 			</component>

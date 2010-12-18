@@ -42,18 +42,3 @@
 		<div class="gridFooter" id="${component.path}_gridFooter"></div>
 	</div>
 </div>
-
-	<!--<table style="height: 100%; width: 100%;" cellpadding=0 cellspacing=0 class="gridTable">
-	
-		<tr><td id="${component['path']}_gridHeader" class="gridHeaderCell">
-		</td></tr>
-		
-		<tr style="height: 100%; width: 100%;" id="${component['path']}_gridCell"><td>
-				<table class="element_table" id="${component.path}_grid" style="height: 100%">
-				</table>
-		</td></tr>
-		
-		<tr><td id="${component['path']}_gridFooter" class="gridFooterCell">
-		</td></tr>
-		
-	</table>-->

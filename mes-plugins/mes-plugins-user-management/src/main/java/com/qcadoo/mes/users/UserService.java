@@ -93,11 +93,22 @@ public final class UserService {
         }
     }
 
+    public boolean checkIfLoginDoesNotContainIllegalCharacters(final DataDefinition dataDefinition, final Entity entity) {
+        String userName = entity.getStringField("userName");
+
+        if (!userName.matches("^[a-zA-Z0-9\\.]+$")) {
+            entity.addError(dataDefinition.getField("userName"), "users.validate.global.error.loginIllegalCharacters");
+            return false;
+        }
+
+        return true;
+    }
+
     public boolean checkPassword(final DataDefinition dataDefinition, final Entity entity) {
         String password = entity.getStringField("password");
         String passwordConfirmation = entity.getStringField("passwordConfirmation");
         String oldPassword = entity.getStringField("oldPassword");
-        String viewIdentifier = entity.getStringField("viewIdentifier");
+        String viewIdentifier = entity.getId() == null ? "userChangePassword" : entity.getStringField("viewIdentifier");
 
         if (!"profileChangePassword".equals(viewIdentifier) && !"userChangePassword".equals(viewIdentifier)) {
             return true;
@@ -109,6 +120,7 @@ public final class UserService {
                 return false;
             }
             Object currentPassword = dataDefinition.get(entity.getId()).getField("password");
+
             if (!currentPassword.equals(oldPassword)) {
                 entity.addError(dataDefinition.getField("oldPassword"), "users.validate.global.error.wrongOldPassword");
                 return false;

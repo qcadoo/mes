@@ -56,6 +56,10 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     private int width = DEFAULT_GRID_WIDTH;
 
+    private String defaultOrderColumn;
+
+    private String defaultOrderDirection;
+
     private boolean lookup;
 
     public GridComponentPattern(final ComponentDefinition componentDefinition) {
@@ -64,7 +68,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new GridComponentState(belongsToFieldDefinition, columns);
+        return new GridComponentState(belongsToFieldDefinition, columns, defaultOrderColumn, defaultOrderDirection);
     }
 
     @Override
@@ -111,7 +115,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         json.put("creatable", creatable);
         json.put("height", height);
         json.put("width", width);
-        json.put("fullscreen", width == 0 || height == 0); // TODO masz
+        json.put("fullscreen", width == 0 || height == 0);
         json.put("lookup", lookup);
         json.put("correspondingView", correspondingView);
         json.put("correspondingComponent", correspondingComponent);
@@ -238,6 +242,9 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 searchableColumns.addAll(parseColumns(option.getValue()));
             } else if ("orderable".equals(option.getType())) {
                 orderableColumns.addAll(parseColumns(option.getValue()));
+            } else if ("order".equals(option.getType())) {
+                defaultOrderColumn = option.getAtrributeValue("column");
+                defaultOrderDirection = option.getAtrributeValue("direction");
             } else if ("column".equals(option.getType())) {
                 parseColumnOption(option);
             } else {

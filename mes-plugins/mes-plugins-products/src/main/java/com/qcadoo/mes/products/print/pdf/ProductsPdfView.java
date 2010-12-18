@@ -65,6 +65,8 @@ public abstract class ProductsPdfView extends AbstractPdfView {
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
+        decimalFormat.setMaximumFractionDigits(3);
+        decimalFormat.setMinimumFractionDigits(3);
         DefaultEntity entity = (DefaultEntity) model.get("entity");
         String fileName = addContent(document, entity, locale, writer);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);

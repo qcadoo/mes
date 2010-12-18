@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -84,7 +83,7 @@
 						</systemProperty>
 						<systemProperty>
 							<name>QCADOO_CONF</name>
-							<value>${basedir}/conf/jetty</value>
+							<value>${basedir}/conf/${profile.name}</value>
 						</systemProperty>
 						<systemProperty>
 							<name>QCADOO_LOG</name>
@@ -125,7 +124,7 @@
 
 	<profiles>
 		<profile>
-			<id>installer</id>
+			<id>package</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -145,13 +144,13 @@
 										<tstamp>
 											<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
 										</tstamp>
-										<property name="build.number" value="-"/>
+										<property name="build.number" value="-" />
 										<echo file="${basedir}/target/classes/build.properties">
-buildApplicationName = Qcadoo MES
-buildApplicationVersion = ${pom.version}
-buildTime = ${build.time}
-buildNumber = ${build.number}
-buildRevision = ${build.revision}
+											buildApplicationName = Qcadoo MES
+											buildApplicationVersion = ${pom.version}
+											buildTime = ${build.time}
+											buildNumber = ${build.number}
+											buildRevision = ${build.revision}
 										</echo>
 									</tasks>
 								</configuration>
