@@ -175,8 +175,8 @@ public final class FormComponentState extends AbstractContainerState {
             Entity databaseEntity = getFormEntity();
             if (databaseEntity == null && entityId != null) {
                 addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
+                clear(args);
             } else {
-
                 Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(),
                         entityId);
 
@@ -200,9 +200,8 @@ public final class FormComponentState extends AbstractContainerState {
                 } else {
                     addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
                 }
+                setFieldsRequiredAndDisables();
             }
-
-            setFieldsRequiredAndDisables();
         }
 
         public void delete(final String[] args) {
@@ -223,14 +222,13 @@ public final class FormComponentState extends AbstractContainerState {
             if (entity != null) {
                 copyEntityToFields(entity, true);
                 setFieldValue(entity.getId());
+                setFieldsRequiredAndDisables();
             } else {
                 if (entityId != null) {
                     addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
                 }
                 clear(args);
             }
-
-            setFieldsRequiredAndDisables();
         }
 
         public void clear(final String[] args) {
