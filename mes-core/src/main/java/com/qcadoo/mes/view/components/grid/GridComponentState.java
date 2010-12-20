@@ -245,9 +245,14 @@ public final class GridComponentState extends AbstractComponentState {
         }
 
         public void removeSelectedEntity(final String[] args) {
-            getDataDefinition().delete(selectedEntityId);
+            Entity entity = getDataDefinition().get(selectedEntityId);
+            if (entity == null) {
+                addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
+            } else {
+                getDataDefinition().delete(selectedEntityId);
+                addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
+            }
             setSelectedEntityId(null);
-            addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
         }
 
         public void moveUpSelectedEntity(final String[] args) {

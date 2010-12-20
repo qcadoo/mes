@@ -261,11 +261,13 @@ public final class ProductService {
     public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
         FormComponentState order = (FormComponentState) state.getComponentByReference("form");
 
-        Entity entity = dataDefinitionService.get("products", "order").get(order.getEntityId());
+        if (order.getEntityId() != null) {
+            Entity entity = dataDefinitionService.get("products", "order").get(order.getEntityId());
 
-        if (entity != null && "done".equals(entity.getStringField("state")) && order.isValid()) {
-            order.setEnabled(false);
-            setChildrenEnabled(order.getChildren().values(), false);
+            if (entity != null && "done".equals(entity.getStringField("state")) && order.isValid()) {
+                order.setEnabled(false);
+                setChildrenEnabled(order.getChildren().values(), false);
+            }
         }
     }
 
