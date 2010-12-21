@@ -29,11 +29,7 @@
 	<view name="menuCategories" model="menuCategory" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{grid}.performNew;" />
-					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{grid}.performDelete;" />
-				</group>
+				<group template="gridActions"/>
 			</ribbon>
 			<component type="grid" name="menuCategories" reference="grid">
 				<option type="column" name="categoryOrder" fields="categoryOrder" />
@@ -53,19 +49,8 @@
 	<view name="menuCategory" model="menuCategory">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{form}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{form}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{form}.performDelete; #{window}.performBack" />
-				</group>
+				<group template="navigation"/>
+				<group template="formActions"/>
 			</ribbon>
 			<component type="form" name="menuCategory" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
@@ -101,19 +86,8 @@
 	<view name="menuViewDefinitionItem" model="menuViewDefinitionItem">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{form}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{form}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{form}.performDelete; #{window}.performBack" />
-				</group>
+				<group template="navigation"/>
+				<group template="formActions"/>
 			</ribbon>
 			<component type="form" name="menuViewDefinitionItem" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
