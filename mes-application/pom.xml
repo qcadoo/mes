@@ -63,6 +63,11 @@
 			<artifactId>tiles-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.yahoo.platform.yui</groupId>
+			<artifactId>yuicompressor</artifactId>
+			<version>2.3.6</version>
+		</dependency>
+		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>system</scope>
@@ -77,10 +82,6 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<configuration>
 					<systemProperties>
-						<systemProperty>
-							<name>com.qcadoo.mes.application.copyResources</name>
-							<value>false</value>
-						</systemProperty>
 						<systemProperty>
 							<name>QCADOO_CONF</name>
 							<value>${basedir}/conf/${profile.name}</value>
@@ -148,9 +149,11 @@
 										<echo file="${basedir}/target/classes/build.properties">
 											buildApplicationName = Qcadoo MES
 											buildApplicationVersion = ${pom.version}
-											buildTime = ${build.time}
+											buildTime =
+											${build.time}
 											buildNumber = ${build.number}
-											buildRevision = ${build.revision}
+											buildRevision =
+											${build.revision}
 										</echo>
 									</tasks>
 								</configuration>

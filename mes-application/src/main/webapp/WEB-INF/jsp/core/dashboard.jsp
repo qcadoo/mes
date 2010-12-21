@@ -31,10 +31,18 @@
 <html>
 <head>
 
-	<link rel="stylesheet" href="css/core/dashboard.css" type="text/css" />
-	<link rel="stylesheet" href="css/core/menu/style.css" type="text/css" />
-	
-	<script type="text/javascript" src="js/core/lib/jquery-1.4.2.min.js"></script>
+	<c:choose>
+		<c:when test="${compressStaticResources}">
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/qcadoo.min.css" type="text/css" />
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
+		</c:when>
+		<c:otherwise>
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/dashboard.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menu/style.css" type="text/css" />
+			
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
+		</c:otherwise>
+	</c:choose>
 	
 	<script type="text/javascript">
 

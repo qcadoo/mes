@@ -126,7 +126,7 @@ div.filterButton {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	border: 1px solid #959595;	
-	background: transparent url(../images/form/input_c_transparent.png) no-repeat 0 0;
+	background: transparent url(/css/crud/images/form/input_c_transparent.png) no-repeat 0 0;
 	padding-left: 6px;
 }
 
@@ -156,16 +156,16 @@ div.filterButton {
 	background-position: 0px 0px;
 }
 .headerPagingButton.headerButton_first {
-	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_first.png');
+	background-image: url('/css/crud/images/grid/qcadoo_grid_arrows/arrow_first.png');
 }
 .headerPagingButton.headerButton_last {
-	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_last.png');
+	background-image: url('/css/crud/images/grid/qcadoo_grid_arrows/arrow_last.png');
 }
 .headerPagingButton.headerButton_left {
-	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_left.png');
+	background-image: url('/css/crud/images/grid/qcadoo_grid_arrows/arrow_left.png');
 }
 .headerPagingButton.headerButton_right {
-	background-image: url('../images/grid/qcadoo_grid_arrows/arrow_right.png');
+	background-image: url('/css/crud/images/grid/qcadoo_grid_arrows/arrow_right.png');
 }
 
 
@@ -224,7 +224,7 @@ div.filterButton {
 	visible: none;
 	display: inline-block;
 	visibility: hidden;
-	background: transparent url('../images/grid/sortArrows.png') no-repeat 0 -16px;
+	background: transparent url('/css/crud/images/grid/sortArrows.png') no-repeat 0 -16px;
 	vertical-align: top;
 	margin-left: 5px;
 }
@@ -243,7 +243,7 @@ div.filterButton {
 
 .gridContainer .ui-th-column,
 .gridContainer .ui-jqgrid-hdiv {
-	background: transparent url('../images/grid/gradientygrid/gradient_header.png') repeat-x 0 0;
+	background: transparent url('/css/crud/images/grid/gradientygrid/gradient_header.png') repeat-x 0 0;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	color: #e8e8e8;

@@ -33,12 +33,12 @@
 }
 /* q menu */
 #q_row1_out {
-	background-image:url('images/q_row1_bg.png');
+	background-image:url('/css/core/menu/images/q_row1_bg.png');
 	background-position: top;
 	background-repeat: repeat-x;
 }
 #secondLevelMenuWrapper {
-	background-image:url('images/q_row2_bg.png');
+	background-image:url('/css/core/menu/images/q_row2_bg.png');
 	background-position: top;
 	background-repeat: repeat-x;
 }
@@ -50,13 +50,13 @@
 }
 #q_row3_out {
 	background-color:#f5f5f5;
-	background-image:url('images/q_row3_bg.png');
+	background-image:url('/css/core/menu/images/q_row3_bg.png');
 	background-position: top;
 	background-repeat: repeat-x;	
 }
 #q_row4_out {
-	//background-image:url('images/q_row4_bg.png');
-	background-image:url('images/shadow_20.png');
+	//background-image:url('/css/core/menu/images/q_row4_bg.png');
+	background-image:url('/css/core/menu/images/shadow_20.png');
 	background-position: top;
 	background-repeat: repeat-x;
 	//height: 6px;
@@ -81,12 +81,12 @@
 	margin:auto;
 }
 .pic_down {
-	background-image:url('images/down.png');
+	background-image:url('/css/core/menu/images/down.png');
 	background-position: right;
 	background-repeat: no-repeat;
 }
 .pic_down_grey {
-	background-image:url('images/down_grey.png');
+	background-image:url('/css/core/menu/images/down_grey.png');
 	background-position:  right;
 	background-repeat: no-repeat;
 }
@@ -124,82 +124,82 @@ ul.q_row1 li a span {
 	line-height: 29px;
 }
 ul.q_row1 li:hover {
-	background-image:url('images/btn_row1_hover_l.png');
+	background-image:url('/css/core/menu/images/btn_row1_hover_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
 ul.q_row1 li:hover a {
 	color: #fff;
-	background-image: url('images/btn_row1Hover.png');
+	background-image: url('/css/core/menu/images/btn_row1Hover.png');
 	background-repeat:no-repeat;
 	background-position:top right;
 }
 ul.q_row1 li.pic_down:hover a {
-	background-image: url('images/btn_down.png');
+	background-image: url('/css/core/menu/images/btn_down.png');
 	background-repeat:no-repeat;
 	background-position:top right;
 }
 ul.q_row1 li:hover a span {
 	color: #fff;
-	background-image: url('images/btn_row1_hover_c.png');
+	background-image: url('/css/core/menu/images/btn_row1_hover_c.png');
 	background-repeat:repeat-x;
 	background-position: 0px 0px;
 }
 /* row_1 menu [path] */
 ul.q_row1 li.path {
-	background-image: url('images/btn_row1_path_l.png');
+	background-image: url('/css/core/menu/images/btn_row1_path_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 	}	
 ul.q_row1 li.path a {
-	background-image: url('images/btn_row1Path.png');
+	background-image: url('/css/core/menu/images/btn_row1Path.png');
 	background-repeat:no-repeat;
 	background-position:top right;
 	}
 ul.q_row1 li.path a span {
-	background-image: url('images/btn_row1_path_c.png');
+	background-image: url('/css/core/menu/images/btn_row1_path_c.png');
 	}
 ul.q_row1 li.path:hover {
-	background-image: url('images/btn_row1_path_hover_l.png');
+	background-image: url('/css/core/menu/images/btn_row1_path_hover_l.png');
 	background-position: left;
 	}	
 ul.q_row1 li.path:hover a  {
-	background-image: url('images/pathUP.png');
+	background-image: url('/css/core/menu/images/pathUP.png');
 	background-repeat:no-repeat;
 	background-position:top right;
 	}
 ul.q_row1 li.path:hover a span {
-	background-image: url('images/btn_row1_path_hover_c.png');
+	background-image: url('/css/core/menu/images/btn_row1_path_hover_c.png');
 	}
 /* row_1 menu [activ] */
 ul.q_row1 li.activ {
-	background-image: url('images/btn_row1_activ_l.png');
+	background-image: url('/css/core/menu/images/btn_row1_activ_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 	}
 ul.q_row1 li.activ a {
 	color: #189106;
-	background-image: url('images/btn_row1.png');
+	background-image: url('/css/core/menu/images/btn_row1.png');
 	background-repeat:no-repeat;
 	background-position:top right;
 	}
 ul.q_row1 li.activ a span {
 	padding-top:2px;
 	color: #189106;
-	background-image: url('images/btn_row1_activ_c.png');
+	background-image: url('/css/core/menu/images/btn_row1_activ_c.png');
 	}
 ul.q_row1 li.activ:hover {
-	background-image: url('images/btn_row1_activ_l.png');
+	background-image: url('/css/core/menu/images/btn_row1_activ_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 	}
 ul.q_row1 li.activ:hover a {
-	background-image: url('images/btn_row1.png');
+	background-image: url('/css/core/menu/images/btn_row1.png');
 	background-repeat:no-repeat;
 	background-position:top right;
 	}
 ul.q_row1 li.activ:hover a span {
-	background-image: url('images/btn_row1_activ_c.png');
+	background-image: url('/css/core/menu/images/btn_row1_activ_c.png');
 	}
 /* row_1 menu [noImg] */
 ul.q_row1 li.linkHome:hover {
@@ -210,10 +210,10 @@ ul.q_row1 li.linkHome a {
 	width:15px;
 	height: 28px;
 	padding: 2px 0px;
-	background-image: url('images/home.png');
+	background-image: url('/css/core/menu/images/home.png');
 }
 ul.q_row1 li.linkHome a:hover {
-	background-image: url('images/home_hover.png');
+	background-image: url('/css/core/menu/images/home_hover.png');
 }
 /* row_2 menu */
 ul.q_row2 {
@@ -248,7 +248,7 @@ ul.q_row2 li a span {
 	line-height: 24px;
 }
 ul.q_row2 li:hover {
-	background-image: url('images/btn_row2_hover_l.png');
+	background-image: url('/css/core/menu/images/btn_row2_hover_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
@@ -256,70 +256,70 @@ ul.q_row2 li:hover a {
 	height:24px;
 	line-height:24px;
 	padding: 0;	
-	background-image: url('images/btn_row2Hover.png');
+	background-image: url('/css/core/menu/images/btn_row2Hover.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
 ul.q_row2 li.pic_down_grey:hover a {
-	background-image: url('images/btn_down_grey.png');
+	background-image: url('/css/core/menu/images/btn_down_grey.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
 ul.q_row2 li:hover a span {
 	display:block;
-	background-image: url('images/btn_row2_hover_c.png');
+	background-image: url('/css/core/menu/images/btn_row2_hover_c.png');
 }
 /* row_2 menu [path] */
 ul.q_row2 li.path {
-	background-image: url('images/btn_row2_path_l.png');
+	background-image: url('/css/core/menu/images/btn_row2_path_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
 ul.q_row2 li.path a {
-	background-image: url('images/btn_row2Path.png');
+	background-image: url('/css/core/menu/images/btn_row2Path.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
 ul.q_row2 li.path a span  {
-	background-image: url('images/btn_row2_path_c.png');
+	background-image: url('/css/core/menu/images/btn_row2_path_c.png');
 }
 ul.q_row2 li.path:hover  {
-	background-image: url('images/btn_row2_path_hover_l.png');
+	background-image: url('/css/core/menu/images/btn_row2_path_hover_l.png');
 	background-position: left;
 	}
 ul.q_row2 li.path:hover a  {
-	background-image: url('images/btn_row2_path_hover_r.png');
+	background-image: url('/css/core/menu/images/btn_row2_path_hover_r.png');
 	background-position: right;
 	}
 ul.q_row2 li.path:hover a span {
-	background-image: url('images/btn_row2_path_hover_c.png');
+	background-image: url('/css/core/menu/images/btn_row2_path_hover_c.png');
 	}
 /* row_2 menu [activ] */
 ul.q_row2 li.activ {
-	background-image: url('images/btn_row2_activ_l.png');
+	background-image: url('/css/core/menu/images/btn_row2_activ_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
 ul.q_row2 li.activ a {
-	background-image: url('images/btn_row2.png');
+	background-image: url('/css/core/menu/images/btn_row2.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
 ul.q_row2 li.activ a span  {
-	background-image: url('images/btn_row2_activ_c.png');
+	background-image: url('/css/core/menu/images/btn_row2_activ_c.png');
 }
 ul.q_row2 li.activ:hover {
-	background-image: url('images/btn_row2_activ_l.png');
+	background-image: url('/css/core/menu/images/btn_row2_activ_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
 ul.q_row2 li.activ:hover a {
-	background-image: url('images/btn_row2.png');
+	background-image: url('/css/core/menu/images/btn_row2.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
 ul.q_row2 li.activ:hover a span  {
-	background-image: url('images/btn_row2_activ_c.png');
+	background-image: url('/css/core/menu/images/btn_row2_activ_c.png');
 }
 /* ribbon [group] */
 .ribbonMenu {
@@ -327,21 +327,21 @@ ul.q_row2 li.activ:hover a span  {
 	width:auto;
 	margin-right:10px;
 	float:left;
-	background-image:url('images/ribbon_down.png');
+	background-image:url('/css/core/menu/images/ribbon_down.png');
 	background-position:bottom;
 	background-repeat:repeat-x;
 	line-height:110%;
 	font-size:11px;
 }
 .ribbonMenu_left {
-	background-image:url('images/ribbon_left.png');
+	background-image:url('/css/core/menu/images/ribbon_left.png');
 	background-position:left;
 	background-repeat:no-repeat;
 }
 .ribbonMenu_right {
 	height:61px;
 	padding: 0px 10px;
-	background-image:url('images/ribbon_right.png');
+	background-image:url('/css/core/menu/images/ribbon_right.png');
 	background-position:right;
 	background-repeat:no-repeat;
 	text-align:center;
@@ -389,7 +389,7 @@ ul.ribbonAddElement li {
 	height: 45px;
 }
 ul.ribbonAddElement > li:hover {
-	background-image:url('images/btn_add_c.png');
+	background-image:url('/css/core/menu/images/btn_add_c.png');
 	background-repeat:repeat-x;
 	
 }
@@ -402,7 +402,7 @@ ul.ribbonAddElement > li:hover > span {
 	padding: 0px;	
 	margin: 0px;
 	color:#454545;
-	background-image:url('images/btn_add_r.png');
+	background-image:url('/css/core/menu/images/btn_add_r.png');
 	background-repeat:no-repeat;
 	background-position:top right;
 }
@@ -411,7 +411,7 @@ ul.ribbonAddElement > li:hover > span > div {
 	margin:0px;
 	height: 45px;
 	padding:0px;
-	background-image:url('images/btn_add_l.png');
+	background-image:url('/css/core/menu/images/btn_add_l.png');
 	background-repeat:no-repeat;
 	background-position:top left;
 }
@@ -474,14 +474,14 @@ ul.ribbonAddElement li ul li a span div.bigDropdownButtonDiv div {
 }
 
 ul.ribbonAddElement li ul li:hover {
-	background-image:url('images/btn_add_hover_l.png');
+	background-image:url('/css/core/menu/images/btn_add_hover_l.png');
 
 }
 ul.ribbonAddElement li ul li:hover a {
-	background-image:url('images/btn_add_hover_r.png');
+	background-image:url('/css/core/menu/images/btn_add_hover_r.png');
 }
 ul.ribbonAddElement li ul li:hover a span {
-	background-image:url('images/btn_add_hover_c.png');
+	background-image:url('/css/core/menu/images/btn_add_hover_c.png');
 }
 /* AddB */
 ul.ribbonAddElement li ul li.addB {
@@ -513,19 +513,19 @@ ul.ribbonAddElement li ul li.addB a span {
 
 
 ul.ribbonAddElement li ul li.addB:hover {
-	background-image:url('images/btn_addB_hover_l.png');
+	background-image:url('/css/core/menu/images/btn_addB_hover_l.png');
 
 }
 ul.ribbonAddElement li ul li.addB:hover a {
-	background-image:url('images/btn_addB_hover_r.png');
+	background-image:url('/css/core/menu/images/btn_addB_hover_r.png');
 }
 ul.ribbonAddElement li ul li.addB:hover a span {
-	background-image:url('images/btn_addB_hover_c.png');
+	background-image:url('/css/core/menu/images/btn_addB_hover_c.png');
 }
 .icon_btn_add {
 	/*display:block;
 	height:28px;
-	background-image:url('images/icon_btn_add.png');
+	background-image:url('/css/core/menu/images/icon_btn_add.png');
 	background-repeat:no-repeat;
 	background-position: top left;
 	padding: 5px 5px 0px 34px;
@@ -535,7 +535,7 @@ ul.ribbonAddElement li ul li.addB:hover a span {
 	width:5px;
 	height:12px;
 	margin:auto;
-	background-image:url('images/icon_btn_addB.png');
+	background-image:url('/css/core/menu/images/icon_btn_addB.png');
 	background-repeat:no-repeat;
 	background-position: center;
 }
@@ -596,30 +596,30 @@ ul.ribbonListElement li a span div div {
 	
 }
 ul.ribbonListElement li:hover {
-	background-image:url('images/btn_list_hover_l.png');
+	background-image:url('/css/core/menu/images/btn_list_hover_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
 ul.ribbonListElement li:hover a {
-	background-image:url('images/btn_listUp.png');
+	background-image:url('/css/core/menu/images/btn_listUp.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
 ul.ribbonListElement li:hover a span {
-	background-image:url('images/btn_list_hover_c.png');
+	background-image:url('/css/core/menu/images/btn_list_hover_c.png');
 }
 ul.ribbonListElement li.active {
-	background-image:url('images/btn_list_activ_l.png');
+	background-image:url('/css/core/menu/images/btn_list_activ_l.png');
 	background-position: left;
 	background-repeat:no-repeat;
 }
 ul.ribbonListElement li.active a {
-	background-image:url('images/btn_listActive.png');
+	background-image:url('/css/core/menu/images/btn_listActive.png');
 	background-position: right;
 	background-repeat:no-repeat;
 }
 ul.ribbonListElement li.active a span {
-	background-image:url('images/btn_list_activ_c.png');
+	background-image:url('/css/core/menu/images/btn_list_activ_c.png');
 	background-repeat: repeat-x;
 }
 ul.ribbonListElement li.noActive {
@@ -629,7 +629,7 @@ ul.ribbonListElement li.noActive {
 .icon_folder_noActive {
 	display:block;
 	height:40px;
-	background-image:url('images/btn_list_noactive.png');
+	background-image:url('/css/core/menu/images/btn_list_noactive.png');
 	background-repeat:no-repeat;
 	background-position: top left;
 	padding: 5px 2px 0px 32px;
@@ -670,7 +670,7 @@ ul.ribbon_list li.twoB a {
 	background-image:none;
 }
 ul.ribbon_list li.arrow a, ul.ribbon_list li a.make {
-	background-image:url('images/lt_1arrow.png');
+	background-image:url('/css/core/menu/images/lt_1arrow.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
@@ -686,35 +686,35 @@ ul.ribbon_list li a span div {
 	padding-top: 5px;
 	padding-left: 2px;
 	//padding: 5px 0px 0px 23px;
-	//background-image:url('images/lt_1span.png');
+	//background-image:url('/css/core/menu/images/lt_1span.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
 ul.ribbon_list .hasIcon {
-	//background-image:url('images/testIcon16.png');
+	//background-image:url('/css/core/menu/images/testIcon16.png');
 	padding-left: 18px;
 }
 ul.ribbon_list li.btnOne:hover  {
-	background-image:url('images/lt_hover_l.png');
+	background-image:url('/css/core/menu/images/lt_hover_l.png');
 	background-position: left;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.btnOne:hover a  {
-	background-image:url('images/lt_1Up.png');
+	background-image:url('/css/core/menu/images/lt_1Up.png');
 	background-position: right;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.btnOne:hover a span  {
 	display:block;
-	background-image:url('images/lt_hover_c.png');
+	background-image:url('/css/core/menu/images/lt_hover_c.png');
 	background-repeat:repeat-x;
 }
 ul.ribbon_list li.arrow:hover a {
-	background-image:url('images/lt_1arrowUp.png');
+	background-image:url('/css/core/menu/images/lt_1arrowUp.png');
 	background-position: right;
 }
 ul.ribbon_list li.noActive {
-	background-image:url('images/lt_1arrownoActive.png');
+	background-image:url('/css/core/menu/images/lt_1arrownoActive.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
@@ -724,18 +724,18 @@ ul.ribbon_list li.noActive span {
 	color:#b7b7b7;
 }
 ul.ribbon_list li.activ_list {
-	background-image:url('images/lt_activ_l.png');
+	background-image:url('/css/core/menu/images/lt_activ_l.png');
 	background-position: left;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.activ_list a {
-	background-image:url('images/lt_activ_r.png');
+	background-image:url('/css/core/menu/images/lt_activ_r.png');
 	background-position: right;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.activ_list a span {
 	display:block;
-	background-image:url('images/lt_activ_c.png');
+	background-image:url('/css/core/menu/images/lt_activ_c.png');
 	background-repeat:repeat-x;
 }
 /* [LIST twoB] */
@@ -745,36 +745,36 @@ ul.ribbon_list > li {
 	float: left;
 }
 ul.ribbon_list > li.twoB:hover {
-	background-image:url('images/lt_twoB_c.png') !important;
+	background-image:url('/css/core/menu/images/lt_twoB_c.png') !important;
 	background-repeat:repeat-x;
  }
 ul.ribbon_list li.twoB:hover > span {
 	display:block;
 	height: 23px;
-	background-image:url('images/lt_twoB_l.png') !important;
+	background-image:url('/css/core/menu/images/lt_twoB_l.png') !important;
 	background-repeat:no-repeat;
 	background-position: left; 
 }
 ul.ribbon_list li.twoB:hover > span > div {
 	display:block;
 	height: 23px;
-	background-image:url('images/lt_twoB_r.png');
+	background-image:url('/css/core/menu/images/lt_twoB_r.png');
 	background-repeat:no-repeat;
 	background-position: right; 
 }
 ul.ribbon_list li.twoB span div ul li:hover {
-	background-image:url('images/lt_hover_l.png');
+	background-image:url('/css/core/menu/images/lt_hover_l.png');
 	background-position: left;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.twoB span div ul li:hover a {
-	background-image:url('images/lt_1Up.png');
+	background-image:url('/css/core/menu/images/lt_1Up.png');
 	background-position: right;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.twoB span div ul li:hover a span {
 	display:block;
-	background-image:url('images/lt_hover_c.png');
+	background-image:url('/css/core/menu/images/lt_hover_c.png');
 	background-repeat:repeat-x; 
 }
 /* [LIST icon] */
@@ -784,7 +784,7 @@ ul.ribbon_list .icon_list {
 	margin-right:0px;
 	height: 18px;
 	padding: 5px 0px 0px 23px;
-	background-image:url('images/lt_1span.png');
+	background-image:url('/css/core/menu/images/lt_1span.png');
 	background-repeat:no-repeat;
 	background-position: left;
 */}
@@ -793,7 +793,7 @@ ul.ribbon_list .icon_list {
 	margin-right:0px;
 	height: 18px;
 	padding: 5px 0px 0px 23px;
-	background-image:url('images/lt_1spanMake.png');
+	background-image:url('/css/core/menu/images/lt_1spanMake.png');
 	background-repeat:no-repeat;
 }
 .icon_noActive {
@@ -801,7 +801,7 @@ ul.ribbon_list .icon_list {
 	margin-left:7px;
 	height: 15px;
 	padding: 5px 0px 0px 23px;
-	background-image:url('images/lt_1spannoActive.png');
+	background-image:url('/css/core/menu/images/lt_1spannoActive.png');
 	background-repeat:no-repeat;
 }
 /* [LIST two button] */
@@ -815,12 +815,12 @@ ul.ribbon_list li.twoB ul li {
 ul.ribbon_list li.twoB ul li a.twoB_down {
 	width:15px;
 	height:23px;
-	background-image:url('images/lt_twoB_down.png');
+	background-image:url('/css/core/menu/images/lt_twoB_down.png');
 	
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.twoB ul li a.twoB_down:hover {
-	background-image:url('images/lt_twoB_downClick.png') !important;
+	background-image:url('/css/core/menu/images/lt_twoB_downClick.png') !important;
 }
 /* SUBMENU */
 .m_warp {
@@ -850,7 +850,7 @@ ul.ribbon_list li.twoB ul li a.twoB_down:hover {
 	list-style: none;
 	margin:0;
 	padding:0;
-	background-image:url('images/m_ul_tlo.png');
+	background-image:url('/css/core/menu/images/m_ul_tlo.png');
 	background-repeat:repeat-y;
 }
 .m_module ul li {
@@ -866,8 +866,8 @@ ul.ribbon_list li.twoB ul li a.twoB_down:hover {
 	height: auto !important;
 }
 .m_module ul li a.icon span {
-	//background-image:url('images/lt_1span.png');
-	//background-image:url('images/testIcon16.png');
+	//background-image:url('/css/core/menu/images/lt_1span.png');
+	//background-image:url('/css/core/menu/images/testIcon16.png');
 	background-repeat:no-repeat;
 	background-position: 4px 2px;
 	margin: 0px 0px 0px 0px;
@@ -878,7 +878,7 @@ ul.ribbon_list li.twoB ul li a.twoB_down:hover {
 	border: 1px solid transparent;
 }
 .m_module ul li a:hover {
-	background-image:url('images/m_li_tlo.png');
+	background-image:url('/css/core/menu/images/m_li_tlo.png');
 	background-repeat:repeat-y;
 }
 .m_module ul li a:hover span {

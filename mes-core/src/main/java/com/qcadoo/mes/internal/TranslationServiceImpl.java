@@ -37,6 +37,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
@@ -57,7 +58,10 @@ public final class TranslationServiceImpl implements TranslationService {
 
     private static final Set<String> DASHBOARD_MESSAGES = new HashSet<String>();
 
-    private static final boolean DISPLAY_MISSING_TRANSLATIONS = true;
+    private static final String DEFAULT_MISSING_MESSAGE = "-";
+
+    @Value("${ignoreMissingTranslations}")
+    private boolean ignoreMissingTranslations;
 
     @Autowired
     private MessageSource messageSource;
@@ -74,10 +78,10 @@ public final class TranslationServiceImpl implements TranslationService {
 
         LOG.warn("Missing translation " + messageCode + " for locale " + locale);
 
-        if (DISPLAY_MISSING_TRANSLATIONS) {
-            return messageCode;
+        if (ignoreMissingTranslations) {
+            return DEFAULT_MISSING_MESSAGE;
         } else {
-            return "";
+            return messageCode;
         }
     }
 
@@ -92,10 +96,10 @@ public final class TranslationServiceImpl implements TranslationService {
 
         LOG.warn("Missing translation " + messageCodes + " for locale " + locale);
 
-        if (DISPLAY_MISSING_TRANSLATIONS) {
-            return messageCodes.toString();
+        if (ignoreMissingTranslations) {
+            return DEFAULT_MISSING_MESSAGE;
         } else {
-            return "";
+            return messageCodes.toString();
         }
     }
 

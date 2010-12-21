@@ -207,4 +207,4 @@ Encoder = {
 		return -1;
 	}
 
-}
+};
