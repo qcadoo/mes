@@ -35,8 +35,15 @@
 <html>
 <head>
 
-	<script type="text/javascript" src="/js/core/lib/jquery-1.4.2.min.js"></script>
-
+	<c:choose>
+		<c:when test="${compressStaticResources}">
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
+		</c:when>
+		<c:otherwise>
+			<script type="text/javascript" src="/js/core/lib/_jquery-1.4.2.min.js"></script>
+		</c:otherwise>
+	</c:choose>
+	
 	<script type="text/javascript">
 
 		jQuery(document).ready(function(){

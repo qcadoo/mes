@@ -118,7 +118,7 @@
 }
 
 .component_container_form_x {
-	background: transparent url(../images/form/input_x_transparent.png) repeat-x 0 1px;
+	background: transparent url(/css/crud/images/form/input_x_transparent.png) repeat-x 0 1px;
 	display: block;
 	position: absolute;
 	height: 5px;
@@ -130,7 +130,7 @@
 .component_container_form_y {
 	margin: 0;
 	padding: 0;
-	background: transparent url(../images/form/input_y_transparent.png) repeat-y 1px 0;
+	background: transparent url(/css/crud/images/form/input_y_transparent.png) repeat-y 1px 0;
 	display: block;
 	position: absolute;
 	width: 5px;
@@ -154,7 +154,7 @@
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	border: 1px solid #959595;	
-	background: white url(../images/form/input_c_transparent.png) no-repeat 0 0;
+	background: white url(/css/crud/images/form/input_c_transparent.png) no-repeat 0 0;
 	padding-left: 6px;
 	padding-top: 3px;
 	width: 100%;
@@ -260,7 +260,7 @@
 }
 
 .component_container_form .error_messages div span {
-	background: url(../images/form/error_bg.png) repeat-x;
+	background: url(/css/crud/images/form/error_bg.png) repeat-x;
 	color: #fff;
 	font-weight: bold;
 	height: 20px;
@@ -305,7 +305,7 @@
 }
 
 .component_container_form .description_message span {
-	background: url(../images/form/description_bg.png) repeat-x;
+	background: url(/css/crud/images/form/description_bg.png) repeat-x;
 	color: #fff;
 	font-weight: bold;
 	height: 20px;
@@ -355,7 +355,7 @@
 	position: absolute;
 	top: 0px;
 	right: 0px;
-	background: url(../images/form/input_icon.png) no-repeat -20px 0;
+	background: url(/css/crud/images/form/input_icon.png) no-repeat -20px 0;
 	vertical-align: middle;
 }
 .component_container_form .lookupValueWrapper .lookupButton.enabled {
