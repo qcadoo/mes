@@ -21,15 +21,12 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 	var autocompleteMatches;
 	
 	function constructor() {
-		//lookupDropdownElement.height(100);
 		lookupDropdownElement.css("top", "21px");
 	}
 	
 	this.updateAutocomplete = function(_autocompleteMatches, _autocompleteEntitiesNumber) {
 		
 		autocompleteMatches = _autocompleteMatches;
-		
-		QCD.info(_autocompleteEntitiesNumber);
 		
 		selectedElement = null;
 		
@@ -116,7 +113,6 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 	
 	this.getSelected = function() {
 		if (selectedElement) {
-			//autocompleteMatches[];
 			var id = selectedElement.attr("id").substring((controller.elementPath+"_autocompleteOption_").length);
 			return autocompleteMatches[id];
 		}
@@ -124,12 +120,10 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 	}
 	
 	this.hide = function() {
-		//selectedElement = null;
 		lookupDropdownElement.hide();
 	}
 	
 	this.show = function() {
-		//selectedElement = null;
 		lookupDropdownElement.show();
 	}
 	

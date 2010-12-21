@@ -111,7 +111,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 				performSelectEntity(entity);
 				currentData.currentCode = currentData.selectedEntityCode;
 				inputElement.val(currentData.selectedEntityCode);
-				updateView();
+				//updateView();
 				isDropdownVisible = false;
 				onInputValueChange(true);
 				lookupDropdown.hide();
@@ -159,17 +159,35 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			value: data.selectedEntityValue
 		}, false);
 		currentData.contextEntityId = data.contextEntityId;
-		autocompleteEntitiesNumber = data.autocompleteEntitiesNumber;
+		
 		
 		if (data.autocompleteMatches) {
 			autocompleteMatches = data.autocompleteMatches;
 			autocompleteCode = data.autocompleteCode;
+			autocompleteEntitiesNumber = data.autocompleteEntitiesNumber;
 		} else {
 			autocompleteMatches = null;
 			autocompleteCode = null;
+			autocompleteEntitiesNumber = null;
 		}
 		
-		updateView();
+		if (isFocused) {
+			
+			autocompleteCode = autocompleteCode ? autocompleteCode : "";
+			if (autocompleteCode == currentData.currentCode) {
+				loadingElement.hide();	
+			}
+			lookupDropdown.updateAutocomplete(autocompleteMatches, autocompleteEntitiesNumber);
+			if (isDropdownVisible) {
+				lookupDropdown.show();
+			}
+			
+		} else {
+			inputElement.val(currentData.selectedEntityValue);
+			loadingElement.hide();
+		}
+		
+		//updateView();
 		
 		if (shouldUpdateDataAfterSearch) {
 			shouldUpdateDataAfterSearch = false;
@@ -199,47 +217,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		return ! (currentData.selectedEntityCode == baseValue.selectedEntityCode);
 	}
 	
-	function updateView() {
-		if (isFocused) {
-			if (autocompleteMatches) {
-				autocompleteCode = autocompleteCode ? autocompleteCode : "";
-				if (autocompleteCode == currentData.currentCode) {
-					loadingElement.hide();	
-				}
-				//if (autocompleteCode == "") {
-				//	lookupDropdown.hide();
-				//} else {
-					lookupDropdown.updateAutocomplete(autocompleteMatches, autocompleteEntitiesNumber);
-					if (isDropdownVisible) {
-						lookupDropdown.show();
-					}
-				//}
-			} else {
-				loadingElement.hide();
-			}
-		} else {
-			inputElement.val(currentData.selectedEntityValue);
-			loadingElement.hide();
-		}
-	}
 	
-	function performSelectEntity(entity, callEvent) {
-		if (callEvent == undefined) {
-			callEvent = true;
-		}
-		if (entity) {
-			currentData.value = entity.id;
-			currentData.selectedEntityCode = entity.code;
-			currentData.selectedEntityValue = entity.value;	
-		} else {
-			currentData.value = null;
-			currentData.selectedEntityCode = null;
-			currentData.selectedEntityValue = null;
-		}
-		if (hasListeners && callEvent) {
-			mainController.callEvent("onSelectedEntityChange", elementPath, null, null, null);
-		}
-	}
 	
 	//TODO: mady 429
 //	function setSelectionRange(input, selectionStart, selectionEnd) {
@@ -278,18 +256,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	function onInputFocus() {
-		QCD.info("focus");
 		isFocused = true;
-		openLookupButtonElement.addClass("lightHover");
-		labelElement.html(labelFocus);
-		
-		if (currentData.selectedEntityCode && ! currentData.currentCode) {
-			currentData.currentCode = currentData.selectedEntityCode
-		}
-		
-		inputElement.val(currentData.currentCode);
-		
-		updateView();
+		updateData();
 		
 		//TODO: mady 429
 //		setCaretToPos(inputElement,2);
@@ -299,6 +267,51 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 //		input.focus();
 //		input.value = input.value;
 
+	}
+	
+	function updateData() {
+		if (isFocused) {
+			openLookupButtonElement.addClass("lightHover");
+			labelElement.html(labelFocus);
+			
+			if (currentData.selectedEntityCode && ! currentData.currentCode) {
+				currentData.currentCode = currentData.selectedEntityCode
+			}
+			
+			inputElement.val(currentData.currentCode);
+			
+			
+			if (autocompleteCode == currentData.currentCode) {
+				loadingElement.hide();	
+			}
+			lookupDropdown.updateAutocomplete(autocompleteMatches, autocompleteEntitiesNumber);
+			if (isDropdownVisible) {
+				lookupDropdown.show();
+			}
+			
+		} else {
+			inputElement.val(currentData.selectedEntityValue);
+			loadingElement.hide();
+		}
+		
+	}
+	
+	function performSelectEntity(entity, callEvent) {
+		if (callEvent == undefined) {
+			callEvent = true;
+		}
+		if (entity) {
+			currentData.value = entity.id;
+			currentData.selectedEntityCode = entity.code;
+			currentData.selectedEntityValue = entity.value;	
+		} else {
+			currentData.value = null;
+			currentData.selectedEntityCode = null;
+			currentData.selectedEntityValue = null;
+		}
+		if (hasListeners && callEvent) {
+			mainController.callEvent("onSelectedEntityChange", elementPath, null, null, null);
+		}
 	}
 	
 	function onInputBlur() {
@@ -345,7 +358,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 						labelElement.html(labelNormal);
 					}
 				} else {
-					//QCD.info("ok")
 					element.removeClass("error");
 					performSelectEntity(autocompleteMatches[0]);
 					currentData.currentCode = currentData.selectedEntityCode;
@@ -363,7 +375,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			element.removeClass("error");
 		}
 		lookupDropdown.hide();
-		updateView();
+		inputElement.val(currentData.selectedEntityValue);
 	}
 	
 	function openLookup() {

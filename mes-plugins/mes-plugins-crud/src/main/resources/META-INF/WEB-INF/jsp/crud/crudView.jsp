@@ -85,7 +85,7 @@
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/passwordInput.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/dynamicComboBox.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/entityComboBox.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/lookup.js"></script>
+	<script type="text/javascript" src="../../js/crud/qcd/components/elements/lookup/lookup.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/lookup/lookupDropdown.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/checkBox.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/linkButton.js"></script>

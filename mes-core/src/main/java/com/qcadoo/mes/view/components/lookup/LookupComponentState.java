@@ -24,7 +24,7 @@ public final class LookupComponentState extends FieldComponentState {
 
     public static final String JSON_CODE = "selectedEntityCode";
 
-    public static final String JSON_CURREND_CODE = "currentCode";
+    public static final String JSON_CURRENT_CODE = "currentCode";
 
     public static final String JSON_BELONGS_TO_ENTITY_ID = "contextEntityId";
 
@@ -46,12 +46,6 @@ public final class LookupComponentState extends FieldComponentState {
 
     private String selectedEntityValue;
 
-    // private boolean codeNotValid;
-
-    // private String text;
-
-    // private String selectedEntity
-
     private final String fieldCode;
 
     private final String expression;
@@ -67,7 +61,6 @@ public final class LookupComponentState extends FieldComponentState {
         this.fieldCode = fieldCode;
         this.expression = expression;
         registerEvent("initialize", eventPerformer, "initialize");
-        // registerEvent("search", eventPerformer, "search");
         registerEvent("autompleteSearch", eventPerformer, "autompleteSearch");
         registerEvent("onSelectedEntityChange", eventPerformer, "onSelectedEntityChange");
     }
@@ -86,8 +79,8 @@ public final class LookupComponentState extends FieldComponentState {
             belongsToEntityId = json.getLong(JSON_BELONGS_TO_ENTITY_ID);
         }
 
-        if (json.has(JSON_CURREND_CODE) && !json.isNull(JSON_CURREND_CODE)) {
-            currentCode = json.getString(JSON_CURREND_CODE);
+        if (json.has(JSON_CURRENT_CODE) && !json.isNull(JSON_CURRENT_CODE)) {
+            currentCode = json.getString(JSON_CURRENT_CODE);
         }
 
         if (json.has(JSON_AUTOCOMPLETE_CODE) && !json.isNull(JSON_AUTOCOMPLETE_CODE)) {
@@ -187,42 +180,7 @@ public final class LookupComponentState extends FieldComponentState {
             requestRender();
         }
 
-        // public void search(final String[] args) {
-        // if (StringUtils.hasText(code) && (belongsToFieldDefinition == null || belongsToEntityId != null)) {
-        // SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find().restrictedWith(
-        // Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*"));
-        //
-        // if (belongsToFieldDefinition != null && belongsToEntityId != null) {
-        // searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
-        // }
-        //
-        // SearchResult results = searchCriteriaBuilder.list();
-        //
-        // if (results.getTotalNumberOfEntities() == 1) {
-        // Entity entity = results.getEntities().get(0);
-        // setFieldValue(entity.getId());
-        // code = String.valueOf(entity.getField(fieldCode));
-        // text = ExpressionUtil.getValue(entity, expression, getLocale());
-        // } else {
-        // setFieldValueWithoutRefreshing(null);
-        // text = "";
-        // if (!codeNotValid) {
-        // addMessage(
-        // getTranslationService().translate("core.validate.field.error.lookupCodeNotFound", getLocale()),
-        // MessageType.FAILURE);
-        // }
-        // codeNotValid = true;
-        // }
-        // } else {
-        // setFieldValueWithoutRefreshing(null);
-        // text = "";
-        // }
-        //
-        // requestRender();
-        // }
-
         public void autompleteSearch(final String[] args) {
-            // if (StringUtils.hasText(currentCode) && (belongsToFieldDefinition == null || belongsToEntityId != null)) {
             if ((belongsToFieldDefinition == null || belongsToEntityId != null)) {
                 SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find();
 
@@ -240,17 +198,15 @@ public final class LookupComponentState extends FieldComponentState {
                 autocompleteEntitiesNumber = results.getTotalNumberOfEntities();
 
                 if (results.getTotalNumberOfEntities() > 25) {
-                    // TODO mina too many results info
                     autocompleteMatches = new LinkedList<Entity>();
                 } else {
                     autocompleteMatches = results.getEntities();
                 }
-
-                autocompleteCode = currentCode;
             } else {
                 autocompleteMatches = new LinkedList<Entity>();
             }
 
+            autocompleteCode = currentCode;
             requestRender();
         }
 

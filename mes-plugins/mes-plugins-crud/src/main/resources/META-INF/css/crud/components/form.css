@@ -187,7 +187,9 @@
 
 .component_container_form .error input[type='text'],
 .component_container_form .error input[type='password'], 
-.component_container_form .error textarea {
+.component_container_form .error textarea,
+.component_container_form .error .lookupValueWrapper,
+.component_container_form .required.error .component_container_form_w .lookupValueWrapper {
 	border: 1px solid #ec1c24;
 }
 
