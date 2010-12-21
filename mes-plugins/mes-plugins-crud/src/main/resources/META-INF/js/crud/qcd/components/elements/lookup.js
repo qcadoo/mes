@@ -32,15 +32,18 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var elementPath = this.elementPath;
 	var element = _element;
 	
+	var translations = this.options.translations;
+	
 	var mainController = _mainController;
 	
 	var lookupWindow;
 	
 	var inputElement = this.input;
-	var valueDivElement = $("#"+this.elementSearchName+"_valueDiv");
 	var loadingElement = $("#"+this.elementSearchName+"_loadingDiv");
 	var labelElement = $("#"+this.elementSearchName+"_labelDiv");
 	var openLookupButtonElement = $("#"+this.elementSearchName+"_openLookupButton");
+	var lookupDropdownElement = $("#"+this.elementSearchName+"_lookupDropdown");
+	var lookupDropdown = new QCD.components.elements.lookup.Dropdown(lookupDropdownElement, this, translations);
 	
 	var labelNormal = labelElement.html();
 	var labelFocus = "<span class='focusedLabel'>"+this.options.translations.labelOnFocus+"</span>";
@@ -49,6 +52,11 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	currentData.value = null;
 	currentData.selectedEntityValue = null;
 	currentData.selectedEntityCode = null;
+	currentData.currentCode = null;
+	
+	var autocompleteMatches
+	var autocompleteCode;
+	var autocompleteEntitiesNumber;
 	
 	var isFocused = false;
 	
@@ -59,53 +67,125 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var _this = this;
 	
+	var isDropdownVisible = false;
+	
+	var autocompleteRefreshTimeout = null;
+	
+	var shouldUpdateDataAfterSearch = false;
+	
+	
+	
+	var _this = this;
+	
 	var constructor = function(_this) {
 		openLookupButtonElement.click(openLookup);
 		inputElement.focus(onInputFocus).blur(onInputBlur);
-		inputElement.keypress(function(e) {
-			var key=e.keyCode || e.which;
-			if (key==13) {
-				performSearch();
+		
+		inputElement.keyup(function(e) {
+			var key = e.keyCode || e.which;
+			
+			if (key == 40) { // down
+				if (! lookupDropdown.isOpen()) {
+					onInputValueChange(true);
+				}
+				isDropdownVisible = true;
+				lookupDropdown.selectNext();
+				return;
 			}
-		});
-		valueDivElement.click(function() {
-			if (openLookupButtonElement.hasClass("enabled")) {
-				inputElement.focus();
+			if (key == 38) { // up
+				if (! lookupDropdown.isOpen()) {
+					onInputValueChange(true);
+				}
+				isDropdownVisible = true;
+				lookupDropdown.selectPrevious();
+				return;
 			}
+			if (key == 13) { // enter
+				if (! lookupDropdown.isOpen()) {
+					return;
+				}
+				var entity = lookupDropdown.getSelected();
+				if (entity == null) {
+					return;
+				}
+				performSelectEntity(entity);
+				currentData.currentCode = currentData.selectedEntityCode;
+				inputElement.val(currentData.selectedEntityCode);
+				updateView();
+				isDropdownVisible = false;
+				onInputValueChange(true);
+				lookupDropdown.hide();
+				return;
+			}
+			if (key == 27) { // escape
+				lookupDropdown.hide();
+				//QCD.info("escape");
+				return;
+			}
+			isDropdownVisible = true;
+			var inputVal = inputElement.val();
+			
+			if (currentData.currentCode != inputVal) {
+				currentData.currentCode = inputVal;
+				performSelectEntity(null);
+				onInputValueChange();
+			} 
 		});
 	}
 	
-	this.setComponentData = function(data) {
-		currentData.value = data.value ? data.value : null;
-		currentData.selectedEntityValue = data.selectedEntityValue;
-		currentData.selectedEntityCode = data.selectedEntityCode;
-		currentData.contextEntityId = data.contextEntityId;
-		if (currentData.value == null && currentData.selectedEntityCode != null && $.trim(currentData.selectedEntityCode) != "") {
-			currentData.isError = true;
-		} else {
-			currentData.isError = false;
+	// prevent event propagation
+	inputElement.keydown(function(e) {
+		var key = e.keyCode || e.which;
+		if (key == 38 || key == 27) { // up or escape
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			e.stopPropagation();
+			return;
 		}
-		updateData();
+	}).keypress(function(e) {
+		var key = e.keyCode || e.which;
+		if (key == 38 || key == 27) { // up or escape
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			e.stopPropagation();
+			return;
+		}
+	});
+	
+	this.setComponentData = function(data) {
+		performSelectEntity({
+			id: data.value ? data.value : null,
+			code: data.selectedEntityCode,
+			value: data.selectedEntityValue
+		}, false);
+		currentData.contextEntityId = data.contextEntityId;
+		autocompleteEntitiesNumber = data.autocompleteEntitiesNumber;
+		
+		if (data.autocompleteMatches) {
+			autocompleteMatches = data.autocompleteMatches;
+			autocompleteCode = data.autocompleteCode;
+		} else {
+			autocompleteMatches = null;
+			autocompleteCode = null;
+		}
+		
+		updateView();
+		
+		if (shouldUpdateDataAfterSearch) {
+			shouldUpdateDataAfterSearch = false;
+			onInputBlur();
+		}
 	}
 	
 	this.getComponentData = function() {
-		if (isFocused) {
-			currentData.selectedEntityCode = $.trim(inputElement.val());
-		}
-		//currentData.selectedEntityCode = $.trim(inputElement.val());
-		//if (baseValue && (currentData.selectedEntityCode != baseValue.selectedEntityCode)) {
-		//	QCD.info(elementPath + " clear");
-		//}
 		return currentData;
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
 			openLookupButtonElement.addClass("enabled")
-			document.getElementById(this.elementPath+"_valueDiv").removeAttribute("disabled");
 		} else {
 			openLookupButtonElement.removeClass("enabled")
-			document.getElementById(this.elementPath+"_valueDiv").setAttribute("disabled", true);
 		}
 	}
 	
@@ -119,29 +199,45 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		return ! (currentData.selectedEntityCode == baseValue.selectedEntityCode);
 	}
 	
-	function updateData() {
-		loadingElement.hide();
-		if (! currentData.isError) {
-			element.removeClass("error");
-			valueDivElement.html(currentData.selectedEntityValue);
-			if (currentData.selectedEntityCode) {
-				valueDivElement.attr('title', currentData.selectedEntityValue);
-				inputElement.attr('title', currentData.selectedEntityValue);
-				if (! isFocused) {
-					valueDivElement.show();
-					inputElement.val("");
-					labelElement.html(labelNormal);
-				} else {
-					inputElement.val(currentData.selectedEntityCode);
+	function updateView() {
+		if (isFocused) {
+			if (autocompleteMatches) {
+				autocompleteCode = autocompleteCode ? autocompleteCode : "";
+				if (autocompleteCode == currentData.currentCode) {
+					loadingElement.hide();	
 				}
+				//if (autocompleteCode == "") {
+				//	lookupDropdown.hide();
+				//} else {
+					lookupDropdown.updateAutocomplete(autocompleteMatches, autocompleteEntitiesNumber);
+					if (isDropdownVisible) {
+						lookupDropdown.show();
+					}
+				//}
 			} else {
-				valueDivElement.attr('title', "");
-				inputElement.attr('title', "");
-				inputElement.val("");
-				if (! isFocused) {
-					labelElement.html(labelNormal);
-				}
+				loadingElement.hide();
 			}
+		} else {
+			inputElement.val(currentData.selectedEntityValue);
+			loadingElement.hide();
+		}
+	}
+	
+	function performSelectEntity(entity, callEvent) {
+		if (callEvent == undefined) {
+			callEvent = true;
+		}
+		if (entity) {
+			currentData.value = entity.id;
+			currentData.selectedEntityCode = entity.code;
+			currentData.selectedEntityValue = entity.value;	
+		} else {
+			currentData.value = null;
+			currentData.selectedEntityCode = null;
+			currentData.selectedEntityValue = null;
+		}
+		if (hasListeners && callEvent) {
+			mainController.callEvent("onSelectedEntityChange", elementPath, null, null, null);
 		}
 	}
 	
@@ -162,18 +258,39 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 //		setSelectionRange(input, pos, pos);
 //	}
 	
+	function onInputValueChange(immidiateRefresh) {
+		//performSelectEntity(null);
+		
+		if (autocompleteRefreshTimeout) {
+			window.clearTimeout(autocompleteRefreshTimeout);
+			autocompleteRefreshTimeout = null;
+		}
+		if (immidiateRefresh) {
+			loadingElement.show();
+			mainController.callEvent("autompleteSearch", elementPath, null, null, null);	
+		} else {
+			autocompleteRefreshTimeout = window.setTimeout(function() {
+				autocompleteRefreshTimeout = null;
+				loadingElement.show();
+				mainController.callEvent("autompleteSearch", elementPath, null, null, null);
+			}, 200);	
+		}
+	}
+	
 	function onInputFocus() {
+		QCD.info("focus");
 		isFocused = true;
 		openLookupButtonElement.addClass("lightHover");
-		valueDivElement.hide();
 		labelElement.html(labelFocus);
-		if (currentData.selectedEntityCode) {
-			inputElement.val(currentData.selectedEntityCode);
-			inputElement.attr('title', currentData.selectedEntityCode);
-		} else {
-			
+		
+		if (currentData.selectedEntityCode && ! currentData.currentCode) {
+			currentData.currentCode = currentData.selectedEntityCode
 		}
-
+		
+		inputElement.val(currentData.currentCode);
+		
+		updateView();
+		
 		//TODO: mady 429
 //		setCaretToPos(inputElement,2);
 //		var input = $("input:first");
@@ -185,35 +302,69 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	function onInputBlur() {
+		QCD.info("blur");
 		isFocused = false;
 		openLookupButtonElement.removeClass("lightHover");
-		performSearch();
-	}
-	
-	function performSearch() {
-		var newCode = $.trim(inputElement.val());
-		if (newCode != currentData.selectedEntityCode) {
-			currentData.selectedEntityCode = $.trim(inputElement.val());
-			currentData.selectedEntityValue = null;
-			currentData.value = null;
-			if (currentData.selectedEntityCode == "") {
-				if (hasListeners) {
-					loadingElement.show();
-					mainController.callEvent("search", elementPath, null, null, null);
+		
+		if (loadingElement.is(':visible') || autocompleteRefreshTimeout) {
+			QCD.info("is searching");
+			shouldUpdateDataAfterSearch = true;
+			return;
+		}
+		
+		QCD.info(currentData.value);
+		
+		if (!currentData.value) {
+			if (autocompleteMatches) {
+				if (autocompleteMatches.length == 0) {
+					if (currentData.currentCode != "") {
+						_this.addMessage({
+							title: "",
+							content: translations.noMatchError
+						});
+						element.addClass("error");
+					} else {
+						labelElement.html(labelNormal);
+						performSelectEntity(null);
+						inputElement.val("");
+					}
+				} else if (autocompleteMatches.length > 1) {
+					
+					var entity = lookupDropdown.getSelected();
+					if (entity == null) {
+						element.addClass("error");
+						_this.addMessage({
+							title: "",
+							content: translations.moreTahnOneMatchError
+						});
+					} else {
+						element.removeClass("error");
+						performSelectEntity(entity);
+						currentData.currentCode = currentData.selectedEntityCode;
+						inputElement.val(currentData.selectedEntityCode);
+						labelElement.html(labelNormal);
+					}
 				} else {
-					currentData.isError = false;
-					updateData();
+					//QCD.info("ok")
 					element.removeClass("error");
+					performSelectEntity(autocompleteMatches[0]);
+					currentData.currentCode = currentData.selectedEntityCode;
+					labelElement.html(labelNormal);
 				}
 			} else {
-				loadingElement.show();
-				mainController.callEvent("search", elementPath, null, null, null);
+				_this.addMessage({
+					title: "",
+					content: translations.noMatchError
+				});
+				element.addClass("error");
 			}
 		} else {
-			updateData();
+			labelElement.html(labelNormal);
+			element.removeClass("error");
 		}
+		lookupDropdown.hide();
+		updateView();
 	}
-	
 	
 	function openLookup() {
 		if (! openLookupButtonElement.hasClass("enabled")) {
@@ -244,14 +395,16 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	this.onGridLinkClicked = function(entityId) {
 		var grid = lookupWindow.getComponent("window.grid");
 		var lookupData = grid.getLookupData(entityId);
-		currentData.value = lookupData.entityId;
-		currentData.selectedEntityValue = lookupData.lookupValue;
-		currentData.selectedEntityCode = lookupData.lookupCode;
+		performSelectEntity({
+			id: lookupData.entityId,
+			code: lookupData.lookupCode,
+			value: lookupData.lookupValue
+		});
 		currentData.isError = false;
 		updateData();
-		if (hasListeners) {
-			mainController.callEvent("search", elementPath, null, null, null);
-		}
+//		if (hasListeners) {
+//			mainController.callEvent("search", elementPath, null, null, null);
+//		}
 		mainController.closePopup();
 	}
 	

@@ -129,29 +129,32 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.setMessages = function(messages) {
 		errorMessages.html("");
 		for ( var i in messages) {
-			messageDiv = $('<div>');
-			
-			messageDiv.append('<span>' + messages[i].title + '</span>');
-			messageDiv.append('<p>' + messages[i].content + '</p>');
-
-			errorMessages.append(messageDiv);
-
-			var top = this.input.offset().top;
-			var errorIconHeight = errorMessages.height();
-			var inputHeight = this.input.outerHeight() - 1;
-			var viewHeight = document.documentElement.clientHeight + $(document).scrollTop();
-
-			if ((top+errorIconHeight+inputHeight) > viewHeight) {
-				errorMessages.css("top", "");
-				errorMessages.css("bottom", errorIcon.outerHeight()+"px");
-			} else {
-				errorMessages.css("top", errorIcon.outerHeight()+"px");
-				errorMessages.css("bottom", "");
-			}
-			
+			this.addMessage(messages[i]);
 		}
 		if (messages) {
 			setComponentError(messages.length != 0);
+		}
+	}
+	
+	this.addMessage = function(message) {
+		messageDiv = $('<div>');
+		
+		messageDiv.append('<span>' + message.title + '</span>');
+		messageDiv.append('<p>' + message.content + '</p>');
+
+		errorMessages.append(messageDiv);
+
+		var top = this.input.offset().top;
+		var errorIconHeight = errorMessages.height();
+		var inputHeight = this.input.outerHeight() - 1;
+		var viewHeight = document.documentElement.clientHeight + $(document).scrollTop();
+
+		if ((top+errorIconHeight+inputHeight) > viewHeight) {
+			errorMessages.css("top", "");
+			errorMessages.css("bottom", errorIcon.outerHeight()+"px");
+		} else {
+			errorMessages.css("top", errorIcon.outerHeight()+"px");
+			errorMessages.css("bottom", "");
 		}
 	}
 	

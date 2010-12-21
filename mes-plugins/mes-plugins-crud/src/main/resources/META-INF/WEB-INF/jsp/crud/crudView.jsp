@@ -34,7 +34,8 @@
 <html>
 <head>
 	<link rel="stylesheet" href="../../css/core/jquery-ui-1.8.5.custom.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/jquery.datepick.css" type="text/css" /> 
+	<link rel="stylesheet" href="../../css/crud/jquery.datepick.css" type="text/css" />
+	<link rel="stylesheet" href="/css/core/jquery.autocomplete.css" type="text/css" /> 
 	<link rel="stylesheet" href="../../css/core/ui.jqgrid.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/jstree/style.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/core/qcd.css" type="text/css" />
@@ -48,6 +49,8 @@
 	<link rel="stylesheet" href="../../css/crud/components/tree.css" type="text/css" />
 	<link rel="stylesheet" href="../../css/crud/components/elementHeader.css" type="text/css" />
 	
+	<script type="text/javascript" src="../../js/core/lib/encoder.js"></script>
+	
 	<script type="text/javascript" src="../../js/core/lib/json_sans_eval.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/json2.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery-1.4.2.min.js"></script>
@@ -58,7 +61,8 @@
 	<script type="text/javascript" src="../../js/core/lib/jquery-ui-1.8.5.custom.min.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery-ui-i18n.js"></script>
 	<script type="text/javascript" src="../../js/core/lib/jquery.pnotify.min.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/encoder.js"></script>
+	<script type="text/javascript" src="/js/core/lib/jquery.autocomplete.js"></script>
+	
 	
 	<script type="text/javascript" src="../../js/core/qcd/utils/logger.js"></script>
 	<script type="text/javascript" src="../../js/core/qcd/utils/serializator.js"></script>
@@ -82,6 +86,7 @@
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/dynamicComboBox.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/entityComboBox.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/lookup.js"></script>
+	<script type="text/javascript" src="../../js/crud/qcd/components/elements/lookup/lookupDropdown.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/checkBox.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/linkButton.js"></script>
 	<script type="text/javascript" src="../../js/crud/qcd/components/elements/tree.js"></script>

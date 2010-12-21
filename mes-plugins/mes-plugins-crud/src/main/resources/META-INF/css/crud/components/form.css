@@ -390,6 +390,38 @@
 	display: none;
 }
 
+.component_container_form_w .lookupValueWrapper .lookupDropdown {
+	position: absolute;
+	z-index: 100;
+	left: 0;
+	right: 0;
+	background: #e1e1e1;
+	border: solid #959595 1px;
+	border-top: none;
+	overflow: auto;
+	font: 11px arial;
+}
+.component_container_form_w .lookupValueWrapper .lookupDropdown .lookupMatch {
+	height: 20px;
+	vertical-align: middle;
+	border-bottom: solid #959595 1px;
+	padding: 2px 5px;
+	color: black;
+	overflow: hidden;
+	line-height: 20px;
+}
+.component_container_form_w .lookupValueWrapper .lookupDropdown .lookupMatch.lookupMatchHover {
+	//background: #dcdcdc;
+	background: #FFDB67;
+	cursor: pointer;
+}
+
+.component_container_form_w .lookupValueWrapper .lookupDropdown .lookupMatch_noRecords {
+	padding: 5px;
+	text-align: center;
+	color: grey;
+}
+
 /** calendar **/
 
 .ui-widget {
