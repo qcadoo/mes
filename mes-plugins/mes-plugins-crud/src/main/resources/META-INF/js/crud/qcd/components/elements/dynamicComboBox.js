@@ -34,7 +34,24 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	var stateSelectedValue = null;
 	
 	var input = this.input;
-
+	
+	var constructor = function(_this) {
+		input.change(function() {
+			setTitle();
+		});
+	}
+	
+	function setTitle() {
+		title = input.find(':selected').text();
+		value = input.val();
+		
+		if(title && value) {		
+			input.attr('title', title);
+		} else {
+			input.removeAttr('title');
+		}
+	}
+	
 	this.getComponentData = function() {
 		var selected = this.input.val();
 		return {
@@ -72,10 +89,15 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		} else {
 			input.val(selected);
 		}
+		
+		setTitle();
 	}
 	
 	this.updateSize = function(_width, _height) {
 		var height = _height ? _height-10 : 40;
 		this.input.parent().parent().height(height);
 	}
+	
+	constructor(this);
+	
 }
