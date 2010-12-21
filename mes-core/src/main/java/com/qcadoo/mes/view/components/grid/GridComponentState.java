@@ -129,7 +129,7 @@ public final class GridComponentState extends AbstractComponentState {
             Iterator<String> filtersKeys = filtersJson.keys();
             while (filtersKeys.hasNext()) {
                 String column = filtersKeys.next();
-                filters.put(column, filtersJson.getString(column));
+                filters.put(column, filtersJson.getString(column).trim());
             }
         }
 
