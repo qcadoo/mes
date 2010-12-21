@@ -49,14 +49,8 @@
 	<view name="dictionary" model="dictionary">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="newValue" icon="newIcon24.png" action="#{grid}.performNew;" />
-					<smallButton name="deleteValue" icon="deleteIcon16.png"
-						action="#{grid}.performDelete;" />
-				</group>
+				<group template="navigation"/>
+				<group template="gridActions"/>
 			</ribbon>
 			<component type="form" reference="form" name="dictionary">
 				<option type="header" value="false" />
@@ -82,19 +76,8 @@
 	<view name="dictionaryItem" model="dictionaryItem">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{form}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{form}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{form}.performDelete; #{window}.performBack" />
-				</group>
+				<group template="navigation"/>
+				<group template="formActions"/>
 			</ribbon>		
 			<component type="form" name="dictionaryItem" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="4">

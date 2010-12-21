@@ -69,9 +69,7 @@
 	<view name="plugin" model="plugin">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
+				<group template="navigation"/>
 				<group name="plugins">
 					<bigButton name="update" icon="updateIcon24.png" action="#{form}.fireEvent(update);" />
 				</group>
@@ -107,9 +105,7 @@
 	<view name="pluginDownload">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
+				<group template="navigation"/>
 			</ribbon>
 			<component type="staticPage" name="pluginDownload">
 				<option type="page" value="plugins/pluginDownload.jsp" />
@@ -123,9 +119,7 @@
 	<view name="pluginInfo">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
+				<group template="navigation"/>
 			</ribbon>
 			<component type="staticPage" name="pluginInfo">
 				<option type="page" value="plugins/pluginInfo.jsp" />

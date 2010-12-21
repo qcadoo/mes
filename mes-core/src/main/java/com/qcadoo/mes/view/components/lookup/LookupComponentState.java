@@ -1,5 +1,9 @@
 package com.qcadoo.mes.view.components.lookup;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
@@ -20,7 +24,15 @@ public final class LookupComponentState extends FieldComponentState {
 
     public static final String JSON_CODE = "selectedEntityCode";
 
+    public static final String JSON_CURRENT_CODE = "currentCode";
+
     public static final String JSON_BELONGS_TO_ENTITY_ID = "contextEntityId";
+
+    public static final String JSON_AUTOCOMPLETE_MATCHES = "autocompleteMatches";
+
+    public static final String JSON_AUTOCOMPLETE_CODE = "autocompleteCode";
+
+    public static final String JSON_AUTOCOMPLETE_ENTITIES_NUMBER = "autocompleteEntitiesNumber";
 
     private final LookupEventPerformer eventPerformer = new LookupEventPerformer();
 
@@ -28,22 +40,29 @@ public final class LookupComponentState extends FieldComponentState {
 
     private Long belongsToEntityId;
 
-    private String code;
+    private String currentCode;
 
-    private boolean codeNotValid;
+    private String selectedEntityCode;
 
-    private String text;
+    private String selectedEntityValue;
 
     private final String fieldCode;
 
     private final String expression;
+
+    private String autocompleteCode;
+
+    private List<Entity> autocompleteMatches;
+
+    private int autocompleteEntitiesNumber;
 
     public LookupComponentState(final FieldDefinition scopeField, final String fieldCode, final String expression) {
         this.belongsToFieldDefinition = scopeField;
         this.fieldCode = fieldCode;
         this.expression = expression;
         registerEvent("initialize", eventPerformer, "initialize");
-        registerEvent("search", eventPerformer, "search");
+        registerEvent("autompleteSearch", eventPerformer, "autompleteSearch");
+        registerEvent("onSelectedEntityChange", eventPerformer, "onSelectedEntityChange");
     }
 
     @Override
@@ -51,13 +70,21 @@ public final class LookupComponentState extends FieldComponentState {
         super.initializeContent(json);
 
         if (json.has(JSON_TEXT) && !json.isNull(JSON_TEXT)) {
-            text = json.getString(JSON_TEXT);
+            selectedEntityValue = json.getString(JSON_TEXT);
         }
         if (json.has(JSON_CODE) && !json.isNull(JSON_CODE)) {
-            code = json.getString(JSON_CODE);
+            selectedEntityCode = json.getString(JSON_CODE);
         }
         if (json.has(JSON_BELONGS_TO_ENTITY_ID) && !json.isNull(JSON_BELONGS_TO_ENTITY_ID)) {
             belongsToEntityId = json.getLong(JSON_BELONGS_TO_ENTITY_ID);
+        }
+
+        if (json.has(JSON_CURRENT_CODE) && !json.isNull(JSON_CURRENT_CODE)) {
+            currentCode = json.getString(JSON_CURRENT_CODE);
+        }
+
+        if (json.has(JSON_AUTOCOMPLETE_CODE) && !json.isNull(JSON_AUTOCOMPLETE_CODE)) {
+            autocompleteCode = json.getString(JSON_AUTOCOMPLETE_CODE);
         }
 
         if (belongsToFieldDefinition != null && belongsToEntityId == null) {
@@ -68,9 +95,25 @@ public final class LookupComponentState extends FieldComponentState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = super.renderContent();
-        json.put(JSON_TEXT, text);
-        json.put(JSON_CODE, code);
+        json.put(JSON_TEXT, selectedEntityValue);
+        json.put(JSON_CODE, selectedEntityCode);
         json.put(JSON_BELONGS_TO_ENTITY_ID, belongsToEntityId);
+
+        if (autocompleteMatches != null) {
+            JSONArray matches = new JSONArray();
+            for (Entity entity : autocompleteMatches) {
+                JSONObject matchEntity = new JSONObject();
+                matchEntity.put("id", entity.getId());
+                matchEntity.put("value", ExpressionUtil.getValue(entity, expression, getLocale()));
+                matchEntity.put("code", String.valueOf(entity.getField(fieldCode)));
+                matches.put(matchEntity);
+            }
+            json.put(JSON_AUTOCOMPLETE_MATCHES, matches);
+            json.put(JSON_AUTOCOMPLETE_CODE, autocompleteCode);
+            json.put(JSON_AUTOCOMPLETE_ENTITIES_NUMBER, autocompleteEntitiesNumber);
+
+        }
+
         return json;
     }
 
@@ -78,12 +121,12 @@ public final class LookupComponentState extends FieldComponentState {
     public Long getFieldValue() {
         Long entityId = getFieldValueWithoutSearching();
 
-        if (entityId == null && StringUtils.hasText(code)) {
-            eventPerformer.search(new String[0]);
-            return getFieldValueWithoutSearching();
-        } else {
-            return entityId;
-        }
+        // if (entityId == null && StringUtils.hasText(code)) {
+        // eventPerformer.search(new String[0]);
+        // return getFieldValueWithoutSearching();
+        // } else {
+        return entityId;
+        // }
     }
 
     public Long getFieldValueWithoutSearching() {
@@ -92,8 +135,8 @@ public final class LookupComponentState extends FieldComponentState {
 
     @Override
     public void setFieldValue(final Object value) {
-        text = "";
-        code = "";
+        selectedEntityCode = "";
+        selectedEntityValue = "";
         setFieldValueWithoutRefreshing(convertToLong(value));
         eventPerformer.refresh();
     }
@@ -120,7 +163,10 @@ public final class LookupComponentState extends FieldComponentState {
         if (belongsToFieldDefinition != null) {
             belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
-            eventPerformer.refresh();
+            // eventPerformer.refresh();
+            setFieldValueWithoutRefreshing(null);
+            selectedEntityCode = "";
+            selectedEntityValue = "";
             requestRender();
         } else {
             throw new IllegalStateException("Lookup doesn't have scopeField, it cannot set scopeEntityId");
@@ -134,10 +180,14 @@ public final class LookupComponentState extends FieldComponentState {
             requestRender();
         }
 
-        public void search(final String[] args) {
-            if (StringUtils.hasText(code) && (belongsToFieldDefinition == null || belongsToEntityId != null)) {
-                SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find().restrictedWith(
-                        Restrictions.eq(getDataDefinition().getField(fieldCode), code + "*"));
+        public void autompleteSearch(final String[] args) {
+            if ((belongsToFieldDefinition == null || belongsToEntityId != null)) {
+                SearchCriteriaBuilder searchCriteriaBuilder = getDataDefinition().find();
+
+                if (StringUtils.hasText(currentCode)) {
+                    searchCriteriaBuilder.restrictedWith(Restrictions.eq(getDataDefinition().getField(fieldCode), currentCode
+                            + "*"));
+                }
 
                 if (belongsToFieldDefinition != null && belongsToEntityId != null) {
                     searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
@@ -145,27 +195,23 @@ public final class LookupComponentState extends FieldComponentState {
 
                 SearchResult results = searchCriteriaBuilder.list();
 
-                if (results.getTotalNumberOfEntities() == 1) {
-                    Entity entity = results.getEntities().get(0);
-                    setFieldValue(entity.getId());
-                    code = String.valueOf(entity.getField(fieldCode));
-                    text = ExpressionUtil.getValue(entity, expression, getLocale());
+                autocompleteEntitiesNumber = results.getTotalNumberOfEntities();
+
+                if (results.getTotalNumberOfEntities() > 25) {
+                    autocompleteMatches = new LinkedList<Entity>();
                 } else {
-                    setFieldValueWithoutRefreshing(null);
-                    text = "";
-                    if (!codeNotValid) {
-                        addMessage(
-                                getTranslationService().translate("core.validate.field.error.lookupCodeNotFound", getLocale()),
-                                MessageType.FAILURE);
-                    }
-                    codeNotValid = true;
+                    autocompleteMatches = results.getEntities();
                 }
             } else {
-                setFieldValueWithoutRefreshing(null);
-                text = "";
+                autocompleteMatches = new LinkedList<Entity>();
             }
 
+            autocompleteCode = currentCode;
             requestRender();
+        }
+
+        public void onSelectedEntityChange(final String[] args) {
+            notifyEntityIdChangeListeners(getFieldValue());
         }
 
         private void refresh() {
@@ -176,15 +222,17 @@ public final class LookupComponentState extends FieldComponentState {
                 Entity entity = getDataDefinition().get(entityId);
 
                 if (entity != null) {
-                    code = String.valueOf(entity.getField(fieldCode));
-                    text = ExpressionUtil.getValue(entity, expression, getLocale());
+                    selectedEntityCode = String.valueOf(entity.getField(fieldCode));
+                    selectedEntityValue = ExpressionUtil.getValue(entity, expression, getLocale());
                 } else {
                     setFieldValueWithoutRefreshing(null);
-                    text = "";
+                    selectedEntityCode = "";
+                    selectedEntityValue = "";
                 }
 
             } else {
-                text = "";
+                selectedEntityCode = "";
+                selectedEntityValue = "";
             }
         }
 
