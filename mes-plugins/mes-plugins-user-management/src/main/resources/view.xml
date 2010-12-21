@@ -48,17 +48,8 @@
 	<view name="group" model="group">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{form}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{form}.performCancel;" />
-				</group>
+				<group template="navigation"/>
+				<group template="formSaveActions"/>
 			</ribbon>		
 			<component type="form" name="group" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
@@ -77,11 +68,7 @@
 	<view name="users" model="user" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{grid}.performNew;" />
-					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{grid}.performDelete;" />
-				</group>
+				<group template="gridActions"/>
 			</ribbon>
 			<component type="grid" name="users" reference="grid">
 				<option type="column" name="login" fields="userName" link="true" />
@@ -104,19 +91,8 @@
 	<view name="user" model="user">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-					<bigButton name="saveBack" icon="saveBackIcon24.png"
-						action="#{form}.performSave; #{window}.performBack" />
-					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{form}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{form}.performDelete; #{window}.performBack" />
-				</group>
+				<group template="navigation"/>
+				<group template="formActions"/>
 			</ribbon>
 			<component type="form" name="user" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="10">
@@ -163,13 +139,8 @@
 	<view name="userChangePassword" model="user">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-				</group>
+				<group template="navigation"/>
+				<group template="formSaveAction"/>
 			</ribbon>
 			<component type="form" name="user" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
@@ -190,10 +161,7 @@
 	<view name="profile" model="user">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-				</group>
+				<group template="formSaveAction"/>
 			</ribbon>
 			<component type="form" name="user" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="8">
@@ -233,13 +201,8 @@
 	<view name="profileChangePassword" model="user">
 		<component type="window" name="window">
 			<ribbon>
-				<group name="navigation">
-					<bigButton name="back" icon="backIcon24.png" action="#{window}.performBack" />
-				</group>
-				<group name="actions">
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-				</group>
+				<group template="navigation"/>
+				<group template="formSaveAction"/>
 			</ribbon>
 			<component type="form" name="user" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">

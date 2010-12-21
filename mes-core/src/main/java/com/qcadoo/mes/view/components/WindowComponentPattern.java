@@ -160,20 +160,41 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     }
 
     private RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinitionParser parser) {
-        RibbonGroup ribbonGroup = new RibbonGroup();
-        ribbonGroup.setName(parser.getStringAttribute(groupNode, "name"));
+        String template = parser.getStringAttribute(groupNode, "template");
 
-        NodeList childNodes = groupNode.getChildNodes();
-
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            Node child = childNodes.item(i);
-
-            if (child.getNodeType() == Node.ELEMENT_NODE) {
-                ribbonGroup.addItem(parseRibbonItem(child, parser));
+        if (template != null) {
+            if ("navigation".equals(template)) {
+                return createNavigationTemplate();
+            } else if ("gridActions".equals(template)) {
+                return createGridActionsTemplate();
+            } else if ("gridNewAction".equals(template)) {
+                return createGridNewActionTemplate();
+            } else if ("formActions".equals(template)) {
+                return createFormActionsTemplate();
+            } else if ("formSaveActions".equals(template)) {
+                return createFormSaveActionsTemplate();
+            } else if ("formSaveAction".equals(template)) {
+                return createFormSaveActionTemplate();
+            } else {
+                throw new IllegalStateException("Unsupported ribbon template : " + template);
             }
+        } else {
+            RibbonGroup ribbonGroup = new RibbonGroup();
+            ribbonGroup.setName(parser.getStringAttribute(groupNode, "name"));
+
+            NodeList childNodes = groupNode.getChildNodes();
+
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node child = childNodes.item(i);
+
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    ribbonGroup.addItem(parseRibbonItem(child, parser));
+                }
+            }
+
+            return ribbonGroup;
         }
 
-        return ribbonGroup;
     }
 
     private RibbonActionItem parseRibbonItem(final Node itemNode, final ViewDefinitionParser parser) {
@@ -238,4 +259,103 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
         return translateAction;
     }
+
+    private RibbonGroup createNavigationTemplate() {
+        RibbonActionItem ribbonBackAction = new RibbonActionItem();
+        ribbonBackAction.setAction("#{window}.performBack");
+        ribbonBackAction.setIcon("backIcon24.png");
+        ribbonBackAction.setName("back");
+        ribbonBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("navigation");
+        ribbonGroup.addItem(ribbonBackAction);
+
+        return ribbonGroup;
+    }
+
+    private RibbonGroup createGridActionsTemplate() {
+        RibbonGroup ribbonGroup = createGridNewActionTemplate();
+
+        RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
+        ribbonDeleteAction.setAction("#{grid}.performDelete;");
+        ribbonDeleteAction.setIcon("deleteIcon16.png");
+        ribbonDeleteAction.setName("delete");
+        ribbonDeleteAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+
+        ribbonGroup.addItem(ribbonDeleteAction);
+
+        return ribbonGroup;
+    }
+
+    private RibbonGroup createGridNewActionTemplate() {
+        RibbonActionItem ribbonNewAction = new RibbonActionItem();
+        ribbonNewAction.setAction("#{grid}.performNew;");
+        ribbonNewAction.setIcon("newIcon24.png");
+        ribbonNewAction.setName("new");
+        ribbonNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("actions");
+        ribbonGroup.addItem(ribbonNewAction);
+
+        return ribbonGroup;
+    }
+
+    private RibbonGroup createFormActionsTemplate() {
+        RibbonGroup ribbonGroup = createFormSaveActionsTemplate();
+
+        RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
+        ribbonDeleteAction.setAction("#{form}.performDelete; #{window}.performBack");
+        ribbonDeleteAction.setIcon("deleteIcon16.png");
+        ribbonDeleteAction.setName("delete");
+        ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+
+        ribbonGroup.addItem(ribbonDeleteAction);
+
+        return ribbonGroup;
+    }
+
+    private RibbonGroup createFormSaveActionsTemplate() {
+        RibbonActionItem ribbonSaveAction = new RibbonActionItem();
+        ribbonSaveAction.setAction("#{form}.performSave;");
+        ribbonSaveAction.setIcon("saveIcon24.png");
+        ribbonSaveAction.setName("save");
+        ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+
+        RibbonActionItem ribbonSaveBackAction = new RibbonActionItem();
+        ribbonSaveBackAction.setAction("#{form}.performSave; #{window}.performBack");
+        ribbonSaveBackAction.setIcon("saveBackIcon24.png");
+        ribbonSaveBackAction.setName("saveBack");
+        ribbonSaveBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+
+        RibbonActionItem ribbonCancelAction = new RibbonActionItem();
+        ribbonCancelAction.setAction("#{form}.performCancel;");
+        ribbonCancelAction.setIcon("cancelIcon16.png");
+        ribbonCancelAction.setName("cancel");
+        ribbonCancelAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("actions");
+        ribbonGroup.addItem(ribbonSaveAction);
+        ribbonGroup.addItem(ribbonSaveBackAction);
+        ribbonGroup.addItem(ribbonCancelAction);
+
+        return ribbonGroup;
+    }
+
+    private RibbonGroup createFormSaveActionTemplate() {
+        RibbonActionItem ribbonSaveAction = new RibbonActionItem();
+        ribbonSaveAction.setAction("#{form}.performSave; #{window}.performBack");
+        ribbonSaveAction.setIcon("saveBackIcon24.png");
+        ribbonSaveAction.setName("save");
+        ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("actions");
+        ribbonGroup.addItem(ribbonSaveAction);
+
+        return ribbonGroup;
+    }
+
 }
