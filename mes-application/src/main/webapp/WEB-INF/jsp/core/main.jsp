@@ -24,6 +24,7 @@
 
 --%>
 
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -33,18 +34,26 @@
 
 	<title>QCADOO MES</title>
 	
-	<link rel="stylesheet" href="css/core/mainPage.css" type="text/css" />
-	<link rel="stylesheet" href="css/core/menuTopLevel.css" type="text/css" />
-	<link rel="stylesheet" href="css/core/menu/style.css" type="text/css" />
-	<link rel="stylesheet" href="css/core/notification.css" type="text/css" />
-
-	<script type="text/javascript" src="js/core/lib/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="js/core/lib/jquery.pnotify.min.js"></script>
-	<script type="text/javascript" src="js/core/qcd/utils/logger.js"></script>
-	<script type="text/javascript" src="js/core/qcd/menu/model.js"></script>
-	<script type="text/javascript" src="js/core/qcd/menu/menuController.js"></script>
-	<script type="text/javascript" src="js/core/qcd/core/windowController.js"></script>
-	<script type="text/javascript" src="js/core/qcd/core/messagesController.js"></script>
+	<c:choose>
+		<c:when test="${compressStaticResources}">
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/qcadoo.min.css" type="text/css" />
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
+		</c:when>
+		<c:otherwise>
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/mainPage.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menuTopLevel.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menu/style.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/notification.css" type="text/css" />
+		
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.pnotify.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/logger.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/menu/model.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/menu/menuController.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/windowController.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/messagesController.js"></script>
+		</c:otherwise>
+	</c:choose>
 	
 	<link rel="shortcut icon" href="/img/core/icons/favicon.png">
 	

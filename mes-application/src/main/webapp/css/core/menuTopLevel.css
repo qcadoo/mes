@@ -25,7 +25,7 @@
 #topLevelMenu {
 	height: 45px;
 	padding-left: 20px;
-	background: #f1f1f1 url('images/topBg.png') repeat-x 0 0;
+	background: #f1f1f1 url('/css/core/images/topBg.png') repeat-x 0 0;
 }
 
 #topLevelMenu #logoImage {

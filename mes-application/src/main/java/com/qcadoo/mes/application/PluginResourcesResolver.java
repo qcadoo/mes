@@ -25,10 +25,17 @@
 package com.qcadoo.mes.application;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -43,6 +50,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.yahoo.platform.yui.compressor.YUICompressor;
+
 @Component
 public final class PluginResourcesResolver implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -54,6 +63,12 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
     @Value("${QCADOO_WEBAPP_PATH}")
     private String webappPath;
 
+    @Value("${copyPluginResources}")
+    private boolean copyPluginResources;
+
+    @Value("${compressStaticResources}")
+    private boolean compressStaticResources;
+
     @PostConstruct
     public void init() {
         LOG.info("Webapp path: " + webappPath);
@@ -61,17 +76,61 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        boolean copyResources = true;
-        String copyResorcesProperty = System.getProperty("com.qcadoo.mes.application.copyResources");
-        if (copyResorcesProperty != null) {
-            copyResources = Boolean.parseBoolean(copyResorcesProperty);
-        }
-        if (copyResources) {
+        if (copyPluginResources) {
             copyResources("js", "js");
             copyResources("css", "css");
             copyResources("img", "img");
             copyResources("WEB-INF/jsp", "WEB-INF/jsp");
+
+            try {
+                if (compressStaticResources) {
+                    compressResources("js", "js");
+                    compressResources("css", "css");
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
         }
+    }
+
+    private static void mergeFiles(final Writer output, final File folder, final String type, final List<String> excluded)
+            throws IOException {
+        File[] files = folder.listFiles();
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                mergeFiles(output, file, type, excluded);
+            } else if (file.isFile() && !excluded.contains(file.getName()) && file.getName().endsWith("." + type)) {
+                Reader input = new FileReader(file);
+                IOUtils.copy(input, output);
+                output.write("\n\n");
+                input.close();
+            }
+        }
+    }
+
+    private void compressResources(final String type, final String targetPath) throws IOException {
+        File file = new File(webappPath + "/" + targetPath + "/qcadoo." + type);
+        File minFile = new File(webappPath + "/" + targetPath + "/qcadoo.min." + type);
+
+        if (file.exists()) {
+            file.delete();
+        }
+
+        if (minFile.exists()) {
+            minFile.delete();
+        }
+
+        Writer output = new BufferedWriter(new FileWriter(file));
+
+        File folder = new File(webappPath + "/" + targetPath);
+
+        mergeFiles(output, folder, type, Arrays.asList(new String[] { "qcadoo." + type, "qcadoo.min." + type }));
+
+        output.flush();
+        output.close();
+
+        YUICompressor.main(new String[] { "-v", "-o", minFile.getAbsolutePath(), file.getAbsolutePath() });
     }
 
     private void copyResources(final String type, final String targetPath) {

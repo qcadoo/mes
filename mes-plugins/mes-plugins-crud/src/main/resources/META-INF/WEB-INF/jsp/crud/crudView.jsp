@@ -33,72 +33,74 @@
 
 <html>
 <head>
-	<link rel="stylesheet" href="../../css/core/jquery-ui-1.8.5.custom.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/jquery.datepick.css" type="text/css" />
-	<link rel="stylesheet" href="/css/core/jquery.autocomplete.css" type="text/css" /> 
-	<link rel="stylesheet" href="../../css/core/ui.jqgrid.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/jstree/style.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/core/qcd.css" type="text/css" />
-	<!--<link rel="stylesheet" href="../../css/menuRibbon.css" type="text/css" />-->
-	<link rel="stylesheet" href="../../css/core/menu/style.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/core/notification.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/components/window.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/components/grid.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/components/form.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/components/layout.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/components/tree.css" type="text/css" />
-	<link rel="stylesheet" href="../../css/crud/components/elementHeader.css" type="text/css" />
-	
-	<script type="text/javascript" src="../../js/core/lib/encoder.js"></script>
-	
-	<script type="text/javascript" src="../../js/core/lib/json_sans_eval.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/json2.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery.blockUI.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery.jqGrid.min.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery.jstree.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery.cookie.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery-ui-1.8.5.custom.min.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery-ui-i18n.js"></script>
-	<script type="text/javascript" src="../../js/core/lib/jquery.pnotify.min.js"></script>
-	<script type="text/javascript" src="/js/core/lib/jquery.autocomplete.js"></script>
-	
-	
-	<script type="text/javascript" src="../../js/core/qcd/utils/logger.js"></script>
-	<script type="text/javascript" src="../../js/core/qcd/utils/serializator.js"></script>
-	<script type="text/javascript" src="../../js/core/qcd/utils/connector.js"></script>
-	<script type="text/javascript" src="../../js/core/qcd/utils/options.js"></script>
-	<script type="text/javascript" src="../../js/core/qcd/utils/pageConstructor.js"></script>
-	<script type="text/javascript" src="../../js/core/qcd/core/messagesController.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/core/pageController.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/component.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/container.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/containers/layout/layout.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/containers/window.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/containers/form.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/utils/elementHeaderUtils.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/formComponent.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/grid.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/grid/gridHeader.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/textInput.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/textArea.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/passwordInput.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/dynamicComboBox.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/entityComboBox.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/lookup/lookup.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/lookup/lookupDropdown.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/checkBox.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/linkButton.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/tree.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/calendar.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/elements/staticComponent.js"></script>
-	<script type="text/javascript" src="../../js/crud/qcd/components/ribbon.js"></script>
-	
-	<c:forEach items="${model['jsFilePaths']}" var="jsFilePath">
-		<script type="text/javascript" src="${jsFilePath}"></script>
-	</c:forEach>
-	
-	
+
+	<c:choose>
+		<c:when test="${compressStaticResources}">
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/qcadoo.min.css" type="text/css" />
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
+		</c:when>
+		<c:otherwise>
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/jquery-ui-1.8.5.custom.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/jquery.datepick.css" type="text/css" /> 
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/ui.jqgrid.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/jstree/style.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/qcd.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/menu/style.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/notification.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/window.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/grid.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/form.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/layout.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/tree.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/elementHeader.css" type="text/css" />
+			
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/json_sans_eval.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/json2.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.blockUI.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.jqGrid.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.jstree.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.cookie.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery-ui-1.8.5.custom.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery-ui-i18n.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/jquery.pnotify.min.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/encoder.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/logger.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/serializator.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/connector.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/options.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/pageConstructor.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/messagesController.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/core/pageController.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/component.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/container.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/containers/layout/layout.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/containers/window.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/containers/form.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/utils/elementHeaderUtils.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/formComponent.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid/gridHeader.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/textInput.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/textArea.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/passwordInput.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/dynamicComboBox.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/entityComboBox.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/lookup.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/lookup/lookupDropdown.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/checkBox.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/linkButton.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/tree.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/calendar.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/staticComponent.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/ribbon.js"></script>
+			
+			<c:forEach items="${model['jsFilePaths']}" var="jsFilePath">
+				<script type="text/javascript" src="${jsFilePath}"></script>
+			</c:forEach>
+		</c:otherwise>
+	</c:choose>
+
 	<script type="text/javascript">
 
 		var viewName = "${viewName}";

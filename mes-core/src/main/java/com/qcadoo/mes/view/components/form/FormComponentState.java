@@ -174,8 +174,7 @@ public final class FormComponentState extends AbstractContainerState {
         public void save(final String[] args) {
             Entity databaseEntity = getFormEntity();
             if (databaseEntity == null && entityId != null) {
-                addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
-                clear(args);
+                throw new IllegalStateException("Entity cannot be found");
             } else {
                 Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(),
                         entityId);
@@ -200,20 +199,19 @@ public final class FormComponentState extends AbstractContainerState {
                 } else {
                     addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
                 }
-                setFieldsRequiredAndDisables();
             }
+            setFieldsRequiredAndDisables();
         }
 
         public void delete(final String[] args) {
             Entity entity = getFormEntity();
             if (entity == null) {
-                addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
+                throw new IllegalStateException("Entity cannot be found");
             } else if (entityId != null) {
                 getDataDefinition().delete(entityId);
                 addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
+                clear(args);
             }
-
-            clear(args);
         }
 
         public void initialize(final String[] args) {
@@ -223,10 +221,10 @@ public final class FormComponentState extends AbstractContainerState {
                 copyEntityToFields(entity, true);
                 setFieldValue(entity.getId());
                 setFieldsRequiredAndDisables();
+            } else if (entityId != null) {
+                disableForm();
+                throw new IllegalStateException("Entity cannot be found");
             } else {
-                if (entityId != null) {
-                    addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
-                }
                 clear(args);
             }
         }
@@ -334,6 +332,13 @@ public final class FormComponentState extends AbstractContainerState {
                     field.getValue().setEnabled(false);
                 }
             }
+        }
+
+        private void disableForm() {
+            for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
+                field.getValue().setEnabled(false);
+            }
+            setEnabled(false);
         }
 
     }

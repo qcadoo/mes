@@ -30,6 +30,7 @@
 		<string name="userName" >
 			<validatesPresence />
 			<validatesUniqueness />
+			<validatesRegex regex="^[a-zA-Z0-9\\.]+$" message="users.validate.global.error.loginIllegalCharacters" />
 		</string>
 		<belongsTo name="userGroup" model="group" lookupField="name" lazy="false">
 			<validatesPresence />
@@ -49,7 +50,6 @@
 		</password>
 		<password name="oldPassword" persistent="false" />
 		<string name="viewIdentifier" persistent="false" />
-		<validatesWith bean="com.qcadoo.mes.users.UserService" method="checkIfLoginDoesNotContainIllegalCharacters" />
 		<validatesWith bean="com.qcadoo.mes.users.UserService" method="checkPassword" />
 	</model>
 	<model name="group">

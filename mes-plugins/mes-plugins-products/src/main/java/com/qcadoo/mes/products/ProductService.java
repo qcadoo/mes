@@ -450,7 +450,7 @@ public final class ProductService {
 
         }
 
-        if (!entity.getField("state").toString().equals("inProgress")) {
+        if (!"inProgress".toString().equals(entity.getField("state"))) {
             if (entity.getField("effectiveDateTo") != null) {
                 entity.setField("state", "done");
             } else if (entity.getField("effectiveDateFrom") != null) {

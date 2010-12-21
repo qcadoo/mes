@@ -63,7 +63,7 @@ body {
 	position: static;
 	height: 100%;
 	width: 100%;
-	background: url(images/dashboard/startowa_pattern_grey.png);
+	background: url('/css/core/images/dashboard/startowa_pattern_grey.png');
 	background-position: top center;
 	background-repeat: no-repeat;
 }
@@ -77,7 +77,7 @@ body {
 #dashboardContentWrapper {
 	clear: both;
 	width: 940px;
-	background-image: url('images/dashboard/qcadoo_white.png');
+	background-image: url('/css/core/images/dashboard/qcadoo_white.png');
 	background-position: 770px 30px;
 	background-repeat: no-repeat;
 	margin: auto;
@@ -124,7 +124,7 @@ body {
 	margin-left: 10px;
 	margin-right: 3px;
 	vertical-align: middle;
-	background-image: url('images/dashboard/startowa_tlo.png');
+	background-image: url('/css/core/images/dashboard/startowa_tlo.png');
 }
 
 #dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon {
@@ -138,14 +138,14 @@ body {
 	background-repeat: no-repeat;
 }
 #dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon1 {
-	background-image: url('images/dashboard/organize.png');
+	background-image: url('/css/core/images/dashboard/organize.png');
 }
 #dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon2 {
-	background-image: url('images/dashboard/define.png');
+	background-image: url('/css/core/images/dashboard/define.png');
 	background-position: 15px 25px;
 }
 #dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonIcon.icon3 {
-	background-image: url('images/dashboard/react.png');
+	background-image: url('/css/core/images/dashboard/react.png');
 }
 
 #dashboardContentWrapper #buttonsElement .dashboardButton .dashboardButtonContent {
