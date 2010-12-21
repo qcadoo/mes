@@ -468,7 +468,7 @@
 							<option type="orderable" value="name,category" />
 							<option type="expression" value="#name + ' - ' + #number" />
 							<option type="fieldCode" value="number" />
-							<listener event="search" bean="com.qcadoo.mes.products.ProductService" method="changeOrderProduct"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.ProductService" method="changeOrderProduct"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="3">

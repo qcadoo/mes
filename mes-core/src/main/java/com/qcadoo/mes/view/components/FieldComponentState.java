@@ -18,6 +18,9 @@ public class FieldComponentState extends AbstractComponentState {
         if (json.has(JSON_VALUE) && !json.isNull(JSON_VALUE)) {
             value = json.getString(JSON_VALUE);
         }
+        if (json.has(JSON_REQUIRED) && !json.isNull(JSON_REQUIRED)) {
+            required = json.getBoolean(JSON_REQUIRED);
+        }
     }
 
     @Override

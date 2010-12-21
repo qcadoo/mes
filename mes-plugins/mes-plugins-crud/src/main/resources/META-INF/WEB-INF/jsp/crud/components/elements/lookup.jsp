@@ -41,9 +41,10 @@
 			<div class="lookupInputWrapper">
 				<input type="text" id="${component['path']}_input" tabindex="${component['indexOrder']}"/>
 			</div>
-			<div class="lookupValue" id="${component['path']}_valueDiv"></div>
+			<!--<div class="lookupValue" id="${component['path']}_valueDiv"></div>-->
 			<div class="lookupLoading" id="${component['path']}_loadingDiv"></div>
 			<div class="lookupButton" id="${component['path']}_openLookupButton"></div>
+			<div class="lookupDropdown" id="${component['path']}_lookupDropdown" style="display: none;"></div>
 		</div>
 	</tiles:putAttribute>
 </tiles:insertTemplate>
