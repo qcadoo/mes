@@ -93,17 +93,6 @@ public final class UserService {
         }
     }
 
-    public boolean checkIfLoginDoesNotContainIllegalCharacters(final DataDefinition dataDefinition, final Entity entity) {
-        String userName = entity.getStringField("userName");
-
-        if (!userName.matches("^[a-zA-Z0-9\\.]+$")) {
-            entity.addError(dataDefinition.getField("userName"), "users.validate.global.error.loginIllegalCharacters");
-            return false;
-        }
-
-        return true;
-    }
-
     public boolean checkPassword(final DataDefinition dataDefinition, final Entity entity) {
         String password = entity.getStringField("password");
         String passwordConfirmation = entity.getStringField("passwordConfirmation");

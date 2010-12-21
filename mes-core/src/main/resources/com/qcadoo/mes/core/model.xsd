@@ -100,6 +100,10 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	
+	<xs:complexType name="validatesRegexType">
+		<xs:attribute name="regex" type="xs:string" />
+	</xs:complexType>
 
 	<xs:complexType name="hookType">
 		<xs:attribute name="bean" use="required">

@@ -159,6 +159,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 			<validatesLength max="40" />
+			<validatesRegex regex="^[a-zA-Z0-9]+$" />
 		</string>
 		<string name="name">
 			<validatesPresence />

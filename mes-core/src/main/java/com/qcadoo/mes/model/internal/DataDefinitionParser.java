@@ -71,7 +71,7 @@ public final class DataDefinitionParser {
     }
 
     private static enum FieldTag {
-        VALIDATESPRESENCE, VALIDATESPRESENCEONCREATE, VALIDATESLENGTH, VALIDATESPRECISION, VALIDATESSCALE, VALIDATESRANGE, VALIDATESUNIQUENESS, VALIDATESWITH
+        VALIDATESPRESENCE, VALIDATESPRESENCEONCREATE, VALIDATESLENGTH, VALIDATESPRECISION, VALIDATESSCALE, VALIDATESRANGE, VALIDATESUNIQUENESS, VALIDATESWITH, VALIDATESREGEX
     }
 
     private static final String TAG_MODELS = "models";
@@ -287,6 +287,10 @@ public final class DataDefinitionParser {
                 break;
             case VALIDATESWITH:
                 fieldDefinition.withValidator(getValidatorDefinition(reader, validatorFactory.custom(getHookDefinition(reader))));
+                break;
+            case VALIDATESREGEX:
+                fieldDefinition.withValidator(getValidatorDefinition(reader,
+                        validatorFactory.regex(getStringAttribute(reader, "regex"))));
                 break;
             default:
                 throw new IllegalStateException("Illegal validator type " + tag);
