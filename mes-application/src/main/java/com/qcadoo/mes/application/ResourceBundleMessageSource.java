@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
@@ -46,9 +47,14 @@ public class ResourceBundleMessageSource extends ReloadableResourceBundleMessage
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Value("${ignoreMissingTranslations}")
+    private boolean ignoreMissingTranslations;
+
     @PostConstruct
     public void init() {
-        LOG.info("Lokking for localization resources ...");
+        setFallbackToSystemLocale(ignoreMissingTranslations);
+
+        LOG.info("Locking for localization resources ...");
 
         Set<String> basenames = new HashSet<String>();
 
