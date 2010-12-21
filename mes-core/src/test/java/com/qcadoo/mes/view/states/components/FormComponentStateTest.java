@@ -138,10 +138,20 @@ public class FormComponentStateTest extends AbstractStateTest {
         assertEquals(13L, json.getJSONObject(ComponentState.JSON_CONTENT).getLong(FormComponentState.JSON_ENTITY_ID));
     }
 
-    @Test
-    public void shouldClearFormIfEntityIsNotExists() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionIfEntityIsNotExistsAndEntityIdIsNotNull() throws Exception {
         // given
         form.setFieldValue(12L);
+
+        // when
+        form.performEvent(viewDefinitionState, "initialize", new String[0]);
+
+    }
+
+    @Test
+    public void shouldClearFormIfEntityIsNotExistsAndEntityIdIsNull() throws Exception {
+        // given
+        form.setFieldValue(null);
 
         // when
         form.performEvent(viewDefinitionState, "initialize", new String[0]);

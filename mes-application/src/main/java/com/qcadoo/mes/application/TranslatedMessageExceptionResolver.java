@@ -24,6 +24,7 @@
 
 package com.qcadoo.mes.application;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -58,7 +59,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
     @PostConstruct
     public void init() {
         exceptionTranslations.put(DataIntegrityViolationException.class, "dataIntegrityViolationException.objectInUse");
-        messageTranslations.put("Entity.+ cannot be found", "illegalStateException.entityNotFound");
+        messageTranslations.put("Entity.* cannot be found", "illegalStateException.entityNotFound");
         messageTranslations.put("PrintError:DocumentNotGenerated", "illegalStateException.printErrorDocumentNotGenerated");
     }
 
@@ -110,11 +111,14 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
             }
         }
 
-        if (throwable.getCause() != null) {
-            return getCustomExceptionMessageForClass(throwable.getCause());
+        if (throwable instanceof InvocationTargetException) {
+            return getCustomExceptionMessage(((InvocationTargetException) throwable).getTargetException());
+        } else if (throwable.getCause() != null) {
+            return getCustomExceptionMessage(throwable.getCause());
         } else {
             return null;
         }
+
     }
 
     private Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {

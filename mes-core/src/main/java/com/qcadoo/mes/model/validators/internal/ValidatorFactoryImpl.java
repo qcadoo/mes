@@ -69,6 +69,11 @@ public final class ValidatorFactoryImpl implements ValidatorFactory {
     }
 
     @Override
+    public FieldValidator regex(final String regex) {
+        return new RegexValidator(regex);
+    }
+
+    @Override
     public FieldValidator custom(final HookDefinition validateHook) {
         return new CustomValidator(validateHook);
     }

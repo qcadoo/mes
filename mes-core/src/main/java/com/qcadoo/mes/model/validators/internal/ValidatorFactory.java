@@ -48,6 +48,8 @@ public interface ValidatorFactory {
 
     FieldValidator range(Object from, Object to, boolean inclusive);
 
+    FieldValidator regex(String regex);
+
     FieldValidator custom(HookDefinition validateHook);
 
     EntityValidator customEntity(HookDefinition entityValidateHook);
