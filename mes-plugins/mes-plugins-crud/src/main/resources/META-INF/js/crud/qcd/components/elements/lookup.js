@@ -180,7 +180,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	}
 	
 	function onViewStateChange() {
-		if (viewState.isFocused) {
+		if (viewState.isFocused && !elements.input.attr("readonly")) {
 			elements.openLookupButton.addClass("lightHover");
 			elements.label.html(labels.focus);
 			elements.input.val(dataState.currentCode);
