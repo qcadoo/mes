@@ -91,6 +91,7 @@
 						<component type="input" name="unit" field="unit" />
 					</layoutElement>
 				</component>
+				<option type="defaultAction" value="#{form}.performSave; #{window}.performBack" />
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
