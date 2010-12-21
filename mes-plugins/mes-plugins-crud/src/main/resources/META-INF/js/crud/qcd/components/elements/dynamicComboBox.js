@@ -29,6 +29,7 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 
+	var element = _element;
 	var mainController = _mainController;
 	var elementPath = this.elementPath;
 	var stateSelectedValue = null;
@@ -93,11 +94,24 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		setTitle();
 	}
 	
+	this.setComponentEnabled = function(isEnabled) {
+		if (isEnabled) {
+			element.removeClass("disabled");
+			this.input.removeAttr('disabled');
+		} else {
+			element.addClass("disabled");
+			this.input.attr('disabled', 'true');
+		}
+		if (this.setFormComponentEnabled) {
+			this.setFormComponentEnabled(isEnabled);
+		}
+	}
+	
 	this.updateSize = function(_width, _height) {
 		var height = _height ? _height-10 : 40;
 		this.input.parent().parent().height(height);
 	}
-	
+		
 	constructor(this);
 	
 }

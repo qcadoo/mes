@@ -108,10 +108,10 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.setComponentEnabled = function(isEnabled) {
 		if (isEnabled) {
 			element.removeClass("disabled");
-			this.input.removeAttr('disabled');
+			this.input.removeAttr("readonly");
 		} else {
 			element.addClass("disabled");
-			this.input.attr('disabled', 'true');
+			this.input.attr("readonly", "readonly");
 		}
 		if (this.setFormComponentEnabled) {
 			this.setFormComponentEnabled(isEnabled);
