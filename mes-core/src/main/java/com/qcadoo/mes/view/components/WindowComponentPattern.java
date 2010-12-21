@@ -164,17 +164,17 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
         if (template != null) {
             if ("navigation".equals(template)) {
-                return createNavigationTemplate();
+                return createNavigationTemplate(parser);
             } else if ("gridActions".equals(template)) {
-                return createGridActionsTemplate();
+                return createGridActionsTemplate(parser);
             } else if ("gridNewAction".equals(template)) {
-                return createGridNewActionTemplate();
+                return createGridNewActionTemplate(parser);
             } else if ("formActions".equals(template)) {
-                return createFormActionsTemplate();
+                return createFormActionsTemplate(parser);
             } else if ("formSaveActions".equals(template)) {
-                return createFormSaveActionsTemplate();
+                return createFormSaveActionsTemplate(parser);
             } else if ("formSaveAction".equals(template)) {
-                return createFormSaveActionTemplate();
+                return createFormSaveActionTemplate(parser);
             } else {
                 throw new IllegalStateException("Unsupported ribbon template : " + template);
             }
@@ -260,9 +260,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return translateAction;
     }
 
-    private RibbonGroup createNavigationTemplate() {
+    private RibbonGroup createNavigationTemplate(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonBackAction = new RibbonActionItem();
-        ribbonBackAction.setAction("#{window}.performBack");
+        ribbonBackAction.setAction(translateRibbonAction("#{window}.performBack", parser));
         ribbonBackAction.setIcon("backIcon24.png");
         ribbonBackAction.setName("back");
         ribbonBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -274,11 +274,11 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonGroup createGridActionsTemplate() {
-        RibbonGroup ribbonGroup = createGridNewActionTemplate();
+    private RibbonGroup createGridActionsTemplate(final ViewDefinitionParser parser) {
+        RibbonGroup ribbonGroup = createGridNewActionTemplate(parser);
 
         RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
-        ribbonDeleteAction.setAction("#{grid}.performDelete;");
+        ribbonDeleteAction.setAction(translateRibbonAction("#{grid}.performDelete;", parser));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -288,9 +288,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonGroup createGridNewActionTemplate() {
+    private RibbonGroup createGridNewActionTemplate(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonNewAction = new RibbonActionItem();
-        ribbonNewAction.setAction("#{grid}.performNew;");
+        ribbonNewAction.setAction(translateRibbonAction("#{grid}.performNew;", parser));
         ribbonNewAction.setIcon("newIcon24.png");
         ribbonNewAction.setName("new");
         ribbonNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -302,11 +302,11 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonGroup createFormActionsTemplate() {
-        RibbonGroup ribbonGroup = createFormSaveActionsTemplate();
+    private RibbonGroup createFormActionsTemplate(final ViewDefinitionParser parser) {
+        RibbonGroup ribbonGroup = createFormSaveActionsTemplate(parser);
 
         RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
-        ribbonDeleteAction.setAction("#{form}.performDelete; #{window}.performBack");
+        ribbonDeleteAction.setAction(translateRibbonAction("#{form}.performDelete; #{window}.performBack", parser));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
@@ -316,21 +316,21 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonGroup createFormSaveActionsTemplate() {
+    private RibbonGroup createFormSaveActionsTemplate(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonSaveAction = new RibbonActionItem();
-        ribbonSaveAction.setAction("#{form}.performSave;");
+        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave;", parser));
         ribbonSaveAction.setIcon("saveIcon24.png");
         ribbonSaveAction.setName("save");
         ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
 
         RibbonActionItem ribbonSaveBackAction = new RibbonActionItem();
-        ribbonSaveBackAction.setAction("#{form}.performSave; #{window}.performBack");
+        ribbonSaveBackAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack", parser));
         ribbonSaveBackAction.setIcon("saveBackIcon24.png");
         ribbonSaveBackAction.setName("saveBack");
         ribbonSaveBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
 
         RibbonActionItem ribbonCancelAction = new RibbonActionItem();
-        ribbonCancelAction.setAction("#{form}.performCancel;");
+        ribbonCancelAction.setAction(translateRibbonAction("#{form}.performCancel;", parser));
         ribbonCancelAction.setIcon("cancelIcon16.png");
         ribbonCancelAction.setName("cancel");
         ribbonCancelAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
@@ -344,9 +344,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonGroup createFormSaveActionTemplate() {
+    private RibbonGroup createFormSaveActionTemplate(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonSaveAction = new RibbonActionItem();
-        ribbonSaveAction.setAction("#{form}.performSave; #{window}.performBack");
+        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack", parser));
         ribbonSaveAction.setIcon("saveBackIcon24.png");
         ribbonSaveAction.setName("save");
         ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
