@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -467,6 +468,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         given(substituteCriteria.list()).willReturn(result);
         given(result.getTotalNumberOfEntities()).willReturn(0);
         given(result.getEntities()).willReturn(Collections.<Entity> emptyList());
+        given(substituteDataDefinition.get(anyLong())).willReturn(entity);
         grid.initialize(json, Locale.ENGLISH);
         grid.addFieldEntityIdChangeListener("field", listener);
 
@@ -494,6 +496,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         given(substituteCriteria.list()).willReturn(result);
         given(result.getTotalNumberOfEntities()).willReturn(0);
         given(result.getEntities()).willReturn(Collections.<Entity> emptyList());
+        given(substituteDataDefinition.get(anyLong())).willReturn(entity);
         willThrow(new IllegalStateException()).given(substituteDataDefinition).delete(13L);
         grid.initialize(json, Locale.ENGLISH);
         grid.addFieldEntityIdChangeListener("field", listener);

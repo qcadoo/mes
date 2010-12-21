@@ -145,7 +145,6 @@
   	space: 0;
 	color: #464646;
 	height: 22px;
-	max-width: 100%;
 	font: 11px arial;
 	vertical-align: middle;
 	border-radius: 0;
@@ -196,6 +195,7 @@
 	height: auto;
 	padding-left: 6px;
 	padding-top: 4px;
+	resize: none;
 }
 
 /** error icons **/

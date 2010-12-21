@@ -247,6 +247,12 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (value.belongsToEntityId) {
 			currentState.belongsToEntityId = value.belongsToEntityId;
 		}
+		if (value.firstEntity) {
+			currentState.firstEntity = value.firstEntity;
+		}
+		if (value.maxEntities) {
+			currentState.maxEntities = value.maxEntities;
+		}
 		
 		if (value.entities == null) {
 			return;

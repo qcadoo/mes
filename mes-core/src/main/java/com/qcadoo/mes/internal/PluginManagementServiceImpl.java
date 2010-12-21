@@ -28,6 +28,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
@@ -294,7 +296,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
                     deleteFile = true;
                     LOG.info("Plugin hasn't apropriate status");
                     return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToUpdate");
-                } else if (databasePlugin.getVersion().compareTo(plugin.getVersion()) >= 0) {
+                } else if (compareVersions(databasePlugin.getVersion(), plugin.getVersion()) >= 0) {
                     deleteFile = true;
                     LOG.info("Plugin has actual version");
                     return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.pluginHasActualVersion");
@@ -337,6 +339,40 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             LOG.info("Chosen file is empty");
             return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.emptyFile");
         }
+    }
+
+    @Override
+    public int compareVersions(final String version, final String otherVersion) {
+        if (version.equals(otherVersion)) {
+            return 0;
+        }
+
+        String[] versionSplitted = version.split("\\.");
+        String[] otherVersionSplitted = otherVersion.split("\\.");
+
+        if (versionSplitted.length != otherVersionSplitted.length) {
+            throw new IllegalStateException("Invalid plugin versions " + version + " and " + otherVersion);
+        }
+
+        for (int i = 0; i < versionSplitted.length; i++) {
+            int j = compareVersionPart(versionSplitted[i], otherVersionSplitted[i]);
+            if (j != 0) {
+                return j;
+            }
+        }
+
+        return 0;
+    }
+
+    private int compareVersionPart(final String version, final String otherVersion) {
+        try {
+            int versionInteger = NumberFormat.getIntegerInstance().parse(version).intValue();
+            int otherVersionInteger = NumberFormat.getIntegerInstance().parse(otherVersion).intValue();
+            return (versionInteger - otherVersionInteger);
+        } catch (ParseException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
     }
 
     @Override

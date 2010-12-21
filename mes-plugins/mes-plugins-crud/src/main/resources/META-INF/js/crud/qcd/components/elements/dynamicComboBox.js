@@ -67,7 +67,7 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 			selected = data.value;
 		}
 		
-		if (!selected || $.trim(selected) == "") {
+		if (selected == undefined) {
 			input.val(previousSelected);
 		} else {
 			input.val(selected);
