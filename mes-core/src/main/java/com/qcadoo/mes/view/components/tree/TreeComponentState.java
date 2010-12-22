@@ -31,7 +31,6 @@ public final class TreeComponentState extends AbstractComponentState {
 
     private TreeNode rootNode;
 
-    // TODO krna
     private List<Long> openedNodes;
 
     private Long selectedEntityId;
@@ -193,7 +192,7 @@ public final class TreeComponentState extends AbstractComponentState {
         }
     }
 
-    private void createChildrenNodes(List<Pair<Entity, Boolean>> entities, TreeNode parent) {
+    private void createChildrenNodes(final List<Pair<Entity, Boolean>> entities, final TreeNode parent) {
         for (Pair<Entity, Boolean> entityPair : entities) {
             if (entityPair.getValue()) {
                 continue;
@@ -209,7 +208,7 @@ public final class TreeComponentState extends AbstractComponentState {
         }
     }
 
-    private boolean isKid(TreeNode parent, Entity ent) {
+    private boolean isKid(final TreeNode parent, final Entity ent) {
         Object entityParent = ent.getField("parent");
         if (entityParent == null) {
             if (parent.getId() == null) {
