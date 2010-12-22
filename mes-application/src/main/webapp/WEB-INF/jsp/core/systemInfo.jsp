@@ -33,11 +33,6 @@
 		margin: 20px;
 		font-family:Arial, Helvetica, sans-serif;
 	}
-	#systemInfoContent #systemInfoHeader {
-		font-size: 16px;
-		font-weight: bold;
-		margin-bottom: 20px;
-	}
 	#systemInfoContent .systemInfoItem {
 		margin-top: 10px;
 		margin-left: 20px;
@@ -45,7 +40,7 @@
 	}
 	#systemInfoContent .systemInfoItem .systemInfoItemLabel {
 		display: inline-block;
-		width: 100px;
+		width: 115px;
 		color: #616161;
 	}
 	#systemInfoContent .systemInfoItem .systemInfoItemValue {
@@ -53,11 +48,13 @@
 	}
 </style>
 
-<div id="systemInfoContent">
+<script type="text/JavaScript">
+	jQuery(document).ready(function(){
+		window.mainController.setWindowHeader("${translationsMap['core.systemInfo.header']}");	
+	});
+</script>
 
-	<div id="systemInfoHeader">
-		${translationsMap['core.systemInfo.header']}
-	</div>
+<div id="systemInfoContent">
 	<div class="systemInfoItem">
 		<span class="systemInfoItemLabel">${translationsMap['core.systemInfo.buildApplicationName.label']}</span>
 		<span class="systemInfoItemValue">${buildApplicationName}</span>

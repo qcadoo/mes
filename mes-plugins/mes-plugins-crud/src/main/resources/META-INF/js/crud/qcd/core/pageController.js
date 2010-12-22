@@ -47,10 +47,14 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			setComponentState(serializationObject);
 			if (hasDataDefinition) {
 				this.callEvent("initializeAfterBack", null, function() {QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"))});
+			} else {
+				QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"));
 			}
 		} else {
 			if (hasDataDefinition) {
 				this.callEvent("initialize", null, function() {QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"))});
+			} else {
+				QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"));
 			}
 		}
 	}
