@@ -55,19 +55,19 @@ html>body .ui-pnotify {
 }
 
 .ui-pnotify .ui-state-error {
-	background-color: #FEF1EC; 
+	background: #FEF1EC; 
 	border: 1px solid #CD0A0A;
 	color: #CD0A0A;
 }
 
 .ui-pnotify .ui-state-highlight {
-	background-color: #EEE; 
+	background: #EEE; 
 	border: 1px solid #DDD;
 	color: #444;
 }
 
 .ui-state-success .ui-state-highlight {
-	background-color: #B9F47D; 
+	background: #B9F47D; 
 	border: 1px solid #24A800;
 	color: #363636;
 }
