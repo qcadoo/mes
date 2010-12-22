@@ -38,6 +38,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.internal.BelongsToEntityType;
+import com.qcadoo.mes.model.types.internal.PasswordType;
 import com.qcadoo.mes.model.validators.EntityValidator;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
@@ -65,6 +66,9 @@ public final class ValidationService {
             final Entity existingGenericEntity) {
         for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
             Object value = existingGenericEntity != null ? existingGenericEntity.getField(field.getKey()) : null;
+            if (field.getValue().getType() instanceof PasswordType) {
+                continue;
+            }
             if (field.getValue().isReadOnly()) {
                 genericEntity.setField(field.getKey(), value);
             }
