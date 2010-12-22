@@ -164,6 +164,7 @@
 .disabled .component_container_form_inner input[type='password'],
 .disabled .component_container_form_inner textarea {
 	background-color: #F0F0F0;
+	color: #818181;
 }
 
 .component_element_checkbox .component_container_form_w {
