@@ -511,12 +511,9 @@ public final class ProductService {
             } else {
                 try {
 
-                    materialRequirement = updateFileName(
-                            materialRequirement,
-                            getFullFileName(
-                                    (Date) materialRequirement.getField("date"),
-                                    translationService.translate("products.materialRequirement.report.fileName",
-                                            state.getLocale())), "materialRequirement");
+                    materialRequirement = updateFileName(materialRequirement,
+                            getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"),
+                            "materialRequirement");
                     materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
                     materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
@@ -635,10 +632,7 @@ public final class ProductService {
             } else {
                 try {
 
-                    workPlan = updateFileName(
-                            workPlan,
-                            getFullFileName((Date) workPlan.getField("date"),
-                                    translationService.translate("products.workPlan.report.fileName", state.getLocale())),
+                    workPlan = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "Work_plan"),
                             "workPlan");
                     workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale());
                     workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale());
@@ -681,7 +675,7 @@ public final class ProductService {
     }
 
     private final String getFullFileName(final Date date, final String fileName) {
-        return path + fileName + "_" + D_T_F.format(date);
+        return path + fileName + "_" + D_T_F.format(date) + "_";
     }
 
     private final Entity updateFileName(final Entity entity, final String fileName, final String entityName) {

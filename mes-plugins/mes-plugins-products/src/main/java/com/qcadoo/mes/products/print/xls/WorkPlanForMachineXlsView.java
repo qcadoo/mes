@@ -34,6 +34,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
@@ -47,8 +48,15 @@ public final class WorkPlanForMachineXlsView extends AbstractExcelView {
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
-        XlsCopyUtil.copyXlsContent(model, workbook, response,
-                translationService.translate("products.workPlan.report.fileName.suffix.forMachine", locale));
+        Entity entity = (Entity) model.get("entity");
+        XlsCopyUtil.copyXlsContent(
+                entity,
+                workbook,
+                response,
+                "for_machine",
+                PdfUtil.prepareFileNameForResponse(entity,
+                        translationService.translate("products.workPlan.report.fileName", locale),
+                        translationService.translate("products.workPlan.report.fileName.suffix.forMachine", locale)));
     }
 
 }
