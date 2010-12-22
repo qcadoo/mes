@@ -33,7 +33,7 @@
 			<component type="staticPage" name="systemInfo">
 				<option type="page" value="core/systemInfo.jsp" />
 			</component>
-			<option type="header" value="false" />
+			<option type="header" value="true" />
 		</component>
 	</view>
 </qcd:views>

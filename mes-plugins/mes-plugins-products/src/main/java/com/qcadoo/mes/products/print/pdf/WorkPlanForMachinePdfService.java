@@ -55,6 +55,10 @@ public final class WorkPlanForMachinePdfService extends PdfDocumentService {
 
     @Override
     protected String getSuffix(final Locale locale) {
-        return getTranslationService().translate("products.workPlan.report.fileName.suffix.forMachine", locale);
+        if (locale != null) {
+            return getTranslationService().translate("products.workPlan.report.fileName.suffix.forMachine", locale);
+        } else {
+            return "for_machine";
+        }
     }
 }

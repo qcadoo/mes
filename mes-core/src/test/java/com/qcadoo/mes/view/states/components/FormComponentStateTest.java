@@ -11,7 +11,9 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONObject;
@@ -75,7 +77,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         name.setName("name");
         name.initialize(new JSONObject(), Locale.ENGLISH);
 
-        form = new FormComponentState(null);
+        form = new FormComponentState("'static expression'");
         ((AbstractContainerState) form).setDataDefinition(dataDefinition);
         ((AbstractContainerState) form).setTranslationService(translationService);
         ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", name);
@@ -138,13 +140,19 @@ public class FormComponentStateTest extends AbstractStateTest {
         assertEquals(13L, json.getJSONObject(ComponentState.JSON_CONTENT).getLong(FormComponentState.JSON_ENTITY_ID));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionIfEntityIsNotExistsAndEntityIdIsNotNull() throws Exception {
+    @Test
+    public void shouldHaveMessageIfEntityIsNotExistsAndEntityIdIsNotNull() throws Exception {
         // given
         form.setFieldValue(12L);
+        List<String> codes = Arrays.asList(new String[] { "null.entityNotFound", "core.message.entityNotFound" });
+        given(translationService.translate(eq(codes), any(Locale.class))).willReturn("translated entityNotFound");
 
         // when
         form.performEvent(viewDefinitionState, "initialize", new String[0]);
+
+        // then
+        assertFalse(((FormComponentState) form).isValid());
+        assertTrue(form.render().toString().contains("translated entityNotFound"));
 
     }
 

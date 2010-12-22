@@ -42,7 +42,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.pdf.util.PdfPageNumbering;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 import com.qcadoo.mes.products.print.pdf.util.TableBorderEvent;
@@ -53,7 +52,7 @@ public final class OrderPdfView extends ProductsPdfView {
     private SecurityService securityService;
 
     @Override
-    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
+    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
         String documentTitle = getTranslationService().translate("products.order.report.order", locale);
         String documentAuthor = getTranslationService().translate("products.order.report.author", locale);
@@ -63,7 +62,7 @@ public final class OrderPdfView extends ProductsPdfView {
         addDetailTable(document, entity, locale);
         String text = getTranslationService().translate("products.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
-        return getTranslationService().translate("products.order.report.fileName", locale) + entity.getField("number");
+        return getTranslationService().translate("products.order.report.fileName", locale) + "_" + entity.getField("number");
     }
 
     private void addMainTable(final Document document, final Entity entity, final Locale locale) throws DocumentException {
