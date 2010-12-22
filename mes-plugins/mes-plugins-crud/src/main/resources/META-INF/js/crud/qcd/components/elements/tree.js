@@ -89,7 +89,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		container.append(header);
 		container.append(contentElement);
 		
-		_this.element.append(container);
+		element.append(container);
+		element.css("padding", "10px");
 		
 		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", /*"hotkeys"*/ ],
 			"themes" : {
@@ -314,6 +315,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (! _height) {
 			_height = 300;
 		}
+		//element.css("height",_height+"px")
 		contentElement.height(_height - 52);
 	}
 	

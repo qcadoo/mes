@@ -564,7 +564,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				}, null, actionsPerformer);
 			}
 		} else {
-			mainController.showMessage("error", translations.noRowSelectedError);
+			mainController.showMessage({type: "error", content: translations.noRowSelectedError});
 		}	
 	}
 	var performDelete = this.performDelete;
@@ -585,7 +585,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				actionsPerformer.performNext();
 			}
 		} else {
-			mainController.showMessage("error", translations.noRowSelectedError);
+			mainController.showMessage({type: "error", content: translations.noRowSelectedError});
 		}	
 	}
 	
