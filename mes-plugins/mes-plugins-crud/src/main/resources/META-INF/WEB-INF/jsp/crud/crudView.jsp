@@ -40,7 +40,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
 		</c:when>
 		<c:otherwise>
-			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/jquery-ui-1.8.5.custom.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/_jquery-ui-1.8.5.custom.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/jquery.datepick.css" type="text/css" /> 
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/ui.jqgrid.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/jstree/style.css" type="text/css" />
@@ -78,6 +78,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/containers/window.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/containers/form.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/utils/elementHeaderUtils.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/utils/loadingIndicator.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/formComponent.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/grid/gridHeader.js"></script>

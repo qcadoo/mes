@@ -38,17 +38,19 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		} else {
 			$(window).focus(onWindowClick);
 		}
+		
+		QCD.components.elements.utils.LoadingIndicator.blockElement($("body"));
 	}
 	
 	this.init = function(serializationObject) {
 		if (serializationObject) {
 			setComponentState(serializationObject);
 			if (hasDataDefinition) {
-				this.callEvent("initializeAfterBack");
+				this.callEvent("initializeAfterBack", null, function() {QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"))});
 			}
 		} else {
 			if (hasDataDefinition) {
-				this.callEvent("initialize");
+				this.callEvent("initialize", null, function() {QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"))});
 			}
 		}
 	}
