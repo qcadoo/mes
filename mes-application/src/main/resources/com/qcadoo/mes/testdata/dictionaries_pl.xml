@@ -30,7 +30,8 @@
 	<row NAME="categories" ITEM="kategoria 2" />
 	<row NAME="categories" ITEM="kategoria 3" />
 	<row NAME="categories" ITEM="kategoria 4" />
-	<row NAME="machines" ITEM="tokarka" />
-	<row NAME="machines" ITEM="gilotyna" />
-	<row NAME="machines" ITEM="obrabiarka" />
+	<row NAME="machines" ITEM="Heblownica" />
+	<row NAME="machines" ITEM="Piła" />
+	<row NAME="machines" ITEM="Szlifierka" />
+	<row NAME="machines" ITEM="Frezarka" />
 </users>

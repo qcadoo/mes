@@ -70,6 +70,8 @@ import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsSubstituteComponent;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
+import com.qcadoo.mes.beans.products.ProductsWorkPlan;
+import com.qcadoo.mes.beans.products.ProductsWorkPlanComponent;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
@@ -132,6 +134,7 @@ public final class TestDataLoader {
         readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
         addMaterialRequirements();
+        addWorkPlans();
     }
 
     private File getXmlFile(final String type) throws IOException {
@@ -231,7 +234,7 @@ public final class TestDataLoader {
 
         operation.setName(values.get("name"));
         operation.setNumber(values.get("number"));
-        operation.setMachine(getRandomMachine());
+        operation.setMachine(getMachine(values.get("number")));
         operation.setStaff(getRandomStaff());
 
         if (LOG.isDebugEnabled()) {
@@ -266,7 +269,11 @@ public final class TestDataLoader {
         }
 
         for (int i = 0; i < RANDOM.nextInt(5); i++) {
-            addSubstitute(values.get("name") + "*", values.get("product_nr") + "*", product, i + 1);
+            String asterix = "*";
+            for (int j = 0; j < i; j++) {
+                asterix = asterix + "*";
+            }
+            addSubstitute(values.get("name") + asterix, values.get("product_nr") + asterix, product, i + 1);
         }
     }
 
@@ -575,6 +582,40 @@ public final class TestDataLoader {
         }
     }
 
+    private void addWorkPlans() {
+        for (int i = 0; i < 50; i++) {
+            addWorkPlan();
+        }
+    }
+
+    private void addWorkPlan() {
+        ProductsWorkPlan workPlan = new ProductsWorkPlan();
+        workPlan.setName(getRandomProduct().getName());
+        workPlan.setGenerated(false);
+        workPlan.setDate(null);
+        workPlan.setWorker(null);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test material requirement {name=" + workPlan.getName() + ", date=" + workPlan.getDate() + ", worker="
+                    + workPlan.getWorker() + ", generated=" + workPlan.isGenerated() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(workPlan);
+
+        for (int i = 0; i < RANDOM.nextInt(8) + 2; i++) {
+            ProductsWorkPlanComponent component = new ProductsWorkPlanComponent();
+            component.setWorkPlan(workPlan);
+            component.setOrder(getRandomOrder());
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Add test material requirement component {requirement=" + component.getWorkPlan().getName()
+                        + ", order=" + component.getOrder().getNumber() + "}");
+            }
+
+            sessionFactory.getCurrentSession().save(component);
+        }
+    }
+
     private BasicStaff getRandomStaff() {
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicStaff.class)
                 .setProjection(Projections.rowCount()).uniqueResult();
@@ -582,11 +623,20 @@ public final class TestDataLoader {
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
 
-    private BasicMachine getRandomMachine() {
-        Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
-                .setProjection(Projections.rowCount()).uniqueResult();
+    private BasicMachine getMachine(String id) {
+        // Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+        // .setProjection(Projections.rowCount()).uniqueResult();
+        // return (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+        // .setFirstResult(Integer.parseInt(id)).setMaxResults(1).uniqueResult();
+
+        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>> ID: " + id);
+
+        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>> Machine: "
+                + (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+                        .add(Restrictions.idEq(Long.parseLong(id))).uniqueResult());
+
         return (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
-                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
+                .add(Restrictions.eq("number", id)).uniqueResult();
     }
 
     private ProductsTechnology getTechnologyByName(final String name) {

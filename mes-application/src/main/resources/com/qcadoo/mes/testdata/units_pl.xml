@@ -28,5 +28,8 @@
 <units>
 	<row NAME="kg" />
 	<row NAME="szt" />
-	<row NAME="ml" />
+	<row NAME="m2" />
+<!-- 
+ <row NAME="ml" />
+-->
 </units>
