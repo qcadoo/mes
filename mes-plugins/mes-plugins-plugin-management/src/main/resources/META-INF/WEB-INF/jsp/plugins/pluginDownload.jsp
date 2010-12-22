@@ -69,7 +69,7 @@ String ctx = request.getContextPath();
 		        	<input type="hidden" name="entityId" value="${entityId}" />
 		        	
 		        	<div style="margin-left: 10px; margin-top: 10px; font: 11px arial; font-weight: bold;">
-		        		Wybierz plik z pluginem:
+		        		${chooseFileLabel}
 		        	</div>
 		        	<div style="margin-top: 5px; margin-bottom: 20px; margin-left: 10px;">
 		            	<input type="file" name="file" size="50" onChange="checkExtension(this.value, this.form.upload, ['jar']);"/>
