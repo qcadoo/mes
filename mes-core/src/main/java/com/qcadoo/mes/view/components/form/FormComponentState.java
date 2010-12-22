@@ -128,6 +128,7 @@ public final class FormComponentState extends AbstractContainerState {
     }
 
     private String translateMessage(final String key) {
+        System.out.println(" -----> " + getTranslationPath() + "." + key + ", core.message." + key);
         List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.message." + key });
         return getTranslationService().translate(codes, getLocale());
     }
