@@ -248,7 +248,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			if (belongsToFieldName) {
 				params[correspondingComponent+"."+belongsToFieldName] = belongsToEntityId;
 			}
-			params[correspondingComponent+".parent"] = getSelectedEntityId();
+			var entityId = getSelectedEntityId();
+			entityId = entityId=="0" ? null : entityId;
+			params[correspondingComponent+".parent"] = entityId;
 			redirectToCorrespondingPage(params);
 		}
 	}

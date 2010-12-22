@@ -87,7 +87,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 					listenerElement.setComponentLoading(true);
 				}
 				eventCompleteFunction = function() {
-					completeFunction();
+					if (completeFunction) {
+						completeFunction();
+					}
 					for (var i = 0; i<componentListeners.length; i++) {
 						var listenerElement = getComponent(componentListeners[i]);
 						listenerElement.setComponentLoading(false);
