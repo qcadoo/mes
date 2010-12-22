@@ -85,6 +85,10 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
             try {
                 if (compressStaticResources) {
                     compressResources("js", "js");
+                    // TODO masz dla css musimy zmieniać znacznik "url"
+                    // jeśli zaczyna się od "/" usuwamy go
+                    // jeśli nie, dodajemy ścieżke do pliku
+                    // chodzi o to aby wszystkie "url" były względne do qcadoo.css
                     compressResources("css", "css");
                 }
             } catch (IOException e) {
