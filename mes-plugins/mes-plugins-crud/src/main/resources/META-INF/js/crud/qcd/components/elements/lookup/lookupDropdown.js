@@ -63,8 +63,7 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 					mouseSelectedElement = null;
 				});
 				matchElement.click(function() {
-					//$(this).removeClass("lookupMatchHover");
-					alert("TODO");
+					// do nothing, blur will perform action 
 				});
 				
 				lookupDropdownElement.append(matchElement);
