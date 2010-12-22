@@ -73,6 +73,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	this.callEvent = function(eventName, component, completeFunction, args, actionsPerformer) {
 		var initParameters = new Object();
+		var eventCompleteFunction = completeFunction;
 		initParameters.event = {
 			name: eventName
 		}
@@ -85,13 +86,20 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 					var listenerElement = getComponent(componentListeners[i]);
 					listenerElement.setComponentLoading(true);
 				}
+				eventCompleteFunction = function() {
+					completeFunction();
+					for (var i = 0; i<componentListeners.length; i++) {
+						var listenerElement = getComponent(componentListeners[i]);
+						listenerElement.setComponentLoading(false);
+					}
+				}
 			}
 		}
 		if (args) {
 			initParameters.event.args = args;
 		}
 		initParameters.components = getValueData();
-		performEvent(initParameters, completeFunction, actionsPerformer);
+		performEvent(initParameters, eventCompleteFunction, actionsPerformer);
 	}
 	
 	function performEvent(parameters, completeFunction, actionsPerformer) {
