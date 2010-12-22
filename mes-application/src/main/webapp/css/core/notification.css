@@ -115,22 +115,22 @@ html>body .ui-pnotify {
 }
 
 .ui-pnotify-closer .ui-icon-circle-close {
-	background-image: url(images/ui-icons_222222_256x240.png);
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
 	background-position: -32px -192px;
 }
 
 .ui-pnotify-icon .ui-icon-error {
-	background-image: url(images/ui-icons_222222_256x240.png);
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
 	background-position: 0px -144px;
 }
 
 .ui-pnotify-icon .ui-icon-notify {
-	background-image: url(images/ui-icons_222222_256x240.png);
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
 	background-position: -16px -144px;
 }
 
 .ui-pnotify-icon .ui-icon-success {
-	background-image: url(images/ui-icons_222222_256x240.png);
+	background-image: url(/css/core/images/ui-icons_222222_256x240.png);
 	background-position: -16px -144px;
 }
 

@@ -281,7 +281,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setAction(translateRibbonAction("#{grid}.performDelete;", parser));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
-        ribbonDeleteAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
 
         ribbonGroup.addItem(ribbonDeleteAction);
 

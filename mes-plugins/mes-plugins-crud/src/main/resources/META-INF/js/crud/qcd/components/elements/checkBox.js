@@ -64,6 +64,19 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 		}
 	}
 	
+	this.setComponentEnabled = function(isEnabled) {
+		if (isEnabled) {
+			textRepresentation.removeClass("disabled");
+			this.input.removeAttr('disabled');
+		} else {
+			textRepresentation.addClass("disabled");
+			this.input.attr('disabled', 'true');
+		}
+		if (this.setFormComponentEnabled) {
+			this.setFormComponentEnabled(isEnabled);
+		}
+	}
+	
 	this.setSelected = function(actionsPerformer, isSelected) {
 		this.input.attr('checked', isSelected);
 		if (actionsPerformer) {

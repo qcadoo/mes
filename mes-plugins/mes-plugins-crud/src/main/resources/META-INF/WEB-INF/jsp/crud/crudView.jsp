@@ -40,7 +40,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/qcadoo.min.js"></script>
 		</c:when>
 		<c:otherwise>
-			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/jquery-ui-1.8.5.custom.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/_jquery-ui-1.8.5.custom.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/jquery.datepick.css" type="text/css" /> 
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/core/ui.jqgrid.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/jstree/style.css" type="text/css" />
