@@ -47,7 +47,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
-		block();
 	}
 
 	this.getComponentValue = function() {
@@ -147,18 +146,11 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	function block() {
-		element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
-            border: 'none', 
-            padding: '15px', 
-            backgroundColor: '#000', 
-            '-webkit-border-radius': '10px', 
-            '-moz-border-radius': '10px', 
-            opacity: .5, 
-            color: '#fff' } });
+		QCD.components.elements.utils.LoadingIndicator.blockElement(element);
 	}
 	
 	function unblock() {
-		element.unblock();
+		QCD.components.elements.utils.LoadingIndicator.unblockElement(element);
 	}
 	
 	constructor(this);

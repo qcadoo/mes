@@ -194,7 +194,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			}
 			
 			viewState.error = null;
-			if (! dataState.selectedEntity.id && ! lookupDropdown.getSelected() && dataState.autocomplete.matches && dataState.currentCode != "") {
+			if (! dataState.selectedEntity.id && ! lookupDropdown.getSelected() && ! lookupDropdown.getMouseSelected() 
+					&& dataState.autocomplete.matches && dataState.currentCode != "") {
 				if (dataState.autocomplete.matches.length == 0) {
 					viewState.error = translations.noMatchError;
 				} else if (dataState.autocomplete.matches.length > 1) {
@@ -208,10 +209,14 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 				elements.label.html(labels.normal);
 				if (dataState.selectedEntity.id) {
 					elements.input.val(dataState.selectedEntity.value);	
+				} else if (lookupDropdown.getMouseSelected()) {
+					performSelectEntity(lookupDropdown.getMouseSelected());
+					dataState.currentCode = lookupDropdown.getMouseSelected().code;
+					elements.input.val(dataState.selectedEntity.value);
 				} else if (lookupDropdown.getSelected()) {
 					performSelectEntity(lookupDropdown.getSelected());
 					dataState.currentCode = lookupDropdown.getSelected().code;
-					elements.input.val(dataState.selectedEntity.value);	
+					elements.input.val(dataState.selectedEntity.value);
 				}
 			} else {
 				_this.addMessage({

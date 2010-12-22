@@ -18,6 +18,8 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 	
 	var selectedElement;
 	
+	var mouseSelectedElement;
+	
 	var autocompleteMatches;
 	
 	function constructor() {
@@ -46,6 +48,7 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 				lookupDropdownElement.css("height", (RESULT_HEIGHT*PAGE_RESULT-1)+"px");
 			} else {
 				lookupDropdownElement.css("height", (autocompleteMatches.length*RESULT_HEIGHT-1)+"px");
+				lookupDropdownElement.css("overflow", "hidden");
 			}
 			for (var i in autocompleteMatches) {
 				var entity = autocompleteMatches[i];
@@ -53,13 +56,14 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 				
 				matchElement.mouseover(function() {
 					$(this).addClass("lookupMatchHover");
+					mouseSelectedElement = $(this);
 				});
 				matchElement.mouseout(function() {
 					$(this).removeClass("lookupMatchHover");
+					mouseSelectedElement = null;
 				});
 				matchElement.click(function() {
-					//$(this).removeClass("lookupMatchHover");
-					alert("TODO");
+					// do nothing, blur will perform action 
 				});
 				
 				lookupDropdownElement.append(matchElement);
@@ -119,12 +123,22 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 		return null;
 	}
 	
+	this.getMouseSelected = function() {
+		if (mouseSelectedElement) {
+			var id = mouseSelectedElement.attr("id").substring((controller.elementPath+"_autocompleteOption_").length);
+			return autocompleteMatches[id];
+		}
+		return null;
+	}
+	
 	this.hide = function() {
-		lookupDropdownElement.hide();
+		//lookupDropdownElement.hide();
+		lookupDropdownElement.slideUp(400);
 	}
 	
 	this.show = function() {
-		lookupDropdownElement.show();
+		//lookupDropdownElement.show();
+		lookupDropdownElement.slideDown(400);
 	}
 	
 	this.isOpen = function() {

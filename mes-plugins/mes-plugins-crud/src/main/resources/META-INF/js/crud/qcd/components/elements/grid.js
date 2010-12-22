@@ -320,22 +320,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 
 	
 	function blockGrid() {
-		if (grid) {
-			element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: {
-	            border: 'none', 
-	            padding: '15px', 
-	            backgroundColor: '#000', 
-	            '-webkit-border-radius': '10px', 
-	            '-moz-border-radius': '10px', 
-	            opacity: .5, 
-	            color: '#fff' } });
-		}
+		QCD.components.elements.utils.LoadingIndicator.blockElement(element);
 	}
 	
 	function unblockGrid() {
-		if (grid) {
-			element.unblock();
-		}
+		QCD.components.elements.utils.LoadingIndicator.unblockElement(element);
 	}
 
 	function constructor(_this) {
@@ -373,8 +362,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		
 		element.width("100%");
-		
-		blockGrid();
 		
 		grid.jqGrid('filterToolbar',{
 			stringResult: true
