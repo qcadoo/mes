@@ -223,7 +223,8 @@ public final class FormComponentState extends AbstractContainerState {
                 setFieldsRequiredAndDisables();
             } else if (entityId != null) {
                 disableForm();
-                throw new IllegalStateException("Entity cannot be found");
+                valid = false;
+                addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
             } else {
                 clear(args);
             }
@@ -337,6 +338,7 @@ public final class FormComponentState extends AbstractContainerState {
         private void disableForm() {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 field.getValue().setEnabled(false);
+                field.getValue().requestComponentUpdateState();
             }
             setEnabled(false);
         }

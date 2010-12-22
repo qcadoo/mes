@@ -343,7 +343,7 @@
 .component_container_form_w .lookupValueWrapper .lookupInputWrapper {
 	position: absolute;
 	display: block;
-	top: 0px; left: 0px; right: 25px;
+	top: 0px; left: 0px; right: 21px;
 }
 
 .component_container_form_w .lookupValueWrapper .lookupInputWrapper input{

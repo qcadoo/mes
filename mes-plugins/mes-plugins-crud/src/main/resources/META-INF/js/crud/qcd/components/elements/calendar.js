@@ -135,6 +135,12 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 				}
 			}
 		});
+		
+		input.focus(function() {
+			calendar.addClass("lightHover");
+		}).blur(function() {
+			calendar.removeClass("lightHover");
+		});
 	}
 	
 	this.setFormComponentEnabled = function(isEnabled) {
