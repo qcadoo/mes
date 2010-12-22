@@ -30,15 +30,17 @@ import java.util.Locale;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 public final class MaterialRequirementPdfView extends ProductsPdfView {
 
     @Override
-    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
+    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
-        return PdfUtil.copyPdfContent(document, entity, writer, "");
+        PdfUtil.copyPdfContent(document, entity, writer, "");
+        return PdfUtil.prepareFileNameForResponse(entity,
+                getTranslationService().translate("products.materialRequirement.report.fileName", locale), "");
     }
 
     @Override

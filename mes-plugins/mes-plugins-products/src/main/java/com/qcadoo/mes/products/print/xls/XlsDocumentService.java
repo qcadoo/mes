@@ -52,7 +52,7 @@ public abstract class XlsDocumentService extends DocumentService {
         sheet.setZoom(4, 3);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(locale)
+            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(null)
                     + XlsCopyUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {

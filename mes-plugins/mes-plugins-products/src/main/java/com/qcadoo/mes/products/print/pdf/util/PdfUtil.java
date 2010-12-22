@@ -60,10 +60,11 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
 
 public final class PdfUtil {
+
+    private static final SimpleDateFormat D_T_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
 
     private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
 
@@ -349,14 +350,16 @@ public final class PdfUtil {
         return null;
     }
 
-    public static String copyPdfContent(final Document document, final DefaultEntity entity, final PdfWriter writer,
+    public static void copyPdfContent(final Document document, final Entity entity, final PdfWriter writer,
             final String fileSuffix) throws IOException, DocumentException {
         Object fileName = entity.getField("fileName");
-        String fileNameWithoutPath = "";
         if (fileName != null && !"".equals(fileName.toString().trim())) {
             copyPdf(document, writer, (String) fileName + fileSuffix + PDF_EXTENSION);
-            fileNameWithoutPath = ((String) fileName + "_" + fileSuffix).substring(((String) fileName).lastIndexOf("/") + 1);
         }
-        return fileNameWithoutPath;
+    }
+
+    public static String prepareFileNameForResponse(final Entity entity, final String fileName, final String suffix) {
+        Object date = entity.getField("date");
+        return fileName + "_" + D_T_F.format((Date) date) + "_" + suffix;
     }
 }

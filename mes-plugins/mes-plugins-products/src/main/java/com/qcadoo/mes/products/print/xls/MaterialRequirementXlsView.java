@@ -24,22 +24,37 @@
 
 package com.qcadoo.mes.products.print.xls;
 
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
+import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
 
 public final class MaterialRequirementXlsView extends AbstractExcelView {
 
+    @Autowired
+    private TranslationService translationService;
+
     @Override
     protected void buildExcelDocument(final Map<String, Object> model, final HSSFWorkbook workbook,
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        XlsCopyUtil.copyXlsContent(model, workbook, response, "");
+        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
+        Entity entity = (Entity) model.get("entity");
+        XlsCopyUtil.copyXlsContent(
+                entity,
+                workbook,
+                response,
+                "",
+                PdfUtil.prepareFileNameForResponse(entity,
+                        translationService.translate("products.materialRequirement.report.fileName", locale), ""));
     }
-
 }

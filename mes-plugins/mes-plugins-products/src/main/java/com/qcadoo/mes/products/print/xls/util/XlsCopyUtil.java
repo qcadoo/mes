@@ -44,7 +44,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.api.Entity;
 
 public final class XlsCopyUtil {
 
@@ -169,15 +169,12 @@ public final class XlsCopyUtil {
         }
     }
 
-    public static void copyXlsContent(final Map<String, Object> model, final HSSFWorkbook workbook,
-            final HttpServletResponse response, final String fileSuffix) throws IOException {
-        DefaultEntity entity = (DefaultEntity) model.get("entity");
+    public static void copyXlsContent(final Entity entity, final HSSFWorkbook workbook, final HttpServletResponse response,
+            final String fileSuffix, final String fileNameForResponse) throws IOException {
         Object fileName = entity.getField("fileName");
         if (fileName != null && !"".equals(fileName.toString().trim())) {
             copyWorkbook(workbook, (String) fileName + fileSuffix + XLS_EXTENSION);
-            String fileNameWithoutPath = ((String) fileName).substring(((String) fileName).lastIndexOf("/") + 1);
-            response.setHeader("Content-disposition", "attachment; filename=" + fileNameWithoutPath + "_" + fileSuffix
-                    + XLS_EXTENSION);
+            response.setHeader("Content-disposition", "attachment; filename=" + fileNameForResponse + XLS_EXTENSION);
         }
     }
 
