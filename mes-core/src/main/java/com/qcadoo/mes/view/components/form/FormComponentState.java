@@ -73,7 +73,7 @@ public final class FormComponentState extends AbstractContainerState {
             String field = iterator.next();
             if ("id".equals(field)) {
                 entityId = json.getLong(field);
-            } else {
+            } else if (!json.isNull(field)) {
                 context.put(field, json.get(field));
             }
         }
