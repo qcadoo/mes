@@ -203,7 +203,7 @@ div.filterButton {
 .gridContainer .lightRow.ui-state-hover {
 	background: #dcdcdc;
 }
-.gridTable .darkRow.ui-state-hover {
+.gridContainer .darkRow.ui-state-hover {
 	background: #dcdcdc;
 }
 .gridContainer .lightRow.ui-state-highlight,

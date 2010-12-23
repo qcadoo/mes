@@ -350,6 +350,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.onSelectRow = function(id){
 			rowClicked(id);
         }
+		gridParameters.ondblClickRow = function(id){
+			linkClicked(id);
+        }
 		gridParameters.onSortCol = onSortColumnChange;
 		
 		grid = $("#"+gridParameters.element).jqGrid(gridParameters);
