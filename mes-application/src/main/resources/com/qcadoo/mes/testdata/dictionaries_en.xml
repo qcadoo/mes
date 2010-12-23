@@ -26,10 +26,10 @@
 -->
 
 <categories>
-	<row NAME="categories" ITEM="kategoria 1" />
-	<row NAME="categories" ITEM="kategoria 2" />
-	<row NAME="categories" ITEM="kategoria 3" />
-	<row NAME="categories" ITEM="kategoria 4" />
+	<row NAME="categories" ITEM="category 1" />
+	<row NAME="categories" ITEM="category 2" />
+	<row NAME="categories" ITEM="category 3" />
+	<row NAME="categories" ITEM="category 4" />
 	<row NAME="machines" ITEM="Planer" />
 	<row NAME="machines" ITEM="Saw" />
 	<row NAME="machines" ITEM="Grinder" />
