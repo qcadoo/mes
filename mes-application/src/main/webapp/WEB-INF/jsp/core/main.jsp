@@ -52,6 +52,8 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/menu/menuController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/windowController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/messagesController.js"></script>
+			
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/snow.js"></script>
 		</c:otherwise>
 	</c:choose>
 	
@@ -112,6 +114,8 @@
 		<c:forEach items="${commonTranslations}" var="translation">
 			window.translationsMap["${translation.key}"] = "${translation.value}";
 		</c:forEach>
+	
+		
 	</script>
 
 </head>
