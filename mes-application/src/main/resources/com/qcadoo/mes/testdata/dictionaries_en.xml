@@ -30,7 +30,8 @@
 	<row NAME="categories" ITEM="category 2" />
 	<row NAME="categories" ITEM="category 3" />
 	<row NAME="categories" ITEM="category 4" />
-	<row NAME="machines" ITEM="lathe" />
-	<row NAME="machines" ITEM="guillotine" />
-	<row NAME="machines" ITEM="furnace" />
+	<row NAME="machines" ITEM="Planer" />
+	<row NAME="machines" ITEM="Saw" />
+	<row NAME="machines" ITEM="Grinder" />
+	<row NAME="machines" ITEM="Milling machine" />
 </categories>
