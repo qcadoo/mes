@@ -26,7 +26,7 @@
 -->
 
 <staff>
-	<row ID="01" NAME="person1" SURNAME="person1" POST="post1"/>
-	<row ID="02" NAME="person2" SURNAME="person2" POST="post2"/>
-	<row ID="03" NAME="person3" SURNAME="person3" POST="post3"/>
+	<row ID="01" NAME="John" SURNAME="Smith" POST="Carpenter"/>
+	<row ID="02" NAME="Mark" SURNAME="Johnson" POST="Carpenter"/>
+	<row ID="03" NAME="Andrew" SURNAME="Jones" POST="Manager"/>
 </staff>
