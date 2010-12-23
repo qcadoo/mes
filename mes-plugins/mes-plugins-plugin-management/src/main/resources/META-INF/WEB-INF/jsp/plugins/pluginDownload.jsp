@@ -64,7 +64,7 @@ String ctx = request.getContextPath();
         <title>${headerLabel}</title>
     </head>
     <body>
-	    	<div style="margin: 0; background: transparent url('/img/plugins/Jessica_Alba.jpg') no-repeat 0 0; padding-left: 60px; height: 100px;">
+	    	<div style="margin: 0;">
 		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data" id="form">
 		        	<input type="hidden" name="entityId" value="${entityId}" />
 		        	
