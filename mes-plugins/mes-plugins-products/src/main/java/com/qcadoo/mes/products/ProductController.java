@@ -52,6 +52,15 @@ public class ProductController {
         return mav;
     }
 
+    @RequestMapping(value = "products/workPlanForProduct.pdf", method = RequestMethod.GET)
+    public ModelAndView workPlanForProductPdf(@RequestParam("id") final String id) {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("workPlanForProductPdfView");
+        mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
+        return mav;
+    }
+
     @RequestMapping(value = "products/workPlanForMachine.pdf", method = RequestMethod.GET)
     public ModelAndView workPlanForMachinePdf(@RequestParam("id") final String id) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
@@ -66,6 +75,15 @@ public class ProductController {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         ModelAndView mav = new ModelAndView();
         mav.setViewName("workPlanForWorkerXlsView");
+        mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
+        return mav;
+    }
+
+    @RequestMapping(value = "products/workPlanForProduct.xls", method = RequestMethod.GET)
+    public ModelAndView workPlanForProductXls(@RequestParam("id") final String id) {
+        DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("workPlanForProductXlsView");
         mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
         return mav;
     }

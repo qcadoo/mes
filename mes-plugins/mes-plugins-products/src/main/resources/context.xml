@@ -52,11 +52,17 @@
   		
   	<bean id="workPlanForMachinePdfView"
   		class="com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfView"/>
+
+  	<bean id="workPlanForProductPdfView"
+  		class="com.qcadoo.mes.products.print.pdf.WorkPlanForProductPdfView"/>
   		
   	<bean id="workPlanForWorkerXlsView"
   		class="com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsView"/>
   		
   	<bean id="workPlanForMachineXlsView"
   		class="com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsView"/>
+
+  	<bean id="workPlanForProductXlsView"
+  		class="com.qcadoo.mes.products.print.xls.WorkPlanForProductXlsView"/>
 	
 </beans>

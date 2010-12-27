@@ -44,7 +44,7 @@ public final class WorkPlanForMachinePdfService extends PdfDocumentService {
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, true);
+        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, "machine");
     }
 
     @Override

@@ -24,41 +24,29 @@
 
 package com.qcadoo.mes.products.print.pdf;
 
+import java.io.IOException;
 import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.products.print.ProductReportService;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
-@Service
-public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
-
-    @Autowired
-    private ProductReportService productReportService;
+public final class WorkPlanForProductPdfView extends ProductsPdfView {
 
     @Override
-    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, "worker");
+    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
+            throws DocumentException, IOException {
+        PdfUtil.copyPdfContent(document, entity, writer, "for_product");
+        return PdfUtil.prepareFileNameForResponse(entity,
+                getTranslationService().translate("products.workPlan.report.fileName", locale), getTranslationService()
+                        .translate("products.workPlan.report.fileName.suffix.forProduct", locale));
     }
 
     @Override
-    protected void buildPdfMetadata(final Document document, final Locale locale) {
+    protected void addTitle(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("products.workPlan.report.title", locale));
-        PdfUtil.addMetaData(document);
     }
 
-    @Override
-    protected String getSuffix(final Locale locale) {
-        if (locale != null) {
-            return getTranslationService().translate("products.workPlan.report.fileName.suffix.forWorker", locale);
-        } else {
-            return "for_worker";
-        }
-    }
 }

@@ -73,7 +73,7 @@ public class ProductReportService {
         return products;
     }
 
-    private Map<Entity, Map<Entity, Entity>> getOperationSeries(final Entity entity, final boolean isMachine) {
+    private Map<Entity, Map<Entity, Entity>> getOperationSeries(final Entity entity, final String type) {
         Map<Entity, Map<Entity, Entity>> operations = new HashMap<Entity, Map<Entity, Entity>>();
         List<Entity> orders = entity.getHasManyField("orders");
         for (Entity component : orders) {
@@ -81,12 +81,20 @@ public class ProductReportService {
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
                 List<Entity> operationComponents = technology.getHasManyField("operationComponents");
+
+                Entity entityKey = null;
+
+                if (type.equals("product")) {
+                    Entity product = (Entity) order.getField("product");
+                    entityKey = product;
+                }
+
                 for (Entity operationComponent : operationComponents) {
                     Entity operation = (Entity) operationComponent.getField("operation");
-                    Entity entityKey = null;
-                    if (isMachine) {
+
+                    if (type.equals("machine")) {
                         entityKey = (Entity) operation.getField("machine");
-                    } else {
+                    } else if (type.equals("worker")) {
                         entityKey = (Entity) operation.getField("staff");
                     }
                     if (operations.containsKey(entityKey)) {
@@ -103,13 +111,13 @@ public class ProductReportService {
         return operations;
     }
 
-    public void addOperationSeries(final Document document, final Entity entity, final Locale locale, final boolean isMachine)
+    public void addOperationSeries(final Document document, final Entity entity, final Locale locale, final String type)
             throws DocumentException {
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         boolean firstPage = true;
-        Map<Entity, Map<Entity, Entity>> operations = getOperationSeries(entity, isMachine);
+        Map<Entity, Map<Entity, Entity>> operations = getOperationSeries(entity, type);
         for (Entry<Entity, Map<Entity, Entity>> entry : operations.entrySet()) {
             if (!firstPage) {
                 document.newPage();
@@ -118,17 +126,24 @@ public class ProductReportService {
             addOrderSeries(orderTable, entity, decimalFormat);
             document.add(orderTable);
             document.add(Chunk.NEWLINE);
-            if (isMachine) {
+            if (type.equals("machine")) {
                 Entity machine = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah3",
                         locale), PdfUtil.getArialBold11Light()));
                 title.add(new Phrase(" " + machine.getField("name"), PdfUtil.getArialBold19Dark()));
                 document.add(title);
-            } else {
+            } else if (type.equals("worker")) {
                 Entity staff = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah2",
                         locale), PdfUtil.getArialBold11Light()));
                 title.add(new Phrase(" " + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold19Dark()));
+                document.add(title);
+            } else if (type.equals("product")) {
+                Entity product = entry.getKey();
+                Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah4",
+                        locale), PdfUtil.getArialBold11Light()));
+
+                title.add(new Phrase(" " + product.getField("name"), PdfUtil.getArialBold19Dark()));
                 document.add(title);
             }
             PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale), false);

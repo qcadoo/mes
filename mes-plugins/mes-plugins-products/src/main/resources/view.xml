@@ -640,6 +640,12 @@
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
+				<group name="exportProduct">
+					<smallButton name="pdfProduct" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" />
+					<smallButton name="xlsProduct" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" />
+				</group>				
 			</ribbon>		
 			<component type="grid" name="workPlans" reference="grid">
 				<option type="column" name="name" fields="name" link="true" width="300" />
@@ -678,6 +684,12 @@
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
 						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" />
 				</group>
+				<group name="exportProduct">
+					<smallButton name="pdfProduct" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForProduct);" />
+					<smallButton name="xlsProduct" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,xls,ForProduct);" />
+				</group>					
 			</ribbon>
 			<component type="form" name="workPlan" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="5">

@@ -56,9 +56,11 @@ import com.qcadoo.mes.model.types.internal.DateTimeType;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForMachinePdfService;
+import com.qcadoo.mes.products.print.pdf.WorkPlanForProductPdfService;
 import com.qcadoo.mes.products.print.pdf.WorkPlanForWorkerPdfService;
 import com.qcadoo.mes.products.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForMachineXlsService;
+import com.qcadoo.mes.products.print.xls.WorkPlanForProductXlsService;
 import com.qcadoo.mes.products.print.xls.WorkPlanForWorkerXlsService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
@@ -93,10 +95,16 @@ public final class ProductService {
     private WorkPlanForMachinePdfService workPlanForMachinePdfService;
 
     @Autowired
+    private WorkPlanForProductPdfService workPlanForProductPdfService;
+
+    @Autowired
     private WorkPlanForWorkerXlsService workPlanForWorkerXlsService;
 
     @Autowired
     private WorkPlanForMachineXlsService workPlanForMachineXlsService;
+
+    @Autowired
+    private WorkPlanForProductXlsService workPlanForProductXlsService;
 
     @Value("${reportPath}")
     private String path;
@@ -638,6 +646,8 @@ public final class ProductService {
                     workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale());
                     workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale());
                     workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale());
+                    workPlanForProductPdfService.generateDocument(workPlan, state.getLocale());
+                    workPlanForProductXlsService.generateDocument(workPlan, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);

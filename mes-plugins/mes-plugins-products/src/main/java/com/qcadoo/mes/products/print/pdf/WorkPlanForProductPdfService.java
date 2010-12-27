@@ -37,14 +37,14 @@ import com.qcadoo.mes.products.print.ProductReportService;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 @Service
-public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
+public final class WorkPlanForProductPdfService extends PdfDocumentService {
 
     @Autowired
     private ProductReportService productReportService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, "worker");
+        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, "product");
     }
 
     @Override
@@ -56,9 +56,9 @@ public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
     @Override
     protected String getSuffix(final Locale locale) {
         if (locale != null) {
-            return getTranslationService().translate("products.workPlan.report.fileName.suffix.forWorker", locale);
+            return getTranslationService().translate("products.workPlan.report.fileName.suffix.forProduct", locale);
         } else {
-            return "for_worker";
+            return "for_product";
         }
     }
 }
