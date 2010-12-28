@@ -30,8 +30,4 @@
 	<row NAME="categories" ITEM="category 2" />
 	<row NAME="categories" ITEM="category 3" />
 	<row NAME="categories" ITEM="category 4" />
-	<row NAME="machines" ITEM="Planer" />
-	<row NAME="machines" ITEM="Saw" />
-	<row NAME="machines" ITEM="Grinder" />
-	<row NAME="machines" ITEM="Milling machine" />
 </categories>

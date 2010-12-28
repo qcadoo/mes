@@ -457,9 +457,6 @@
 						<component type="select" name="state" field="state" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="select" name="machine" field="machine" />
-					</layoutElement>
-					<layoutElement column="2" row="2">
 						<component type="lookup" name="product" reference="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
@@ -471,10 +468,10 @@
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.ProductService" method="changeOrderProduct"/>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3">
+					<layoutElement column="2" row="2">
 						<component type="input" name="defaultTechnology" reference="defaultTechnology" field="defaultTechnology" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="2" row="4">
+					<layoutElement column="2" row="3">
 						<component type="lookup" name="technology" reference="technology" field="technology" source="#{product}.technologies">
 							<option type="column" name="name" fields="name" link="true" width="300" />
 							<option type="searchable" value="name,number" />
@@ -483,10 +480,10 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="5">
+					<layoutElement column="2" row="4">
 						<component type="input" name="plannedQuantity" reference="plannedQuantity" field="plannedQuantity" />
 					</layoutElement>
-					<layoutElement column="2" row="6">
+					<layoutElement column="2" row="5">
 						<component type="input" name="doneQuantity" field="doneQuantity" />
 					</layoutElement>
 					<layoutElement column="3" row="1">

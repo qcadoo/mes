@@ -173,7 +173,6 @@
 		<enum name="state" values="pending,inProgress,done">
 			<validatesPresence />
 		</enum>
-		<dictionary name="machine" dictionary="machines" />
 		<belongsTo name="product" model="product" lookupField="name" />
 		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" model="technology" lookupField="name" />
