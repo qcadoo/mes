@@ -123,9 +123,11 @@ public class ProductReportService {
                 document.newPage();
             }
             PdfPTable orderTable = PdfUtil.createTableWithHeader(6, getOrderHeader(document, entity, locale), false);
-            addOrderSeries(orderTable, entity, decimalFormat);
-            document.add(orderTable);
-            document.add(Chunk.NEWLINE);
+            if (type.equals("machine") || type.equals("worker")) {
+                addOrderSeries(orderTable, entity, decimalFormat);
+                document.add(orderTable);
+                document.add(Chunk.NEWLINE);
+            }
             if (type.equals("machine")) {
                 Entity machine = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah3",
@@ -143,6 +145,21 @@ public class ProductReportService {
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah4",
                         locale), PdfUtil.getArialBold11Light()));
 
+                // mady: getting the planned quantity from an order, everything should be ok since all the orders in this map
+                // should have
+                // the same planned quantity and should never Null Pointer since every product needs a technology
+                // Map<Entity, Entity> values = entry.getValue();
+                // List<Entity> orders = (List<Entity>) values.values();
+                // Entity order = orders.get(0);
+                //
+                // for (Entity value : orders) {
+                // addOrderSeries(orderTable, value, decimalFormat);
+                // }
+                // document.add(orderTable);
+                // document.add(Chunk.NEWLINE);
+
+                // title.add(new Phrase(" " + order.getField("plannedQuantity") + " x " + product.getField("name"), PdfUtil
+                // .getArialBold19Dark()));
                 title.add(new Phrase(" " + product.getField("name"), PdfUtil.getArialBold19Dark()));
                 document.add(title);
             }
@@ -237,5 +254,41 @@ public class ProductReportService {
             table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
         }
     }
+
+    // private void addOrderSeries(final PdfPTable table, final Entity entity, final DecimalFormat df) throws DocumentException {
+
+    // Set<String> added = new HashSet<String>();
+    //
+    // for (Entry<Entity, Entity> entry : entity.entrySet()) {
+    // Entity order = entry.getValue();
+    // if (!added.contains(order.getField("name").toString())) {
+    // table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+    // table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+    // Entity product = (Entity) order.getField("product");
+    // if (product != null) {
+    // table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+    // } else {
+    // table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+    // }
+    // table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+    // BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+    // plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity;
+    // table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
+    // table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+    // if (product != null) {
+    // Object unit = product.getField("unit");
+    // if (unit != null) {
+    // table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
+    // } else {
+    // table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+    // }
+    // } else {
+    // table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+    // }
+    // table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
+    // }
+    // added.add(order.getField("name").toString());
+    // }
+    // }
 
 }
