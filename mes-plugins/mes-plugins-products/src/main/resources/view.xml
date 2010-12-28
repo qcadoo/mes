@@ -30,14 +30,6 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="gridActions"/>
-				<group name="test">
-					<combobox name="testCombo" icon="pdfIcon16.png" action="#{grid}.fireEvent(printOrder,pdf);">
-						<option name="option1"/>
-						<option name="option2"/>
-						<option name="option3"/>
-						<option name="option4"/>
-					</combobox>
-				</group>
 			</ribbon>
 			<component type="grid" name="products" reference="grid">
 				<option type="column" name="number" fields="number" link="true"
