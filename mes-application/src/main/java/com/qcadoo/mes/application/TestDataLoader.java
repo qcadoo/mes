@@ -84,7 +84,7 @@ public final class TestDataLoader {
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final String[] TYPE_OF_MATERIALS = new String[] { "product", "component", "intermediate" };
+    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
 
     private static final List<String> UNITS = new ArrayList<String>();
 
@@ -397,11 +397,11 @@ public final class TestDataLoader {
         }
         order.setStartWorker(getRandomUser().getUserName());
 
-        String state = (RANDOM.nextDouble() > 0.4) ? "done" : "pending";
+        String state = (RANDOM.nextDouble() > 0.4) ? "03done" : "01pending";
 
         order.setState(state);
 
-        if ("pending".equals(state)) {
+        if ("01pending".equals(state)) {
             order.setEndWorker(null);
             order.setEffectiveDateTo(null);
         }

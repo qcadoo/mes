@@ -148,7 +148,7 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
                 plugin.setBase(false);
             }
             plugin.setIdentifier(identifier);
-            plugin.setStatus("active");
+            plugin.setStatus("03active");
         } else {
             LOG.info("Updating plugin \"" + identifier + "\"");
 

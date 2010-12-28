@@ -131,7 +131,7 @@ public class ViewDefinitionParserImplTest {
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setIdentifier("sample");
 
-        given(pluginManagementService.getByIdentifierAndStatus("sample", "active")).willReturn(plugin);
+        given(pluginManagementService.getByIdentifierAndStatus("sample", "03active")).willReturn(plugin);
         given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
 
         dataDefinitionA = mock(DataDefinition.class);

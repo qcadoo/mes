@@ -57,18 +57,18 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setStatus("active");
+        plugin.setStatus("03active");
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
                         .add(any(Criterion.class)).uniqueResult()).willReturn(plugin);
 
         // when
-        PluginsPlugin databasePlugin = pluginManagementService.getByIdentifierAndStatus("plugins", "active");
+        PluginsPlugin databasePlugin = pluginManagementService.getByIdentifierAndStatus("plugins", "03active");
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals("active", databasePlugin.getStatus());
+        assertEquals("03active", databasePlugin.getStatus());
     }
 
     @Test
@@ -76,7 +76,7 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setStatus("active");
+        plugin.setStatus("03active");
 
         given(sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class)).uniqueResult())
                 .willReturn(plugin);
@@ -86,7 +86,7 @@ public final class PluginManagementServiceTest {
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals("active", databasePlugin.getStatus());
+        assertEquals("03active", databasePlugin.getStatus());
     }
 
     @Test
@@ -94,7 +94,7 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setStatus("active");
+        plugin.setStatus("03active");
 
         given(sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class)).uniqueResult())
                 .willReturn(plugin);
@@ -104,7 +104,7 @@ public final class PluginManagementServiceTest {
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals("active", databasePlugin.getStatus());
+        assertEquals("03active", databasePlugin.getStatus());
     }
 
     @Test
@@ -112,7 +112,7 @@ public final class PluginManagementServiceTest {
         // given
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setName("plugins");
-        plugin.setStatus("active");
+        plugin.setStatus("03active");
 
         given(
                 sessionFactory.getCurrentSession().createCriteria(PluginsPlugin.class).add(any(Criterion.class))
@@ -123,13 +123,13 @@ public final class PluginManagementServiceTest {
 
         // then
         assertEquals("plugins", databasePlugin.getName());
-        assertEquals("active", databasePlugin.getStatus());
+        assertEquals("03active", databasePlugin.getStatus());
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrownAnExceptionIfPluginIdentifierIsNullAndStatusIsValid() {
         // when
-        pluginManagementService.getByIdentifierAndStatus(null, "active");
+        pluginManagementService.getByIdentifierAndStatus(null, "03active");
     }
 
     @Test(expected = NullPointerException.class)

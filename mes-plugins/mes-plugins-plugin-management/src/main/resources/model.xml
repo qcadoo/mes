@@ -37,7 +37,7 @@
 		<string name="version" readonly="true" >
 			<validatesPresenceOnCreate />
 		</string>
-		<enum name="status" values="downloaded,installed,active">
+		<enum name="status" values="01downloaded,02installed,03active">
 			<validatesPresenceOnCreate />
 		</enum>
 		<boolean name="base" readonly="true">

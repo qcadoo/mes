@@ -17,7 +17,7 @@
 		<text name="name">
 			<validatesPresence />
 		</text>
-		<enum name="typeOfMaterial" values="product,intermediate,component">
+		<enum name="typeOfMaterial" values="01component,02intermediate,03product">
 			<validatesPresence />
 		</enum>
 		<string name="ean" />
