@@ -272,7 +272,7 @@ public final class ProductService {
         if (order.getEntityId() != null) {
             Entity entity = dataDefinitionService.get("products", "order").get(order.getEntityId());
 
-            if (entity != null && "done".equals(entity.getStringField("state")) && order.isValid()) {
+            if (entity != null && "03done".equals(entity.getStringField("state")) && order.isValid()) {
                 order.setEnabled(false);
                 setChildrenEnabled(order.getChildren().values(), false);
             }
@@ -372,12 +372,12 @@ public final class ProductService {
 
     public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {
         SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
-                .restrictedWith(Restrictions.eq(dataDefinition.getField("state"), "inProgress"))
+                .restrictedWith(Restrictions.eq(dataDefinition.getField("state"), "02inProgress"))
                 .restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.EQ));
 
         SearchResult searchResult = searchCriteria.list();
 
-        if (entity.getField("state").toString().equals("pending") && searchResult.getTotalNumberOfEntities() > 0) {
+        if (entity.getField("state").toString().equals("01pending") && searchResult.getTotalNumberOfEntities() > 0) {
             entity.addError(dataDefinition.getField("state"), "products.validate.global.error.illegalStateChange");
             return false;
         }
@@ -447,22 +447,22 @@ public final class ProductService {
     }
 
     public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
-        if (("pending".equals(entity.getField("state")) || "done".equals(entity.getField("state")))
+        if (("01pending".equals(entity.getField("state")) || "03done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
             entity.setField("startWorker", getLoginOfLoggedUser());
         }
-        if ("done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
+        if ("03done".equals(entity.getField("state")) && entity.getField("effectiveDateTo") == null) {
             entity.setField("effectiveDateTo", new Date());
             entity.setField("endWorker", getLoginOfLoggedUser());
 
         }
 
-        if (!"inProgress".toString().equals(entity.getField("state"))) {
+        if (!"02inProgress".toString().equals(entity.getField("state"))) {
             if (entity.getField("effectiveDateTo") != null) {
-                entity.setField("state", "done");
+                entity.setField("state", "03done");
             } else if (entity.getField("effectiveDateFrom") != null) {
-                entity.setField("state", "pending");
+                entity.setField("state", "01pending");
             }
         }
     }

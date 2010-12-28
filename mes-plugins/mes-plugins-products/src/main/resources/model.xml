@@ -35,7 +35,7 @@
 		<string name="name">
 			<validatesPresence />
 		</string>
-		<enum name="typeOfMaterial" values="product,intermediate,component">
+		<enum name="typeOfMaterial" values="01component,02intermediate,03product">
 			<validatesPresence />
 		</enum>
 		<string name="ean" />
@@ -170,10 +170,9 @@
 		<date name="dateTo">
 			<validatesPresence />
 		</date>
-		<enum name="state" values="pending,inProgress,done">
+		<enum name="state" values="01pending,02inProgress,03done">
 			<validatesPresence />
 		</enum>
-		<dictionary name="machine" dictionary="machines" />
 		<belongsTo name="product" model="product" lookupField="name" />
 		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" model="technology" lookupField="name" />

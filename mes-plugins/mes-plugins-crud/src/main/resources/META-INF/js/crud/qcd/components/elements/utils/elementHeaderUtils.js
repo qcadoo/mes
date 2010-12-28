@@ -59,3 +59,27 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 	
 	return itemElementButtonWrapper;
 }
+
+QCD.components.elements.utils.HeaderUtils.createHeaderComboBox = function(options, selectAction) {
+	
+	var select = $("<select>").addClass("headerSelect");
+	select.change(function() {
+		//itemElementButton.blur();
+		selectAction.call(select.val());
+	});
+	
+	for (var i in options) {
+		select.append($("<option>").attr("value",options[i]).html(options[i]));
+	}
+	
+	select.enable = function() {
+		$(this).attr("disabled", "");
+	}
+	select.disable = function() {
+		$(this).attr("disabled", "true");
+	}
+	
+	select.disable();
+	
+	return select;
+}

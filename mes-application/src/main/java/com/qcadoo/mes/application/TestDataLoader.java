@@ -84,7 +84,7 @@ public final class TestDataLoader {
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final String[] TYPE_OF_MATERIALS = new String[] { "product", "component", "intermediate" };
+    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
 
     private static final List<String> UNITS = new ArrayList<String>();
 
@@ -388,7 +388,6 @@ public final class TestDataLoader {
         order.setEffectiveDateTo(new Date(effectiveEndDate));
         order.setEndWorker(getRandomUser().getUserName());
         order.setTechnology(getTechnologyByName(values.get("bom_name")));
-        order.setMachine(getRandomDictionaryItem("machines"));
         order.setName((values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setNumber(values.get("order_nr"));
         order.setPlannedQuantity(values.get("quantity_scheduled").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
@@ -398,11 +397,11 @@ public final class TestDataLoader {
         }
         order.setStartWorker(getRandomUser().getUserName());
 
-        String state = (RANDOM.nextDouble() > 0.4) ? "done" : "pending";
+        String state = (RANDOM.nextDouble() > 0.4) ? "03done" : "01pending";
 
         order.setState(state);
 
-        if ("pending".equals(state)) {
+        if ("01pending".equals(state)) {
             order.setEndWorker(null);
             order.setEffectiveDateTo(null);
         }
@@ -417,9 +416,8 @@ public final class TestDataLoader {
                     + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", dateFrom="
                     + order.getDateFrom() + ", dateTo=" + order.getDateTo() + ", effectiveDateFrom="
                     + order.getEffectiveDateFrom() + ", effectiveDateTo=" + order.getEffectiveDateTo() + ", doneQuantity="
-                    + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", machine="
-                    + order.getMachine() + ", state=" + order.getState() + ", startWorker=" + order.getStartWorker()
-                    + ", endWorker=" + order.getEndWorker() + "}");
+                    + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", state=" + order.getState()
+                    + ", startWorker=" + order.getStartWorker() + ", endWorker=" + order.getEndWorker() + "}");
         }
 
         sessionFactory.getCurrentSession().save(order);

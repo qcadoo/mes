@@ -42,7 +42,7 @@ public class ProductReportService {
     @Autowired
     private SecurityService securityService;
 
-    private static final String MATERIAL_COMPONENT = "component";
+    private static final String MATERIAL_COMPONENT = "01component";
 
     public final Map<Entity, BigDecimal> getTechnologySeries(final Entity entity, final List<Entity> orders) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
@@ -209,8 +209,8 @@ public class ProductReportService {
             ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
             Object unit = product.getField("unit");
             products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
-                    + df.format(((BigDecimal) operationProductComponent.getField("quantity"))) + " ["
-                    + (unit != null ? unit.toString() : "") + "] \n\n");
+                    + df.format((operationProductComponent.getField("quantity"))) + " [" + (unit != null ? unit.toString() : "")
+                    + "] \n\n");
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
