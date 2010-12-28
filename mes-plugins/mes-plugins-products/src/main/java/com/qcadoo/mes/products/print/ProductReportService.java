@@ -6,10 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,8 +75,8 @@ public class ProductReportService {
         return products;
     }
 
-    private Map<Entity, Map<Entity, Entity>> getOperationSeries(final Entity entity, final String type) {
-        Map<Entity, Map<Entity, Entity>> operations = new HashMap<Entity, Map<Entity, Entity>>();
+    private Map<Entity, Map<Entity, List<Entity>>> getOperationSeries(final Entity entity, final String type) {
+        Map<Entity, Map<Entity, List<Entity>>> operations = new HashMap<Entity, Map<Entity, List<Entity>>>();
         List<Entity> orders = entity.getHasManyField("orders");
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
@@ -98,11 +100,20 @@ public class ProductReportService {
                         entityKey = (Entity) operation.getField("staff");
                     }
                     if (operations.containsKey(entityKey)) {
-                        Map<Entity, Entity> operationMap = operations.get(entityKey);
-                        operationMap.put(operationComponent, order);
+                        Map<Entity, List<Entity>> operationMap = operations.get(entityKey);
+                        List<Entity> ordersList;
+                        if (operationMap.containsKey(operationComponent)) {
+                            ordersList = operationMap.get(operationComponent);
+                        } else {
+                            ordersList = new ArrayList<Entity>();
+                        }
+                        ordersList.add(order);
+                        operationMap.put(operationComponent, ordersList);
                     } else {
-                        Map<Entity, Entity> operationMap = new HashMap<Entity, Entity>();
-                        operationMap.put(operationComponent, order);
+                        Map<Entity, List<Entity>> operationMap = new HashMap<Entity, List<Entity>>();
+                        List<Entity> ordersList = new ArrayList<Entity>();
+                        ordersList.add(order);
+                        operationMap.put(operationComponent, ordersList);
                         operations.put(entityKey, operationMap);
                     }
                 }
@@ -117,8 +128,8 @@ public class ProductReportService {
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         boolean firstPage = true;
-        Map<Entity, Map<Entity, Entity>> operations = getOperationSeries(entity, type);
-        for (Entry<Entity, Map<Entity, Entity>> entry : operations.entrySet()) {
+        Map<Entity, Map<Entity, List<Entity>>> operations = getOperationSeries(entity, type);
+        for (Entry<Entity, Map<Entity, List<Entity>>> entry : operations.entrySet()) {
             if (!firstPage) {
                 document.newPage();
             }
@@ -145,38 +156,47 @@ public class ProductReportService {
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah4",
                         locale), PdfUtil.getArialBold11Light()));
 
-                // mady: getting the planned quantity from an order, everything should be ok since all the orders in this map
-                // should have
-                // the same planned quantity and should never Null Pointer since every product needs a technology
-                // Map<Entity, Entity> values = entry.getValue();
-                // List<Entity> orders = (List<Entity>) values.values();
-                // Entity order = orders.get(0);
-                //
-                // for (Entity value : orders) {
-                // addOrderSeries(orderTable, value, decimalFormat);
-                // }
-                // document.add(orderTable);
-                // document.add(Chunk.NEWLINE);
+                Map<Entity, List<Entity>> values = entry.getValue();
+                List<List<Entity>> orders = new ArrayList<List<Entity>>(values.values());
 
-                // title.add(new Phrase(" " + order.getField("plannedQuantity") + " x " + product.getField("name"), PdfUtil
-                // .getArialBold19Dark()));
-                title.add(new Phrase(" " + product.getField("name"), PdfUtil.getArialBold19Dark()));
+                Double totalQuantity = 0.0;
+
+                Set<String> addedOrders = new HashSet<String>();
+
+                for (List<Entity> singleOrderList : orders) {
+                    for (Entity singleOrder : singleOrderList) {
+                        if (!addedOrders.contains(singleOrder.getField("name").toString())) {
+                            totalQuantity += Double.parseDouble(singleOrder.getField("plannedQuantity").toString());
+                            addedOrders.add(singleOrder.getField("name").toString());
+                        }
+                    }
+                }
+
+                addOrderSeries(orderTable, orders, decimalFormat);
+
+                document.add(orderTable);
+                document.add(Chunk.NEWLINE);
+
+                title.add(new Phrase(" " + totalQuantity + " x " + product.getField("name"), PdfUtil.getArialBold19Dark()));
                 document.add(title);
             }
             PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale), false);
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
-            Map<Entity, Entity> operationMap = entry.getValue();
-            for (Entry<Entity, Entity> entryComponent : operationMap.entrySet()) {
-                Entity operation = (Entity) entryComponent.getKey().getField("operation");
-                table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(entryComponent.getValue().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-                List<Entity> operationProductOutComponents = entryComponent.getKey().getHasManyField(
-                        "operationProductOutComponents");
-                List<Entity> operationProductInComponents = entryComponent.getKey().getHasManyField(
-                        "operationProductInComponents");
-                addProductSeries(table, operationProductOutComponents, decimalFormat);
-                addProductSeries(table, operationProductInComponents, decimalFormat);
+            Map<Entity, List<Entity>> operationMap = entry.getValue();
+            for (Entry<Entity, List<Entity>> entryComponent : operationMap.entrySet()) {
+                for (Entity singleOperationComponent : entryComponent.getValue()) {
+                    Entity operation = (Entity) entryComponent.getKey().getField("operation");
+                    table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+                    table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                    table.addCell(new Phrase(singleOperationComponent.getField("number").toString(), PdfUtil
+                            .getArialRegular9Dark()));
+                    List<Entity> operationProductOutComponents = entryComponent.getKey().getHasManyField(
+                            "operationProductOutComponents");
+                    List<Entity> operationProductInComponents = entryComponent.getKey().getHasManyField(
+                            "operationProductInComponents");
+                    addProductSeries(table, operationProductOutComponents, decimalFormat);
+                    addProductSeries(table, operationProductInComponents, decimalFormat);
+                }
             }
             document.add(table);
             firstPage = false;
@@ -255,40 +275,43 @@ public class ProductReportService {
         }
     }
 
-    // private void addOrderSeries(final PdfPTable table, final Entity entity, final DecimalFormat df) throws DocumentException {
+    private void addOrderSeries(final PdfPTable table, final List<List<Entity>> values, final DecimalFormat df)
+            throws DocumentException {
 
-    // Set<String> added = new HashSet<String>();
-    //
-    // for (Entry<Entity, Entity> entry : entity.entrySet()) {
-    // Entity order = entry.getValue();
-    // if (!added.contains(order.getField("name").toString())) {
-    // table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-    // table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-    // Entity product = (Entity) order.getField("product");
-    // if (product != null) {
-    // table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-    // } else {
-    // table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-    // }
-    // table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-    // BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-    // plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity;
-    // table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
-    // table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-    // if (product != null) {
-    // Object unit = product.getField("unit");
-    // if (unit != null) {
-    // table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
-    // } else {
-    // table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-    // }
-    // } else {
-    // table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
-    // }
-    // table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
-    // }
-    // added.add(order.getField("name").toString());
-    // }
-    // }
+        Set<String> added = new HashSet<String>();
+
+        for (List<Entity> entry : values) {
+            List<Entity> orderList = entry;
+            for (Entity order : orderList) {
+                if (!added.contains(order.getField("name").toString())) {
+                    table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+                    table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                    Entity product = (Entity) order.getField("product");
+                    if (product != null) {
+                        table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                    } else {
+                        table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+                    }
+                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                    BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+                    plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity;
+                    table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
+                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                    if (product != null) {
+                        Object unit = product.getField("unit");
+                        if (unit != null) {
+                            table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
+                        } else {
+                            table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+                        }
+                    } else {
+                        table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+                    }
+                    table.addCell(new Phrase(D_F.format((Date) order.getField("dateTo")), PdfUtil.getArialRegular9Dark()));
+                }
+                added.add(order.getField("name").toString());
+            }
+        }
+    }
 
 }
