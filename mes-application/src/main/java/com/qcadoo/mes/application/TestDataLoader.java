@@ -268,12 +268,13 @@ public final class TestDataLoader {
                     + product.getTypeOfMaterial() + ", unit=" + product.getUnit() + "}");
         }
 
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < RANDOM.nextInt(5); i++) {
-            String asterix = "*";
-            for (int j = 0; j < i; j++) {
-                asterix = asterix + "*";
+            for (int j = 0; j <= i; j++) {
+                stringBuilder.append("*");
             }
-            addSubstitute(values.get("name") + asterix, values.get("product_nr") + asterix, product, i + 1);
+            addSubstitute(values.get("name") + stringBuilder.toString(), values.get("product_nr") + stringBuilder.toString(),
+                    product, i + 1);
         }
     }
 
@@ -623,7 +624,7 @@ public final class TestDataLoader {
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
 
-    private BasicMachine getMachine(String id) {
+    private BasicMachine getMachine(final String id) {
         // Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
         // .setProjection(Projections.rowCount()).uniqueResult();
         // return (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
@@ -632,7 +633,7 @@ public final class TestDataLoader {
         LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>> ID: " + id);
 
         LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>> Machine: "
-                + (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+                + sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
                         .add(Restrictions.idEq(Long.parseLong(id))).uniqueResult());
 
         return (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
