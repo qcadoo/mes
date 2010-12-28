@@ -21,6 +21,7 @@ import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
 import com.qcadoo.mes.view.ribbon.Ribbon;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.ribbon.RibbonComboBox;
 import com.qcadoo.mes.view.ribbon.RibbonComboItem;
 import com.qcadoo.mes.view.ribbon.RibbonGroup;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
@@ -205,11 +206,15 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             type = RibbonActionItem.Type.BIG_BUTTON;
         } else if ("smallButtons".equals(stringType) || "smallButton".equals(stringType)) {
             type = RibbonActionItem.Type.SMALL_BUTTON;
+        } else if ("combobox".equals(stringType)) {
+            type = RibbonActionItem.Type.COMBOBOX;
         }
 
         RibbonActionItem item = null;
         if ("bigButtons".equals(stringType) || "smallButtons".equals(stringType)) {
             item = new RibbonComboItem();
+        } else if ("combobox".equals(stringType)) {
+            item = new RibbonComboBox();
         } else {
             item = new RibbonActionItem();
         }
@@ -226,7 +231,19 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
                 Node child = childNodes.item(i);
 
                 if (child.getNodeType() == Node.ELEMENT_NODE) {
+
                     ((RibbonComboItem) item).addItem(parseRibbonItem(child, parser));
+                }
+            }
+        } else if (item instanceof RibbonComboBox) {
+            NodeList childNodes = itemNode.getChildNodes();
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node child = childNodes.item(i);
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    if (!"option".equals(child.getNodeName())) {
+                        throw new IllegalStateException("ribbon combobox can only have 'option' elements");
+                    }
+                    ((RibbonComboBox) item).addOption(parser.getStringAttribute(child, "name"));
                 }
             }
         } else {

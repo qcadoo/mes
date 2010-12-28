@@ -27,6 +27,8 @@ QCD.components = QCD.components || {};
 
 QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	
+	QCD.info(_model);
+	
 	var ribbonModel = _model;
 	var mainController = _mainController;
 	var elementName = _elementName;
@@ -73,6 +75,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 						} else {
 							itemElement = createSmallButton(groupModel.name, itemModel);
 						}
+						isSmall = true;
+					} else if (itemModel.type == "COMBOBOX") {
+						itemElement = createComboBox(groupModel.name, itemModel);
 						isSmall = true;
 					}
 					
@@ -196,6 +201,25 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 				});
 			}
 		});
+	}
+	
+	function createComboBox(path, itemModel) {
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div "+getItemIconStyle(itemModel)+">"+itemModel.label+"</div></span>");
+		var buttonLi = $("<li>").append(itemElementButton);
+		var itemElementDropdownButton = $("<a>").attr('href','#').addClass("twoB_down");
+		var buttonDropdownLi = $("<li>").append(itemElementDropdownButton);
+		var ulElement = $("<ul>").append(buttonLi).append(buttonDropdownLi);
+		var divElement = $("<div>").append(ulElement);
+		var spanElement = $("<span>").append(divElement);
+		var itemElement = $("<li>").addClass("twoB").addClass("ribbonDropdownContainer").append(spanElement);
+		
+		//itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		
+		//var dropdownMenu = createDropdownMenu(path + "." + (itemModel.label ? itemModel.label : itemModel.name), itemModel).addClass("smallButtonDropdownMenu");
+		//addDropdownAction(itemElementDropdownButton);
+		//itemElement.append(dropdownMenu);
+			
+		return itemElement;
 	}
 	
 	function getItemIconStyle(itemModel) {
