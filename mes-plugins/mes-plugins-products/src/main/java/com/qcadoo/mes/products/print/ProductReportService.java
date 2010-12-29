@@ -1,6 +1,10 @@
 package com.qcadoo.mes.products.print;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,13 +17,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.krysalis.barcode4j.impl.code128.Code128Bean;
+import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
+import org.krysalis.barcode4j.tools.UnitConv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
+import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
@@ -133,12 +142,15 @@ public class ProductReportService {
             if (!firstPage) {
                 document.newPage();
             }
+
             PdfPTable orderTable = PdfUtil.createTableWithHeader(6, getOrderHeader(document, entity, locale), false);
+
             if (type.equals("machine") || type.equals("worker")) {
                 addOrderSeries(orderTable, entity, decimalFormat);
                 document.add(orderTable);
                 document.add(Chunk.NEWLINE);
             }
+
             if (type.equals("machine")) {
                 Entity machine = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah3",
@@ -179,6 +191,7 @@ public class ProductReportService {
 
                 title.add(new Phrase(" " + totalQuantity + " x " + product.getField("name"), PdfUtil.getArialBold19Dark()));
                 document.add(title);
+
             }
             PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale), false);
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
@@ -203,6 +216,47 @@ public class ProductReportService {
         }
     }
 
+    private Image generateBarcode(String code) throws BadElementException {
+        Code128Bean codeBean = new Code128Bean();
+        final int dpi = 150;
+
+        codeBean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
+        codeBean.doQuietZone(false);
+        codeBean.setHeight(8);
+        codeBean.setFontSize(0.0);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi, BufferedImage.TYPE_BYTE_BINARY,
+                    false, 0);
+
+            codeBean.generateBarcode(canvas, code);
+
+            canvas.finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            Image image = Image.getInstance(out.toByteArray());
+            image.setAlignment(Image.RIGHT);
+
+            return image;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private void addProductSeries(final PdfPTable table, final List<Entity> operationProductComponents, final DecimalFormat df) {
         StringBuilder products = new StringBuilder();
         for (Entity operationProductComponent : operationProductComponents) {
@@ -221,7 +275,7 @@ public class ProductReportService {
         String documentAuthor = translationService.translate("products.materialRequirement.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
         PdfUtil.addDocumentHeader(document, entity, documenTitle, documentAuthor, (Date) entity.getField("date"), user);
-        document.add(Chunk.NEWLINE);
+        document.add(generateBarcode(entity.getField("name").toString()));
         document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah", locale), PdfUtil
                 .getArialBold11Dark()));
         List<String> orderHeader = new ArrayList<String>();
