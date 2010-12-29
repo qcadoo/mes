@@ -131,7 +131,7 @@ public class DataDefinitionParserTest {
         setField(dataDefinitionParser, "hookFactory", hookFactory);
         setField(dataDefinitionParser, "validatorFactory", validatorFactory);
 
-        xml = new FileInputStream(new File("src/test/resources/model.xml"));
+        xml = new FileInputStream(new File("src/test/resources/test.model.xml"));
 
         given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
     }

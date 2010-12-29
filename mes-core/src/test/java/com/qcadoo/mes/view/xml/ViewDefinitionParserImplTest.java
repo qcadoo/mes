@@ -126,7 +126,7 @@ public class ViewDefinitionParserImplTest {
         setField(viewDefinitionParser, "translationService", translationService);
         setField(viewDefinitionParser, "viewComponentsResolver", viewComponentsResolver);
 
-        xml = new FileInputStream(new File("src/test/resources/view.xml"));
+        xml = new FileInputStream(new File("src/test/resources/test.view.xml"));
 
         PluginsPlugin plugin = new PluginsPlugin();
         plugin.setIdentifier("sample");
