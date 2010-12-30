@@ -567,7 +567,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			currentState.filtersEnabled = true;
 		}
 		
-		QCD.info(filterObject);
 		setSortColumnAndDirection({column: filter.orderColumn, direction: filter.orderDirection});
 		
 		updateSearchFields();

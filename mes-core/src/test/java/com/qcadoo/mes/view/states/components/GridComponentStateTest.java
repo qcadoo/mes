@@ -369,7 +369,6 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.render();
 
         // then
-        // verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test*"));
         verify(substituteCriteria).restrictedWith(Restrictions.forOperator(RestrictionOperator.EQ, null, "test*"));
     }
 

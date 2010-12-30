@@ -2,6 +2,7 @@ package com.qcadoo.mes.view.patterns.components;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -10,9 +11,16 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Locale;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.api.TranslationService;
@@ -33,6 +41,8 @@ import com.qcadoo.mes.view.components.grid.GridComponentPattern;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 import com.qcadoo.mes.view.patterns.AbstractPatternTest;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
+import com.qcadoo.mes.view.xml.ViewDefinitionParserImpl;
 
 public class GridComponentPatternTest extends AbstractPatternTest {
 
@@ -290,6 +300,73 @@ public class GridComponentPatternTest extends AbstractPatternTest {
         assertEquals(belongsToFieldDefinition, getField(state, "belongsToFieldDefinition"));
         assertEquals(getField(pattern, "columns"), getField(state, "columns"));
 
+    }
+
+    @Test
+    public void shouldParsePredefinedFilters() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        ViewDefinition viewDefinition = mock(ViewDefinition.class);
+        TranslationService translationService = mock(TranslationService.class);
+        given(viewDefinition.getDataDefinition()).willReturn(dataDefinition);
+        ComponentDefinition componentDefinition = getComponentDefinition("grid", viewDefinition);
+        componentDefinition.setTranslationService(translationService);
+        GridComponentPattern pattern = new GridComponentPattern(componentDefinition);
+
+        pattern.addOption(new ComponentOption("order", ImmutableMap.of("column", "name", "direction", "asc")));
+
+        ViewDefinitionParser parser = new ViewDefinitionParserImpl();
+
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = builder.newDocument();
+        Node componentNode = doc.createElement("root");
+
+        Node predefinedFiltersNode = doc.createElement("predefinedFilters");
+        componentNode.appendChild(predefinedFiltersNode);
+
+        Element predefinedFilter1 = doc.createElement("predefinedFilter");
+        predefinedFilter1.setAttribute("name", "filter1");
+        predefinedFiltersNode.appendChild(predefinedFilter1);
+
+        Element predefinedFilter2 = doc.createElement("predefinedFilter");
+        predefinedFilter2.setAttribute("name", "filter2");
+        predefinedFiltersNode.appendChild(predefinedFilter2);
+        Element orderNode = doc.createElement("filterOrder");
+        orderNode.setAttribute("column", "testCol");
+        orderNode.setAttribute("direction", "desc");
+        predefinedFilter2.appendChild(orderNode);
+        Element filterNode1 = doc.createElement("filterRestriction");
+        filterNode1.setAttribute("column", "testCol1");
+        filterNode1.setAttribute("value", "testVal1");
+        predefinedFilter2.appendChild(filterNode1);
+        Element filterNode2 = doc.createElement("filterRestriction");
+        filterNode2.setAttribute("column", "testCol2");
+        filterNode2.setAttribute("value", "testVal2");
+        predefinedFilter2.appendChild(filterNode2);
+
+        pattern.initialize();
+
+        // when
+        pattern.parse(componentNode, parser);
+
+        // then
+        JSONObject options = getJsOptions(pattern);
+        JSONArray filtersArray = options.getJSONArray("predefinedFilters");
+        assertNotNull(filtersArray);
+
+        assertEquals(2, filtersArray.length());
+
+        assertEquals("filter1", filtersArray.getJSONObject(0).get("label"));
+        assertEquals("name", filtersArray.getJSONObject(0).get("orderColumn"));
+        assertEquals("asc", filtersArray.getJSONObject(0).get("orderDirection"));
+        assertEquals(0, filtersArray.getJSONObject(0).getJSONObject("filter").length());
+
+        assertEquals("filter2", filtersArray.getJSONObject(1).get("label"));
+        assertEquals("testCol", filtersArray.getJSONObject(1).get("orderColumn"));
+        assertEquals("desc", filtersArray.getJSONObject(1).get("orderDirection"));
+        assertEquals(2, filtersArray.getJSONObject(1).getJSONObject("filter").length());
+        assertEquals("testVal1", filtersArray.getJSONObject(1).getJSONObject("filter").getString("testCol1"));
+        assertEquals("testVal2", filtersArray.getJSONObject(1).getJSONObject("filter").getString("testCol2"));
     }
 
 }

@@ -341,8 +341,8 @@ public final class GridComponentState extends AbstractComponentState {
             }
         }
 
-        private Restriction getRestrictionsToString(Pair<RestrictionOperator, String> parsedFilterValue,
-                FieldDefinition fieldDefinition) {
+        private Restriction getRestrictionsToString(final Pair<RestrictionOperator, String> parsedFilterValue,
+                final FieldDefinition fieldDefinition) {
             if (parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) {
                 return Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition, parsedFilterValue.getValue() + "*");
             } else if (parsedFilterValue.getKey().equals(RestrictionOperator.NE)) {
@@ -361,8 +361,8 @@ public final class GridComponentState extends AbstractComponentState {
             throw new IllegalStateException("unknown operator");
         }
 
-        private Restriction getRestrictionsToDate(Pair<RestrictionOperator, String> parsedFilterValue,
-                FieldDefinition fieldDefinition) throws ParseException {
+        private Restriction getRestrictionsToDate(final Pair<RestrictionOperator, String> parsedFilterValue,
+                final FieldDefinition fieldDefinition) throws ParseException {
             Date minDate = DateType.parseDate(parsedFilterValue.getValue(), false);
             Date maxDate = DateType.parseDate(parsedFilterValue.getValue(), true);
             if (minDate == null || maxDate == null) {
@@ -384,7 +384,7 @@ public final class GridComponentState extends AbstractComponentState {
             throw new IllegalStateException("unknown operator");
         }
 
-        private Pair<RestrictionOperator, String> parseFilterValue(String filterValue) {
+        private Pair<RestrictionOperator, String> parseFilterValue(final String filterValue) {
             RestrictionOperator operator = RestrictionOperator.EQ;
             String value;
             if (filterValue.charAt(0) == '>') {
