@@ -53,6 +53,7 @@
 					</predefinedFilter>
 					<predefinedFilter name="pending">
 						<filterRestriction column="state" value="01pending"/>
+						<filterOrder column="dateFrom" direction="desc"/>
 					</predefinedFilter>
 					<predefinedFilter name="overduePending">
 						<filterRestriction column="state" value="01pending"/>

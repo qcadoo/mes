@@ -19,6 +19,10 @@ public class PredefinedFilter {
 
     private Map<String, String> filterRestrictions = new HashMap<String, String>();
 
+    private String orderColumn;
+
+    private String orderDirection;
+
     public String getName() {
         return name;
     }
@@ -38,6 +42,8 @@ public class PredefinedFilter {
     public JSONObject toJson() throws JSONException {
         JSONObject object = new JSONObject();
         object.put("label", name);
+        object.put("orderColumn", orderColumn);
+        object.put("orderDirection", orderDirection);
         JSONObject filterRestrictionsObject = new JSONObject();
         for (Entry<String, String> filterRestriction : filterRestrictions.entrySet()) {
             filterRestrictionsObject.put(filterRestriction.getKey(), parseRestriction(filterRestriction.getValue()));
@@ -76,5 +82,21 @@ public class PredefinedFilter {
             throw new IllegalStateException("unsupported predefined filter expression: '" + expression + "'");
         }
         return new SimpleDateFormat(DateType.DATE_FORMAT).format(date.toDate());
+    }
+
+    public String getOrderColumn() {
+        return orderColumn;
+    }
+
+    public void setOrderColumn(String orderColumn) {
+        this.orderColumn = orderColumn;
+    }
+
+    public String getOrderDirection() {
+        return orderDirection;
+    }
+
+    public void setOrderDirection(String orderDirection) {
+        this.orderDirection = orderDirection;
     }
 }

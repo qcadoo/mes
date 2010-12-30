@@ -197,6 +197,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         grid.addOption(new ComponentOption("lookup", ImmutableMap.of("value", "true")));
         grid.addOption(new ComponentOption("fullscreen", ImmutableMap.of("value", "true")));
         grid.addOption(new ComponentOption("orderable", ImmutableMap.of("value", "lookupCode")));
+        grid.addOption(new ComponentOption("order", ImmutableMap.of("column", "lookupCode", "direction", "asc")));
         grid.addOption(new ComponentOption("searchable", ImmutableMap.of("value", "lookupCode")));
         grid.addOption(createLookupValueColumn());
         grid.addOption(createLookupCodeColumn());

@@ -100,7 +100,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         parseOptions();
 
         if (correspondingView != null && correspondingComponent == null) {
-            throw new IllegalStateException("Missing correspondingComponent for grid");
+            throwIllegalStateException("Missing correspondingComponent for grid");
         }
     }
 
@@ -110,7 +110,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 HasManyType hasManyType = (HasManyType) getScopeFieldDefinition().getType();
                 belongsToFieldDefinition = hasManyType.getDataDefinition().getField(hasManyType.getJoinFieldName());
             } else {
-                throw new IllegalStateException("Scope field for grid be a hasMany one");
+                throwIllegalStateException("Scope field for grid be a hasMany one");
             }
         }
     }
@@ -261,7 +261,6 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 if ("predefinedFilter".equals(child.getNodeName())) {
                     PredefinedFilter predefinedFilter = new PredefinedFilter();
                     predefinedFilter.setName(parser.getStringAttribute(child, "name"));
-                    // TODO mina add restrictions
 
                     NodeList restrictionNodes = child.getChildNodes();
                     for (int restrictionNodesIndex = 0; restrictionNodesIndex < restrictionNodes.getLength(); restrictionNodesIndex++) {
@@ -270,15 +269,35 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                             if ("filterRestriction".equals(restrictionNode.getNodeName())) {
                                 predefinedFilter.addFilterRestriction(parser.getStringAttribute(restrictionNode, "column"),
                                         parser.getStringAttribute(restrictionNode, "value"));
+                            } else if ("filterOrder".equals(restrictionNode.getNodeName())) {
+                                String column = parser.getStringAttribute(restrictionNode, "column");
+                                String direction = parser.getStringAttribute(restrictionNode, "direction");
+                                if (column == null) {
+                                    throwIllegalStateException("'filterOrder' tag must contain 'collumn' attribute");
+                                }
+                                if (direction == null) {
+                                    direction = "asc";
+                                } else {
+                                    if (!("asc".equals(direction) || "desc".equals(direction))) {
+                                        throwIllegalStateException("unknown order direction: " + direction);
+                                    }
+                                }
+                                predefinedFilter.setOrderColumn(column);
+                                predefinedFilter.setOrderDirection(direction);
                             } else {
-                                throw new IllegalStateException("predefinedFilter can only contain 'filterRestriction' tag");
+                                throwIllegalStateException("predefinedFilter can only contain 'filterRestriction' or 'filterOrder' tag");
                             }
                         }
                     }
 
+                    if (predefinedFilter.getOrderColumn() == null && defaultOrderColumn != null) {
+                        predefinedFilter.setOrderColumn(defaultOrderColumn);
+                        predefinedFilter.setOrderDirection(defaultOrderDirection);
+                    }
+
                     predefinedFilters.add(predefinedFilter);
                 } else {
-                    throw new IllegalStateException("predefinedFilters can only contain 'predefinedFilter' tag");
+                    throwIllegalStateException("predefinedFilters can only contain 'predefinedFilter' tag");
                 }
             }
         }
@@ -314,11 +333,22 @@ public final class GridComponentPattern extends AbstractComponentPattern {
             } else if ("order".equals(option.getType())) {
                 defaultOrderColumn = option.getAtrributeValue("column");
                 defaultOrderDirection = option.getAtrributeValue("direction");
+                if (predefinedFilters != null) {
+                    for (PredefinedFilter predefinedFilter : predefinedFilters) {
+                        if (predefinedFilter.getOrderColumn() == null) {
+                            predefinedFilter.setOrderColumn(defaultOrderColumn);
+                            predefinedFilter.setOrderDirection(defaultOrderDirection);
+                        }
+                    }
+                }
             } else if ("column".equals(option.getType())) {
                 parseColumnOption(option);
             } else {
-                throw new IllegalStateException("Unknown option for grid: " + option.getType());
+                throwIllegalStateException("Unknown option for grid: " + option.getType());
             }
+        }
+        if (defaultOrderColumn == null) {
+            throwIllegalStateException("grid must contain 'order' option");
         }
     }
 
@@ -360,4 +390,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         return set;
     }
 
+    private void throwIllegalStateException(final String message) {
+        throw new IllegalStateException(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "#"
+                + getPath() + ": " + message);
+    }
 }

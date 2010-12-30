@@ -208,7 +208,7 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 				}
 				headerElements.predefiniedFiltersCustomOption_line1.css("display","none");
 				headerElements.predefiniedFiltersCustomOption_line2.css("display","none");
-				var filterObj = gridParameters.predefinedFilters[selectedItem].filter;
+				var filterObj = gridParameters.predefinedFilters[selectedItem];
 				gridController.setFilterObject(filterObj);	
 			});
 			headerElements.predefiniedFiltersCombo.append(headerElements.predefiniedFiltersCustomOption_line1);

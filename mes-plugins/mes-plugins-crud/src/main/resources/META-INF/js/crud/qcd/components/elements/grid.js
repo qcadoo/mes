@@ -533,8 +533,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		$("#gs_"+column).val(filterText);
 	}
 	
-	this.setFilterObject = function(filterObject) {
+	this.setFilterObject = function(filter) {
 		blockGrid();
+		
+		var filterObject = filter.filter
 		for (var i in columnModel) {
 			var column = columnModel[i];
 			$("#gs_"+column.name).val("");
@@ -546,6 +548,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			fieldsNo++;
 		}
 		currentState.filters = filterObject;
+		
 		if (fieldsNo == 0) {
 			if (currentState.filtersEnabled) {
 				currentGridHeight += 23;
@@ -563,6 +566,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			headerController.setFilterActive();
 			currentState.filtersEnabled = true;
 		}
+		
+		QCD.info(filterObject);
+		setSortColumnAndDirection({column: filter.orderColumn, direction: filter.orderDirection});
+		
 		updateSearchFields();
 		onCurrentStateChange(true);
 	}
@@ -632,6 +639,18 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		for (var i in gridParameters.predefinedFilters) {
 			var predefiniedFilter = gridParameters.predefinedFilters[i].filter;
 			isIdentical = true;
+			
+			if (gridParameters.predefinedFilters[i].orderColumn) {
+				if (currentState.order.column != gridParameters.predefinedFilters[i].orderColumn) {
+					isIdentical = false;
+					continue;
+				}
+				if (currentState.order.direction != gridParameters.predefinedFilters[i].orderDirection) {
+					isIdentical = false;
+					continue;
+				}
+			}
+			
 			for (var col in columnModel) {
 				var column = columnModel[col];
 				if (predefiniedFilter[column.name] != filterToSearch[column.name]) {
