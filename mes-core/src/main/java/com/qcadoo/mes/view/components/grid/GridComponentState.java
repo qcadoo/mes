@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
@@ -321,38 +322,16 @@ public final class GridComponentState extends AbstractComponentState {
                         continue;
                     }
 
-                    if (fieldDefinition != null
-                            && String.class.isAssignableFrom(fieldDefinition.getType().getType())
-                            && ((parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) || parsedFilterValue.getKey().equals(
-                                    RestrictionOperator.NE))) {
-                        criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
-                                parsedFilterValue.getValue() + "*"));
+                    if (fieldDefinition != null && String.class.isAssignableFrom(fieldDefinition.getType().getType())) {
+
+                        criteria.restrictedWith(getRestrictionsToString(parsedFilterValue, fieldDefinition));
+
                     } else if (fieldDefinition != null && Boolean.class.isAssignableFrom(fieldDefinition.getType().getType())) {
                         criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
                                 "1".equals(parsedFilterValue.getValue())));
                     } else if (fieldDefinition != null && Date.class.isAssignableFrom(fieldDefinition.getType().getType())) {
-                        Date minDate = DateType.parseDate(parsedFilterValue.getValue(), false);
-                        Date maxDate = DateType.parseDate(parsedFilterValue.getValue(), true);
 
-                        if (minDate == null || maxDate == null) {
-                            throw new ParseException("wrong date", 1);
-                        }
-
-                        if (parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) {
-                            criteria.restrictedWith(Restrictions.ge(fieldDefinition, minDate)).restrictedWith(
-                                    Restrictions.le(fieldDefinition, maxDate));
-                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.NE)) {
-                            criteria.restrictedWith(Restrictions.or(Restrictions.lt(fieldDefinition, minDate),
-                                    Restrictions.gt(fieldDefinition, maxDate)));
-                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GT)) {
-                            criteria.restrictedWith(Restrictions.gt(fieldDefinition, maxDate));
-                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GE)) {
-                            criteria.restrictedWith(Restrictions.ge(fieldDefinition, minDate));
-                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LT)) {
-                            criteria.restrictedWith(Restrictions.lt(fieldDefinition, minDate));
-                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LE)) {
-                            criteria.restrictedWith(Restrictions.le(fieldDefinition, maxDate));
-                        }
+                        criteria.restrictedWith(getRestrictionsToDate(parsedFilterValue, fieldDefinition));
 
                     } else {
                         criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
@@ -360,6 +339,49 @@ public final class GridComponentState extends AbstractComponentState {
                     }
                 }
             }
+        }
+
+        private Restriction getRestrictionsToString(Pair<RestrictionOperator, String> parsedFilterValue,
+                FieldDefinition fieldDefinition) {
+            if (parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) {
+                return Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition, parsedFilterValue.getValue() + "*");
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.NE)) {
+                return Restrictions.not(Restrictions.eq(fieldDefinition, parsedFilterValue.getValue() + "*"));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GT)) {
+                return Restrictions.and(Restrictions.gt(fieldDefinition, parsedFilterValue.getValue()),
+                        Restrictions.not(Restrictions.eq(fieldDefinition, parsedFilterValue.getValue() + "*")));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GE)) {
+                return Restrictions.ge(fieldDefinition, parsedFilterValue.getValue());
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LT)) {
+                return Restrictions.lt(fieldDefinition, parsedFilterValue.getValue());
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LE)) {
+                return Restrictions.or(Restrictions.le(fieldDefinition, parsedFilterValue.getValue()),
+                        Restrictions.eq(fieldDefinition, parsedFilterValue.getValue() + "*"));
+            }
+            throw new IllegalStateException("unknown operator");
+        }
+
+        private Restriction getRestrictionsToDate(Pair<RestrictionOperator, String> parsedFilterValue,
+                FieldDefinition fieldDefinition) throws ParseException {
+            Date minDate = DateType.parseDate(parsedFilterValue.getValue(), false);
+            Date maxDate = DateType.parseDate(parsedFilterValue.getValue(), true);
+            if (minDate == null || maxDate == null) {
+                throw new ParseException("wrong date", 1);
+            }
+            if (parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) {
+                return Restrictions.and(Restrictions.ge(fieldDefinition, minDate), Restrictions.le(fieldDefinition, maxDate));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.NE)) {
+                return Restrictions.or(Restrictions.lt(fieldDefinition, minDate), Restrictions.gt(fieldDefinition, maxDate));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GT)) {
+                return Restrictions.gt(fieldDefinition, maxDate);
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GE)) {
+                return Restrictions.ge(fieldDefinition, minDate);
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LT)) {
+                return Restrictions.lt(fieldDefinition, minDate);
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LE)) {
+                return Restrictions.le(fieldDefinition, maxDate);
+            }
+            throw new IllegalStateException("unknown operator");
         }
 
         private Pair<RestrictionOperator, String> parseFilterValue(String filterValue) {
