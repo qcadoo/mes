@@ -421,12 +421,38 @@
 				<option type="column" name="number" fields="number" link="true"/>
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="column" name="state" fields="state" />
+				<option type="column" name="dateFrom" fields="dateFrom" />
+				<option type="column" name="dateTo" fields="dateTo" />
 				<option type="order" column="number" direction="desc"/>
 				<option type="correspondingView" value="products/order" />
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="name,number,state" />
-				<option type="orderable" value="name,number,state" />
+				<option type="searchable" value="name,number,state,dateFrom,dateTo" />
+				<option type="orderable" value="name,number,state,dateFrom,dateTo" />
 				<option type="fullscreen" value="true" />
+				<option type="hasPredefinedFilters" value="true" />
+				<predefinedFilters>
+					<predefinedFilter name="all">
+					</predefinedFilter>
+					<predefinedFilter name="pending">
+						<filterRestriction column="state" value="pending"/>
+					</predefinedFilter>
+					<predefinedFilter name="overduePending">
+						<filterRestriction column="state" value="pending"/>
+						<filterRestriction column="dateTo" value="&lt;= @{yesterday}"/>
+					</predefinedFilter>
+					<predefinedFilter name="overdueInProgress">
+						<filterRestriction column="state" value="inProgress"/>
+						<filterRestriction column="dateTo" value="&lt;= @{yesterday}"/>
+					</predefinedFilter>
+					<predefinedFilter name="startingToday">
+						<filterRestriction column="state" value="pending"/>
+						<filterRestriction column="dateFrom" value="@{today}"/>
+					</predefinedFilter>
+					<predefinedFilter name="startingTomorrow">
+						<filterRestriction column="state" value="pending"/>
+						<filterRestriction column="dateFrom" value="@{tomorrow}"/>
+					</predefinedFilter>
+				</predefinedFilters>
 				<listener event="printOrder" bean="com.qcadoo.mes.products.ProductService" method="printOrder" />
 			</component>
 			<option type="fixedHeight" value="true" />

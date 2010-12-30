@@ -1,7 +1,9 @@
 package com.qcadoo.mes.view.components.grid;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,11 +19,13 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
 public final class GridComponentState extends AbstractComponentState {
@@ -272,22 +276,27 @@ public final class GridComponentState extends AbstractComponentState {
                     criteria.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
                 }
 
-                if (filtersEnabled) {
-                    addFilters(criteria);
-                }
+                try {
+                    if (filtersEnabled) {
+                        addFilters(criteria);
+                    }
 
-                addOrder(criteria);
-                addPaging(criteria);
-
-                SearchResult result = criteria.list();
-
-                if (repeatWithFixedFirstResult(result)) {
+                    addOrder(criteria);
                     addPaging(criteria);
-                    result = criteria.list();
-                }
 
-                entities = result.getEntities();
-                totalEntities = result.getTotalNumberOfEntities();
+                    SearchResult result = criteria.list();
+
+                    if (repeatWithFixedFirstResult(result)) {
+                        addPaging(criteria);
+                        result = criteria.list();
+                    }
+
+                    entities = result.getEntities();
+                    totalEntities = result.getTotalNumberOfEntities();
+                } catch (ParseException e) {
+                    entities = Collections.emptyList();
+                    totalEntities = 0;
+                }
             } else {
                 entities = Collections.emptyList();
                 totalEntities = 0;
@@ -299,25 +308,104 @@ public final class GridComponentState extends AbstractComponentState {
             criteria.withMaxResults(maxResults);
         }
 
-        private void addFilters(final SearchCriteriaBuilder criteria) {
+        private void addFilters(final SearchCriteriaBuilder criteria) throws ParseException {
             for (Map.Entry<String, String> filter : filters.entrySet()) {
                 String field = getFieldNameByColumnName(filter.getKey());
 
                 if (field != null) {
-                    FieldType type = getFieldType(field);
+                    FieldDefinition fieldDefinition = getFieldDefinition(field);
 
-                    if (type != null && String.class.isAssignableFrom(type.getType())) {
-                        criteria.restrictedWith(Restrictions.eq(field, filter.getValue() + "*"));
-                    } else if (type != null && Boolean.class.isAssignableFrom(type.getType())) {
-                        criteria.restrictedWith(Restrictions.eq(field, "1".equals(filter.getValue())));
+                    Pair<RestrictionOperator, String> parsedFilterValue = parseFilterValue(filter.getValue());
+
+                    if ("".equals(parsedFilterValue.getValue())) {
+                        continue;
+                    }
+
+                    if (fieldDefinition != null
+                            && String.class.isAssignableFrom(fieldDefinition.getType().getType())
+                            && ((parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) || parsedFilterValue.getKey().equals(
+                                    RestrictionOperator.NE))) {
+                        criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
+                                parsedFilterValue.getValue() + "*"));
+                    } else if (fieldDefinition != null && Boolean.class.isAssignableFrom(fieldDefinition.getType().getType())) {
+                        criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
+                                "1".equals(parsedFilterValue.getValue())));
+                    } else if (fieldDefinition != null && Date.class.isAssignableFrom(fieldDefinition.getType().getType())) {
+                        Date minDate = DateType.parseDate(parsedFilterValue.getValue(), false);
+                        Date maxDate = DateType.parseDate(parsedFilterValue.getValue(), true);
+
+                        if (minDate == null || maxDate == null) {
+                            throw new ParseException("wrong date", 1);
+                        }
+
+                        if (parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) {
+                            criteria.restrictedWith(Restrictions.ge(fieldDefinition, minDate)).restrictedWith(
+                                    Restrictions.le(fieldDefinition, maxDate));
+                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.NE)) {
+                            criteria.restrictedWith(Restrictions.or(Restrictions.lt(fieldDefinition, minDate),
+                                    Restrictions.gt(fieldDefinition, maxDate)));
+                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GT)) {
+                            criteria.restrictedWith(Restrictions.gt(fieldDefinition, maxDate));
+                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GE)) {
+                            criteria.restrictedWith(Restrictions.ge(fieldDefinition, minDate));
+                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LT)) {
+                            criteria.restrictedWith(Restrictions.lt(fieldDefinition, minDate));
+                        } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LE)) {
+                            criteria.restrictedWith(Restrictions.le(fieldDefinition, maxDate));
+                        }
+
                     } else {
-                        criteria.restrictedWith(Restrictions.eq(field, filter.getValue()));
+                        criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
+                                parsedFilterValue.getValue()));
                     }
                 }
             }
         }
 
-        private FieldType getFieldType(final String field) {
+        private Pair<RestrictionOperator, String> parseFilterValue(String filterValue) {
+            RestrictionOperator operator = RestrictionOperator.EQ;
+            String value;
+            if (filterValue.charAt(0) == '>') {
+                if (filterValue.length() > 1 && filterValue.charAt(1) == '=') {
+                    operator = RestrictionOperator.GE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '<') {
+                    operator = RestrictionOperator.NE;
+                    value = filterValue.substring(2);
+                } else {
+                    operator = RestrictionOperator.GT;
+                    value = filterValue.substring(1);
+                }
+            } else if (filterValue.charAt(0) == '<') {
+                if (filterValue.length() > 1 && filterValue.charAt(1) == '=') {
+                    operator = RestrictionOperator.LE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '>') {
+                    operator = RestrictionOperator.NE;
+                    value = filterValue.substring(2);
+                } else {
+                    operator = RestrictionOperator.LT;
+                    value = filterValue.substring(1);
+                }
+            } else if (filterValue.charAt(0) == '=') {
+                if (filterValue.length() > 1 && filterValue.charAt(1) == '<') {
+                    operator = RestrictionOperator.LE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '>') {
+                    operator = RestrictionOperator.GE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '=') {
+                    value = filterValue.substring(2);
+                } else {
+                    value = filterValue.substring(1);
+                }
+            } else {
+                value = filterValue;
+            }
+            return Pair.of(operator, value.trim());
+        }
+
+        private FieldDefinition getFieldDefinition(final String field) {
             String[] path = field.split("\\.");
 
             DataDefinition dataDefinition = getDataDefinition();
@@ -327,18 +415,18 @@ public final class GridComponentState extends AbstractComponentState {
                     return null;
                 }
 
-                FieldType fieldType = dataDefinition.getField(path[i]).getType();
+                FieldDefinition fieldDefinition = dataDefinition.getField(path[i]);
 
                 if (i < path.length - 1) {
-                    if (fieldType instanceof BelongsToType) {
-                        dataDefinition = ((BelongsToType) fieldType).getDataDefinition();
+                    if (fieldDefinition.getType() instanceof BelongsToType) {
+                        dataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
                         continue;
                     } else {
                         return null;
                     }
                 }
 
-                return fieldType;
+                return fieldDefinition;
             }
 
             return null;

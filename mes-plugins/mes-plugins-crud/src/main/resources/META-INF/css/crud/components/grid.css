@@ -184,6 +184,11 @@ div.filterButton {
 	border-color: #DDDDDD;
 }
 
+.gridContainer .noRecordsBox {
+	margin-top: 10px;
+	text-align: center;
+}
+
 .gridContainer a.gridLink {
 	color: #005ec5;
 	font-size: 11px;

@@ -25,6 +25,7 @@
 package com.qcadoo.mes.model.search.restrictions.internal;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 
 import com.qcadoo.mes.model.search.Restriction;
 
@@ -33,6 +34,11 @@ public abstract class BaseRestriction implements Restriction {
     private final String fieldName;
 
     private final Object value;
+
+    public BaseRestriction() {
+        fieldName = null;
+        value = null;
+    }
 
     public BaseRestriction(final String fieldName, final Object value) {
         this.fieldName = fieldName;
@@ -47,19 +53,22 @@ public abstract class BaseRestriction implements Restriction {
         return value;
     }
 
-    public abstract Criteria addRestrictionToHibernateCriteria(final Criteria criteria);
+    public abstract Criterion getHibernateCriteria();
 
     @Override
     public final Criteria addToHibernateCriteria(final Criteria criteria) {
-        String[] path = fieldName.split("\\.");
+        if (fieldName != null) {
+            String[] path = fieldName.split("\\.");
 
-        if (path.length > 2) {
-            throw new IllegalStateException("Cannot order using multiple assosiations - " + fieldName);
-        } else if (path.length == 2 && !criteria.toString().matches(".*Subcriteria\\(" + path[0] + ":" + path[0] + "\\).*")) {
-            criteria.createAlias(path[0], path[0]);
+            if (path.length > 2) {
+                throw new IllegalStateException("Cannot order using multiple assosiations - " + fieldName);
+            } else if (path.length == 2 && !criteria.toString().matches(".*Subcriteria\\(" + path[0] + ":" + path[0] + "\\).*")) {
+                criteria.createAlias(path[0], path[0]);
+            }
         }
 
-        return addRestrictionToHibernateCriteria(criteria);
+        return criteria.add(getHibernateCriteria());
+
     }
 
 }

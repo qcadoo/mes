@@ -3,6 +3,7 @@ package com.qcadoo.mes.view.components.grid;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -11,6 +12,8 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
@@ -22,6 +25,7 @@ import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @ViewComponent("grid")
 public final class GridComponentPattern extends AbstractComponentPattern {
@@ -51,6 +55,10 @@ public final class GridComponentPattern extends AbstractComponentPattern {
     private boolean deletable = false;
 
     private boolean creatable = false;
+
+    private boolean hasPredefinedFilters = false;
+
+    private List<PredefinedFilter> predefinedFilters = new LinkedList<PredefinedFilter>();
 
     private int height = DEFAULT_GRID_HEIGHT;
 
@@ -113,6 +121,15 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         json.put("paginable", paginable);
         json.put("deletable", deletable);
         json.put("creatable", creatable);
+        json.put("hasPredefinedFilters", hasPredefinedFilters);
+
+        JSONArray predefinedFiltersArray = new JSONArray();
+        for (PredefinedFilter predefinedFilter : predefinedFilters) {
+            predefinedFiltersArray.put(predefinedFilter.toJson());
+        }
+
+        json.put("predefinedFilters", predefinedFiltersArray);
+
         json.put("height", height);
         json.put("width", width);
         json.put("fullscreen", width == 0 || height == 0);
@@ -132,6 +149,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         JSONObject translations = new JSONObject();
 
         addTranslation(translations, "addFilterButton", locale);
+        addTranslation(translations, "noResults", locale);
         addTranslation(translations, "removeFilterButton", locale);
         addTranslation(translations, "newButton", locale);
         addTranslation(translations, "deleteButton", locale);
@@ -143,6 +161,11 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         addTranslation(translations, "confirmDeleteMessage", locale);
         addTranslation(translations, "wrongSearchCharacterError", locale);
         addTranslation(translations, "header", locale);
+
+        addTranslation(translations, "customPredefinedFilter", locale);
+        for (PredefinedFilter filter : predefinedFilters) {
+            addTranslation(translations, "filter." + filter.getName(), locale);
+        }
 
         translations.put("loading", getTranslationService().translate("commons.loading", locale));
 
@@ -217,6 +240,50 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         }
     }
 
+    @Override
+    public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        super.parse(componentNode, parser);
+        NodeList childNodes = componentNode.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if ("predefinedFilters".equals(child.getNodeName())) {
+                NodeList predefinedFilterChildNodes = child.getChildNodes();
+                parsePredefinedFilterChildNodes(predefinedFilterChildNodes, parser);
+                break;
+            }
+        }
+    }
+
+    private void parsePredefinedFilterChildNodes(final NodeList componentNodes, final ViewDefinitionParser parser) {
+        for (int i = 0; i < componentNodes.getLength(); i++) {
+            Node child = componentNodes.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if ("predefinedFilter".equals(child.getNodeName())) {
+                    PredefinedFilter predefinedFilter = new PredefinedFilter();
+                    predefinedFilter.setName(parser.getStringAttribute(child, "name"));
+                    // TODO mina add restrictions
+
+                    NodeList restrictionNodes = child.getChildNodes();
+                    for (int restrictionNodesIndex = 0; restrictionNodesIndex < restrictionNodes.getLength(); restrictionNodesIndex++) {
+                        Node restrictionNode = restrictionNodes.item(restrictionNodesIndex);
+                        if (restrictionNode.getNodeType() == Node.ELEMENT_NODE) {
+                            if ("filterRestriction".equals(restrictionNode.getNodeName())) {
+                                predefinedFilter.addFilterRestriction(parser.getStringAttribute(restrictionNode, "column"),
+                                        parser.getStringAttribute(restrictionNode, "value"));
+                            } else {
+                                throw new IllegalStateException("predefinedFilter can only contain 'filterRestriction' tag");
+                            }
+                        }
+                    }
+
+                    predefinedFilters.add(predefinedFilter);
+                } else {
+                    throw new IllegalStateException("predefinedFilters can only contain 'predefinedFilter' tag");
+                }
+            }
+        }
+    }
+
     private void parseOptions() {
         for (ComponentOption option : getOptions()) {
             if ("correspondingView".equals(option.getType())) {
@@ -227,6 +294,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 paginable = Boolean.parseBoolean(option.getValue());
             } else if ("creatable".equals(option.getType())) {
                 creatable = Boolean.parseBoolean(option.getValue());
+            } else if ("hasPredefinedFilters".equals(option.getType())) {
+                hasPredefinedFilters = Boolean.parseBoolean(option.getValue());
             } else if ("deletable".equals(option.getType())) {
                 deletable = Boolean.parseBoolean(option.getValue());
             } else if ("height".equals(option.getType())) {

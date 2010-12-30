@@ -33,6 +33,7 @@ import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restriction;
+import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -277,7 +278,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.render();
 
         // then
-        verify(substituteCriteria).restrictedWith(Restrictions.eq("asdName", "test"));
+        verify(substituteCriteria).restrictedWith(Restrictions.forOperator(RestrictionOperator.EQ, null, "test"));
     }
 
     @Test
@@ -329,7 +330,8 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.render();
 
         // then
-        verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test"));
+        // verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test"));
+        verify(substituteCriteria).restrictedWith(Restrictions.forOperator(RestrictionOperator.EQ, null, "test"));
     }
 
     @Test
@@ -367,7 +369,8 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.render();
 
         // then
-        verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test*"));
+        // verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test*"));
+        verify(substituteCriteria).restrictedWith(Restrictions.forOperator(RestrictionOperator.EQ, null, "test*"));
     }
 
     @Test
