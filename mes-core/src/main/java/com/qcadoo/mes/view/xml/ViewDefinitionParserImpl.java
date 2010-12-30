@@ -93,8 +93,10 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         LOG.info("Reading view definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:view.xml");
+            Resource[] resources = applicationContext.getResources("classpath*:view/*.xml");
+            LOG.info(" ----------> " + resources.length);
             for (Resource resource : resources) {
+                LOG.info(" ----------> " + resource.getFilename());
                 parse(resource.getInputStream());
             }
         } catch (IOException e) {

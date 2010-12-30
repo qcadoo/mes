@@ -25,39 +25,26 @@
 
 -->
 
-<qcd:models plugin="basic" xmlns:qcd="http://www.qcadoo.com/model">
-	<model name="machine" deletable="true">
-		<string name="name" >
+<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+	<model name="materialRequirement">	
+		<string name="name">
 			<validatesPresence />
-			<validatesUniqueness />
-			<validatesLength max="2048"/>
-		</string>
-		<string name="number">
-			<validatesPresence />
-			<validatesUniqueness />
 			<validatesLength max="255"/>
 		</string>
-		<boolean name="productionLine"/>
-		<string name="description">
-			<validatesLength max="2048"/>
-		</string>
+		<datetime name="date" />
+		<string name="worker" />
+		<boolean name="onlyComponents" />
+		<boolean name="generated" />
+		<string name="fileName" />
+		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" />
 	</model>
-	<model name="staff" deletable="true">
-		<string name="number">
-			<validatesPresence />
-			<validatesUniqueness />
-			<validatesLength max="255"/>
-		</string>
-		<string name="name" >
-			<validatesPresence />
-			<validatesUniqueness />
-			<validatesLength max="255"/>
-		</string>
-		<string name="surname" >
-			<validatesPresence />
-			<validatesUniqueness />
-			<validatesLength max="255"/>
-		</string>
-		<string name="post"/>
-	</model>
+	<model name="materialRequirementComponent">	
+		<belongsTo name="materialRequirement" model="materialRequirement" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<belongsTo name="order" model="order" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkMaterialRequirementComponentUniqueness" />
+	</model>	
 </qcd:models>

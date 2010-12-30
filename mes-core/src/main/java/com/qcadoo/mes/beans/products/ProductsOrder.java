@@ -73,8 +73,6 @@ public class ProductsOrder {
     @Temporal(TemporalType.DATE)
     private Date dateTo;
 
-    private String machine;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsProduct product;
 
@@ -159,14 +157,6 @@ public class ProductsOrder {
 
     public void setDateTo(final Date dateTo) {
         this.dateTo = dateTo;
-    }
-
-    public String getMachine() {
-        return machine;
-    }
-
-    public void setMachine(final String machine) {
-        this.machine = machine;
     }
 
     public ProductsProduct getProduct() {

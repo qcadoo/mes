@@ -102,8 +102,10 @@ public final class DataDefinitionParser {
         LOG.info("Reading model definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:model.xml");
+            Resource[] resources = applicationContext.getResources("classpath*:model/*.xml");
+            LOG.info(" ----------> " + resources.length);
             for (Resource resource : resources) {
+                LOG.info(" ----------> " + resource.getFilename());
                 parse(resource.getInputStream());
             }
         } catch (IOException e) {

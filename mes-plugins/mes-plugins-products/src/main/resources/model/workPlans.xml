@@ -25,24 +25,25 @@
 
 -->
 
-<qcd:models plugin="dictionaries" xmlns:qcd="http://www.qcadoo.com/model">
-	<model name="dictionary" deletable="false">
-		<string name="name" >
+<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+	<model name="workPlan">	
+		<string name="name">
 			<validatesPresence />
-			<validatesUniqueness />
-		</string>
-		<hasMany name="dictionaryItems" model="dictionaryItem" joinField="dictionary" cascade="delete" />
-	</model>
-	<model name="dictionaryItem">
-		<string name="name" >
-			<validatesPresence />
-			<validatesUniqueness />
-		</string>
-		<string name="description" >
 			<validatesLength max="255"/>
 		</string>
-		<belongsTo name="dictionary" model="dictionary" lookupField="name">
-			<validatesPresence />
+		<datetime name="date" />
+		<string name="worker" />
+		<boolean name="generated" />
+		<string name="fileName" />
+		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" />
+	</model>
+	<model name="workPlanComponent">	
+		<belongsTo name="workPlan" model="workPlan" lookupField="name" lazy="false">
+			<validatesPresence /> 
 		</belongsTo>
+		<belongsTo name="order" model="order" lookupField="name" lazy="false">
+			<validatesPresence /> 
+		</belongsTo>
+		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkWorkPlanComponentUniqueness" />
 	</model>
 </qcd:models>
