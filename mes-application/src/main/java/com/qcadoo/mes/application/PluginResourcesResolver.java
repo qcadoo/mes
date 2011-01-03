@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -100,6 +101,14 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
     private static void mergeFiles(final Writer output, final File folder, final String type, final List<String> excluded)
             throws IOException {
         File[] files = folder.listFiles();
+
+        Arrays.sort(files, new Comparator<File>() {
+
+            @Override
+            public int compare(File f1, File f2) {
+                return f1.getName().compareTo(f2.getName());
+            }
+        });
 
         for (File file : files) {
             if (file.isDirectory()) {
