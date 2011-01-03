@@ -46,6 +46,7 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 		} else {
 			if (autocompleteMatches.length > PAGE_RESULT) {
 				lookupDropdownElement.css("height", (RESULT_HEIGHT*PAGE_RESULT-1)+"px");
+				lookupDropdownElement.css("overflow", "auto");
 			} else {
 				lookupDropdownElement.css("height", (autocompleteMatches.length*RESULT_HEIGHT-1)+"px");
 				lookupDropdownElement.css("overflow", "hidden");
