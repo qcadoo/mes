@@ -22,6 +22,8 @@ QCD.components.elements.lookup.Dropdown = function(_lookupDropdownElement, _cont
 	
 	var autocompleteMatches;
 	
+	var hello;
+	
 	function constructor() {
 		lookupDropdownElement.css("top", "21px");
 	}
