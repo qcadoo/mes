@@ -73,5 +73,8 @@
 		}
 		
 		jQuery(document).ready(function(){
-			SNOW_Weather(); 
+			
+			if (QCD.global && QCD.global.isSonowOnPage) {
+				SNOW_Weather(); 
+			}
 		});

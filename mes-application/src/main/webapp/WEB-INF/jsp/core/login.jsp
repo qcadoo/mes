@@ -53,6 +53,10 @@
 		
 	<script type="text/javascript">
 
+		var QCD = QCD || {};
+		QCD.global = QCD.global || {};
+		QCD.global.isSonowOnPage = true;
+
 		var serverMessageType;
 		var serverMessageHeader;
 		var serverMessageContent;

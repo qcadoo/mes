@@ -71,13 +71,14 @@ public class PredefinedFilter {
     }
 
     private String evalExpression(String expression) {
-        DateTime date = new DateTime();
+        DateTime today = new DateTime();
+        DateTime date;
         if ("today".equals(expression)) {
-            // do nothing
+            date = today;
         } else if ("yesterday".equals(expression)) {
-            date = date.minusDays(1);
+            date = today.minusDays(1);
         } else if ("tomorrow".equals(expression)) {
-            date = date.plusDays(1);
+            date = today.plusDays(1);
         } else {
             throw new IllegalStateException("unsupported predefined filter expression: '" + expression + "'");
         }

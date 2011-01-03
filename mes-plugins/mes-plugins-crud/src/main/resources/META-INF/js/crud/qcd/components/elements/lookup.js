@@ -208,16 +208,15 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			if (viewState.error == null) {
 				elements.label.html(labels.normal);
 				if (dataState.selectedEntity.id) {
-					elements.input.val(dataState.selectedEntity.value);	
+					
 				} else if (lookupDropdown.getMouseSelected()) {
 					performSelectEntity(lookupDropdown.getMouseSelected());
 					dataState.currentCode = lookupDropdown.getMouseSelected().code;
-					elements.input.val(dataState.selectedEntity.value);
 				} else if (lookupDropdown.getSelected()) {
 					performSelectEntity(lookupDropdown.getSelected());
 					dataState.currentCode = lookupDropdown.getSelected().code;
-					elements.input.val(dataState.selectedEntity.value);
 				}
+				elements.input.val(stripHTML(dataState.selectedEntity.value));
 			} else {
 				_this.addMessage({
 					title: "",
@@ -246,7 +245,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			lookupDropdown.updateAutocomplete(dataState.autocomplete.matches, dataState.autocomplete.entitiesNumber);
 			lookupDropdown.show();
 		} else {
-			elements.input.val(dataState.selectedEntity.value);
+			elements.input.val(stripHTML(dataState.selectedEntity.value));
 		}
 	}
 	
@@ -283,6 +282,14 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (hasListeners && callEvent) {
 			mainController.callEvent("onSelectedEntityChange", elementPath, null, null, null);
 		}
+	}
+	
+	function stripHTML(text){
+		if (!text || text == "") {
+			return "";
+		}
+		var re= /<\S[^><]*>/g
+		return text.replace(re, "");
 	}
 	
 	this.updateSize = function(_width, _height) {
