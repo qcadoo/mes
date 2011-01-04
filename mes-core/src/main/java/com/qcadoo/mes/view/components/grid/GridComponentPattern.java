@@ -117,7 +117,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
     @Override
     protected JSONObject getJsOptions(final Locale locale) throws JSONException {
-        JSONObject json = new JSONObject();
+        JSONObject json = super.getJsOptions(locale);
         json.put("paginable", paginable);
         json.put("deletable", deletable);
         json.put("creatable", creatable);

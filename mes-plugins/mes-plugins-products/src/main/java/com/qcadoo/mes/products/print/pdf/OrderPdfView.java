@@ -27,9 +27,6 @@ package com.qcadoo.mes.products.print.pdf;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,7 +39,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.products.print.pdf.util.PdfPageNumbering;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 import com.qcadoo.mes.products.print.pdf.util.TableBorderEvent;
 
@@ -148,22 +144,5 @@ public final class OrderPdfView extends ProductsPdfView {
     @Override
     protected void addTitle(final Document document, final Locale locale) {
         document.addTitle(getTranslationService().translate("products.order.report.title", locale));
-    }
-
-    @Override
-    protected Document newDocument() {
-        Document doc = super.newDocument();
-        doc.setMargins(40, 40, 60, 60);
-        return doc;
-    }
-
-    @Override
-    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
-            throws DocumentException {
-        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
-        super.prepareWriter(model, writer, request);
-        writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
-                getTranslationService().translate("products.report.in", locale), PdfUtil.getFontsPath(getWindowsFontsPath(),
-                        getMacosFontsPath(), getLinuxFontsPath())));
     }
 }

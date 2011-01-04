@@ -96,6 +96,27 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 							smallElementsGroupElement = null;
 						}
 					}
+					
+					itemElement.addClass("enabled");
+					
+					if (itemModel.script) {
+						var scriptObject = {
+							element: itemElement,
+							setDisableMessage: function(msg) {
+								this.element.removeClass("enabled");
+								if (msg && msg != "") {
+									this.element.attr("title", msg);	
+								} else {
+									this.element.attr("title", "");									
+								}
+							},
+							setEnabled: function() {
+								this.element.addClass("enabled");
+								this.element.attr("title", "");
+							}
+						}
+						mainController.getActionEvaluator().performJsAction(itemModel.script, scriptObject);
+					}
 				}
 				content.append(groupElement);
 			}
@@ -104,11 +125,11 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	}
 	
 	function createBigButton(path, itemModel) {
-		var aElement = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"><label>"+itemModel.label+"</label><div></div></div></span>");
+		var aElement = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><label>"+itemModel.label+"</label></div></div></span>");
 		var liElement = $("<li>").append(aElement);
 		var ribbonListElement = $("<ul>").addClass("ribbonListElement").append(liElement);
 		var itemElement = $("<div>").addClass("ribbonBigElement").append(ribbonListElement);
-		aElement.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		aElement.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
 	
@@ -141,9 +162,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	}
 	
 	function createSmallButton(path, itemModel) {
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+">"+itemModel.label+"</div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><div class='btnOneLabel'>"+itemModel.label+"</div></span>");
 		var itemElement = $("<li>").addClass("btnOne").append(itemElementButton);
-		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		itemElementButton.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
 	
@@ -233,6 +254,11 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	
 	function buttonClicked(e) {
 		$(this).blur();
+		if (e.data.itemElement) {
+			if (! e.data.itemElement.hasClass("enabled")) {
+				return;
+			}
+		}
 		var action = e.data.clickAction;
 		var name = e.data.itemName;
 		mainController.performRibbonAction(action);
