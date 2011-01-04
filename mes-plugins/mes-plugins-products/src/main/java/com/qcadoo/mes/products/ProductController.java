@@ -70,10 +70,10 @@ public class ProductController {
             final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "materialRequirement");
         Entity materialRequirement = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(materialRequirement.getStringField("fileName") + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE, response);
         sentTranslatedFileName(materialRequirement,
                 translationService.translate("products.materialRequirement.report.fileName", locale), "", PdfUtil.PDF_EXTENSION,
                 response);
+        sentFileAsAttachement(materialRequirement.getStringField("fileName") + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE, response);
     }
 
     @RequestMapping(value = "products/materialRequirement.xls", method = RequestMethod.GET)
@@ -81,10 +81,10 @@ public class ProductController {
             final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "materialRequirement");
         Entity materialRequirement = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(materialRequirement.getStringField("fileName") + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE, response);
         sentTranslatedFileName(materialRequirement,
                 translationService.translate("products.materialRequirement.report.fileName", locale), "", XlsUtil.XLS_EXTENSION,
                 response);
+        sentFileAsAttachement(materialRequirement.getStringField("fileName") + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE, response);
     }
 
     @RequestMapping(value = "products/order.pdf", method = RequestMethod.GET)
@@ -100,66 +100,66 @@ public class ProductController {
     public void workPlanForWorkerPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_worker" + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE,
-                response);
         sentTranslatedFileName(workPlan, translationService.translate("products.workPlan.report.fileName", locale),
                 translationService.translate("products.workPlan.report.fileName.suffix.forWorker", locale),
                 PdfUtil.PDF_EXTENSION, response);
+        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_worker" + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE,
+                response);
     }
 
     @RequestMapping(value = "products/workPlanForProduct.pdf", method = RequestMethod.GET)
     public void workPlanForProductPdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_product" + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE,
-                response);
         sentTranslatedFileName(workPlan, translationService.translate("products.workPlan.report.fileName", locale),
                 translationService.translate("products.workPlan.report.fileName.suffix.forProduct", locale),
                 PdfUtil.PDF_EXTENSION, response);
+        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_product" + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE,
+                response);
     }
 
     @RequestMapping(value = "products/workPlanForMachine.pdf", method = RequestMethod.GET)
     public void workPlanForMachinePdf(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_machine" + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE,
-                response);
         sentTranslatedFileName(workPlan, translationService.translate("products.workPlan.report.fileName", locale),
                 translationService.translate("products.workPlan.report.fileName.suffix.forMachine", locale),
                 PdfUtil.PDF_EXTENSION, response);
+        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_machine" + PdfUtil.PDF_EXTENSION, PDF_CONTENT_TYPE,
+                response);
     }
 
     @RequestMapping(value = "products/workPlanForWorker.xls", method = RequestMethod.GET)
     public void workPlanForWorkerXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_worker" + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE,
-                response);
         sentTranslatedFileName(workPlan, translationService.translate("products.workPlan.report.fileName", locale),
                 translationService.translate("products.workPlan.report.fileName.suffix.forWorker", locale),
                 XlsUtil.XLS_EXTENSION, response);
+        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_worker" + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE,
+                response);
     }
 
     @RequestMapping(value = "products/workPlanForProduct.xls", method = RequestMethod.GET)
     public void workPlanForProductXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_product" + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE,
-                response);
         sentTranslatedFileName(workPlan, translationService.translate("products.workPlan.report.fileName", locale),
                 translationService.translate("products.workPlan.report.fileName.suffix.forProduct", locale),
                 XlsUtil.XLS_EXTENSION, response);
+        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_product" + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE,
+                response);
     }
 
     @RequestMapping(value = "products/workPlanForMachine.xls", method = RequestMethod.GET)
     public void workPlanForMachineXls(@RequestParam("id") final String id, final HttpServletResponse response, final Locale locale) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "workPlan");
         Entity workPlan = dataDefinition.get(Long.parseLong(id));
-        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_machine" + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE,
-                response);
         sentTranslatedFileName(workPlan, translationService.translate("products.workPlan.report.fileName", locale),
                 translationService.translate("products.workPlan.report.fileName.suffix.forMachine", locale),
                 XlsUtil.XLS_EXTENSION, response);
+        sentFileAsAttachement(workPlan.getStringField("fileName") + "for_machine" + XlsUtil.XLS_EXTENSION, XLS_CONTENT_TYPE,
+                response);
     }
 
 }
