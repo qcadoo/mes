@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.ProductReportService;
-import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
+import com.qcadoo.mes.products.print.xls.util.XlsUtil;
 
 @Service
 public final class MaterialRequirementXlsService extends XlsDocumentService {
@@ -51,16 +51,16 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
         cell0.setCellValue(getTranslationService().translate("products.product.number.label", locale));
-        cell0.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
         cell1.setCellValue(getTranslationService().translate("products.product.name.label", locale));
-        cell1.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
         cell2.setCellValue(getTranslationService().translate("products.technologyOperationComponent.quantity.label", locale));
-        cell2.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
         cell3.setCellValue(getTranslationService().translate("products.product.unit.label", locale));
-        cell3.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
     @Override
@@ -92,7 +92,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getSuffix(final Locale locale) {
+    protected String getSuffix() {
         return "";
     }
 }
