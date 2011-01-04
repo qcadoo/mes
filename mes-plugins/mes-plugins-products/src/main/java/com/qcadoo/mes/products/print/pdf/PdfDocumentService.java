@@ -64,7 +64,7 @@ public abstract class PdfDocumentService extends DocumentService {
             decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
             decimalFormat.setMaximumFractionDigits(3);
             decimalFormat.setMinimumFractionDigits(3);
-            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(null)
+            FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
                     + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
             writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
@@ -75,8 +75,7 @@ public abstract class PdfDocumentService extends DocumentService {
             writer.createXmpMetadata();
             document.open();
             buildPdfContent(document, entity, locale);
-            String text = getTranslationService().translate("products.report.endOfReport", locale);
-            PdfUtil.addEndOfDocument(document, writer, text);
+            PdfUtil.addEndOfDocument(document, writer, getTranslationService().translate("products.report.endOfReport", locale));
             document.close();
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
@@ -85,7 +84,10 @@ public abstract class PdfDocumentService extends DocumentService {
         }
     }
 
-    protected abstract void buildPdfMetadata(final Document document, final Locale locale);
+    protected void buildPdfMetadata(final Document document, final Locale locale) {
+        document.addTitle(getReportTitle(locale));
+        PdfUtil.addMetaData(document);
+    }
 
     protected abstract void buildPdfContent(final Document document, final Entity entity, final Locale locale)
             throws DocumentException;

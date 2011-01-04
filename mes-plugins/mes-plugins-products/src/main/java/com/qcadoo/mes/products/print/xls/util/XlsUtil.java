@@ -22,30 +22,28 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.products.print.pdf;
+package com.qcadoo.mes.products.print.xls.util;
 
-import java.io.IOException;
-import java.util.Locale;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Font;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
-import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
+public final class XlsUtil {
 
-public final class MaterialRequirementPdfView extends ProductsPdfView {
+    public static final String XLS_EXTENSION = ".xls";
 
-    @Override
-    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
-            throws DocumentException, IOException {
-        PdfUtil.copyPdfContent(document, entity, writer, "");
-        return PdfUtil.prepareFileNameForResponse(entity,
-                getTranslationService().translate("products.materialRequirement.report.fileName", locale), "");
+    private XlsUtil() {
     }
 
-    @Override
-    protected void addTitle(final Document document, final Locale locale) {
-        document.addTitle(getTranslationService().translate("products.materialRequirement.report.title", locale));
+    public static HSSFCellStyle getHeaderStyle(final HSSFWorkbook workbook) {
+        HSSFCellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short) 12);
+        font.setFontName(HSSFFont.FONT_ARIAL);
+        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        style.setFont(font);
+        return style;
     }
 
 }
