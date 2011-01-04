@@ -16,6 +16,8 @@ public class ProductController {
     @Autowired
     DataDefinitionService dataDefinitionService;
 
+    public String hello;
+
     @RequestMapping(value = "products/materialRequirement.pdf", method = RequestMethod.GET)
     public ModelAndView materialRequirementPdf(@RequestParam("id") final String id) {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "materialRequirement");
