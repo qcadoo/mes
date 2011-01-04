@@ -33,7 +33,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
+import com.qcadoo.mes.products.print.xls.util.XlsUtil;
 
 @Service
 public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
@@ -43,20 +43,20 @@ public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
         cell0.setCellValue(getTranslationService().translate("products.workPlan.report.operationTable.worker.column", locale));
-        cell0.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
         cell1.setCellValue(getTranslationService().translate("products.operation.number.label", locale));
-        cell1.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
         cell2.setCellValue(getTranslationService().translate("products.operation.name.label", locale));
-        cell2.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
         cell3.setCellValue(getTranslationService()
                 .translate("products.workPlan.report.operationTable.productsOut.column", locale));
-        cell3.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell4 = header.createCell(4);
         cell4.setCellValue(getTranslationService().translate("products.workPlan.report.operationTable.productsIn.column", locale));
-        cell4.setCellStyle(XlsCopyUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
 
     }
 
@@ -110,11 +110,7 @@ public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getSuffix(final Locale locale) {
-        if (locale != null) {
-            return getTranslationService().translate("products.workPlan.report.fileName.suffix.forWorker", locale);
-        } else {
-            return "for_worker";
-        }
+    protected String getSuffix() {
+        return "for_worker";
     }
 }

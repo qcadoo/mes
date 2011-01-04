@@ -85,12 +85,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         addTechnologySeries(document, (DefaultEntity) entity, productHeader);
     }
 
-    @Override
-    protected void buildPdfMetadata(final Document document, final Locale locale) {
-        document.addTitle(getTranslationService().translate("products.materialRequirement.report.title", locale));
-        PdfUtil.addMetaData(document);
-    }
-
     private void addTechnologySeries(final Document document, final DefaultEntity entity, final List<String> productHeader)
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
@@ -146,8 +140,13 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getSuffix(final Locale locale) {
+    protected String getSuffix() {
         return "";
+    }
+
+    @Override
+    protected String getReportTitle(final Locale locale) {
+        return getTranslationService().translate("products.materialRequirement.report.title", locale);
     }
 
 }
