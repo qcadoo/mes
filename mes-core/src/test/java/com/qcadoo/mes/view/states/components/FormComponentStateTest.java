@@ -230,8 +230,8 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldUseContextWhileSaving() throws Exception {
         // given
-        Entity entity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
-        Entity savedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
+        Entity entity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
+        Entity savedEntity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         given(dataDefinition.getFields().keySet()).willReturn(Collections.singleton("name"));
         name.setFieldValue("text");
@@ -254,7 +254,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         // then
         verify(dataDefinition).save(eq(entity));
         assertEquals("text2", name.getFieldValue());
-        assertEquals(14L, form.getFieldValue());
+        assertEquals(13L, form.getFieldValue());
         assertTrue(((FormComponentState) form).isValid());
     }
 

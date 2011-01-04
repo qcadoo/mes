@@ -29,7 +29,7 @@
 	<view name="operations" model="operation" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridActions"/>
+				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>
 			<component type="grid" name="operations" reference="grid">
 				<option type="column" name="number" fields="number" link="true"/>
@@ -49,7 +49,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="operation" reference="form">
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
@@ -90,7 +90,7 @@
 	<view name="technologies" model="technology" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridActions"/>
+				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>
 			<component type="grid" name="technologies" reference="grid">
 				<option type="column" name="number" fields="number" link="true" />
@@ -112,7 +112,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="technology" reference="form">
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
@@ -143,7 +143,6 @@
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
 			</component>
-			
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
 				<layoutElement column="1" row="1" height="5">
 					<component type="tree" name="technologyTree" reference="technologyTree" source="#{form}.operationComponents">
@@ -192,7 +191,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
@@ -216,7 +215,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
@@ -244,7 +243,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">

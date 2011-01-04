@@ -35,6 +35,8 @@ public interface DataAccessService {
 
     Entity get(InternalDataDefinition dataDefinition, Long entityId);
 
+    Entity copy(InternalDataDefinition dataDefinition, Long entityId);
+
     void delete(InternalDataDefinition dataDefinition, Long... entityId);
 
     SearchResult find(SearchCriteria searchCriteria);

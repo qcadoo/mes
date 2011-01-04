@@ -50,7 +50,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="gridActions"/>
+				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>
 			<component type="form" reference="form" name="dictionary">
 				<option type="header" value="false" />
@@ -77,7 +77,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>		
 			<component type="form" name="dictionaryItem" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="4">

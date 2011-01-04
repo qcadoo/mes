@@ -44,12 +44,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restriction;
+import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
@@ -70,6 +72,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Autowired
     private PriorityService priorityService;
+
+    @Autowired
+    private TranslationService translationService;
 
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
@@ -116,6 +121,66 @@ public final class DataAccessServiceImpl implements DataAccessService {
         LOG.info(savedEntity + " has been saved");
 
         return savedEntity;
+    }
+
+    @Override
+    @Transactional
+    @Monitorable
+    public Entity copy(final InternalDataDefinition dataDefinition, final Long entityId) {
+        Entity sourceEntity = get(dataDefinition, entityId);
+
+        Entity targetEntity = new DefaultEntity(sourceEntity.getPluginIdentifier(), sourceEntity.getName());
+
+        for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
+            Object value = null;
+
+            if (field.getValue().isUnique()) {
+                if (field.getValue().getType().getType().equals(String.class)) {
+                    value = getCopyValueOfUniqueField(dataDefinition, field.getValue(),
+                            sourceEntity.getStringField(field.getKey()));
+                } else {
+                    throw new IllegalStateException("Cannot copy unique field of type "
+                            + field.getValue().getType().getType().getSimpleName());
+                }
+            } else {
+                value = sourceEntity.getField(field.getKey());
+            }
+
+            targetEntity.setField(field.getKey(), value);
+        }
+
+        dataDefinition.callCopyHook(targetEntity);
+
+        targetEntity = save(dataDefinition, targetEntity);
+
+        for (ErrorMessage error : targetEntity.getGlobalErrors()) {
+            System.out.println(" 5 -------> " + error.getMessage());
+        }
+
+        for (Map.Entry<String, ErrorMessage> error : targetEntity.getErrors().entrySet()) {
+            System.out.println(" 6 -------> " + error.getKey() + " - " + error.getValue().getMessage());
+        }
+
+        LOG.info(sourceEntity + " has been copied to " + targetEntity);
+
+        return targetEntity;
+    }
+
+    private String getCopyValueOfUniqueField(final InternalDataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final String value) {
+        for (int i = 0; i < 9; i++) {
+            String newValue = value + "(" + (i + 1) + ")";
+
+            int matches = dataDefinition.find().withMaxResults(1).restrictedWith(Restrictions.eq(fieldDefinition, newValue))
+                    .list().getTotalNumberOfEntities();
+
+            if (matches == 0) {
+                return newValue;
+            }
+        }
+
+        throw new IllegalStateException("Cannot get new value of unique field " + dataDefinition.getName() + "."
+                + fieldDefinition.getName() + ": " + value);
     }
 
     @Override

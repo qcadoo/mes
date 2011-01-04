@@ -268,7 +268,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-		
+		if (value.selectedEntityId) {
+			currentState.selectedEntityId = value.selectedEntityId;
+		}
 		if (value.belongsToEntityId) {
 			currentState.belongsToEntityId = value.belongsToEntityId;
 		}
@@ -326,6 +328,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		grid.setSelection(currentState.selectedEntityId, false);
 		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
+		
 		if (rowIndex == false) {
 			currentState.selectedEntityId = null;
 			rowIndex = null;
@@ -720,6 +723,18 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}	
 	}
 	var performDelete = this.performDelete;
+
+	this.performCopy = function(actionsPerformer) {
+		if (currentState.selectedEntityId) {
+			blockGrid();
+			mainController.callEvent("copy", elementPath, function() {
+				unblockGrid();
+			}, null, actionsPerformer);
+		} else {
+			mainController.showMessage({type: "error", content: translations.noRowSelectedError});
+		}	
+	}
+	var performCopy = this.performCopy;
 	
 	this.fireEvent = function(actionsPerformer, eventName, args) {
 		blockGrid();

@@ -29,7 +29,7 @@
 	<view name="products" model="product" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridActions"/>
+				<group template="gridNewCopyAndRemoveAction"/>
 			</ribbon>
 			<component type="grid" name="products" reference="grid">
 				<option type="column" name="number" fields="number" link="true"
@@ -53,7 +53,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="product" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
@@ -119,7 +119,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="substitute" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
@@ -142,7 +142,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="substituteComponent" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
