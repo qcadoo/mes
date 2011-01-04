@@ -54,4 +54,9 @@ public final class SecurityServiceImpl implements SecurityService {
         return user;
     }
 
+    @Override
+    public String getCurrentUserName() {
+        return getCurrentUser().getUserName();
+    }
+
 }

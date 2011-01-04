@@ -50,6 +50,7 @@ public final class FormComponentState extends AbstractContainerState {
         registerEvent("initialize", eventPerformer, "initialize");
         registerEvent("reset", eventPerformer, "initialize");
         registerEvent("delete", eventPerformer, "delete");
+        registerEvent("copy", eventPerformer, "copy");
     }
 
     @Override
@@ -72,6 +73,9 @@ public final class FormComponentState extends AbstractContainerState {
         while (iterator.hasNext()) {
             String field = iterator.next();
             if ("id".equals(field)) {
+                if (entityId != null) {
+                    continue;
+                }
                 entityId = json.getLong(field);
             } else if (!json.isNull(field)) {
                 context.put(field, json.get(field));
@@ -201,6 +205,22 @@ public final class FormComponentState extends AbstractContainerState {
                 }
             }
             setFieldsRequiredAndDisables();
+        }
+
+        public void copy(final String[] args) {
+            save(args);
+            if (isValid()) {
+                Entity copiedEntity = getDataDefinition().copy(entityId);
+
+                if (copiedEntity.getId() != null) {
+                    clear(args);
+                    setEntityId(copiedEntity.getId());
+                    initialize(args);
+                    addMessage(translateMessage("copyMessage"), MessageType.SUCCESS);
+                } else {
+                    addMessage(translateMessage("copyFailedMessage"), MessageType.FAILURE);
+                }
+            }
         }
 
         public void delete(final String[] args) {

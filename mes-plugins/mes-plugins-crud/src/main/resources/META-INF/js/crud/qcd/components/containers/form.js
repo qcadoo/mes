@@ -109,6 +109,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	this.performSave = function(actionsPerformer) {
 		callEvent("save", actionsPerformer);
 	}
+
+	this.performCopy = function(actionsPerformer) {
+		callEvent("copy", actionsPerformer);
+	}
 	
 	this.performDelete = function(actionsPerformer) {
 		if (window.confirm(translations.confirmDeleteMessage)) {

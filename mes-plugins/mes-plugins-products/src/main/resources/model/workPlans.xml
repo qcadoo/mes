@@ -36,6 +36,7 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" />
+		<onCopy bean="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
 	</model>
 	<model name="workPlanComponent">	
 		<belongsTo name="workPlan" model="workPlan" lookupField="name" lazy="false">
@@ -44,6 +45,6 @@
 		<belongsTo name="order" model="order" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkWorkPlanComponentUniqueness" />
+		<validatesWith bean="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />		
 	</model>
 </qcd:models>

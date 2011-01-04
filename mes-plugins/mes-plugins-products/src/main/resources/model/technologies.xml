@@ -57,8 +57,9 @@
 		<string name="description" />
 		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkTechnologyDefault" />
+		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
+		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="clearMasterOnCopy" />
 	</model>
 	<model name="technologyOperationComponent">
 		<belongsTo name="technology" model="technology" lookupField="name">
