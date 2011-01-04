@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -44,7 +46,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
@@ -72,9 +73,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     @Autowired
     private PriorityService priorityService;
-
-    @Autowired
-    private TranslationService translationService;
 
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
@@ -113,6 +111,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         if (genericEntity.getId() == null) {
             priorityService.prioritizeEntity(dataDefinition, databaseEntity);
         }
+
+        System.out.println(databaseEntity);
 
         getCurrentSession().save(databaseEntity);
 
@@ -153,14 +153,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         targetEntity = save(dataDefinition, targetEntity);
 
-        for (ErrorMessage error : targetEntity.getGlobalErrors()) {
-            System.out.println(" 5 -------> " + error.getMessage());
-        }
-
-        for (Map.Entry<String, ErrorMessage> error : targetEntity.getErrors().entrySet()) {
-            System.out.println(" 6 -------> " + error.getKey() + " - " + error.getValue().getMessage());
-        }
-
         LOG.info(sourceEntity + " has been copied to " + targetEntity);
 
         return targetEntity;
@@ -168,8 +160,19 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private String getCopyValueOfUniqueField(final InternalDataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final String value) {
-        for (int i = 0; i < 9; i++) {
-            String newValue = value + "(" + (i + 1) + ")";
+        Matcher matcher = Pattern.compile("(.+)\\((\\d+)\\)").matcher(value);
+
+        String oldValue = value;
+        int index = 0;
+
+        if (matcher.matches()) {
+            System.out.println(matcher.group(0));
+            oldValue = matcher.group(1);
+            index = Integer.valueOf(matcher.group(2));
+        }
+
+        for (int i = index; i < 9 + index; i++) {
+            String newValue = oldValue + "(" + (i + 1) + ")";
 
             int matches = dataDefinition.find().withMaxResults(1).restrictedWith(Restrictions.eq(fieldDefinition, newValue))
                     .list().getTotalNumberOfEntities();

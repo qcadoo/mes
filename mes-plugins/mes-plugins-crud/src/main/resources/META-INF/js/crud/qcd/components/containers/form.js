@@ -111,7 +111,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 
 	this.performCopy = function(actionsPerformer) {
-		callEvent("copy", actionsPerformer);
+		if(mainController.canClose()) {
+			callEvent("copy", actionsPerformer);
+		}
 	}
 	
 	this.performDelete = function(actionsPerformer) {
