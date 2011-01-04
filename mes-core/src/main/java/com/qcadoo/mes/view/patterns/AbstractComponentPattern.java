@@ -173,6 +173,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             addListenersToJsOptions(jsOptions);
             jsOptions.put("defaultEnabled", isDefaultEnabled());
             jsOptions.put("defaultVisible", isDefaultVisible());
+            jsOptions.put("referenceName", reference);
             map.put("jsOptions", jsOptions);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);

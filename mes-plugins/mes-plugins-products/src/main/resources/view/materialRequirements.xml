@@ -30,11 +30,55 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="gridNewAction"/>
+				<group name="actions">
+					<bigButton name="generate"  icon="generateIcon24.png" action="#{grid}.fireEvent(generateMaterialRequirement);">
+						<script>
+							<![CDATA[
+								var listener = {
+									onChange: function(selectedRecord) {
+										if (!selectedRecord) {
+											this.setDisableMessage("no record selected");									
+										} else if (selectedRecord.fields.generated == 'tak') {
+											this.setDisableMessage("record is already generated");
+										} else {
+											this.setEnabled();
+										}
+									}
+								}
+								#{grid}.addOnChangeListener(listener);
+								this.setDisableMessage("no record selected");
+							]]>
+						</script>
+					</bigButton>
+					<bigButton name="test" action="#{grid}.fireEvent(generateMaterialRequirement);">
+						<script>
+							<![CDATA[
+								QCD.info("initialize script");
+							]]>
+						</script>
+					</bigButton>
+				</group>
 				<group name="export">
-					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printMaterialRequirement,pdf);" />
-					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printMaterialRequirement,xls);" />
+					<smallButton name="pdf" icon="pdfIcon16.png" action="#{grid}.fireEvent(printMaterialRequirement,pdf);">
+						<script>
+							<![CDATA[
+								var listener = {
+									onChange: function(selectedRecord) {
+										if (!selectedRecord) {
+											this.setDisableMessage("no record selected");	
+										} else if (selectedRecord.fields.generated == 'nie') {
+											this.setDisableMessage("record is not generated");								
+										} else {
+											this.setEnabled();
+										}
+									}
+								}
+								#{grid}.addOnChangeListener(listener);
+								this.setDisableMessage("no record selected");
+							]]>
+						</script>
+					</smallButton>
+					<smallButton name="xls" icon="xlsIcon16.png" action="#{grid}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirements" reference="grid">

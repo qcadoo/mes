@@ -224,22 +224,28 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         item.setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action"), parser));
         item.setType(type);
 
+        NodeList childNodes = itemNode.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE && "script".equals(child.getNodeName())) {
+                item.setScript(parser.getStringNodeContent(child));
+            }
+        }
+
         if (item instanceof RibbonComboItem) {
-            NodeList childNodes = itemNode.getChildNodes();
 
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node child = childNodes.item(i);
 
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if (child.getNodeType() == Node.ELEMENT_NODE && !"script".equals(child.getNodeName())) {
 
                     ((RibbonComboItem) item).addItem(parseRibbonItem(child, parser));
                 }
             }
         } else if (item instanceof RibbonComboBox) {
-            NodeList childNodes = itemNode.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node child = childNodes.item(i);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if (child.getNodeType() == Node.ELEMENT_NODE && !"script".equals(child.getNodeName())) {
                     if (!"option".equals(child.getNodeName())) {
                         throw new IllegalStateException("ribbon combobox can only have 'option' elements");
                     }

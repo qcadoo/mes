@@ -56,6 +56,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		filtersEnabled: false
 	}
 	
+	var onChangeListeners = new Array();
+	
 	var RESIZE_COLUMNS_ON_UPDATE_SIZE = true;
 	
 	var columnModel = new Object();
@@ -68,10 +70,16 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		shrinkToFit: false
 	};
 	
+	var currentEntities;
+	
 	var noRecordsDiv;
 	
 	var FILTER_TIMEOUT = 200;
 	var filterRefreshTimeout = null;
+	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
 	
 	function parseOptions(options) {
 		gridParameters = new Object();
@@ -180,6 +188,14 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			rowIndex = null;
 		}
 		headerController.onRowClicked(rowIndex);
+
+		var selectedEntity = null;
+		if (rowIndex) {
+			selectedEntity = currentEntities[rowId];
+		}
+		for (var i in onChangeListeners) {
+			onChangeListeners[i].onChange(selectedEntity);
+		}
 		
 		if (gridParameters.listeners.length > 0) {
 			onSelectChange();
@@ -268,8 +284,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		}
 		grid.jqGrid('clearGridData');
 		var rowCounter = 1;
+		currentEntities = new Object();
 		for (var entityNo in value.entities) {
 			var entity = value.entities[entityNo];
+			currentEntities[entity.id] = entity;
 			var fields = new Object();
 			for (var fieldName in entity.fields) {
 				if (hiddenColumnValues[fieldName]) {
@@ -593,6 +611,11 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		mainController.callEvent("moveDown", elementPath, function() {
 			unblockGrid();
 		});
+	}
+	
+	this.addOnChangeListener = function(listener) {
+		QCD.info("addOnChangeListener" + listener);
+		onChangeListeners.push(listener);
 	}
 	
 	this.updateSize = function(_width, _height) {

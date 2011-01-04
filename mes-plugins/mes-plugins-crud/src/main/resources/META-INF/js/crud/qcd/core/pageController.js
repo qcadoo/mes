@@ -17,6 +17,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	var popup;
 	
+	var actionEvaluator = new QCD.ActionEvaluator(this);
+	
+	var referencesObject = {};
+	
 	function constructor(_this) {
 		
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
@@ -138,6 +142,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 //			actionsPerformer.performNext();
 //		}
 //	}
+	
+	this.getActionEvaluator = function() {
+		return actionEvaluator;
+	};
 	
 	this.performRibbonAction = function(ribbonAction) {
 		var actionParts = ribbonAction.split(";");
@@ -276,6 +284,15 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		return component;
 	}
 	var getComponent = this.getComponent;
+	
+	this.registerReferenceName = function(referenceName, object) {
+		referencesObject[referenceName] = object;
+	}
+	
+	this.getComponentByReferenceName = function(referenceName) {
+		QCD.info(referencesObject[referenceName]);
+		return referencesObject[referenceName];
+	}
 	
 	function onWindowClick() {
 		if (popup) {
