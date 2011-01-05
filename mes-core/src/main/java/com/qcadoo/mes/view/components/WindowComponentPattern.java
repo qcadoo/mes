@@ -336,9 +336,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     private RibbonActionItem createGridCopyAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonCopyAction = new RibbonActionItem();
         ribbonCopyAction.setAction(translateRibbonAction("#{grid}.performCopy;", parser));
-        ribbonCopyAction.setIcon("newIcon24.png");
+        ribbonCopyAction.setIcon("copyIcon16.png");
         ribbonCopyAction.setName("copy");
-        ribbonCopyAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        ribbonCopyAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         return ribbonCopyAction;
     }
 
@@ -407,7 +407,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     private RibbonActionItem createFormCopyAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonCopyAction = new RibbonActionItem();
         ribbonCopyAction.setAction(translateRibbonAction("#{form}.performCopy;", parser));
-        ribbonCopyAction.setIcon("saveIcon24.png");
+        ribbonCopyAction.setIcon("copyIcon24.png");
         ribbonCopyAction.setName("copy");
         ribbonCopyAction.setType(RibbonActionItem.Type.BIG_BUTTON);
         return ribbonCopyAction;

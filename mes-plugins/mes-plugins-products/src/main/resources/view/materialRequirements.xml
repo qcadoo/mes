@@ -114,6 +114,12 @@
 				</group>
 			</ribbon>
 			<component type="form" name="materialRequirement" reference="form">
+				<script>
+					<![CDATA[
+						QCD.info("form script");
+						QCD.info(this);
+					]]>
+				</script>
 				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
