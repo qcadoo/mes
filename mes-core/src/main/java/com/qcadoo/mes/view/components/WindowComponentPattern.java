@@ -427,6 +427,11 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+        ribbonDeleteAction.setEnabled(false);
+        ribbonDeleteAction.setMessage("recordNotCreated");
+        ribbonDeleteAction
+                .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
+                        + "this.setEnabled();} else {this.setDisableMessage('recordNotCreated');}}}; #{form}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -445,6 +450,11 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setIcon("copyIcon24.png");
         ribbonCopyAction.setName("copy");
         ribbonCopyAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        ribbonCopyAction.setEnabled(false);
+        ribbonCopyAction.setMessage("recordNotCreated");
+        ribbonCopyAction
+                .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
+                        + "this.setEnabled();} else {this.setDisableMessage('recordNotCreated');}}}; #{form}.addOnChangeListener(listener);");
         return ribbonCopyAction;
     }
 

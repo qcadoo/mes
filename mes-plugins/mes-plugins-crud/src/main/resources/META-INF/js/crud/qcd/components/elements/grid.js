@@ -331,6 +331,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (rowIndex == false) {
 			currentState.selectedEntityId = null;
 			rowIndex = null;
+			fireOnChangeListeners("onChange", [null]);
+		} else {
+			fireOnChangeListeners("onChange", [currentEntities[currentState.selectedEntityId]]);
 		}
 		headerController.onRowClicked(rowIndex);
 		
