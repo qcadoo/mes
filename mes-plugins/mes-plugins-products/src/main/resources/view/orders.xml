@@ -23,27 +23,27 @@
 				</group>
 				<group name="exportMaterialReq">
 					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printMaterialRequirementForOrder,pdf);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf);" />
 					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printMaterialRequirementForOrder,xls);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls);" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" />
 					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" />
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" />
 				</group>
 				<group name="exportProduct">
 					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" />
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" />
 				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
@@ -84,7 +84,7 @@
 					</predefinedFilter>
 				</predefinedFilters>
 				<listener event="printOrder" bean="com.qcadoo.mes.products.OrderService" method="printOrder" />
-				<listener event="printMaterialRequirementForOrder" bean="com.qcadoo.mes.products.WorkPlanServiceService" method="printMaterialRequirementForOrder" />
+				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlanForOrder" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
