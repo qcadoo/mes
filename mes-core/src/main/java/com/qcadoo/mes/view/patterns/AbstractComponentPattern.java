@@ -74,6 +74,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private final List<ComponentCustomEvent> customEvents = new ArrayList<ComponentCustomEvent>();
 
+    private String script;
+
     private FieldDefinition fieldDefinition;
 
     private FieldDefinition scopeFieldDefinition;
@@ -174,6 +176,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             jsOptions.put("defaultEnabled", isDefaultEnabled());
             jsOptions.put("defaultVisible", isDefaultVisible());
             jsOptions.put("referenceName", reference);
+            jsOptions.put("script", script);
             map.put("jsOptions", jsOptions);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
@@ -437,14 +440,13 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
             if ("option".equals(child.getNodeName())) {
                 addOption(parser.parseOption(child));
-            }
-        }
-
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            Node child = childNodes.item(i);
-
-            if ("listener".equals(child.getNodeName())) {
+            } else if ("listener".equals(child.getNodeName())) {
                 addCustomEvent(parser.parseCustomEvent(child));
+            } else if ("script".equals(child.getNodeName())) {
+                if (script == null) {
+                    script = "";
+                }
+                script += parser.getStringNodeContent(child) + ";";
             }
         }
     }

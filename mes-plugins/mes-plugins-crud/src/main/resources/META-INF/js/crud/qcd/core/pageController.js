@@ -47,6 +47,11 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	}
 	
 	this.init = function(serializationObject) {
+		
+		for (var i in pageComponents) {
+			pageComponents[i].performScript();
+		}
+		
 		if (serializationObject) {
 			setComponentState(serializationObject);
 			if (hasDataDefinition) {
@@ -290,7 +295,6 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	}
 	
 	this.getComponentByReferenceName = function(referenceName) {
-		QCD.info(referencesObject[referenceName]);
 		return referencesObject[referenceName];
 	}
 	

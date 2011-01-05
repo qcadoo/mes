@@ -42,7 +42,7 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	var baseValue;
 	
 	this.input = $("#" + this.elementSearchName + "_input");
-
+	
 	function constructor(_this) {
 		_this.registerCallbacks();
 	}
