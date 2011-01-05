@@ -194,9 +194,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (rowIndex) {
 			selectedEntity = currentEntities[rowId];
 		}
-		//for (var i in onChangeListeners) {
-			//onChangeListeners[i].onChange(selectedEntity);
-		//}
 		fireOnChangeListeners("onChange", [selectedEntity]);
 		
 		if (gridParameters.listeners.length > 0) {

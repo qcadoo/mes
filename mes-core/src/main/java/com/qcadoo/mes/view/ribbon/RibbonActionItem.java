@@ -64,6 +64,10 @@ public class RibbonActionItem {
 
     private String clickAction;
 
+    private boolean enabled = true;
+
+    private String message;
+
     /**
      * get defined item click action
      * 
@@ -151,6 +155,8 @@ public class RibbonActionItem {
         itemObject.put("name", name);
         itemObject.put("type", type);
         itemObject.put("icon", icon);
+        itemObject.put("enabled", enabled);
+        itemObject.put("message", message);
         if (script != null) {
             itemObject.put("script", script);
         }
@@ -164,6 +170,22 @@ public class RibbonActionItem {
 
     public void setScript(String script) {
         this.script = script;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }
