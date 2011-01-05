@@ -23,9 +23,9 @@
 				</group>
 				<group name="exportMaterialReq">
 					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf);" />
+						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" />
 					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls);" />
+						action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
@@ -84,6 +84,7 @@
 					</predefinedFilter>
 				</predefinedFilters>
 				<listener event="printOrder" bean="com.qcadoo.mes.products.OrderService" method="printOrder" />
+				<listener event="printMaterialReqForOrder" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialReqForOrder" />
 				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlanForOrder" />
 			</component>
 			<option type="fixedHeight" value="true" />
@@ -95,30 +96,6 @@
 			<ribbon>
 				<group template="navigation"/>
 				<group template="formSaveCopyAndRemoveActions"/>
-				<group name="exportMaterialReq">
-					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{form}.fireEvent(printMaterialRequirement,pdf);" />
-					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{form}.fireEvent(printMaterialRequirement,xls);" />
-				</group>
-				<group name="exportWorker">
-					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" />
-					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" />
-				</group>
-				<group name="exportMachine">
-					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" />
-					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" />
-				</group>
-				<group name="exportProduct">
-					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,pdf,ForProduct);" />
-					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,xls,ForProduct);" />
-				</group>
 			</ribbon>
 			<component type="form" name="order" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3"
