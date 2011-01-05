@@ -25,13 +25,12 @@
 var QCD = QCD || {};
 QCD.components = QCD.components || {};
 
-QCD.components.Ribbon = function(_model, _elementName, _mainController) {
-	
-	QCD.info(_model);
+QCD.components.Ribbon = function(_model, _elementName, _mainController, _translations) {
 	
 	var ribbonModel = _model;
 	var mainController = _mainController;
 	var elementName = _elementName;
+	var translations = _translations;
 	
 	var element;
 	
@@ -97,13 +96,15 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 						}
 					}
 					
-					itemElement.addClass("enabled");
 					itemModel.element = itemElement;
 					
-					if (itemModel.script) {
-						var scriptObject = createJsObject(itemElement);
-						//mainController.getActionEvaluator().performJsAction(itemModel.script, scriptObject);
+					if (itemModel.enabled) {
+						itemElement.addClass("enabled");
 					}
+					if (itemModel.message) {
+						itemElement.attr("title", translations["message."+itemModel.message]);
+					}
+					
 				}
 				content.append(groupElement);
 			}
@@ -254,10 +255,11 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	function createJsObject(item) {
 		return {
 			element: item.element,
+			translations: translations,
 			setDisableMessage: function(msg) {
 				this.element.removeClass("enabled");
 				if (msg && msg != "") {
-					this.element.attr("title", msg);	
+					this.element.attr("title", this.translations["message."+msg]);	
 				} else {
 					this.element.attr("title", "");									
 				}
@@ -265,6 +267,19 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 			setEnabled: function() {
 				this.element.addClass("enabled");
 				this.element.attr("title", "");
+			}
+		}
+	}
+	
+	this.performScripts = function() {
+		for (var groupIter in ribbonModel.groups) {
+			var group = ribbonModel.groups[groupIter];
+			for (var itemsIter in group.items) {
+				var item = group.items[itemsIter];
+				if (item.script) {
+					var scriptObject = createJsObject(item);
+					mainController.getActionEvaluator().performJsAction(item.script, scriptObject);
+				}
 			}
 		}
 	}

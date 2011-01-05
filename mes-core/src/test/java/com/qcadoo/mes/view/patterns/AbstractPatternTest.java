@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
@@ -30,6 +31,8 @@ public abstract class AbstractPatternTest {
         componentDefinition.setFieldPath(fieldPath);
         componentDefinition.setSourceFieldPath(sourceFieldPath);
         componentDefinition.setParent(parent);
+        TranslationService translationService = mock(TranslationService.class);
+        componentDefinition.setTranslationService(translationService);
         if (viewDefinition != null) {
             componentDefinition.setViewDefinition(viewDefinition);
         } else {

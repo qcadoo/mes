@@ -131,8 +131,10 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.performScript = function() {
 		if (this.options.script) {
-			QCD.info("performScript: "+this.elementName);
 			mainController.getActionEvaluator().performJsAction(this.options.script, this);
+		}
+		if (this.performComponentScript) {
+			this.performComponentScript();
 		}
 	}
 	

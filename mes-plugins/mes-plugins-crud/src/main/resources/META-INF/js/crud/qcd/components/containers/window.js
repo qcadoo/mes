@@ -43,7 +43,7 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		mainController.setWindowHeaderComponent(_this);
 		
 		if (_this.options.ribbon) {
-			ribbon = new QCD.components.Ribbon(_this.options.ribbon, _this.elementName, mainController);
+			ribbon = new QCD.components.Ribbon(_this.options.ribbon, _this.elementName, mainController, _this.options.translations);
 			var ribbonElement = ribbon.constructElement();
 			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
 			ribbonDiv.append(ribbonElement);
@@ -139,6 +139,10 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
+	}
+	
+	this.performComponentScript = function() {
+		ribbon.performScripts();
 	}
 	
 	this.getRibbonItem = function(ribbonItemPath) {
