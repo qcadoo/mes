@@ -235,12 +235,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         }
 
         if (item instanceof RibbonComboItem) {
-
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node child = childNodes.item(i);
-
                 if (child.getNodeType() == Node.ELEMENT_NODE && !"script".equals(child.getNodeName())) {
-
                     ((RibbonComboItem) item).addItem(parseRibbonItem(child, parser));
                 }
             }
