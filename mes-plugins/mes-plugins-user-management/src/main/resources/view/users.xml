@@ -50,7 +50,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formSaveActions"/>
+				<group template="formSaveAndRemoveActions"/>
 			</ribbon>		
 			<component type="form" name="group" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
@@ -69,7 +69,7 @@
 	<view name="users" model="user" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridActions"/>
+				<group template="gridNewAndRemoveAction"/>
 			</ribbon>
 			<component type="grid" name="users" reference="grid">
 				<option type="column" name="login" fields="userName" link="true" />
@@ -93,7 +93,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formActions"/>
+				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="user" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="10">

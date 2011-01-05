@@ -50,12 +50,10 @@
 		</string>
 		<string name="name" >
 			<validatesPresence />
-			<validatesUniqueness />
 			<validatesLength max="255"/>
 		</string>
 		<string name="surname" >
 			<validatesPresence />
-			<validatesUniqueness />
 			<validatesLength max="255"/>
 		</string>
 		<string name="post"/>

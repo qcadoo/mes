@@ -29,12 +29,56 @@
 	<view name="materialRequirements" model="materialRequirement" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridNewAction"/>
+				<group template="gridNewAndCopyAction"/>
+				<group name="actions">
+					<bigButton name="generate"  icon="generateIcon24.png" action="#{grid}.fireEvent(generateMaterialRequirement);">
+						<script>
+							<![CDATA[
+								var listener = {
+									onChange: function(selectedRecord) {
+										if (!selectedRecord) {
+											this.setDisableMessage("no record selected");									
+										} else if (selectedRecord.fields.generated == 'tak') {
+											this.setDisableMessage("record is already generated");
+										} else {
+											this.setEnabled();
+										}
+									}
+								}
+								#{grid}.addOnChangeListener(listener);
+								this.setDisableMessage("no record selected");
+							]]>
+						</script>
+					</bigButton>
+					<bigButton name="test" action="#{grid}.fireEvent(generateMaterialRequirement);">
+						<script>
+							<![CDATA[
+								QCD.info("initialize script");
+							]]>
+						</script>
+					</bigButton>
+				</group>
 				<group name="export">
-					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printMaterialRequirement,pdf);" />
-					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printMaterialRequirement,xls);" />
+					<smallButton name="pdf" icon="pdfIcon16.png" action="#{grid}.fireEvent(printMaterialRequirement,pdf);">
+						<script>
+							<![CDATA[
+								var listener = {
+									onChange: function(selectedRecord) {
+										if (!selectedRecord) {
+											this.setDisableMessage("no record selected");	
+										} else if (selectedRecord.fields.generated == 'nie') {
+											this.setDisableMessage("record is not generated");								
+										} else {
+											this.setEnabled();
+										}
+									}
+								}
+								#{grid}.addOnChangeListener(listener);
+								this.setDisableMessage("no record selected");
+							]]>
+						</script>
+					</smallButton>
+					<smallButton name="xls" icon="xlsIcon16.png" action="#{grid}.fireEvent(printMaterialRequirement,xls);" />
 				</group>
 			</ribbon>		
 			<component type="grid" name="materialRequirements" reference="grid">
@@ -47,7 +91,7 @@
 				<option type="correspondingView" value="products/materialRequirement" />
 				<option type="correspondingComponent" value="form" />
 				<option type="fullscreen" value="true" />
-				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement"/>
+				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialRequirement"/>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -109,11 +153,11 @@
 				</component>
 				<option type="header" value="false" />
 				<option type="expression" value="#name" />
-				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="printMaterialRequirement" />
-				<listener event="generateMaterialRequirement" bean="com.qcadoo.mes.products.ProductService" method="generateMaterialRequirement" />
+				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialRequirement" />
+				<listener event="generateMaterialRequirement" bean="com.qcadoo.mes.products.MaterialRequirementService" method="generateMaterialRequirement" />
 			</component>
 		</component>
-		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="disableFormForExistingMaterialRequirement" />
+		<preRenderHook bean="com.qcadoo.mes.products.MaterialRequirementService" method="disableFormForExistingMaterialRequirement" />
 	</view>	
 	<view name="materialRequirementComponent" model="materialRequirementComponent">
 		<component type="window" name="window">

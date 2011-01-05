@@ -17,6 +17,8 @@ public interface ViewDefinitionParser {
 
     String getStringAttribute(Node groupNode, String string);
 
+    String getStringNodeContent(Node node);
+
     Boolean getBooleanAttribute(final Node node, final String name, final boolean defaultValue);
 
 }

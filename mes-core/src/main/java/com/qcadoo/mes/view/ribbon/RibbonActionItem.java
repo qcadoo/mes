@@ -60,6 +60,8 @@ public class RibbonActionItem {
 
     private String icon;
 
+    private String script;
+
     private String clickAction;
 
     /**
@@ -149,8 +151,19 @@ public class RibbonActionItem {
         itemObject.put("name", name);
         itemObject.put("type", type);
         itemObject.put("icon", icon);
+        if (script != null) {
+            itemObject.put("script", script);
+        }
         itemObject.put("clickAction", clickAction);
         return itemObject;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
     }
 
 }

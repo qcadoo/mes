@@ -90,6 +90,7 @@ public final class GridComponentState extends AbstractComponentState {
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
         registerEvent("moveUp", eventPerformer, "moveUpSelectedEntity");
         registerEvent("moveDown", eventPerformer, "moveDownSelectedEntity");
+        registerEvent("copy", eventPerformer, "copySelectedEntity");
     }
 
     @Override
@@ -263,6 +264,16 @@ public final class GridComponentState extends AbstractComponentState {
         public void moveUpSelectedEntity(final String[] args) {
             getDataDefinition().move(selectedEntityId, -1);
             addMessage(translateMessage("moveMessage"), MessageType.SUCCESS);
+        }
+
+        public void copySelectedEntity(final String[] args) {
+            Entity copiedEntity = getDataDefinition().copy(selectedEntityId);
+            if (copiedEntity.getId() != null) {
+                setSelectedEntityId(copiedEntity.getId());
+                addMessage(translateMessage("copyMessage"), MessageType.SUCCESS);
+            } else {
+                addMessage(translateMessage("copyFailedMessage"), MessageType.FAILURE);
+            }
         }
 
         public void moveDownSelectedEntity(final String[] args) {

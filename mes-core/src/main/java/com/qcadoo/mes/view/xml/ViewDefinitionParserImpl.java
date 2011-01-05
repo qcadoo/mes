@@ -199,6 +199,19 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         }
     }
 
+    @Override
+    public String getStringNodeContent(Node node) {
+        NodeList childNodes = node.getChildNodes();
+        StringBuilder contentSB = new StringBuilder();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+                contentSB.append(child.getNodeValue());
+            }
+        }
+        return contentSB.toString().trim();
+    }
+
     private Node getAttribute(final Node node, final String name) {
         if (node != null && node.getAttributes() != null) {
             return node.getAttributes().getNamedItem(name);

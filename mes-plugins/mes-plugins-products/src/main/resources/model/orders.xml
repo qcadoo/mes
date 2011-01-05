@@ -31,7 +31,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 			<validatesLength max="40" />
-			<validatesRegex regex="^[a-zA-Z0-9\\_]+$" />
+			<validatesRegex regex="^[a-zA-Z0-9\\_\\(\\)]+$" />
 		</string>
 		<string name="name">
 			<validatesPresence />
@@ -64,12 +64,13 @@
 		<string name="endWorker" readonly="true" />
 		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
 		<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="nullify" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfStateChangeIsCorrect" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderDates" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderPlannedQuantity" />
-		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkOrderTechnology" />
+		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfStateChangeIsCorrect" />
+		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderDates" />
+		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderPlannedQuantity" />
+		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderTechnology" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfTechnologyIsNotRemoved" />
-		<onSave bean="com.qcadoo.mes.products.ProductService" method="fillOrderDatesAndWorkers" />
+		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillOrderDatesAndWorkers" />
+		<onCopy bean="com.qcadoo.mes.products.OrderService" method="clearOrderDatesAndWorkersOnCopy" />
 	</model>	
 </qcd:models>

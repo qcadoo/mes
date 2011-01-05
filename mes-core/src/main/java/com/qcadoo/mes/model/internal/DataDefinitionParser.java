@@ -67,7 +67,7 @@ import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
 public final class DataDefinitionParser {
 
     private static enum ModelTag {
-        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, VALIDATESWITH, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, ENUM, DICTIONARY, PASSWORD
+        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, ENUM, DICTIONARY, PASSWORD
     }
 
     private static enum FieldTag {
@@ -103,9 +103,7 @@ public final class DataDefinitionParser {
 
         try {
             Resource[] resources = applicationContext.getResources("classpath*:model/*.xml");
-            LOG.info(" ----------> " + resources.length);
             for (Resource resource : resources) {
-                LOG.info(" ----------> " + resource.getFilename());
                 parse(resource.getInputStream());
             }
         } catch (IOException e) {
@@ -171,6 +169,9 @@ public final class DataDefinitionParser {
                 break;
             case ONSAVE:
                 dataDefinition.withSaveHook(getHookDefinition(reader));
+                break;
+            case ONCOPY:
+                dataDefinition.withCopyHook(getHookDefinition(reader));
                 break;
             case VALIDATESWITH:
                 dataDefinition.withValidator(validatorFactory.customEntity(getHookDefinition(reader)));

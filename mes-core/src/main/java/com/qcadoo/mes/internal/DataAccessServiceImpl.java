@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -50,6 +52,7 @@ import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restriction;
+import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
@@ -109,6 +112,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             priorityService.prioritizeEntity(dataDefinition, databaseEntity);
         }
 
+        System.out.println(databaseEntity);
+
         getCurrentSession().save(databaseEntity);
 
         Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
@@ -116,6 +121,69 @@ public final class DataAccessServiceImpl implements DataAccessService {
         LOG.info(savedEntity + " has been saved");
 
         return savedEntity;
+    }
+
+    @Override
+    @Transactional
+    @Monitorable
+    public Entity copy(final InternalDataDefinition dataDefinition, final Long entityId) {
+        Entity sourceEntity = get(dataDefinition, entityId);
+
+        Entity targetEntity = new DefaultEntity(sourceEntity.getPluginIdentifier(), sourceEntity.getName());
+
+        for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
+            Object value = null;
+
+            if (field.getValue().isUnique()) {
+                if (field.getValue().getType().getType().equals(String.class)) {
+                    value = getCopyValueOfUniqueField(dataDefinition, field.getValue(),
+                            sourceEntity.getStringField(field.getKey()));
+                } else {
+                    throw new IllegalStateException("Cannot copy unique field of type "
+                            + field.getValue().getType().getType().getSimpleName());
+                }
+            } else {
+                value = sourceEntity.getField(field.getKey());
+            }
+
+            targetEntity.setField(field.getKey(), value);
+        }
+
+        dataDefinition.callCopyHook(targetEntity);
+
+        targetEntity = save(dataDefinition, targetEntity);
+
+        LOG.info(sourceEntity + " has been copied to " + targetEntity);
+
+        return targetEntity;
+    }
+
+    private String getCopyValueOfUniqueField(final InternalDataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final String value) {
+        Matcher matcher = Pattern.compile("(.+)\\((\\d+)\\)").matcher(value);
+
+        String oldValue = value;
+        int index = 0;
+
+        if (matcher.matches()) {
+            System.out.println(matcher.group(0));
+            oldValue = matcher.group(1);
+            index = Integer.valueOf(matcher.group(2));
+        }
+
+        for (int i = index; i < 9 + index; i++) {
+            String newValue = oldValue + "(" + (i + 1) + ")";
+
+            int matches = dataDefinition.find().withMaxResults(1).restrictedWith(Restrictions.eq(fieldDefinition, newValue))
+                    .list().getTotalNumberOfEntities();
+
+            if (matches == 0) {
+                return newValue;
+            }
+        }
+
+        throw new IllegalStateException("Cannot get new value of unique field " + dataDefinition.getName() + "."
+                + fieldDefinition.getName() + ": " + value);
     }
 
     @Override
