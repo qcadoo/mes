@@ -98,24 +98,11 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 					}
 					
 					itemElement.addClass("enabled");
+					itemModel.element = itemElement;
 					
 					if (itemModel.script) {
-						var scriptObject = {
-							element: itemElement,
-							setDisableMessage: function(msg) {
-								this.element.removeClass("enabled");
-								if (msg && msg != "") {
-									this.element.attr("title", msg);	
-								} else {
-									this.element.attr("title", "");									
-								}
-							},
-							setEnabled: function() {
-								this.element.addClass("enabled");
-								this.element.attr("title", "");
-							}
-						}
-						mainController.getActionEvaluator().performJsAction(itemModel.script, scriptObject);
+						var scriptObject = createJsObject(itemElement);
+						//mainController.getActionEvaluator().performJsAction(itemModel.script, scriptObject);
 					}
 				}
 				content.append(groupElement);
@@ -262,6 +249,53 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 		var action = e.data.clickAction;
 		var name = e.data.itemName;
 		mainController.performRibbonAction(action);
+	}
+	
+	function createJsObject(item) {
+		return {
+			element: item.element,
+			setDisableMessage: function(msg) {
+				this.element.removeClass("enabled");
+				if (msg && msg != "") {
+					this.element.attr("title", msg);	
+				} else {
+					this.element.attr("title", "");									
+				}
+			},
+			setEnabled: function() {
+				this.element.addClass("enabled");
+				this.element.attr("title", "");
+			}
+		}
+	}
+	
+	this.getRibbonItem = function(ribbonItemPath) {
+		var pathParts = ribbonItemPath.split(".");
+		if (pathParts.length != 2) {
+			QCD.error("wrong path: '"+ribbonItemPath+"'");
+			return null;
+		}
+		var group = null;
+		for (var groupIter in ribbonModel.groups) {
+			if (ribbonModel.groups[groupIter].name == pathParts[0]) {
+				group = ribbonModel.groups[groupIter];
+				break;
+			}
+		}
+		if (!group) {
+			return null;
+		}
+		var item = null;
+		for (var itemsIter in group.items) {
+			if (group.items[itemsIter].name == pathParts[1]) {
+				item = group.items[itemsIter];
+				break;
+			}
+		}
+		if (!item) {
+			return null;
+		}
+		return createJsObject(item);
 	}
 
 	this.updateSize = function(margin, innerWidth) {

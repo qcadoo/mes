@@ -35,6 +35,10 @@ QCD.components.elements.CheckBox = function(_element, _mainController) {
 	
 	var translations = this.options.translations; 
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	this.getComponentData = function() {
 		if (this.input.attr('checked')) {
 			return { value: "1" };
