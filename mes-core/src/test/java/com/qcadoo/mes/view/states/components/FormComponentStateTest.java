@@ -228,6 +228,25 @@ public class FormComponentStateTest extends AbstractStateTest {
     }
 
     @Test
+    public void shouldCopyFormEntity() throws Exception {
+        // given
+        Entity copiedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text(1)"));
+        given(dataDefinition.copy(13L)).willReturn(copiedEntity);
+        given(dataDefinition.get(14L)).willReturn(copiedEntity);
+        name.setFieldValue("text");
+        form.setFieldValue(13L);
+
+        // when
+        form.performEvent(viewDefinitionState, "copy", new String[0]);
+
+        // then
+        verify(dataDefinition).copy(13L);
+        verify(dataDefinition).get(14L);
+        assertEquals("text(1)", name.getFieldValue());
+        assertEquals(14L, form.getFieldValue());
+    }
+
+    @Test
     public void shouldUseContextWhileSaving() throws Exception {
         // given
         Entity entity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
