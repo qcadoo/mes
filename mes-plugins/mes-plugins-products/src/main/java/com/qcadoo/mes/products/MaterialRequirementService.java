@@ -41,6 +41,7 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.products.ProductsMaterialRequirement;
 import com.qcadoo.mes.beans.products.ProductsOrder;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -153,12 +154,8 @@ public final class MaterialRequirementService {
                 state.addMessage(message, MessageType.FAILURE);
             } else {
                 try {
+                    generateMaterialReqDocuments(state, materialRequirement);
 
-                    materialRequirement = updateFileName(materialRequirement,
-                            getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"),
-                            "materialRequirement");
-                    materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
-                    materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
                     state.performEvent(viewDefinitionState, "reset", new String[0]);
                 } catch (IOException e) {
                     throw new IllegalStateException(e.getMessage(), e);
@@ -195,6 +192,91 @@ public final class MaterialRequirementService {
                         MessageType.FAILURE);
             }
         }
+    }
+
+    public void printMaterialReqForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+
+        if (state.getFieldValue() instanceof Long) {
+            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+
+            if (order == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                Entity materialRequirement = createNewMaterialReq(order, state);
+                try {
+                    generateMaterialReqDocuments(state, materialRequirement);
+
+                    viewDefinitionState.redirectTo(
+                            "/products/materialRequirement." + args[0] + "?id=" + materialRequirement.getId(), false);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                } catch (DocumentException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                }
+            }
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+
+    }
+
+    private String generateMaterialReqNumber() {
+        SearchResult results = dataDefinitionService.get("products", "materialRequirement").find().withMaxResults(1)
+                .orderDescBy("id").list();
+
+        long longValue = 0;
+
+        if (results.getEntities().isEmpty()) {
+            longValue++;
+        } else {
+            longValue = results.getEntities().get(0).getId() + 1;
+        }
+
+        String generatedNumber = String.format("%06d", longValue);
+
+        return generatedNumber;
+    }
+
+    private void generateMaterialReqDocuments(final ComponentState state, Entity materialRequirement) throws IOException,
+            DocumentException {
+        materialRequirement = updateFileName(materialRequirement,
+                getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"), "materialRequirement");
+        materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
+        materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
+    }
+
+    private Entity createNewMaterialReq(Entity order, final ComponentState state) {
+
+        Entity materialReq = new DefaultEntity("products", "materialRequirement");
+        materialReq.setField(
+                "name",
+                generateMaterialReqNumber() + " "
+                        + translationService.translate("products.materialReq.forOrder", state.getLocale()) + " "
+                        + order.getField("number"));
+        materialReq.setField("generated", true);
+        materialReq.setField("worker", securityService.getCurrentUserName());
+        materialReq.setField("date", new Date());
+        materialReq.setField("onlyComponents", false);
+
+        DataDefinition data = dataDefinitionService.get("products", "materialRequirement");
+        Entity saved = data.save(materialReq);
+
+        Entity materialReqComponent = new DefaultEntity("products", "materialRequirementComponent");
+        materialReqComponent.setField("order", order);
+        materialReqComponent.setField("materialRequirement", saved);
+
+        DataDefinition workPlanComponentDef = dataDefinitionService.get("products", "materialRequirementComponent");
+        workPlanComponentDef.save(materialReqComponent);
+
+        return saved;
     }
 
     private final String getFullFileName(final Date date, final String fileName) {
