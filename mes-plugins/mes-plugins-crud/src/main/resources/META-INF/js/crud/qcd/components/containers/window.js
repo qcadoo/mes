@@ -31,6 +31,8 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	
+	var ribbon;
+	
 	this.element.css("height","100%");
 	
 	function constructor(_this) {
@@ -45,6 +47,10 @@ QCD.components.containers.Window = function(_element, _mainController) {
 			var ribbonElement = ribbon.constructElement();
 			var ribbonDiv = $("#"+_this.elementPath+"_windowContainerRibbon");
 			ribbonDiv.append(ribbonElement);
+		}
+		
+		if (_this.options.referenceName) {
+			mainController.registerReferenceName(_this.options.referenceName, _this);
 		}
 	}
 	
@@ -133,6 +139,10 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}
+	}
+	
+	this.getRibbonItem = function(ribbonItemPath) {
+		return ribbon.getRibbonItem(ribbonItemPath);
 	}
 	
 	constructor(this);

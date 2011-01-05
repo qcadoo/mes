@@ -44,6 +44,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	translations = this.options.translations;
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
