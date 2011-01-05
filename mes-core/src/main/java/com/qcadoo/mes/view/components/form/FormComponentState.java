@@ -208,6 +208,11 @@ public final class FormComponentState extends AbstractContainerState {
         }
 
         public void copy(final String[] args) {
+            if (entityId == null) {
+                addMessage(translateMessage("copyFailedMessage"), MessageType.FAILURE);
+                return;
+            }
+
             Entity copiedEntity = getDataDefinition().copy(entityId);
 
             if (copiedEntity.getId() != null) {
