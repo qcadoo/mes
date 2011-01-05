@@ -5,7 +5,8 @@ QCD.ActionEvaluator = function(_pageController) {
 	var pageController = _pageController;
 	
 	this.performJsAction = function(jsBody, scope) {
-		jsBody = " "+jsBody+" ";
+		
+		jsBody = " "+Encoder.htmlDecode(jsBody)+" ";
 		
 		var referenceObject = {};
 		var thisObject = scope;

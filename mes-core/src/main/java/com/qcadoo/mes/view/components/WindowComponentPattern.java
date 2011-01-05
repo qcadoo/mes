@@ -70,7 +70,21 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             json.put("ribbon", getJsRibbon(locale));
         }
 
+        JSONObject translations = new JSONObject();
+
+        addTranslation(translations, "message.noRecordSelected", locale);
+        addTranslation(translations, "message.recordAlreadyGenerated", locale);
+        addTranslation(translations, "message.recordNotGenerated", locale);
+        addTranslation(translations, "message.recordNotCreated", locale);
+
+        json.put("translations", translations);
+
         return json;
+    }
+
+    private void addTranslation(final JSONObject translation, final String key, final Locale locale) throws JSONException {
+        List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.ribbon." + key });
+        translation.put(key, getTranslationService().translate(codes, locale));
     }
 
     @Override
@@ -225,6 +239,20 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         item.setName(parser.getStringAttribute(itemNode, "name"));
         item.setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action"), parser));
         item.setType(type);
+        String state = parser.getStringAttribute(itemNode, "state");
+        if (state != null) {
+            if ("enabled".equals(state)) {
+                item.setEnabled(true);
+            } else if ("disabled".equals(state)) {
+                item.setEnabled(false);
+            } else {
+                throw new IllegalStateException("Unsupported ribbon item state : " + state);
+            }
+        }
+        String message = parser.getStringAttribute(itemNode, "message");
+        if (message != null) {
+            item.setMessage(message);
+        }
 
         NodeList childNodes = itemNode.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
@@ -327,6 +355,11 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+        ribbonDeleteAction.setEnabled(false);
+        ribbonDeleteAction.setMessage("noRecordSelected");
+        ribbonDeleteAction
+                .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
+                        + "this.setDisableMessage('noRecordSelected');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -335,6 +368,11 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setAction(translateRibbonAction("#{grid}.performCopy;", parser));
         ribbonCopyAction.setIcon("copyIcon16.png");
         ribbonCopyAction.setName("copy");
+        ribbonCopyAction.setEnabled(false);
+        ribbonCopyAction.setMessage("noRecordSelected");
+        ribbonCopyAction
+                .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
+                        + "this.setDisableMessage('noRecordSelected');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
         ribbonCopyAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         return ribbonCopyAction;
     }
