@@ -176,13 +176,38 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             jsOptions.put("defaultEnabled", isDefaultEnabled());
             jsOptions.put("defaultVisible", isDefaultVisible());
             jsOptions.put("referenceName", reference);
-            jsOptions.put("script", script);
+            if (script != null) {
+                jsOptions.put("script", prepareScript(script, locale));
+            }
             map.put("jsOptions", jsOptions);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
         return map;
+    }
+
+    public String prepareScript(final String scriptBody, final Locale locale) {
+        Pattern p = Pattern.compile("#\\{translate\\(.*?\\)\\}");
+        Matcher m = p.matcher(scriptBody);
+        int lastEnd = 0;
+        StringBuilder result = new StringBuilder();
+        while (m.find()) {
+            String expression = scriptBody.substring(m.start() + 12, m.end() - 2);
+            result.append(scriptBody.substring(lastEnd, m.start()));
+            if (expression.contains(".")) {
+                result.append(translationService.translate(expression, locale));
+            } else {
+                result.append(translationService.translate("core.ribbon.message." + expression, locale));
+            }
+            lastEnd = m.end();
+        }
+        if (lastEnd > 0) {
+            result.append(scriptBody.substring(lastEnd));
+            return result.toString();
+        } else {
+            return scriptBody;
+        }
     }
 
     protected void prepareComponentView(final Map<String, Object> map, final Locale locale) throws JSONException {

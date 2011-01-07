@@ -33,6 +33,10 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	
 	var input = this.input;
 	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	this.getComponentData = function() {
 		return {
 			value : input.val()

@@ -54,11 +54,11 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									xlsRibbonItem.setDisableMessage("noRecordSelected");
-									pdfRibbonItem.setDisableMessage("noRecordSelected");	
-								} else if (selectedRecord.fields.generated == 'nie') {
-									xlsRibbonItem.setDisableMessage("recordNotGenerated");
-									pdfRibbonItem.setDisableMessage("recordNotGenerated");								
+									xlsRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
+									pdfRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");	
+								} else if (selectedRecord.fields.generated == '0') {
+									xlsRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");								
 								} else {
 									xlsRibbonItem.setEnabled();
 									pdfRibbonItem.setEnabled();
@@ -103,19 +103,19 @@
 									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 										xlsRibbonItem.setEnabled();
 										pdfRibbonItem.setEnabled();
-										saveRibbonItem.setDisableMessage("recordAlreadyGenerated");
-										generateRibbonItem.setDisableMessage("recordAlreadyGenerated");
+										saveRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+										generateRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
 									} else {
-										xlsRibbonItem.setDisableMessage("recordNotGenerated");
-										pdfRibbonItem.setDisableMessage("recordNotGenerated");
+										xlsRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+										pdfRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
 										saveRibbonItem.setEnabled();
 										generateRibbonItem.setEnabled();
 									}
 								} else {
-									xlsRibbonItem.setDisableMessage("recordNotCreated");
-									pdfRibbonItem.setDisableMessage("recordNotCreated");
+									xlsRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
+									pdfRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
 									saveRibbonItem.setEnabled();
-									generateRibbonItem.setDisableMessage("recordNotCreated");
+									generateRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
 								}
 							}
 						}

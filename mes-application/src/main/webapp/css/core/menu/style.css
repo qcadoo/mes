@@ -786,35 +786,39 @@ ul.ribbon_list > li {
 	clear: left;
 	float: left;
 }
-ul.ribbon_list > li.twoB:hover {
+ul.ribbon_list li.twoB.enabled a {
+	cursor: pointer;
+	color:#464646;
+}
+ul.ribbon_list > li.twoB.enabled:hover {
 	background-image:url('/css/core/menu/images/lt_twoB_c.png') !important;
 	background-repeat:repeat-x;
  }
-ul.ribbon_list li.twoB:hover > span {
+ul.ribbon_list li.twoB.enabled:hover > span {
 	display:block;
 	height: 23px;
 	background-image:url('/css/core/menu/images/lt_twoB_l.png') !important;
 	background-repeat:no-repeat;
-	background-position: left; 
+	background-position: left;
 }
-ul.ribbon_list li.twoB:hover > span > div {
+ul.ribbon_list li.twoB.enabled:hover > span > div {
 	display:block;
 	height: 23px;
 	background-image:url('/css/core/menu/images/lt_twoB_r.png');
 	background-repeat:no-repeat;
 	background-position: right; 
 }
-ul.ribbon_list li.twoB span div ul li:hover {
+ul.ribbon_list li.twoB.enabled span div ul li:hover {
 	background-image:url('/css/core/menu/images/lt_hover_l.png');
 	background-position: left;
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.twoB span div ul li:hover a {
+ul.ribbon_list li.twoB.enabled span div ul li:hover a {
 	background-image:url('/css/core/menu/images/lt_1Up.png');
 	background-position: right;
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.twoB span div ul li:hover a span {
+ul.ribbon_list li.twoB.enabled span div ul li:hover a span {
 	display:block;
 	background-image:url('/css/core/menu/images/lt_hover_c.png');
 	background-repeat:repeat-x; 
@@ -858,10 +862,9 @@ ul.ribbon_list li.twoB ul li a.twoB_down {
 	width:15px;
 	height:23px;
 	background-image:url('/css/core/menu/images/lt_twoB_down.png');
-	
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.twoB ul li a.twoB_down:hover {
+ul.ribbon_list li.twoB.enabled ul li a.twoB_down:hover {
 	background-image:url('/css/core/menu/images/lt_twoB_downClick.png') !important;
 }
 /* SUBMENU */
@@ -903,27 +906,43 @@ ul.ribbon_list li.twoB ul li a.twoB_down:hover {
 }
 .m_module ul li a {
 	display:block;
-	color:#464646;
 	text-decoration:none;
 	height: auto !important;
+	clear: both;
+	margin: 0;
+	padding: 0;
+	cursor: default !important;
 }
-.m_module ul li a.icon span {
-	//background-image:url('/css/core/menu/images/lt_1span.png');
-	//background-image:url('/css/core/menu/images/testIcon16.png');
+.m_module ul li a span.dropdownItemIcon {
+	display: block;
+	float: left;
+	width: 22px;
+	height: 26px;
 	background-repeat:no-repeat;
-	background-position: 4px 2px;
-	margin: 0px 0px 0px 0px;
+	background-position: 4px 6px;
+	vertical-align: middle;
+	filter:alpha(opacity=50); /* filtr dla IE*/
+	opacity: 0.5; /* filtr dla Opera*/
+	-moz-opacity:0.5; /* filtr dla Mozilla Firefox */
 }
-.m_module ul li a span {
-	display:block;
-	padding: 4px 10px 4px 35px;
+.m_module ul li.enabled a span.dropdownItemIcon {
+	filter:alpha(opacity=100); /* filtr dla IE*/
+	opacity: 1; /* filtr dla Opera*/
+	-moz-opacity:1; /* filtr dla Mozilla Firefox */
+}
+.m_module ul li a span.dropdownItemLabel {
+	display: block;
+	color: #aaaaaa;
+	padding: 0px 5px 0px 30px;
+	line-height: 26px;
+	margin: 1px;
 	border: 1px solid transparent;
 }
-.m_module ul li a:hover {
-	background-image:url('/css/core/menu/images/m_li_tlo.png');
-	background-repeat:repeat-y;
+.m_module ul li.enabled a span.dropdownItemLabel {
+	color:#464646;
+	cursor: pointer;
 }
-.m_module ul li a:hover span {
+.m_module ul li.enabled a:hover span.dropdownItemLabel {
 	border-color: #f29d15;
 }
 

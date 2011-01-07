@@ -34,6 +34,10 @@ QCD.components.elements.EntityComboBox = function(_element, _mainController) {
 	var elementPath = this.elementPath;
 	var input = this.input;
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	function constructor(_this) {
 		_this.input.change(onChange);
 	}

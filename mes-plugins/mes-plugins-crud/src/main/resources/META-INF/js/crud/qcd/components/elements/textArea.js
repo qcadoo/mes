@@ -29,6 +29,10 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.TextArea = function(_element, _mainController) {
 	$.extend(this, new QCD.components.elements.FormComponent(_element, _mainController));
 	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	this.updateSize = function(_width, _height) {
 		var height = _height ? _height-10 : 90;
 		if (height < 50) {

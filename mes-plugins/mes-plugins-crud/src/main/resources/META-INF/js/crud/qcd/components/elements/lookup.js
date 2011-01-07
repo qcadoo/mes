@@ -66,6 +66,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var baseValue;
 	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	function constructor(_this) {
 		
 		elements.openLookupButton.click(openLookup);

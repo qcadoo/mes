@@ -1,6 +1,7 @@
 package com.qcadoo.mes.view.components.grid;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -206,7 +207,9 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
         if (column.getFields().get(0).getType() instanceof EnumType) {
             EnumType type = (EnumType) column.getFields().get(0).getType();
-            for (String value : type.values()) {
+            List<String> sortedValues = type.values();
+            Collections.sort(sortedValues);
+            for (String value : sortedValues) {
                 String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
                         column.getFields().get(0).getName())
                         + ".value." + value;

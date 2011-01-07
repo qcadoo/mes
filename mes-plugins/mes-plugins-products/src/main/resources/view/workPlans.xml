@@ -27,26 +27,26 @@
 
 <qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="workPlans" model="workPlan" menuAccessible="true">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="gridNewAndCopyAction"/>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled" message="noRecordSelected"/>
 					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled" message="noRecordSelected"/>
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled" message="noRecordSelected"/>
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled" message="noRecordSelected"/>
 				</group>
 				<group name="exportProduct">
 					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" />
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled" message="noRecordSelected"/>
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" />
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled" message="noRecordSelected"/>
 				</group>				
 			</ribbon>		
 			<component type="grid" name="workPlans" reference="grid">
@@ -60,40 +60,126 @@
 				<option type="orderable" value="name,generated,worker" />
 				<option type="fullscreen" value="true" />
 				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlan"/>
+				<script>
+					<![CDATA[
+						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
+						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
+						var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
+						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
+						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
+						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+						var listener = {
+							onChange: function(selectedRecord) {
+								if (!selectedRecord) {
+									pdfWorker.setDisableMessage("#{translate(noRecordSelected)}");
+									xlsWorker.setDisableMessage("#{translate(noRecordSelected)}");
+									pdfMachine.setDisableMessage("#{translate(noRecordSelected)}");
+									xlsMachine.setDisableMessage("#{translate(noRecordSelected)}");
+									pdfProduct.setDisableMessage("#{translate(noRecordSelected)}");
+									xlsProduct.setDisableMessage("#{translate(noRecordSelected)}");	
+								} else if (selectedRecord.fields.generated == '0') {
+									pdfWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");								
+								} else {
+									pdfWorker.setEnabled();
+									xlsWorker.setEnabled();
+									pdfMachine.setEnabled();
+									xlsMachine.setEnabled();
+									pdfProduct.setEnabled();
+									xlsProduct.setEnabled();
+								}
+							}
+						}
+						this.addOnChangeListener(listener);
+					]]>
+				</script>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
 	</view>
 	<view name="workPlan" model="workPlan">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-						<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" />
+						action="#{form}.performSave;" state="disabled"/>
+						<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" state="disabled"/>
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" />
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled"/>
 					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" />
+						action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled"/>
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" />
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled"/>
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" />
+						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled"/>
 				</group>
 				<group name="exportProduct">
 					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,pdf,ForProduct);" />
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled"/>
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{form}.fireEvent(printWorkPlan,xls,ForProduct);" />
+						action="#{form}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled"/>
 				</group>					
 			</ribbon>
 			<component type="form" name="workPlan" reference="form">
+				<script>
+					<![CDATA[
+						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+						var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
+						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
+						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
+						var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
+						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
+						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
+						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+						
+						var listener = {
+							onSetValue: function(value) {
+								var isGeneratedCheckboxValue = #{generated}.getValue();
+								if (value && value.content && value.content.entityId) {
+									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+										pdfWorker.setEnabled();
+										xlsWorker.setEnabled();
+										pdfMachine.setEnabled();
+										xlsMachine.setEnabled();
+										pdfProduct.setEnabled();
+										xlsProduct.setEnabled();
+										saveRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+										generateRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									} else {
+										pdfWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+										xlsWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+										pdfMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+										xlsMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+										pdfProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+										xlsProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
+										saveRibbonItem.setEnabled();
+										generateRibbonItem.setEnabled();
+									}
+								} else {
+									pdfWorker.setDisableMessage("#{translate(recordNotCreated)}");
+									xlsWorker.setDisableMessage("#{translate(recordNotCreated)}");
+									pdfMachine.setDisableMessage("#{translate(recordNotCreated)}");
+									xlsMachine.setDisableMessage("#{translate(recordNotCreated)}");
+									pdfProduct.setDisableMessage("#{translate(recordNotCreated)}");
+									xlsProduct.setDisableMessage("#{translate(recordNotCreated)}");
+									saveRibbonItem.setEnabled();
+									generateRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
+								}
+							}
+						}
+						this.addOnChangeListener(listener);
+					]]>
+				</script>
 				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
