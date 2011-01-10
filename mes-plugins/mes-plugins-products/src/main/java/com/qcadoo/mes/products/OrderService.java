@@ -288,6 +288,22 @@ public final class OrderService {
         }
     }
 
+    public boolean checkIfOrderTechnologyHasOperations(final DataDefinition dataDefinition, final Entity entity) {
+        // TODO masz why we get hibernate entities here?
+        ProductsOrder order = (ProductsOrder) entity.getField("order");
+
+        if (order == null || order.getTechnology() == null) {
+            return true;
+        }
+
+        if (order.getTechnology().getOperationComponents().isEmpty()) {
+            entity.addError(dataDefinition.getField("order"), "products.validate.global.error.orderTechnologyMustHaveOperation");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     private void setChildrenEnabled(final Collection<ComponentState> children, final boolean isEnabled) {
         for (ComponentState child : children) {
             child.setEnabled(isEnabled);

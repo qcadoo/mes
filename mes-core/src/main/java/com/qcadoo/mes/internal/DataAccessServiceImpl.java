@@ -112,8 +112,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
             priorityService.prioritizeEntity(dataDefinition, databaseEntity);
         }
 
-        System.out.println(databaseEntity);
-
         getCurrentSession().save(databaseEntity);
 
         Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
@@ -166,7 +164,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
         int index = 0;
 
         if (matcher.matches()) {
-            System.out.println(matcher.group(0));
             oldValue = matcher.group(1);
             index = Integer.valueOf(matcher.group(2));
         }

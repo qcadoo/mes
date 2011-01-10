@@ -127,6 +127,25 @@ public final class MaterialRequirementService {
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
 
+            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                    (Long) state.getFieldValue());
+
+            if (materialRequirement == null) {
+                String message = translationService.translate("core.message.entityNotFound", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+                String message = translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.documentsWasGenerated", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            } else if (materialRequirement.getHasManyField("orders").isEmpty()) {
+                String message = translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.missingAssosiatedOrders", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            }
+
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
@@ -142,30 +161,15 @@ public final class MaterialRequirementService {
                 return;
             }
 
-            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
-                    (Long) state.getFieldValue());
+            materialRequirement = dataDefinitionService.get("products", "materialRequirement").get((Long) state.getFieldValue());
 
-            if (materialRequirement == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
-                String message = translationService.translate(
-                        "products.materialRequirement.window.materialRequirement.documentsWasGenerated", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
-            } else if (materialRequirement.getHasManyField("orders").isEmpty()) {
-                state.addMessage(translationService.translate(
-                        "products.materialRequirement.window.materialRequirement.missingAssosiatedOrders", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                try {
-                    generateMaterialReqDocuments(state, materialRequirement);
-
-                    state.performEvent(viewDefinitionState, "reset", new String[0]);
-                } catch (IOException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                } catch (DocumentException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                }
+            try {
+                generateMaterialReqDocuments(state, materialRequirement);
+                state.performEvent(viewDefinitionState, "reset", new String[0]);
+            } catch (IOException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            } catch (DocumentException e) {
+                throw new IllegalStateException(e.getMessage(), e);
             }
         }
     }

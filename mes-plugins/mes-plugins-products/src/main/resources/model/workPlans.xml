@@ -46,6 +46,7 @@
 			<validatesPresence />			
 		</belongsTo>
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
+		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderTechnologyHasOperations" />
 		<validatesWith bean="com.qcadoo.mes.products.WorkPlanService" method="checkWorkPlanComponentUniqueness" />			
 	</model>
 </qcd:models>
