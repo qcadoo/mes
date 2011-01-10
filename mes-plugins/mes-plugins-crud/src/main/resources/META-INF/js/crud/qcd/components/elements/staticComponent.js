@@ -29,6 +29,9 @@ QCD.components.elements = QCD.components.elements || {};
 QCD.components.elements.StaticComponent = function(_element, _mainController) {
 	$.extend(this, new QCD.components.Component(_element, _mainController));
 	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
 
 	this.setComponentState = function(state) {
 	}

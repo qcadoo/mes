@@ -41,6 +41,10 @@ QCD.components.elements.LinkButton = function(_element, _mainController) {
 	var button = $("#"+this.elementSearchName+"_buttonDiv");
 	var buttonLink = $("#"+this.elementSearchName+"_buttonLink");
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	this.getComponentValue = function() {
 		return { value: {}};
 	}

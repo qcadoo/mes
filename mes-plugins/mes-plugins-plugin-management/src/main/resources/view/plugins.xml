@@ -27,17 +27,17 @@
 
 <qcd:views plugin="plugins" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="plugins" model="plugin" menuAccessible="true">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="plugins">
 					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" />
-					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" state="disabled" message="noRecordSelected"/>
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" />
-					<smallButtons name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);">
-						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{grid}.fireEvent(deinstall);" />
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" />
+					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="disabled" message="noRecordSelected"/>
+					<smallButtons name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);" state="disabled" message="noRecordSelected">
+						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{grid}.fireEvent(deinstall);" state="disabled" message="noRecordSelected"/>
+						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" state="disabled" message="noRecordSelected"/>
 					</smallButtons>
 				</group>
 			</ribbon>
@@ -46,12 +46,13 @@
 				<option type="column" name="description" fields="description" />
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
+				<option type="column" name="base" fields="base" link="false" />
 				<option type="column" name="status" fields="status" />
 				<option type="order" column="name" direction="asc"/>
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="name,vendor,status" />
-				<option type="orderable" value="name,description,version,vendor,status" />
+				<option type="searchable" value="name,description,version,vendor,status,base" />
+				<option type="orderable" value="name,description,version,vendor,status,base" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
@@ -61,6 +62,57 @@
 				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDisableClick" />
 				<listener event="deinstall" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDeinstallClick" />
 				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
+				<script>
+					<![CDATA[
+						var downloadRibbonItem = #{window}.getRibbonItem("plugins.download");
+						var updateRibbonItem = #{window}.getRibbonItem("plugins.update");
+						
+						var enableRibbonItem = #{window}.getRibbonItem("actions.enable");
+						var disableRibbonItem = #{window}.getRibbonItem("actions.disable");
+						var deinstallRibbonItem = #{window}.getRibbonItem("actions.disable.deinstall");
+						var removeRibbonItem = #{window}.getRibbonItem("actions.disable.remove");
+						
+						var listener = {
+							onChange: function(selectedRecord) {
+								if (!selectedRecord) {
+									updateRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
+									enableRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
+									disableRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
+									deinstallRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
+									removeRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
+								} else {
+									var status = selectedRecord.fields.status;
+									var isBase = (selectedRecord.fields.base == "1");
+									if (status == "01downloaded") {
+										enableRibbonItem.setEnabled();
+										disableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
+										deinstallRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.notInstalled)}");
+										enableRibbonItem.setEnabled();
+									} else if (status == "02installed") {
+										enableRibbonItem.setEnabled();
+										disableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
+										enableRibbonItem.setEnabled();
+										removeRibbonItem.setEnabled();
+									} else if (status == "03active") {
+										enableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
+										if (isBase) {
+											disableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.base)}");
+											deinstallRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.base)}");
+											removeRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.base)}");
+										} else {
+											disableRibbonItem.setEnabled();
+											deinstallRibbonItem.setEnabled();
+											removeRibbonItem.setEnabled();
+										}
+										
+									}
+									updateRibbonItem.setEnabled();
+								}
+							}
+						}
+						this.addOnChangeListener(listener);
+					]]>
+				</script>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -71,7 +123,24 @@
 			<ribbon>
 				<group template="navigation"/>
 				<group name="plugins">
-					<bigButton name="update" icon="updateIcon24.png" action="#{form}.fireEvent(update);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{form}.fireEvent(update);" state="disabled">
+						<script>
+							<![CDATA[
+								var listener = {
+									onSetValue: function(value) {
+										var isBase = (#{base}.getValue().content.value == "1");
+										var status = #{status}.getValue().content.value;
+										if (status == "03active") {
+											this.setEnabled();
+										} else {
+											this.setDisableMessage("#{translate(plugins.ribbon.messages.notEnabled)}");
+										}  
+									}
+								}
+								#{form}.addOnChangeListener(listener);
+							]]>
+						</script>
+					</bigButton>
 				</group>
 			</ribbon>
 			<component type="form" name="plugin" reference="form">
@@ -89,10 +158,10 @@
 						<component type="textarea" name="description" field="description" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="7">
-						<component type="select" name="status" field="status" defaultEnabled="false" />
+						<component type="select" name="status" field="status" defaultEnabled="false" reference="status" />
 					</layoutElement>
 					<layoutElement column="1" row="8">
-						<component type="checkbox" name="base" field="base" defaultEnabled="false" />
+						<component type="checkbox" name="base" field="base" defaultEnabled="false" reference="base" />
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />

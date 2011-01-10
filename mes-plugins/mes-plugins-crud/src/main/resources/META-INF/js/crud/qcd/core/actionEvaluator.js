@@ -62,6 +62,76 @@ QCD.ActionEvaluator = function(_pageController) {
 		
 	}
 	
+	this.performRibbonAction = function(ribbonAction) {
+		var actionParts = ribbonAction.split(";");
+		var actions = new Array();
+		for (var actionIter in actionParts) {
+			var action = $.trim(actionParts[actionIter]);
+			if (action) {
+				var elementBegin = action.search("{");
+				var elementEnd = action.search("}");
+				if (elementBegin<0 || elementEnd<0 || elementEnd<elementBegin) {
+					QCD.error("action parse error in: "+action);
+					return;
+				}
+				var elementPath = action.substring(elementBegin+1, elementEnd);
+				var component = pageController.getComponent(elementPath);
+				
+				var elementAction = action.substring(elementEnd+1);
+				if (elementAction[0] != ".") {
+					QCD.error("action parse error in: "+action);
+					return;
+				}
+				elementAction = elementAction.substring(1);
+
+				var argumentsBegin = elementAction.indexOf("(");
+				var argumentsEnd = elementAction.indexOf(")");
+				var argumentsList = new Array();
+				
+				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
+				//and only empty parenthesis ()
+				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
+					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
+					argumentsList = args.split(",");
+					elementAction = elementAction.substring(0, argumentsBegin);
+				} else if(argumentsBegin == argumentsEnd-1) {
+					//we need to get rid of the empty parenthesis
+					elementAction = elementAction.substring(0, argumentsBegin);
+				}
+
+				var actionObject = {
+					component: component,
+					action: elementAction,
+					arguments: argumentsList
+				}
+				
+				actions.push(actionObject);
+			}
+		}
+		var actionsPerformer = {
+			actions: actions,
+			actionIter: 0,
+			performNext: function() {
+				var actionObject = this.actions[this.actionIter];
+				if (actionObject) {
+					var func = actionObject.component[actionObject.action];
+					if (!func) {
+						QCD.error("no function in "+actionObject.component.elementPath+": "+actionObject.action);
+						return;
+					}
+					this.actionIter++;
+					
+					var fullArgumentList = new Array(this);
+					fullArgumentList = fullArgumentList.concat(actionObject.arguments[0]);
+					fullArgumentList.push(actionObject.arguments.slice(1));
+					
+					func.apply(actionObject.component, fullArgumentList);
+				}
+			}
+		}
+		actionsPerformer.performNext();
+	}
+	
 	function printError(msg) {
 		QCD.error("cannot evaluate script: "+msg);
 	}

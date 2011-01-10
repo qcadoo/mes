@@ -70,21 +70,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             json.put("ribbon", getJsRibbon(locale));
         }
 
-        JSONObject translations = new JSONObject();
-
-        addTranslation(translations, "message.noRecordSelected", locale);
-        addTranslation(translations, "message.recordAlreadyGenerated", locale);
-        addTranslation(translations, "message.recordNotGenerated", locale);
-        addTranslation(translations, "message.recordNotCreated", locale);
-
-        json.put("translations", translations);
-
         return json;
-    }
-
-    private void addTranslation(final JSONObject translation, final String key, final Locale locale) throws JSONException {
-        List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.ribbon." + key });
-        translation.put(key, getTranslationService().translate(codes, locale));
     }
 
     @Override
@@ -113,6 +99,24 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
                 String label = getTranslationService().translate(getTranslationCodes(prefix + item.getString("name")), locale);
                 item.put("label", label);
+
+                if (item.has("script")) {
+                    String script = item.getString("script");
+                    if (script != null) {
+                        item.put("script", prepareScript(script, locale));
+                    }
+                }
+
+                if (item.has("message")) {
+                    String message = item.getString("message");
+                    if (message.contains(".")) {
+                        message = getTranslationService().translate(message, locale);
+                    } else {
+                        message = getTranslationService().translate("core.ribbon.message." + message, locale);
+                    }
+                    item.put("message", prepareScript(message, locale));
+                }
+
                 translateRibbonItems(item, prefix + item.getString("name") + ".", locale);
             }
         }
@@ -359,7 +363,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setMessage("noRecordSelected");
         ribbonDeleteAction
                 .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
-                        + "this.setDisableMessage('noRecordSelected');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
+                        + "this.setDisableMessage('#{translate(noRecordSelected)}');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -372,7 +376,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setMessage("noRecordSelected");
         ribbonCopyAction
                 .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
-                        + "this.setDisableMessage('noRecordSelected');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
+                        + "this.setDisableMessage('#{translate(noRecordSelected)}');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
         ribbonCopyAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         return ribbonCopyAction;
     }
@@ -431,7 +435,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setMessage("recordNotCreated");
         ribbonDeleteAction
                 .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
-                        + "this.setEnabled();} else {this.setDisableMessage('recordNotCreated');}}}; #{form}.addOnChangeListener(listener);");
+                        + "this.setEnabled();} else {this.setDisableMessage('#{translate(recordNotCreated)}');}}}; #{form}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -454,7 +458,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setMessage("recordNotCreated");
         ribbonCopyAction
                 .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
-                        + "this.setEnabled();} else {this.setDisableMessage('recordNotCreated');}}}; #{form}.addOnChangeListener(listener);");
+                        + "this.setEnabled();} else {this.setDisableMessage('#{translate(recordNotCreated)}');}}}; #{form}.addOnChangeListener(listener);");
         return ribbonCopyAction;
     }
 
