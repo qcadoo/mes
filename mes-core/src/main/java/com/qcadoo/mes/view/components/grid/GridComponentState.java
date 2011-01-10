@@ -155,7 +155,10 @@ public final class GridComponentState extends AbstractComponentState {
     @Override
     public void onScopeEntityIdChange(final Long scopeEntityId) {
         if (belongsToFieldDefinition != null) {
-            this.belongsToEntityId = scopeEntityId;
+            if (belongsToEntityId != null && !belongsToEntityId.equals(scopeEntityId)) {
+                setSelectedEntityId(null);
+            }
+            belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
         } else {
             throw new IllegalStateException("Grid doesn't have scopeField, it cannot set scopeEntityId");

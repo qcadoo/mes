@@ -98,6 +98,9 @@ public final class TreeComponentState extends AbstractComponentState {
     @Override
     public void onScopeEntityIdChange(final Long scopeEntityId) {
         if (belongsToFieldDefinition != null) {
+            if (belongsToEntityId != null && !belongsToEntityId.equals(scopeEntityId)) {
+                setValue(null);
+            }
             this.belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
         } else {

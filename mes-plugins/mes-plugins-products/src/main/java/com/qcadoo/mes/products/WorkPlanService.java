@@ -186,6 +186,9 @@ public final class WorkPlanService {
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
             workPlanComponents.setEnabled(false);
+        } else {
+            name.setEnabled(true);
+            workPlanComponents.setEnabled(true);
         }
     }
 
