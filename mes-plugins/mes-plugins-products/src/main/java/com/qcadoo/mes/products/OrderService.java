@@ -36,6 +36,7 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
@@ -268,6 +269,38 @@ public final class OrderService {
             } else if (entity.getField("effectiveDateFrom") != null) {
                 entity.setField("state", "01pending");
             }
+        }
+    }
+
+    public boolean checkIfOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        // TODO masz why we get hibernate entities here?
+        ProductsOrder order = (ProductsOrder) entity.getField("order");
+
+        if (order == null) {
+            return true;
+        }
+
+        if (order.getTechnology() == null) {
+            entity.addError(dataDefinition.getField("order"), "products.validate.global.error.orderMustHaveTechnology");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkIfOrderTechnologyHasOperations(final DataDefinition dataDefinition, final Entity entity) {
+        // TODO masz why we get hibernate entities here?
+        ProductsOrder order = (ProductsOrder) entity.getField("order");
+
+        if (order == null || order.getTechnology() == null) {
+            return true;
+        }
+
+        if (order.getTechnology().getOperationComponents().isEmpty()) {
+            entity.addError(dataDefinition.getField("order"), "products.validate.global.error.orderTechnologyMustHaveOperation");
+            return false;
+        } else {
+            return true;
         }
     }
 

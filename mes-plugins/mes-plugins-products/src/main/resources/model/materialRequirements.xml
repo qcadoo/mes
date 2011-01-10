@@ -46,6 +46,7 @@
 		<belongsTo name="order" model="order" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
+		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfOrderHasTechnology" />
 		<validatesWith bean="com.qcadoo.mes.products.MaterialRequirementService" method="checkMaterialRequirementComponentUniqueness" />		
 	</model>	
 </qcd:models>

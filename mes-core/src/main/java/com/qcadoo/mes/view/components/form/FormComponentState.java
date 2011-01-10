@@ -204,6 +204,7 @@ public final class FormComponentState extends AbstractContainerState {
                     addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
                 }
             }
+
             setFieldsRequiredAndDisables();
         }
 
@@ -280,6 +281,7 @@ public final class FormComponentState extends AbstractContainerState {
         private void copyEntityToFields(final Entity entity, final boolean requestUpdateState) {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 ErrorMessage message = entity.getError(field.getKey());
+
                 if (message != null) {
                     copyMessage(field.getValue(), message);
                 } else {
