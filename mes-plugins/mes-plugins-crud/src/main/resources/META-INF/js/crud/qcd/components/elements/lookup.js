@@ -235,9 +235,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (dataState.autocomplete.code == dataState.currentCode) {
 			elements.loading.hide();	
 		}
-		if (dataState.selectedEntity.id) {
-			element.removeClass("error");
-		}
 		if (blurAfterLoad) {
 			blurAfterLoad = false;
 			viewState.isFocused = false;

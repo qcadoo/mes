@@ -269,7 +269,7 @@
 								width="300" />
 							<option type="searchable" value="number,name" />
 							<option type="orderable" value="number,name" />
-							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
