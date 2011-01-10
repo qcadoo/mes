@@ -129,6 +129,10 @@ public final class WorkPlanService {
                 String message = translationService.translate("products.workPlan.window.workPlan.documentsWasGenerated",
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
+            } else if (workPlan.getHasManyField("orders").isEmpty()) {
+                state.addMessage(
+                        translationService.translate("products.workPlan.window.workPlan.missingAssosiatedOrders",
+                                state.getLocale()), MessageType.FAILURE);
             } else {
                 try {
                     generateWorkPlanDocuments(state, workPlan);

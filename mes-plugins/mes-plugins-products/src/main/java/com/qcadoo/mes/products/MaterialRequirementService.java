@@ -152,6 +152,10 @@ public final class MaterialRequirementService {
                 String message = translationService.translate(
                         "products.materialRequirement.window.materialRequirement.documentsWasGenerated", state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
+            } else if (materialRequirement.getHasManyField("orders").isEmpty()) {
+                state.addMessage(translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.missingAssosiatedOrders", state.getLocale()),
+                        MessageType.FAILURE);
             } else {
                 try {
                     generateMaterialReqDocuments(state, materialRequirement);
@@ -253,7 +257,7 @@ public final class MaterialRequirementService {
         materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
     }
 
-    private Entity createNewMaterialReq(Entity order, final ComponentState state) {
+    private Entity createNewMaterialReq(final Entity order, final ComponentState state) {
 
         Entity materialReq = new DefaultEntity("products", "materialRequirement");
         materialReq.setField(
