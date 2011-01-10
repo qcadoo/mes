@@ -36,7 +36,7 @@
 		<boolean name="onlyComponents" />
 		<boolean name="generated" />
 		<string name="fileName" />
-		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" />
+		<hasMany name="orders" model="materialRequirementComponent" joinField="materialRequirement" cascade="delete" copyable="true" />
 		<onCopy bean="com.qcadoo.mes.products.MaterialRequirementService" method="clearGeneratedOnCopy" />
 	</model>
 	<model name="materialRequirementComponent">	

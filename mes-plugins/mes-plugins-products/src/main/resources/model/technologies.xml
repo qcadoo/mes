@@ -55,7 +55,7 @@
 		</belongsTo>
 		<boolean name="master" />
 		<string name="description" />
-		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" />
+		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
@@ -69,9 +69,10 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
-		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
-		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" />
-		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" />
+		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
+		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
+		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
+		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="copyTechnologyFromParent" />
 	</model>
 	<model name="operationProductInComponent">
 		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">

@@ -35,7 +35,7 @@
 		<string name="worker" />
 		<boolean name="generated" />
 		<string name="fileName" />
-		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" />
+		<hasMany name="orders" model="workPlanComponent" joinField="workPlan" cascade="delete" copyable="true" />
 		<onCopy bean="com.qcadoo.mes.products.WorkPlanService" method="clearGeneratedOnCopy" />
 	</model>
 	<model name="workPlanComponent">

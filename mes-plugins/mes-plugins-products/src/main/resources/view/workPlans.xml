@@ -109,7 +109,8 @@
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png"
 						action="#{form}.performSave;" state="disabled"/>
-						<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" state="disabled"/>
+					<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" state="disabled"/>
+					<bigButton name="generate" icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" state="disabled"/>
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
@@ -134,6 +135,7 @@
 				<script>
 					<![CDATA[
 						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 						var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
 						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
 						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
@@ -172,6 +174,7 @@
 						function updateRibbon() {
 							if (entityExists) {
 								var isGeneratedCheckboxValue = #{generated}.getValue();
+								copyRibbonItem.enable();
 								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 									pdfWorker.enable();
 									xlsWorker.enable();
@@ -196,6 +199,7 @@
 									}
 								}
 							} else {
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
 								pdfWorker.disable("#{translate(recordNotCreated)}");
 								xlsWorker.disable("#{translate(recordNotCreated)}");
 								pdfMachine.disable("#{translate(recordNotCreated)}");

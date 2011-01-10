@@ -79,6 +79,7 @@
 				<group template="navigation"/>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" state="disabled" />
+					<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" state="disabled"/>
 					<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateMaterialRequirement);" state="disabled"/>
 				</group>
 				<group name="export">
@@ -91,6 +92,7 @@
 			<component type="form" name="materialRequirement" reference="form">
 				<script>
 					<![CDATA[
+						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 						var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 						var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
@@ -126,6 +128,7 @@
 						function updateRibbon() {
 							if (entityExists) {
 								var isGeneratedCheckboxValue = #{generated}.getValue();
+								copyRibbonItem.enable();
 								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 									xlsRibbonItem.enable();
 									pdfRibbonItem.enable();
@@ -142,6 +145,7 @@
 									}
 								}
 							} else {
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
 								xlsRibbonItem.disable("#{translate(recordNotCreated)}");
 								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
 								saveRibbonItem.enable();

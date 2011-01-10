@@ -207,10 +207,13 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     }
 
     @Override
-    public void callCopyHook(final Entity entity) {
+    public boolean callCopyHook(final Entity entity) {
         if (copyHook != null) {
-            copyHook.callWithEntity(this, entity);
+            if (!copyHook.callWithEntityAndGetBoolean(this, entity)) {
+                return false;
+            }
         }
+        return true;
     }
 
     @Override

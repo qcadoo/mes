@@ -144,7 +144,7 @@ public abstract class DataAccessTest {
 
         parentFieldDefinitionHasMany = new FieldDefinitionImpl(null, "entities");
         parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
-                HasManyType.Cascade.DELETE));
+                HasManyType.Cascade.DELETE, false));
 
         parentDataDefinition.withField(parentFieldDefinitionName);
         parentDataDefinition.withField(parentFieldDefinitionHasMany);

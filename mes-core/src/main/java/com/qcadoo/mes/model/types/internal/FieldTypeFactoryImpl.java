@@ -129,7 +129,7 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
 
     @Override
     public FieldType hasManyType(final String pluginIdentifier, final String entityName, final String fieldName,
-            final HasManyType.Cascade cascade) {
-        return new HasManyEntitiesType(pluginIdentifier, entityName, fieldName, cascade, dataDefinitionService);
+            final HasManyType.Cascade cascade, final boolean copyable) {
+        return new HasManyEntitiesType(pluginIdentifier, entityName, fieldName, cascade, copyable, dataDefinitionService);
     }
 }

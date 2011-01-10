@@ -212,7 +212,7 @@ public final class DataDefinitionParser {
         HasManyType.Cascade cascade = "delete".equals(getStringAttribute(reader, "cascade")) ? HasManyType.Cascade.DELETE
                 : HasManyType.Cascade.NULLIFY;
         return fieldTypeFactory.hasManyType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, TAG_MODEL),
-                getStringAttribute(reader, "joinField"), cascade);
+                getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false));
     }
 
     private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {

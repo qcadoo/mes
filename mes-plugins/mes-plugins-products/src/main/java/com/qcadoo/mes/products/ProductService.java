@@ -117,12 +117,4 @@ public final class ProductService {
         }
     }
 
-    // private final String getFullFileName(final Date date, final String fileName) {
-    // return path + fileName + "_" + D_T_F.format(date) + "_";
-    // }
-    //
-    // private final Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
-    // entity.setField("fileName", fileName);
-    // return dataDefinitionService.get("products", entityName).save(entity);
-    // }
 }

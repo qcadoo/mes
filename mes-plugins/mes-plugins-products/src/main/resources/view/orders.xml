@@ -243,7 +243,7 @@
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="generateOrderNumber" />		
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="fillDefaultTechnology" />		
+		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableFormForDoneOrder" />
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableTechnologiesIfProductDoesNotAny" />		
-		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableFormForDoneOrder" />	
 	</view>
 </qcd:views>

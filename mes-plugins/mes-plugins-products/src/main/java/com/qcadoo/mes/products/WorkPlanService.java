@@ -92,11 +92,12 @@ public final class WorkPlanService {
     @Autowired
     private TranslationService translationService;
 
-    public void clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
         entity.setField("generated", false);
         entity.setField("date", null);
         entity.setField("worker", null);
+        return true;
     }
 
     public void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -185,6 +186,9 @@ public final class WorkPlanService {
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
             workPlanComponents.setEnabled(false);
+        } else {
+            name.setEnabled(true);
+            workPlanComponents.setEnabled(true);
         }
     }
 

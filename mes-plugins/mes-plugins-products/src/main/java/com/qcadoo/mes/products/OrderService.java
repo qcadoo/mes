@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.products;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,7 +45,6 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
-import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
@@ -64,13 +62,16 @@ public final class OrderService {
     @Autowired
     private TranslationService translationService;
 
-    public void clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
         entity.setField("effectiveDateFrom", new Date());
         entity.setField("startWorker", securityService.getCurrentUserName());
         entity.setField("effectiveDateTo", null);
         entity.setField("endWorker", null);
+        entity.setField("effectiveDateFrom", null);
+        entity.setField("startWorker", null);
         entity.setField("doneQuantity", null);
+        return true;
     }
 
     public void printOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -168,17 +169,18 @@ public final class OrderService {
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state, final Locale locale) {
         LookupComponentState product = (LookupComponentState) state.getComponentByReference("product");
         LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
+        FieldComponentState defaultTechnology = (FieldComponentState) state.getComponentByReference("defaultTechnology");
         FieldComponentState plannedQuantity = (FieldComponentState) state.getComponentByReference("plannedQuantity");
+
+        defaultTechnology.setEnabled(false);
 
         if (product.getFieldValue() == null || !hasAnyTechnologies(product.getFieldValue())) {
             technology.setEnabled(false);
             technology.setRequired(false);
-            plannedQuantity.setEnabled(false);
             plannedQuantity.setRequired(false);
         } else {
             technology.setEnabled(true);
             technology.setRequired(true);
-            plannedQuantity.setEnabled(true);
             plannedQuantity.setRequired(true);
         }
     }
@@ -196,13 +198,7 @@ public final class OrderService {
             }
         }
 
-        if (disabled) {
-            order.setEnabled(false);
-            setChildrenEnabled(order.getChildren().values(), false);
-        } else {
-            order.setEnabled(true);
-            setChildrenEnabled(order.getChildren().values(), true);
-        }
+        order.setEnabledWithChildren(!disabled);
     }
 
     public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {
@@ -252,7 +248,7 @@ public final class OrderService {
     }
 
     public void fillOrderDatesAndWorkers(final DataDefinition dataDefinition, final Entity entity) {
-        if (("01pending".equals(entity.getField("state")) || "03done".equals(entity.getField("state")))
+        if (("02inProgress".equals(entity.getField("state")) || "03done".equals(entity.getField("state")))
                 && entity.getField("effectiveDateFrom") == null) {
             entity.setField("effectiveDateFrom", new Date());
             entity.setField("startWorker", securityService.getCurrentUserName());
@@ -263,12 +259,10 @@ public final class OrderService {
 
         }
 
-        if (!"02inProgress".toString().equals(entity.getField("state"))) {
-            if (entity.getField("effectiveDateTo") != null) {
-                entity.setField("state", "03done");
-            } else if (entity.getField("effectiveDateFrom") != null) {
-                entity.setField("state", "01pending");
-            }
+        if (entity.getField("effectiveDateTo") != null) {
+            entity.setField("state", "03done");
+        } else if (entity.getField("effectiveDateFrom") != null) {
+            entity.setField("state", "02inProgress");
         }
     }
 
@@ -301,15 +295,6 @@ public final class OrderService {
             return false;
         } else {
             return true;
-        }
-    }
-
-    private void setChildrenEnabled(final Collection<ComponentState> children, final boolean isEnabled) {
-        for (ComponentState child : children) {
-            child.setEnabled(isEnabled);
-            if (child instanceof ContainerState) {
-                setChildrenEnabled(((ContainerState) child).getChildren().values(), isEnabled);
-            }
         }
     }
 

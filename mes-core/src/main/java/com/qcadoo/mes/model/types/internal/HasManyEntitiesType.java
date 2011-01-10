@@ -45,12 +45,15 @@ public final class HasManyEntitiesType implements HasManyType {
 
     private final Cascade cascade;
 
+    private final boolean copyable;
+
     public HasManyEntitiesType(final String pluginIdentifier, final String entityName, final String joinFieldName,
-            final Cascade cascade, final DataDefinitionService dataDefinitionService) {
+            final Cascade cascade, final boolean copyable, final DataDefinitionService dataDefinitionService) {
         this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;
         this.joinFieldName = joinFieldName;
         this.cascade = cascade;
+        this.copyable = copyable;
         this.dataDefinitionService = dataDefinitionService;
     }
 
@@ -102,6 +105,11 @@ public final class HasManyEntitiesType implements HasManyType {
     @Override
     public DataDefinition getDataDefinition() {
         return dataDefinitionService.get(pluginIdentifier, entityName);
+    }
+
+    @Override
+    public boolean isCopyable() {
+        return copyable;
     }
 
 }

@@ -166,6 +166,18 @@ public final class FormComponentState extends AbstractContainerState {
         return true;
     }
 
+    public void setEnabledWithChildren(final boolean enabled) {
+        for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
+            FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
+
+            if (!(fieldDefinition.isReadOnly() || (entityId != null && fieldDefinition.isReadOnlyOnUpdate()))) {
+                field.getValue().setEnabled(enabled);
+                field.getValue().requestComponentUpdateState();
+            }
+        }
+        setEnabled(enabled);
+    }
+
     protected final class FormEventPerformer {
 
         public void saveAndClear(final String[] args) {
@@ -245,7 +257,7 @@ public final class FormComponentState extends AbstractContainerState {
                 setFieldValue(entity.getId());
                 setFieldsRequiredAndDisables();
             } else if (entityId != null) {
-                disableForm();
+                setEnabledWithChildren(false);
                 valid = false;
                 addMessage(translateMessage("entityNotFound"), MessageType.FAILURE);
             } else {
@@ -357,14 +369,6 @@ public final class FormComponentState extends AbstractContainerState {
                     field.getValue().setEnabled(false);
                 }
             }
-        }
-
-        private void disableForm() {
-            for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
-                field.getValue().setEnabled(false);
-                field.getValue().requestComponentUpdateState();
-            }
-            setEnabled(false);
         }
 
     }
