@@ -49,14 +49,17 @@ public final class UserService {
         PasswordComponentState password = (PasswordComponentState) state.getComponentByReference("passwordTextInput");
         PasswordComponentState passwordConfirmation = (PasswordComponentState) state
                 .getComponentByReference("passwordConfirmationTextInput");
-        ButtonComponentState changePasswordButton = (ButtonComponentState) state.getComponentByReference("changePasswordButton");
 
         oldPassword.setRequired(true);
         password.setRequired(true);
         passwordConfirmation.setRequired(true);
         viewIdentifier.setFieldValue("profileChangePassword");
+    }
 
+    public void removeChangePasswordButtonWhenNotAllowed(final ViewDefinitionState state, final Locale locale) {
         if (!showChangePasswordButton) {
+            ButtonComponentState changePasswordButton = (ButtonComponentState) state
+                    .getComponentByReference("changePasswordButton");
             changePasswordButton.setVisible(false);
         }
     }

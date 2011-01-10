@@ -201,6 +201,7 @@
 				<option type="expression" value="' '"/>
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.users.UserService" method="removeChangePasswordButtonWhenNotAllowed" />
 	</view>
 	<view name="profileChangePassword" model="user">
 		<component type="window" name="window">
