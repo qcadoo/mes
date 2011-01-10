@@ -107,21 +107,4 @@ public final class DataAccessServiceCopyTest extends DataAccessTest {
         Assert.assertEquals("Mr T(3)", entity.getField("name"));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldFailedCopyEntityWithUniqueField() throws Exception {
-        // given
-        fieldDefinitionName.withValidator(new UniqueValidator());
-
-        SampleSimpleDatabaseObject simpleDatabaseObject = new SampleSimpleDatabaseObject();
-        simpleDatabaseObject.setId(13L);
-        simpleDatabaseObject.setName("Mr T(1)");
-        simpleDatabaseObject.setAge(66);
-
-        given(criteria.setProjection(Projections.rowCount()).uniqueResult()).willReturn(1);
-        given(session.get(any(Class.class), Matchers.anyInt())).willReturn(simpleDatabaseObject);
-
-        // when
-        Entity entity = dataDefinition.copy(13L);
-    }
-
 }

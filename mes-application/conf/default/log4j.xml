@@ -15,7 +15,7 @@
 		</layout>
 	</appender>
 	<logger name="com.qcadoo.mes">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="com.qcadoo.mes.utils">
 		<level value="info" />

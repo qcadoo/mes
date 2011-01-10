@@ -76,11 +76,12 @@ public final class MaterialRequirementService {
     @Autowired
     private TranslationService translationService;
 
-    public void clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
         entity.setField("generated", false);
         entity.setField("date", null);
         entity.setField("worker", null);
+        return true;
     }
 
     public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {

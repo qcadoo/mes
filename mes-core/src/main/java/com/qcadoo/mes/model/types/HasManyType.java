@@ -59,4 +59,11 @@ public interface HasManyType extends FieldType {
      */
     Cascade getCascade();
 
+    /**
+     * Return true if field should be copied.
+     * 
+     * @return copyable
+     */
+    boolean isCopyable();
+
 }

@@ -48,6 +48,7 @@ public final class PriorityService {
     private EntityService entityService;
 
     public void prioritizeEntity(final InternalDataDefinition dataDefinition, final Object databaseEntity) {
+        System.out.println(" # priority");
         if (!dataDefinition.isPrioritizable()) {
             return;
         }
@@ -55,6 +56,8 @@ public final class PriorityService {
         FieldDefinition fieldDefinition = dataDefinition.getPriorityField();
 
         int totalNumberOfEntities = getTotalNumberOfEntities(dataDefinition, fieldDefinition, databaseEntity);
+
+        System.out.println(" # priority == " + fieldDefinition.getName() + " : " + totalNumberOfEntities + 1);
 
         entityService.setField(databaseEntity, fieldDefinition, totalNumberOfEntities + 1);
     }
