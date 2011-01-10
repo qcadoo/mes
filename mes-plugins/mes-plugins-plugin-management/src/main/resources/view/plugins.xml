@@ -30,11 +30,11 @@
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" />
+					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" message="plugins.ribbon.messages.download"/>
 					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" state="disabled" message="noRecordSelected"/>
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="disabled" message="noRecordSelected"/>
+					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="enabled" message="noRecordSelected"/>
 					<smallButton name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);" state="disabled" message="noRecordSelected" />
 					<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" state="disabled" message="noRecordSelected"/>
 				</group>
@@ -86,20 +86,20 @@
 									} else {
 										if (status == "01downloaded") {
 											updateRibbonItem.disable("#{translate(plugins.ribbon.messages.notInstalled)}");
-											enableRibbonItem.enable();
+											enableRibbonItem.enable("#{translate(plugins.ribbon.messages.enable)}");
 											disableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
 											removeRibbonItem.enable();
 											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.remove)}");
 											removeRibbonItem.setIcon('deleteIcon16.png');
 										} else if (status == "02installed") {
-											updateRibbonItem.enable();
-											enableRibbonItem.enable();
+											updateRibbonItem.enable("#{translate(plugins.ribbon.messages.update)}");
+											enableRibbonItem.enable("#{translate(plugins.ribbon.messages.enable)}");
 											disableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
 											removeRibbonItem.enable();
 											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.deinstall)}");
 											removeRibbonItem.setIcon('deinstallIcon16.png');
 										} else if (status == "03active") {
-											updateRibbonItem.enable();
+											updateRibbonItem.enable("#{translate(plugins.ribbon.messages.update)}");
 											enableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
 											disableRibbonItem.enable();
 											removeRibbonItem.enable();
