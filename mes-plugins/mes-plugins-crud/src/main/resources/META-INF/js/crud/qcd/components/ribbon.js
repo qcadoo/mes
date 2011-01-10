@@ -129,7 +129,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 			style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
 			className = " hasIcon";
 		}
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label>"+itemModel.label+"</label><div></div></div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label class='ribbonLabel'>"+itemModel.label+"</label><div></div></div></span>");
 		var buttonLi = $("<li>").append(itemElementButton);
 		var itemElementDropdownButton = $("<a>").attr('href','#').html("<span><div class='icon_btn_addB'></div></span>");
 		var buttonDropdownLi = $("<li>").addClass("addB").append(itemElementDropdownButton);
@@ -150,7 +150,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	}
 	
 	function createSmallButton(path, itemModel) {
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><div class='btnOneLabel'>"+itemModel.label+"</div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><div class='btnOneLabel ribbonLabel'>"+itemModel.label+"</div></span>");
 		var itemElement = $("<li>").addClass("btnOne").append(itemElementButton);
 		itemElementButton.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
@@ -240,8 +240,11 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 		var icon = (itemModel.icon && $.trim(itemModel.icon) != "") ? $.trim(itemModel.icon) : null;
 		var style = "";
 		if (icon) {
-			style = " class='hasIcon' style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
+			style = " class='iconElement hasIcon' style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
+		} else {
+			style = "class='iconElement' ";
 		}
+		
 		return style;
 	}
 	
@@ -260,7 +263,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	function createJsObject(item) {
 		return {
 			element: item.element,
-			setDisableMessage: function(msg) {
+			disable: function(msg) {
 				this.element.removeClass("enabled");
 				if (msg && msg != "") {
 					this.element.attr("title", msg);	
@@ -268,9 +271,21 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 					this.element.attr("title", "");									
 				}
 			},
-			setEnabled: function() {
+			enable: function() {
 				this.element.addClass("enabled");
 				this.element.attr("title", "");
+			},
+			setLabel: function(label) {
+				this.element.find('.ribbonLabel').html(label);
+			},
+			setIcon: function(icon) {
+				var iconEl = this.element.find('.iconElement');
+				if (icon) {
+					iconEl.addClass("hasIcon");
+					iconEl.css("backgroundImage", "url(\'/img/core/icons/"+icon+"\')");
+				} else {
+					iconEl.removeClass("hasIcon");
+				}
 			}
 		}
 	}

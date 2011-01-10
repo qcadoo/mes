@@ -184,15 +184,6 @@ public final class PluginManagementController {
         }
     }
 
-    public void onPluginDeinstallClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        Long pluginId = getPluginId(triggerState);
-        if (pluginId != null) {
-            PluginManagementOperationStatus operationStatus = pluginManagementService.deinstallPlugin(pluginId);
-            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
-        }
-    }
-
     public void onPluginRemoveClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
         Long pluginId = getPluginId(triggerState);

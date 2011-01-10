@@ -54,14 +54,14 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									xlsRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");	
+									xlsRibbonItem.disable("#{translate(noRecordSelected)}");
+									pdfRibbonItem.disable("#{translate(noRecordSelected)}");	
 								} else if (selectedRecord.fields.generated == '0') {
-									xlsRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");								
+									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
 								} else {
-									xlsRibbonItem.setEnabled();
-									pdfRibbonItem.setEnabled();
+									xlsRibbonItem.enable();
+									pdfRibbonItem.enable();
 								}
 							}
 						}
@@ -101,21 +101,21 @@
 								var isGeneratedCheckboxValue = #{generated}.getValue();
 								if (value && value.content && value.content.entityId) {
 									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-										xlsRibbonItem.setEnabled();
-										pdfRibbonItem.setEnabled();
-										saveRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-										generateRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+										xlsRibbonItem.enable();
+										pdfRibbonItem.enable();
+										saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+										generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
 									} else {
-										xlsRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										pdfRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										saveRibbonItem.setEnabled();
-										generateRibbonItem.setEnabled();
+										xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										saveRibbonItem.enable();
+										generateRibbonItem.enable();
 									}
 								} else {
-									xlsRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
-									pdfRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
-									saveRibbonItem.setEnabled();
-									generateRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
+									xlsRibbonItem.disable("#{translate(recordNotCreated)}");
+									pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+									saveRibbonItem.enable();
+									generateRibbonItem.disable("#{translate(recordNotCreated)}");
 								}
 							}
 						}

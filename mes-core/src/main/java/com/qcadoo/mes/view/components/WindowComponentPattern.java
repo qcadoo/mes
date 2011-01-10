@@ -112,7 +112,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
                     if (message.contains(".")) {
                         message = getTranslationService().translate(message, locale);
                     } else {
-                        message = getTranslationService().translate("core.ribbon.message." + message, locale);
+                        message = getTranslationService().translate("core.message." + message, locale);
                     }
                     item.put("message", prepareScript(message, locale));
                 }
@@ -363,7 +363,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setMessage("noRecordSelected");
         ribbonDeleteAction
                 .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
-                        + "this.setDisableMessage('#{translate(noRecordSelected)}');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
+                        + "this.disable('#{translate(noRecordSelected)}');} else {this.enable();}}}; #{grid}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -376,7 +376,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setMessage("noRecordSelected");
         ribbonCopyAction
                 .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
-                        + "this.setDisableMessage('#{translate(noRecordSelected)}');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
+                        + "this.disable('#{translate(noRecordSelected)}');} else {this.enable();}}}; #{grid}.addOnChangeListener(listener);");
         ribbonCopyAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         return ribbonCopyAction;
     }
@@ -435,7 +435,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setMessage("recordNotCreated");
         ribbonDeleteAction
                 .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
-                        + "this.setEnabled();} else {this.setDisableMessage('#{translate(recordNotCreated)}');}}}; #{form}.addOnChangeListener(listener);");
+                        + "this.enable();} else {this.disable('#{translate(recordNotCreated)}');}}}; #{form}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -458,7 +458,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setMessage("recordNotCreated");
         ribbonCopyAction
                 .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
-                        + "this.setEnabled();} else {this.setDisableMessage('#{translate(recordNotCreated)}');}}}; #{form}.addOnChangeListener(listener);");
+                        + "this.enable();} else {this.disable('#{translate(recordNotCreated)}');}}}; #{form}.addOnChangeListener(listener);");
         return ribbonCopyAction;
     }
 

@@ -71,26 +71,26 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									pdfWorker.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsWorker.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfMachine.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsMachine.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfProduct.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsProduct.setDisableMessage("#{translate(noRecordSelected)}");	
+									pdfWorker.disable("#{translate(noRecordSelected)}");
+									xlsWorker.disable("#{translate(noRecordSelected)}");
+									pdfMachine.disable("#{translate(noRecordSelected)}");
+									xlsMachine.disable("#{translate(noRecordSelected)}");
+									pdfProduct.disable("#{translate(noRecordSelected)}");
+									xlsProduct.disable("#{translate(noRecordSelected)}");	
 								} else if (selectedRecord.fields.generated == '0') {
-									pdfWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");								
+									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
 								} else {
-									pdfWorker.setEnabled();
-									xlsWorker.setEnabled();
-									pdfMachine.setEnabled();
-									xlsMachine.setEnabled();
-									pdfProduct.setEnabled();
-									xlsProduct.setEnabled();
+									pdfWorker.enable();
+									xlsWorker.enable();
+									pdfMachine.enable();
+									xlsMachine.enable();
+									pdfProduct.enable();
+									xlsProduct.enable();
 								}
 							}
 						}
@@ -147,33 +147,33 @@
 								var isGeneratedCheckboxValue = #{generated}.getValue();
 								if (value && value.content && value.content.entityId) {
 									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-										pdfWorker.setEnabled();
-										xlsWorker.setEnabled();
-										pdfMachine.setEnabled();
-										xlsMachine.setEnabled();
-										pdfProduct.setEnabled();
-										xlsProduct.setEnabled();
-										saveRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-										generateRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+										pdfWorker.enable();
+										xlsWorker.enable();
+										pdfMachine.enable();
+										xlsMachine.enable();
+										pdfProduct.enable();
+										xlsProduct.enable();
+										saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+										generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
 									} else {
-										pdfWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										xlsWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										pdfMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										xlsMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										pdfProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										xlsProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										saveRibbonItem.setEnabled();
-										generateRibbonItem.setEnabled();
+										pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+										saveRibbonItem.enable();
+										generateRibbonItem.enable();
 									}
 								} else {
-									pdfWorker.setDisableMessage("#{translate(recordNotCreated)}");
-									xlsWorker.setDisableMessage("#{translate(recordNotCreated)}");
-									pdfMachine.setDisableMessage("#{translate(recordNotCreated)}");
-									xlsMachine.setDisableMessage("#{translate(recordNotCreated)}");
-									pdfProduct.setDisableMessage("#{translate(recordNotCreated)}");
-									xlsProduct.setDisableMessage("#{translate(recordNotCreated)}");
-									saveRibbonItem.setEnabled();
-									generateRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
+									pdfWorker.disable("#{translate(recordNotCreated)}");
+									xlsWorker.disable("#{translate(recordNotCreated)}");
+									pdfMachine.disable("#{translate(recordNotCreated)}");
+									xlsMachine.disable("#{translate(recordNotCreated)}");
+									pdfProduct.disable("#{translate(recordNotCreated)}");
+									xlsProduct.disable("#{translate(recordNotCreated)}");
+									saveRibbonItem.enable();
+									generateRibbonItem.disable("#{translate(recordNotCreated)}");
 								}
 							}
 						}
