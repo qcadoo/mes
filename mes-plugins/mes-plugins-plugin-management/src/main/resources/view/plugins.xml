@@ -31,12 +31,12 @@
 			<ribbon>
 				<group name="plugins">
 					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" message="plugins.ribbon.messages.download"/>
-					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" state="disabled" message="noRecordSelected"/>
+					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" state="disabled" />
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="enabled" message="noRecordSelected"/>
-					<smallButton name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);" state="disabled" message="noRecordSelected" />
-					<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" state="disabled" message="noRecordSelected"/>
+					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="enabled" />
+					<smallButton name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);" state="disabled" />
+					<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="grid" name="plugins" reference="grid">
@@ -71,10 +71,10 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									updateRibbonItem.disable("#{translate(noRecordSelected)}");
-									enableRibbonItem.disable("#{translate(noRecordSelected)}");
-									disableRibbonItem.disable("#{translate(noRecordSelected)}");
-									removeRibbonItem.disable("#{translate(noRecordSelected)}");
+									updateRibbonItem.disable();
+									enableRibbonItem.disable();
+									disableRibbonItem.disable();
+									removeRibbonItem.disable();
 								} else {
 									var status = selectedRecord.fields.status;
 									var isBase = (selectedRecord.fields.base == "1");
@@ -102,7 +102,7 @@
 											updateRibbonItem.enable("#{translate(plugins.ribbon.messages.update)}");
 											enableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
 											disableRibbonItem.enable();
-											removeRibbonItem.enable();
+											removeRibbonItem.enable("#{translate(plugins.plugins.window.ribbon.actions.removeInfo)}");
 											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.deinstall)}");
 											removeRibbonItem.setIcon('deinstallIcon16.png');
 										}
