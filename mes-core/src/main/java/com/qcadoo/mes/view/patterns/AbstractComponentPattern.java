@@ -198,7 +198,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             if (expression.contains(".")) {
                 result.append(translationService.translate(expression, locale));
             } else {
-                result.append(translationService.translate("core.ribbon.message." + expression, locale));
+                result.append(translationService.translate("core.message." + expression, locale));
             }
             lastEnd = m.end();
         }

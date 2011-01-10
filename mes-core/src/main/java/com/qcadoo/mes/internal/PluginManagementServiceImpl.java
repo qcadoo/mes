@@ -151,19 +151,10 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
             LOG.info("Plugin is base");
             return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.isBase");
         } else if (!databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
-            LOG.info("Plugin hasn't apropriate status");
-            return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToRemove");
+            return deinstallPlugin(databasePlugin);
+        } else {
+            return deletePlugin(databasePlugin);
         }
-        try {
-            getCurrentSession().delete(databasePlugin);
-
-            pluginUtil.removePluginFile(pluginsTmpPath + "/" + databasePlugin.getFileName(), false);
-        } catch (IOException e) {
-            LOG.error("Problem with removing plugin file - " + e.getMessage());
-            return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileRemoveError");
-        }
-
-        return new PluginManagementOperationStatusImpl(false, "plugins.messages.success.removeSuccess");
     }
 
     @Override
@@ -227,18 +218,23 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
         return new PluginManagementOperationStatusImpl(false, "plugins.messages.success.disableSuccess");
     }
 
-    @Override
     @Transactional
     @Monitorable
-    public PluginManagementOperationStatus deinstallPlugin(final Long id) {
-        PluginsPlugin databasePlugin = get(id);
-        if (databasePlugin.isBase()) {
-            LOG.info("Plugin is base");
-            return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.isBase");
-        } else if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
-            LOG.info("Plugin hasn't apropriate status");
-            return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.wrongStatusToUninstall");
+    private PluginManagementOperationStatus deletePlugin(final PluginsPlugin databasePlugin) {
+        try {
+            getCurrentSession().delete(databasePlugin);
+            pluginUtil.removePluginFile(pluginsTmpPath + "/" + databasePlugin.getFileName(), false);
+        } catch (IOException e) {
+            LOG.error("Problem with removing plugin file - " + e.getMessage());
+            return new PluginManagementOperationStatusImpl(true, "plugins.messages.error.fileRemoveError");
         }
+
+        return new PluginManagementOperationStatusImpl(false, "plugins.messages.success.removeSuccess");
+    }
+
+    @Transactional
+    @Monitorable
+    private PluginManagementOperationStatus deinstallPlugin(final PluginsPlugin databasePlugin) {
         try {
             getCurrentSession().delete(databasePlugin);
             pluginUtil.removePluginFile(pluginsPath + "/" + databasePlugin.getFileName(), true);

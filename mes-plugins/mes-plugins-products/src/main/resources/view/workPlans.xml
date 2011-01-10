@@ -32,21 +32,21 @@
 				<group template="gridNewAndCopyAction"/>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled"/>
 					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled" />
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled" />
 				</group>
 				<group name="exportProduct">
 					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled" />
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled" />
 				</group>				
 			</ribbon>		
 			<component type="grid" name="workPlans" reference="grid">
@@ -71,26 +71,26 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									pdfWorker.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsWorker.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfMachine.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsMachine.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfProduct.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsProduct.setDisableMessage("#{translate(noRecordSelected)}");	
+									pdfWorker.disable();
+									xlsWorker.disable();
+									pdfMachine.disable();
+									xlsMachine.disable();
+									pdfProduct.disable();
+									xlsProduct.disable();	
 								} else if (selectedRecord.fields.generated == '0') {
-									pdfWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									xlsProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");								
+									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
 								} else {
-									pdfWorker.setEnabled();
-									xlsWorker.setEnabled();
-									pdfMachine.setEnabled();
-									xlsMachine.setEnabled();
-									pdfProduct.setEnabled();
-									xlsProduct.setEnabled();
+									pdfWorker.enable();
+									xlsWorker.enable();
+									pdfMachine.enable();
+									xlsMachine.enable();
+									pdfProduct.enable();
+									xlsProduct.enable();
 								}
 							}
 						}
@@ -144,44 +144,72 @@
 						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
 						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
 						
-						var listener = {
+						var containsAtLeastOneOrder = false;
+						var entityExists = false;
+						
+						this.addOnChangeListener({
 							onSetValue: function(value) {
-								var isGeneratedCheckboxValue = #{generated}.getValue();
-								if (value && value.content && value.content.entityId) {
-									copyRibbonItem.setEnabled();	
-									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-										pdfWorker.setEnabled();
-										xlsWorker.setEnabled();
-										pdfMachine.setEnabled();
-										xlsMachine.setEnabled();
-										pdfProduct.setEnabled();
-										xlsProduct.setEnabled();
-										saveRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-										generateRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-									} else {
-										pdfWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										xlsWorker.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										pdfMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										xlsMachine.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										pdfProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										xlsProduct.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										saveRibbonItem.setEnabled();
-										generateRibbonItem.setEnabled();
-									}
-								} else {
-									copyRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
-									pdfWorker.setDisableMessage("#{translate(recordNotCreated)}");
-									xlsWorker.setDisableMessage("#{translate(recordNotCreated)}");
-									pdfMachine.setDisableMessage("#{translate(recordNotCreated)}");
-									xlsMachine.setDisableMessage("#{translate(recordNotCreated)}");
-									pdfProduct.setDisableMessage("#{translate(recordNotCreated)}");
-									xlsProduct.setDisableMessage("#{translate(recordNotCreated)}");
-									saveRibbonItem.setEnabled();
-									generateRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
+								if (!value || !value.content) {
+									return;
 								}
+								if (value.content.entityId) {
+									entityExists = true;
+								} else {
+									entityExists = false;
+								}
+								updateRibbon();
+							}
+						});
+						#{workPlanComponents}.addOnChangeListener({
+							onSetValue: function(value) {
+								if (value.content.totalEntities > 0) {
+									containsAtLeastOneOrder = true;
+								} else {
+									containsAtLeastOneOrder = false;
+								}
+								updateRibbon();
+							}
+						});
+						
+						function updateRibbon() {
+							if (entityExists) {
+								var isGeneratedCheckboxValue = #{generated}.getValue();
+								copyRibbonItem.enable();
+								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+									pdfWorker.enable();
+									xlsWorker.enable();
+									pdfMachine.enable();
+									xlsMachine.enable();
+									pdfProduct.enable();
+									xlsProduct.enable();
+									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+								} else {
+									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									saveRibbonItem.enable();
+									if (containsAtLeastOneOrder) {
+										generateRibbonItem.enable();
+									} else {
+										generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
+									}
+								}
+							} else {
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
+								pdfWorker.disable("#{translate(recordNotCreated)}");
+								xlsWorker.disable("#{translate(recordNotCreated)}");
+								pdfMachine.disable("#{translate(recordNotCreated)}");
+								xlsMachine.disable("#{translate(recordNotCreated)}");
+								pdfProduct.disable("#{translate(recordNotCreated)}");
+								xlsProduct.disable("#{translate(recordNotCreated)}");
+								saveRibbonItem.enable();
+								generateRibbonItem.disable("#{translate(recordNotCreated)}");
 							}
 						}
-						this.addOnChangeListener(listener);
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3" rows="5">

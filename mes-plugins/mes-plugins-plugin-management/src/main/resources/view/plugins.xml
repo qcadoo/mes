@@ -30,15 +30,13 @@
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" />
+					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" message="plugins.ribbon.messages.download"/>
 					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" state="disabled" message="noRecordSelected"/>
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="disabled" message="noRecordSelected"/>
-					<smallButtons name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);" state="disabled" message="noRecordSelected">
-						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{grid}.fireEvent(deinstall);" state="disabled" message="noRecordSelected"/>
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" state="disabled" message="noRecordSelected"/>
-					</smallButtons>
+					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="enabled" message="noRecordSelected"/>
+					<smallButton name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);" state="disabled" message="noRecordSelected" />
+					<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" state="disabled" message="noRecordSelected"/>
 				</group>
 			</ribbon>
 			<component type="grid" name="plugins" reference="grid">
@@ -60,7 +58,6 @@
 				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
 				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginEnableClick" />
 				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDisableClick" />
-				<listener event="deinstall" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDeinstallClick" />
 				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
 				<script>
 					<![CDATA[
@@ -69,44 +66,47 @@
 						
 						var enableRibbonItem = #{window}.getRibbonItem("actions.enable");
 						var disableRibbonItem = #{window}.getRibbonItem("actions.disable");
-						var deinstallRibbonItem = #{window}.getRibbonItem("actions.disable.deinstall");
-						var removeRibbonItem = #{window}.getRibbonItem("actions.disable.remove");
+						var removeRibbonItem = #{window}.getRibbonItem("actions.remove");
 						
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									updateRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
-									enableRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
-									disableRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
-									deinstallRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
-									removeRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
+									updateRibbonItem.disable("#{translate(noRecordSelected)}");
+									enableRibbonItem.disable("#{translate(noRecordSelected)}");
+									disableRibbonItem.disable("#{translate(noRecordSelected)}");
+									removeRibbonItem.disable("#{translate(noRecordSelected)}");
 								} else {
 									var status = selectedRecord.fields.status;
 									var isBase = (selectedRecord.fields.base == "1");
-									if (status == "01downloaded") {
-										enableRibbonItem.setEnabled();
-										disableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
-										deinstallRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.notInstalled)}");
-										enableRibbonItem.setEnabled();
-									} else if (status == "02installed") {
-										enableRibbonItem.setEnabled();
-										disableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
-										enableRibbonItem.setEnabled();
-										removeRibbonItem.setEnabled();
-									} else if (status == "03active") {
-										enableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
-										if (isBase) {
-											disableRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.base)}");
-											deinstallRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.base)}");
-											removeRibbonItem.setDisableMessage("#{translate(plugins.ribbon.messages.base)}");
-										} else {
-											disableRibbonItem.setEnabled();
-											deinstallRibbonItem.setEnabled();
-											removeRibbonItem.setEnabled();
+									if (isBase) {
+										updateRibbonItem.disable("#{translate(plugins.ribbon.messages.base)}");
+										enableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
+										disableRibbonItem.disable("#{translate(plugins.ribbon.messages.base)}");
+										removeRibbonItem.disable("#{translate(plugins.ribbon.messages.base)}");
+									} else {
+										if (status == "01downloaded") {
+											updateRibbonItem.disable("#{translate(plugins.ribbon.messages.notInstalled)}");
+											enableRibbonItem.enable("#{translate(plugins.ribbon.messages.enable)}");
+											disableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
+											removeRibbonItem.enable();
+											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.remove)}");
+											removeRibbonItem.setIcon('deleteIcon16.png');
+										} else if (status == "02installed") {
+											updateRibbonItem.enable("#{translate(plugins.ribbon.messages.update)}");
+											enableRibbonItem.enable("#{translate(plugins.ribbon.messages.enable)}");
+											disableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
+											removeRibbonItem.enable();
+											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.deinstall)}");
+											removeRibbonItem.setIcon('deinstallIcon16.png');
+										} else if (status == "03active") {
+											updateRibbonItem.enable("#{translate(plugins.ribbon.messages.update)}");
+											enableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
+											disableRibbonItem.enable();
+											removeRibbonItem.enable();
+											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.deinstall)}");
+											removeRibbonItem.setIcon('deinstallIcon16.png');
 										}
-										
 									}
-									updateRibbonItem.setEnabled();
 								}
 							}
 						}
@@ -130,11 +130,15 @@
 									onSetValue: function(value) {
 										var isBase = (#{base}.getValue().content.value == "1");
 										var status = #{status}.getValue().content.value;
-										if (status == "03active") {
-											this.setEnabled();
+										if (isBase) {
+											this.disable("#{translate(plugins.ribbon.messages.base)}");
 										} else {
-											this.setDisableMessage("#{translate(plugins.ribbon.messages.notEnabled)}");
-										}  
+											if (status == "01downloaded") {
+												this.disable("#{translate(plugins.ribbon.messages.notInstalled)}");
+											} else {
+												this.enable();
+											}
+										}
 									}
 								}
 								#{form}.addOnChangeListener(listener);

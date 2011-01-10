@@ -19,31 +19,31 @@
 				<group template="gridNewCopyAndRemoveAction"/>
 				<group name="export">
 					<smallButton name="print" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" message="noRecordSelected" />
+						action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" />
 				</group>
 				<group name="exportMaterialReq">
 					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" state="disabled" />
 					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" state="disabled" />
 					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" state="disabled" />
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" state="disabled" />
 				</group>
 				<group name="exportProduct">
 					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" state="disabled" />
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" message="noRecordSelected"/>
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
@@ -61,25 +61,25 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									print.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfMaterialReq.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsMaterialReq.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfWorker.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsWorker.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfMachine.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsMachine.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfProduct.setDisableMessage("#{translate(noRecordSelected)}");
-									xlsProduct.setDisableMessage("#{translate(noRecordSelected)}");
+									print.disable();
+									pdfMaterialReq.disable();
+									xlsMaterialReq.disable();
+									pdfWorker.disable();
+									xlsWorker.disable();
+									pdfMachine.disable();
+									xlsMachine.disable();
+									pdfProduct.disable();
+									xlsProduct.disable();
 								} else {
-									print.setEnabled();
-									pdfMaterialReq.setEnabled();
-									xlsMaterialReq.setEnabled();
-									pdfWorker.setEnabled();
-									xlsWorker.setEnabled();
-									pdfMachine.setEnabled();
-									xlsMachine.setEnabled();
-									pdfProduct.setEnabled();
-									xlsProduct.setEnabled();
+									print.enable();
+									pdfMaterialReq.enable();
+									xlsMaterialReq.enable();
+									pdfWorker.enable();
+									xlsWorker.enable();
+									pdfMachine.enable();
+									xlsMachine.enable();
+									pdfProduct.enable();
+									xlsProduct.enable();
 								}
 							}
 						}
@@ -137,6 +137,35 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="order" reference="form">
+				<script>
+					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						var del = #{window}.getRibbonItem("actions.delete");
+						this.addOnChangeListener({
+							onSetValue: function(selectedRecord) {
+								var state = #{state}.getValue().content.value;
+								if (state && state == "03done") {
+									save.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									saveBack.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									cancel.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									del.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+								} else {
+									save.enable();
+									saveBack.enable();
+									if (!selectedRecord) {
+										cancel.disable();
+										del.disable();
+									} else {
+										cancel.enable();
+										del.enable();
+									}
+								}
+							}
+						});
+					]]>
+				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6">
 					<layoutElement column="1" row="1">
@@ -153,7 +182,7 @@
 						<component type="calendar" name="dateTo" field="dateTo" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="select" name="state" field="state" />
+						<component type="select" name="state" field="state" reference="state"/>
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="product" reference="product"

@@ -102,7 +102,18 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 						itemElement.addClass("enabled");
 					}
 					if (itemModel.message) {
-						itemElement.attr("title", itemModel.message);
+						if (itemModel.tooltipElement) {
+							if (itemModel.message && itemModel.message != "") {
+								itemModel.tooltipElement.show();
+								itemModel.tooltipMessageElementContent.html(itemModel.message);
+							} else {
+								itemModel.tooltipElement.hide();
+							}
+						}
+					} else {
+						if (itemModel.tooltipElement) {
+							itemModel.tooltipElement.hide();
+						}
 					}
 					
 				}
@@ -117,6 +128,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 		var liElement = $("<li>").append(aElement);
 		var ribbonListElement = $("<ul>").addClass("ribbonListElement").append(liElement);
 		var itemElement = $("<div>").addClass("ribbonBigElement").append(ribbonListElement);
+		createTooltip(itemModel,aElement);
 		aElement.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
@@ -129,7 +141,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 			style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
 			className = " hasIcon";
 		}
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label>"+itemModel.label+"</label><div></div></div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label class='ribbonLabel'>"+itemModel.label+"</label><div></div></div></span>");
 		var buttonLi = $("<li>").append(itemElementButton);
 		var itemElementDropdownButton = $("<a>").attr('href','#').html("<span><div class='icon_btn_addB'></div></span>");
 		var buttonDropdownLi = $("<li>").addClass("addB").append(itemElementDropdownButton);
@@ -150,7 +162,8 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	}
 	
 	function createSmallButton(path, itemModel) {
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><div class='btnOneLabel'>"+itemModel.label+"</div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><div class='btnOneLabel ribbonLabel'>"+itemModel.label+"</div></span>");
+		createTooltip(itemModel,itemElementButton);
 		var itemElement = $("<li>").addClass("btnOne").append(itemElementButton);
 		itemElementButton.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
@@ -236,12 +249,31 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 		return itemElement;
 	}
 	
+	function createTooltip(itemModel, itemElementButton) {
+		var tooltipElement = $("<div>").addClass("ribbon_description_icon").css("display", "none");
+		var tooltipMessageElement = $("<div>").addClass("description_message").css("display", "none");
+		var tooltipMessageElementContent = $("<p>").html("");
+		tooltipMessageElement.append(tooltipMessageElementContent);
+		itemElementButton.append(tooltipElement);
+		itemElementButton.append(tooltipMessageElement);
+		tooltipElement.hover(function() {
+			tooltipMessageElement.show();
+		}, function() {
+			tooltipMessageElement.hide();
+		});
+		itemModel.tooltipElement = tooltipElement;
+		itemModel.tooltipMessageElementContent = tooltipMessageElementContent;
+	}
+	
 	function getItemIconStyle(itemModel) {
 		var icon = (itemModel.icon && $.trim(itemModel.icon) != "") ? $.trim(itemModel.icon) : null;
 		var style = "";
 		if (icon) {
-			style = " class='hasIcon' style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
+			style = " class='iconElement hasIcon' style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
+		} else {
+			style = "class='iconElement' ";
 		}
+		
 		return style;
 	}
 	
@@ -260,17 +292,41 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 	function createJsObject(item) {
 		return {
 			element: item.element,
-			setDisableMessage: function(msg) {
+			tooltipElement: item.tooltipElement,
+			tooltipMessageElementContent: item.tooltipMessageElementContent,
+			disable: function(msg) {
 				this.element.removeClass("enabled");
-				if (msg && msg != "") {
-					this.element.attr("title", msg);	
-				} else {
-					this.element.attr("title", "");									
+				if (this.tooltipElement) {
+					if (msg && msg != "") {
+						this.tooltipElement.show();
+						this.tooltipMessageElementContent.html(msg);
+					} else {
+						this.tooltipElement.hide();
+					}
 				}
 			},
-			setEnabled: function() {
+			enable: function(msg) {
 				this.element.addClass("enabled");
-				this.element.attr("title", "");
+				if (this.tooltipElement) {
+					if (msg && msg != "") {
+						this.tooltipElement.show();
+						this.tooltipMessageElementContent.html(msg);
+					} else {
+						this.tooltipElement.hide();
+					}
+				}
+			},
+			setLabel: function(label) {
+				this.element.find('.ribbonLabel').html(label);
+			},
+			setIcon: function(icon) {
+				var iconEl = this.element.find('.iconElement');
+				if (icon) {
+					iconEl.addClass("hasIcon");
+					iconEl.css("backgroundImage", "url(\'/img/core/icons/"+icon+"\')");
+				} else {
+					iconEl.removeClass("hasIcon");
+				}
 			}
 		}
 	}

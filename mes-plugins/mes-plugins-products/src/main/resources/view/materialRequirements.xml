@@ -54,14 +54,14 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									xlsRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");
-									pdfRibbonItem.setDisableMessage("#{translate(noRecordSelected)}");	
+									xlsRibbonItem.disable();
+									pdfRibbonItem.disable();	
 								} else if (selectedRecord.fields.generated == '0') {
-									xlsRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-									pdfRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");								
+									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
 								} else {
-									xlsRibbonItem.setEnabled();
-									pdfRibbonItem.setEnabled();
+									xlsRibbonItem.enable();
+									pdfRibbonItem.enable();
 								}
 							}
 						}
@@ -98,32 +98,60 @@
 						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 						var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
 						
-						var listener = {
+						var containsAtLeastOneOrder = false;
+						var entityExists = false;
+						
+						this.addOnChangeListener({
 							onSetValue: function(value) {
-								var isGeneratedCheckboxValue = #{generated}.getValue();
-								if (value && value.content && value.content.entityId) {
-									copyRibbonItem.setEnabled();
-									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-										xlsRibbonItem.setEnabled();
-										pdfRibbonItem.setEnabled();
-										saveRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-										generateRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-									} else {
-										xlsRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										pdfRibbonItem.setDisableMessage("#{translate(products.ribbon.message.recordNotGenerated)}");
-										saveRibbonItem.setEnabled();
-										generateRibbonItem.setEnabled();
-									}
-								} else {
-									copyRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
-									xlsRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
-									pdfRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
-									saveRibbonItem.setEnabled();
-									generateRibbonItem.setDisableMessage("#{translate(recordNotCreated)}");
+								if (!value || !value.content) {
+									return;
 								}
+								if (value.content.entityId) {
+									entityExists = true;
+								} else {
+									entityExists = false;
+								}
+								updateRibbon();
+							}
+						});
+						#{materialRequirementComponents}.addOnChangeListener({
+							onSetValue: function(value) {
+								if (value.content.totalEntities > 0) {
+									containsAtLeastOneOrder = true;
+								} else {
+									containsAtLeastOneOrder = false;
+								}
+								updateRibbon();
+							}
+						});
+						
+						function updateRibbon() {
+							if (entityExists) {
+								var isGeneratedCheckboxValue = #{generated}.getValue();
+								copyRibbonItem.enable();
+								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+									xlsRibbonItem.enable();
+									pdfRibbonItem.enable();
+									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+								} else {
+									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									saveRibbonItem.enable();
+									if (containsAtLeastOneOrder) {
+										generateRibbonItem.enable();
+									} else {
+										generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
+									}
+								}
+							} else {
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
+								xlsRibbonItem.disable("#{translate(recordNotCreated)}");
+								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+								saveRibbonItem.enable();
+								generateRibbonItem.disable("#{translate(recordNotCreated)}");
 							}
 						}
-						this.addOnChangeListener(listener);
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3" rows="6">

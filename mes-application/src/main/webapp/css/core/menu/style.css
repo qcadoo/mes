@@ -560,6 +560,7 @@ ul.ribbonListElement li {
 	padding: 0px 0px;
 	height: 45px;
 	margin: 0px 2px 0px;
+	position: relative;
 }
 ul.ribbonListElement li a {
 	display:block;
@@ -685,7 +686,7 @@ ul.ribbon_list li {
 	height: 23px;
 	background-image:none;
 }
-ul.ribbon_list li.btnOne a,
+ul.ribbon_list li.btnOne > a,
 ul.ribbon_list li.twoB a {
 	display:block;
 	width:auto;
@@ -696,12 +697,13 @@ ul.ribbon_list li.twoB a {
 	font-size:11px;
 	background-image:none;
 	cursor: default;
+	position: relative;
 }
-ul.ribbon_list li.btnOne.enabled a {
+ul.ribbon_list li.btnOne.enabled > a {
 	color:#464646;
 	cursor: pointer;
 }
-ul.ribbon_list li.arrow a, ul.ribbon_list li a.make {
+ul.ribbon_list li.arrow a, ul.ribbon_list li > a.make {
 	background-image:url('/css/core/menu/images/lt_1arrow.png');
 	background-repeat:no-repeat;
 	background-position: right;
@@ -741,7 +743,7 @@ ul.ribbon_list li.btnOne.enabled:hover  {
 	background-position: left;
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.btnOne.enabled:hover a  {
+ul.ribbon_list li.btnOne.enabled:hover > a  {
 	background-image:url('/css/core/menu/images/lt_1Up.png');
 	background-position: right;
 	background-repeat:no-repeat;
@@ -946,3 +948,35 @@ ul.ribbon_list li.twoB.enabled ul li a.twoB_down:hover {
 	border-color: #f29d15;
 }
 
+.ribbon_content .ribbon_description_icon {
+	position: absolute;
+	width: 9px;
+	height: 9px;
+	top: 0;
+	left: 0;
+	background: url(/css/core/images/info.icon.grey.png);
+	filter:alpha(opacity=80); /* filtr dla IE*/
+	opacity: 0.8; /* filtr dla Opera*/
+	-moz-opacity:0.8; /* filtr dla Mozilla Firefox */
+}
+.ribbon_content .ribbonListElement .ribbon_description_icon {
+	top: 8px;
+}
+.ribbon_content .enabled .ribbon_description_icon {
+	background-image: url(/css/core/images/info.icon.png);
+}
+.ribbon_content .ribbon_description_icon:hover {
+	filter:alpha(opacity=100); /* filtr dla IE*/
+	opacity: 1; /* filtr dla Opera*/
+	-moz-opacity:1; /* filtr dla Mozilla Firefox */
+}
+.ribbon_content .btnOne .description_message,
+.ribbon_content .ribbonListElement .description_message {
+	border-color: #464646;
+	background: #e0e0e0;
+}
+.ribbon_content .btnOne .description_message p a,
+.ribbon_content .ribbonListElement .description_message p a {
+	color: #464646;
+	height: auto;
+}

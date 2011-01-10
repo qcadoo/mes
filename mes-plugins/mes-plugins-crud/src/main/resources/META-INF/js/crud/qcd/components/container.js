@@ -59,14 +59,14 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 	}
 	
 	this.performScript = function() {
-		for (var i in components) {
-			components[i].performScript();
-		}
 		if (this.performComponentScript) {
 			this.performComponentScript();
 		}
 		if (this.options.script) {
 			mainController.getActionEvaluator().performJsAction(this.options.script, this);
+		}
+		for (var i in components) {
+			components[i].performScript();
 		}
 	}
 	

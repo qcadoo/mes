@@ -217,6 +217,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function linkClicked(entityId) {
+		if (!componentEnabled) {
+			return;
+		}
 		if (linkListener) {
 			linkListener.onGridLinkClicked(entityId);
 		} else {
