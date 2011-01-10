@@ -211,6 +211,10 @@ public final class MaterialRequirementService {
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
+            } else if (order.getField("technology") == null) {
+                state.addMessage(
+                        translationService.translate("products.validate.global.error.orderMustHaveTechnology", state.getLocale()),
+                        MessageType.FAILURE);
             } else {
                 Entity materialRequirement = createNewMaterialReq(order, state);
                 try {

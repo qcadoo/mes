@@ -218,6 +218,14 @@ public final class WorkPlanService {
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
+            } else if (order.getField("technology") == null) {
+                state.addMessage(
+                        translationService.translate("products.validate.global.error.orderMustHaveTechnology", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (order.getBelongsToField("technology").getHasManyField("operationComponents").isEmpty()) {
+                state.addMessage(
+                        translationService.translate("products.validate.global.error.orderTechnologyMustHaveOperation",
+                                state.getLocale()), MessageType.FAILURE);
             } else {
                 Entity workPlan = createNewWorkPlan(order, state);
                 try {
