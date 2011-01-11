@@ -73,7 +73,7 @@ public final class ProductService {
                 .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("product"), product.getId()))
                 .restrictedWith(Restrictions.belongsTo(dataDefinition.getField("substitute"), substitute.getId())).list();
 
-        if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
+        if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField("product"), "products.validate.global.error.substituteComponentDuplicated");
             return false;
         } else {
