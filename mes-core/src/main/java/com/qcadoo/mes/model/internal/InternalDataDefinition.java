@@ -112,6 +112,6 @@ public interface InternalDataDefinition extends DataDefinition {
      * @param entity
      *            entity
      */
-    void callCopyHook(Entity targetEntity);
+    boolean callCopyHook(Entity targetEntity);
 
 }

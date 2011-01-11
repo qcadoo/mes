@@ -62,6 +62,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var translations = this.options.translations;
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	function constructor(_this) {
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			

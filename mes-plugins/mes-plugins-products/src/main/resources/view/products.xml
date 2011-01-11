@@ -153,7 +153,7 @@
 							<option type="column" name="category" fields="category" />
 							<option type="searchable" value="name,category" />
 							<option type="orderable" value="name,category" />
-							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>

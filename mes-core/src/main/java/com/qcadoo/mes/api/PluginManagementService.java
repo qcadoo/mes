@@ -120,17 +120,6 @@ public interface PluginManagementService {
     PluginManagementOperationStatus disablePlugin(final Long id);
 
     /**
-     * Remove the "installed" plugin and restart the server.
-     * 
-     * @param id
-     *            id
-     * @throws com.qcadoo.mes.plugins.internal.exceptions.PluginException
-     *             if operation cannot be executed
-     * @return the operation's status
-     */
-    PluginManagementOperationStatus deinstallPlugin(final Long id);
-
-    /**
      * Download new plugin's version and restart the server.
      * 
      * @param file

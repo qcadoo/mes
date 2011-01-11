@@ -68,6 +68,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		shrinkToFit: false
 	};
 	
+	var globalColumnTranslations = {};
+	
 	var currentEntities;
 	
 	var noRecordsDiv;
@@ -125,9 +127,18 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 					searchoptions.defaultValue = "";
 				}
 				
-				colModel.push({name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true, 
-					align: column.align, stype: stype, searchoptions: searchoptions
-					});
+				var col = {name:column.name, index:column.name, width:column.width, sortable: isSortable, resizable: true, 
+						align: column.align, stype: stype, searchoptions: searchoptions
+				};
+				
+				if (searchoptions.value) {
+					globalColumnTranslations[column.name] = searchoptions.value;
+					col.formatter = function(cellvalue, options, rowObject) {
+						return globalColumnTranslations[options.colModel.name][cellvalue];
+					}
+				}
+				
+				colModel.push(col);
 			} else {
 				hiddenColumnValues[column.name] = new Object();
 			}
@@ -206,6 +217,9 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	function linkClicked(entityId) {
+		if (!componentEnabled) {
+			return;
+		}
 		if (linkListener) {
 			linkListener.onGridLinkClicked(entityId);
 		} else {

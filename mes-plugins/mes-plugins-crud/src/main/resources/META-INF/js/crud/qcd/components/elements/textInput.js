@@ -33,6 +33,10 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	
 	var input = this.input;
 	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	this.getComponentData = function() {
 		return {
 			value : input.val()
@@ -40,9 +44,12 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		if (data.value != undefined && data.value != null) {
-			input.val(data.value);
+		if (data.value) {
+			this.input.val(data.value);
 			textRepresentation.html(data.value);
+		} else {
+			this.input.val("");
+			textRepresentation.html("");
 		}
 	}
 	

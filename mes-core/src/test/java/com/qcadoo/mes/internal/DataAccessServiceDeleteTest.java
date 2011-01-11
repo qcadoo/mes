@@ -84,7 +84,7 @@ public class DataAccessServiceDeleteTest extends DataAccessTest {
         List<SampleSimpleDatabaseObject> entities = new ArrayList<SampleSimpleDatabaseObject>();
         entities.add(simpleDatabaseObject);
         parentFieldDefinitionHasMany.withType(fieldTypeFactory.hasManyType("simple", "entity", "belongsTo",
-                HasManyType.Cascade.NULLIFY));
+                HasManyType.Cascade.NULLIFY, false));
         parentDataDefinition.withField(parentFieldDefinitionHasMany);
 
         Criteria databaseCriteria = mock(Criteria.class, RETURNS_DEEP_STUBS);

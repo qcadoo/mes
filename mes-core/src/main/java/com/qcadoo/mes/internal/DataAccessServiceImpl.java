@@ -112,8 +112,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
             priorityService.prioritizeEntity(dataDefinition, databaseEntity);
         }
 
-        System.out.println(databaseEntity);
-
         getCurrentSession().save(databaseEntity);
 
         Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
@@ -128,51 +126,87 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Monitorable
     public Entity copy(final InternalDataDefinition dataDefinition, final Long entityId) {
         Entity sourceEntity = get(dataDefinition, entityId);
+        Entity targetEntity = copy(dataDefinition, sourceEntity);
 
-        Entity targetEntity = new DefaultEntity(sourceEntity.getPluginIdentifier(), sourceEntity.getName());
-
-        for (Map.Entry<String, FieldDefinition> field : dataDefinition.getFields().entrySet()) {
-            Object value = null;
-
-            if (field.getValue().isUnique()) {
-                if (field.getValue().getType().getType().equals(String.class)) {
-                    value = getCopyValueOfUniqueField(dataDefinition, field.getValue(),
-                            sourceEntity.getStringField(field.getKey()));
-                } else {
-                    throw new IllegalStateException("Cannot copy unique field of type "
-                            + field.getValue().getType().getType().getSimpleName());
-                }
-            } else {
-                value = sourceEntity.getField(field.getKey());
-            }
-
-            targetEntity.setField(field.getKey(), value);
+        if (targetEntity == null) {
+            throw new IllegalStateException("Cannot copy " + sourceEntity);
         }
-
-        dataDefinition.callCopyHook(targetEntity);
-
-        targetEntity = save(dataDefinition, targetEntity);
-
-        LOG.info(sourceEntity + " has been copied to " + targetEntity);
 
         return targetEntity;
     }
 
-    private String getCopyValueOfUniqueField(final InternalDataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    public Entity copy(final InternalDataDefinition dataDefinition, final Entity sourceEntity) {
+        Entity targetEntity = new DefaultEntity(sourceEntity.getPluginIdentifier(), sourceEntity.getName());
+
+        for (String fieldName : dataDefinition.getFields().keySet()) {
+            targetEntity.setField(fieldName, getCopyValueOfSimpleField(sourceEntity, dataDefinition, fieldName));
+        }
+
+        if (!dataDefinition.callCopyHook(targetEntity)) {
+            return null;
+        }
+
+        targetEntity = save(dataDefinition, targetEntity);
+
+        if (!targetEntity.isValid()) {
+            throw new CopyException(targetEntity);
+        }
+
+        LOG.info(sourceEntity + " has been copied to " + targetEntity);
+
+        for (String fieldName : dataDefinition.getFields().keySet()) {
+            copyHasManyField(sourceEntity, targetEntity, dataDefinition, fieldName);
+        }
+
+        return targetEntity;
+    }
+
+    private void copyHasManyField(final Entity sourceEntity, final Entity targetEntity, final DataDefinition dataDefinition,
+            final String fieldName) {
+        FieldDefinition fieldDefinition = dataDefinition.getField(fieldName);
+
+        if (!(fieldDefinition.getType() instanceof HasManyType) || !((HasManyType) fieldDefinition.getType()).isCopyable()) {
+            return;
+        }
+
+        HasManyType hasManyType = ((HasManyType) fieldDefinition.getType());
+
+        for (Entity childEntity : sourceEntity.getHasManyField(fieldName)) {
+            childEntity.setField(hasManyType.getJoinFieldName(), targetEntity.getId());
+            copy((InternalDataDefinition) hasManyType.getDataDefinition(), childEntity);
+        }
+    }
+
+    private Object getCopyValueOfSimpleField(final Entity sourceEntity, final DataDefinition dataDefinition,
+            final String fieldName) {
+        FieldDefinition fieldDefinition = dataDefinition.getField(fieldName);
+
+        if (fieldDefinition.isUnique()) {
+            if (fieldDefinition.getType().getType().equals(String.class)) {
+                return getCopyValueOfUniqueField(dataDefinition, fieldDefinition, sourceEntity.getStringField(fieldName));
+            } else {
+                sourceEntity.addError(fieldDefinition, "core.validate.field.error.invalidUniqueType");
+                throw new CopyException(sourceEntity);
+            }
+        } else {
+            return sourceEntity.getField(fieldName);
+        }
+    }
+
+    private String getCopyValueOfUniqueField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
             final String value) {
         Matcher matcher = Pattern.compile("(.+)\\((\\d+)\\)").matcher(value);
 
         String oldValue = value;
-        int index = 0;
+        int index = 1;
 
         if (matcher.matches()) {
-            System.out.println(matcher.group(0));
             oldValue = matcher.group(1);
-            index = Integer.valueOf(matcher.group(2));
+            index = Integer.valueOf(matcher.group(2)) + 1;
         }
 
-        for (int i = index; i < 9 + index; i++) {
-            String newValue = oldValue + "(" + (i + 1) + ")";
+        while (true) {
+            String newValue = oldValue + "(" + (index++) + ")";
 
             int matches = dataDefinition.find().withMaxResults(1).restrictedWith(Restrictions.eq(fieldDefinition, newValue))
                     .list().getTotalNumberOfEntities();
@@ -181,9 +215,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 return newValue;
             }
         }
-
-        throw new IllegalStateException("Cannot get new value of unique field " + dataDefinition.getName() + "."
-                + fieldDefinition.getName() + ": " + value);
     }
 
     @Override

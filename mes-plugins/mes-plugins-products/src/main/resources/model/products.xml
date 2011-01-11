@@ -41,7 +41,7 @@
 		<string name="ean" />
 		<dictionary name="category" dictionary="categories" />
 		<string name="unit" />
-		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" />
+		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" copyable="true" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="product" cascade="nullify"/>
@@ -60,7 +60,7 @@
 		<belongsTo name="product" model="product" lookupField="name" lazy="false">
 			<validatesPresence /> 
 		</belongsTo>
-		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" />
+		<hasMany name="components" model="substituteComponent" joinField="substitute" cascade="delete" copyable="true" />
 		<priority name="priority" scope="product" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
 	</model>

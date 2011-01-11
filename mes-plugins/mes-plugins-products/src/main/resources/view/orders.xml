@@ -14,39 +14,78 @@
 
 <qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="orders" model="order" menuAccessible="true">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="gridNewCopyAndRemoveAction"/>
 				<group name="export">
 					<smallButton name="print" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printOrder,pdf);" />
+						action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" />
 				</group>
 				<group name="exportMaterialReq">
 					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" />
+						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" state="disabled" />
 					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" />
+						action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" />
 				</group>
 				<group name="exportWorker">
 					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" state="disabled" />
 					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled" />
 				</group>
 				<group name="exportMachine">
 					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" state="disabled" />
 					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" state="disabled" />
 				</group>
 				<group name="exportProduct">
 					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" state="disabled" />
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" />
+						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
+				<script>
+					<![CDATA[
+						var print = #{window}.getRibbonItem("export.print");
+						var pdfMaterialReq = #{window}.getRibbonItem("exportMaterialReq.pdf");
+						var xlsMaterialReq = #{window}.getRibbonItem("exportMaterialReq.xls");
+						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
+						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
+						var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
+						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
+						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
+						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+						var listener = {
+							onChange: function(selectedRecord) {
+								if (!selectedRecord) {
+									print.disable();
+									pdfMaterialReq.disable();
+									xlsMaterialReq.disable();
+									pdfWorker.disable();
+									xlsWorker.disable();
+									pdfMachine.disable();
+									xlsMachine.disable();
+									pdfProduct.disable();
+									xlsProduct.disable();
+								} else {
+									print.enable();
+									pdfMaterialReq.enable();
+									xlsMaterialReq.enable();
+									pdfWorker.enable();
+									xlsWorker.enable();
+									pdfMachine.enable();
+									xlsMachine.enable();
+									pdfProduct.enable();
+									xlsProduct.enable();
+								}
+							}
+						}
+						this.addOnChangeListener(listener);
+					]]>
+				</script>
 				<option type="column" name="number" fields="number" link="true" />
 				<option type="column" name="name" fields="name" link="true" />
 				<option type="column" name="state" fields="state" />
@@ -92,12 +131,41 @@
 		</component>
 	</view>
 	<view name="order" model="order">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="order" reference="form">
+				<script>
+					<![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						var del = #{window}.getRibbonItem("actions.delete");
+						this.addOnChangeListener({
+							onSetValue: function(selectedRecord) {
+								var state = #{state}.getValue().content.value;
+								if (state && state == "03done") {
+									save.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									saveBack.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									cancel.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									del.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+								} else {
+									save.enable();
+									saveBack.enable();
+									if (!selectedRecord) {
+										cancel.disable();
+										del.disable();
+									} else {
+										cancel.enable();
+										del.enable();
+									}
+								}
+							}
+						});
+					]]>
+				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6">
 					<layoutElement column="1" row="1">
@@ -114,7 +182,7 @@
 						<component type="calendar" name="dateTo" field="dateTo" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="select" name="state" field="state" />
+						<component type="select" name="state" field="state" reference="state"/>
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="product" reference="product"
@@ -124,7 +192,7 @@
 							<option type="column" name="category" fields="category" />
 							<option type="searchable" value="name,category" />
 							<option type="orderable" value="name,category" />
-							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.OrderService" method="changeOrderProduct"/>
 						</component>
@@ -141,7 +209,7 @@
 								width="300" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
@@ -175,7 +243,7 @@
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="generateOrderNumber" />		
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="fillDefaultTechnology" />		
+		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableFormForDoneOrder" />
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableTechnologiesIfProductDoesNotAny" />		
-		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="disableFormForDoneOrder" />	
 	</view>
 </qcd:views>

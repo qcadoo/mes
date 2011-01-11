@@ -127,6 +127,9 @@ QCD.components.Component = function(_element, _mainController) {
 		if (state.components) {
 			this.setComponentsState(state);
 		}
+		if (onChangeListeners) {
+			this.fireOnChangeListeners("onSetValue", [state]);
+		}
 	}
 	
 	this.performScript = function() {

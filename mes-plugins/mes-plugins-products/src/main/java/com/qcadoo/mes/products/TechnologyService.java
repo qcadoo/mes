@@ -36,8 +36,29 @@ import com.qcadoo.mes.model.search.SearchResult;
 @Service
 public final class TechnologyService {
 
-    public void clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("master", false);
+        return true;
+    }
+
+    public boolean copyTechnologyFromParent(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity.getField("parent") == null) {
+            return true;
+        }
+
+        Object object = entity.getField("parent");
+
+        Entity parent = null;
+
+        if (object instanceof Long) {
+            parent = dataDefinition.get((Long) object);
+        } else {
+            return false;
+        }
+
+        entity.setField("technology", parent.getField("technology"));
+
+        return true;
     }
 
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {

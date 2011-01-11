@@ -41,7 +41,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
+import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.controller.ErrorController;
+import com.qcadoo.mes.internal.CopyException;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 
 public final class TranslatedMessageExceptionResolver extends SimpleMappingExceptionResolver {
 
@@ -56,9 +59,13 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
     @Autowired
     private ErrorController errorController;
 
+    @Autowired
+    private TranslationService translationService;
+
     @PostConstruct
     public void init() {
         exceptionTranslations.put(DataIntegrityViolationException.class, "dataIntegrityViolationException.objectInUse");
+        exceptionTranslations.put(CopyException.class, "copyException");
         messageTranslations.put("Entity.* cannot be found", "illegalStateException.entityNotFound");
         messageTranslations.put("PrintError:DocumentNotGenerated", "illegalStateException.printErrorDocumentNotGenerated");
     }
@@ -79,11 +86,52 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
                 LOG.debug("Adding exception message to view: " + customExceptionMessage);
             }
 
-            return errorController.getAccessDeniedPageView(code, exception, customExceptionMessage,
-                    retrieveLocaleFromRequestCookie(request));
+            String customExceptionMessageHeader = null;
+            String customExceptionMessageExplanation = null;
+
+            Locale locale = retrieveLocaleFromRequestCookie(request);
+
+            customExceptionMessageHeader = translationService.translate("core.errorPage.error." + customExceptionMessage
+                    + ".header", locale);
+            customExceptionMessageExplanation = translationService.translate("core.errorPage.error." + customExceptionMessage
+                    + ".explanation", locale);
+
+            Throwable rootException = getRootException(exception);
+
+            if (rootException instanceof CopyException) {
+                String copyExplanation = getAdditionalMessageForCopyException((CopyException) rootException, locale);
+                if (copyExplanation != null) {
+                    customExceptionMessageExplanation = copyExplanation;
+                }
+            }
+
+            return errorController.getAccessDeniedPageView(code, exception, customExceptionMessageHeader,
+                    customExceptionMessageExplanation, retrieveLocaleFromRequestCookie(request));
         }
 
         return mv;
+    }
+
+    private Throwable getRootException(final Throwable throwable) {
+        if (throwable.getCause() != null) {
+            return getRootException(throwable.getCause());
+        } else if (throwable instanceof InvocationTargetException) {
+            return getRootException(((InvocationTargetException) throwable).getTargetException());
+        } else {
+            return throwable;
+        }
+    }
+
+    private String getAdditionalMessageForCopyException(final CopyException exception, final Locale locale) {
+        for (Map.Entry<String, ErrorMessage> error : exception.getEntity().getErrors().entrySet()) {
+            String field = translationService.translate(exception.getEntity().getPluginIdentifier() + "."
+                    + exception.getEntity().getName() + "." + error.getKey() + ".label", locale);
+            return field + " - " + translationService.translate(error.getValue().getMessage(), locale);
+        }
+        for (ErrorMessage error : exception.getEntity().getGlobalErrors()) {
+            return translationService.translate(error.getMessage(), locale);
+        }
+        return null;
     }
 
     private String getCustomExceptionMessage(final Throwable throwable) {
@@ -94,6 +142,10 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
         }
 
         exceptionMessage = throwable.getMessage();
+
+        if (exceptionMessage == null) {
+            return null;
+        }
 
         for (Map.Entry<String, String> translation : messageTranslations.entrySet()) {
             if (exceptionMessage.matches(translation.getKey())) {

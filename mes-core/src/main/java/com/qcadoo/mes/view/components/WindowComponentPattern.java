@@ -70,21 +70,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             json.put("ribbon", getJsRibbon(locale));
         }
 
-        JSONObject translations = new JSONObject();
-
-        addTranslation(translations, "message.noRecordSelected", locale);
-        addTranslation(translations, "message.recordAlreadyGenerated", locale);
-        addTranslation(translations, "message.recordNotGenerated", locale);
-        addTranslation(translations, "message.recordNotCreated", locale);
-
-        json.put("translations", translations);
-
         return json;
-    }
-
-    private void addTranslation(final JSONObject translation, final String key, final Locale locale) throws JSONException {
-        List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + key, "core.ribbon." + key });
-        translation.put(key, getTranslationService().translate(codes, locale));
     }
 
     @Override
@@ -113,6 +99,24 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
                 String label = getTranslationService().translate(getTranslationCodes(prefix + item.getString("name")), locale);
                 item.put("label", label);
+
+                if (item.has("script")) {
+                    String script = item.getString("script");
+                    if (script != null) {
+                        item.put("script", prepareScript(script, locale));
+                    }
+                }
+
+                if (item.has("message")) {
+                    String message = item.getString("message");
+                    if (message.contains(".")) {
+                        message = getTranslationService().translate(message, locale);
+                    } else {
+                        message = getTranslationService().translate("core.message." + message, locale);
+                    }
+                    item.put("message", prepareScript(message, locale));
+                }
+
                 translateRibbonItems(item, prefix + item.getString("name") + ".", locale);
             }
         }
@@ -356,10 +360,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         ribbonDeleteAction.setEnabled(false);
-        ribbonDeleteAction.setMessage("noRecordSelected");
-        ribbonDeleteAction
-                .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
-                        + "this.setDisableMessage('noRecordSelected');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
+        // ribbonDeleteAction.setMessage("noRecordSelected");
+        ribbonDeleteAction.setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
+                + "this.disable();} else {this.enable();}}}; #{grid}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -369,10 +372,9 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setIcon("copyIcon16.png");
         ribbonCopyAction.setName("copy");
         ribbonCopyAction.setEnabled(false);
-        ribbonCopyAction.setMessage("noRecordSelected");
-        ribbonCopyAction
-                .setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
-                        + "this.setDisableMessage('noRecordSelected');} else {this.setEnabled();}}}; #{grid}.addOnChangeListener(listener);");
+        // ribbonCopyAction.setMessage("noRecordSelected");
+        ribbonCopyAction.setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
+                + "this.disable();} else {this.enable();}}}; #{grid}.addOnChangeListener(listener);");
         ribbonCopyAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         return ribbonCopyAction;
     }
@@ -413,7 +415,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonSaveAction.setIcon("saveBackIcon24.png");
         ribbonSaveAction.setName("save");
         ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
-
+        ribbonSaveAction.setEnabled(true);
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
         ribbonGroup.addItem(ribbonSaveAction);
@@ -428,10 +430,10 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         ribbonDeleteAction.setEnabled(false);
-        ribbonDeleteAction.setMessage("recordNotCreated");
+        // ribbonDeleteAction.setMessage("recordNotCreated");
         ribbonDeleteAction
-                .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
-                        + "this.setEnabled();} else {this.setDisableMessage('recordNotCreated');}}}; #{form}.addOnChangeListener(listener);");
+                .setScript("var listener = {onSetValue: function(value) {if (!value || !value.content) return; if (value.content.entityId) {"
+                        + "this.enable();} else {this.disable();}}}; #{form}.addOnChangeListener(listener);");
         return ribbonDeleteAction;
     }
 
@@ -440,6 +442,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCancelAction.setAction(translateRibbonAction("#{form}.performCancel;", parser));
         ribbonCancelAction.setIcon("cancelIcon16.png");
         ribbonCancelAction.setName("cancel");
+        ribbonCancelAction.setEnabled(true);
         ribbonCancelAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
         return ribbonCancelAction;
     }
@@ -451,10 +454,10 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonCopyAction.setName("copy");
         ribbonCopyAction.setType(RibbonActionItem.Type.BIG_BUTTON);
         ribbonCopyAction.setEnabled(false);
-        ribbonCopyAction.setMessage("recordNotCreated");
+        // ribbonCopyAction.setMessage("recordNotCreated");
         ribbonCopyAction
-                .setScript("var listener = {onSetValue: function(value) {if (value && value.content && value.content.entityId) {"
-                        + "this.setEnabled();} else {this.setDisableMessage('recordNotCreated');}}}; #{form}.addOnChangeListener(listener);");
+                .setScript("var listener = {onSetValue: function(value) {if (!value || !value.content) return; if (value.content.entityId) {"
+                        + "this.enable();} else {this.disable();}}}; #{form}.addOnChangeListener(listener);");
         return ribbonCopyAction;
     }
 
@@ -463,6 +466,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonSaveBackAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack;", parser));
         ribbonSaveBackAction.setIcon("saveBackIcon24.png");
         ribbonSaveBackAction.setName("saveBack");
+        ribbonSaveBackAction.setEnabled(true);
         ribbonSaveBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
         return ribbonSaveBackAction;
     }
@@ -472,6 +476,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave;", parser));
         ribbonSaveAction.setIcon("saveIcon24.png");
         ribbonSaveAction.setName("save");
+        ribbonSaveAction.setEnabled(true);
         ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
         return ribbonSaveAction;
     }

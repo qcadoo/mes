@@ -50,7 +50,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
-				<group template="formSaveAndRemoveActions"/>
+				<group template="formSaveAction"/>
 			</ribbon>		
 			<component type="form" name="group" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
@@ -201,6 +201,7 @@
 				<option type="expression" value="' '"/>
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.users.UserService" method="removeChangePasswordButtonWhenNotAllowed" />
 	</view>
 	<view name="profileChangePassword" model="user">
 		<component type="window" name="window">

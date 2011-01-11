@@ -10,7 +10,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var translations = this.options.translations;
 	
-	var AUTOCOMPLETE_TIMEOUT = 200;
+	var AUTOCOMPLETE_TIMEOUT = 100;
 	
 	var keyboard = {
 		UP: 38,
@@ -65,6 +65,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var lookupWindow;
 	
 	var baseValue;
+	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
 	
 	function constructor(_this) {
 		
@@ -230,9 +234,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	function onDataStateChange() {
 		if (dataState.autocomplete.code == dataState.currentCode) {
 			elements.loading.hide();	
-		}
-		if (dataState.selectedEntity.id) {
-			element.removeClass("error");
 		}
 		if (blurAfterLoad) {
 			blurAfterLoad = false;

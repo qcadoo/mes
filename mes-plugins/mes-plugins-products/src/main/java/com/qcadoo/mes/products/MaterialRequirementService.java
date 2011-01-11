@@ -76,11 +76,12 @@ public final class MaterialRequirementService {
     @Autowired
     private TranslationService translationService;
 
-    public void clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
         entity.setField("generated", false);
         entity.setField("date", null);
         entity.setField("worker", null);
+        return true;
     }
 
     public boolean checkMaterialRequirementComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
@@ -117,6 +118,10 @@ public final class MaterialRequirementService {
             name.setEnabled(false);
             onlyComponents.setEnabled(false);
             materialRequirementComponents.setEnabled(false);
+        } else {
+            name.setEnabled(true);
+            onlyComponents.setEnabled(true);
+            materialRequirementComponents.setEnabled(true);
         }
     }
 
@@ -126,6 +131,25 @@ public final class MaterialRequirementService {
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState worker = viewDefinitionState.getComponentByReference("worker");
+
+            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
+                    (Long) state.getFieldValue());
+
+            if (materialRequirement == null) {
+                String message = translationService.translate("core.message.entityNotFound", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+                String message = translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.documentsWasGenerated", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            } else if (materialRequirement.getHasManyField("orders").isEmpty()) {
+                String message = translationService.translate(
+                        "products.materialRequirement.window.materialRequirement.missingAssosiatedOrders", state.getLocale());
+                state.addMessage(message, MessageType.FAILURE);
+                return;
+            }
 
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
@@ -142,26 +166,15 @@ public final class MaterialRequirementService {
                 return;
             }
 
-            Entity materialRequirement = dataDefinitionService.get("products", "materialRequirement").get(
-                    (Long) state.getFieldValue());
+            materialRequirement = dataDefinitionService.get("products", "materialRequirement").get((Long) state.getFieldValue());
 
-            if (materialRequirement == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
-                String message = translationService.translate(
-                        "products.materialRequirement.window.materialRequirement.documentsWasGenerated", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
-            } else {
-                try {
-                    generateMaterialReqDocuments(state, materialRequirement);
-
-                    state.performEvent(viewDefinitionState, "reset", new String[0]);
-                } catch (IOException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                } catch (DocumentException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                }
+            try {
+                generateMaterialReqDocuments(state, materialRequirement);
+                state.performEvent(viewDefinitionState, "reset", new String[0]);
+            } catch (IOException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            } catch (DocumentException e) {
+                throw new IllegalStateException(e.getMessage(), e);
             }
         }
     }
@@ -202,6 +215,10 @@ public final class MaterialRequirementService {
 
             if (order == null) {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else if (order.getField("technology") == null) {
+                state.addMessage(
+                        translationService.translate("products.validate.global.error.orderMustHaveTechnology", state.getLocale()),
                         MessageType.FAILURE);
             } else {
                 Entity materialRequirement = createNewMaterialReq(order, state);
@@ -253,7 +270,7 @@ public final class MaterialRequirementService {
         materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
     }
 
-    private Entity createNewMaterialReq(Entity order, final ComponentState state) {
+    private Entity createNewMaterialReq(final Entity order, final ComponentState state) {
 
         Entity materialReq = new DefaultEntity("products", "materialRequirement");
         materialReq.setField(

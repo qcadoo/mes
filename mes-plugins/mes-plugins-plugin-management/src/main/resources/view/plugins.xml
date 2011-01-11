@@ -27,18 +27,16 @@
 
 <qcd:views plugin="plugins" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="plugins" model="plugin" menuAccessible="true">
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="plugins">
-					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" />
-					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" />
+					<bigButton name="download" icon="downloadIcon24.png" action="#{grid}.fireEvent(download);" message="plugins.ribbon.messages.download"/>
+					<bigButton name="update" icon="updateIcon24.png" action="#{grid}.fireEvent(update);" state="disabled" />
 				</group>
 				<group name="actions">
-					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" />
-					<smallButtons name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);">
-						<smallButton name="deinstall" icon="deinstallIcon16.png" action="#{grid}.fireEvent(deinstall);" />
-						<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" />
-					</smallButtons>
+					<smallButton name="enable" icon="enableIcon16.png" action="#{grid}.fireEvent(enable);" state="enabled" />
+					<smallButton name="disable" icon="disableIcon16.png" action="#{grid}.fireEvent(disable);" state="disabled" />
+					<smallButton name="remove" icon="deleteIcon16.png" action="#{grid}.fireEvent(removePlugin);" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="grid" name="plugins" reference="grid">
@@ -46,12 +44,13 @@
 				<option type="column" name="description" fields="description" />
 				<option type="column" name="version" fields="version" />
 				<option type="column" name="vendor" fields="vendor" />
+				<option type="column" name="base" fields="base" link="false" />
 				<option type="column" name="status" fields="status" />
 				<option type="order" column="name" direction="asc"/>
 				<option type="correspondingView" value="plugins/plugin" />
 				<option type="correspondingComponent" value="form" />
-				<option type="searchable" value="name,vendor,status" />
-				<option type="orderable" value="name,description,version,vendor,status" />
+				<option type="searchable" value="name,description,version,vendor,status,base" />
+				<option type="orderable" value="name,description,version,vendor,status,base" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
 				<option type="fullscreen" value="true" />
@@ -59,8 +58,61 @@
 				<listener event="update" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginUpdateClick" />
 				<listener event="enable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginEnableClick" />
 				<listener event="disable" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDisableClick" />
-				<listener event="deinstall" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginDeinstallClick" />
 				<listener event="removePlugin" bean="com.qcadoo.mes.plugins.controller.PluginManagementController" method="onPluginRemoveClick" />
+				<script>
+					<![CDATA[
+						var downloadRibbonItem = #{window}.getRibbonItem("plugins.download");
+						var updateRibbonItem = #{window}.getRibbonItem("plugins.update");
+						
+						var enableRibbonItem = #{window}.getRibbonItem("actions.enable");
+						var disableRibbonItem = #{window}.getRibbonItem("actions.disable");
+						var removeRibbonItem = #{window}.getRibbonItem("actions.remove");
+						
+						var listener = {
+							onChange: function(selectedRecord) {
+								if (!selectedRecord) {
+									updateRibbonItem.disable();
+									enableRibbonItem.disable();
+									disableRibbonItem.disable();
+									removeRibbonItem.disable();
+								} else {
+									var status = selectedRecord.fields.status;
+									var isBase = (selectedRecord.fields.base == "1");
+									if (isBase) {
+										updateRibbonItem.disable("#{translate(plugins.ribbon.messages.base)}");
+										enableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
+										disableRibbonItem.disable("#{translate(plugins.ribbon.messages.base)}");
+										removeRibbonItem.disable("#{translate(plugins.ribbon.messages.base)}");
+									} else {
+										if (status == "01downloaded") {
+											updateRibbonItem.disable("#{translate(plugins.ribbon.messages.notInstalled)}");
+											enableRibbonItem.enable("#{translate(plugins.ribbon.messages.enable)}");
+											disableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
+											removeRibbonItem.enable();
+											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.remove)}");
+											removeRibbonItem.setIcon('deleteIcon16.png');
+										} else if (status == "02installed") {
+											updateRibbonItem.enable("#{translate(plugins.ribbon.messages.update)}");
+											enableRibbonItem.enable("#{translate(plugins.ribbon.messages.enable)}");
+											disableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyDisabled)}");
+											removeRibbonItem.enable();
+											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.deinstall)}");
+											removeRibbonItem.setIcon('deinstallIcon16.png');
+										} else if (status == "03active") {
+											updateRibbonItem.enable("#{translate(plugins.ribbon.messages.update)}");
+											enableRibbonItem.disable("#{translate(plugins.ribbon.messages.alreadyEnabled)}");
+											disableRibbonItem.enable();
+											removeRibbonItem.enable("#{translate(plugins.plugins.window.ribbon.actions.removeInfo)}");
+											removeRibbonItem.setLabel("#{translate(plugins.plugins.window.ribbon.actions.deinstall)}");
+											removeRibbonItem.setIcon('deinstallIcon16.png');
+										}
+									}
+								}
+							}
+						}
+						this.addOnChangeListener(listener);
+					]]>
+				</script>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -71,7 +123,28 @@
 			<ribbon>
 				<group template="navigation"/>
 				<group name="plugins">
-					<bigButton name="update" icon="updateIcon24.png" action="#{form}.fireEvent(update);" />
+					<bigButton name="update" icon="updateIcon24.png" action="#{form}.fireEvent(update);" state="disabled">
+						<script>
+							<![CDATA[
+								var listener = {
+									onSetValue: function(value) {
+										var isBase = (#{base}.getValue().content.value == "1");
+										var status = #{status}.getValue().content.value;
+										if (isBase) {
+											this.disable("#{translate(plugins.ribbon.messages.base)}");
+										} else {
+											if (status == "01downloaded") {
+												this.disable("#{translate(plugins.ribbon.messages.notInstalled)}");
+											} else {
+												this.enable();
+											}
+										}
+									}
+								}
+								#{form}.addOnChangeListener(listener);
+							]]>
+						</script>
+					</bigButton>
 				</group>
 			</ribbon>
 			<component type="form" name="plugin" reference="form">
@@ -89,10 +162,10 @@
 						<component type="textarea" name="description" field="description" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="7">
-						<component type="select" name="status" field="status" defaultEnabled="false" />
+						<component type="select" name="status" field="status" defaultEnabled="false" reference="status" />
 					</layoutElement>
 					<layoutElement column="1" row="8">
-						<component type="checkbox" name="base" field="base" defaultEnabled="false" />
+						<component type="checkbox" name="base" field="base" defaultEnabled="false" reference="base" />
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />

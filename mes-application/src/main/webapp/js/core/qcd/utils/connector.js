@@ -59,11 +59,8 @@ QCDConnector.sendGet = function(type, parameters, responseFunction, errorFunctio
 					return;
 				}
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
-					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.showErrorMessage(message);
-					if (errorFunction) {
-						errorFunction(message);
-					}
+					var messageBody = responseText.substring(20, responseText.search("]]>"));
+					QCDConnector.showErrorMessage(messageBody,errorFunction);
 					return;
 				}
 				if (responseFunction) {
@@ -105,11 +102,8 @@ QCDConnector.sendPost = function(parameters, responseFunction, errorFunction) {
 				}
 				//alert(responseText);
 				if (responseText.substring(0, 20) == "<![CDATA[ERROR PAGE:") {
-					var message = responseText.substring(20, responseText.search("]]>"));
-					QCDConnector.showErrorMessage(message);
-					if (errorFunction) {
-						errorFunction(message);
-					}
+					var messageBody = responseText.substring(20, responseText.search("]]>"));
+					QCDConnector.showErrorMessage(messageBody,errorFunction);
 					return;
 				}
 				if (responseFunction) {
@@ -130,9 +124,18 @@ QCDConnector.sendPost = function(parameters, responseFunction, errorFunction) {
 	});
 }
 
-QCDConnector.showErrorMessage = function(messageContent) {
-	QCDConnector.mainController.showMessage({
-		type: "failure",
-		content: messageContent
-	});
+QCDConnector.showErrorMessage = function(messageBody, errorFunction) {
+	var messageBodyParts = messageBody.split("##");
+	var message = {};
+	if (messageBodyParts.length == 2) {
+		message.title = messageBodyParts[0];
+		message.content = messageBodyParts[1];
+	} else {
+		message.content = messageBody;
+	}
+	message.type = "failure";
+	QCDConnector.mainController.showMessage(message);
+	if (errorFunction) {
+		errorFunction(message);
+	}
 }

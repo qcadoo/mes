@@ -54,14 +54,14 @@
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
-									xlsRibbonItem.setDisableMessage("noRecordSelected");
-									pdfRibbonItem.setDisableMessage("noRecordSelected");	
-								} else if (selectedRecord.fields.generated == 'nie') {
-									xlsRibbonItem.setDisableMessage("recordNotGenerated");
-									pdfRibbonItem.setDisableMessage("recordNotGenerated");								
+									xlsRibbonItem.disable();
+									pdfRibbonItem.disable();	
+								} else if (selectedRecord.fields.generated == '0') {
+									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
 								} else {
-									xlsRibbonItem.setEnabled();
-									pdfRibbonItem.setEnabled();
+									xlsRibbonItem.enable();
+									pdfRibbonItem.enable();
 								}
 							}
 						}
@@ -79,6 +79,7 @@
 				<group template="navigation"/>
 				<group name="actions">
 					<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" state="disabled" />
+					<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" state="disabled"/>
 					<bigButton name="generate"  icon="generateIcon24.png" action="#{form}.fireEvent(generateMaterialRequirement);" state="disabled"/>
 				</group>
 				<group name="export">
@@ -91,35 +92,66 @@
 			<component type="form" name="materialRequirement" reference="form">
 				<script>
 					<![CDATA[
+						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 						var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 						var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 						var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
 						
-						var listener = {
+						var containsAtLeastOneOrder = false;
+						var entityExists = false;
+						
+						this.addOnChangeListener({
 							onSetValue: function(value) {
-								var isGeneratedCheckboxValue = #{generated}.getValue();
-								if (value && value.content && value.content.entityId) {
-									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-										xlsRibbonItem.setEnabled();
-										pdfRibbonItem.setEnabled();
-										saveRibbonItem.setDisableMessage("recordAlreadyGenerated");
-										generateRibbonItem.setDisableMessage("recordAlreadyGenerated");
-									} else {
-										xlsRibbonItem.setDisableMessage("recordNotGenerated");
-										pdfRibbonItem.setDisableMessage("recordNotGenerated");
-										saveRibbonItem.setEnabled();
-										generateRibbonItem.setEnabled();
-									}
-								} else {
-									xlsRibbonItem.setDisableMessage("recordNotCreated");
-									pdfRibbonItem.setDisableMessage("recordNotCreated");
-									saveRibbonItem.setEnabled();
-									generateRibbonItem.setDisableMessage("recordNotCreated");
+								if (!value || !value.content) {
+									return;
 								}
+								if (value.content.entityId) {
+									entityExists = true;
+								} else {
+									entityExists = false;
+								}
+								updateRibbon();
+							}
+						});
+						#{materialRequirementComponents}.addOnChangeListener({
+							onSetValue: function(value) {
+								if (value.content.totalEntities > 0) {
+									containsAtLeastOneOrder = true;
+								} else {
+									containsAtLeastOneOrder = false;
+								}
+								updateRibbon();
+							}
+						});
+						
+						function updateRibbon() {
+							if (entityExists) {
+								var isGeneratedCheckboxValue = #{generated}.getValue();
+								copyRibbonItem.enable();
+								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+									xlsRibbonItem.enable();
+									pdfRibbonItem.enable();
+									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+								} else {
+									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									saveRibbonItem.enable();
+									if (containsAtLeastOneOrder) {
+										generateRibbonItem.enable();
+									} else {
+										generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
+									}
+								}
+							} else {
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
+								xlsRibbonItem.disable("#{translate(recordNotCreated)}");
+								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+								saveRibbonItem.enable();
+								generateRibbonItem.disable("#{translate(recordNotCreated)}");
 							}
 						}
-						this.addOnChangeListener(listener);
 					]]>
 				</script>
 				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
@@ -181,7 +213,7 @@
 								width="300" />
 							<option type="searchable" value="number,name" />
 							<option type="orderable" value="number,name" />
-							<option type="expression" value="#name + ' - ' + #number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
