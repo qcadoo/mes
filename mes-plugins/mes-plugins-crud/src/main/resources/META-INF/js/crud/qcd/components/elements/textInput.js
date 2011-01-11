@@ -44,9 +44,12 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 	}
 	
 	this.setComponentData = function(data) {
-		if (data.value != undefined && data.value != null) {
-			input.val(data.value);
+		if (data.value) {
+			this.input.val(data.value);
 			textRepresentation.html(data.value);
+		} else {
+			this.input.val("");
+			textRepresentation.html("");
 		}
 	}
 	
