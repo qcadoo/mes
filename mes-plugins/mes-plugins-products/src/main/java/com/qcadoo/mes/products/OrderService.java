@@ -159,7 +159,7 @@ public final class OrderService {
             Entity defaultTechnologyEntity = getDefaultTechnology(product.getFieldValue());
 
             if (defaultTechnologyEntity != null) {
-                String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#name + ' - ' + #number",
+                String defaultTechnologyValue = ExpressionUtil.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                         locale);
                 defaultTechnology.setFieldValue(defaultTechnologyValue);
             }
