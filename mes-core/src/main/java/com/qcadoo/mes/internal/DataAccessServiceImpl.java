@@ -149,7 +149,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         targetEntity = save(dataDefinition, targetEntity);
 
         if (!targetEntity.isValid()) {
-            throw new IllegalStateException("Cannot copy " + sourceEntity);
+            throw new CopyException(targetEntity);
         }
 
         LOG.info(sourceEntity + " has been copied to " + targetEntity);
@@ -185,8 +185,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             if (fieldDefinition.getType().getType().equals(String.class)) {
                 return getCopyValueOfUniqueField(dataDefinition, fieldDefinition, sourceEntity.getStringField(fieldName));
             } else {
-                throw new IllegalStateException("Cannot copy unique field of type "
-                        + fieldDefinition.getType().getType().getSimpleName());
+                sourceEntity.addError(fieldDefinition, "core.validate.field.error.invalidUniqueType");
+                throw new CopyException(sourceEntity);
             }
         } else {
             return sourceEntity.getField(fieldName);

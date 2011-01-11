@@ -43,22 +43,19 @@ public class ErrorController {
 
     @RequestMapping(value = "error", method = RequestMethod.GET)
     public ModelAndView getAccessDeniedPageView(@RequestParam final int code, final Locale locale) {
-        return getAccessDeniedPageView(code, null, null, locale);
+        return getAccessDeniedPageView(code, null, null, null, locale);
     }
 
     public ModelAndView getAccessDeniedPageView(@RequestParam final int code, final Exception exception,
-            final String predefinedExceptionMessage, final Locale locale) {
+            final String predefinedExceptionMessageHeader, final String predefinedExceptionMessageExplanation, final Locale locale) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("core/error");
 
         mav.addObject("code", code);
 
-        if (predefinedExceptionMessage != null) {
-
-            mav.addObject("errorHeader",
-                    translationService.translate("core.errorPage.error." + predefinedExceptionMessage + ".header", locale));
-            mav.addObject("errorExplanation",
-                    translationService.translate("core.errorPage.error." + predefinedExceptionMessage + ".explanation", locale));
+        if (predefinedExceptionMessageHeader != null && predefinedExceptionMessageExplanation != null) {
+            mav.addObject("errorHeader", predefinedExceptionMessageHeader);
+            mav.addObject("errorExplanation", predefinedExceptionMessageExplanation);
 
         } else {
 
