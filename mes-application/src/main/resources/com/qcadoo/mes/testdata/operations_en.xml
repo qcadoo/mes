@@ -27,7 +27,8 @@
 
 
 <operations>
-	<row NAME="operation1" NUMBER="1" />
-	<row NAME="operation2" NUMBER="2" />
-	<row NAME="operation3" NUMBER="3" />
+	<row NAME="Plane" NUMBER="1" />
+	<row NAME="Saw" NUMBER="2" />
+	<row NAME="Grind" NUMBER="3" />
+	<row NAME="Mill" NUMBER="4" />
 </operations>

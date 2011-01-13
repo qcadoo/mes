@@ -40,4 +40,6 @@ public interface SecurityService {
      */
     UsersUser getCurrentUser();
 
+    String getCurrentUserName();
+
 }

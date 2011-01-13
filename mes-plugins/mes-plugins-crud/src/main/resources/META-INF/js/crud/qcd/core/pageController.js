@@ -17,6 +17,10 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	var popup;
 	
+	var actionEvaluator = new QCD.ActionEvaluator(this);
+	
+	var referencesObject = {};
+	
 	function constructor(_this) {
 		
 		QCDConnector.windowName = "/page/"+pluginIdentifier+"/"+viewName;
@@ -38,17 +42,28 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		} else {
 			$(window).focus(onWindowClick);
 		}
+		
+		QCD.components.elements.utils.LoadingIndicator.blockElement($("body"));
 	}
 	
 	this.init = function(serializationObject) {
+		
+		for (var i in pageComponents) {
+			pageComponents[i].performScript();
+		}
+		
 		if (serializationObject) {
 			setComponentState(serializationObject);
 			if (hasDataDefinition) {
-				this.callEvent("initializeAfterBack");
+				this.callEvent("initializeAfterBack", null, function() {QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"))});
+			} else {
+				QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"));
 			}
 		} else {
 			if (hasDataDefinition) {
-				this.callEvent("initialize");
+				this.callEvent("initialize", null, function() {QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"))});
+			} else {
+				QCD.components.elements.utils.LoadingIndicator.unblockElement($("body"));
 			}
 		}
 	}
@@ -67,6 +82,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 	
 	this.callEvent = function(eventName, component, completeFunction, args, actionsPerformer) {
 		var initParameters = new Object();
+		var eventCompleteFunction = completeFunction;
 		initParameters.event = {
 			name: eventName
 		}
@@ -79,13 +95,22 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 					var listenerElement = getComponent(componentListeners[i]);
 					listenerElement.setComponentLoading(true);
 				}
+				eventCompleteFunction = function() {
+					if (completeFunction) {
+						completeFunction();
+					}
+					for (var i = 0; i<componentListeners.length; i++) {
+						var listenerElement = getComponent(componentListeners[i]);
+						listenerElement.setComponentLoading(false);
+					}
+				}
 			}
 		}
 		if (args) {
 			initParameters.event.args = args;
 		}
 		initParameters.components = getValueData();
-		performEvent(initParameters, completeFunction, actionsPerformer);
+		performEvent(initParameters, eventCompleteFunction, actionsPerformer);
 	}
 	
 	function performEvent(parameters, completeFunction, actionsPerformer) {
@@ -123,75 +148,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 //		}
 //	}
 	
-	this.performRibbonAction = function(ribbonAction) {
-		var actionParts = ribbonAction.split(";");
-		var actions = new Array();
-		for (var actionIter in actionParts) {
-			var action = $.trim(actionParts[actionIter]);
-			if (action) {
-				var elementBegin = action.search("{");
-				var elementEnd = action.search("}");
-				if (elementBegin<0 || elementEnd<0 || elementEnd<elementBegin) {
-					QCD.error("action parse error in: "+action);
-					return;
-				}
-				var elementPath = action.substring(elementBegin+1, elementEnd);
-				var component = this.getComponent(elementPath);
-				
-				var elementAction = action.substring(elementEnd+1);
-				if (elementAction[0] != ".") {
-					QCD.error("action parse error in: "+action);
-					return;
-				}
-				elementAction = elementAction.substring(1);
-
-				var argumentsBegin = elementAction.indexOf("(");
-				var argumentsEnd = elementAction.indexOf(")");
-				var argumentsList = new Array();
-				
-				//(argumentsBegin < argumentsEnd-1) because it then means that there are no arguments
-				//and only empty parenthesis ()
-				if(argumentsBegin > 0 && argumentsEnd > 0 && argumentsBegin < argumentsEnd-1) {
-					var args = elementAction.substring(argumentsBegin+1, argumentsEnd);
-					argumentsList = args.split(",");
-					elementAction = elementAction.substring(0, argumentsBegin);
-				} else if(argumentsBegin == argumentsEnd-1) {
-					//we need to get rid of the empty parenthesis
-					elementAction = elementAction.substring(0, argumentsBegin);
-				}
-
-				var actionObject = {
-					component: component,
-					action: elementAction,
-					arguments: argumentsList
-				}
-				
-				actions.push(actionObject);
-			}
-		}
-		var actionsPerformer = {
-			actions: actions,
-			actionIter: 0,
-			performNext: function() {
-				var actionObject = this.actions[this.actionIter];
-				if (actionObject) {
-					var func = actionObject.component[actionObject.action];
-					if (!func) {
-						QCD.error("no function in "+actionObject.component.elementPath+": "+actionObject.action);
-						return;
-					}
-					this.actionIter++;
-					
-					var fullArgumentList = new Array(this);
-					fullArgumentList = fullArgumentList.concat(actionObject.arguments[0]);
-					fullArgumentList.push(actionObject.arguments.slice(1));
-					
-					func.apply(actionObject.component, fullArgumentList);
-				}
-			}
-		}
-		actionsPerformer.performNext();
-	}
+	this.getActionEvaluator = function() {
+		return actionEvaluator;
+	};
 	
 	function getValueData() {
 		var values = new Object();
@@ -260,6 +219,14 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 		return component;
 	}
 	var getComponent = this.getComponent;
+	
+	this.registerReferenceName = function(referenceName, object) {
+		referencesObject[referenceName] = object;
+	}
+	
+	this.getComponentByReferenceName = function(referenceName) {
+		return referencesObject[referenceName];
+	}
 	
 	function onWindowClick() {
 		if (popup) {

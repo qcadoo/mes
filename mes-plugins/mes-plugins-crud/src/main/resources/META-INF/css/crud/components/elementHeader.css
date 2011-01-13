@@ -41,7 +41,10 @@
 .elementHeader.elementHeaderDisabled .elementHeaderTitle {
 	color: #b7b7b7;
 }
-
+.elementHeader .headerSelect {
+	margin-left: 5px;
+	margin-right: 10px;
+}
 div.headerActionButton {
 	padding: 0px;
 	height: 23px;

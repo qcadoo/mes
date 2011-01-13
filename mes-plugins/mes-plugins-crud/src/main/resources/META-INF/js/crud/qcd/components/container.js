@@ -57,7 +57,18 @@ QCD.components.Container = function(_element, _mainController, childrenElements)
 			components[i].setState(componentState);
 		}
 	}
-
+	
+	this.performScript = function() {
+		if (this.performComponentScript) {
+			this.performComponentScript();
+		}
+		if (this.options.script) {
+			mainController.getActionEvaluator().performJsAction(this.options.script, this);
+		}
+		for (var i in components) {
+			components[i].performScript();
+		}
+	}
 	
 	this.isChanged = function() {
 		changed = this.isComponentChanged();

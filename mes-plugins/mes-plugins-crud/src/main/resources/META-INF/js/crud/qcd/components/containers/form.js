@@ -44,10 +44,13 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	translations = this.options.translations;
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	function constructor(_this) {
 		var childrenElement = $("#"+_this.elementSearchName+"_formComponents");
 		_this.constructChildren(childrenElement.children());
-		block();
 	}
 
 	this.getComponentValue = function() {
@@ -110,6 +113,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	this.performSave = function(actionsPerformer) {
 		callEvent("save", actionsPerformer);
 	}
+
+	this.performCopy = function(actionsPerformer) {
+		if(mainController.canClose()) {
+			callEvent("copy", actionsPerformer);
+		}
+	}
 	
 	this.performDelete = function(actionsPerformer) {
 		if (window.confirm(translations.confirmDeleteMessage)) {
@@ -135,30 +144,17 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
-//		width = _width - 40;
-//		if(width > 1380) {
-//			width = 1380;
-//		} 
-//		element.width(width);
 		for (var i in this.components) {
-			//QCD.info(this.components[i])
 			this.components[i].updateSize(_width, _height);
 		}
 	}
 	
 	function block() {
-		element.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
-            border: 'none', 
-            padding: '15px', 
-            backgroundColor: '#000', 
-            '-webkit-border-radius': '10px', 
-            '-moz-border-radius': '10px', 
-            opacity: .5, 
-            color: '#fff' } });
+		QCD.components.elements.utils.LoadingIndicator.blockElement(element);
 	}
 	
 	function unblock() {
-		element.unblock();
+		QCD.components.elements.utils.LoadingIndicator.unblockElement(element);
 	}
 	
 	constructor(this);

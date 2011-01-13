@@ -42,6 +42,16 @@
 		<column caption="MTXT_STATUS_NAME" name="STATUS_NAME" nlsID="MTXT_STATUS_NAME" type="VARCHAR2"/>
 	</columns>
 	<data rows="53">
+		<row CLASS_NAME="(brak)" EAN="5909990436219" GROUP_NAME="(brak)" NAME="Kantówka strugana" PRODUCT_ID="6" PRODUCT_NR="100n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="5909990436214" GROUP_NAME="(brak)" NAME="Deska heblowana" PRODUCT_ID="7" PRODUCT_NR="101n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="5909990436215" GROUP_NAME="(brak)" NAME="Deska podłogowa" PRODUCT_ID="3" PRODUCT_NR="102n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="5908360436213" GROUP_NAME="(brak)" NAME="Ćwierćwałek" PRODUCT_ID="33" PRODUCT_NR="103n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="5909990436214" GROUP_NAME="(brak)" NAME="Kantówka" PRODUCT_ID="36" PRODUCT_NR="104n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="5909349046216" GROUP_NAME="(brak)" NAME="Deska obrzynana" PRODUCT_ID="37" PRODUCT_NR="105n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="5909560436218" GROUP_NAME="(brak)" NAME="Imitacja bala" PRODUCT_ID="42" PRODUCT_NR="106n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="5909990336212" GROUP_NAME="(brak)" NAME="Deska frezowana" PRODUCT_ID="9" PRODUCT_NR="107n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+		<row CLASS_NAME="(brak)" EAN="4209990436219" GROUP_NAME="(brak)" NAME="Kątownik" PRODUCT_ID="39" PRODUCT_NR="108n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
+	<!--
 		<row CLASS_NAME="(brak)" EAN="" GROUP_NAME="(brak)" NAME="melasa" PRODUCT_ID="53" PRODUCT_NR="melasa" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
 		<row CLASS_NAME="(brak)" EAN="5909990436219" GROUP_NAME="(brak)" NAME="Kondensator 100n rozmiar 0603" PRODUCT_ID="6" PRODUCT_NR="100n/0603" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
 		<row CLASS_NAME="(brak)" EAN="5909990436214" GROUP_NAME="(brak)" NAME="Rezystor 10k rozmiar 0402" PRODUCT_ID="7" PRODUCT_NR="10k/0402" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
@@ -95,5 +105,5 @@
 		<row CLASS_NAME="(brak)" EAN="" GROUP_NAME="Plastikowe" NAME="Uszczelka czarna" PRODUCT_ID="51" PRODUCT_NR="USZ-BLACK" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
 		<row CLASS_NAME="(brak)" EAN="" GROUP_NAME="(brak)" NAME="Zapach PA01" PRODUCT_ID="41" PRODUCT_NR="Zapach_PA01" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>
 		<row CLASS_NAME="(brak)" EAN="" GROUP_NAME="(brak)" NAME="Zinc pyrithione, tlenek 2-pirydynotiolu." PRODUCT_ID="44" PRODUCT_NR="ZnP" PROD_TYPE_NAME="Zwykły artykuł" STATUS_NAME="O.K."/>		
-	</data>
+	--></data>
 </spread_data>

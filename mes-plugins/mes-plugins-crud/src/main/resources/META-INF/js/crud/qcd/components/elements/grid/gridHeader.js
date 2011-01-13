@@ -45,6 +45,9 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	
 	var headerElements = new Object();
 	headerElements.filterButton = null;
+	headerElements.predefiniedFiltersCombo = null;
+	headerElements.predefiniedFiltersCustomOption_line1 = $("<option>").attr("value",-1).html("--------------").css("display", "none");
+	headerElements.predefiniedFiltersCustomOption_line2 = $("<option>").attr("value",-1).html(translations.customPredefinedFilter).css("display", "none");
 	headerElements.newButton = null;
 	headerElements.deleteButton = null;
 	headerElements.upButton = null;
@@ -182,6 +185,28 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 		headerElement.append($("<span>").html(translations.header).addClass('grid_header_gridName').addClass('elementHeaderTitle'));
 		entitiesNumberSpan = $("<span>").html("(0)").addClass('grid_header_totalNumberOfEntities').addClass('elementHeaderTitle');
 		headerElement.append(entitiesNumberSpan);
+		
+		if (gridParameters.hasPredefinedFilters) { // TODO mina add option
+			var options = new Array();
+			for (var i in gridParameters.predefinedFilters) {
+				options[i] = {
+					value: i,
+					label: translations["filter."+gridParameters.predefinedFilters[i].label]
+				};
+			}
+			headerElements.predefiniedFiltersCombo = QCD.components.elements.utils.HeaderUtils.createHeaderComboBox(options, function(selectedItem) {
+				if (selectedItem < 0) {
+					return;
+				}
+				headerElements.predefiniedFiltersCustomOption_line1.css("display","none");
+				headerElements.predefiniedFiltersCustomOption_line2.css("display","none");
+				var filterObj = gridParameters.predefinedFilters[selectedItem];
+				gridController.setFilterObject(filterObj);	
+			});
+			headerElements.predefiniedFiltersCombo.append(headerElements.predefiniedFiltersCustomOption_line1);
+			headerElements.predefiniedFiltersCombo.append(headerElements.predefiniedFiltersCustomOption_line2);
+			headerElement.append(headerElements.predefiniedFiltersCombo);
+		}
 		if (gridParameters.filter) {
 			headerElements.filterButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton(translations.addFilterButton, function(e) {
 				if (headerElements.filterButton.hasClass("headerButtonEnabled")) {
@@ -267,6 +292,9 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 			if (headerElements.filterButton != null) {
 				setEnabledButton(headerElements.filterButton, false);
 			}
+			if (headerElements.predefiniedFiltersCombo != null) {
+				headerElements.predefiniedFiltersCombo.disable();
+			}
 			if (headerElements.newButton != null) {
 				setEnabledButton(headerElements.newButton, false);
 			}
@@ -293,6 +321,9 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 		} else {
 			if (headerElements.filterButton != null) {
 				setEnabledButton(headerElements.filterButton, true);
+			}
+			if (headerElements.predefiniedFiltersCombo != null) {
+				headerElements.predefiniedFiltersCombo.enable();
 			}
 			if (headerElements.newButton != null) {
 				setEnabledButton(headerElements.newButton, true);
@@ -343,6 +374,23 @@ QCD.components.elements.grid.GridHeaderController = function(_gridController, _m
 	this.setFilterActive = function() {
 		headerElements.filterButton.addClass("headerButtonActive");
 		headerElements.filterButton.label.html(translations.removeFilterButton);
+	}
+	
+	this.setFilterNotActive = function() {
+		headerElements.filterButton.removeClass("headerButtonActive");
+		headerElements.filterButton.label.html(translations.addFilterButton);
+	}
+	
+	this.setPredefinedFilter = function(predefinedFilter) {
+		if (predefinedFilter == null) {
+			headerElements.predefiniedFiltersCustomOption_line1.css("display","");
+			headerElements.predefiniedFiltersCustomOption_line2.css("display","");
+			headerElements.predefiniedFiltersCombo.val(-1);
+		} else {
+			headerElements.predefiniedFiltersCustomOption_line1.css("display","none");
+			headerElements.predefiniedFiltersCustomOption_line2.css("display","none");
+			headerElements.predefiniedFiltersCombo.val(predefinedFilter);
+		}
 	}
 
 	this.setEnabledButton = function(button, enabled) {

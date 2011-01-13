@@ -106,4 +106,12 @@ public interface InternalDataDefinition extends DataDefinition {
      */
     boolean isUpdatable();
 
+    /**
+     * Call copy hooks on given entity.
+     * 
+     * @param entity
+     *            entity
+     */
+    boolean callCopyHook(Entity targetEntity);
+
 }

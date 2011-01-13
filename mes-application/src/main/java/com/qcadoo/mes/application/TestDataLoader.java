@@ -70,6 +70,8 @@ import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsSubstituteComponent;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
+import com.qcadoo.mes.beans.products.ProductsWorkPlan;
+import com.qcadoo.mes.beans.products.ProductsWorkPlanComponent;
 import com.qcadoo.mes.beans.users.UsersGroup;
 import com.qcadoo.mes.beans.users.UsersUser;
 
@@ -82,7 +84,7 @@ public final class TestDataLoader {
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final String[] TYPE_OF_MATERIALS = new String[] { "product", "component", "intermediate" };
+    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
 
     private static final List<String> UNITS = new ArrayList<String>();
 
@@ -132,6 +134,7 @@ public final class TestDataLoader {
         readDataFromXML("technologies", TECHNOLOGY_ATTRIBUTES);
         readDataFromXML("orders", ORDER_ATTRIBUTES);
         addMaterialRequirements();
+        addWorkPlans();
     }
 
     private File getXmlFile(final String type) throws IOException {
@@ -231,7 +234,7 @@ public final class TestDataLoader {
 
         operation.setName(values.get("name"));
         operation.setNumber(values.get("number"));
-        operation.setMachine(getRandomMachine());
+        operation.setMachine(getMachine(values.get("number")));
         operation.setStaff(getRandomStaff());
 
         if (LOG.isDebugEnabled()) {
@@ -265,8 +268,13 @@ public final class TestDataLoader {
                     + product.getTypeOfMaterial() + ", unit=" + product.getUnit() + "}");
         }
 
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < RANDOM.nextInt(5); i++) {
-            addSubstitute(values.get("name") + "*", values.get("product_nr") + "*", product, i + 1);
+            for (int j = 0; j <= i; j++) {
+                stringBuilder.append("*");
+            }
+            addSubstitute(values.get("name") + stringBuilder.toString(), values.get("product_nr") + stringBuilder.toString(),
+                    product, i + 1);
         }
     }
 
@@ -380,7 +388,6 @@ public final class TestDataLoader {
         order.setEffectiveDateTo(new Date(effectiveEndDate));
         order.setEndWorker(getRandomUser().getUserName());
         order.setTechnology(getTechnologyByName(values.get("bom_name")));
-        order.setMachine(getRandomDictionaryItem("machines"));
         order.setName((values.get("name").isEmpty() || values.get("name") == null) ? values.get("order_nr") : values.get("name"));
         order.setNumber(values.get("order_nr"));
         order.setPlannedQuantity(values.get("quantity_scheduled").isEmpty() ? new BigDecimal(100 * RANDOM.nextDouble())
@@ -390,11 +397,11 @@ public final class TestDataLoader {
         }
         order.setStartWorker(getRandomUser().getUserName());
 
-        String state = (RANDOM.nextDouble() > 0.4) ? "done" : "pending";
+        String state = (RANDOM.nextDouble() > 0.4) ? "03done" : "01pending";
 
         order.setState(state);
 
-        if ("pending".equals(state)) {
+        if ("01pending".equals(state)) {
             order.setEndWorker(null);
             order.setEffectiveDateTo(null);
         }
@@ -403,15 +410,16 @@ public final class TestDataLoader {
 
         order.setProduct(product);
 
+        order.setTechnology(getDefaultTechnologyForProduct(product));
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test order {id=" + order.getId() + ", name=" + order.getName() + ", number=" + order.getNumber()
                     + ", product=" + (order.getProduct() != null ? order.getProduct().getNumber() : null) + ", technology="
                     + (order.getTechnology() != null ? order.getTechnology().getNumber() : null) + ", dateFrom="
                     + order.getDateFrom() + ", dateTo=" + order.getDateTo() + ", effectiveDateFrom="
                     + order.getEffectiveDateFrom() + ", effectiveDateTo=" + order.getEffectiveDateTo() + ", doneQuantity="
-                    + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", machine="
-                    + order.getMachine() + ", state=" + order.getState() + ", startWorker=" + order.getStartWorker()
-                    + ", endWorker=" + order.getEndWorker() + "}");
+                    + order.getDoneQuantity() + ", plannedQuantity=" + order.getPlannedQuantity() + ", state=" + order.getState()
+                    + ", startWorker=" + order.getStartWorker() + ", endWorker=" + order.getEndWorker() + "}");
         }
 
         sessionFactory.getCurrentSession().save(order);
@@ -575,6 +583,40 @@ public final class TestDataLoader {
         }
     }
 
+    private void addWorkPlans() {
+        for (int i = 0; i < 50; i++) {
+            addWorkPlan();
+        }
+    }
+
+    private void addWorkPlan() {
+        ProductsWorkPlan workPlan = new ProductsWorkPlan();
+        workPlan.setName(getRandomProduct().getName());
+        workPlan.setGenerated(false);
+        workPlan.setDate(null);
+        workPlan.setWorker(null);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add test material requirement {name=" + workPlan.getName() + ", date=" + workPlan.getDate() + ", worker="
+                    + workPlan.getWorker() + ", generated=" + workPlan.isGenerated() + "}");
+        }
+
+        sessionFactory.getCurrentSession().save(workPlan);
+
+        for (int i = 0; i < RANDOM.nextInt(8) + 2; i++) {
+            ProductsWorkPlanComponent component = new ProductsWorkPlanComponent();
+            component.setWorkPlan(workPlan);
+            component.setOrder(getRandomOrder());
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Add test material requirement component {requirement=" + component.getWorkPlan().getName()
+                        + ", order=" + component.getOrder().getNumber() + "}");
+            }
+
+            sessionFactory.getCurrentSession().save(component);
+        }
+    }
+
     private BasicStaff getRandomStaff() {
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicStaff.class)
                 .setProjection(Projections.rowCount()).uniqueResult();
@@ -582,11 +624,20 @@ public final class TestDataLoader {
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
 
-    private BasicMachine getRandomMachine() {
-        Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
-                .setProjection(Projections.rowCount()).uniqueResult();
+    private BasicMachine getMachine(final String id) {
+        // Long total = (Long) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+        // .setProjection(Projections.rowCount()).uniqueResult();
+        // return (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+        // .setFirstResult(Integer.parseInt(id)).setMaxResults(1).uniqueResult();
+
+        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>> ID: " + id);
+
+        LOG.debug(">>>>>>>>>>>>>>>>>>>>>>>> Machine: "
+                + sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
+                        .add(Restrictions.idEq(Long.parseLong(id))).uniqueResult());
+
         return (BasicMachine) sessionFactory.getCurrentSession().createCriteria(BasicMachine.class)
-                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
+                .add(Restrictions.eq("number", id)).uniqueResult();
     }
 
     private ProductsTechnology getTechnologyByName(final String name) {

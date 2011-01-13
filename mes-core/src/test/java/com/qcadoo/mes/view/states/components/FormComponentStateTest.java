@@ -11,7 +11,9 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONObject;
@@ -75,7 +77,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         name.setName("name");
         name.initialize(new JSONObject(), Locale.ENGLISH);
 
-        form = new FormComponentState(null);
+        form = new FormComponentState("'static expression'");
         ((AbstractContainerState) form).setDataDefinition(dataDefinition);
         ((AbstractContainerState) form).setTranslationService(translationService);
         ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", name);
@@ -138,13 +140,19 @@ public class FormComponentStateTest extends AbstractStateTest {
         assertEquals(13L, json.getJSONObject(ComponentState.JSON_CONTENT).getLong(FormComponentState.JSON_ENTITY_ID));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionIfEntityIsNotExistsAndEntityIdIsNotNull() throws Exception {
+    @Test
+    public void shouldHaveMessageIfEntityIsNotExistsAndEntityIdIsNotNull() throws Exception {
         // given
         form.setFieldValue(12L);
+        List<String> codes = Arrays.asList(new String[] { "null.entityNotFound", "core.message.entityNotFound" });
+        given(translationService.translate(eq(codes), any(Locale.class))).willReturn("translated entityNotFound");
 
         // when
         form.performEvent(viewDefinitionState, "initialize", new String[0]);
+
+        // then
+        assertFalse(((FormComponentState) form).isValid());
+        assertTrue(form.render().toString().contains("translated entityNotFound"));
 
     }
 
@@ -220,10 +228,29 @@ public class FormComponentStateTest extends AbstractStateTest {
     }
 
     @Test
+    public void shouldCopyFormEntity() throws Exception {
+        // given
+        Entity copiedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text(1)"));
+        given(dataDefinition.copy(13L)).willReturn(copiedEntity);
+        given(dataDefinition.get(14L)).willReturn(copiedEntity);
+        name.setFieldValue("text");
+        form.setFieldValue(13L);
+
+        // when
+        form.performEvent(viewDefinitionState, "copy", new String[0]);
+
+        // then
+        verify(dataDefinition).copy(13L);
+        verify(dataDefinition).get(14L);
+        assertEquals("text(1)", name.getFieldValue());
+        assertEquals(14L, form.getFieldValue());
+    }
+
+    @Test
     public void shouldUseContextWhileSaving() throws Exception {
         // given
-        Entity entity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
-        Entity savedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text2"));
+        Entity entity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
+        Entity savedEntity = new DefaultEntity("plugin", "name", 13L, Collections.singletonMap("name", (Object) "text2"));
         given(dataDefinition.save(eq(entity))).willReturn(savedEntity);
         given(dataDefinition.getFields().keySet()).willReturn(Collections.singleton("name"));
         name.setFieldValue("text");
@@ -246,7 +273,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         // then
         verify(dataDefinition).save(eq(entity));
         assertEquals("text2", name.getFieldValue());
-        assertEquals(14L, form.getFieldValue());
+        assertEquals(13L, form.getFieldValue());
         assertTrue(((FormComponentState) form).isValid());
     }
 

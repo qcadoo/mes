@@ -33,6 +33,7 @@ import com.qcadoo.mes.model.search.restrictions.internal.BelongsToRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.IsNotNullRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.IsNullRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.LikeRestriction;
+import com.qcadoo.mes.model.search.restrictions.internal.LogicalOperatorRestriction;
 import com.qcadoo.mes.model.search.restrictions.internal.SimpleRestriction;
 
 /**
@@ -231,7 +232,48 @@ public final class Restrictions {
         if (!validatedEntity.getErrors().isEmpty()) {
             return null;
         }
+        if (expectedValue instanceof String && ((String) expectedValue).matches(".*[\\*%\\?_].*")) {
+            String preperadValue = ((String) expectedValue).replace('*', '%').replace('?', '_');
+
+            return not(new LikeRestriction(fieldDefinition.getName(), preperadValue));
+        }
         return new SimpleRestriction(fieldDefinition.getName(), value, RestrictionOperator.NE);
+    }
+
+    public static Restriction forOperator(final RestrictionOperator operator, final FieldDefinition fieldDefinition,
+            final Object expectedValue) {
+        switch (operator) {
+            case EQ:
+                String fieldName = null;
+                if (fieldDefinition != null) {
+                    fieldName = fieldDefinition.getName();
+                }
+                return eq(fieldName, expectedValue);
+            case NE:
+                return ne(fieldDefinition, expectedValue);
+            case GT:
+                return gt(fieldDefinition, expectedValue);
+            case GE:
+                return ge(fieldDefinition, expectedValue);
+            case LT:
+                return lt(fieldDefinition, expectedValue);
+            case LE:
+                return le(fieldDefinition, expectedValue);
+            default:
+                throw new IllegalStateException("Unknown operator");
+        }
+    }
+
+    public static Restriction not(final Restriction restriction) {
+        return new LogicalOperatorRestriction(RestrictionLogicalOperator.NOT, restriction);
+    }
+
+    public static Restriction and(final Restriction... restrictions) {
+        return new LogicalOperatorRestriction(RestrictionLogicalOperator.AND, restrictions);
+    }
+
+    public static Restriction or(final Restriction... restrictions) {
+        return new LogicalOperatorRestriction(RestrictionLogicalOperator.OR, restrictions);
     }
 
     private static Object validateValue(final FieldDefinition fieldDefinition, final Object value, final Entity validatedEntity) {

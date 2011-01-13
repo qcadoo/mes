@@ -64,6 +64,15 @@ public interface DataDefinition {
     Entity get(final Long id);
 
     /**
+     * Return the copied entity related with this data definition.
+     * 
+     * @param id
+     *            id
+     * @return entity
+     */
+    Entity copy(final Long id);
+
+    /**
      * Delete the entity related with this data definition, by its id.
      * 
      * @param id

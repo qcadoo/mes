@@ -64,6 +64,8 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
 
     private HookDefinition saveHook;
 
+    private HookDefinition copyHook;
+
     private boolean deletable = true;
 
     private boolean creatable = true;
@@ -81,6 +83,11 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
     @Override
     public Entity get(final Long id) {
         return dataAccessService.get(this, id);
+    }
+
+    @Override
+    public Entity copy(final Long id) {
+        return dataAccessService.copy(this, id);
     }
 
     @Override
@@ -175,6 +182,10 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         this.saveHook = saveHook;
     }
 
+    public void withCopyHook(final HookDefinition copyHook) {
+        this.copyHook = copyHook;
+    }
+
     @Override
     public void callCreateHook(final Entity entity) {
         if (createHook != null) {
@@ -193,6 +204,16 @@ public final class DataDefinitionImpl implements InternalDataDefinition {
         if (saveHook != null) {
             saveHook.callWithEntity(this, entity);
         }
+    }
+
+    @Override
+    public boolean callCopyHook(final Entity entity) {
+        if (copyHook != null) {
+            if (!copyHook.callWithEntityAndGetBoolean(this, entity)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

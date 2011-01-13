@@ -135,8 +135,6 @@ public final class LookupComponentState extends FieldComponentState {
 
     @Override
     public void setFieldValue(final Object value) {
-        selectedEntityCode = "";
-        selectedEntityValue = "";
         setFieldValueWithoutRefreshing(convertToLong(value));
         eventPerformer.refresh();
     }
@@ -163,10 +161,6 @@ public final class LookupComponentState extends FieldComponentState {
         if (belongsToFieldDefinition != null) {
             belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
-            // eventPerformer.refresh();
-            setFieldValueWithoutRefreshing(null);
-            selectedEntityCode = "";
-            selectedEntityValue = "";
             requestRender();
         } else {
             throw new IllegalStateException("Lookup doesn't have scopeField, it cannot set scopeEntityId");

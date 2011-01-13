@@ -40,7 +40,6 @@ public final class StaticResourcesFilter implements Filter {
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
-        System.out.println(" ---> compressStaticResources: " + compressStaticResources);
         request.setAttribute("compressStaticResources", compressStaticResources);
         chain.doFilter(request, response);
     }

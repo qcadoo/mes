@@ -46,6 +46,10 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 	
 	var isTriggerBootonHovered = false;
 	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	var constructor = function(_this) {
 		options = $.datepicker.regional[locale];
 		
@@ -134,6 +138,12 @@ QCD.components.elements.Calendar = function(_element, _mainController) {
 					opened = false;
 				}
 			}
+		});
+		
+		input.focus(function() {
+			calendar.addClass("lightHover");
+		}).blur(function() {
+			calendar.removeClass("lightHover");
 		});
 	}
 	

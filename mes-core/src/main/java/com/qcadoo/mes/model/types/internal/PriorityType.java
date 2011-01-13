@@ -26,6 +26,8 @@ package com.qcadoo.mes.model.types.internal;
 
 import java.util.Locale;
 
+import org.springframework.util.StringUtils;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.FieldType;
@@ -73,12 +75,16 @@ public final class PriorityType implements FieldType {
 
     @Override
     public String toString(final Object value, final Locale locale) {
-        return String.valueOf(value);
+        return value != null ? String.valueOf(value) : "";
     }
 
     @Override
     public Object fromString(final String value, final Locale locale) {
-        return Integer.parseInt(value);
+        if (StringUtils.hasText(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return null;
+        }
     }
 
     public FieldDefinition getScopeFieldDefinition() {

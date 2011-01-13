@@ -44,6 +44,7 @@ QCD.components.Component = function(_element, _mainController) {
 	
 	this.contextObject = null;
 	
+	var onChangeListeners;
 	
 	function constructor(_this) {
 		var optionsElement = $("#"+elementSearchName+" > .element_options");
@@ -55,6 +56,10 @@ QCD.components.Component = function(_element, _mainController) {
 		optionsElement.remove();
 		isVisible = _this.options.defaultVisible;
 		isEnabled = _this.options.defaultEnabled;
+		
+//		if (_this.options.referenceName) {
+//			mainController.registerReferenceName(_this.options.referenceName, _this);
+//		}
 	}
 	
 	this.getValue = function() {
@@ -91,6 +96,9 @@ QCD.components.Component = function(_element, _mainController) {
 		if (value.updateState) {
 			this.performUpdateState();
 		}
+		if (onChangeListeners) {
+			this.fireOnChangeListeners("onSetValue", [value]);
+		}
 	}
 	
 	this.performUpdateState = function() {
@@ -118,6 +126,18 @@ QCD.components.Component = function(_element, _mainController) {
 		}
 		if (state.components) {
 			this.setComponentsState(state);
+		}
+		if (onChangeListeners) {
+			this.fireOnChangeListeners("onSetValue", [state]);
+		}
+	}
+	
+	this.performScript = function() {
+		if (this.options.script) {
+			mainController.getActionEvaluator().performJsAction(this.options.script, this);
+		}
+		if (this.performComponentScript) {
+			this.performComponentScript();
 		}
 	}
 	
@@ -170,6 +190,22 @@ QCD.components.Component = function(_element, _mainController) {
 		return isVisible;
 	}
 
+	this.addOnChangeListener = function(listener) {
+		if (!onChangeListeners) {
+			onChangeListeners = new Array();
+		}
+		onChangeListeners.push(listener);
+	}
+	
+	this.fireOnChangeListeners = function(method, args) {
+		for (var i in onChangeListeners) {
+			var func = onChangeListeners[i][method];
+			if (func) {
+				func.apply(this, args);
+			}
+		}
+	}
+	
 	this.isChanged = function() {
 		return this.isComponentChanged();
 	}

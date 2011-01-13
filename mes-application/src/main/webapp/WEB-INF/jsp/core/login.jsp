@@ -42,6 +42,8 @@
 			
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/serializator.js"></script>
+			
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/utils/snow.js"></script>
 		</c:otherwise>
 	</c:choose>
 
@@ -50,6 +52,10 @@
 	<title>QCADOO :: login</title>
 		
 	<script type="text/javascript">
+
+		var QCD = QCD || {};
+		QCD.global = QCD.global || {};
+		QCD.global.isSonowOnPage = true;
 
 		var serverMessageType;
 		var serverMessageHeader;

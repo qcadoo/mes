@@ -34,7 +34,6 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.ProductReportService;
-import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 @Service
 public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
@@ -44,17 +43,16 @@ public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, false);
+        productReportService.addOperationSeries(document, (DefaultEntity) entity, locale, "worker");
     }
 
     @Override
-    protected void buildPdfMetadata(final Document document, final Locale locale) {
-        document.addTitle(getTranslationService().translate("products.workPlan.report.title", locale));
-        PdfUtil.addMetaData(document);
+    protected String getSuffix() {
+        return "for_worker";
     }
 
     @Override
-    protected String getSuffix(final Locale locale) {
-        return getTranslationService().translate("products.workPlan.report.fileName.suffix.forWorker", locale);
+    protected String getReportTitle(final Locale locale) {
+        return getTranslationService().translate("products.workPlan.report.title", locale);
     }
 }

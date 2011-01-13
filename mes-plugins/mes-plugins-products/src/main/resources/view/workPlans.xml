@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+
+<qcd:views plugin="products" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="workPlans" model="workPlan" menuAccessible="true">
+		<component type="window" name="window" reference="window">
+			<ribbon>
+				<group template="gridNewAndCopyAction"/>
+				<group name="exportWorker">
+					<smallButton name="pdfWorker" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled"/>
+					<smallButton name="xlsWorker" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled" />
+				</group>
+				<group name="exportMachine">
+					<smallButton name="pdfMachine" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled" />
+					<smallButton name="xlsMachine" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled" />
+				</group>
+				<group name="exportProduct">
+					<smallButton name="pdfProduct" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled" />
+					<smallButton name="xlsProduct" icon="xlsIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled" />
+				</group>				
+			</ribbon>		
+			<component type="grid" name="workPlans" reference="grid">
+				<option type="column" name="name" fields="name" link="true" width="300" />
+				<option type="column" name="generated" fields="generated" link="false" width="100" />
+				<option type="column" name="worker" fields="worker" width="300" />
+				<option type="order" column="name" direction="asc"/>
+				<option type="correspondingView" value="products/workPlan" />
+				<option type="correspondingComponent" value="form" />
+				<option type="searchable" value="name,generated,worker" />
+				<option type="orderable" value="name,generated,worker" />
+				<option type="fullscreen" value="true" />
+				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlan"/>
+				<script>
+					<![CDATA[
+						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
+						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
+						var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
+						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
+						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
+						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+						var listener = {
+							onChange: function(selectedRecord) {
+								if (!selectedRecord) {
+									pdfWorker.disable();
+									xlsWorker.disable();
+									pdfMachine.disable();
+									xlsMachine.disable();
+									pdfProduct.disable();
+									xlsProduct.disable();	
+								} else if (selectedRecord.fields.generated == '0') {
+									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");								
+								} else {
+									pdfWorker.enable();
+									xlsWorker.enable();
+									pdfMachine.enable();
+									xlsMachine.enable();
+									pdfProduct.enable();
+									xlsProduct.enable();
+								}
+							}
+						}
+						this.addOnChangeListener(listener);
+					]]>
+				</script>
+			</component>
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+	</view>
+	<view name="workPlan" model="workPlan">
+		<component type="window" name="window" reference="window">
+			<ribbon>
+				<group template="navigation"/>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{form}.performSave;" state="disabled"/>
+					<bigButton name="copy" icon="copyIcon24.png" action="#{form}.performCopy;" state="disabled"/>
+					<bigButton name="generate" icon="generateIcon24.png" action="#{form}.fireEvent(generateWorkPlan);" state="disabled"/>
+				</group>
+				<group name="exportWorker">
+					<smallButton name="pdfWorker" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForWorker);" state="disabled"/>
+					<smallButton name="xlsWorker" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,xls,ForWorker);" state="disabled"/>
+				</group>
+				<group name="exportMachine">
+					<smallButton name="pdfMachine" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForMachine);" state="disabled"/>
+					<smallButton name="xlsMachine" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,xls,ForMachine);" state="disabled"/>
+				</group>
+				<group name="exportProduct">
+					<smallButton name="pdfProduct" icon="pdfIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,pdf,ForProduct);" state="disabled"/>
+					<smallButton name="xlsProduct" icon="xlsIcon16.png"
+						action="#{form}.fireEvent(printWorkPlan,xls,ForProduct);" state="disabled"/>
+				</group>					
+			</ribbon>
+			<component type="form" name="workPlan" reference="form">
+				<script>
+					<![CDATA[
+						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+						var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
+						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
+						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
+						var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
+						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
+						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
+						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+						
+						var containsAtLeastOneOrder = false;
+						var entityExists = false;
+						
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (!value || !value.content) {
+									return;
+								}
+								if (value.content.entityId) {
+									entityExists = true;
+								} else {
+									entityExists = false;
+								}
+								updateRibbon();
+							}
+						});
+						#{workPlanComponents}.addOnChangeListener({
+							onSetValue: function(value) {
+								if (value.content.totalEntities > 0) {
+									containsAtLeastOneOrder = true;
+								} else {
+									containsAtLeastOneOrder = false;
+								}
+								updateRibbon();
+							}
+						});
+						
+						function updateRibbon() {
+							if (entityExists) {
+								var isGeneratedCheckboxValue = #{generated}.getValue();
+								copyRibbonItem.enable();
+								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+									pdfWorker.enable();
+									xlsWorker.enable();
+									pdfMachine.enable();
+									xlsMachine.enable();
+									pdfProduct.enable();
+									xlsProduct.enable();
+									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+								} else {
+									pdfWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsWorker.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsMachine.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									pdfProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									xlsProduct.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
+									saveRibbonItem.enable();
+									if (containsAtLeastOneOrder) {
+										generateRibbonItem.enable();
+									} else {
+										generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
+									}
+								}
+							} else {
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
+								pdfWorker.disable("#{translate(recordNotCreated)}");
+								xlsWorker.disable("#{translate(recordNotCreated)}");
+								pdfMachine.disable("#{translate(recordNotCreated)}");
+								xlsMachine.disable("#{translate(recordNotCreated)}");
+								pdfProduct.disable("#{translate(recordNotCreated)}");
+								xlsProduct.disable("#{translate(recordNotCreated)}");
+								saveRibbonItem.enable();
+								generateRibbonItem.disable("#{translate(recordNotCreated)}");
+							}
+						}
+					]]>
+				</script>
+				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+					<layoutElement column="1" row="1">
+						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="date" field="date" reference="date" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="worker" field="worker" reference="worker" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" height="2">
+						<component type="textarea" name="name" reference="name" field="name" />
+					</layoutElement>
+					<layoutElement column="2" row="1" height="5" width="2">
+						<component type="grid" name="workPlanComponents" reference="workPlanComponents" source="#{form}.orders">
+							<option type="column" name="number" fields="order" expression="#order['number']"/>
+							<option type="column" name="name" fields="order" expression="#order['name']"/>
+							<option type="order" column="number" direction="desc"/>
+							<option type="correspondingView" value="products/workPlanComponent" />
+							<option type="correspondingComponent" value="form" />
+							<option type="paginable" value="false" />
+							<option type="height" value="200" />
+							<option type="width" value="350" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+						</component>
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#name" />
+				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlan" />
+				<listener event="generateWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="generateWorkPlan" />
+			</component>
+			
+		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.WorkPlanService" method="disableFormForExistingWorkPlan" />
+	</view>	
+	<view name="workPlanComponent" model="workPlanComponent">
+		<component type="window" name="window">
+			<ribbon>
+				<group template="navigation"/>
+				<group template="formSaveAction"/>
+			</ribbon>		
+			<component type="form" name="workPlanComponent" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="order" field="order">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#name" />
+			</component>
+		</component>
+	</view>
+</qcd:views>

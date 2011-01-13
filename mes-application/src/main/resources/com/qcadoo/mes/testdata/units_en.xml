@@ -29,5 +29,5 @@
 <units>
 	<row NAME="kg" />
 	<row NAME="units" />
-	<row NAME="ml" />
+	<row NAME="m2" />
 </units>

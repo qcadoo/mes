@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -85,6 +86,10 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
             try {
                 if (compressStaticResources) {
                     compressResources("js", "js");
+                    // TODO masz dla css musimy zmieniać znacznik "url"
+                    // jeśli zaczyna się od "/" usuwamy go
+                    // jeśli nie, dodajemy ścieżke do pliku
+                    // chodzi o to aby wszystkie "url" były względne do qcadoo.css
                     compressResources("css", "css");
                 }
             } catch (IOException e) {
@@ -96,6 +101,14 @@ public final class PluginResourcesResolver implements ApplicationListener<Contex
     private static void mergeFiles(final Writer output, final File folder, final String type, final List<String> excluded)
             throws IOException {
         File[] files = folder.listFiles();
+
+        Arrays.sort(files, new Comparator<File>() {
+
+            @Override
+            public int compare(File f1, File f2) {
+                return f1.getName().compareTo(f2.getName());
+            }
+        });
 
         for (File file : files) {
             if (file.isDirectory()) {

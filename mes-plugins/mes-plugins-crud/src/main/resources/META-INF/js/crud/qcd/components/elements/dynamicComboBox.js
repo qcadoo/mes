@@ -36,6 +36,10 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 	
 	var input = this.input;
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	var constructor = function(_this) {
 		input.change(function() {
 			setTitle();

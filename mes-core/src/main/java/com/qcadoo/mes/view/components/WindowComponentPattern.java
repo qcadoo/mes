@@ -21,6 +21,7 @@ import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractContainerPattern;
 import com.qcadoo.mes.view.ribbon.Ribbon;
 import com.qcadoo.mes.view.ribbon.RibbonActionItem;
+import com.qcadoo.mes.view.ribbon.RibbonComboBox;
 import com.qcadoo.mes.view.ribbon.RibbonComboItem;
 import com.qcadoo.mes.view.ribbon.RibbonGroup;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
@@ -98,6 +99,24 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
                 String label = getTranslationService().translate(getTranslationCodes(prefix + item.getString("name")), locale);
                 item.put("label", label);
+
+                if (item.has("script")) {
+                    String script = item.getString("script");
+                    if (script != null) {
+                        item.put("script", prepareScript(script, locale));
+                    }
+                }
+
+                if (item.has("message")) {
+                    String message = item.getString("message");
+                    if (message.contains(".")) {
+                        message = getTranslationService().translate(message, locale);
+                    } else {
+                        message = getTranslationService().translate("core.message." + message, locale);
+                    }
+                    item.put("message", prepareScript(message, locale));
+                }
+
                 translateRibbonItems(item, prefix + item.getString("name") + ".", locale);
             }
         }
@@ -165,14 +184,16 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         if (template != null) {
             if ("navigation".equals(template)) {
                 return createNavigationTemplate(parser);
-            } else if ("gridActions".equals(template)) {
-                return createGridActionsTemplate(parser);
-            } else if ("gridNewAction".equals(template)) {
-                return createGridNewActionTemplate(parser);
-            } else if ("formActions".equals(template)) {
-                return createFormActionsTemplate(parser);
-            } else if ("formSaveActions".equals(template)) {
-                return createFormSaveActionsTemplate(parser);
+            } else if ("gridNewAndRemoveAction".equals(template)) {
+                return createGridNewAndRemoveActionsTemplate(parser);
+            } else if ("gridNewCopyAndRemoveAction".equals(template)) {
+                return createGridNewCopyAndRemoveActionTemplate(parser);
+            } else if ("gridNewAndCopyAction".equals(template)) {
+                return createGridNewAndCopyActionTemplate(parser);
+            } else if ("formSaveCopyAndRemoveActions".equals(template)) {
+                return createFormSaveCopyAndRemoveActionsTemplate(parser);
+            } else if ("formSaveAndRemoveActions".equals(template)) {
+                return createFormSaveAndRemoveActionsTemplate(parser);
             } else if ("formSaveAction".equals(template)) {
                 return createFormSaveActionTemplate(parser);
             } else {
@@ -205,11 +226,15 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             type = RibbonActionItem.Type.BIG_BUTTON;
         } else if ("smallButtons".equals(stringType) || "smallButton".equals(stringType)) {
             type = RibbonActionItem.Type.SMALL_BUTTON;
+        } else if ("combobox".equals(stringType)) {
+            type = RibbonActionItem.Type.COMBOBOX;
         }
 
         RibbonActionItem item = null;
         if ("bigButtons".equals(stringType) || "smallButtons".equals(stringType)) {
             item = new RibbonComboItem();
+        } else if ("combobox".equals(stringType)) {
+            item = new RibbonComboBox();
         } else {
             item = new RibbonActionItem();
         }
@@ -218,15 +243,44 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         item.setName(parser.getStringAttribute(itemNode, "name"));
         item.setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action"), parser));
         item.setType(type);
+        String state = parser.getStringAttribute(itemNode, "state");
+        if (state != null) {
+            if ("enabled".equals(state)) {
+                item.setEnabled(true);
+            } else if ("disabled".equals(state)) {
+                item.setEnabled(false);
+            } else {
+                throw new IllegalStateException("Unsupported ribbon item state : " + state);
+            }
+        }
+        String message = parser.getStringAttribute(itemNode, "message");
+        if (message != null) {
+            item.setMessage(message);
+        }
+
+        NodeList childNodes = itemNode.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE && "script".equals(child.getNodeName())) {
+                item.setScript(parser.getStringNodeContent(child));
+            }
+        }
 
         if (item instanceof RibbonComboItem) {
-            NodeList childNodes = itemNode.getChildNodes();
-
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node child = childNodes.item(i);
-
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if (child.getNodeType() == Node.ELEMENT_NODE && !"script".equals(child.getNodeName())) {
                     ((RibbonComboItem) item).addItem(parseRibbonItem(child, parser));
+                }
+            }
+        } else if (item instanceof RibbonComboBox) {
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node child = childNodes.item(i);
+                if (child.getNodeType() == Node.ELEMENT_NODE && !"script".equals(child.getNodeName())) {
+                    if (!"option".equals(child.getNodeName())) {
+                        throw new IllegalStateException("ribbon combobox can only have 'option' elements");
+                    }
+                    ((RibbonComboBox) item).addOption(parser.getStringAttribute(child, "name"));
                 }
             }
         } else {
@@ -274,73 +328,84 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return ribbonGroup;
     }
 
-    private RibbonGroup createGridActionsTemplate(final ViewDefinitionParser parser) {
-        RibbonGroup ribbonGroup = createGridNewActionTemplate(parser);
+    private RibbonGroup createGridNewAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("actions");
+        ribbonGroup.addItem(createGridNewAction(parser));
+        ribbonGroup.addItem(createGridDeleteAction(parser));
+        return ribbonGroup;
+    }
 
+    private RibbonGroup createGridNewAndCopyActionTemplate(final ViewDefinitionParser parser) {
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("actions");
+        ribbonGroup.addItem(createGridNewAction(parser));
+        ribbonGroup.addItem(createGridCopyAction(parser));
+        return ribbonGroup;
+    }
+
+    private RibbonGroup createGridNewCopyAndRemoveActionTemplate(final ViewDefinitionParser parser) {
+        RibbonGroup ribbonGroup = new RibbonGroup();
+        ribbonGroup.setName("actions");
+        ribbonGroup.addItem(createGridNewAction(parser));
+        ribbonGroup.addItem(createGridCopyAction(parser));
+        ribbonGroup.addItem(createGridDeleteAction(parser));
+        return ribbonGroup;
+    }
+
+    private RibbonActionItem createGridDeleteAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
         ribbonDeleteAction.setAction(translateRibbonAction("#{grid}.performDelete;", parser));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
-        ribbonDeleteAction.setType(RibbonActionItem.Type.BIG_BUTTON);
-
-        ribbonGroup.addItem(ribbonDeleteAction);
-
-        return ribbonGroup;
+        ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+        ribbonDeleteAction.setEnabled(false);
+        // ribbonDeleteAction.setMessage("noRecordSelected");
+        ribbonDeleteAction.setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
+                + "this.disable();} else {this.enable();}}}; #{grid}.addOnChangeListener(listener);");
+        return ribbonDeleteAction;
     }
 
-    private RibbonGroup createGridNewActionTemplate(final ViewDefinitionParser parser) {
+    private RibbonActionItem createGridCopyAction(final ViewDefinitionParser parser) {
+        RibbonActionItem ribbonCopyAction = new RibbonActionItem();
+        ribbonCopyAction.setAction(translateRibbonAction("#{grid}.performCopy;", parser));
+        ribbonCopyAction.setIcon("copyIcon16.png");
+        ribbonCopyAction.setName("copy");
+        ribbonCopyAction.setEnabled(false);
+        // ribbonCopyAction.setMessage("noRecordSelected");
+        ribbonCopyAction.setScript("var listener = {onChange: function(selectedRecord) {if (!selectedRecord) {"
+                + "this.disable();} else {this.enable();}}}; #{grid}.addOnChangeListener(listener);");
+        ribbonCopyAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+        return ribbonCopyAction;
+    }
+
+    private RibbonActionItem createGridNewAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonNewAction = new RibbonActionItem();
         ribbonNewAction.setAction(translateRibbonAction("#{grid}.performNew;", parser));
         ribbonNewAction.setIcon("newIcon24.png");
         ribbonNewAction.setName("new");
         ribbonNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        return ribbonNewAction;
+    }
 
+    private RibbonGroup createFormSaveCopyAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(ribbonNewAction);
-
+        ribbonGroup.addItem(createFormSaveAction(parser));
+        ribbonGroup.addItem(createFormSaveAndBackAction(parser));
+        ribbonGroup.addItem(createFormCopyAction(parser));
+        ribbonGroup.addItem(createFormCancelAction(parser));
+        ribbonGroup.addItem(createFormDeleteAction(parser));
         return ribbonGroup;
     }
 
-    private RibbonGroup createFormActionsTemplate(final ViewDefinitionParser parser) {
-        RibbonGroup ribbonGroup = createFormSaveActionsTemplate(parser);
-
-        RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
-        ribbonDeleteAction.setAction(translateRibbonAction("#{form}.performDelete; #{window}.performBack", parser));
-        ribbonDeleteAction.setIcon("deleteIcon16.png");
-        ribbonDeleteAction.setName("delete");
-        ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
-
-        ribbonGroup.addItem(ribbonDeleteAction);
-
-        return ribbonGroup;
-    }
-
-    private RibbonGroup createFormSaveActionsTemplate(final ViewDefinitionParser parser) {
-        RibbonActionItem ribbonSaveAction = new RibbonActionItem();
-        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave;", parser));
-        ribbonSaveAction.setIcon("saveIcon24.png");
-        ribbonSaveAction.setName("save");
-        ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
-
-        RibbonActionItem ribbonSaveBackAction = new RibbonActionItem();
-        ribbonSaveBackAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack", parser));
-        ribbonSaveBackAction.setIcon("saveBackIcon24.png");
-        ribbonSaveBackAction.setName("saveBack");
-        ribbonSaveBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
-
-        RibbonActionItem ribbonCancelAction = new RibbonActionItem();
-        ribbonCancelAction.setAction(translateRibbonAction("#{form}.performCancel;", parser));
-        ribbonCancelAction.setIcon("cancelIcon16.png");
-        ribbonCancelAction.setName("cancel");
-        ribbonCancelAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
-
+    private RibbonGroup createFormSaveAndRemoveActionsTemplate(final ViewDefinitionParser parser) {
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
-        ribbonGroup.addItem(ribbonSaveAction);
-        ribbonGroup.addItem(ribbonSaveBackAction);
-        ribbonGroup.addItem(ribbonCancelAction);
-
+        ribbonGroup.addItem(createFormSaveAction(parser));
+        ribbonGroup.addItem(createFormSaveAndBackAction(parser));
+        ribbonGroup.addItem(createFormCancelAction(parser));
+        ribbonGroup.addItem(createFormDeleteAction(parser));
         return ribbonGroup;
     }
 
@@ -350,12 +415,70 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonSaveAction.setIcon("saveBackIcon24.png");
         ribbonSaveAction.setName("save");
         ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
-
+        ribbonSaveAction.setEnabled(true);
         RibbonGroup ribbonGroup = new RibbonGroup();
         ribbonGroup.setName("actions");
         ribbonGroup.addItem(ribbonSaveAction);
 
         return ribbonGroup;
+    }
+
+    private RibbonActionItem createFormDeleteAction(final ViewDefinitionParser parser) {
+        RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
+        ribbonDeleteAction.setAction(translateRibbonAction("#{form}.performDelete; #{window}.performBack", parser));
+        ribbonDeleteAction.setIcon("deleteIcon16.png");
+        ribbonDeleteAction.setName("delete");
+        ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+        ribbonDeleteAction.setEnabled(false);
+        // ribbonDeleteAction.setMessage("recordNotCreated");
+        ribbonDeleteAction
+                .setScript("var listener = {onSetValue: function(value) {if (!value || !value.content) return; if (value.content.entityId) {"
+                        + "this.enable();} else {this.disable();}}}; #{form}.addOnChangeListener(listener);");
+        return ribbonDeleteAction;
+    }
+
+    private RibbonActionItem createFormCancelAction(final ViewDefinitionParser parser) {
+        RibbonActionItem ribbonCancelAction = new RibbonActionItem();
+        ribbonCancelAction.setAction(translateRibbonAction("#{form}.performCancel;", parser));
+        ribbonCancelAction.setIcon("cancelIcon16.png");
+        ribbonCancelAction.setName("cancel");
+        ribbonCancelAction.setEnabled(true);
+        ribbonCancelAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
+        return ribbonCancelAction;
+    }
+
+    private RibbonActionItem createFormCopyAction(final ViewDefinitionParser parser) {
+        RibbonActionItem ribbonCopyAction = new RibbonActionItem();
+        ribbonCopyAction.setAction(translateRibbonAction("#{form}.performCopy;", parser));
+        ribbonCopyAction.setIcon("copyIcon24.png");
+        ribbonCopyAction.setName("copy");
+        ribbonCopyAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        ribbonCopyAction.setEnabled(false);
+        // ribbonCopyAction.setMessage("recordNotCreated");
+        ribbonCopyAction
+                .setScript("var listener = {onSetValue: function(value) {if (!value || !value.content) return; if (value.content.entityId) {"
+                        + "this.enable();} else {this.disable();}}}; #{form}.addOnChangeListener(listener);");
+        return ribbonCopyAction;
+    }
+
+    private RibbonActionItem createFormSaveAndBackAction(final ViewDefinitionParser parser) {
+        RibbonActionItem ribbonSaveBackAction = new RibbonActionItem();
+        ribbonSaveBackAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack;", parser));
+        ribbonSaveBackAction.setIcon("saveBackIcon24.png");
+        ribbonSaveBackAction.setName("saveBack");
+        ribbonSaveBackAction.setEnabled(true);
+        ribbonSaveBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        return ribbonSaveBackAction;
+    }
+
+    private RibbonActionItem createFormSaveAction(final ViewDefinitionParser parser) {
+        RibbonActionItem ribbonSaveAction = new RibbonActionItem();
+        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave;", parser));
+        ribbonSaveAction.setIcon("saveIcon24.png");
+        ribbonSaveAction.setName("save");
+        ribbonSaveAction.setEnabled(true);
+        ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        return ribbonSaveAction;
     }
 
 }

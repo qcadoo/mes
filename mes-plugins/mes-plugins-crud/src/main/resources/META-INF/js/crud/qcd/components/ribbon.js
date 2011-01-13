@@ -25,11 +25,12 @@
 var QCD = QCD || {};
 QCD.components = QCD.components || {};
 
-QCD.components.Ribbon = function(_model, _elementName, _mainController) {
+QCD.components.Ribbon = function(_model, _elementName, _mainController, _translations) {
 	
 	var ribbonModel = _model;
 	var mainController = _mainController;
 	var elementName = _elementName;
+	var translations = _translations;
 	
 	var element;
 	
@@ -74,6 +75,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 							itemElement = createSmallButton(groupModel.name, itemModel);
 						}
 						isSmall = true;
+					} else if (itemModel.type == "COMBOBOX") {
+						itemElement = createComboBox(groupModel.name, itemModel);
+						isSmall = true;
 					}
 					
 					if (itemElement) {
@@ -91,6 +95,27 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 							smallElementsGroupElement = null;
 						}
 					}
+					
+					itemModel.element = itemElement;
+					
+					if (itemModel.enabled) {
+						itemElement.addClass("enabled");
+					}
+					if (itemModel.message) {
+						if (itemModel.tooltipElement) {
+							if (itemModel.message && itemModel.message != "") {
+								itemModel.tooltipElement.show();
+								itemModel.tooltipMessageElementContent.html(itemModel.message);
+							} else {
+								itemModel.tooltipElement.hide();
+							}
+						}
+					} else {
+						if (itemModel.tooltipElement) {
+							itemModel.tooltipElement.hide();
+						}
+					}
+					
 				}
 				content.append(groupElement);
 			}
@@ -99,11 +124,12 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	}
 	
 	function createBigButton(path, itemModel) {
-		var aElement = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"><label>"+itemModel.label+"</label><div></div></div></span>");
+		var aElement = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><label>"+itemModel.label+"</label></div></div></span>");
 		var liElement = $("<li>").append(aElement);
 		var ribbonListElement = $("<ul>").addClass("ribbonListElement").append(liElement);
 		var itemElement = $("<div>").addClass("ribbonBigElement").append(ribbonListElement);
-		aElement.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		createTooltip(itemModel,aElement);
+		aElement.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
 	
@@ -115,7 +141,7 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 			style = " style=\"background-image:url(\'../../images/icons/"+icon+"\')\"";
 			className = " hasIcon";
 		}
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label>"+itemModel.label+"</label><div></div></div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div class='"+className+" bigDropdownButtonDiv' "+style+"><label class='ribbonLabel'>"+itemModel.label+"</label><div></div></div></span>");
 		var buttonLi = $("<li>").append(itemElementButton);
 		var itemElementDropdownButton = $("<a>").attr('href','#').html("<span><div class='icon_btn_addB'></div></span>");
 		var buttonDropdownLi = $("<li>").addClass("addB").append(itemElementDropdownButton);
@@ -136,14 +162,15 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	}
 	
 	function createSmallButton(path, itemModel) {
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+">"+itemModel.label+"</div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div"+getItemIconStyle(itemModel)+"></div><div class='btnOneLabel ribbonLabel'>"+itemModel.label+"</div></span>");
+		createTooltip(itemModel,itemElementButton);
 		var itemElement = $("<li>").addClass("btnOne").append(itemElementButton);
-		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		itemElementButton.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		return itemElement;
 	}
 	
 	function createSmallButtonWithDropdown(path, itemModel) {
-		var itemElementButton = $("<a>").attr('href','#').html("<span><div "+getItemIconStyle(itemModel)+">"+itemModel.label+"</div></span>");
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div "+getItemIconStyle(itemModel)+"></div><div class='btnOneLabel'>"+itemModel.label+"</div></span>");
 		var buttonLi = $("<li>").append(itemElementButton);
 		var itemElementDropdownButton = $("<a>").attr('href','#').addClass("twoB_down");
 		var buttonDropdownLi = $("<li>").append(itemElementDropdownButton);
@@ -152,10 +179,10 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 		var spanElement = $("<span>").append(divElement);
 		var itemElement = $("<li>").addClass("twoB").addClass("ribbonDropdownContainer").append(spanElement);
 		
-		itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		itemElementButton.bind('click', {itemElement: itemElement, itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
 		
 		var dropdownMenu = createDropdownMenu(path + "." + (itemModel.label ? itemModel.label : itemModel.name), itemModel).addClass("smallButtonDropdownMenu");
-		addDropdownAction(itemElementDropdownButton);
+		addDropdownAction(itemElementDropdownButton, itemElement);
 		itemElement.append(dropdownMenu);
 			
 		return itemElement;
@@ -164,26 +191,31 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 	function createDropdownMenu(path, itemModel) {
 		var dropdownMenuContent = $("<ul>");
 		for (var menuIter in itemModel.items) {
-			var menuItemName = itemModel.items[menuIter].name;
-			var icon = (itemModel.items[menuIter].icon && $.trim(itemModel.items[menuIter].icon) != "") ? $.trim(itemModel.items[menuIter].icon) : null;
+			var dropdownItem = itemModel.items[menuIter];
+			var menuItemName = dropdownItem.name;
+			var icon = (dropdownItem.icon && $.trim(dropdownItem.icon) != "") ? $.trim(dropdownItem.icon) : null;
 			var style = "";
 			if (icon) {
 				style = " style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
 			}
-			var menuItemButton = $("<a>").attr('href','#').html("<span "+style+">"+itemModel.items[menuIter].label+"</span>").addClass("icon");
-			menuItemButton.bind('click', {itemName: itemModel.name+"."+menuItemName, clickAction: itemModel.items[menuIter].clickAction}, buttonClicked);
+			var menuItemButton = $("<a>").attr('href','#').html("<span class='dropdownItemIcon' "+style+"></span><span class='dropdownItemLabel'>"+dropdownItem.label+"</span>").addClass("icon");
 			var menuItem = $("<li>").append(menuItemButton);
+			menuItemButton.bind('click', {itemElement: menuItem, itemName: itemModel.name+"."+menuItemName, clickAction: dropdownItem.clickAction}, buttonClicked);
+			dropdownItem.element = menuItem;
 			dropdownMenuContent.append(menuItem);
 		}
 		var dropdownMenu = $("<div>").addClass("dropdownMenu").addClass("m_module").append(dropdownMenuContent);
 		return dropdownMenu;
 	}
 	
-	function addDropdownAction(dropdownTriggerButton) {
+	function addDropdownAction(dropdownTriggerButton, itemElement) {
 		dropdownTriggerButton.addClass("dropdownTrigger");
 		dropdownTriggerButton.click(function() {
 			var parent = $(this);
 			parent.blur();
+			if (! itemElement.hasClass("enabled")) {
+				return;
+			}
 			while(! parent.hasClass("ribbonDropdownContainer")) {
 				parent = parent.parent();
 			}
@@ -198,20 +230,163 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController) {
 		});
 	}
 	
+	function createComboBox(path, itemModel) {
+		var itemElementButton = $("<a>").attr('href','#').html("<span><div "+getItemIconStyle(itemModel)+">"+itemModel.label+"</div></span>");
+		var buttonLi = $("<li>").append(itemElementButton);
+		var itemElementDropdownButton = $("<a>").attr('href','#').addClass("twoB_down");
+		var buttonDropdownLi = $("<li>").append(itemElementDropdownButton);
+		var ulElement = $("<ul>").append(buttonLi).append(buttonDropdownLi);
+		var divElement = $("<div>").append(ulElement);
+		var spanElement = $("<span>").append(divElement);
+		var itemElement = $("<li>").addClass("twoB").addClass("ribbonDropdownContainer").append(spanElement);
+		
+		//itemElementButton.bind('click', {itemName: itemModel.name, clickAction: itemModel.clickAction}, buttonClicked);
+		
+		//var dropdownMenu = createDropdownMenu(path + "." + (itemModel.label ? itemModel.label : itemModel.name), itemModel).addClass("smallButtonDropdownMenu");
+		//addDropdownAction(itemElementDropdownButton);
+		//itemElement.append(dropdownMenu);
+			
+		return itemElement;
+	}
+	
+	function createTooltip(itemModel, itemElementButton) {
+		var tooltipElement = $("<div>").addClass("ribbon_description_icon").css("display", "none");
+		var tooltipMessageElement = $("<div>").addClass("description_message").css("display", "none");
+		var tooltipMessageElementContent = $("<p>").html("");
+		tooltipMessageElement.append(tooltipMessageElementContent);
+		itemElementButton.append(tooltipElement);
+		itemElementButton.append(tooltipMessageElement);
+		tooltipElement.hover(function() {
+			tooltipMessageElement.show();
+		}, function() {
+			tooltipMessageElement.hide();
+		});
+		itemModel.tooltipElement = tooltipElement;
+		itemModel.tooltipMessageElementContent = tooltipMessageElementContent;
+	}
+	
 	function getItemIconStyle(itemModel) {
 		var icon = (itemModel.icon && $.trim(itemModel.icon) != "") ? $.trim(itemModel.icon) : null;
 		var style = "";
 		if (icon) {
-			style = " class='hasIcon' style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
+			style = " class='iconElement hasIcon' style=\"background-image:url(\'/img/core/icons/"+icon+"\')\"";
+		} else {
+			style = "class='iconElement' ";
 		}
+		
 		return style;
 	}
 	
 	function buttonClicked(e) {
 		$(this).blur();
+		if (e.data.itemElement) {
+			if (! e.data.itemElement.hasClass("enabled")) {
+				return;
+			}
+		}
 		var action = e.data.clickAction;
 		var name = e.data.itemName;
-		mainController.performRibbonAction(action);
+		mainController.getActionEvaluator().performRibbonAction(action);
+	}
+	
+	function createJsObject(item) {
+		return {
+			element: item.element,
+			tooltipElement: item.tooltipElement,
+			tooltipMessageElementContent: item.tooltipMessageElementContent,
+			disable: function(msg) {
+				this.element.removeClass("enabled");
+				if (this.tooltipElement) {
+					if (msg && msg != "") {
+						this.tooltipElement.show();
+						this.tooltipMessageElementContent.html(msg);
+					} else {
+						this.tooltipElement.hide();
+					}
+				}
+			},
+			enable: function(msg) {
+				this.element.addClass("enabled");
+				if (this.tooltipElement) {
+					if (msg && msg != "") {
+						this.tooltipElement.show();
+						this.tooltipMessageElementContent.html(msg);
+					} else {
+						this.tooltipElement.hide();
+					}
+				}
+			},
+			setLabel: function(label) {
+				this.element.find('.ribbonLabel').html(label);
+			},
+			setIcon: function(icon) {
+				var iconEl = this.element.find('.iconElement');
+				if (icon) {
+					iconEl.addClass("hasIcon");
+					iconEl.css("backgroundImage", "url(\'/img/core/icons/"+icon+"\')");
+				} else {
+					iconEl.removeClass("hasIcon");
+				}
+			}
+		}
+	}
+	
+	this.performScripts = function() {
+		for (var groupIter in ribbonModel.groups) {
+			var group = ribbonModel.groups[groupIter];
+			for (var itemsIter in group.items) {
+				var item = group.items[itemsIter];
+				if (item.script) {
+					var scriptObject = createJsObject(item);
+					mainController.getActionEvaluator().performJsAction(item.script, scriptObject);
+				}
+			}
+		}
+	}
+	
+	this.getRibbonItem = function(ribbonItemPath) {
+		var pathParts = ribbonItemPath.split(".");
+		if (pathParts.length != 2 && pathParts.length != 3) {
+			QCD.error("wrong path: '"+ribbonItemPath+"'");
+			return null;
+		}
+		var group = null;
+		for (var groupIter in ribbonModel.groups) {
+			if (ribbonModel.groups[groupIter].name == pathParts[0]) {
+				group = ribbonModel.groups[groupIter];
+				break;
+			}
+		}
+		if (!group) {
+			return null;
+		}
+		var item = null;
+		for (var itemsIter in group.items) {
+			if (group.items[itemsIter].name == pathParts[1]) {
+				item = group.items[itemsIter];
+				break;
+			}
+		}
+		if (!item) {
+			return null;
+		}
+		if (pathParts.length == 3) {
+			if (! item.items) {
+				return null;
+			}
+			var dropdownItem = null;
+			for (var dropdownItemsIter in item.items) {
+				if (item.items[dropdownItemsIter].name == pathParts[2]) {
+					dropdownItem = item.items[dropdownItemsIter];
+					break;
+				}
+			}
+			if (! dropdownItem) {
+				return null;
+			}
+			return createJsObject(dropdownItem);
+		}
+		return createJsObject(item);
 	}
 
 	this.updateSize = function(margin, innerWidth) {

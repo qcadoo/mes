@@ -40,8 +40,9 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
+import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.products.print.pdf.util.PdfPageNumbering;
 import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
 
 public abstract class ProductsPdfView extends AbstractPdfView {
@@ -67,7 +68,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
-        DefaultEntity entity = (DefaultEntity) model.get("entity");
+        Entity entity = (Entity) model.get("entity");
         String fileName = addContent(document, entity, locale, writer);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);
         writer.addJavaScript("this.print(false);", false);
@@ -76,8 +77,18 @@ public abstract class ProductsPdfView extends AbstractPdfView {
     @Override
     protected Document newDocument() {
         Document doc = super.newDocument();
-        doc.setMargins(0, 0, 0, 0);
+        doc.setMargins(40, 40, 60, 60);
         return doc;
+    }
+
+    @Override
+    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+            throws DocumentException {
+        Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
+        super.prepareWriter(model, writer, request);
+        writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
+                getTranslationService().translate("products.report.in", locale), PdfUtil.getFontsPath(getWindowsFontsPath(),
+                        getMacosFontsPath(), getLinuxFontsPath())));
     }
 
     @Override
@@ -87,7 +98,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         PdfUtil.addMetaData(document);
     }
 
-    protected String addContent(final Document document, final DefaultEntity entity, final Locale locale, final PdfWriter writer)
+    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
         document.add(new Paragraph("", PdfUtil.getArialRegular9Dark()));
         return "document";

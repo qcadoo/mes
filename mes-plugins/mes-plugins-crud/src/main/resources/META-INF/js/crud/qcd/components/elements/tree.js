@@ -31,6 +31,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var mainController = _mainController;
 	
+	var element = _element;
+	
 	var tree;
 	
 	var header;
@@ -60,6 +62,10 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 	
 	var translations = this.options.translations;
 	
+	if (this.options.referenceName) {
+		mainController.registerReferenceName(this.options.referenceName, this);
+	}
+	
 	function constructor(_this) {
 		header = $("<div>").addClass('tree_header').addClass('elementHeader').addClass("elementHeaderDisabled");
 			
@@ -87,7 +93,8 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		container.append(header);
 		container.append(contentElement);
 		
-		_this.element.append(container);
+		element.append(container);
+		element.css("padding", "10px");
 		
 		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", /*"hotkeys"*/ ],
 			"themes" : {
@@ -136,8 +143,6 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				}
 			}
 		});
-		
-		block();
 	}
 	
 	this.setComponentState = function(state) {
@@ -247,7 +252,9 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			if (belongsToFieldName) {
 				params[correspondingComponent+"."+belongsToFieldName] = belongsToEntityId;
 			}
-			params[correspondingComponent+".parent"] = getSelectedEntityId();
+			var entityId = getSelectedEntityId();
+			entityId = entityId=="0" ? null : entityId;
+			params[correspondingComponent+".parent"] = entityId;
 			redirectToCorrespondingPage(params);
 		}
 	}
@@ -314,28 +321,18 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		if (! _height) {
 			_height = 300;
 		}
+		//element.css("height",_height+"px")
 		contentElement.height(_height - 52);
 	}
 	
 	function block() {
 		isEnabled = false;
-		if (tree) {
-			tree.block({ message: '<div class="loading_div">'+translations.loading+'</div>', showOverlay: false,  fadeOut: 0, fadeIn: 0,css: { 
-	            border: 'none', 
-	            padding: '15px', 
-	            backgroundColor: '#000', 
-	            '-webkit-border-radius': '10px', 
-	            '-moz-border-radius': '10px', 
-	            opacity: .5, 
-	            color: '#fff' } });
-		}
+		QCD.components.elements.utils.LoadingIndicator.blockElement(element);
 	}
 	
 	function unblock() {
-		if (tree) {
-			tree.unblock();
-			isEnabled = true;
-		}
+		QCD.components.elements.utils.LoadingIndicator.unblockElement(element);
+		isEnabled = true;
 	}
 	
 	constructor(this);

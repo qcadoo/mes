@@ -26,7 +26,7 @@ package com.qcadoo.mes.model.search.restrictions.internal;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 public final class IsNullRestriction extends BaseRestriction {
@@ -36,8 +36,8 @@ public final class IsNullRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criteria addRestrictionToHibernateCriteria(final Criteria criteria) {
-        return criteria.add(Restrictions.isNull(getFieldName()));
+    public Criterion getHibernateCriteria() {
+        return Restrictions.isNull(getFieldName());
     }
 
     @Override

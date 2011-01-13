@@ -33,6 +33,7 @@ import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restriction;
+import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -277,7 +278,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.render();
 
         // then
-        verify(substituteCriteria).restrictedWith(Restrictions.eq("asdName", "test"));
+        verify(substituteCriteria).restrictedWith(Restrictions.forOperator(RestrictionOperator.EQ, null, "test"));
     }
 
     @Test
@@ -329,7 +330,8 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.render();
 
         // then
-        verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test"));
+        // verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test"));
+        verify(substituteCriteria).restrictedWith(Restrictions.forOperator(RestrictionOperator.EQ, null, "test"));
     }
 
     @Test
@@ -367,7 +369,7 @@ public class GridComponentStateTest extends AbstractStateTest {
         grid.render();
 
         // then
-        verify(substituteCriteria).restrictedWith(Restrictions.eq("product.name", "test*"));
+        verify(substituteCriteria).restrictedWith(Restrictions.forOperator(RestrictionOperator.EQ, null, "test*"));
     }
 
     @Test
@@ -503,6 +505,35 @@ public class GridComponentStateTest extends AbstractStateTest {
 
         // when
         grid.performEvent(viewDefinitionState, "remove", new String[0]);
+    }
+
+    @Test
+    public void shouldCopySelectedEntity() throws Exception {
+        // given
+        FieldEntityIdChangeListener listener = mock(FieldEntityIdChangeListener.class);
+        SearchResult result = mock(SearchResult.class);
+        given(substituteCriteria.list()).willReturn(result);
+        given(result.getTotalNumberOfEntities()).willReturn(0);
+        given(result.getEntities()).willReturn(Collections.<Entity> emptyList());
+        grid.initialize(json, Locale.ENGLISH);
+        grid.addFieldEntityIdChangeListener("field", listener);
+        Entity copiedEntity = new DefaultEntity("plugin", "name", 14L, Collections.singletonMap("name", (Object) "text(1)"));
+        given(substituteDataDefinition.copy(13L)).willReturn(copiedEntity);
+
+        // when
+        grid.performEvent(viewDefinitionState, "copy", new String[0]);
+
+        // then
+        verify(substituteDataDefinition).copy(13L);
+
+        JSONObject json = grid.render();
+
+        assertEquals(Long.valueOf(14L), grid.getSelectedEntityId());
+        assertEquals("SUCCESS",
+                json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_TYPE));
+        assertEquals("i18n",
+                json.getJSONArray(ComponentState.JSON_MESSAGES).getJSONObject(0).getString(ComponentState.JSON_MESSAGE_BODY));
+        verify(listener, never()).onFieldEntityIdChange(13L);
     }
 
     @Test

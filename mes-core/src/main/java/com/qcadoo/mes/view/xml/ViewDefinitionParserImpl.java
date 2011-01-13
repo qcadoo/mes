@@ -93,7 +93,7 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         LOG.info("Reading view definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:view.xml");
+            Resource[] resources = applicationContext.getResources("classpath*:view/*.xml");
             for (Resource resource : resources) {
                 parse(resource.getInputStream());
             }
@@ -195,6 +195,19 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public String getStringNodeContent(final Node node) {
+        NodeList childNodes = node.getChildNodes();
+        StringBuilder contentSB = new StringBuilder();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+                contentSB.append(child.getNodeValue());
+            }
+        }
+        return contentSB.toString().trim();
     }
 
     private Node getAttribute(final Node node, final String name) {

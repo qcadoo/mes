@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.DocumentService;
-import com.qcadoo.mes.products.print.xls.util.XlsCopyUtil;
+import com.qcadoo.mes.products.print.xls.util.XlsUtil;
 
 @Service
 public abstract class XlsDocumentService extends DocumentService {
@@ -52,8 +52,7 @@ public abstract class XlsDocumentService extends DocumentService {
         sheet.setZoom(4, 3);
         FileOutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix(locale)
-                    + XlsCopyUtil.XLS_EXTENSION);
+            outputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix() + XlsUtil.XLS_EXTENSION);
             workbook.write(outputStream);
         } catch (IOException e) {
             LOG.error("Problem with generating document - " + e.getMessage());
@@ -68,7 +67,5 @@ public abstract class XlsDocumentService extends DocumentService {
     protected abstract void addHeader(final HSSFSheet sheet, final Locale locale);
 
     protected abstract void addSeries(final HSSFSheet sheet, final Entity entity);
-
-    protected abstract String getReportTitle(final Locale locale);
 
 }

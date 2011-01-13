@@ -1,8 +1,10 @@
 package com.qcadoo.mes.view.components.grid;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
@@ -22,6 +26,7 @@ import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @ViewComponent("grid")
 public final class GridComponentPattern extends AbstractComponentPattern {
@@ -51,6 +56,10 @@ public final class GridComponentPattern extends AbstractComponentPattern {
     private boolean deletable = false;
 
     private boolean creatable = false;
+
+    private boolean hasPredefinedFilters = false;
+
+    private List<PredefinedFilter> predefinedFilters = new LinkedList<PredefinedFilter>();
 
     private int height = DEFAULT_GRID_HEIGHT;
 
@@ -92,7 +101,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         parseOptions();
 
         if (correspondingView != null && correspondingComponent == null) {
-            throw new IllegalStateException("Missing correspondingComponent for grid");
+            throwIllegalStateException("Missing correspondingComponent for grid");
         }
     }
 
@@ -102,17 +111,26 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 HasManyType hasManyType = (HasManyType) getScopeFieldDefinition().getType();
                 belongsToFieldDefinition = hasManyType.getDataDefinition().getField(hasManyType.getJoinFieldName());
             } else {
-                throw new IllegalStateException("Scope field for grid be a hasMany one");
+                throwIllegalStateException("Scope field for grid be a hasMany one");
             }
         }
     }
 
     @Override
     protected JSONObject getJsOptions(final Locale locale) throws JSONException {
-        JSONObject json = new JSONObject();
+        JSONObject json = super.getJsOptions(locale);
         json.put("paginable", paginable);
         json.put("deletable", deletable);
         json.put("creatable", creatable);
+        json.put("hasPredefinedFilters", hasPredefinedFilters);
+
+        JSONArray predefinedFiltersArray = new JSONArray();
+        for (PredefinedFilter predefinedFilter : predefinedFilters) {
+            predefinedFiltersArray.put(predefinedFilter.toJson());
+        }
+
+        json.put("predefinedFilters", predefinedFiltersArray);
+
         json.put("height", height);
         json.put("width", width);
         json.put("fullscreen", width == 0 || height == 0);
@@ -132,6 +150,7 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         JSONObject translations = new JSONObject();
 
         addTranslation(translations, "addFilterButton", locale);
+        addTranslation(translations, "noResults", locale);
         addTranslation(translations, "removeFilterButton", locale);
         addTranslation(translations, "newButton", locale);
         addTranslation(translations, "deleteButton", locale);
@@ -143,6 +162,11 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         addTranslation(translations, "confirmDeleteMessage", locale);
         addTranslation(translations, "wrongSearchCharacterError", locale);
         addTranslation(translations, "header", locale);
+
+        addTranslation(translations, "customPredefinedFilter", locale);
+        for (PredefinedFilter filter : predefinedFilters) {
+            addTranslation(translations, "filter." + filter.getName(), locale);
+        }
 
         translations.put("loading", getTranslationService().translate("commons.loading", locale));
 
@@ -183,7 +207,9 @@ public final class GridComponentPattern extends AbstractComponentPattern {
 
         if (column.getFields().get(0).getType() instanceof EnumType) {
             EnumType type = (EnumType) column.getFields().get(0).getType();
-            for (String value : type.values()) {
+            List<String> sortedValues = type.values();
+            Collections.sort(sortedValues);
+            for (String value : sortedValues) {
                 String fieldCode = getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(),
                         column.getFields().get(0).getName())
                         + ".value." + value;
@@ -217,6 +243,69 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         }
     }
 
+    @Override
+    public void parse(final Node componentNode, final ViewDefinitionParser parser) {
+        super.parse(componentNode, parser);
+        NodeList childNodes = componentNode.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.item(i);
+            if ("predefinedFilters".equals(child.getNodeName())) {
+                NodeList predefinedFilterChildNodes = child.getChildNodes();
+                parsePredefinedFilterChildNodes(predefinedFilterChildNodes, parser);
+                break;
+            }
+        }
+    }
+
+    private void parsePredefinedFilterChildNodes(final NodeList componentNodes, final ViewDefinitionParser parser) {
+        for (int i = 0; i < componentNodes.getLength(); i++) {
+            Node child = componentNodes.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if ("predefinedFilter".equals(child.getNodeName())) {
+                    PredefinedFilter predefinedFilter = new PredefinedFilter();
+                    predefinedFilter.setName(parser.getStringAttribute(child, "name"));
+
+                    NodeList restrictionNodes = child.getChildNodes();
+                    for (int restrictionNodesIndex = 0; restrictionNodesIndex < restrictionNodes.getLength(); restrictionNodesIndex++) {
+                        Node restrictionNode = restrictionNodes.item(restrictionNodesIndex);
+                        if (restrictionNode.getNodeType() == Node.ELEMENT_NODE) {
+                            if ("filterRestriction".equals(restrictionNode.getNodeName())) {
+                                predefinedFilter.addFilterRestriction(parser.getStringAttribute(restrictionNode, "column"),
+                                        parser.getStringAttribute(restrictionNode, "value"));
+                            } else if ("filterOrder".equals(restrictionNode.getNodeName())) {
+                                String column = parser.getStringAttribute(restrictionNode, "column");
+                                String direction = parser.getStringAttribute(restrictionNode, "direction");
+                                if (column == null) {
+                                    throwIllegalStateException("'filterOrder' tag must contain 'collumn' attribute");
+                                }
+                                if (direction == null) {
+                                    direction = "asc";
+                                } else {
+                                    if (!("asc".equals(direction) || "desc".equals(direction))) {
+                                        throwIllegalStateException("unknown order direction: " + direction);
+                                    }
+                                }
+                                predefinedFilter.setOrderColumn(column);
+                                predefinedFilter.setOrderDirection(direction);
+                            } else {
+                                throwIllegalStateException("predefinedFilter can only contain 'filterRestriction' or 'filterOrder' tag");
+                            }
+                        }
+                    }
+
+                    if (predefinedFilter.getOrderColumn() == null && defaultOrderColumn != null) {
+                        predefinedFilter.setOrderColumn(defaultOrderColumn);
+                        predefinedFilter.setOrderDirection(defaultOrderDirection);
+                    }
+
+                    predefinedFilters.add(predefinedFilter);
+                } else {
+                    throwIllegalStateException("predefinedFilters can only contain 'predefinedFilter' tag");
+                }
+            }
+        }
+    }
+
     private void parseOptions() {
         for (ComponentOption option : getOptions()) {
             if ("correspondingView".equals(option.getType())) {
@@ -227,6 +316,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
                 paginable = Boolean.parseBoolean(option.getValue());
             } else if ("creatable".equals(option.getType())) {
                 creatable = Boolean.parseBoolean(option.getValue());
+            } else if ("hasPredefinedFilters".equals(option.getType())) {
+                hasPredefinedFilters = Boolean.parseBoolean(option.getValue());
             } else if ("deletable".equals(option.getType())) {
                 deletable = Boolean.parseBoolean(option.getValue());
             } else if ("height".equals(option.getType())) {
@@ -245,11 +336,22 @@ public final class GridComponentPattern extends AbstractComponentPattern {
             } else if ("order".equals(option.getType())) {
                 defaultOrderColumn = option.getAtrributeValue("column");
                 defaultOrderDirection = option.getAtrributeValue("direction");
+                if (predefinedFilters != null) {
+                    for (PredefinedFilter predefinedFilter : predefinedFilters) {
+                        if (predefinedFilter.getOrderColumn() == null) {
+                            predefinedFilter.setOrderColumn(defaultOrderColumn);
+                            predefinedFilter.setOrderDirection(defaultOrderDirection);
+                        }
+                    }
+                }
             } else if ("column".equals(option.getType())) {
                 parseColumnOption(option);
             } else {
-                throw new IllegalStateException("Unknown option for grid: " + option.getType());
+                throwIllegalStateException("Unknown option for grid: " + option.getType());
             }
+        }
+        if (defaultOrderColumn == null) {
+            throwIllegalStateException("grid must contain 'order' option");
         }
     }
 
@@ -291,4 +393,8 @@ public final class GridComponentPattern extends AbstractComponentPattern {
         return set;
     }
 
+    private void throwIllegalStateException(final String message) {
+        throw new IllegalStateException(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "#"
+                + getPath() + ": " + message);
+    }
 }

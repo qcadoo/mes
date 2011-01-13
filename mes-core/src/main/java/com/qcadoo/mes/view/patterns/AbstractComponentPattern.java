@@ -74,6 +74,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private final List<ComponentCustomEvent> customEvents = new ArrayList<ComponentCustomEvent>();
 
+    private String script;
+
     private FieldDefinition fieldDefinition;
 
     private FieldDefinition scopeFieldDefinition;
@@ -173,12 +175,39 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             addListenersToJsOptions(jsOptions);
             jsOptions.put("defaultEnabled", isDefaultEnabled());
             jsOptions.put("defaultVisible", isDefaultVisible());
+            jsOptions.put("referenceName", reference);
+            if (script != null) {
+                jsOptions.put("script", prepareScript(script, locale));
+            }
             map.put("jsOptions", jsOptions);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
         return map;
+    }
+
+    public String prepareScript(final String scriptBody, final Locale locale) {
+        Pattern p = Pattern.compile("#\\{translate\\(.*?\\)\\}");
+        Matcher m = p.matcher(scriptBody);
+        int lastEnd = 0;
+        StringBuilder result = new StringBuilder();
+        while (m.find()) {
+            String expression = scriptBody.substring(m.start() + 12, m.end() - 2);
+            result.append(scriptBody.substring(lastEnd, m.start()));
+            if (expression.contains(".")) {
+                result.append(translationService.translate(expression, locale));
+            } else {
+                result.append(translationService.translate("core.message." + expression, locale));
+            }
+            lastEnd = m.end();
+        }
+        if (lastEnd > 0) {
+            result.append(scriptBody.substring(lastEnd));
+            return result.toString();
+        } else {
+            return scriptBody;
+        }
     }
 
     protected void prepareComponentView(final Map<String, Object> map, final Locale locale) throws JSONException {
@@ -436,14 +465,13 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
             if ("option".equals(child.getNodeName())) {
                 addOption(parser.parseOption(child));
-            }
-        }
-
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            Node child = childNodes.item(i);
-
-            if ("listener".equals(child.getNodeName())) {
+            } else if ("listener".equals(child.getNodeName())) {
                 addCustomEvent(parser.parseCustomEvent(child));
+            } else if ("script".equals(child.getNodeName())) {
+                if (script == null) {
+                    script = "";
+                }
+                script += parser.getStringNodeContent(child) + ";";
             }
         }
     }

@@ -67,7 +67,7 @@ import com.qcadoo.mes.model.validators.internal.ValidatorFactory;
 public final class DataDefinitionParser {
 
     private static enum ModelTag {
-        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, VALIDATESWITH, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, ENUM, DICTIONARY, PASSWORD
+        PRIORITY, ONCREATE, ONUPDATE, ONSAVE, ONCOPY, VALIDATESWITH, INTEGER, STRING, TEXT, DECIMAL, DATETIME, DATE, BOOLEAN, BELONGSTO, HASMANY, ENUM, DICTIONARY, PASSWORD
     }
 
     private static enum FieldTag {
@@ -102,7 +102,7 @@ public final class DataDefinitionParser {
         LOG.info("Reading model definitions ...");
 
         try {
-            Resource[] resources = applicationContext.getResources("classpath*:model.xml");
+            Resource[] resources = applicationContext.getResources("classpath*:model/*.xml");
             for (Resource resource : resources) {
                 parse(resource.getInputStream());
             }
@@ -170,6 +170,9 @@ public final class DataDefinitionParser {
             case ONSAVE:
                 dataDefinition.withSaveHook(getHookDefinition(reader));
                 break;
+            case ONCOPY:
+                dataDefinition.withCopyHook(getHookDefinition(reader));
+                break;
             case VALIDATESWITH:
                 dataDefinition.withValidator(validatorFactory.customEntity(getHookDefinition(reader)));
                 break;
@@ -209,7 +212,7 @@ public final class DataDefinitionParser {
         HasManyType.Cascade cascade = "delete".equals(getStringAttribute(reader, "cascade")) ? HasManyType.Cascade.DELETE
                 : HasManyType.Cascade.NULLIFY;
         return fieldTypeFactory.hasManyType(plugin != null ? plugin : pluginIdentifier, getStringAttribute(reader, TAG_MODEL),
-                getStringAttribute(reader, "joinField"), cascade);
+                getStringAttribute(reader, "joinField"), cascade, getBooleanAttribute(reader, "copyable", false));
     }
 
     private FieldType getBelongsToType(final XMLStreamReader reader, final String pluginIdentifier) {

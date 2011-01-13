@@ -26,7 +26,7 @@ package com.qcadoo.mes.plugins.internal.enums;
 
 public enum PluginStatus {
 
-    DOWNLOADED("downloaded"), INSTALLED("installed"), ACTIVE("active");
+    DOWNLOADED("01downloaded"), INSTALLED("02installed"), ACTIVE("03active");
 
     private String value;
 

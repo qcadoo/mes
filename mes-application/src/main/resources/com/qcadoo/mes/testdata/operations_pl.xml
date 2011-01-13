@@ -27,11 +27,8 @@
 
 
 <operations>
-	<row NAME="operacja1" NUMBER="1" />
-	<row NAME="operacja2" NUMBER="2" />
-	<row NAME="operacja3" NUMBER="3" />
-	<row NAME="heblowanie" NUMBER="4" />
-	<row NAME="toczenie" NUMBER="5" />
-	<row NAME="spawanie" NUMBER="6" />
-	<row NAME="rozdrabnianie" NUMBER="7" />
+	<row NAME="Heblowanie" NUMBER="1" />
+	<row NAME="Piłowanie" NUMBER="2" />
+	<row NAME="Szlifowanie" NUMBER="3" />
+	<row NAME="Frezowanie" NUMBER="4" />
 </operations>

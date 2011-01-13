@@ -10,7 +10,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var translations = this.options.translations;
 	
-	var AUTOCOMPLETE_TIMEOUT = 200;
+	var AUTOCOMPLETE_TIMEOUT = 100;
 	
 	var keyboard = {
 		UP: 38,
@@ -65,6 +65,10 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	var lookupWindow;
 	
 	var baseValue;
+	
+	if (this.options.referenceName) {
+		_mainController.registerReferenceName(this.options.referenceName, this);
+	}
 	
 	function constructor(_this) {
 		
@@ -194,7 +198,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			}
 			
 			viewState.error = null;
-			if (! dataState.selectedEntity.id && ! lookupDropdown.getSelected() && dataState.autocomplete.matches && dataState.currentCode != "") {
+			if (! dataState.selectedEntity.id && ! lookupDropdown.getSelected() && ! lookupDropdown.getMouseSelected() 
+					&& dataState.autocomplete.matches && dataState.currentCode != "") {
 				if (dataState.autocomplete.matches.length == 0) {
 					viewState.error = translations.noMatchError;
 				} else if (dataState.autocomplete.matches.length > 1) {
@@ -207,12 +212,15 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			if (viewState.error == null) {
 				elements.label.html(labels.normal);
 				if (dataState.selectedEntity.id) {
-					elements.input.val(dataState.selectedEntity.value);	
+					
+				} else if (lookupDropdown.getMouseSelected()) {
+					performSelectEntity(lookupDropdown.getMouseSelected());
+					dataState.currentCode = lookupDropdown.getMouseSelected().code;
 				} else if (lookupDropdown.getSelected()) {
 					performSelectEntity(lookupDropdown.getSelected());
 					dataState.currentCode = lookupDropdown.getSelected().code;
-					elements.input.val(dataState.selectedEntity.value);	
 				}
+				elements.input.val(stripHTML(dataState.selectedEntity.value));
 			} else {
 				_this.addMessage({
 					title: "",
@@ -227,9 +235,6 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (dataState.autocomplete.code == dataState.currentCode) {
 			elements.loading.hide();	
 		}
-		if (dataState.selectedEntity.id) {
-			element.removeClass("error");
-		}
 		if (blurAfterLoad) {
 			blurAfterLoad = false;
 			viewState.isFocused = false;
@@ -241,7 +246,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			lookupDropdown.updateAutocomplete(dataState.autocomplete.matches, dataState.autocomplete.entitiesNumber);
 			lookupDropdown.show();
 		} else {
-			elements.input.val(dataState.selectedEntity.value);
+			elements.input.val(stripHTML(dataState.selectedEntity.value));
 		}
 	}
 	
@@ -278,6 +283,14 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (hasListeners && callEvent) {
 			mainController.callEvent("onSelectedEntityChange", elementPath, null, null, null);
 		}
+	}
+	
+	function stripHTML(text){
+		if (!text || text == "") {
+			return "";
+		}
+		var re= /<\S[^><]*>/g
+		return text.replace(re, "");
 	}
 	
 	this.updateSize = function(_width, _height) {

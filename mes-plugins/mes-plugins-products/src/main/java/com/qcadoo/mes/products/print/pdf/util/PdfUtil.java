@@ -47,23 +47,21 @@ import com.lowagie.text.Element;
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
-import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
 
 public final class PdfUtil {
+
+    public static final SimpleDateFormat D_T_F = new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT);
 
     private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
 
@@ -298,7 +296,7 @@ public final class PdfUtil {
             cellTable.addCell(new Phrase(nullValue, valueFont));
         } else {
             if (value instanceof BigDecimal && df != null) {
-                cellTable.addCell(new Phrase(df.format(((BigDecimal) value)), valueFont));
+                cellTable.addCell(new Phrase(df.format((value)), valueFont));
             } else {
                 cellTable.addCell(new Phrase(value.toString(), valueFont));
             }
@@ -326,18 +324,6 @@ public final class PdfUtil {
         return locale;
     }
 
-    public static void copyPdf(final Document document, final PdfWriter writer, final String existingWorkbookFileName)
-            throws IOException, DocumentException {
-        PdfReader reader = new PdfReader(existingWorkbookFileName);
-        int n = reader.getNumberOfPages();
-        PdfImportedPage page;
-        for (int i = 1; i <= n; i++) {
-            page = writer.getImportedPage(reader, i);
-            Image instance = Image.getInstance(page);
-            document.add(instance);
-        }
-    }
-
     public static String getFontsPath(final String windowsFontsPath, final String macosFontsPath, final String linuxFontsPath) {
         if (SystemUtils.IS_OS_WINDOWS) {
             return windowsFontsPath;
@@ -347,16 +333,5 @@ public final class PdfUtil {
             return linuxFontsPath;
         }
         return null;
-    }
-
-    public static String copyPdfContent(final Document document, final DefaultEntity entity, final PdfWriter writer,
-            final String fileSuffix) throws IOException, DocumentException {
-        Object fileName = entity.getField("fileName");
-        String fileNameWithoutPath = "";
-        if (fileName != null && !"".equals(fileName.toString().trim())) {
-            copyPdf(document, writer, (String) fileName + fileSuffix + PDF_EXTENSION);
-            fileNameWithoutPath = ((String) fileName + "_" + fileSuffix).substring(((String) fileName).lastIndexOf("/") + 1);
-        }
-        return fileNameWithoutPath;
     }
 }

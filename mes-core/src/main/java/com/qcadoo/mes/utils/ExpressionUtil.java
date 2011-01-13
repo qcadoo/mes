@@ -46,8 +46,6 @@ import org.springframework.stereotype.Component;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.internal.BooleanType;
-import com.qcadoo.mes.model.types.internal.EnumType;
 
 /**
  * Helper class that contains methods to evaluate expression value.
@@ -146,17 +144,17 @@ public final class ExpressionUtil {
         if (fieldDefinitions.size() == 1) {
             FieldDefinition field = fieldDefinitions.get(0);
             value = field.getValue(entity.getField(field.getName()), locale);
-            if (field.getType() instanceof BooleanType) {
-                if ("0".equals(value)) {
-                    value = translationService.translate("commons.false", locale);
-                } else {
-                    value = translationService.translate("commons.true", locale);
-                }
-            } else if (field.getType() instanceof EnumType) {
-                String messageCode = translationService.getEntityFieldBaseMessageCode(field.getDataDefinition(), field.getName())
-                        + ".value." + value;
-                value = translationService.translate(messageCode, locale);
-            }
+            // if (field.getType() instanceof BooleanType) {
+            // if ("0".equals(value)) {
+            // value = translationService.translate("commons.false", locale);
+            // } else {
+            // value = translationService.translate("commons.true", locale);
+            // }
+            // } else if (field.getType() instanceof EnumType) {
+            // String messageCode = translationService.getEntityFieldBaseMessageCode(field.getDataDefinition(), field.getName())
+            // + ".value." + value;
+            // value = translationService.translate(messageCode, locale);
+            // }
         } else {
             List<String> values = new ArrayList<String>();
             for (FieldDefinition fieldDefinition : fieldDefinitions) {

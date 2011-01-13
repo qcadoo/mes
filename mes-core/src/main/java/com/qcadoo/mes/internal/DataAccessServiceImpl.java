@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -50,6 +52,7 @@ import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.search.Order;
 import com.qcadoo.mes.model.search.Restriction;
+import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
@@ -116,6 +119,102 @@ public final class DataAccessServiceImpl implements DataAccessService {
         LOG.info(savedEntity + " has been saved");
 
         return savedEntity;
+    }
+
+    @Override
+    @Transactional
+    @Monitorable
+    public Entity copy(final InternalDataDefinition dataDefinition, final Long entityId) {
+        Entity sourceEntity = get(dataDefinition, entityId);
+        Entity targetEntity = copy(dataDefinition, sourceEntity);
+
+        if (targetEntity == null) {
+            throw new IllegalStateException("Cannot copy " + sourceEntity);
+        }
+
+        return targetEntity;
+    }
+
+    public Entity copy(final InternalDataDefinition dataDefinition, final Entity sourceEntity) {
+        Entity targetEntity = new DefaultEntity(sourceEntity.getPluginIdentifier(), sourceEntity.getName());
+
+        for (String fieldName : dataDefinition.getFields().keySet()) {
+            targetEntity.setField(fieldName, getCopyValueOfSimpleField(sourceEntity, dataDefinition, fieldName));
+        }
+
+        if (!dataDefinition.callCopyHook(targetEntity)) {
+            return null;
+        }
+
+        targetEntity = save(dataDefinition, targetEntity);
+
+        if (!targetEntity.isValid()) {
+            throw new CopyException(targetEntity);
+        }
+
+        LOG.info(sourceEntity + " has been copied to " + targetEntity);
+
+        for (String fieldName : dataDefinition.getFields().keySet()) {
+            copyHasManyField(sourceEntity, targetEntity, dataDefinition, fieldName);
+        }
+
+        return targetEntity;
+    }
+
+    private void copyHasManyField(final Entity sourceEntity, final Entity targetEntity, final DataDefinition dataDefinition,
+            final String fieldName) {
+        FieldDefinition fieldDefinition = dataDefinition.getField(fieldName);
+
+        if (!(fieldDefinition.getType() instanceof HasManyType) || !((HasManyType) fieldDefinition.getType()).isCopyable()) {
+            return;
+        }
+
+        HasManyType hasManyType = ((HasManyType) fieldDefinition.getType());
+
+        for (Entity childEntity : sourceEntity.getHasManyField(fieldName)) {
+            childEntity.setField(hasManyType.getJoinFieldName(), targetEntity.getId());
+            copy((InternalDataDefinition) hasManyType.getDataDefinition(), childEntity);
+        }
+    }
+
+    private Object getCopyValueOfSimpleField(final Entity sourceEntity, final DataDefinition dataDefinition,
+            final String fieldName) {
+        FieldDefinition fieldDefinition = dataDefinition.getField(fieldName);
+
+        if (fieldDefinition.isUnique()) {
+            if (fieldDefinition.getType().getType().equals(String.class)) {
+                return getCopyValueOfUniqueField(dataDefinition, fieldDefinition, sourceEntity.getStringField(fieldName));
+            } else {
+                sourceEntity.addError(fieldDefinition, "core.validate.field.error.invalidUniqueType");
+                throw new CopyException(sourceEntity);
+            }
+        } else {
+            return sourceEntity.getField(fieldName);
+        }
+    }
+
+    private String getCopyValueOfUniqueField(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+            final String value) {
+        Matcher matcher = Pattern.compile("(.+)\\((\\d+)\\)").matcher(value);
+
+        String oldValue = value;
+        int index = 1;
+
+        if (matcher.matches()) {
+            oldValue = matcher.group(1);
+            index = Integer.valueOf(matcher.group(2)) + 1;
+        }
+
+        while (true) {
+            String newValue = oldValue + "(" + (index++) + ")";
+
+            int matches = dataDefinition.find().withMaxResults(1).restrictedWith(Restrictions.eq(fieldDefinition, newValue))
+                    .list().getTotalNumberOfEntities();
+
+            if (matches == 0) {
+                return newValue;
+            }
+        }
     }
 
     @Override

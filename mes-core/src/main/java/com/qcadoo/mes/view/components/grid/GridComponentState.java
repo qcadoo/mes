@@ -1,7 +1,9 @@
 package com.qcadoo.mes.view.components.grid;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,11 +19,14 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.Restriction;
+import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.BelongsToType;
-import com.qcadoo.mes.model.types.FieldType;
+import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
 public final class GridComponentState extends AbstractComponentState {
@@ -85,6 +90,7 @@ public final class GridComponentState extends AbstractComponentState {
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
         registerEvent("moveUp", eventPerformer, "moveUpSelectedEntity");
         registerEvent("moveDown", eventPerformer, "moveDownSelectedEntity");
+        registerEvent("copy", eventPerformer, "copySelectedEntity");
     }
 
     @Override
@@ -149,7 +155,10 @@ public final class GridComponentState extends AbstractComponentState {
     @Override
     public void onScopeEntityIdChange(final Long scopeEntityId) {
         if (belongsToFieldDefinition != null) {
-            this.belongsToEntityId = scopeEntityId;
+            if (belongsToEntityId != null && !belongsToEntityId.equals(scopeEntityId)) {
+                setSelectedEntityId(null);
+            }
+            belongsToEntityId = scopeEntityId;
             setEnabled(scopeEntityId != null);
         } else {
             throw new IllegalStateException("Grid doesn't have scopeField, it cannot set scopeEntityId");
@@ -260,6 +269,16 @@ public final class GridComponentState extends AbstractComponentState {
             addMessage(translateMessage("moveMessage"), MessageType.SUCCESS);
         }
 
+        public void copySelectedEntity(final String[] args) {
+            Entity copiedEntity = getDataDefinition().copy(selectedEntityId);
+            if (copiedEntity.getId() != null) {
+                setSelectedEntityId(copiedEntity.getId());
+                addMessage(translateMessage("copyMessage"), MessageType.SUCCESS);
+            } else {
+                addMessage(translateMessage("copyFailedMessage"), MessageType.FAILURE);
+            }
+        }
+
         public void moveDownSelectedEntity(final String[] args) {
             getDataDefinition().move(selectedEntityId, 1);
             addMessage(translateMessage("moveMessage"), MessageType.SUCCESS);
@@ -272,22 +291,27 @@ public final class GridComponentState extends AbstractComponentState {
                     criteria.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
                 }
 
-                if (filtersEnabled) {
-                    addFilters(criteria);
-                }
+                try {
+                    if (filtersEnabled) {
+                        addFilters(criteria);
+                    }
 
-                addOrder(criteria);
-                addPaging(criteria);
-
-                SearchResult result = criteria.list();
-
-                if (repeatWithFixedFirstResult(result)) {
+                    addOrder(criteria);
                     addPaging(criteria);
-                    result = criteria.list();
-                }
 
-                entities = result.getEntities();
-                totalEntities = result.getTotalNumberOfEntities();
+                    SearchResult result = criteria.list();
+
+                    if (repeatWithFixedFirstResult(result)) {
+                        addPaging(criteria);
+                        result = criteria.list();
+                    }
+
+                    entities = result.getEntities();
+                    totalEntities = result.getTotalNumberOfEntities();
+                } catch (ParseException e) {
+                    entities = Collections.emptyList();
+                    totalEntities = 0;
+                }
             } else {
                 entities = Collections.emptyList();
                 totalEntities = 0;
@@ -299,25 +323,125 @@ public final class GridComponentState extends AbstractComponentState {
             criteria.withMaxResults(maxResults);
         }
 
-        private void addFilters(final SearchCriteriaBuilder criteria) {
+        private void addFilters(final SearchCriteriaBuilder criteria) throws ParseException {
             for (Map.Entry<String, String> filter : filters.entrySet()) {
                 String field = getFieldNameByColumnName(filter.getKey());
 
                 if (field != null) {
-                    FieldType type = getFieldType(field);
+                    FieldDefinition fieldDefinition = getFieldDefinition(field);
 
-                    if (type != null && String.class.isAssignableFrom(type.getType())) {
-                        criteria.restrictedWith(Restrictions.eq(field, filter.getValue() + "*"));
-                    } else if (type != null && Boolean.class.isAssignableFrom(type.getType())) {
-                        criteria.restrictedWith(Restrictions.eq(field, "1".equals(filter.getValue())));
+                    Pair<RestrictionOperator, String> parsedFilterValue = parseFilterValue(filter.getValue());
+
+                    if ("".equals(parsedFilterValue.getValue())) {
+                        continue;
+                    }
+
+                    if (fieldDefinition != null && String.class.isAssignableFrom(fieldDefinition.getType().getType())) {
+
+                        criteria.restrictedWith(getRestrictionsToString(parsedFilterValue, fieldDefinition));
+
+                    } else if (fieldDefinition != null && Boolean.class.isAssignableFrom(fieldDefinition.getType().getType())) {
+                        criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
+                                "1".equals(parsedFilterValue.getValue())));
+                    } else if (fieldDefinition != null && Date.class.isAssignableFrom(fieldDefinition.getType().getType())) {
+
+                        criteria.restrictedWith(getRestrictionsToDate(parsedFilterValue, fieldDefinition));
+
                     } else {
-                        criteria.restrictedWith(Restrictions.eq(field, filter.getValue()));
+                        criteria.restrictedWith(Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition,
+                                parsedFilterValue.getValue()));
                     }
                 }
             }
         }
 
-        private FieldType getFieldType(final String field) {
+        private Restriction getRestrictionsToString(final Pair<RestrictionOperator, String> parsedFilterValue,
+                final FieldDefinition fieldDefinition) {
+            if (parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) {
+                return Restrictions.forOperator(parsedFilterValue.getKey(), fieldDefinition, parsedFilterValue.getValue() + "*");
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.NE)) {
+                return Restrictions.not(Restrictions.eq(fieldDefinition, parsedFilterValue.getValue() + "*"));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GT)) {
+                return Restrictions.and(Restrictions.gt(fieldDefinition, parsedFilterValue.getValue()),
+                        Restrictions.not(Restrictions.eq(fieldDefinition, parsedFilterValue.getValue() + "*")));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GE)) {
+                return Restrictions.ge(fieldDefinition, parsedFilterValue.getValue());
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LT)) {
+                return Restrictions.lt(fieldDefinition, parsedFilterValue.getValue());
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LE)) {
+                return Restrictions.or(Restrictions.le(fieldDefinition, parsedFilterValue.getValue()),
+                        Restrictions.eq(fieldDefinition, parsedFilterValue.getValue() + "*"));
+            }
+            throw new IllegalStateException("unknown operator");
+        }
+
+        private Restriction getRestrictionsToDate(final Pair<RestrictionOperator, String> parsedFilterValue,
+                final FieldDefinition fieldDefinition) throws ParseException {
+            Date minDate = DateType.parseDate(parsedFilterValue.getValue(), false);
+            Date maxDate = DateType.parseDate(parsedFilterValue.getValue(), true);
+            if (minDate == null || maxDate == null) {
+                throw new ParseException("wrong date", 1);
+            }
+            if (parsedFilterValue.getKey().equals(RestrictionOperator.EQ)) {
+                return Restrictions.and(Restrictions.ge(fieldDefinition, minDate), Restrictions.le(fieldDefinition, maxDate));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.NE)) {
+                return Restrictions.or(Restrictions.lt(fieldDefinition, minDate), Restrictions.gt(fieldDefinition, maxDate));
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GT)) {
+                return Restrictions.gt(fieldDefinition, maxDate);
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.GE)) {
+                return Restrictions.ge(fieldDefinition, minDate);
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LT)) {
+                return Restrictions.lt(fieldDefinition, minDate);
+            } else if (parsedFilterValue.getKey().equals(RestrictionOperator.LE)) {
+                return Restrictions.le(fieldDefinition, maxDate);
+            }
+            throw new IllegalStateException("unknown operator");
+        }
+
+        private Pair<RestrictionOperator, String> parseFilterValue(final String filterValue) {
+            RestrictionOperator operator = RestrictionOperator.EQ;
+            String value;
+            if (filterValue.charAt(0) == '>') {
+                if (filterValue.length() > 1 && filterValue.charAt(1) == '=') {
+                    operator = RestrictionOperator.GE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '<') {
+                    operator = RestrictionOperator.NE;
+                    value = filterValue.substring(2);
+                } else {
+                    operator = RestrictionOperator.GT;
+                    value = filterValue.substring(1);
+                }
+            } else if (filterValue.charAt(0) == '<') {
+                if (filterValue.length() > 1 && filterValue.charAt(1) == '=') {
+                    operator = RestrictionOperator.LE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '>') {
+                    operator = RestrictionOperator.NE;
+                    value = filterValue.substring(2);
+                } else {
+                    operator = RestrictionOperator.LT;
+                    value = filterValue.substring(1);
+                }
+            } else if (filterValue.charAt(0) == '=') {
+                if (filterValue.length() > 1 && filterValue.charAt(1) == '<') {
+                    operator = RestrictionOperator.LE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '>') {
+                    operator = RestrictionOperator.GE;
+                    value = filterValue.substring(2);
+                } else if (filterValue.length() > 1 && filterValue.charAt(1) == '=') {
+                    value = filterValue.substring(2);
+                } else {
+                    value = filterValue.substring(1);
+                }
+            } else {
+                value = filterValue;
+            }
+            return Pair.of(operator, value.trim());
+        }
+
+        private FieldDefinition getFieldDefinition(final String field) {
             String[] path = field.split("\\.");
 
             DataDefinition dataDefinition = getDataDefinition();
@@ -327,18 +451,18 @@ public final class GridComponentState extends AbstractComponentState {
                     return null;
                 }
 
-                FieldType fieldType = dataDefinition.getField(path[i]).getType();
+                FieldDefinition fieldDefinition = dataDefinition.getField(path[i]);
 
                 if (i < path.length - 1) {
-                    if (fieldType instanceof BelongsToType) {
-                        dataDefinition = ((BelongsToType) fieldType).getDataDefinition();
+                    if (fieldDefinition.getType() instanceof BelongsToType) {
+                        dataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
                         continue;
                     } else {
                         return null;
                     }
                 }
 
-                return fieldType;
+                return fieldDefinition;
             }
 
             return null;

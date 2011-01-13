@@ -293,7 +293,7 @@
 	margin-left: 3px;
 }
 
-.component_container_form .description_message {
+.description_message {
 	position: absolute;
 	top: 15px;
 	left: 15px;
@@ -307,7 +307,7 @@
   	-webkit-border-radius: 2px;
 }
 
-.component_container_form .description_message span {
+.description_message span {
 	background: url(/css/crud/images/form/description_bg.png) repeat-x;
 	color: #fff;
 	font-weight: bold;
@@ -317,7 +317,7 @@
 	padding: 0 6px;
 }
 
-.component_container_form .description_message p {
+.description_message p {
 	color: #585858;
 	margin: 7px 6px;
 }
@@ -329,7 +329,6 @@
 	padding: 0;
 	display: block;
 	position: relative;
-	width: 100%;
 	height: 20px;
 	border: solid #959595 1px;
 }
@@ -343,7 +342,7 @@
 .component_container_form_w .lookupValueWrapper .lookupInputWrapper {
 	position: absolute;
 	display: block;
-	top: 0px; left: 0px; right: 25px;
+	top: 0px; left: 0px; right: 21px;
 }
 
 .component_container_form_w .lookupValueWrapper .lookupInputWrapper input{
@@ -461,8 +460,8 @@
 }
 
 .linkButton {
-	margin-left: 20px;
-	margin-right: 20px;
+	margin-left: 99px;
+	margin-right: 10px;
 	padding: 0;
 	text-align: center;
 	font-family:Tahoma, Arial, Helvetica, sans-serif;

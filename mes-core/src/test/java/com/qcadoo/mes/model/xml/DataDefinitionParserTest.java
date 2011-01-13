@@ -131,7 +131,7 @@ public class DataDefinitionParserTest {
         setField(dataDefinitionParser, "hookFactory", hookFactory);
         setField(dataDefinitionParser, "validatorFactory", validatorFactory);
 
-        xml = new FileInputStream(new File("src/test/resources/model.xml"));
+        xml = new FileInputStream(new File("src/test/resources/model/test.xml"));
 
         given(applicationContext.getBean(CustomEntityService.class)).willReturn(new CustomEntityService());
     }
@@ -211,7 +211,7 @@ public class DataDefinitionParserTest {
         assertNotNull(dataDefinition.getField("typeOfMaterial"));
         assertThat(dataDefinition.getField("typeOfMaterial").getType(), instanceOf(EnumType.class));
         assertThat(((EnumType) dataDefinition.getField("typeOfMaterial").getType()).values(),
-                JUnitMatchers.hasItems("product", "intermediate", "component"));
+                JUnitMatchers.hasItems("03product", "02intermediate", "01component"));
         assertNotNull(dataDefinition.getField("category"));
         assertThat(dataDefinition.getField("category").getType(), instanceOf(DictionaryType.class));
         assertEquals("categories", getField(dataDefinition.getField("category").getType(), "dictionaryName"));

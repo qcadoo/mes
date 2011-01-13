@@ -32,6 +32,8 @@ String ctx = request.getContextPath();
 %>
 <script type="text/JavaScript">
 
+	var buttonActive = true;
+
 	jQuery(document).ready(function(){
 		window.mainController.setWindowHeader("${headerLabel}");	
 	});
@@ -44,11 +46,15 @@ String ctx = request.getContextPath();
 			fileType = dots[dots.length-1];
 	      
 		      if (fileTypes.indexOf(fileType) != -1) {
-		    	  submitName.disabled = false;
+		    	  buttonActive = true;
+		    	  $("#submit").addClass("activeButton");
+		    	  //submitName.disabled = false;
 		        return true;
 		      } else {
-		        alert("${firstCheckExtensionMessage}" + "\n\n" + (fileTypes.join(" .")) + "\n\n" + "${lastCheckExtensionMessage}");
-		        submitName.disabled = true;
+		        //alert("${firstCheckExtensionMessage}" + "\n\n" + (fileTypes.join(" .")) + "\n\n" + "${lastCheckExtensionMessage}");
+		        //submitName.disabled = true;
+		        $("#submit").removeClass("activeButton");
+		        buttonActive = false;
 		        return false;
 		      }
 		}
@@ -58,15 +64,29 @@ String ctx = request.getContextPath();
         <title>${headerLabel}</title>
     </head>
     <body>
-	    	<div style="margin: 0; background: transparent url('/img/plugins/Jessica_Alba.jpg') no-repeat 0 0; padding-left: 60px; height: 100px;">
-		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data">
+	    	<div style="margin: 0;">
+		        <form method="post" action="<%=ctx%>/${downloadAction}" enctype="multipart/form-data" id="form">
 		        	<input type="hidden" name="entityId" value="${entityId}" />
-		        	<div style="margin-top: 10px; margin-bottom: 20px; margin-left: 10px;">
+		        	
+		        	<div style="margin-left: 10px; margin-top: 10px; font: 11px arial; font-weight: bold;">
+		        		${chooseFileLabel}
+		        	</div>
+		        	<div style="margin-top: 5px; margin-bottom: 20px; margin-left: 10px;">
 		            	<input type="file" name="file" size="50" onChange="checkExtension(this.value, this.form.upload, ['jar']);"/>
 		            </div>
-		            <div style="margin-top: 10px; margin-left: 10px; margin-bottom: 10px;">
+		            
+		            <!--<div style="margin-top: 10px; margin-left: 10px; margin-bottom: 10px;">
 		            	<input type="submit" name="upload" value="${buttonLabel}" style="width: 200px; cursor: pointer;"/>
-		            </div>
+		            </div>-->
+		            
+					<div class="linkButton activeButton" style="width: 200px; margin-left: 10px;" id="submit">
+						<a href="#" onclick="if (buttonActive) {$('#form').submit();}">
+							<span>
+								<div id="labelDiv">${buttonLabel}</div>
+							</span>
+						</a>
+					</div>
+					
 		        </form>
 	        </div>
     </body>

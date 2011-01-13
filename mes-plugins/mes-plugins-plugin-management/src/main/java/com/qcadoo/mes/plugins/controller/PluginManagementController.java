@@ -118,6 +118,7 @@ public final class PluginManagementController {
         }
 
         String buttonLabel = translationService.translate("plugins.downloadView.button", locale);
+        String chooseFileLabel = translationService.translate("plugins.downloadView.chooseFileLabel", locale);
         String firstCheckExtensionMessage = translationService.translate("plugins.downloadView.checkExtensionMessage.first",
                 locale);
         String lastCheckExtensionMessage = translationService
@@ -125,6 +126,7 @@ public final class PluginManagementController {
 
         mav.addObject("headerLabel", headerLabel);
         mav.addObject("buttonLabel", buttonLabel);
+        mav.addObject("chooseFileLabel", chooseFileLabel);
         mav.addObject("downloadAction", downloadAction);
         mav.addObject("entityId", entityId);
         mav.addObject("firstCheckExtensionMessage", firstCheckExtensionMessage);
@@ -178,15 +180,6 @@ public final class PluginManagementController {
         Long pluginId = getPluginId(triggerState);
         if (pluginId != null) {
             PluginManagementOperationStatus operationStatus = pluginManagementService.disablePlugin(pluginId);
-            updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
-        }
-    }
-
-    public void onPluginDeinstallClick(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        Long pluginId = getPluginId(triggerState);
-        if (pluginId != null) {
-            PluginManagementOperationStatus operationStatus = pluginManagementService.deinstallPlugin(pluginId);
             updatePluginManagementOperationStatus(viewDefinitionState, triggerState, operationStatus, triggerState.getLocale());
         }
     }

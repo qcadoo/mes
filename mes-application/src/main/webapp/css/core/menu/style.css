@@ -374,6 +374,14 @@ ul.q_row2 li.activ:hover a span  {
 	float:left;
 	margin-right:0px;
 }
+
+.ribbonBigElement.disabled label {
+//	color: red;
+}
+.ribbonBigElement.disabled .hasIcon {
+	//background-position: 10px 10px;
+}
+
 /* :[ADD] */
 ul.ribbonAddElement {
 	margin: 0px;
@@ -552,8 +560,9 @@ ul.ribbonListElement li {
 	padding: 0px 0px;
 	height: 45px;
 	margin: 0px 2px 0px;
+	position: relative;
 }
-ul.ribbonListElement li a {
+ul.ribbonListElement li > a {
 	display:block;
 	width:auto;
 	height: 45px;
@@ -561,6 +570,10 @@ ul.ribbonListElement li a {
 	padding: 0;	
 	margin: 0px;
 	color:#454545;
+	cursor: default;
+}
+.enabled ul.ribbonListElement li>  a {
+	cursor: pointer;
 }
 ul.ribbonListElement li a span {
 	display:block;
@@ -571,23 +584,37 @@ ul.ribbonListElement li a span {
 }
 ul.ribbonListElement li a span div {
 	background-repeat:no-repeat;
-	//background-position: 0px 7px;
 	background-position: 0px 10px;
 	vertical-align: middle;
-	display:block;
+	display: inline-block;
+	width: 0px;
 	height:40px;
 	vertical-align: middle;
 	margin: auto;
 }
 ul.ribbonListElement li a span div.hasIcon {
-	//padding-left: 34px;
-	padding-left: 26px;
+	width: 24px;
+	filter:alpha(opacity=50); /* filtr dla IE*/
+	opacity: 0.5; /* filtr dla Opera*/
+	-moz-opacity:0.5; /* filtr dla Mozilla Firefox */
 }
-ul.ribbonListElement li a span div label {
+.enabled ul.ribbonListElement li a span div.hasIcon {
+	filter:alpha(opacity=100); /* filtr dla IE*/
+	opacity: 1; /* filtr dla Opera*/
+	-moz-opacity:1; /* filtr dla Mozilla Firefox */
+}
+ul.ribbonListElement li a span label {
 	vertical-align: middle;
 	display: inline-block;
-	line-height: 110%;
+	margin-left: 5px;
+	margin-top: 5px;
+	line-height: 100%;
+	cursor: default;
+	color: #aaaaaa;
+}
+.enabled ul.ribbonListElement li a span label {
 	cursor: pointer;
+	color: #464646;
 }
 ul.ribbonListElement li a span div div {
 	vertical-align: middle;
@@ -595,17 +622,18 @@ ul.ribbonListElement li a span div div {
 	height: 45px;
 	
 }
-ul.ribbonListElement li:hover {
+
+.enabled ul.ribbonListElement li:hover {
 	background-image:url('/css/core/menu/images/btn_list_hover_l.png');
 	background-repeat:no-repeat;
 	background-position: left;
 }
-ul.ribbonListElement li:hover a {
+.enabled ul.ribbonListElement li:hover > a {
 	background-image:url('/css/core/menu/images/btn_listUp.png');
 	background-repeat:no-repeat;
 	background-position: right;
 }
-ul.ribbonListElement li:hover a span {
+.enabled ul.ribbonListElement li:hover a span {
 	background-image:url('/css/core/menu/images/btn_list_hover_c.png');
 }
 ul.ribbonListElement li.active {
@@ -658,18 +686,24 @@ ul.ribbon_list li {
 	height: 23px;
 	background-image:none;
 }
-ul.ribbon_list li.btnOne a,
+ul.ribbon_list li.btnOne > a,
 ul.ribbon_list li.twoB a {
 	display:block;
 	width:auto;
 	height: 23px;
 	text-decoration:none;
 	padding: 0;	
-	color:#464646;
+	color: #aaaaaa;
 	font-size:11px;
 	background-image:none;
+	cursor: default;
+	position: relative;
 }
-ul.ribbon_list li.arrow a, ul.ribbon_list li a.make {
+ul.ribbon_list li.btnOne.enabled > a {
+	color:#464646;
+	cursor: pointer;
+}
+ul.ribbon_list li.arrow a, ul.ribbon_list li > a.make {
 	background-image:url('/css/core/menu/images/lt_1arrow.png');
 	background-repeat:no-repeat;
 	background-position: right;
@@ -679,32 +713,42 @@ ul.ribbon_list li a span {
 	padding:0px;
 	margin: 0px 3px 0px 3px;
 }
-ul.ribbon_list li a span div {
-	display:block;
-	margin-right: 0px;
-	height: 18px;
-	padding-top: 5px;
+ul.ribbon_list li a span div.btnOneLabel {
+	display: inline-block;
+	padding-top: 6px;
 	padding-left: 2px;
-	//padding: 5px 0px 0px 23px;
-	//background-image:url('/css/core/menu/images/lt_1span.png');
-	background-repeat:no-repeat;
-	background-position: left;
+	padding-right: 2px;
+	height: 18px;
+	vertical-align: middle;
 }
 ul.ribbon_list .hasIcon {
-	//background-image:url('/css/core/menu/images/testIcon16.png');
-	padding-left: 18px;
+	height: 18px;
+	width: 16px;
+	height: 16px;
+	margin-top: 0px;
+	margin-left: 2px;
+	vertical-align: middle;
+	display: inline-block;
+	filter:alpha(opacity=50); /* filtr dla IE*/
+	opacity: 0.5; /* filtr dla Opera*/
+	-moz-opacity:0.5; /* filtr dla Mozilla Firefox */
 }
-ul.ribbon_list li.btnOne:hover  {
+ul.ribbon_list li.enabled .hasIcon {
+	filter:alpha(opacity=100); /* filtr dla IE*/
+	opacity: 1; /* filtr dla Opera*/
+	-moz-opacity:1; /* filtr dla Mozilla Firefox */
+}
+ul.ribbon_list li.btnOne.enabled:hover  {
 	background-image:url('/css/core/menu/images/lt_hover_l.png');
 	background-position: left;
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.btnOne:hover a  {
+ul.ribbon_list li.btnOne.enabled:hover > a  {
 	background-image:url('/css/core/menu/images/lt_1Up.png');
 	background-position: right;
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.btnOne:hover a span  {
+ul.ribbon_list li.btnOne.enabled:hover a span  {
 	display:block;
 	background-image:url('/css/core/menu/images/lt_hover_c.png');
 	background-repeat:repeat-x;
@@ -744,35 +788,39 @@ ul.ribbon_list > li {
 	clear: left;
 	float: left;
 }
-ul.ribbon_list > li.twoB:hover {
+ul.ribbon_list li.twoB.enabled a {
+	cursor: pointer;
+	color:#464646;
+}
+ul.ribbon_list > li.twoB.enabled:hover {
 	background-image:url('/css/core/menu/images/lt_twoB_c.png') !important;
 	background-repeat:repeat-x;
  }
-ul.ribbon_list li.twoB:hover > span {
+ul.ribbon_list li.twoB.enabled:hover > span {
 	display:block;
 	height: 23px;
 	background-image:url('/css/core/menu/images/lt_twoB_l.png') !important;
 	background-repeat:no-repeat;
-	background-position: left; 
+	background-position: left;
 }
-ul.ribbon_list li.twoB:hover > span > div {
+ul.ribbon_list li.twoB.enabled:hover > span > div {
 	display:block;
 	height: 23px;
 	background-image:url('/css/core/menu/images/lt_twoB_r.png');
 	background-repeat:no-repeat;
 	background-position: right; 
 }
-ul.ribbon_list li.twoB span div ul li:hover {
+ul.ribbon_list li.twoB.enabled span div ul li:hover {
 	background-image:url('/css/core/menu/images/lt_hover_l.png');
 	background-position: left;
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.twoB span div ul li:hover a {
+ul.ribbon_list li.twoB.enabled span div ul li:hover a {
 	background-image:url('/css/core/menu/images/lt_1Up.png');
 	background-position: right;
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.twoB span div ul li:hover a span {
+ul.ribbon_list li.twoB.enabled span div ul li:hover a span {
 	display:block;
 	background-image:url('/css/core/menu/images/lt_hover_c.png');
 	background-repeat:repeat-x; 
@@ -816,10 +864,9 @@ ul.ribbon_list li.twoB ul li a.twoB_down {
 	width:15px;
 	height:23px;
 	background-image:url('/css/core/menu/images/lt_twoB_down.png');
-	
 	background-repeat:no-repeat;
 }
-ul.ribbon_list li.twoB ul li a.twoB_down:hover {
+ul.ribbon_list li.twoB.enabled ul li a.twoB_down:hover {
 	background-image:url('/css/core/menu/images/lt_twoB_downClick.png') !important;
 }
 /* SUBMENU */
@@ -861,27 +908,80 @@ ul.ribbon_list li.twoB ul li a.twoB_down:hover {
 }
 .m_module ul li a {
 	display:block;
-	color:#464646;
 	text-decoration:none;
 	height: auto !important;
+	clear: both;
+	margin: 0;
+	padding: 0;
+	cursor: default !important;
 }
-.m_module ul li a.icon span {
-	//background-image:url('/css/core/menu/images/lt_1span.png');
-	//background-image:url('/css/core/menu/images/testIcon16.png');
+.m_module ul li a span.dropdownItemIcon {
+	display: block;
+	float: left;
+	width: 22px;
+	height: 26px;
 	background-repeat:no-repeat;
-	background-position: 4px 2px;
-	margin: 0px 0px 0px 0px;
+	background-position: 4px 6px;
+	vertical-align: middle;
+	filter:alpha(opacity=50); /* filtr dla IE*/
+	opacity: 0.5; /* filtr dla Opera*/
+	-moz-opacity:0.5; /* filtr dla Mozilla Firefox */
 }
-.m_module ul li a span {
-	display:block;
-	padding: 4px 10px 4px 35px;
+.m_module ul li.enabled a span.dropdownItemIcon {
+	filter:alpha(opacity=100); /* filtr dla IE*/
+	opacity: 1; /* filtr dla Opera*/
+	-moz-opacity:1; /* filtr dla Mozilla Firefox */
+}
+.m_module ul li a span.dropdownItemLabel {
+	display: block;
+	color: #aaaaaa;
+	padding: 0px 5px 0px 30px;
+	line-height: 26px;
+	margin: 1px;
 	border: 1px solid transparent;
 }
-.m_module ul li a:hover {
-	background-image:url('/css/core/menu/images/m_li_tlo.png');
-	background-repeat:repeat-y;
+.m_module ul li.enabled a span.dropdownItemLabel {
+	color:#464646;
+	cursor: pointer;
 }
-.m_module ul li a:hover span {
+.m_module ul li.enabled a:hover span.dropdownItemLabel {
 	border-color: #f29d15;
 }
 
+.ribbon_content .ribbon_description_icon {
+	position: absolute;
+	width: 9px;
+	height: 9px;
+	top: 0;
+	left: 0;
+	background: url(/css/core/images/info.icon.grey.png);
+	filter:alpha(opacity=80); /* filtr dla IE*/
+	opacity: 0.8; /* filtr dla Opera*/
+	-moz-opacity:0.8; /* filtr dla Mozilla Firefox */
+}
+.ribbon_content .ribbonListElement .ribbon_description_icon {
+	top: 8px;
+}
+.ribbon_content .enabled .ribbon_description_icon {
+	background-image: url(/css/core/images/info.icon.png);
+}
+.ribbon_content .ribbon_description_icon:hover {
+	filter:alpha(opacity=100); /* filtr dla IE*/
+	opacity: 1; /* filtr dla Opera*/
+	-moz-opacity:1; /* filtr dla Mozilla Firefox */
+}
+.ribbon_content .btnOne.enabled .description_message,
+.ribbon_content .enabled .ribbonListElement .description_message {
+	border-color: #0076ca;
+	background: #f9f9f9;
+}
+.ribbon_content .btnOne .description_message,
+.ribbon_content .ribbonListElement .description_message {
+	border-color: #464646;
+	background: #e0e0e0;
+}
+.ribbon_content .btnOne .description_message p a,
+.ribbon_content .ribbonListElement .description_message p a {
+	color: #464646;
+	height: auto;
+}

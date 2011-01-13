@@ -54,4 +54,11 @@ public final class SecurityServiceImpl implements SecurityService {
         return user;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    @Monitorable
+    public String getCurrentUserName() {
+        return getCurrentUser().getUserName();
+    }
+
 }
