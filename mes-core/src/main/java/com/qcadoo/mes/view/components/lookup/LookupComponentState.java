@@ -187,6 +187,8 @@ public final class LookupComponentState extends FieldComponentState {
                     searchCriteriaBuilder.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
                 }
 
+                searchCriteriaBuilder.orderAscBy(fieldCode);
+
                 SearchResult results = searchCriteriaBuilder.list();
 
                 autocompleteEntitiesNumber = results.getTotalNumberOfEntities();
