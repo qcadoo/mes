@@ -324,7 +324,6 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 			}
 			rowCounter++;
 		}
-		
 		if (rowCounter == 1) {
 			noRecordsDiv.show();
 		} else {
@@ -432,7 +431,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 		noRecordsDiv = $("<div>").html(translations.noResults).addClass("noRecordsBox");
 		noRecordsDiv.hide();
-		$("#window_orders_grid").parent().append(noRecordsDiv);
+		$("#"+gridParameters.element).parent().append(noRecordsDiv);
 		
 	}
 	
@@ -569,6 +568,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		currentState.filters = new Object();
 		currentState.filters[column] = filterText;
 		$("#gs_"+column).val(filterText);
+		updateSearchFields();
 	}
 	
 	this.setFilterObject = function(filter) {
