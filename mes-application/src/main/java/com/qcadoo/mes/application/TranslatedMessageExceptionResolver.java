@@ -91,17 +91,19 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
             Locale locale = retrieveLocaleFromRequestCookie(request);
 
-            customExceptionMessageHeader = translationService.translate("core.errorPage.error." + customExceptionMessage
-                    + ".header", locale);
-            customExceptionMessageExplanation = translationService.translate("core.errorPage.error." + customExceptionMessage
-                    + ".explanation", locale);
+            if (customExceptionMessage != null) {
+                customExceptionMessageHeader = translationService.translate("core.errorPage.error." + customExceptionMessage
+                        + ".header", locale);
+                customExceptionMessageExplanation = translationService.translate("core.errorPage.error." + customExceptionMessage
+                        + ".explanation", locale);
 
-            Throwable rootException = getRootException(exception);
+                Throwable rootException = getRootException(exception);
 
-            if (rootException instanceof CopyException) {
-                String copyExplanation = getAdditionalMessageForCopyException((CopyException) rootException, locale);
-                if (copyExplanation != null) {
-                    customExceptionMessageExplanation = copyExplanation;
+                if (rootException instanceof CopyException) {
+                    String copyExplanation = getAdditionalMessageForCopyException((CopyException) rootException, locale);
+                    if (copyExplanation != null) {
+                        customExceptionMessageExplanation = copyExplanation;
+                    }
                 }
             }
 
@@ -175,6 +177,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     private Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {
         Locale locale = request.getLocale();
+        System.out.println(" ----> " + request.getLocale());
         Cookie cookies[] = request.getCookies();
         if ((cookies != null) && (cookies.length > 0)) {
             for (int i = 0; i < cookies.length; i++) {
@@ -185,6 +188,7 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
                 }
             }
         }
+        System.out.println(" ----> " + locale);
         return locale;
     }
 }
