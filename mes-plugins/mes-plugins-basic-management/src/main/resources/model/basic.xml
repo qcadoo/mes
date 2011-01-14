@@ -29,7 +29,6 @@
 	<model name="machine" deletable="true">
 		<string name="name" >
 			<validatesPresence />
-			<validatesUniqueness />
 			<validatesLength max="2048"/>
 		</string>
 		<string name="number">
