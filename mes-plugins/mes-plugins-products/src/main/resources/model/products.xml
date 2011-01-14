@@ -40,7 +40,9 @@
 		</enum>
 		<string name="ean" />
 		<dictionary name="category" dictionary="categories" />
-		<string name="unit" />
+		<string name="unit">
+			<validatesPresence />
+		</string>
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" copyable="true" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
