@@ -72,8 +72,12 @@ public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
                 for (Entity operationComponent : operationComponents) {
                     Entity operation = (Entity) operationComponent.getField("operation");
                     Entity staff = (Entity) operation.getField("staff");
+                    String name = "";
+                    if (staff != null) {
+                        name = staff.getField("name") + " " + staff.getField("surname");
+                    }
                     HSSFRow row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(staff.getField("name") + " " + staff.getField("surname"));
+                    row.createCell(0).setCellValue(name);
                     row.createCell(1).setCellValue(operation.getField("number").toString());
                     row.createCell(2).setCellValue(operation.getField("name").toString());
                     List<Entity> operationProductInComponents = operationComponent

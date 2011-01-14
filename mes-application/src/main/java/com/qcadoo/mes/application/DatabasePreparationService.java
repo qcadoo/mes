@@ -107,13 +107,13 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 5);
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
-                technologyGridView, 3);
-        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryTechnology, productGridView, 1);
+                technologyGridView, 2);
+        addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryBasicData, productGridView, 4);
         addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryOrders,
                 orderGridView, 1);
         addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryReports,
                 materialRequirementGridView, 1);
-        addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryTechnology, operationGridView, 2);
+        addMenuViewDefinitionItem("operations", "products.menu.products.operations", menuCategoryTechnology, operationGridView, 1);
         addMenuViewDefinitionItem("workPlans", "products.menu.products.workPlans", menuCategoryReports, workPlanGridView, 2);
 
         if (addAdministrationMenuToDatabase) {

@@ -177,7 +177,6 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
     private Locale retrieveLocaleFromRequestCookie(final HttpServletRequest request) {
         Locale locale = request.getLocale();
-        System.out.println(" ----> " + request.getLocale());
         Cookie cookies[] = request.getCookies();
         if ((cookies != null) && (cookies.length > 0)) {
             for (int i = 0; i < cookies.length; i++) {
@@ -188,7 +187,6 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
                 }
             }
         }
-        System.out.println(" ----> " + locale);
         return locale;
     }
 }

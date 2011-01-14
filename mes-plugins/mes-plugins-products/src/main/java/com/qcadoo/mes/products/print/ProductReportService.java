@@ -104,9 +104,15 @@ public class ProductReportService {
                     Entity operation = (Entity) operationComponent.getField("operation");
 
                     if (type.equals("machine")) {
-                        entityKey = (Entity) operation.getField("machine");
+                        Object machine = operation.getField("machine");
+                        if (machine != null) {
+                            entityKey = (Entity) machine;
+                        }
                     } else if (type.equals("worker")) {
-                        entityKey = (Entity) operation.getField("staff");
+                        Object machine = operation.getField("staff");
+                        if (machine != null) {
+                            entityKey = (Entity) machine;
+                        }
                     }
                     if (operations.containsKey(entityKey)) {
                         Map<Entity, List<Entity>> operationMap = operations.get(entityKey);
@@ -155,13 +161,21 @@ public class ProductReportService {
                 Entity machine = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah3",
                         locale), PdfUtil.getArialBold11Light()));
-                title.add(new Phrase(" " + machine.getField("name"), PdfUtil.getArialBold19Dark()));
+                String name = "";
+                if (machine != null) {
+                    name = machine.getField("name").toString();
+                }
+                title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
                 document.add(title);
             } else if (type.equals("worker")) {
                 Entity staff = entry.getKey();
                 Paragraph title = new Paragraph(new Phrase(translationService.translate("products.workPlan.report.paragrah2",
                         locale), PdfUtil.getArialBold11Light()));
-                title.add(new Phrase(" " + staff.getField("name") + " " + staff.getField("surname"), PdfUtil.getArialBold19Dark()));
+                String name = "";
+                if (staff != null) {
+                    name = staff.getField("name") + " " + staff.getField("surname");
+                }
+                title.add(new Phrase(" " + name, PdfUtil.getArialBold19Dark()));
                 document.add(title);
             } else if (type.equals("product")) {
                 Entity product = entry.getKey();
@@ -216,7 +230,7 @@ public class ProductReportService {
         }
     }
 
-    private Image generateBarcode(String code) throws BadElementException {
+    private Image generateBarcode(final String code) throws BadElementException {
         Code128Bean codeBean = new Code128Bean();
         final int dpi = 150;
 
