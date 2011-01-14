@@ -1,10 +1,13 @@
 package com.qcadoo.mes.view.components.layout;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.qcadoo.mes.view.ComponentPattern;
 
 public class GridLayoutCell {
 
-    private ComponentPattern component;
+    private List<ComponentPattern> components;
 
     private int rowspan = 1;
 
@@ -14,12 +17,15 @@ public class GridLayoutCell {
 
     private boolean rightBorder = false;
 
-    public ComponentPattern getComponent() {
-        return component;
+    public List<ComponentPattern> getComponents() {
+        return components;
     }
 
-    public void setComponent(ComponentPattern component) {
-        this.component = component;
+    public void addComponent(ComponentPattern component) {
+        if (components == null) {
+            components = new LinkedList<ComponentPattern>();
+        }
+        components.add(component);
     }
 
     public int getRowspan() {
