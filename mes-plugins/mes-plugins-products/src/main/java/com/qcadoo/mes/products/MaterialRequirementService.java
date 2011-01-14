@@ -121,7 +121,6 @@ public final class MaterialRequirementService {
         } else {
             name.setEnabled(true);
             onlyComponents.setEnabled(true);
-            materialRequirementComponents.setEnabled(true);
         }
     }
 
