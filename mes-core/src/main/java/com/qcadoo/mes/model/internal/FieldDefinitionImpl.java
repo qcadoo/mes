@@ -203,7 +203,7 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     @Override
     public String toString() {
-        return name;
+        return "FieldDefinition: " + name;
     }
 
 }

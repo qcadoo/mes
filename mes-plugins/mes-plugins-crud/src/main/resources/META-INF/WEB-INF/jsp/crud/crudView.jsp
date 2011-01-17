@@ -53,6 +53,7 @@
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/layout.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/tree.css" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/elementHeader.css" type="text/css" />
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/css/crud/components/awesomeDynamicList.css" type="text/css" />
 			
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/_jquery-1.4.2.min.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/lib/json_sans_eval.js"></script>
@@ -95,6 +96,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/tree.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/calendar.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/staticComponent.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/elements/awesomeDynamicList.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/ribbon.js"></script>
 			
 			<c:forEach items="${model['jsFilePaths']}" var="jsFilePath">
