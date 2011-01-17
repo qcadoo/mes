@@ -92,7 +92,7 @@
 			<validatesScale max="3" />
 		</decimal>
 		<boolean name="batchRequired" />
-		<hasMany name="genealogyProductInComponents" model="genealogyProductIn" joinField="productInComponent" cascade="delete"/>
+		<hasMany name="genealogyProductInComponents" model="genealogyProductInComponent" joinField="productInComponent" cascade="delete"/>
 	</model>
 	<model name="operationProductOutComponent">
 		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">
