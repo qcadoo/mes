@@ -28,12 +28,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.HookDefinition;
+import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 public final class HookDefinitionImpl implements HookDefinition {
@@ -94,6 +96,12 @@ public final class HookDefinitionImpl implements HookDefinition {
     @Override
     public void callWithViewState(final ViewDefinitionState viewDefinitionState, final Locale locale) {
         call(new Object[] { viewDefinitionState, locale }, new Class[] { ViewDefinitionState.class, Locale.class });
+    }
+
+    @Override
+    public void callWithJSONObject(final ViewDefinition viewDefinition, final JSONObject object, final Locale locale) {
+        call(new Object[] { viewDefinition, object, locale },
+                new Class[] { ViewDefinition.class, JSONObject.class, Locale.class });
     }
 
     public String getMethod() {

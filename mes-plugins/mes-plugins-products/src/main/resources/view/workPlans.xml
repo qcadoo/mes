@@ -251,7 +251,6 @@
 				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlan" />
 				<listener event="generateWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="generateWorkPlan" />
 			</component>
-			
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.WorkPlanService" method="disableFormForExistingWorkPlan" />
 	</view>	

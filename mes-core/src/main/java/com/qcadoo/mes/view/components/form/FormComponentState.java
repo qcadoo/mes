@@ -298,6 +298,7 @@ public final class FormComponentState extends AbstractContainerState {
                     copyMessage(field.getValue(), message);
                 } else {
                     field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
+
                     if (requestUpdateState) {
                         field.getValue().requestComponentUpdateState();
                     }

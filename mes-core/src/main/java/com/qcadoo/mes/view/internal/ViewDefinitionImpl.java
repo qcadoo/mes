@@ -60,6 +60,8 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
     private final boolean menuAccessible;
 
+    private final List<HookDefinition> postConstructHooks = new ArrayList<HookDefinition>();
+
     private final List<HookDefinition> postInitializeHooks = new ArrayList<HookDefinition>();
 
     private final List<HookDefinition> preInitializeHooks = new ArrayList<HookDefinition>();
@@ -110,7 +112,9 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public Map<String, Object> prepareView(final Locale locale) {
+    public Map<String, Object> prepareView(final JSONObject jsonObject, final Locale locale) {
+        callHooks(postConstructHooks, jsonObject, locale);
+
         Map<String, Object> model = new HashMap<String, Object>();
         Map<String, Object> childrenModels = new HashMap<String, Object>();
 
@@ -138,7 +142,9 @@ public final class ViewDefinitionImpl implements ViewDefinition {
     }
 
     @Override
-    public JSONObject performEvent(final JSONObject object, final Locale locale) throws JSONException {
+    public JSONObject performEvent(final JSONObject jsonObject, final Locale locale) throws JSONException {
+        callHooks(postConstructHooks, jsonObject, locale);
+
         ViewDefinitionState viewDefinitionState = new ViewDefinitionStateImpl();
 
         for (ComponentPattern cp : patterns.values()) {
@@ -147,7 +153,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
         callHooks(preInitializeHooks, viewDefinitionState, locale);
 
-        viewDefinitionState.initialize(object, locale);
+        viewDefinitionState.initialize(jsonObject, locale);
 
         for (ComponentPattern cp : patterns.values()) {
             ((AbstractComponentPattern) cp).updateComponentStateListeners(viewDefinitionState);
@@ -155,7 +161,7 @@ public final class ViewDefinitionImpl implements ViewDefinition {
 
         callHooks(postInitializeHooks, viewDefinitionState, locale);
 
-        JSONObject eventJson = object.getJSONObject(JSON_EVENT);
+        JSONObject eventJson = jsonObject.getJSONObject(JSON_EVENT);
         String eventName = eventJson.getString(JSON_EVENT_NAME);
         String eventComponent = eventJson.has(JSON_EVENT_COMPONENT) ? eventJson.getString(JSON_EVENT_COMPONENT) : null;
         JSONArray eventArgsArray = eventJson.has(JSON_EVENT_ARGS) ? eventJson.getJSONArray(JSON_EVENT_ARGS) : new JSONArray();
@@ -235,9 +241,19 @@ public final class ViewDefinitionImpl implements ViewDefinition {
         preInitializeHooks.add(hookDefinition);
     }
 
+    public void addPostConstructHook(final HookDefinition hookDefinition) {
+        postConstructHooks.add(hookDefinition);
+    }
+
     private void callHooks(final List<HookDefinition> hooks, final ViewDefinitionState viewDefinitionState, final Locale locale) {
         for (HookDefinition hook : hooks) {
             hook.callWithViewState(viewDefinitionState, locale);
+        }
+    }
+
+    private void callHooks(final List<HookDefinition> hooks, final JSONObject jsonObject, final Locale locale) {
+        for (HookDefinition hook : hooks) {
+            hook.callWithJSONObject(this, jsonObject, locale);
         }
     }
 

@@ -193,8 +193,8 @@ public class ViewDefinitionParserImplTest {
         TranslationService translationService = mock(TranslationService.class);
         setField(viewDefinition, "translationService", translationService);
 
-        JSONObject jsOptions = (JSONObject) ((Map<String, Map<String, Object>>) viewDefinition.prepareView(Locale.ENGLISH).get(
-                "components")).get("mainWindow").get("jsOptions");
+        JSONObject jsOptions = (JSONObject) ((Map<String, Map<String, Object>>) viewDefinition.prepareView(new JSONObject(),
+                Locale.ENGLISH).get("components")).get("mainWindow").get("jsOptions");
 
         JSONObject ribbon = jsOptions.getJSONObject("ribbon");
 

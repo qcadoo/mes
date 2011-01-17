@@ -147,6 +147,10 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
         cells[row - 1][column - 1] = cell;
     }
 
+    public GridLayoutCell[][] getCells() {
+        return cells;
+    }
+
     private Integer getIntAttribute(final Node node, final String attribute, final ViewDefinitionParser parser) {
         String valueStr = parser.getStringAttribute(node, attribute);
         if (valueStr == null) {
