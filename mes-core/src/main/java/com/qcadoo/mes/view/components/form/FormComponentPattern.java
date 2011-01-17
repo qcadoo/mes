@@ -30,12 +30,6 @@ public final class FormComponentPattern extends AbstractContainerPattern {
 
     @Override
     protected void initializeComponent() throws JSONException {
-        System.out.println(" -- INITIALIZE FORM");
-        System.out.println(getDataDefinition());
-        System.out.println(getChildren());
-        if (getDataDefinition() != null) {
-            System.out.println(getDataDefinition().getName());
-        }
         for (ComponentOption option : getOptions()) {
             if ("expression".equals(option.getType())) {
                 expression = option.getValue();
@@ -45,8 +39,6 @@ public final class FormComponentPattern extends AbstractContainerPattern {
                 throw new IllegalStateException("Unknown option for form: " + option.getType());
             }
         }
-        System.out.println(getFieldEntityIdChangeListeners());
-        System.out.println(getScopeEntityIdChangeListeners());
     }
 
     @Override

@@ -251,7 +251,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         AbstractComponentPattern scopeFieldComponent = null;
 
         if (fieldPath != null) {
-            System.out.println(getPath());
             field = getComponentAndField(fieldPath);
             fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition
                     .getComponentByReference(field[0]));
@@ -298,13 +297,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     public void updateComponentStateListeners(final ViewDefinitionState viewDefinitionState) {
         // TODO masz is this really neccessary?
-
-        System.out.println("----------------");
-        System.out.println(getPath());
-        System.out.println("updateComponentStateListeners");
-        System.out.println(fieldEntityIdChangeListeners);
-        System.out.println(scopeEntityIdChangeListeners);
-
         if (fieldEntityIdChangeListeners.size() > 0) {
             AbstractComponentState thisComponentState = (AbstractComponentState) viewDefinitionState
                     .getComponentByReference(getReference());
