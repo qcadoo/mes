@@ -29,7 +29,6 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -98,7 +97,6 @@ public final class OrderService {
         }
     }
 
-    @Transactional
     public void autocompleteGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() instanceof Long) {
@@ -302,7 +300,7 @@ public final class OrderService {
             entity.setField("endWorker", securityService.getCurrentUserName());
 
         }
-
+        // TODO MADY autocomplete genealogy last used/active based on parameter
         if (entity.getField("effectiveDateTo") != null) {
             entity.setField("state", "03done");
         } else if (entity.getField("effectiveDateFrom") != null) {
@@ -350,7 +348,7 @@ public final class OrderService {
         } else {
             mainBatch = mainProduct.getField("batch");
         }
-        if (mainProduct == null || mainBatch == null || mainBatch.toString().length() == 0) {
+        if (mainProduct == null || mainBatch == null) {
             return;
         }
         Entity genealogy = new DefaultEntity("products", "genealogy");
@@ -363,6 +361,26 @@ public final class OrderService {
         }
         Entity technology = (Entity) order.getField("technology");
         completeBatchForComponents(technology, genealogy, lastUsedMode);
+
+    }
+
+    private void completeAtributesForGenealogy(final Entity genealogy) {
+        // TODO KRNA complete attributes
+        Entity shift = new DefaultEntity("products", "genealogyShiftFeature");
+        shift.setField("genealogy", genealogy);
+        shift.setField("value", "");
+        DataDefinition shiftInDef = dataDefinitionService.get("products", "genealogyShiftFeature");
+        shiftInDef.save(shift);
+        Entity other = new DefaultEntity("products", "genealogyOtherFeature");
+        other.setField("genealogy", genealogy);
+        other.setField("value", "");
+        DataDefinition otherInDef = dataDefinitionService.get("products", "genealogyOtherFeature");
+        otherInDef.save(other);
+        Entity post = new DefaultEntity("products", "genealogyPostFeature");
+        post.setField("genealogy", genealogy);
+        post.setField("value", "");
+        DataDefinition postInDef = dataDefinitionService.get("products", "genealogyPostFeature");
+        postInDef.save(post);
     }
 
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
@@ -372,12 +390,17 @@ public final class OrderService {
                 for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                     if ((Boolean) operationProductComponent.getField("batchRequired")) {
                         if (savedGenealogy == null) {
+                            genealogy.setField("date", new Date());
+                            genealogy.setField("worker", securityService.getCurrentUserName());
                             DataDefinition genealogyDef = dataDefinitionService.get("products", "genealogy");
                             savedGenealogy = genealogyDef.save(genealogy);
+                            completeAtributesForGenealogy(savedGenealogy);
                         }
                         Entity productIn = new DefaultEntity("products", "genealogyProductInComponent");
                         productIn.setField("genealogy", savedGenealogy);
                         productIn.setField("productInComponent", operationProductComponent);
+                        productIn.setField("date", new Date());
+                        productIn.setField("worker", securityService.getCurrentUserName());
                         DataDefinition productInDef = dataDefinitionService.get("products", "genealogyProductInComponent");
                         Entity savedProductIn = productInDef.save(productIn);
                         Entity product = (Entity) operationProductComponent.getField("product");
