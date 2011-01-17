@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 0.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+
+<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+	<model name="genealogy">
+		<string name="batch">
+			<validatesLength max="255" />
+		</string>
+		<decimal name="quantity">
+			<validatesRange from="0" inclusive="false" />
+			<validatesPrecision max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<belongsTo name="order" model="order" lookupField="number" />
+		<hasMany name="shiftFeatures" model="genealogyShiftFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="otherFeatures" model="genealogyOtherFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="postFeatures" model="genealogyPostFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="genealogyProductInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
+		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForGenealogy" />
+	</model>
+	<model name="genealogyProductInComponent">
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
+		<belongsTo name="productInComponent" model="operationProductInComponent" lookupField="operationComponent" />
+		<hasMany name="batch" model="genealogyProductInBatch" joinField="productInComponent" cascade="delete"/>
+	</model>
+	<model name="genealogyProductInBatch">
+		<string name="batch">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="productInComponent" model="genealogyProductInComponent" lookupField="productInComponent" />
+		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForProduct" />
+	</model>
+	<model name="genealogyShiftFeature">
+		<string name="value">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
+	</model>
+	<model name="genealogyPostFeature">
+		<string name="value">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
+	</model>
+	<model name="genealogyOtherFeature">
+		<string name="value">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
+	</model>
+</qcd:models>

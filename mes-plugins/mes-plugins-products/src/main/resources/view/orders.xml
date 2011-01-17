@@ -45,6 +45,12 @@
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
 				</group>
+				<group name="genealogyAutocomplete">
+					<smallButton name="productComplete"
+						action="#{grid}.fireEvent(autocompleteGenealogyFromProducts);" state="disabled" />
+					<smallButton name="lastComplete"
+						action="#{grid}.fireEvent(autocompleteGenealogyFromLastUsed);" state="disabled" />
+				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
 				<script>
@@ -58,6 +64,8 @@
 						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
 						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
 						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+						var productComplete = #{window}.getRibbonItem("genealogyAutocomplete.productComplete");
+						var lastComplete = #{window}.getRibbonItem("genealogyAutocomplete.lastComplete");
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
@@ -70,6 +78,8 @@
 									xlsMachine.disable();
 									pdfProduct.disable();
 									xlsProduct.disable();
+									productComplete.disable();
+									lastComplete.disable();
 								} else {
 									print.enable();
 									pdfMaterialReq.enable();
@@ -80,6 +90,8 @@
 									xlsMachine.enable();
 									pdfProduct.enable();
 									xlsProduct.enable();
+									productComplete.enable();
+									lastComplete.enable();
 								}
 							}
 						}
@@ -125,6 +137,8 @@
 				<listener event="printOrder" bean="com.qcadoo.mes.products.OrderService" method="printOrder" />
 				<listener event="printMaterialReqForOrder" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialReqForOrder" />
 				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlanForOrder" />
+				<listener event="autocompleteGenealogyFromProducts" bean="com.qcadoo.mes.products.OrderService" method="autocompleteGenealogyFromProducts" />
+				<listener event="autocompleteGenealogyFromLastUsed" bean="com.qcadoo.mes.products.OrderService" method="autocompleteGenealogyFromLastUsed" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />

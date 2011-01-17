@@ -60,6 +60,8 @@ public class ProductsTechnology {
 
     private Boolean master;
 
+    private Boolean batchRequired;
+
     @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsTechnologyOperationComponent> operationComponents;
@@ -129,6 +131,14 @@ public class ProductsTechnology {
 
     public void setOrders(final List<ProductsOrder> orders) {
         this.orders = orders;
+    }
+
+    public Boolean getBatchRequired() {
+        return batchRequired;
+    }
+
+    public void setBatchRequired(final Boolean batchRequired) {
+        this.batchRequired = batchRequired;
     }
 
 }

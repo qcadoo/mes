@@ -60,6 +60,10 @@ public class ProductsProduct {
 
     private String unit;
 
+    private String batch;
+
+    private String lastUsedBatch;
+
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsSubstitute> substitutes;
@@ -181,6 +185,22 @@ public class ProductsProduct {
 
     public void setOperationProductOutComponents(final List<ProductsOperationProductOutComponent> operationProductOutComponents) {
         this.operationProductOutComponents = operationProductOutComponents;
+    }
+
+    public String getBatch() {
+        return batch;
+    }
+
+    public void setBatch(final String batch) {
+        this.batch = batch;
+    }
+
+    public String getLastUsedBatch() {
+        return lastUsedBatch;
+    }
+
+    public void setLastUsedBatch(final String lastUsedBatch) {
+        this.lastUsedBatch = lastUsedBatch;
     }
 
 }
