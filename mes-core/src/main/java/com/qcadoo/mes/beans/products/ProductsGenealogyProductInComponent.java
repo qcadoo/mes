@@ -21,8 +21,6 @@ public class ProductsGenealogyProductInComponent {
     @GeneratedValue
     private Long id;
 
-    private Boolean banchRequired;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsGenealogy genealogy;
 
@@ -63,14 +61,6 @@ public class ProductsGenealogyProductInComponent {
 
     public void setBatch(final List<ProductsGenealogyProductInBatch> batch) {
         this.batch = batch;
-    }
-
-    public Boolean getBanchRequired() {
-        return banchRequired;
-    }
-
-    public void setBanchRequired(final Boolean banchRequired) {
-        this.banchRequired = banchRequired;
     }
 
 }

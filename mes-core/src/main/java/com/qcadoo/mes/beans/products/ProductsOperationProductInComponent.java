@@ -20,6 +20,8 @@ public class ProductsOperationProductInComponent {
     @GeneratedValue
     private Long id;
 
+    private Boolean banchRequired;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTechnologyOperationComponent operationComponent;
 
@@ -70,5 +72,13 @@ public class ProductsOperationProductInComponent {
 
     public void setGenealogyProductInComponents(final List<ProductsGenealogyProductInComponent> genealogyProductInComponents) {
         this.genealogyProductInComponents = genealogyProductInComponents;
+    }
+
+    public Boolean getBanchRequired() {
+        return banchRequired;
+    }
+
+    public void setBanchRequired(final Boolean banchRequired) {
+        this.banchRequired = banchRequired;
     }
 }

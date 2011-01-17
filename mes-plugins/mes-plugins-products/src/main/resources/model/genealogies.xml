@@ -38,5 +38,38 @@
 		<belongsTo name="order" lookupField="number" model="order" lazy="false">
 			<validatesPresence />
 		</belongsTo>
+		<hasMany name="shiftFeatures" model="genealogyShiftFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="otherFeatures" model="genealogyOtherFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="postFeatures" model="genealogyPostFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="productInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
+	</model>
+	<model name="genealogyProductInComponent">
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
+		<belongsTo name="productInComponent" model="operationProductInComponent" />
+		<hasMany name="batch" model="genealogyProductInBatch" joinField="genealogyProductInComponent" cascade="delete"/>
+	</model>
+	<model name="genealogyProductInBatch">
+		<string name="batch">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="productInComponent" model="genealogyProductInComponent" />
+	</model>
+	<model name="genealogyShiftFeature">
+		<string name="value">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
+	</model>
+	<model name="genealogyPostFeature">
+		<string name="value">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
+	</model>
+	<model name="genealogyOtherFeature">
+		<string name="value">
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 	</model>
 </qcd:models>
