@@ -9,6 +9,8 @@
 <tiles:useAttribute name="component" />
 
 <div id="${component['path']}_layoutComponents" class="borderLayout">
+
+	<span class="borderLayoutLabel">ZZZ</span>
 	
 	<c:forEach items="${component['children']}" var="component">
 		<tiles:insertTemplate template="../../component.jsp">
