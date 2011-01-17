@@ -36,6 +36,7 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.beans.products.ProductsGenealogyProductInComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -140,18 +141,22 @@ public final class OrderService {
     }
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("productInComponent").getBelongsToField("productInComponent")
-                .getBelongsToField("product");
+        // TODO masz why we get hibernate entities here?
+        ProductsProduct product = ((ProductsGenealogyProductInComponent) entity.getField("productInComponent"))
+                .getProductInComponent().getProduct();
         DataDefinition productInDef = dataDefinitionService.get("products", "product");
-        product.setField("lastUsedBatch", entity.getField("batch"));
-        productInDef.save(product);
+        Entity productEntity = productInDef.get(product.getId());
+        productEntity.setField("lastUsedBatch", entity.getField("batch"));
+        productInDef.save(productEntity);
     }
 
     public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+        // TODO masz why we get hibernate entities here?
+        ProductsProduct product = ((ProductsOrder) entity.getField("order")).getProduct();
         DataDefinition productInDef = dataDefinitionService.get("products", "product");
-        product.setField("lastUsedBatch", entity.getField("batch"));
-        productInDef.save(product);
+        Entity productEntity = productInDef.get(product.getId());
+        productEntity.setField("lastUsedBatch", entity.getField("batch"));
+        productInDef.save(productEntity);
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
