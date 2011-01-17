@@ -118,7 +118,7 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="technology" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="8">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="master" field="master" />
 					</layoutElement>
@@ -140,7 +140,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="checkbox" name="batchRequired" reference="banchRequired" field="banchRequired" />
+						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
 					</layoutElement>
 					<layoutElement column="1" row="7" height="2">
 						<component type="textarea" name="description" field="description" />
@@ -224,7 +224,7 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
@@ -240,7 +240,7 @@
 						<component type="input" name="quantity" field="quantity" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="checkbox" name="batchRequired" reference="banchRequired" field="banchRequired" />
+						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />
