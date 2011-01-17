@@ -110,11 +110,11 @@ public final class OrderService {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                Entity product = (Entity) order.getField("product");
-                if (product == null) {
+                Entity mainProduct = (Entity) order.getField("product");
+                if (mainProduct == null) {
                     // TODO KRNA stop
                 }
-                String batch = product.getField("batch").toString();
+                String batch = mainProduct.getField("batch").toString();
                 if (batch.length() == 0) {
                     // TODO KRNA stop
                 }
@@ -134,7 +134,13 @@ public final class OrderService {
                                 .getHasManyField("operationProductInComponents");
                         for (Entity operationProductComponent : operationProductComponents) {
                             if ((Boolean) operationProductComponent.getField("batchRequired")) {
-                                // Entity genealogy = new DefaultEntity("products", "genealogy");
+                                Entity productIn = new DefaultEntity("products", "genealogyProductIn");
+                                productIn.setField("genealogy", genealogy);
+                                productIn.setField("productInComponent", operationProductComponent);
+                                Entity product = (Entity) operationProductComponent.getField("product");
+                                if (product.getField("batch") != null) {
+                                    // Entity batch =
+                                }
                             }
                         }
                     }
