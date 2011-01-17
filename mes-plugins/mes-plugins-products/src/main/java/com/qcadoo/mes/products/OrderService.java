@@ -139,6 +139,21 @@ public final class OrderService {
         }
     }
 
+    public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
+        Entity product = entity.getBelongsToField("productInComponent").getBelongsToField("productInComponent")
+                .getBelongsToField("product");
+        DataDefinition productInDef = dataDefinitionService.get("products", "product");
+        product.setField("lastUsedBatch", entity.getField("batch"));
+        productInDef.save(product);
+    }
+
+    public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
+        Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+        DataDefinition productInDef = dataDefinitionService.get("products", "product");
+        product.setField("lastUsedBatch", entity.getField("batch"));
+        productInDef.save(product);
+    }
+
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof LookupComponentState)) {
             return;
@@ -344,11 +359,11 @@ public final class OrderService {
 
     private void createGenealogyFromLastUsed(final Entity order) {
         Entity mainProduct = (Entity) order.getField("product");
-        if (mainProduct == null) {
+        if (mainProduct == null || mainProduct.getField("lastUsedBatch") == null) {
             return;
         }
-        String mainBatch = "ttt";
-        if (mainBatch == null || mainBatch.length() == 0) {
+        String mainBatch = mainProduct.getField("lastUsedBatch").toString();
+        if (mainBatch.length() == 0) {
             return;
         }
         Entity genealogy = new DefaultEntity("products", "genealogy");
@@ -377,10 +392,9 @@ public final class OrderService {
                         DataDefinition productInDef = dataDefinitionService.get("products", "genealogyProductInComponent");
                         Entity savedProductIn = productInDef.save(productIn);
                         Entity product = (Entity) operationProductComponent.getField("product");
-                        String batch = "ddd";
-                        if (batch == null || batch.length() == 0) {
+                        if (product.getField("lastUsedBatch") != null) {
                             Entity productBatch = new DefaultEntity("products", "genealogyProductInBatch");
-                            productBatch.setField("batch", batch);
+                            productBatch.setField("batch", product.getField("lastUsedBatch"));
                             productBatch.setField("productInComponent", savedProductIn);
                             DataDefinition batchDef = dataDefinitionService.get("products", "genealogyProductInBatch");
                             batchDef.save(productBatch);
@@ -437,12 +451,6 @@ public final class OrderService {
                 }
             }
         }
-    }
-
-    private String findLastUsedBatchForComponent(final Entity productComponent) {
-        DataDefinition productInDef = dataDefinitionService.get("products", "operationProductInComponent");
-
-        return "";
     }
 
     private Entity getDefaultTechnology(final Long selectedProductId) {
