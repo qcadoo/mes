@@ -479,6 +479,7 @@ public final class TestDataLoader {
             technology.setName(values.get("name"));
             technology.setNumber(values.get("bom_nr"));
             technology.setProduct(product);
+            technology.setBatchRequired(false);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getName() + ", number="
@@ -516,6 +517,7 @@ public final class TestDataLoader {
                 productComponent.setOperationComponent(component);
                 productComponent.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
                 productComponent.setProduct(getRandomProduct());
+                productComponent.setBatchRequired(false);
 
                 sessionFactory.getCurrentSession().save(productComponent);
 

@@ -46,6 +46,9 @@
 		<string name="batch">
 			<validatesLength max="255" />
 		</string>
+		<string name="lastUsedBatch">
+			<validatesLength max="255" />
+		</string>
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" copyable="true" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
