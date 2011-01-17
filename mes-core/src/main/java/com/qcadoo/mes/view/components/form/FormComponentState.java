@@ -88,10 +88,6 @@ public final class FormComponentState extends AbstractContainerState {
     }
 
     public void setEntityId(final Long entityId) {
-        System.out.println("-------setEntityId");
-        System.out.println(entityId);
-        System.out.println(getFieldEntityIdChangeListeners());
-        System.out.println(getScopeEntityIdChangeListeners());
         this.entityId = entityId;
         requestRender();
         requestUpdateState();
@@ -295,10 +291,6 @@ public final class FormComponentState extends AbstractContainerState {
         }
 
         private void copyEntityToFields(final Entity entity, final boolean requestUpdateState) {
-
-            System.out.println("---------copyEntityToFields");
-            System.out.println(getFieldComponents());
-
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 ErrorMessage message = entity.getError(field.getKey());
 

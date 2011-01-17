@@ -38,9 +38,9 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			var formValue = formObjects[i].getValue();
 			formValues.push(formValue);
 		}
-		return { value: {
+		return { 
 			forms: formValues
-		}};
+		};
 	}
 	
 	this.setComponentValue = function(value) {
@@ -115,6 +115,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		awesomeDynamicListContent.append(line);
 		var formObject = QCDPageConstructor.getChildrenComponents(copy, mainController)["innerForm_"+formId];
 		formObject.updateSize(currentWidth-BUTTONS_WIDTH, currentHeight);
+		formObject.setEnabled(true, true);
 		return formObject;
 	}
 	
