@@ -25,7 +25,7 @@ public abstract class AbstractContainerPattern extends AbstractComponentPattern 
     }
 
     @Override
-    public final ComponentState createComponentState(final ViewDefinitionState viewDefinitionState) {
+    public ComponentState createComponentState(final ViewDefinitionState viewDefinitionState) {
         ContainerState componentState = (ContainerState) super.createComponentState(viewDefinitionState);
 
         for (ComponentPattern componentPattern : children.values()) {
