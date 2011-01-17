@@ -25,6 +25,7 @@
 package com.qcadoo.mes.products;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,8 +121,24 @@ public final class OrderService {
                 Entity genealogy = new DefaultEntity("products", "genealogy");
                 genealogy.setField("order", order);
                 genealogy.setField("batch", batch);
-                genealogy.setField("quantity", order.getField("plannedQuantity"));
-
+                if (order.getField("plannedQuantity") != null) {
+                    genealogy.setField("quantity", order.getField("plannedQuantity"));
+                } else if (order.getField("doneQuantity") != null) {
+                    genealogy.setField("quantity", order.getField("doneQuantity"));
+                }
+                Entity technology = (Entity) order.getField("technology");
+                if (technology != null) {
+                    List<Entity> operationComponents = technology.getHasManyField("operationComponents");
+                    for (Entity operationComponent : operationComponents) {
+                        List<Entity> operationProductComponents = operationComponent
+                                .getHasManyField("operationProductInComponents");
+                        for (Entity operationProductComponent : operationProductComponents) {
+                            if ((Boolean) operationProductComponent.getField("batchRequired")) {
+                                // Entity genealogy = new DefaultEntity("products", "genealogy");
+                            }
+                        }
+                    }
+                }
             }
         } else {
             if (state instanceof FormComponentState) {

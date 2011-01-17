@@ -139,7 +139,10 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="6" height="2">
+					<layoutElement column="1" row="6">
+						<component type="checkbox" name="batchRequired" reference="banchRequired" field="banchRequired" />
+					</layoutElement>
+					<layoutElement column="1" row="7" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
 				</component>
@@ -235,6 +238,9 @@
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="checkbox" name="batchRequired" reference="banchRequired" field="banchRequired" />
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />
