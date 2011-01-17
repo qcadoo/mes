@@ -37,6 +37,7 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
+import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -84,6 +85,44 @@ public final class OrderService {
                 viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
             }
 
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
+
+    public void autocompleteGenealogyFromLastUsed(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+
+    }
+
+    public void autocompleteGenealogyFromProducts(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        if (state.getFieldValue() instanceof Long) {
+            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+            if (order == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                Entity product = (Entity) order.getField("product");
+                if (product == null) {
+                    // TODO KRNA stop
+                }
+                String batch = product.getField("batch").toString();
+                if (batch.length() == 0) {
+                    // TODO KRNA stop
+                }
+                Entity genealogy = new DefaultEntity("products", "genealogy");
+                genealogy.setField("order", order);
+                genealogy.setField("batch", batch);
+                genealogy.setField("quantity", order.getField("plannedQuantity"));
+
+            }
         } else {
             if (state instanceof FormComponentState) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),

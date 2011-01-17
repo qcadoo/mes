@@ -41,6 +41,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @SequenceGenerator(name = "SEQ_STORE", sequenceName = "products_order_sequence")
 @Table(name = "products_order")
@@ -94,6 +97,10 @@ public class ProductsOrder {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<ProductsWorkPlanComponent> workPlans;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @Cascade({ CascadeType.DELETE })
+    private List<ProductsGenealogy> genealogies;
 
     public Long getId() {
         return id;
@@ -221,6 +228,14 @@ public class ProductsOrder {
 
     public void setWorkPlans(final List<ProductsWorkPlanComponent> workPlans) {
         this.workPlans = workPlans;
+    }
+
+    public List<ProductsGenealogy> getGenealogies() {
+        return genealogies;
+    }
+
+    public void setGenealogies(final List<ProductsGenealogy> genealogies) {
+        this.genealogies = genealogies;
     }
 
 }

@@ -52,14 +52,17 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="operation" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
+					<layoutElement column="1" row="4" height="2">
+						<component type="textarea" name="comment" field="comment" />
+					</layoutElement>
+					<layoutElement column="1" row="6">
 						<component type="lookup" name="staff" field="staff">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
@@ -71,7 +74,7 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="5">
+					<layoutElement column="1" row="7">
 						<component type="lookup" name="machine" field="machine">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />

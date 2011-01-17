@@ -14,7 +14,7 @@
 		<c:forEach items="${component['cells']}" var="row">
 			<tr>
 				<c:forEach items="${row}" var="cell">
-					<c:if test="${cell.available || cell.component != null}">
+					<c:if test="${cell.available || cell.components != null}">
 					
 						<c:set var="borderClass" value=""/>
 						<c:if test="${cell.rightBorder}">
@@ -23,10 +23,12 @@
 					
 						<td rowspan="${cell.rowspan}" colspan="${cell.colspan}" class="${borderClass}">
 						
-							<c:if test="${cell.component != null}">
-								<tiles:insertTemplate template="../../component.jsp">
-									<tiles:putAttribute name="component" value="${component.children[cell.component.name]}" />
-								</tiles:insertTemplate>
+							<c:if test="${cell.components != null}">
+								<c:forEach items="${cell.components}" var="childrenComponent">
+									<tiles:insertTemplate template="../../component.jsp">
+										<tiles:putAttribute name="component" value="${component.children[childrenComponent.name]}" />
+									</tiles:insertTemplate>
+								</c:forEach>
 							</c:if>
 							
 						</td>

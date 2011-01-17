@@ -84,7 +84,7 @@ public final class TestDataLoader {
 
     private static final long MILLIS_IN_DAY = 86400000;
 
-    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate" };
+    private static final String[] TYPE_OF_MATERIALS = new String[] { "03product", "01component", "02intermediate", "04waste" };
 
     private static final List<String> UNITS = new ArrayList<String>();
 

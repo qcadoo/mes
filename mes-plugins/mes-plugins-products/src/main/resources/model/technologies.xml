@@ -37,6 +37,9 @@
 			<validatesUniqueness/>		
 			<validatesLength max="2048"/>
 		</string>
+		<string name="comment">	
+			<validatesLength max="2048"/>
+		</string>
 		<belongsTo name="staff" plugin="basic" model="staff" lookupField="name" lazy="false" />
 		<belongsTo name="machine" plugin="basic" model="machine" lookupField="name" lazy="false" />
 		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="operation" cascade="nullify" />

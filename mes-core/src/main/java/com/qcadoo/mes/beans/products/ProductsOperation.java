@@ -37,6 +37,9 @@ public class ProductsOperation {
     @ManyToOne(fetch = FetchType.LAZY)
     private BasicMachine machine;
 
+    @Column(length = 2048)
+    private String comment;
+
     public Long getId() {
         return id;
     }
@@ -73,7 +76,7 @@ public class ProductsOperation {
         return staff;
     }
 
-    public void setStaff(BasicStaff staff) {
+    public void setStaff(final BasicStaff staff) {
         this.staff = staff;
     }
 
@@ -81,8 +84,16 @@ public class ProductsOperation {
         return machine;
     }
 
-    public void setMachine(BasicMachine machine) {
+    public void setMachine(final BasicMachine machine) {
         this.machine = machine;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(final String comment) {
+        this.comment = comment;
     }
 
 }
