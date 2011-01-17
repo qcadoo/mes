@@ -24,30 +24,17 @@
 
 package com.qcadoo.mes.products;
 
-import java.util.Locale;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.beans.products.ProductsSubstitute;
 import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.view.ComponentDefinition;
-import com.qcadoo.mes.view.ViewDefinition;
-import com.qcadoo.mes.view.components.FieldComponentPattern;
-import com.qcadoo.mes.view.components.PasswordComponentPattern;
-import com.qcadoo.mes.view.components.TextInputComponentPattern;
-import com.qcadoo.mes.view.components.form.FormComponentPattern;
-import com.qcadoo.mes.view.components.layout.GridLayoutCell;
-import com.qcadoo.mes.view.components.layout.GridLayoutPattern;
 
 @Service
 public final class ProductService {
@@ -128,66 +115,6 @@ public final class ProductService {
         } else {
             return true;
         }
-    }
-
-    @Autowired
-    private TranslationService translationService;
-
-    public void test(final ViewDefinition viewDefinition, final JSONObject jsonObject, final Locale locale) {
-        Long id = null;
-
-        try {
-            if (jsonObject.has("window.product.id") && !jsonObject.isNull("window.product.id")) {
-                id = jsonObject.getLong("window.product.id");
-            } else {
-                JSONObject jsonObject1 = getJsonObject(jsonObject, "components", "window", "components", "product", "context");
-
-                if (jsonObject1 != null && jsonObject1.has("id") && !jsonObject1.isNull("id")) {
-                    id = jsonObject1.getLong("id");
-                }
-            }
-        } catch (JSONException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-
-        FormComponentPattern form = (FormComponentPattern) viewDefinition.getComponentByReference("form");
-        GridLayoutPattern gridLayout = (GridLayoutPattern) viewDefinition.getComponentByReference("gridLayout");
-
-        ComponentDefinition componentDefinition = new ComponentDefinition();
-        componentDefinition.setName("number");
-        componentDefinition.setFieldPath("number");
-        componentDefinition.setParent(gridLayout);
-        componentDefinition.setTranslationService(translationService);
-        componentDefinition.setViewDefinition(viewDefinition);
-
-        FieldComponentPattern number = null;
-
-        if (id == null) {
-            number = new PasswordComponentPattern(componentDefinition);
-        } else {
-            number = new TextInputComponentPattern(componentDefinition);
-        }
-
-        number.initialize();
-
-        gridLayout.addChild(number);
-
-        form.addFieldEntityIdChangeListener("number", number);
-
-        GridLayoutCell cell = gridLayout.getCells()[0][0];
-        cell.setComponent(number);
-    }
-
-    private JSONObject getJsonObject(JSONObject jsonObject, final String... path) throws JSONException {
-        for (String p : path) {
-            if (!jsonObject.has(p)) {
-                return null;
-            }
-
-            jsonObject = jsonObject.getJSONObject(p);
-        }
-
-        return jsonObject;
     }
 
 }
