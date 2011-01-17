@@ -40,6 +40,7 @@
 		<hasMany name="otherFeatures" model="genealogyOtherFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="postFeatures" model="genealogyPostFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="genealogyProductInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
+		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForGenealogy" />
 	</model>
 	<model name="genealogyProductInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
@@ -51,6 +52,7 @@
 			<validatesLength max="255" />
 		</string>
 		<belongsTo name="productInComponent" model="genealogyProductInComponent" lookupField="productInComponent" />
+		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForProduct" />
 	</model>
 	<model name="genealogyShiftFeature">
 		<string name="value">
