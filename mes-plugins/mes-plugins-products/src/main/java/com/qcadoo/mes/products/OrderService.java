@@ -25,7 +25,6 @@
 package com.qcadoo.mes.products;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -362,16 +361,18 @@ public final class OrderService {
         } else if (order.getField("doneQuantity") != null) {
             genealogy.setField("quantity", order.getField("doneQuantity"));
         }
-        DataDefinition genealogyDef = dataDefinitionService.get("products", "genealogy");
         Entity technology = (Entity) order.getField("technology");
+        completeBatchForComponents(technology, genealogy, lastUsedMode);
+    }
+
+    private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
         if (technology != null) {
             Entity savedGenealogy = null;
-            List<Entity> operationComponents = technology.getHasManyField("operationComponents");
-            for (Entity operationComponent : operationComponents) {
-                List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductInComponents");
-                for (Entity operationProductComponent : operationProductComponents) {
+            for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+                for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                     if ((Boolean) operationProductComponent.getField("batchRequired")) {
                         if (savedGenealogy == null) {
+                            DataDefinition genealogyDef = dataDefinitionService.get("products", "genealogy");
                             savedGenealogy = genealogyDef.save(genealogy);
                         }
                         Entity productIn = new DefaultEntity("products", "genealogyProductInComponent");
