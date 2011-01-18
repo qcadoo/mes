@@ -1,6 +1,7 @@
 package com.qcadoo.mes.view.components.form;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,11 +13,11 @@ import org.json.JSONObject;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
+import com.qcadoo.mes.view.ScopeEntityIdChangeListener;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.states.AbstractContainerState;
 
@@ -100,7 +101,10 @@ public final class FormComponentState extends AbstractContainerState {
     }
 
     public Entity getEntity() {
-        return null; // TODO masz entity ktore mapuje formularz, zmiany na nim wplywaja na wartosci inputow
+        Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(), entityId);
+        copyFieldsToEntity(entity);
+        copyContextToEntity(entity);
+        return entity;
     }
 
     public boolean isValid() {
@@ -149,6 +153,13 @@ public final class FormComponentState extends AbstractContainerState {
             }
         }
 
+        for (Map.Entry<String, ScopeEntityIdChangeListener> field : getScopeEntityIdChangeListeners().entrySet()) {
+            if (!(field.getValue() instanceof FieldComponentState)) {
+                continue;
+            }
+            fieldComponents.put(field.getKey(), (FieldComponentState) field.getValue());
+        }
+
         return fieldComponents;
     }
 
@@ -159,11 +170,33 @@ public final class FormComponentState extends AbstractContainerState {
 
         FieldDefinition field = getDataDefinition().getField(fieldName);
 
-        if (field == null || HasManyType.class.isAssignableFrom(field.getType().getClass())) {
+        if (field == null) {
             return false;
         }
 
         return true;
+    }
+
+    private void copyFieldsToEntity(final Entity entity) {
+        for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
+            entity.setField(field.getKey(), convertFieldFromString(field.getValue().getFieldValue(), field.getKey()));
+        }
+    }
+
+    private void copyContextToEntity(final Entity entity) {
+        for (String field : getDataDefinition().getFields().keySet()) {
+            if (context.containsKey(field)) {
+                entity.setField(field, convertFieldFromString(context.get(field), field));
+            }
+        }
+    }
+
+    private Object convertFieldFromString(final Object value, final String field) {
+        if (value instanceof String) {
+            return getDataDefinition().getField(field).getType().fromString((String) value, getLocale());
+        } else {
+            return value;
+        }
     }
 
     public void setEnabledWithChildren(final boolean enabled) {
@@ -192,14 +225,8 @@ public final class FormComponentState extends AbstractContainerState {
             if (databaseEntity == null && entityId != null) {
                 throw new IllegalStateException("Entity cannot be found");
             } else {
-                Entity entity = new DefaultEntity(getDataDefinition().getPluginIdentifier(), getDataDefinition().getName(),
-                        entityId);
 
-                copyFieldsToEntity(entity);
-
-                copyContextToEntity(entity);
-
-                entity = getDataDefinition().save(entity);
+                Entity entity = getDataDefinition().save(getEntity());
 
                 if (!entity.isValid()) {
                     valid = false;
@@ -293,7 +320,6 @@ public final class FormComponentState extends AbstractContainerState {
         private void copyEntityToFields(final Entity entity, final boolean requestUpdateState) {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 ErrorMessage message = entity.getError(field.getKey());
-
                 if (message != null) {
                     copyMessage(field.getValue(), message);
                 } else {
@@ -306,11 +332,15 @@ public final class FormComponentState extends AbstractContainerState {
             }
         }
 
-        private String convertFieldToString(final Object value, final String field) {
+        private Object convertFieldToString(final Object value, final String field) {
             if (value instanceof String) {
                 return (String) value;
             } else if (value != null) {
-                return getDataDefinition().getField(field).getType().toString(value, getLocale());
+                if (value instanceof Collection) {
+                    return value;
+                } else {
+                    return getDataDefinition().getField(field).getType().toString(value, getLocale());
+                }
             } else {
                 return "";
             }
@@ -333,28 +363,6 @@ public final class FormComponentState extends AbstractContainerState {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 field.getValue().setFieldValue(null);
                 field.getValue().requestComponentUpdateState();
-            }
-        }
-
-        private void copyFieldsToEntity(final Entity entity) {
-            for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
-                entity.setField(field.getKey(), convertFieldFromString(field.getValue().getFieldValue(), field.getKey()));
-            }
-        }
-
-        private Object convertFieldFromString(final Object value, final String field) {
-            if (value instanceof String) {
-                return getDataDefinition().getField(field).getType().fromString((String) value, getLocale());
-            } else {
-                return value;
-            }
-        }
-
-        private void copyContextToEntity(final Entity entity) {
-            for (String field : getDataDefinition().getFields().keySet()) {
-                if (context.containsKey(field)) {
-                    entity.setField(field, convertFieldFromString(context.get(field), field));
-                }
             }
         }
 
