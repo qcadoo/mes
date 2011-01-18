@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.genealogies;
 
 import java.util.Date;
 
@@ -12,8 +12,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "products_genealogy_other_feature")
-public class ProductsGenealogyOtherFeature {
+@Table(name = "genealogies_post_feature")
+public class GenealogiesGenealogyPostFeature {
 
     @Id
     @GeneratedValue
@@ -22,7 +22,7 @@ public class ProductsGenealogyOtherFeature {
     private String value;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsGenealogy genealogy;
+    private GenealogiesGenealogy genealogy;
 
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -45,11 +45,11 @@ public class ProductsGenealogyOtherFeature {
         this.value = value;
     }
 
-    public ProductsGenealogy getGenealogy() {
+    public GenealogiesGenealogy getGenealogy() {
         return genealogy;
     }
 
-    public void setGenealogy(final ProductsGenealogy genealogy) {
+    public void setGenealogy(final GenealogiesGenealogy genealogy) {
         this.genealogy = genealogy;
     }
 

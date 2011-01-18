@@ -682,6 +682,7 @@ public final class TestDataLoader {
     private ProductsProduct getRandomProduct() {
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsProduct.class)
                 .setProjection(Projections.rowCount()).uniqueResult();
+
         return (ProductsProduct) sessionFactory.getCurrentSession().createCriteria(ProductsProduct.class)
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }
