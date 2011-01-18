@@ -26,7 +26,7 @@
 -->
 
 <qcd:views plugin="genealogies" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="currentAttributes" model="genealogyCurrentAttribute" menuAccessible="true">
+	<view name="currentAttributes" model="currentAttribute" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
 			</ribbon>		
@@ -46,7 +46,7 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="currentAttribute" model="genealogyCurrentAttribute">
+	<view name="currentAttribute" model="currentAttribute">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
