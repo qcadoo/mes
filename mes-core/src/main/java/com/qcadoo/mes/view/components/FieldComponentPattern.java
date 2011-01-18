@@ -14,6 +14,7 @@ public abstract class FieldComponentPattern extends AbstractComponentPattern {
 
     public FieldComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
+
     }
 
     @Override
