@@ -32,6 +32,14 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     public AwesomeDynamicListPattern(ComponentDefinition componentDefinition) {
         super(componentDefinition);
+        ComponentDefinition formComponentDefinition = new ComponentDefinition();
+        formComponentDefinition.setName("innerForm_@innerFormId");
+        formComponentDefinition.setFieldPath(null);
+        formComponentDefinition.setSourceFieldPath(null);
+        formComponentDefinition.setTranslationService(getTranslationService());
+        formComponentDefinition.setViewDefinition(getViewDefinition());
+        formComponentDefinition.setParent(this);
+        innerFormPattern = new FormComponentPattern(formComponentDefinition);
     }
 
     @Override
@@ -75,18 +83,13 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node child = childNodes.item(i);
             if ("components".equals(child.getNodeName())) {
-                ComponentDefinition componentDefinition = new ComponentDefinition();
-                componentDefinition.setName("innerForm_@innerFormId");
-                componentDefinition.setFieldPath(null);
-                componentDefinition.setSourceFieldPath(null);
-                componentDefinition.setTranslationService(getTranslationService());
-                componentDefinition.setViewDefinition(getViewDefinition());
-                componentDefinition.setParent(this);
-                innerFormPattern = new FormComponentPattern(componentDefinition);
-                // this.addChild(innerFormPattern);
                 innerFormPattern.parse(child, parser);
             }
         }
+    }
+
+    public FormComponentPattern getFormComponentPattern() {
+        return innerFormPattern;
     }
 
     // @Override

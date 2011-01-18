@@ -14,12 +14,12 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.internal.ViewDefinitionStateImpl;
-import com.qcadoo.mes.view.states.AbstractComponentState;
 
-public class AwesomeDynamicListState extends AbstractComponentState {
+public class AwesomeDynamicListState extends FieldComponentState {
 
     public static final String JSON_FORM_VALUES = "forms";
 
@@ -36,7 +36,7 @@ public class AwesomeDynamicListState extends AbstractComponentState {
     public AwesomeDynamicListState(final FieldDefinition belongsToFieldDefinition, final FormComponentPattern innerFormPattern) {
         this.belongsToFieldDefinition = belongsToFieldDefinition;
         this.innerFormPattern = innerFormPattern;
-        registerEvent("initialize", eventPerformer, "initialize");
+        // registerEvent("initialize", eventPerformer, "initialize");
     }
 
     @Override
@@ -56,16 +56,42 @@ public class AwesomeDynamicListState extends AbstractComponentState {
             }
         }
 
-        // forms = new LinkedList<FormComponentState>();
-
-        // JSONArray elementsArray = json.getJSONArray("elements");
-        // for (int i = 0; i < elementsArray.length(); i++) {
-        // FormComponentState formState = (FormComponentState) innerFormPattern.createComponentState(null);
-        // formState.initialize(elementsArray.getJSONObject(i), getLocale());
-        // forms.add(formState);
-        // }
-
         requestRender();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setFieldValue(final Object value) {
+        // this.value = value != null ? value.toString() : null;
+        // requestRender();
+        System.out.println("---------setFieldValue");
+        System.out.println(value);
+        List<Entity> entities = (List<Entity>) value;
+        forms = new LinkedList<FormComponentState>();
+        for (Entity entity : entities) {
+            ViewDefinitionState innerFormState = new ViewDefinitionStateImpl();
+            FormComponentState formState = (FormComponentState) innerFormPattern.createComponentState(innerFormState);
+            innerFormPattern.updateComponentStateListeners(innerFormState);
+            try {
+                formState.initialize(new JSONObject(), getLocale());
+            } catch (JSONException e) {
+                throw new IllegalStateException(e);
+            }
+
+            formState.setEntityId(entity.getId());
+            formState.performEvent(innerFormState, "initialize");
+            forms.add(formState);
+        }
+    }
+
+    @Override
+    public Object getFieldValue() {
+        List<Entity> entities = new LinkedList<Entity>();
+        for (FormComponentState form : forms) {
+            Entity e = form.getEntity();
+            entities.add(e);
+        }
+        return entities;
     }
 
     @Override
@@ -82,30 +108,11 @@ public class AwesomeDynamicListState extends AbstractComponentState {
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
 
-        // if (forms == null) {
-        // readEntitiesEntities();
-        // }
-
         JSONArray formValues = new JSONArray();
         for (FormComponentState formState : forms) {
             formValues.put(formState.render());
         }
         json.put(JSON_FORM_VALUES, formValues);
-
-        // if (entities == null) {
-        // reloadEntities();
-        // }
-        //
-        // if (entities == null) {
-        // throw new IllegalStateException("Cannot load entities for list component");
-        // }
-
-        // JSONArray jsonEntities = new JSONArray();
-        // for (Entity entity : entities) {
-        // jsonEntities.put(convertEntityToJson(entity));
-        // }
-        //
-        // json.put(JSON_ENTITIES, jsonEntities);
 
         return json;
     }
@@ -113,7 +120,7 @@ public class AwesomeDynamicListState extends AbstractComponentState {
     protected final class AwesomeDynamicListEventPerformer {
 
         public void initialize(final String[] args) {
-            readEntitiesEntities();
+            // readEntitiesEntities();
         }
 
         private void readEntitiesEntities() {
