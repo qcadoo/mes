@@ -59,6 +59,9 @@
 		<boolean name="master" />
 		<string name="description" />
 		<boolean name="batchRequired" />
+		<boolean name="shiftFeatureRequired" />
+		<boolean name="postFeatureRequired" />
+		<boolean name="otherFeatureRequired" />
 		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
