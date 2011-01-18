@@ -167,6 +167,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
         Map<String, Object> jspOptions = getJspOptions(locale);
         jspOptions.put("defaultEnabled", isDefaultEnabled());
+        jspOptions.put("defaultRequired", isDefaultRequired());
         jspOptions.put("defaultVisible", isDefaultVisible());
         map.put("jspOptions", jspOptions);
 
@@ -174,6 +175,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             JSONObject jsOptions = getJsOptions(locale);
             addListenersToJsOptions(jsOptions);
             jsOptions.put("defaultEnabled", isDefaultEnabled());
+            jsOptions.put("defaultRequired", isDefaultRequired());
             jsOptions.put("defaultVisible", isDefaultVisible());
             jsOptions.put("referenceName", reference);
             if (script != null) {
@@ -329,6 +331,13 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     protected final boolean isDefaultEnabled() {
         return defaultEnabled;
+    }
+
+    protected final boolean isDefaultRequired() {
+        if (getFieldDefinition() != null) {
+            return getFieldDefinition().isRequired();
+        }
+        return false;
     }
 
     protected final boolean isDefaultVisible() {

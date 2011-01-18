@@ -19,14 +19,15 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	var currentWidth;
 	var currentHeight;
 	
+	var firstLine;
+	
 	var BUTTONS_WIDTH = 50;
 	
 	function constructor(_this) {
 		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicListInnerForm").children();
 		awesomeDynamicListContent = $("#"+_this.elementSearchName+" > .awesomeDynamicListContent");
-		
-		formObjects = new Object();
-		formObjects.c1 = getFormCopy("1");
+		formObjects = new Array();
+		updateButtons();
 	}
 	
 	this.getComponentValue = function() {
@@ -48,18 +49,12 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		formObjects = new Array();
 		awesomeDynamicListContent.empty();
 		formObjectsIndex = 1;
-		if (forms.length == 0) {
+		for (var i in forms) {
+			var formValue = forms[i];
 			var formObject = getFormCopy(formObjectsIndex);
+			formObject.setValue(formValue);
 			formObjects[formObjectsIndex] = formObject;
 			formObjectsIndex++;
-		} else {
-			for (var i in forms) {
-				var formValue = forms[i];
-				var formObject = getFormCopy(formObjectsIndex);
-				formObject.setValue(formValue);
-				formObjects[formObjectsIndex] = formObject;
-				formObjectsIndex++;
-			}
 		}
 		updateButtons();
 	}
@@ -142,24 +137,42 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				lastObject = i;
 			}
 		}
-		for (var i in formObjects) {
-			if (! formObjects[i]) {
-				continue;
+		if (objectCounter  > 0) {
+			if (firstLine) {
+				firstLine.hide();
+				firstLine = null;
 			}
-			var removeButton = $("#"+elementSearchName+"_line_"+i+"_removeButton");
-			var addButton = $("#"+elementSearchName+"_line_"+i+"_addButton");
-			if (objectCounter > 1) {
+			for (var i in formObjects) {
+				if (! formObjects[i]) {
+					continue;
+				}
+				var removeButton = $("#"+elementSearchName+"_line_"+i+"_removeButton");
+				var addButton = $("#"+elementSearchName+"_line_"+i+"_addButton");
 				removeButton.show();
-			} else {
-				removeButton.hide();
-			}
-			if (i == lastObject) {
-				addButton.show();
-			} else {
-				addButton.hide();
-			}
+				if (i == lastObject) {
+					addButton.show();
+				} else {
+					addButton.hide();
+				}
+			}	
+		} else {
+			firstLine = $("<div>").addClass("awesomeListLine").attr("id", elementPath+"_line_0");
+			var buttons = $("<div>").addClass("awesomeListButtons");
+			var addLineButton = $("<a>").addClass("awesomeListButton").addClass("awesomeListPlusButton").addClass("enabled").attr("id", elementPath+"_line_0_addButton");
+			addLineButton.click(function(e) {
+				var button = $(e.target);
+				if (button.hasClass("enabled")) {
+					var lineId = button.attr("id").substring(elementPath.length+6, button.attr("id").length-10); 
+					addRowClicked(lineId);
+				}
+			});
+			buttons.append(addLineButton);
+			firstLine.append(buttons);
+			awesomeDynamicListContent.append(firstLine);
 		}
 	}
+	
+	
 	
 	function changeElementId(element, formId) {
 		var id = element.attr("id");

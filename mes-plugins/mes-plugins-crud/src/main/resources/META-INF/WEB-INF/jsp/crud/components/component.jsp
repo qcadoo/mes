@@ -39,7 +39,12 @@
 	<c:set var="isVisibleStyle" value=" display: none;"/>
 </c:if>
 
-<div id="${component['path']}" class="component" style="height: 100%; ${isVisibleStyle}">
+<c:set var="isRequiredStyle" value=""/>
+<c:if test="${component.jspOptions.defaultRequired}">
+	<c:set var="isRequiredStyle" value="required"/>
+</c:if> 
+
+<div id="${component['path']}" class="component ${isRequiredStyle}" style="height: 100%; ${isVisibleStyle}">
 	<div class="element_js_object" style="display: none">${component['jsObjectName']}</div>
 	<div class="element_options" style="display: none">${component['jsOptions']}</div>
 	
