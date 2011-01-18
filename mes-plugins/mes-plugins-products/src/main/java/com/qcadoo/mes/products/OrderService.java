@@ -373,7 +373,6 @@ public final class OrderService {
     }
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy) {
-        // TODO KRNA complete attributes
         if ((Boolean) technology.getField("shiftFeatureRequired")) {
             Entity shift = new DefaultEntity("products", "genealogyShiftFeature");
             shift.setField("genealogy", genealogy);
