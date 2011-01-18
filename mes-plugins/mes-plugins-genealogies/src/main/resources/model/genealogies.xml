@@ -45,12 +45,12 @@
 		<hasMany name="genealogyProductInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
 		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForGenealogy" />
 	</model>
-	<model name="genealogyProductInComponent">
+	<model name="productInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 		<belongsTo name="productInComponent" model="operationProductInComponent" lookupField="operationComponent" />
 		<hasMany name="batch" model="genealogyProductInBatch" joinField="productInComponent" cascade="delete"/>
 	</model>
-	<model name="genealogyProductInBatch">
+	<model name="productInBatch">
 		<string name="batch">
 			<validatesPresence />
 			<validatesLength max="255" />
@@ -65,7 +65,7 @@
 		<belongsTo name="productInComponent" model="genealogyProductInComponent" lookupField="productInComponent" />
 		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForProduct" />
 	</model>
-	<model name="genealogyShiftFeature">
+	<model name="shiftFeature">
 		<string name="value">
 			<validatesLength max="255" />
 		</string>
@@ -73,7 +73,7 @@
 		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 	</model>
-	<model name="genealogyPostFeature">
+	<model name="postFeature">
 		<string name="value">
 			<validatesLength max="255" />
 		</string>
@@ -81,7 +81,7 @@
 		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 	</model>
-	<model name="genealogyOtherFeature">
+	<model name="otherFeature">
 		<string name="value">
 			<validatesLength max="255" />
 		</string>
@@ -89,7 +89,7 @@
 		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 	</model>
-	<model name="genealogyCurrentAttribute">
+	<model name="currentAttribute">
 		<string name="name"></string>
 		<string name="value"></string>
 	</model>

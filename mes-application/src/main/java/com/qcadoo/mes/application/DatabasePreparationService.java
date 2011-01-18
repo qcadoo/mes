@@ -99,7 +99,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition staffGridView = getMenuViewDefinition("staffs");
         MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlans");
         MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
-        // MenuViewDefinition genealogiesGridView = getMenuViewDefinition("currentAttributes");
+        MenuViewDefinition genealogiesGridView = getMenuViewDefinition("currentAttributes");
 
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 1);
         MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 2);
@@ -124,8 +124,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                     pluginGridView, 3);
             addMenuViewDefinitionItem("menu", "menu.menu.administration.menu", menuCategoryAdministration, menuCategoryGridView,
                     4);
-            // addMenuViewDefinitionItem("currentAttributes", "genealogies.menu.administration.current.features",
-            // menuCategoryAdministration, genealogiesGridView, 5);
+            addMenuViewDefinitionItem("currentAttributes", "genealogies.menu.administration.current.features",
+                    menuCategoryAdministration, genealogiesGridView, 5);
         }
 
         addMenuViewDefinitionItem("dictionaries", "dictionaries.menu.administration.dictionaries", menuCategoryBasicData,

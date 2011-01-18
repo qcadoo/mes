@@ -25,8 +25,8 @@
 
 -->
 
-<qcd:views plugin="genealogy" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="currentAttributes" model="genealogyCurrentAttribute" menuAccessible="true">
+<qcd:views plugin="genealogies" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="currentAttributes" model="currentAttribute" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
 			</ribbon>		
@@ -46,13 +46,13 @@
 			<option type="header" value="false" />
 		</component>
 	</view>
-	<view name="currentAttribute" model="genealogyCurrentAttribute">
+	<view name="currentAttribute" model="currentAttribute">
 		<component type="window" name="window">
 			<ribbon>
 				<group template="navigation"/>
 				<group template="formSaveAction"/>
 			</ribbon>		
-			<component type="form" name="group" reference="form">
+			<component type="form" name="currentAttribute" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="input" name="value" field="value" defaultEnabled="false"/>

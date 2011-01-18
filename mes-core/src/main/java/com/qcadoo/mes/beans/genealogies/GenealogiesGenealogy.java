@@ -119,6 +119,7 @@ public class GenealogiesGenealogy {
 
     public void setShiftFeatures(final List<GenealogiesShiftFeature> shiftFeatures) {
         this.shiftFeatures = shiftFeatures;
+
     }
 
     public List<GenealogiesOtherFeature> getOtherFeatures() {
