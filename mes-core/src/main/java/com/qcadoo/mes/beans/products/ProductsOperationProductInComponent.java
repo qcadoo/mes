@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogyProductInComponent;
+import com.qcadoo.mes.beans.genealogies.GenealogiesProductInComponent;
 
 @Entity
 @Table(name = "products_operation_product_in_component")
@@ -34,7 +34,7 @@ public class ProductsOperationProductInComponent {
     private BigDecimal quantity;
 
     @OneToMany(mappedBy = "productInComponent", fetch = FetchType.LAZY)
-    private List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents;
+    private List<GenealogiesProductInComponent> genealogyProductInComponents;
 
     public BigDecimal getQuantity() {
         return quantity;
@@ -68,11 +68,11 @@ public class ProductsOperationProductInComponent {
         this.product = product;
     }
 
-    public List<GenealogiesGenealogyProductInComponent> getGenealogyProductInComponents() {
+    public List<GenealogiesProductInComponent> getGenealogyProductInComponents() {
         return genealogyProductInComponents;
     }
 
-    public void setGenealogyProductInComponents(final List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents) {
+    public void setGenealogyProductInComponents(final List<GenealogiesProductInComponent> genealogyProductInComponents) {
         this.genealogyProductInComponents = genealogyProductInComponents;
     }
 

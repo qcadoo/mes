@@ -38,19 +38,19 @@ public class GenealogiesGenealogy {
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents;
+    private List<GenealogiesProductInComponent> genealogyProductInComponents;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyShiftFeature> shiftFeatures;
+    private List<GenealogiesShiftFeature> shiftFeatures;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyOtherFeature> otherFeatures;
+    private List<GenealogiesOtherFeature> otherFeatures;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyPostFeature> postFeatures;
+    private List<GenealogiesPostFeature> postFeatures;
 
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -89,35 +89,35 @@ public class GenealogiesGenealogy {
         this.order = order;
     }
 
-    public List<GenealogiesGenealogyProductInComponent> getGenealogyProductInComponents() {
+    public List<GenealogiesProductInComponent> getGenealogyProductInComponents() {
         return genealogyProductInComponents;
     }
 
-    public void setGenealogyProductInComponents(final List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents) {
+    public void setGenealogyProductInComponents(final List<GenealogiesProductInComponent> genealogyProductInComponents) {
         this.genealogyProductInComponents = genealogyProductInComponents;
     }
 
-    public List<GenealogiesGenealogyShiftFeature> getShiftFeatures() {
+    public List<GenealogiesShiftFeature> getShiftFeatures() {
         return shiftFeatures;
     }
 
-    public void setShiftFeatures(final List<GenealogiesGenealogyShiftFeature> shiftFeatures) {
+    public void setShiftFeatures(final List<GenealogiesShiftFeature> shiftFeatures) {
         this.shiftFeatures = shiftFeatures;
     }
 
-    public List<GenealogiesGenealogyOtherFeature> getOtherFeatures() {
+    public List<GenealogiesOtherFeature> getOtherFeatures() {
         return otherFeatures;
     }
 
-    public void setOtherFeatures(final List<GenealogiesGenealogyOtherFeature> otherFeatures) {
+    public void setOtherFeatures(final List<GenealogiesOtherFeature> otherFeatures) {
         this.otherFeatures = otherFeatures;
     }
 
-    public List<GenealogiesGenealogyPostFeature> getPostFeatures() {
+    public List<GenealogiesPostFeature> getPostFeatures() {
         return postFeatures;
     }
 
-    public void setPostFeatures(final List<GenealogiesGenealogyPostFeature> postFeatures) {
+    public void setPostFeatures(final List<GenealogiesPostFeature> postFeatures) {
         this.postFeatures = postFeatures;
     }
 

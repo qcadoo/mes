@@ -35,7 +35,7 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogyProductInComponent;
+import com.qcadoo.mes.beans.genealogies.GenealogiesProductInComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -120,7 +120,7 @@ public final class OrderService {
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
-        ProductsProduct product = ((GenealogiesGenealogyProductInComponent) entity.getField("productInComponent"))
+        ProductsProduct product = ((GenealogiesProductInComponent) entity.getField("productInComponent"))
                 .getProductInComponent().getProduct();
         DataDefinition productInDef = dataDefinitionService.get("products", "product");
         Entity productEntity = productInDef.get(product.getId());
