@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:views plugin="genealogy" xmlns:qcd="http://www.qcadoo.com/view">
+<qcd:views plugin="genealogies" xmlns:qcd="http://www.qcadoo.com/view">
 	<view name="currentAttributes" model="genealogyCurrentAttribute" menuAccessible="true">
 		<component type="window" name="window">
 			<ribbon>
