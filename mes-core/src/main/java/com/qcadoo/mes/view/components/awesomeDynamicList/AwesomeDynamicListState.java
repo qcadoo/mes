@@ -36,7 +36,7 @@ public class AwesomeDynamicListState extends FieldComponentState {
     public AwesomeDynamicListState(final FieldDefinition belongsToFieldDefinition, final FormComponentPattern innerFormPattern) {
         this.belongsToFieldDefinition = belongsToFieldDefinition;
         this.innerFormPattern = innerFormPattern;
-        registerEvent("initialize", eventPerformer, "initialize");
+        // registerEvent("initialize", eventPerformer, "initialize");
     }
 
     @Override
@@ -59,10 +59,39 @@ public class AwesomeDynamicListState extends FieldComponentState {
         requestRender();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setFieldValue(final Object value) {
-        //this.value = value != null ? value.toString() : null;
-        //requestRender();
+        // this.value = value != null ? value.toString() : null;
+        // requestRender();
+        System.out.println("---------setFieldValue");
+        System.out.println(value);
+        List<Entity> entities = (List<Entity>) value;
+        forms = new LinkedList<FormComponentState>();
+        for (Entity entity : entities) {
+            ViewDefinitionState innerFormState = new ViewDefinitionStateImpl();
+            FormComponentState formState = (FormComponentState) innerFormPattern.createComponentState(innerFormState);
+            innerFormPattern.updateComponentStateListeners(innerFormState);
+            try {
+                formState.initialize(new JSONObject(), getLocale());
+            } catch (JSONException e) {
+                throw new IllegalStateException(e);
+            }
+
+            formState.setEntityId(entity.getId());
+            formState.performEvent(innerFormState, "initialize");
+            forms.add(formState);
+        }
+    }
+
+    @Override
+    public Object getFieldValue() {
+        List<Entity> entities = new LinkedList<Entity>();
+        for (FormComponentState form : forms) {
+            Entity e = form.getEntity();
+            entities.add(e);
+        }
+        return entities;
     }
 
     @Override
@@ -91,7 +120,7 @@ public class AwesomeDynamicListState extends FieldComponentState {
     protected final class AwesomeDynamicListEventPerformer {
 
         public void initialize(final String[] args) {
-            readEntitiesEntities();
+            // readEntitiesEntities();
         }
 
         private void readEntitiesEntities() {
