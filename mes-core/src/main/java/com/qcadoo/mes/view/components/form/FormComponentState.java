@@ -111,6 +111,17 @@ public final class FormComponentState extends AbstractContainerState {
         return entity;
     }
 
+    public void setEntity(Entity entity) {
+        if (!entity.isValid()) {
+            valid = false;
+            requestRender();
+            copyMessages(entity.getGlobalErrors());
+        }
+
+        copyEntityToFields(entity, entity.isValid());
+
+    }
+
     public boolean isValid() {
         return valid;
     }
@@ -203,6 +214,47 @@ public final class FormComponentState extends AbstractContainerState {
         }
     }
 
+    private void copyMessages(final List<ErrorMessage> messages) {
+        for (ErrorMessage message : messages) {
+            copyMessage(FormComponentState.this, message);
+        }
+    }
+
+    private void copyEntityToFields(final Entity entity, final boolean requestUpdateState) {
+        for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
+            ErrorMessage message = entity.getError(field.getKey());
+            if (message != null) {
+                copyMessage(field.getValue(), message);
+            } else {
+                field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
+                if (requestUpdateState) {
+                    field.getValue().requestComponentUpdateState();
+                }
+            }
+        }
+    }
+
+    private Object convertFieldToString(final Object value, final String field) {
+        if (value instanceof String) {
+            return (String) value;
+        } else if (value != null) {
+            if (value instanceof Collection) {
+                return value;
+            } else {
+                return getDataDefinition().getField(field).getType().toString(value, getLocale());
+            }
+        } else {
+            return "";
+        }
+    }
+
+    private void copyMessage(final ComponentState componentState, final ErrorMessage message) {
+        if (message != null) {
+            String translation = getTranslationService().translate(message.getMessage(), getLocale());
+            componentState.addMessage(translation, MessageType.FAILURE);
+        }
+    }
+
     public void setEnabledWithChildren(final boolean enabled) {
         for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
             FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
@@ -228,25 +280,34 @@ public final class FormComponentState extends AbstractContainerState {
             Entity databaseEntity = getFormEntity();
             if (databaseEntity == null && entityId != null) {
                 throw new IllegalStateException("Entity cannot be found");
+            }
+
+            Entity entity = getDataDefinition().save(getEntity());
+
+            setEntity(entity);
+
+            if (entity.isValid()) {
+                setFieldValue(entity.getId());
+                addMessage(translateMessage("saveMessage"), MessageType.SUCCESS);
             } else {
-
-                Entity entity = getDataDefinition().save(getEntity());
-
-                if (!entity.isValid()) {
-                    valid = false;
-                    requestRender();
-                    copyMessages(entity.getGlobalErrors());
-                }
-
-                copyEntityToFields(entity, entity.isValid());
-
-                if (entity.isValid()) {
-                    setFieldValue(entity.getId());
-                    addMessage(translateMessage("saveMessage"), MessageType.SUCCESS);
-                } else {
+                if (entity.getGlobalErrors().size() == 0) {
                     addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
                 }
             }
+            // if (!entity.isValid()) {
+            // valid = false;
+            // requestRender();
+            // copyMessages(entity.getGlobalErrors());
+            // }
+            //
+            // copyEntityToFields(entity, entity.isValid());
+            //
+            // if (entity.isValid()) {
+            // setFieldValue(entity.getId());
+            // addMessage(translateMessage("saveMessage"), MessageType.SUCCESS);
+            // } else {
+            // addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
+            // }
 
             setFieldsRequiredAndDisables();
         }
@@ -321,47 +382,6 @@ public final class FormComponentState extends AbstractContainerState {
             }
         }
 
-        private void copyEntityToFields(final Entity entity, final boolean requestUpdateState) {
-            for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
-                ErrorMessage message = entity.getError(field.getKey());
-                if (message != null) {
-                    copyMessage(field.getValue(), message);
-                } else {
-                    field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
-
-                    if (requestUpdateState) {
-                        field.getValue().requestComponentUpdateState();
-                    }
-                }
-            }
-        }
-
-        private Object convertFieldToString(final Object value, final String field) {
-            if (value instanceof String) {
-                return value;
-            } else if (value != null) {
-                if (value instanceof Collection) {
-                    return value;
-                } else {
-                    return getDataDefinition().getField(field).getType().toString(value, getLocale());
-                }
-            } else {
-                return "";
-            }
-        }
-
-        private void copyMessages(final List<ErrorMessage> messages) {
-            for (ErrorMessage message : messages) {
-                copyMessage(FormComponentState.this, message);
-            }
-        }
-
-        private void copyMessage(final ComponentState componentState, final ErrorMessage message) {
-            if (message != null) {
-                String translation = getTranslationService().translate(message.getMessage(), getLocale());
-                componentState.addMessage(translation, MessageType.FAILURE);
-            }
-        }
 
         private void clearFields() {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {

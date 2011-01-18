@@ -30,8 +30,10 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,12 +78,15 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
+    @SuppressWarnings("unchecked")
     @Override
     @Transactional
     @Monitorable
     public Entity save(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkNotNull(genericEntity, "Entity must be given");
+
+        System.out.println("TRY TO SAVE: " + genericEntity);
 
         Entity genericEntityToSave = genericEntity.copy();
 
@@ -95,7 +100,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         validationService.validateGenericEntity(dataDefinition, genericEntity, existingGenericEntity);
 
+        System.out.println("AFTER VALIDATION");
+
         if (!genericEntity.isValid()) {
+            System.out.println("NOT VALID");
             copyValidationErrors(dataDefinition, genericEntityToSave, genericEntity);
             if (existingGenericEntity != null) {
                 copyMissingFields(genericEntityToSave, existingGenericEntity);
@@ -117,6 +125,54 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Entity savedEntity = entityService.convertToGenericEntity(dataDefinition, databaseEntity);
 
         LOG.info(savedEntity + " has been saved");
+        System.out.println("SAVED");
+
+        for (Entry<String, FieldDefinition> fieldEntry : dataDefinition.getFields().entrySet()) {
+            if (fieldEntry.getValue().getType() instanceof HasManyType) {
+                System.out.println("FOUND HAS MANY TYPE: " + fieldEntry.getKey());
+                System.out.println(genericEntityToSave);
+                List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
+                List<Entity> savedEntities = new LinkedList<Entity>();
+                if (entities != null) {
+                    System.out.println("NOT NULL!");
+                    HasManyType hmt = (HasManyType) fieldEntry.getValue().getType();
+                    for (Entity innerEntity : entities) {
+                        System.out.println("HAS ENTITY: " + innerEntity);
+                        innerEntity.setField(hmt.getJoinFieldName(), savedEntity.getId());
+                        Entity savedInnerEntity = save((InternalDataDefinition) hmt.getDataDefinition(), innerEntity);
+                        savedEntities.add(savedInnerEntity);
+                        System.out.println("AFTER SAVE INNER ENTITY");
+                        if (!savedInnerEntity.isValid()) {
+                            // savedEntity.addGlobalError("lalalala");
+                        }
+                        System.out.println(savedInnerEntity.isValid());
+                    }
+
+                    List<Entity> dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
+                    System.out.println("dbEntities:");
+                    System.out.println(dbEntities);
+                    System.out.println(entities);
+                    for (Entity dbEntity : dbEntities) {
+                        boolean exists = false;
+                        for (Entity exisingEntity : savedEntities) {
+                            System.out.println("comparing - " + exisingEntity + " to " + dbEntity);
+                            if (dbEntity.getId() == exisingEntity.getId()) {
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists) {
+                            System.out.println("NOT FOUND ENTITY: " + dbEntity);
+                            delete((InternalDataDefinition) hmt.getDataDefinition(), dbEntity.getId());
+                        }
+                    }
+
+                } else {
+                    System.out.println("BUT LIST OF ENTITIES IS NULL");
+                }
+                savedEntity.setField(fieldEntry.getKey(), savedEntities);
+            }
+        }
 
         return savedEntity;
     }
@@ -180,7 +236,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private Object getCopyValueOfSimpleField(final Entity sourceEntity, final DataDefinition dataDefinition,
             final String fieldName) {
         FieldDefinition fieldDefinition = dataDefinition.getField(fieldName);
-
         if (fieldDefinition.isUnique()) {
             if (fieldDefinition.getType().getType().equals(String.class)) {
                 return getCopyValueOfUniqueField(dataDefinition, fieldDefinition, sourceEntity.getStringField(fieldName));
@@ -188,6 +243,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 sourceEntity.addError(fieldDefinition, "core.validate.field.error.invalidUniqueType");
                 throw new CopyException(sourceEntity);
             }
+        } else if (fieldDefinition.getType() instanceof HasManyType) {
+            return null;
         } else {
             return sourceEntity.getField(fieldName);
         }
@@ -440,6 +497,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
             genericEntityToSave.addGlobalError(error.getMessage(), error.getVars());
         }
         for (Map.Entry<String, ErrorMessage> error : genericEntity.getErrors().entrySet()) {
+            System.out.println("VALIDATION ERROR: " + error.getKey() + " - " + error.getValue().getMessage());
             genericEntityToSave.addError(dataDefinition.getField(error.getKey()), error.getValue().getMessage(), error.getValue()
                     .getVars());
         }
