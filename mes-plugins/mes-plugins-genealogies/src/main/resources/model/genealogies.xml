@@ -44,7 +44,7 @@
 		<hasMany name="shiftFeatures" model="shiftFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="otherFeatures" model="otherFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="postFeatures" model="postFeature" joinField="genealogy" cascade="delete"/>
-		<hasMany name="genealogyProductInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
+		<hasMany name="productInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForGenealogy" />
 	</model>
 	<model name="genealogyProductInComponent">
