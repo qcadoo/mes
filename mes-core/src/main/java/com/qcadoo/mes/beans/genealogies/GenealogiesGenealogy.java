@@ -38,7 +38,7 @@ public class GenealogiesGenealogy {
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesProductInComponent> genealogyProductInComponents;
+    private List<GenealogiesGenealogyProductInComponent> productInComponents;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
@@ -89,12 +89,28 @@ public class GenealogiesGenealogy {
         this.order = order;
     }
 
-    public List<GenealogiesProductInComponent> getGenealogyProductInComponents() {
-        return genealogyProductInComponents;
+    public Date getDate() {
+        return date;
     }
 
-    public void setGenealogyProductInComponents(final List<GenealogiesProductInComponent> genealogyProductInComponents) {
-        this.genealogyProductInComponents = genealogyProductInComponents;
+    public void setDate(final Date date) {
+        this.date = date;
+    }
+
+    public String getWorker() {
+        return worker;
+    }
+
+    public void setWorker(final String worker) {
+        this.worker = worker;
+    }
+
+    public List<GenealogiesGenealogyProductInComponent> getProductInComponents() {
+        return productInComponents;
+    }
+
+    public void setProductInComponents(final List<GenealogiesGenealogyProductInComponent> productInComponents) {
+        this.productInComponents = productInComponents;
     }
 
     public List<GenealogiesShiftFeature> getShiftFeatures() {
@@ -103,6 +119,7 @@ public class GenealogiesGenealogy {
 
     public void setShiftFeatures(final List<GenealogiesShiftFeature> shiftFeatures) {
         this.shiftFeatures = shiftFeatures;
+
     }
 
     public List<GenealogiesOtherFeature> getOtherFeatures() {
@@ -119,22 +136,6 @@ public class GenealogiesGenealogy {
 
     public void setPostFeatures(final List<GenealogiesPostFeature> postFeatures) {
         this.postFeatures = postFeatures;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(final Date date) {
-        this.date = date;
-    }
-
-    public String getWorker() {
-        return worker;
-    }
-
-    public void setWorker(final String worker) {
-        this.worker = worker;
     }
 
 }

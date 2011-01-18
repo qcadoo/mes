@@ -24,7 +24,11 @@ public class GenealogiesProductInBatch {
     private String batch;
 
     @ManyToOne(fetch = FetchType.LAZY)
+<<<<<<< HEAD
     private GenealogiesProductInComponent productInComponent;
+=======
+    private GenealogiesGenealogyProductInComponent productInComponent;
+>>>>>>> c79d9fc703b18a65105695bc2edd8cd575aa5526
 
     @Column(scale = 3, precision = 10)
     private BigDecimal quantity;
@@ -42,10 +46,13 @@ public class GenealogiesProductInBatch {
         return batch;
     }
 
+<<<<<<< HEAD
     public GenealogiesProductInComponent getProductInComponent() {
         return productInComponent;
     }
 
+=======
+>>>>>>> c79d9fc703b18a65105695bc2edd8cd575aa5526
     public void setId(final Long id) {
         this.id = id;
     }
@@ -54,10 +61,13 @@ public class GenealogiesProductInBatch {
         this.batch = batch;
     }
 
+<<<<<<< HEAD
     public void setProductInComponent(final GenealogiesProductInComponent productInComponent) {
         this.productInComponent = productInComponent;
     }
 
+=======
+>>>>>>> c79d9fc703b18a65105695bc2edd8cd575aa5526
     public BigDecimal getQuantity() {
         return quantity;
     }
@@ -82,4 +92,15 @@ public class GenealogiesProductInBatch {
         this.worker = worker;
     }
 
+<<<<<<< HEAD
+=======
+    public GenealogiesGenealogyProductInComponent getProductInComponent() {
+        return productInComponent;
+    }
+
+    public void setProductInComponent(final GenealogiesGenealogyProductInComponent productInComponent) {
+        this.productInComponent = productInComponent;
+    }
+
+>>>>>>> c79d9fc703b18a65105695bc2edd8cd575aa5526
 }

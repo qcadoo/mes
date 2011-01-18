@@ -35,7 +35,7 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
-import com.qcadoo.mes.beans.genealogies.GenealogiesProductInComponent;
+import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogyProductInComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -120,7 +120,7 @@ public final class OrderService {
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         // TODO masz why we get hibernate entities here?
-        ProductsProduct product = ((GenealogiesProductInComponent) entity.getField("productInComponent"))
+        ProductsProduct product = ((GenealogiesGenealogyProductInComponent) entity.getField("productInComponent"))
                 .getProductInComponent().getProduct();
         DataDefinition productInDef = dataDefinitionService.get("products", "product");
         Entity productEntity = productInDef.get(product.getId());
@@ -355,7 +355,7 @@ public final class OrderService {
         if (mainBatch == null) {
             return;
         }
-        Entity genealogy = new DefaultEntity("products", "genealogy");
+        Entity genealogy = new DefaultEntity("genealogies", "genealogy");
         genealogy.setField("order", order);
         genealogy.setField("batch", mainBatch);
         if (order.getField("plannedQuantity") != null) {
@@ -365,7 +365,7 @@ public final class OrderService {
         }
         genealogy.setField("date", new Date());
         genealogy.setField("worker", securityService.getCurrentUserName());
-        DataDefinition genealogyDef = dataDefinitionService.get("products", "genealogy");
+        DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
         Entity savedGenealogy = genealogyDef.save(genealogy);
         completeAttributesForGenealogy(technology, savedGenealogy);
         completeBatchForComponents(technology, savedGenealogy, lastUsedMode);
@@ -374,30 +374,30 @@ public final class OrderService {
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy) {
         if ((Boolean) technology.getField("shiftFeatureRequired")) {
-            Entity shift = new DefaultEntity("products", "genealogyShiftFeature");
+            Entity shift = new DefaultEntity("genealogies", "shiftFeature");
             shift.setField("genealogy", genealogy);
             shift.setField("value", "");
             shift.setField("date", new Date());
             shift.setField("worker", securityService.getCurrentUserName());
-            DataDefinition shiftInDef = dataDefinitionService.get("products", "genealogyShiftFeature");
+            DataDefinition shiftInDef = dataDefinitionService.get("genealogies", "shiftFeature");
             shiftInDef.save(shift);
         }
         if ((Boolean) technology.getField("otherFeatureRequired")) {
-            Entity other = new DefaultEntity("products", "genealogyOtherFeature");
+            Entity other = new DefaultEntity("genealogies", "otherFeature");
             other.setField("genealogy", genealogy);
             other.setField("value", "");
             other.setField("date", new Date());
             other.setField("worker", securityService.getCurrentUserName());
-            DataDefinition otherInDef = dataDefinitionService.get("products", "genealogyOtherFeature");
+            DataDefinition otherInDef = dataDefinitionService.get("genealogies", "otherFeature");
             otherInDef.save(other);
         }
         if ((Boolean) technology.getField("postFeatureRequired")) {
-            Entity post = new DefaultEntity("products", "genealogyPostFeature");
+            Entity post = new DefaultEntity("genealogies", "postFeature");
             post.setField("genealogy", genealogy);
             post.setField("value", "");
             post.setField("date", new Date());
             post.setField("worker", securityService.getCurrentUserName());
-            DataDefinition postInDef = dataDefinitionService.get("products", "genealogyPostFeature");
+            DataDefinition postInDef = dataDefinitionService.get("genealogies", "postFeature");
             postInDef.save(post);
         }
     }
@@ -406,10 +406,10 @@ public final class OrderService {
         for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
-                    Entity productIn = new DefaultEntity("products", "genealogyProductInComponent");
+                    Entity productIn = new DefaultEntity("genealogies", "genealogyProductInComponent");
                     productIn.setField("genealogy", genealogy);
                     productIn.setField("productInComponent", operationProductComponent);
-                    DataDefinition productInDef = dataDefinitionService.get("products", "genealogyProductInComponent");
+                    DataDefinition productInDef = dataDefinitionService.get("genealogies", "genealogyProductInComponent");
                     Entity savedProductIn = productInDef.save(productIn);
                     Entity product = (Entity) operationProductComponent.getField("product");
                     Object batch = null;
@@ -419,12 +419,12 @@ public final class OrderService {
                         batch = product.getField("batch");
                     }
                     if (batch != null) {
-                        Entity productBatch = new DefaultEntity("products", "genealogyProductInBatch");
+                        Entity productBatch = new DefaultEntity("genealogies", "productInBatch");
                         productBatch.setField("batch", batch);
                         productBatch.setField("productInComponent", savedProductIn);
                         productBatch.setField("date", new Date());
                         productBatch.setField("worker", securityService.getCurrentUserName());
-                        DataDefinition batchDef = dataDefinitionService.get("products", "genealogyProductInBatch");
+                        DataDefinition batchDef = dataDefinitionService.get("genealogies", "productInBatch");
                         batchDef.save(productBatch);
                     }
                 }
