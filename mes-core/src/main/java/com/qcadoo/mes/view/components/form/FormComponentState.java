@@ -84,6 +84,10 @@ public final class FormComponentState extends AbstractContainerState {
         }
     }
 
+    public void addContext(final String field, final Object value) {
+        context.put(field, value);
+    }
+
     public Long getEntityId() {
         return entityId;
     }
@@ -334,7 +338,7 @@ public final class FormComponentState extends AbstractContainerState {
 
         private Object convertFieldToString(final Object value, final String field) {
             if (value instanceof String) {
-                return (String) value;
+                return value;
             } else if (value != null) {
                 if (value instanceof Collection) {
                     return value;
