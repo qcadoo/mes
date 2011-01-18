@@ -145,6 +145,15 @@
 					<layoutElement column="1" row="7" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="checkbox" name="shiftFeatureRequired" reference="shiftFeatureRequired" field="shiftFeatureRequired" />
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="checkbox" name="postFeatureRequired" reference="postFeatureRequired" field="postFeatureRequired" />
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="otherFeatureRequired" />
+					</layoutElement>
 				</component>
 				<option type="expression" value="#name" />
 				<option type="header" value="false" />
