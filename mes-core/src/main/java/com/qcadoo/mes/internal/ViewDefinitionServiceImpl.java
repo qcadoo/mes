@@ -30,17 +30,25 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Node;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.view.ViewDefinition;
+import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
 @Service
 public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
+    @Autowired
+    private ViewDefinitionParser viewDefinitionParser;
+
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
+
+    private final Map<String, Node> dynamicViewDefinitions = new HashMap<String, Node>();
 
     @Override
     @Transactional(readOnly = true)
@@ -53,7 +61,14 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Transactional(readOnly = true)
     @Monitorable
     public ViewDefinition getWithoutSession(final String pluginIdentifier, final String viewName) {
-        return viewDefinitions.get(pluginIdentifier + "." + viewName);
+        String key = pluginIdentifier + "." + viewName;
+        if (viewDefinitions.containsKey(key)) {
+            return viewDefinitions.get(key);
+        } else if (dynamicViewDefinitions.containsKey(key)) {
+            return viewDefinitionParser.parseViewDefinition(dynamicViewDefinitions.get(key), pluginIdentifier, viewName);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -81,6 +96,12 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Monitorable
     public void save(final ViewDefinition viewDefinition) {
         viewDefinitions.put(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName(), viewDefinition);
+    }
+
+    @Override
+    @Monitorable
+    public void saveDynamic(final String pluginIdentifier, final String viewName, final Node viewNode) {
+        dynamicViewDefinitions.put(pluginIdentifier + "." + viewName, viewNode);
     }
 
     @Override

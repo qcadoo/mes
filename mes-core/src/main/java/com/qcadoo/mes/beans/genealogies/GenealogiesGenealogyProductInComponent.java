@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.genealogies;
 
 import java.util.List;
 
@@ -13,23 +13,25 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.qcadoo.mes.beans.products.ProductsOperationProductInComponent;
+
 @Entity
-@Table(name = "products_genealogy_product_in_component")
-public class ProductsGenealogyProductInComponent {
+@Table(name = "genealogies_genealogy_product_in_component")
+public class GenealogiesGenealogyProductInComponent {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsGenealogy genealogy;
+    private GenealogiesGenealogy genealogy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsOperationProductInComponent productInComponent;
 
     @OneToMany(mappedBy = "productInComponent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<ProductsGenealogyProductInBatch> batch;
+    private List<GenealogiesProductInBatch> batch;
 
     public Long getId() {
         return id;
@@ -39,11 +41,11 @@ public class ProductsGenealogyProductInComponent {
         this.id = id;
     }
 
-    public ProductsGenealogy getGenealogy() {
+    public GenealogiesGenealogy getGenealogy() {
         return genealogy;
     }
 
-    public void setGenealogy(final ProductsGenealogy genealogy) {
+    public void setGenealogy(final GenealogiesGenealogy genealogy) {
         this.genealogy = genealogy;
     }
 
@@ -55,11 +57,11 @@ public class ProductsGenealogyProductInComponent {
         this.productInComponent = productInComponent;
     }
 
-    public List<ProductsGenealogyProductInBatch> getBatch() {
+    public List<GenealogiesProductInBatch> getBatch() {
         return batch;
     }
 
-    public void setBatch(final List<ProductsGenealogyProductInBatch> batch) {
+    public void setBatch(final List<GenealogiesProductInBatch> batch) {
         this.batch = batch;
     }
 

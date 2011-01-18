@@ -50,9 +50,9 @@ public interface ViewDefinition {
 
     String getPluginIdentifier();
 
-    Map<String, Object> prepareView(Locale locale);
+    Map<String, Object> prepareView(JSONObject jsonObject, Locale locale);
 
-    JSONObject performEvent(JSONObject object, Locale locale) throws JSONException;
+    JSONObject performEvent(JSONObject jsonObject, Locale locale) throws JSONException;
 
     ComponentPattern getComponentByReference(String reference);
 
