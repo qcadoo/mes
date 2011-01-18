@@ -374,27 +374,33 @@ public final class OrderService {
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy) {
         // TODO KRNA complete attributes
-        Entity shift = new DefaultEntity("products", "genealogyShiftFeature");
-        shift.setField("genealogy", genealogy);
-        shift.setField("value", "");
-        shift.setField("date", new Date());
-        shift.setField("worker", securityService.getCurrentUserName());
-        DataDefinition shiftInDef = dataDefinitionService.get("products", "genealogyShiftFeature");
-        shiftInDef.save(shift);
-        Entity other = new DefaultEntity("products", "genealogyOtherFeature");
-        other.setField("genealogy", genealogy);
-        other.setField("value", "");
-        other.setField("date", new Date());
-        other.setField("worker", securityService.getCurrentUserName());
-        DataDefinition otherInDef = dataDefinitionService.get("products", "genealogyOtherFeature");
-        otherInDef.save(other);
-        Entity post = new DefaultEntity("products", "genealogyPostFeature");
-        post.setField("genealogy", genealogy);
-        post.setField("value", "");
-        post.setField("date", new Date());
-        post.setField("worker", securityService.getCurrentUserName());
-        DataDefinition postInDef = dataDefinitionService.get("products", "genealogyPostFeature");
-        postInDef.save(post);
+        if ((Boolean) technology.getField("shiftFeatureRequired")) {
+            Entity shift = new DefaultEntity("products", "genealogyShiftFeature");
+            shift.setField("genealogy", genealogy);
+            shift.setField("value", "");
+            shift.setField("date", new Date());
+            shift.setField("worker", securityService.getCurrentUserName());
+            DataDefinition shiftInDef = dataDefinitionService.get("products", "genealogyShiftFeature");
+            shiftInDef.save(shift);
+        }
+        if ((Boolean) technology.getField("otherFeatureRequired")) {
+            Entity other = new DefaultEntity("products", "genealogyOtherFeature");
+            other.setField("genealogy", genealogy);
+            other.setField("value", "");
+            other.setField("date", new Date());
+            other.setField("worker", securityService.getCurrentUserName());
+            DataDefinition otherInDef = dataDefinitionService.get("products", "genealogyOtherFeature");
+            otherInDef.save(other);
+        }
+        if ((Boolean) technology.getField("postFeatureRequired")) {
+            Entity post = new DefaultEntity("products", "genealogyPostFeature");
+            post.setField("genealogy", genealogy);
+            post.setField("value", "");
+            post.setField("date", new Date());
+            post.setField("worker", securityService.getCurrentUserName());
+            DataDefinition postInDef = dataDefinitionService.get("products", "genealogyPostFeature");
+            postInDef.save(post);
+        }
     }
 
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
