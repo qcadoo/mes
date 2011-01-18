@@ -1,6 +1,7 @@
 package com.qcadoo.mes.beans.products;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -18,6 +20,8 @@ public class ProductsOperationProductInComponent {
     @GeneratedValue
     private Long id;
 
+    private Boolean batchRequired;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTechnologyOperationComponent operationComponent;
 
@@ -26,6 +30,9 @@ public class ProductsOperationProductInComponent {
 
     @Column(scale = 3, precision = 10)
     private BigDecimal quantity;
+
+    @OneToMany(mappedBy = "productInComponent", fetch = FetchType.LAZY)
+    private List<ProductsGenealogyProductInComponent> genealogyProductInComponents;
 
     public BigDecimal getQuantity() {
         return quantity;
@@ -58,4 +65,21 @@ public class ProductsOperationProductInComponent {
     public void setProduct(final ProductsProduct product) {
         this.product = product;
     }
+
+    public List<ProductsGenealogyProductInComponent> getGenealogyProductInComponents() {
+        return genealogyProductInComponents;
+    }
+
+    public void setGenealogyProductInComponents(final List<ProductsGenealogyProductInComponent> genealogyProductInComponents) {
+        this.genealogyProductInComponents = genealogyProductInComponents;
+    }
+
+    public Boolean getBatchRequired() {
+        return batchRequired;
+    }
+
+    public void setBatchRequired(final Boolean batchRequired) {
+        this.batchRequired = batchRequired;
+    }
+
 }

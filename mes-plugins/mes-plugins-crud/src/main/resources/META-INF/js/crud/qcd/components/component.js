@@ -164,9 +164,14 @@ QCD.components.Component = function(_element, _mainController) {
 		}
 	}
 
-	this.setEnabled = function(_isEnabled) {
+	this.setEnabled = function(_isEnabled, isDeep) {
 		isEnabled = _isEnabled;
 		this.setComponentEnabled(isEnabled);
+		if (isDeep && this.components) {
+			for (var i in this.components) {
+				this.components[i].setEnabled(_isEnabled, isDeep);
+			}
+		}
 	}
 	
 	this.isEnabled = function() {

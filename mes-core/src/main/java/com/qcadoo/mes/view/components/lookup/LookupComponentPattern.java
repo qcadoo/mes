@@ -77,6 +77,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     @Override
     protected void initializeComponent() throws JSONException {
+
         for (ComponentOption option : getOptions()) {
             if ("expression".equals(option.getType())) {
                 expression = option.getValue();
@@ -144,8 +145,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
                     getFieldDefinition().getName())
                     + ".label.focus");
         } else {
-            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getFieldDefinition().getName())
-                    + ".label.focus");
+            codes.add(getTranslationService().getEntityFieldBaseMessageCode(getDataDefinition(), getName()) + ".label.focus");
         }
 
         translations.put("labelOnFocus", getTranslationService().translate(codes, locale));

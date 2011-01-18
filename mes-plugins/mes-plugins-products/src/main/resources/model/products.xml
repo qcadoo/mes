@@ -35,12 +35,20 @@
 		<string name="name">
 			<validatesPresence />
 		</string>
-		<enum name="typeOfMaterial" values="01component,02intermediate,03product">
+		<enum name="typeOfMaterial" values="01component,02intermediate,03product,04waste">
 			<validatesPresence />
 		</enum>
 		<string name="ean" />
 		<dictionary name="category" dictionary="categories" />
-		<string name="unit" />
+		<string name="unit">
+			<validatesPresence />
+		</string>
+		<string name="batch">
+			<validatesLength max="255" />
+		</string>
+		<string name="lastUsedBatch">
+			<validatesLength max="255" />
+		</string>
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" copyable="true" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>

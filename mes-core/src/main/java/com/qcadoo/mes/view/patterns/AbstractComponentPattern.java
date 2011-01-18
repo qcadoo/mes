@@ -148,7 +148,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         for (ComponentCustomEvent customEvent : customEvents) {
             state.registerCustomEvent(customEvent.getEvent(), customEvent.getObject(), customEvent.getMethod());
         }
-        if (!(this instanceof AbstractLayoutPattern)) {
+        if (!(this instanceof AbstractLayoutPattern) && viewDefinitionState != null) {
             viewDefinitionState.registerComponent(getReference(), getPath(), state);
         }
         return state;

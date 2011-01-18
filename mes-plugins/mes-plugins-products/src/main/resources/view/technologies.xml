@@ -52,14 +52,17 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="operation" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
+					<layoutElement column="1" row="4" height="2">
+						<component type="textarea" name="comment" field="comment" />
+					</layoutElement>
+					<layoutElement column="1" row="6">
 						<component type="lookup" name="staff" field="staff">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
@@ -71,7 +74,7 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="5">
+					<layoutElement column="1" row="7">
 						<component type="lookup" name="machine" field="machine">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
@@ -115,7 +118,7 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="technology" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="8">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="master" field="master" />
 					</layoutElement>
@@ -136,7 +139,10 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="6" height="2">
+					<layoutElement column="1" row="6">
+						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
+					</layoutElement>
+					<layoutElement column="1" row="7" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
 				</component>
@@ -218,7 +224,7 @@
 				<group template="formSaveAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product">
 							<option type="column" name="name" fields="name" link="true"
@@ -232,6 +238,9 @@
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />

@@ -91,17 +91,19 @@ public final class TranslatedMessageExceptionResolver extends SimpleMappingExcep
 
             Locale locale = retrieveLocaleFromRequestCookie(request);
 
-            customExceptionMessageHeader = translationService.translate("core.errorPage.error." + customExceptionMessage
-                    + ".header", locale);
-            customExceptionMessageExplanation = translationService.translate("core.errorPage.error." + customExceptionMessage
-                    + ".explanation", locale);
+            if (customExceptionMessage != null) {
+                customExceptionMessageHeader = translationService.translate("core.errorPage.error." + customExceptionMessage
+                        + ".header", locale);
+                customExceptionMessageExplanation = translationService.translate("core.errorPage.error." + customExceptionMessage
+                        + ".explanation", locale);
 
-            Throwable rootException = getRootException(exception);
+                Throwable rootException = getRootException(exception);
 
-            if (rootException instanceof CopyException) {
-                String copyExplanation = getAdditionalMessageForCopyException((CopyException) rootException, locale);
-                if (copyExplanation != null) {
-                    customExceptionMessageExplanation = copyExplanation;
+                if (rootException instanceof CopyException) {
+                    String copyExplanation = getAdditionalMessageForCopyException((CopyException) rootException, locale);
+                    if (copyExplanation != null) {
+                        customExceptionMessageExplanation = copyExplanation;
+                    }
                 }
             }
 

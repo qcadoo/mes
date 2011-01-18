@@ -11,6 +11,8 @@ QCD.components.containers.layout.GridLayout = function(_element, _mainController
 	
 	var colsNumber = this.options.colsNumber;
 	
+	var fixedRowHeight = this.options.fixedRowHeight;
+	
 	function constructor(_this) {
 		_this.constructChildren(getLayoutChildren());
 	}
@@ -38,10 +40,14 @@ QCD.components.containers.layout.GridLayout = function(_element, _mainController
 			var rowspan = tdElement.attr("rowspan") ? tdElement.attr("rowspan") : 1;
 			var colspan = tdElement.attr("colspan") ? tdElement.attr("colspan") : 1;
 			
-			var elementHeight = baseHeight * rowspan;
 			var elementWidth = baseWidth * colspan;
 			
-			this.components[i].updateSize(elementWidth, elementHeight);
+			if (fixedRowHeight) {
+				var elementHeight = baseHeight * rowspan;
+				this.components[i].updateSize(elementWidth, elementHeight);
+			} else {
+				this.components[i].updateSize(elementWidth);
+			}
 		}
 	}
 	

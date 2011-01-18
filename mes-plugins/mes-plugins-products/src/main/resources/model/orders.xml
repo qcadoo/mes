@@ -31,7 +31,7 @@
 			<validatesPresence />
 			<validatesUniqueness />
 			<validatesLength max="40" />
-			<validatesRegex regex="^[a-zA-Z0-9\\_\\(\\)]+$" />
+			<validatesRegex regex="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
 		</string>
 		<string name="name">
 			<validatesPresence />
@@ -64,6 +64,7 @@
 		<string name="endWorker" readonly="true" />
 		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
 		<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="nullify" />
+		<hasMany name="genealogies" model="genealogy" joinField="order" cascade="delete"/>
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfStateChangeIsCorrect" />
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderDates" />
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderPlannedQuantity" />

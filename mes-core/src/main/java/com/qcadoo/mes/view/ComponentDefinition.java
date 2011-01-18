@@ -22,7 +22,7 @@ public final class ComponentDefinition {
 
     private ViewDefinition viewDefinition;
 
-    private ContainerPattern parent;
+    private ComponentPattern parent;
 
     public String getName() {
         return name;
@@ -80,11 +80,11 @@ public final class ComponentDefinition {
         this.hasDescription = hasDescription;
     }
 
-    public ContainerPattern getParent() {
+    public ComponentPattern getParent() {
         return parent;
     }
 
-    public void setParent(final ContainerPattern parent) {
+    public void setParent(final ComponentPattern parent) {
         this.parent = parent;
     }
 

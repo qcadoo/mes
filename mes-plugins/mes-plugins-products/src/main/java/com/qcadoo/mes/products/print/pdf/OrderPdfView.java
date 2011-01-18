@@ -99,8 +99,6 @@ public final class OrderPdfView extends ProductsPdfView {
 
     private void addDetailTable(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         PdfPTable detailData = createDetailTable();
-        PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.machine.label", locale),
-                entity.getField("machine"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         PdfUtil.addTableCellAsTable(detailData,
                 getTranslationService().translate("products.order.effectiveDateFrom.label", locale),
                 entity.getField("effectiveDateFrom"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
@@ -128,6 +126,7 @@ public final class OrderPdfView extends ProductsPdfView {
         }
         PdfUtil.addTableCellAsTable(detailData, getTranslationService().translate("products.order.endWorker.label", locale),
                 entity.getField("endWorker"), "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
+        PdfUtil.addTableCellAsTable(detailData, "", "", "", PdfUtil.getArialBold9Dark(), PdfUtil.getArialRegular9Dark());
         document.add(detailData);
     }
 

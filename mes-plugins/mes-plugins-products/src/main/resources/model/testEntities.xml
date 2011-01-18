@@ -1,0 +1,33 @@
+<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+	<model name="testEntity1">
+		<string name="number">
+			<validatesPresence />
+			<validatesUniqueness />
+			<validatesLength max="40" />
+		</string>
+		<string name="name">
+			<validatesPresence />
+		</string>
+		<enum name="typeOfMaterial" values="01component,02intermediate,03product">
+			<validatesPresence />
+		</enum>
+		<string name="ean" />
+		<dictionary name="category" dictionary="categories" />
+		<string name="unit">
+			<validatesPresence />
+		</string>
+		<hasMany name="testEntity2" model="testEntity2" joinField="testEntity1" cascade="delete" copyable="true" />
+	</model>
+	<model name="testEntity2">
+		<string name="number">
+			<validatesPresence />
+			<validatesUniqueness />
+			<validatesLength max="40" />
+		</string>
+		<date name="dateFrom">
+			<validatesPresence />
+		</date>
+		<belongsTo name="testEntity1" model="testEntity1" lookupField="name" lazy="false" />
+		<belongsTo name="product" model="product" lookupField="name" lazy="false" />
+	</model>
+</qcd:models>

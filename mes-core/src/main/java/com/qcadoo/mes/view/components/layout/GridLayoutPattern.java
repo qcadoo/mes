@@ -25,6 +25,8 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
 
     private GridLayoutCell[][] cells;
 
+    private boolean fixedRowHeight = true;
+
     public GridLayoutPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
     }
@@ -35,6 +37,8 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
 
         Integer columns = getIntAttribute(componentNode, "columns", parser);
         Integer rows = getIntAttribute(componentNode, "rows", parser);
+
+        fixedRowHeight = parser.getBooleanAttribute(componentNode, "fixedRowHeight", true);
 
         Preconditions.checkNotNull(columns, "columns nod definied");
         Preconditions.checkNotNull(rows, "rows nod definied");
@@ -75,7 +79,7 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
 
         for (int row = 0; row < cells.length; row++) {
             for (int col = 0; col < cells[row].length; col++) {
-                if (cells[row][col].getComponent() != null) {
+                if (cells[row][col].getComponents() != null) {
                     bordersArray[col + cells[row][col].getColspan() - 1] = true;
                 }
             }
@@ -105,20 +109,18 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
 
         ComponentPattern elementComponent = null;
         NodeList elementComponentNodes = child.getChildNodes();
+        GridLayoutCell cell = new GridLayoutCell();
         for (int elementComponentNodesIter = 0; elementComponentNodesIter < elementComponentNodes.getLength(); elementComponentNodesIter++) {
             Node elementComponentNode = elementComponentNodes.item(elementComponentNodesIter);
             if (elementComponentNode.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
-            Preconditions.checkState(elementComponent == null, "layoutElement cant contain more than one component");
             Preconditions.checkState("component".equals(elementComponentNode.getNodeName()),
                     "layoutElement can contains only components");
             elementComponent = parser.parseComponent(elementComponentNode, this);
             this.addChild(elementComponent);
+            cell.addComponent(elementComponent);
         }
-
-        GridLayoutCell cell = new GridLayoutCell();
-        cell.setComponent(elementComponent);
         if (colspan != null) {
             cell.setColspan(colspan);
         }
@@ -166,6 +168,7 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
     protected JSONObject getJsOptions(final Locale locale) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("colsNumber", cells[0].length);
+        json.put("fixedRowHeight", fixedRowHeight);
         return json;
     }
 
