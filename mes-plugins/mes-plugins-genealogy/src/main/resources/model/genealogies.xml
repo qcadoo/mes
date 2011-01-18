@@ -89,4 +89,8 @@
 		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 	</model>
+	<model name="genealogyCurrentAttribute">
+		<string name="name"></string>
+		<string name="value"></string>
+	</model>
 </qcd:models>
