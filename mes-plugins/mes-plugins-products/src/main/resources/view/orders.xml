@@ -137,8 +137,8 @@
 				<listener event="printOrder" bean="com.qcadoo.mes.products.OrderService" method="printOrder" />
 				<listener event="printMaterialReqForOrder" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialReqForOrder" />
 				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlanForOrder" />
-				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.products.OrderService" method="autocompleteGenealogy" />
-				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.products.OrderService" method="autocompleteGenealogy" />
+				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="autocompleteGenealogy" />
+				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="autocompleteGenealogy" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
