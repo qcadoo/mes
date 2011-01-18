@@ -60,7 +60,7 @@ public final class GenealogyService {
     private TranslationService translationService;
 
     public void addProductInToForm(final ViewDefinition viewDefinition, final JSONObject jsonObject, final Locale locale) {
-        Long orderId = 1900L; // TODO
+        Long orderId = 1950L; // TODO
 
         // try {
         // if (jsonObject.has("window.product.id") && !jsonObject.isNull("window.product.id")) {
@@ -122,9 +122,10 @@ public final class GenealogyService {
 
     public void addBelongsToEntityToProductIn(final ViewDefinitionState state, final Locale locale) {
         GridComponentState grid = (GridComponentState) state.getComponentByReference("grid");
-        ((FormComponentState) state.getComponentByReference("productIn37150Form")).setEntityId(1000002L);
-        ((FormComponentState) state.getComponentByReference("productIn37151Form")).setEntityId(1000001L);
-        ((FormComponentState) state.getComponentByReference("productIn37154Form")).setEntityId(null);
+        ((FormComponentState) state.getComponentByReference("productIn37274Form")).setEntityId(1L);
+        ((FormComponentState) state.getComponentByReference("productIn37285Form")).setEntityId(2L);
+        ((FormComponentState) state.getComponentByReference("productIn37292Form")).setEntityId(3L);
+        ((FormComponentState) state.getComponentByReference("productIn37302Form")).setEntityId(4L);
     }
 
     private ComponentPattern createProductIn(final Entity productInComponent, final GridLayoutPattern parent,
