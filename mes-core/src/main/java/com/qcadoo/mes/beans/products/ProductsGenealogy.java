@@ -1,6 +1,7 @@
 package com.qcadoo.mes.beans.products;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -46,6 +49,11 @@ public class ProductsGenealogy {
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsGenealogyPostFeature> postFeatures;
+
+    @Temporal(TemporalType.DATE)
+    private Date date;
+
+    private String worker;
 
     public Long getId() {
         return id;
@@ -109,6 +117,22 @@ public class ProductsGenealogy {
 
     public void setPostFeatures(final List<ProductsGenealogyPostFeature> postFeatures) {
         this.postFeatures = postFeatures;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(final Date date) {
+        this.date = date;
+    }
+
+    public String getWorker() {
+        return worker;
+    }
+
+    public void setWorker(final String worker) {
+        this.worker = worker;
     }
 
 }

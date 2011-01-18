@@ -1,0 +1,46 @@
+
+.awesomeListLine {
+	text-align: left;
+}
+
+.awesomeListLine .awesomeListFormContainer {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.awesomeListLine .awesomeListButtons {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: left;
+}
+
+.awesomeListLine .awesomeListButtons .awesomeListButton {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+	background-position: 0px 16px;
+	filter:alpha(opacity=60); /* filtr dla IE*/
+	opacity: 0.6; /* filtr dla Opera*/
+	-moz-opacity: 0.6; /* filtr dla Mozilla Firefox */
+}
+
+.awesomeListLine .awesomeListButtons .awesomeListButton.enabled {
+	cursor: pointer;
+	background-position: 0px 0px;
+}
+
+.awesomeListLine .awesomeListButtons .awesomeListButton.enabled:hover {
+	filter:alpha(opacity=100); /* filtr dla IE*/
+	opacity: 1; /* filtr dla Opera*/
+	-moz-opacity: 1; /* filtr dla Mozilla Firefox */
+}
+
+.awesomeListLine .awesomeListButtons .awesomeListButton.awesomeListPlusButton {
+	background-image: url('/img/core/icons/newIcon16_dis.png');
+	margin-left: 5px;
+}
+
+.awesomeListLine .awesomeListButtons .awesomeListButton.awesomeListMinusButton {
+	background-image: url('/img/core/icons/deleteIcon16_dis.png');
+}

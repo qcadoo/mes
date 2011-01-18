@@ -211,6 +211,9 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			return null;
 		}
 		for (var i = 1; i<pathParts.length; i++) {
+			if (!component.components) {
+				return null;
+			}
 			component = component.components[pathParts[i]];
 			if (! component) {
 				return null;

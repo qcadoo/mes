@@ -28,6 +28,7 @@
 <qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="genealogy">
 		<string name="batch">
+			<validatesPresence />
 			<validatesLength max="255" />
 		</string>
 		<decimal name="quantity">
@@ -38,6 +39,8 @@
 		<belongsTo name="order" lookupField="number" model="order" lazy="false">
 			<validatesPresence />
 		</belongsTo>
+		<date name="date" readonly="true" />
+		<string name="worker" readonly="true" />
 		<hasMany name="shiftFeatures" model="genealogyShiftFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="otherFeatures" model="genealogyOtherFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="postFeatures" model="genealogyPostFeature" joinField="genealogy" cascade="delete"/>
@@ -45,12 +48,15 @@
 		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForGenealogy" />
 	</model>
 	<model name="genealogyProductInComponent">
+		<date name="date" readonly="true" />
+		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 		<belongsTo name="productInComponent" model="operationProductInComponent" lookupField="operationComponent" />
 		<hasMany name="batch" model="genealogyProductInBatch" joinField="productInComponent" cascade="delete"/>
 	</model>
 	<model name="genealogyProductInBatch">
 		<string name="batch">
+			<validatesPresence />
 			<validatesLength max="255" />
 		</string>
 		<belongsTo name="productInComponent" model="genealogyProductInComponent" lookupField="productInComponent" />
