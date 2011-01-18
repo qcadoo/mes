@@ -32,11 +32,12 @@
 			</ribbon>		
 			<component type="grid" name="groups">
 				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="value" fields="value" link="true"/>
 				<option type="order" column="name" direction="asc"/>
 				<option type="orderable" value="name,role" />
 				<option type="order" column="name" direction="asc"/>
 				<option type="searchable" value="name" />
-				<option type="correspondingView" value="users/group" />
+				<option type="correspondingView" value="genealogies/currentAttribute" />
 				<option type="correspondingComponent" value="form" />
 				<option type="deletable" value="false" />
 				<option type="creatable" value="false" />
@@ -55,7 +56,10 @@
 			<component type="form" name="currentAttribute" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
 					<layoutElement column="1" row="1">
-						<component type="input" name="value" field="value" defaultEnabled="false"/>
+						<component type="input" name="name" field="name" defaultEnabled="false"/>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="value" field="value" defaultEnabled="true"/>
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />
