@@ -5,6 +5,7 @@ import org.w3c.dom.Node;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ContainerPattern;
+import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 
 public interface ViewDefinitionParser {
@@ -19,6 +20,8 @@ public interface ViewDefinitionParser {
 
     String getStringNodeContent(Node node);
 
-    Boolean getBooleanAttribute(final Node node, final String name, final boolean defaultValue);
+    Boolean getBooleanAttribute(Node node, String name, boolean defaultValue);
+
+    ViewDefinition parseViewDefinition(Node node, String pluginIdentifier, String name);
 
 }

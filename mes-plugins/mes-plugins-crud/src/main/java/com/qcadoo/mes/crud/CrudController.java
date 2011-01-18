@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,10 +64,22 @@ public final class CrudController {
 
         ModelAndView modelAndView = new ModelAndView("crud/crudView");
 
-        modelAndView.addObject("model", viewDefinition.prepareView(locale));
+        String context = viewDefinition.translateContextReferences(arguments.get("context"));
+
+        JSONObject jsonContext = new JSONObject();
+
+        if (StringUtils.hasText(context)) {
+            try {
+                jsonContext = new JSONObject(context);
+            } catch (JSONException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+
+        modelAndView.addObject("model", viewDefinition.prepareView(jsonContext, locale));
         modelAndView.addObject("viewName", viewName);
         modelAndView.addObject("pluginIdentifier", pluginIdentifier);
-        modelAndView.addObject("context", viewDefinition.translateContextReferences(arguments.get("context")));
+        modelAndView.addObject("context", context);
 
         boolean popup = false;
         if (arguments.containsKey("popup")) {

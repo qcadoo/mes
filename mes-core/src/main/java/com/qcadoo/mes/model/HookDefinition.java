@@ -26,7 +26,10 @@ package com.qcadoo.mes.model;
 
 import java.util.Locale;
 
+import org.json.JSONObject;
+
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 
 /**
@@ -69,13 +72,21 @@ public interface HookDefinition {
     /**
      * Call custom hook on view.
      * 
-     * @param value
-     *            view value
-     * @param triggerComponentName
-     *            component which trigger this hook
+     * @param viewDefinitionState
+     *            view definition state
      * @param locale
      *            locale
      */
     void callWithViewState(ViewDefinitionState viewDefinitionState, final Locale locale);
+
+    /**
+     * Call custom hook on view.
+     * 
+     * @param object
+     *            json object
+     * @param locale
+     *            locale
+     */
+    void callWithJSONObject(ViewDefinition viewDefinition, JSONObject object, final Locale locale);
 
 }

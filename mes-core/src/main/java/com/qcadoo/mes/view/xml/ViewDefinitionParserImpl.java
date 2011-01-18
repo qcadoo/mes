@@ -129,13 +129,14 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         }
     }
 
-    private void parseView(final Node viewNode, final String pluginIdentifier) {
-        String name = getStringAttribute(viewNode, "name");
+    @Override
+    public ViewDefinition parseViewDefinition(final Node viewNode, final String pluginIdentifier, final String name) {
         currentIndexOrder = 1;
 
         LOG.info("Reading view " + name + " for plugin " + pluginIdentifier);
 
         boolean menuAccessible = getBooleanAttribute(viewNode, "menuAccessible", false);
+        boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
 
         DataDefinition dataDefinition = null;
 
@@ -157,6 +158,11 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
                 root = parseComponent(child, viewDefinition, null);
             } else if ("preInitializeHook".equals(child.getNodeName())) {
                 viewDefinition.addPreInitializeHook(parseHook(child));
+            } else if ("postConstructHook".equals(child.getNodeName())) {
+                if (!dynamic) {
+                    throw new IllegalStateException("PostConstructHook can be used only with dynamic views");
+                }
+                viewDefinition.addPostConstructHook(parseHook(child));
             } else if ("postInitializeHook".equals(child.getNodeName())) {
                 viewDefinition.addPostInitializeHook(parseHook(child));
             } else if ("preRenderHook".equals(child.getNodeName())) {
@@ -170,7 +176,19 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
 
         viewDefinition.registerViews(viewDefinitionService);
 
-        viewDefinitionService.save(viewDefinition);
+        return viewDefinition;
+    }
+
+    private void parseView(final Node viewNode, final String pluginIdentifier) {
+        String name = getStringAttribute(viewNode, "name");
+
+        boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
+
+        if (dynamic) {
+            viewDefinitionService.saveDynamic(pluginIdentifier, name, viewNode);
+        } else {
+            viewDefinitionService.save(parseViewDefinition(viewNode, pluginIdentifier, name));
+        }
     }
 
     private String getPluginIdentifier(final Node node) {
