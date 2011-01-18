@@ -38,19 +38,19 @@ public class GenealogiesGenealogy {
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents;
+    private List<GenealogiesGenealogyProductInComponent> productInComponents;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyShiftFeature> shiftFeatures;
+    private List<GenealogiesShiftFeature> shiftFeatures;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyOtherFeature> otherFeatures;
+    private List<GenealogiesOtherFeature> otherFeatures;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyPostFeature> postFeatures;
+    private List<GenealogiesPostFeature> postFeatures;
 
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -89,38 +89,6 @@ public class GenealogiesGenealogy {
         this.order = order;
     }
 
-    public List<GenealogiesGenealogyProductInComponent> getGenealogyProductInComponents() {
-        return genealogyProductInComponents;
-    }
-
-    public void setGenealogyProductInComponents(final List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents) {
-        this.genealogyProductInComponents = genealogyProductInComponents;
-    }
-
-    public List<GenealogiesGenealogyShiftFeature> getShiftFeatures() {
-        return shiftFeatures;
-    }
-
-    public void setShiftFeatures(final List<GenealogiesGenealogyShiftFeature> shiftFeatures) {
-        this.shiftFeatures = shiftFeatures;
-    }
-
-    public List<GenealogiesGenealogyOtherFeature> getOtherFeatures() {
-        return otherFeatures;
-    }
-
-    public void setOtherFeatures(final List<GenealogiesGenealogyOtherFeature> otherFeatures) {
-        this.otherFeatures = otherFeatures;
-    }
-
-    public List<GenealogiesGenealogyPostFeature> getPostFeatures() {
-        return postFeatures;
-    }
-
-    public void setPostFeatures(final List<GenealogiesGenealogyPostFeature> postFeatures) {
-        this.postFeatures = postFeatures;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -135,6 +103,38 @@ public class GenealogiesGenealogy {
 
     public void setWorker(final String worker) {
         this.worker = worker;
+    }
+
+    public List<GenealogiesGenealogyProductInComponent> getProductInComponents() {
+        return productInComponents;
+    }
+
+    public void setProductInComponents(final List<GenealogiesGenealogyProductInComponent> productInComponents) {
+        this.productInComponents = productInComponents;
+    }
+
+    public List<GenealogiesShiftFeature> getShiftFeatures() {
+        return shiftFeatures;
+    }
+
+    public void setShiftFeatures(final List<GenealogiesShiftFeature> shiftFeatures) {
+        this.shiftFeatures = shiftFeatures;
+    }
+
+    public List<GenealogiesOtherFeature> getOtherFeatures() {
+        return otherFeatures;
+    }
+
+    public void setOtherFeatures(final List<GenealogiesOtherFeature> otherFeatures) {
+        this.otherFeatures = otherFeatures;
+    }
+
+    public List<GenealogiesPostFeature> getPostFeatures() {
+        return postFeatures;
+    }
+
+    public void setPostFeatures(final List<GenealogiesPostFeature> postFeatures) {
+        this.postFeatures = postFeatures;
     }
 
 }

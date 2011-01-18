@@ -13,7 +13,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "genealogies_post_feature")
-public class GenealogiesGenealogyPostFeature {
+public class GenealogiesPostFeature {
 
     @Id
     @GeneratedValue

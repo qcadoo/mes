@@ -12,8 +12,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "genealogies_shift_feature")
-public class GenealogiesGenealogyShiftFeature {
+@Table(name = "genealogies_other_feature")
+public class GenealogiesOtherFeature {
 
     @Id
     @GeneratedValue

@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "genealogies_current_attribute")
-public class GenealogiesGenealogyCurrentAttribute {
+public class GenealogiesCurrentAttribute {
 
     @Id
     @GeneratedValue
@@ -37,7 +37,7 @@ public class GenealogiesGenealogyCurrentAttribute {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 

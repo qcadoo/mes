@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "genealogies_product_in_batch")
-public class GenealogiesGenealogyProductInBatch {
+public class GenealogiesProductInBatch {
 
     @Id
     @GeneratedValue
@@ -42,20 +42,12 @@ public class GenealogiesGenealogyProductInBatch {
         return batch;
     }
 
-    public GenealogiesGenealogyProductInComponent getProductInComponent() {
-        return productInComponent;
-    }
-
     public void setId(final Long id) {
         this.id = id;
     }
 
     public void setBatch(final String batch) {
         this.batch = batch;
-    }
-
-    public void setProductInComponent(final GenealogiesGenealogyProductInComponent productInComponent) {
-        this.productInComponent = productInComponent;
     }
 
     public BigDecimal getQuantity() {
@@ -80,6 +72,14 @@ public class GenealogiesGenealogyProductInBatch {
 
     public void setWorker(final String worker) {
         this.worker = worker;
+    }
+
+    public GenealogiesGenealogyProductInComponent getProductInComponent() {
+        return productInComponent;
+    }
+
+    public void setProductInComponent(final GenealogiesGenealogyProductInComponent productInComponent) {
+        this.productInComponent = productInComponent;
     }
 
 }

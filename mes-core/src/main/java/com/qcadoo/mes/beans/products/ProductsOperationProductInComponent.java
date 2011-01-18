@@ -68,20 +68,20 @@ public class ProductsOperationProductInComponent {
         this.product = product;
     }
 
-    public List<GenealogiesGenealogyProductInComponent> getGenealogyProductInComponents() {
-        return genealogyProductInComponents;
-    }
-
-    public void setGenealogyProductInComponents(final List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents) {
-        this.genealogyProductInComponents = genealogyProductInComponents;
-    }
-
     public Boolean getBatchRequired() {
         return batchRequired;
     }
 
     public void setBatchRequired(final Boolean batchRequired) {
         this.batchRequired = batchRequired;
+    }
+
+    public List<GenealogiesGenealogyProductInComponent> getGenealogyProductInComponents() {
+        return genealogyProductInComponents;
+    }
+
+    public void setGenealogyProductInComponents(final List<GenealogiesGenealogyProductInComponent> genealogyProductInComponents) {
+        this.genealogyProductInComponents = genealogyProductInComponents;
     }
 
 }

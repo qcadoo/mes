@@ -16,7 +16,7 @@ import org.hibernate.annotations.CascadeType;
 import com.qcadoo.mes.beans.products.ProductsOperationProductInComponent;
 
 @Entity
-@Table(name = "genealogies_product_in_component")
+@Table(name = "genealogies_genealogy_product_in_component")
 public class GenealogiesGenealogyProductInComponent {
 
     @Id
@@ -31,7 +31,7 @@ public class GenealogiesGenealogyProductInComponent {
 
     @OneToMany(mappedBy = "productInComponent", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<GenealogiesGenealogyProductInBatch> batch;
+    private List<GenealogiesProductInBatch> batch;
 
     public Long getId() {
         return id;
@@ -57,11 +57,11 @@ public class GenealogiesGenealogyProductInComponent {
         this.productInComponent = productInComponent;
     }
 
-    public List<GenealogiesGenealogyProductInBatch> getBatch() {
+    public List<GenealogiesProductInBatch> getBatch() {
         return batch;
     }
 
-    public void setBatch(final List<GenealogiesGenealogyProductInBatch> batch) {
+    public void setBatch(final List<GenealogiesProductInBatch> batch) {
         this.batch = batch;
     }
 
