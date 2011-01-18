@@ -39,16 +39,16 @@
 		<date name="date" readonly="true" />
 		<string name="worker" readonly="true" />
 		<belongsTo name="order" model="order" lookupField="number" />
-		<hasMany name="shiftFeatures" model="genealogyShiftFeature" joinField="genealogy" cascade="delete"/>
-		<hasMany name="otherFeatures" model="genealogyOtherFeature" joinField="genealogy" cascade="delete"/>
-		<hasMany name="postFeatures" model="genealogyPostFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="shiftFeatures" model="shiftFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="otherFeatures" model="otherFeature" joinField="genealogy" cascade="delete"/>
+		<hasMany name="postFeatures" model="postFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="genealogyProductInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
 		<onSave bean="com.qcadoo.mes.products.OrderService" method="fillLastUsedBatchForGenealogy" />
 	</model>
-	<model name="productInComponent">
+	<model name="genealogyProductInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 		<belongsTo name="productInComponent" model="operationProductInComponent" lookupField="operationComponent" />
-		<hasMany name="batch" model="genealogyProductInBatch" joinField="productInComponent" cascade="delete"/>
+		<hasMany name="batch" model="productInBatch" joinField="productInComponent" cascade="delete"/>
 	</model>
 	<model name="productInBatch">
 		<string name="batch">
