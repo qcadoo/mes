@@ -44,6 +44,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogy;
+
 @Entity
 @SequenceGenerator(name = "SEQ_STORE", sequenceName = "products_order_sequence")
 @Table(name = "products_order")
@@ -100,7 +102,7 @@ public class ProductsOrder {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
-    private List<ProductsGenealogy> genealogies;
+    private List<GenealogiesGenealogy> genealogies;
 
     public Long getId() {
         return id;
@@ -230,11 +232,11 @@ public class ProductsOrder {
         this.workPlans = workPlans;
     }
 
-    public List<ProductsGenealogy> getGenealogies() {
+    public List<GenealogiesGenealogy> getGenealogies() {
         return genealogies;
     }
 
-    public void setGenealogies(final List<ProductsGenealogy> genealogies) {
+    public void setGenealogies(final List<GenealogiesGenealogy> genealogies) {
         this.genealogies = genealogies;
     }
 

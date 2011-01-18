@@ -25,7 +25,7 @@
 
 -->
 
-<qcd:models plugin="products" xmlns:qcd="http://www.qcadoo.com/model">
+<qcd:models plugin="genealogies" xmlns:qcd="http://www.qcadoo.com/model">
 	<model name="genealogy">
 		<string name="batch">
 			<validatesPresence />
