@@ -37,6 +37,7 @@ public class BorderLayoutPattern extends AbstractLayoutPattern {
     protected Map<String, Object> getJspOptions(final Locale locale) {
         Map<String, Object> jspOptions = super.getJspOptions(locale);
         jspOptions.put("label", label);
+        System.out.println(" ---> " + label);
         return jspOptions;
     }
 

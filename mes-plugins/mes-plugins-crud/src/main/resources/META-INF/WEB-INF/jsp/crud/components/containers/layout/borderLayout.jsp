@@ -10,7 +10,9 @@
 
 <div id="${component['path']}_layoutComponents" class="borderLayout">
 
-	<span class="borderLayoutLabel">ZZZ</span>
+	<c:if test="${component['jspOptions']['label'] != ''}">
+		<span class="borderLayoutLabel">${component['jspOptions']['label']}</span>
+	</c:if>
 	
 	<c:forEach items="${component['children']}" var="component">
 		<tiles:insertTemplate template="../../component.jsp">
