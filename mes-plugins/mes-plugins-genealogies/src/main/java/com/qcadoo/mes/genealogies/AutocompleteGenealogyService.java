@@ -94,8 +94,6 @@ public final class AutocompleteGenealogyService {
         } else if (order.getField("doneQuantity") != null) {
             genealogy.setField("quantity", order.getField("doneQuantity"));
         }
-        genealogy.setField("date", new Date());
-        genealogy.setField("worker", securityService.getCurrentUserName());
         DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
         Entity savedGenealogy = genealogyDef.save(genealogy);
         completeAttributesForGenealogy(technology, savedGenealogy);
@@ -103,13 +101,17 @@ public final class AutocompleteGenealogyService {
 
     }
 
+    public void fillUserAndDate(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("date", new Date());
+        entity.setField("worker", securityService.getCurrentUserName());
+    }
+
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy) {
+        // TODO MADY autocomplete parameters active/last used
         if ((Boolean) technology.getField("shiftFeatureRequired")) {
             Entity shift = new DefaultEntity("genealogies", "shiftFeature");
             shift.setField("genealogy", genealogy);
             shift.setField("value", "");
-            shift.setField("date", new Date());
-            shift.setField("worker", securityService.getCurrentUserName());
             DataDefinition shiftInDef = dataDefinitionService.get("genealogies", "shiftFeature");
             shiftInDef.save(shift);
         }
@@ -117,8 +119,6 @@ public final class AutocompleteGenealogyService {
             Entity other = new DefaultEntity("genealogies", "otherFeature");
             other.setField("genealogy", genealogy);
             other.setField("value", "");
-            other.setField("date", new Date());
-            other.setField("worker", securityService.getCurrentUserName());
             DataDefinition otherInDef = dataDefinitionService.get("genealogies", "otherFeature");
             otherInDef.save(other);
         }
@@ -153,8 +153,6 @@ public final class AutocompleteGenealogyService {
                         Entity productBatch = new DefaultEntity("genealogies", "productInBatch");
                         productBatch.setField("batch", batch);
                         productBatch.setField("productInComponent", savedProductIn);
-                        productBatch.setField("date", new Date());
-                        productBatch.setField("worker", securityService.getCurrentUserName());
                         DataDefinition batchDef = dataDefinitionService.get("genealogies", "productInBatch");
                         batchDef.save(productBatch);
                     }
