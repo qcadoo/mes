@@ -62,6 +62,12 @@ public class ProductsTechnology {
 
     private Boolean batchRequired;
 
+    private Boolean shiftFeatureRequired;
+
+    private Boolean postFeatureRequired;
+
+    private Boolean otherFeatureRequired;
+
     @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsTechnologyOperationComponent> operationComponents;
@@ -139,6 +145,30 @@ public class ProductsTechnology {
 
     public void setBatchRequired(final Boolean batchRequired) {
         this.batchRequired = batchRequired;
+    }
+
+    public Boolean getShiftFeatureRequired() {
+        return shiftFeatureRequired;
+    }
+
+    public void setShiftFeatureRequired(final Boolean shiftFeatureRequired) {
+        this.shiftFeatureRequired = shiftFeatureRequired;
+    }
+
+    public Boolean getPostFeatureRequired() {
+        return postFeatureRequired;
+    }
+
+    public void setPostFeatureRequired(final Boolean postFeatureRequired) {
+        this.postFeatureRequired = postFeatureRequired;
+    }
+
+    public Boolean getOtherFeatureRequired() {
+        return otherFeatureRequired;
+    }
+
+    public void setOtherFeatureRequired(final Boolean otherFeatureRequired) {
+        this.otherFeatureRequired = otherFeatureRequired;
     }
 
 }

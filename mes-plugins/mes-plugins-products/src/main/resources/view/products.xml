@@ -75,8 +75,8 @@
 					<layoutElement column="2" row="3">
 						<component type="input" name="unit" field="unit" />
 					</layoutElement>
-					<layoutElement column="2" row="4" height="2">
-						<component type="textarea" name="batch" field="batch" />
+					<layoutElement column="2" row="4">
+						<component type="input" name="batch" field="batch" />
 					</layoutElement>
 				</component>
 				<option type="expression" value="#name" />

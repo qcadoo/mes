@@ -342,13 +342,17 @@ public final class OrderService {
 
     private void createGenealogy(final Entity order, final boolean lastUsedMode) {
         Entity mainProduct = (Entity) order.getField("product");
+        Entity technology = (Entity) order.getField("technology");
+        if (mainProduct == null || technology == null) {
+            return;
+        }
         Object mainBatch = null;
         if (lastUsedMode) {
             mainBatch = mainProduct.getField("lastUsedBatch");
         } else {
             mainBatch = mainProduct.getField("batch");
         }
-        if (mainProduct == null || mainBatch == null) {
+        if (mainBatch == null) {
             return;
         }
         Entity genealogy = new DefaultEntity("products", "genealogy");
@@ -359,64 +363,64 @@ public final class OrderService {
         } else if (order.getField("doneQuantity") != null) {
             genealogy.setField("quantity", order.getField("doneQuantity"));
         }
-        Entity technology = (Entity) order.getField("technology");
-        completeBatchForComponents(technology, genealogy, lastUsedMode);
+        genealogy.setField("date", new Date());
+        genealogy.setField("worker", securityService.getCurrentUserName());
+        DataDefinition genealogyDef = dataDefinitionService.get("products", "genealogy");
+        Entity savedGenealogy = genealogyDef.save(genealogy);
+        completeAttributesForGenealogy(technology, savedGenealogy);
+        completeBatchForComponents(technology, savedGenealogy, lastUsedMode);
 
     }
 
-    private void completeAtributesForGenealogy(final Entity genealogy) {
+    private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy) {
         // TODO KRNA complete attributes
         Entity shift = new DefaultEntity("products", "genealogyShiftFeature");
         shift.setField("genealogy", genealogy);
         shift.setField("value", "");
+        shift.setField("date", new Date());
+        shift.setField("worker", securityService.getCurrentUserName());
         DataDefinition shiftInDef = dataDefinitionService.get("products", "genealogyShiftFeature");
         shiftInDef.save(shift);
         Entity other = new DefaultEntity("products", "genealogyOtherFeature");
         other.setField("genealogy", genealogy);
         other.setField("value", "");
+        other.setField("date", new Date());
+        other.setField("worker", securityService.getCurrentUserName());
         DataDefinition otherInDef = dataDefinitionService.get("products", "genealogyOtherFeature");
         otherInDef.save(other);
         Entity post = new DefaultEntity("products", "genealogyPostFeature");
         post.setField("genealogy", genealogy);
         post.setField("value", "");
+        post.setField("date", new Date());
+        post.setField("worker", securityService.getCurrentUserName());
         DataDefinition postInDef = dataDefinitionService.get("products", "genealogyPostFeature");
         postInDef.save(post);
     }
 
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
-        if (technology != null) {
-            Entity savedGenealogy = null;
-            for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
-                for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                    if ((Boolean) operationProductComponent.getField("batchRequired")) {
-                        if (savedGenealogy == null) {
-                            genealogy.setField("date", new Date());
-                            genealogy.setField("worker", securityService.getCurrentUserName());
-                            DataDefinition genealogyDef = dataDefinitionService.get("products", "genealogy");
-                            savedGenealogy = genealogyDef.save(genealogy);
-                            completeAtributesForGenealogy(savedGenealogy);
-                        }
-                        Entity productIn = new DefaultEntity("products", "genealogyProductInComponent");
-                        productIn.setField("genealogy", savedGenealogy);
-                        productIn.setField("productInComponent", operationProductComponent);
-                        productIn.setField("date", new Date());
-                        productIn.setField("worker", securityService.getCurrentUserName());
-                        DataDefinition productInDef = dataDefinitionService.get("products", "genealogyProductInComponent");
-                        Entity savedProductIn = productInDef.save(productIn);
-                        Entity product = (Entity) operationProductComponent.getField("product");
-                        Object batch = null;
-                        if (lastUsedMode) {
-                            batch = product.getField("lastUsedBatch");
-                        } else {
-                            batch = product.getField("batch");
-                        }
-                        if (batch != null) {
-                            Entity productBatch = new DefaultEntity("products", "genealogyProductInBatch");
-                            productBatch.setField("batch", batch);
-                            productBatch.setField("productInComponent", savedProductIn);
-                            DataDefinition batchDef = dataDefinitionService.get("products", "genealogyProductInBatch");
-                            batchDef.save(productBatch);
-                        }
+        for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+            for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
+                if ((Boolean) operationProductComponent.getField("batchRequired")) {
+                    Entity productIn = new DefaultEntity("products", "genealogyProductInComponent");
+                    productIn.setField("genealogy", genealogy);
+                    productIn.setField("productInComponent", operationProductComponent);
+                    DataDefinition productInDef = dataDefinitionService.get("products", "genealogyProductInComponent");
+                    Entity savedProductIn = productInDef.save(productIn);
+                    Entity product = (Entity) operationProductComponent.getField("product");
+                    Object batch = null;
+                    if (lastUsedMode) {
+                        batch = product.getField("lastUsedBatch");
+                    } else {
+                        batch = product.getField("batch");
+                    }
+                    if (batch != null) {
+                        Entity productBatch = new DefaultEntity("products", "genealogyProductInBatch");
+                        productBatch.setField("batch", batch);
+                        productBatch.setField("productInComponent", savedProductIn);
+                        productBatch.setField("date", new Date());
+                        productBatch.setField("worker", securityService.getCurrentUserName());
+                        DataDefinition batchDef = dataDefinitionService.get("products", "genealogyProductInBatch");
+                        batchDef.save(productBatch);
                     }
                 }
             }
