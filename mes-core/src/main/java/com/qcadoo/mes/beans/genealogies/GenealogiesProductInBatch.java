@@ -1,4 +1,4 @@
-package com.qcadoo.mes.beans.products;
+package com.qcadoo.mes.beans.genealogies;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,8 +14,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "products_genealogy_product_in_batch")
-public class ProductsGenealogyProductInBatch {
+@Table(name = "genealogies_product_in_batch")
+public class GenealogiesProductInBatch {
 
     @Id
     @GeneratedValue
@@ -24,7 +24,7 @@ public class ProductsGenealogyProductInBatch {
     private String batch;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsGenealogyProductInComponent productInComponent;
+    private GenealogiesGenealogyProductInComponent productInComponent;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal quantity;
@@ -42,20 +42,12 @@ public class ProductsGenealogyProductInBatch {
         return batch;
     }
 
-    public ProductsGenealogyProductInComponent getProductInComponent() {
-        return productInComponent;
-    }
-
     public void setId(final Long id) {
         this.id = id;
     }
 
     public void setBatch(final String batch) {
         this.batch = batch;
-    }
-
-    public void setProductInComponent(final ProductsGenealogyProductInComponent productInComponent) {
-        this.productInComponent = productInComponent;
     }
 
     public BigDecimal getQuantity() {
@@ -82,4 +74,11 @@ public class ProductsGenealogyProductInBatch {
         this.worker = worker;
     }
 
+    public GenealogiesGenealogyProductInComponent getProductInComponent() {
+        return productInComponent;
+    }
+
+    public void setProductInComponent(final GenealogiesGenealogyProductInComponent productInComponent) {
+        this.productInComponent = productInComponent;
+    }
 }

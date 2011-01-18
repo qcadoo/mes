@@ -254,6 +254,7 @@ public final class TestDataLoader {
         }
         if (!values.get("name").isEmpty()) {
             product.setName(values.get("name"));
+            product.setBatch(RANDOM.nextInt(50) + values.get("name"));
         }
         if (!values.get("product_nr").isEmpty()) {
             product.setNumber(values.get("product_nr"));
@@ -480,6 +481,9 @@ public final class TestDataLoader {
             technology.setNumber(values.get("bom_nr"));
             technology.setProduct(product);
             technology.setBatchRequired(false);
+            technology.setPostFeatureRequired(false);
+            technology.setOtherFeatureRequired(false);
+            technology.setShiftFeatureRequired(false);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getName() + ", number="
@@ -678,6 +682,7 @@ public final class TestDataLoader {
     private ProductsProduct getRandomProduct() {
         Long total = (Long) sessionFactory.getCurrentSession().createCriteria(ProductsProduct.class)
                 .setProjection(Projections.rowCount()).uniqueResult();
+
         return (ProductsProduct) sessionFactory.getCurrentSession().createCriteria(ProductsProduct.class)
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).uniqueResult();
     }

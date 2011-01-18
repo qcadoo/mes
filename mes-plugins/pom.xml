@@ -27,6 +27,7 @@
 		<module>mes-plugins-menu-management</module>
 		<module>mes-plugins-products</module>
 		<module>mes-plugins-basic-management</module>
+		<module>mes-plugins-genealogies</module>
 	</modules>
 
 	<dependencies>
