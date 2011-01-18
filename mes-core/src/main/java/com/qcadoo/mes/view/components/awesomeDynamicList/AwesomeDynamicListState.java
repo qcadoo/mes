@@ -66,21 +66,23 @@ public class AwesomeDynamicListState extends FieldComponentState {
         // requestRender();
         System.out.println("---------setFieldValue");
         System.out.println(value);
-        List<Entity> entities = (List<Entity>) value;
         forms = new LinkedList<FormComponentState>();
-        for (Entity entity : entities) {
-            ViewDefinitionState innerFormState = new ViewDefinitionStateImpl();
-            FormComponentState formState = (FormComponentState) innerFormPattern.createComponentState(innerFormState);
-            innerFormPattern.updateComponentStateListeners(innerFormState);
-            try {
-                formState.initialize(new JSONObject(), getLocale());
-            } catch (JSONException e) {
-                throw new IllegalStateException(e);
-            }
+        if (value != null) {
+            List<Entity> entities = (List<Entity>) value;
+            for (Entity entity : entities) {
+                ViewDefinitionState innerFormState = new ViewDefinitionStateImpl();
+                FormComponentState formState = (FormComponentState) innerFormPattern.createComponentState(innerFormState);
+                innerFormPattern.updateComponentStateListeners(innerFormState);
+                try {
+                    formState.initialize(new JSONObject(), getLocale());
+                } catch (JSONException e) {
+                    throw new IllegalStateException(e);
+                }
 
-            formState.setEntityId(entity.getId());
-            formState.performEvent(innerFormState, "initialize");
-            forms.add(formState);
+                formState.setEntityId(entity.getId());
+                formState.performEvent(innerFormState, "initialize");
+                forms.add(formState);
+            }
         }
     }
 
