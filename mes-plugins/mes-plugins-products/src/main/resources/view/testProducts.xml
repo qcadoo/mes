@@ -30,8 +30,8 @@
 				<component type="gridLayout" name="gridLayout" columns="3" rows="2" fixedRowHeight="false">
 					<layoutElement column="1" row="1">
 						<component type="textarea" name="name" field="name" hasDescription="true" />
-						<component type="input" name="number" field="number" />
-						<component type="lookup" name="testEntity3" field="testEntity3">
+						<component type="input" name="number" field="number" hasLabel="false"/>
+						<component type="lookup" name="testEntity3" field="testEntity3" hasLabel="false">
 							<!--<option type="searchable" value="name,category" />-->
 							<!--<option type="orderable" value="name,category" />-->
 							<option type="expression" value="#number"/>
@@ -46,13 +46,14 @@
 					</layoutElement>
 					<layoutElement column="1" row="2" width="3">
 						<component type="awesomeDynamicList" name="entitiesList" source="#{form}.testEntity2">
+							<option type="hasButtons" value="false"/>
 							<components>
 								<component type="gridLayout" name="gridLayout" columns="4" rows="1" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
 										<component type="input" name="number" field="number" />
 									</layoutElement>
 									<layoutElement column="2" row="1">
-										<component type="calendar" name="dateFrom" field="dateFrom" />
+										<component type="calendar" name="dateFrom" field="dateFrom" hasLabel="false" />
 									</layoutElement>
 									<layoutElement column="3" row="1">
 										<component type="lookup" name="product" field="product">
@@ -73,7 +74,7 @@
 														<component type="input" name="number" field="number" />
 													</layoutElement>
 													<layoutElement column="1" row="2">
-														<component type="lookup" name="product" field="product">
+														<component type="lookup" name="product" field="product" hasLabel="false">
 															<option type="column" name="name" fields="name" link="true"
 																width="300" />
 															<option type="column" name="category" fields="category" />

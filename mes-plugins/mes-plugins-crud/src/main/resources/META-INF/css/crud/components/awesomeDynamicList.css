@@ -10,6 +10,7 @@
 
 .awesomeListLine .awesomeListButtons {
 	display: inline-block;
+	//display: none;
 	vertical-align: middle;
 	text-align: left;
 }

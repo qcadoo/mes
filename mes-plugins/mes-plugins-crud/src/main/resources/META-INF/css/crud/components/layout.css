@@ -33,6 +33,7 @@
 .gridLayoutTable > tbody > tr > td {
 	text-align: center;
 	vertical-align: top;
+	//border: solid black 1px;
 }
 
 .gridLayoutTable > tbody > tr > td.rightBorder {

@@ -5,11 +5,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.view.ComponentDefinition;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
@@ -27,6 +29,8 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     private final FormComponentPattern innerFormPattern;
 
+    private boolean hasButtons = true;
+
     public AwesomeDynamicListPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
         ComponentDefinition formComponentDefinition = new ComponentDefinition();
@@ -42,6 +46,13 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     @Override
     protected void initializeComponent() throws JSONException {
         initializeComponent(innerFormPattern);
+        for (ComponentOption option : getOptions()) {
+            if ("hasButtons".equals(option.getType())) {
+                hasButtons = Boolean.parseBoolean(option.getValue());
+            } else {
+                throw new IllegalStateException("Unknown option for AwesomeDynamicList: " + option.getType());
+            }
+        }
     }
 
     @Override
@@ -73,6 +84,13 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     public FormComponentPattern getFormComponentPattern() {
         return innerFormPattern;
+    }
+
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("hasButtons", hasButtons);
+        return json;
     }
 
     @Override
