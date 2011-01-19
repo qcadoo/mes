@@ -44,7 +44,7 @@
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />
-				<option type="expression" value="#name"/>
+				<option type="expression" value="' '"/>
 			</component>
 		</component>
 	</view>
