@@ -174,6 +174,11 @@ public interface Entity {
     boolean isValid();
 
     /**
+     * Set validation status as not valid
+     */
+    void setNotValid();
+
+    /**
      * Return true if there is no field's errors for given field.
      * 
      * @param fieldName

@@ -36,8 +36,10 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			if (! formObjects[i]) {
 				continue;
 			}
-			var formValue = formObjects[i].getValue();
-			formValues.push(formValue);
+			formValues.push({
+				name: formObjects[i].elementName,
+				value: formObjects[i].getValue()
+			});
 		}
 		return { 
 			forms: formValues
@@ -48,12 +50,14 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		var forms = value.forms;
 		formObjects = new Array();
 		awesomeDynamicListContent.empty();
+		this.components = new Object();
 		formObjectsIndex = 1;
 		for (var i in forms) {
 			var formValue = forms[i];
 			var formObject = getFormCopy(formObjectsIndex);
 			formObject.setValue(formValue);
 			formObjects[formObjectsIndex] = formObject;
+			this.components[formObject.elementName] = formObject;
 			formObjectsIndex++;
 		}
 		updateButtons();
