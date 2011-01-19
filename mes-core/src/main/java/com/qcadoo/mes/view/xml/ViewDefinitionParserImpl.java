@@ -270,6 +270,7 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         componentDefinition.setReference(getStringAttribute(componentNode, "reference"));
         componentDefinition.setDefaultEnabled(getBooleanAttribute(componentNode, "defaultEnabled", true));
         componentDefinition.setDefaultVisible(getBooleanAttribute(componentNode, "defaultVisible", true));
+        componentDefinition.setHasLabel(getBooleanAttribute(componentNode, "hasLabel", true));
         componentDefinition.setHasDescription(getBooleanAttribute(componentNode, "hasDescription", false));
 
         ComponentPattern component = viewComponentsResolver.getViewComponentInstance(type, componentDefinition);
