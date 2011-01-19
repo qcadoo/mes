@@ -114,13 +114,13 @@ public class AutocompleteGenealogyService {
         }
     }
 
-    public void fillLastPostShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
+    public void fillLastUsedPostFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
         SearchResult searchResult = featureDef.find().withMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
-            currentAttribute.setField("postUsedShift", entity.getField("value"));
+            currentAttribute.setField("lastUsedPost", entity.getField("value"));
             featureDef.save(currentAttribute);
         }
     }
@@ -131,7 +131,7 @@ public class AutocompleteGenealogyService {
         SearchResult searchResult = featureDef.find().withMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
             Entity currentAttribute = searchResult.getEntities().get(0);
-            currentAttribute.setField("otherUsedShift", entity.getField("value"));
+            currentAttribute.setField("lastUsedOther", entity.getField("value"));
             featureDef.save(currentAttribute);
         }
     }
