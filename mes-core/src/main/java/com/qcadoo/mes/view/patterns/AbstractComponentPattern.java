@@ -60,6 +60,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     private final boolean hasDescription;
 
+    private final boolean hasLabel;
+
     private final String reference;
 
     private final TranslationService translationService;
@@ -94,6 +96,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         this.parent = componentDefinition.getParent();
         this.reference = componentDefinition.getReference();
         this.hasDescription = componentDefinition.isHasDescription();
+        this.hasLabel = componentDefinition.isHasLabel();
         this.defaultEnabled = componentDefinition.isDefaultEnabled();
         this.defaultVisible = componentDefinition.isDefaultVisible();
         this.translationService = componentDefinition.getTranslationService();
@@ -140,6 +143,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     public ComponentState createComponentState(final ViewDefinitionState viewDefinitionState) {
         AbstractComponentState state = (AbstractComponentState) getComponentStateInstance();
         state.setDataDefinition(dataDefinition);
+        System.out.println(getName());
+        System.out.println(getPath());
+        System.out.println(name);
         state.setName(name);
         state.setEnabled(isDefaultEnabled());
         state.setVisible(isDefaultVisible());
@@ -164,6 +170,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         map.put("jsFilePath", getJsFilePath());
         map.put("jsObjectName", getJsObjectName());
         map.put("hasDescription", isHasDescription());
+        map.put("hasLabel", isHasLabel());
 
         Map<String, Object> jspOptions = getJspOptions(locale);
         jspOptions.put("defaultEnabled", isDefaultEnabled());
@@ -240,7 +247,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     @Override
-    public final boolean initialize() {
+    public boolean initialize() {
         if (initialized) {
             return true;
         }
@@ -346,6 +353,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
 
     protected final boolean isHasDescription() {
         return hasDescription;
+    }
+
+    protected final boolean isHasLabel() {
+        return hasLabel;
     }
 
     public final void addOption(final ComponentOption option) {

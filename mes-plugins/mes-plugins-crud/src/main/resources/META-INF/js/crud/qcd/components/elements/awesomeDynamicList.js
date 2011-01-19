@@ -21,12 +21,18 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	var firstLine;
 	
-	var BUTTONS_WIDTH = 50;
+	var BUTTONS_WIDTH = 70;
+	
+	var hasButtons = this.options.hasButtons;
 	
 	function constructor(_this) {
 		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicListInnerForm").children();
 		awesomeDynamicListContent = $("#"+_this.elementSearchName+" > .awesomeDynamicListContent");
 		formObjects = new Array();
+		formObjectsMap = new Object();
+		if (!hasButtons) {
+			BUTTONS_WIDTH = 0;
+		}
 		updateButtons();
 	}
 	
@@ -36,8 +42,10 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			if (! formObjects[i]) {
 				continue;
 			}
-			var formValue = formObjects[i].getValue();
-			formValues.push(formValue);
+			formValues.push({
+				name: formObjects[i].elementName,
+				value: formObjects[i].getValue()
+			});
 		}
 		return { 
 			forms: formValues
@@ -46,17 +54,26 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	this.setComponentValue = function(value) {
 		var forms = value.forms;
-		formObjects = new Array();
-		awesomeDynamicListContent.empty();
-		formObjectsIndex = 1;
-		for (var i in forms) {
-			var formValue = forms[i];
-			var formObject = getFormCopy(formObjectsIndex);
-			formObject.setValue(formValue);
-			formObjects[formObjectsIndex] = formObject;
-			formObjectsIndex++;
+		if (forms) {
+			formObjects = new Array();
+			awesomeDynamicListContent.empty();
+			this.components = new Object();
+			formObjectsIndex = 1;
+			for (var i in forms) {
+				var formValue = forms[i];
+				var formObject = getFormCopy(formObjectsIndex);
+				formObject.setValue(formValue);
+				formObjects[formObjectsIndex] = formObject;
+				this.components[formObject.elementName] = formObject;
+				formObjectsIndex++;
+			}
+			updateButtons();
+		} else {
+			var innerFormChanges = value.innerFormChanges;
+			for (var i in innerFormChanges) {
+				this.components[i].setValue(innerFormChanges[i]);
+			}
 		}
-		updateButtons();
 	}
 	
 	this.setComponentState = function(state) {
@@ -71,6 +88,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	this.updateSize = function(_width, _height) {
 		currentWidth = _width;
 		currentHeight = _height;
+		//this.element.width(currentWidth);
+		QCD.info("updateSize - "+_width);
 		for (var i in formObjects) {
 			formObjects[i].updateSize(_width-BUTTONS_WIDTH, _height);
 		}
@@ -83,7 +102,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		var formContainer = $("<div>").addClass("awesomeListFormContainer");
 		formContainer.append(copy);
 		line.append(formContainer);
-		var buttons = $("<div>").addClass("awesomeListButtons");
+		if (hasButtons) {
+			var buttons = $("<div>").addClass("awesomeListButtons");
 		
 			var removeLineButton = $("<a>").addClass("awesomeListButton").addClass("awesomeListMinusButton").addClass("enabled").attr("id", elementPath+"_line_"+formId+"_removeButton");
 			removeLineButton.css("display", "none");
@@ -106,7 +126,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			addLineButton.css("display", "none");
 			buttons.append(addLineButton);
 			
-		line.append(buttons);
+			line.append(buttons);
+		}
 		awesomeDynamicListContent.append(line);
 		var formObject = QCDPageConstructor.getChildrenComponents(copy, mainController)["innerForm_"+formId];
 		formObject.updateSize(currentWidth-BUTTONS_WIDTH, currentHeight);
@@ -129,6 +150,9 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	}
 	
 	function updateButtons() {
+		if (!hasButtons) {
+			return;
+		}
 		var objectCounter = 0;
 		var lastObject = 0;
 		for (var i in formObjects) {

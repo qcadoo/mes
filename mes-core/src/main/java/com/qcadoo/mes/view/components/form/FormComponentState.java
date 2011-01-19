@@ -241,11 +241,10 @@ public final class FormComponentState extends AbstractContainerState {
             ErrorMessage message = entity.getError(field.getKey());
             if (message != null) {
                 copyMessage(field.getValue(), message);
-            } else {
-                field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
-                if (requestUpdateState) {
-                    field.getValue().requestComponentUpdateState();
-                }
+            }
+            field.getValue().setFieldValue(convertFieldToString(entity.getField(field.getKey()), field.getKey()));
+            if (requestUpdateState) {
+                field.getValue().requestComponentUpdateState();
             }
         }
     }
@@ -310,20 +309,6 @@ public final class FormComponentState extends AbstractContainerState {
                     addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
                 }
             }
-            // if (!entity.isValid()) {
-            // valid = false;
-            // requestRender();
-            // copyMessages(entity.getGlobalErrors());
-            // }
-            //
-            // copyEntityToFields(entity, entity.isValid());
-            //
-            // if (entity.isValid()) {
-            // setFieldValue(entity.getId());
-            // addMessage(translateMessage("saveMessage"), MessageType.SUCCESS);
-            // } else {
-            // addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
-            // }
 
             setFieldsRequiredAndDisables();
         }

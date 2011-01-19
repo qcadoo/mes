@@ -56,13 +56,11 @@
 			<validatesLength max="255"/>
 		</string>
 		<string name="post"/>
-	</model><!--
-	<model name="parameter" deletable="true">
-		<string name="name"/>
-		<string name="type"/>
-		<boolean name="checkBox"/>
-		<enum name="typeOfMaterial" values="01component,02intermediate,03product,04waste">
+	</model>
+	<model name="parameter" deletable="false">
+		<boolean name="checkDoneOrderForQuality"/>
+		<enum name="batchForDoneOrder" values="01active,02lastUsed">
 			<validatesPresence />
 		</enum>
 	</model>
---></qcd:models>
+</qcd:models>

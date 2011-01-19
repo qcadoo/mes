@@ -5,13 +5,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
-import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ComponentDefinition;
+import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
@@ -27,9 +27,9 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     private static final String JSP_PATH = "elements/awesomeDynamicList.jsp";
 
-    private FieldDefinition belongsToFieldDefinition;
-
     private final FormComponentPattern innerFormPattern;
+
+    private boolean hasButtons = true;
 
     public AwesomeDynamicListPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
@@ -45,20 +45,14 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     @Override
     protected void initializeComponent() throws JSONException {
-        getBelongsToFieldDefinition();
-        System.out.println(" -- INITIALIZE LIST BEGIN");
         initializeComponent(innerFormPattern);
-        // innerFormPattern.initialize();
-        // for (ComponentPattern formComponent : innerFormPattern.getChildren().values()) {
-        // formComponent.initialize();
-        // if (formComponent instanceof ContainerPattern) {
-        // ContainerPattern formComponentConteiner = (ContainerPattern) formComponent;
-        // for (ComponentPattern formComponentConteinerKid : formComponentConteiner.getChildren().values()) {
-        // formComponentConteinerKid.initialize();
-        // }
-        // }
-        // }
-        System.out.println(" -- INITIALIZE LIST END");
+        for (ComponentOption option : getOptions()) {
+            if ("hasButtons".equals(option.getType())) {
+                hasButtons = Boolean.parseBoolean(option.getValue());
+            } else {
+                throw new IllegalStateException("Unknown option for AwesomeDynamicList: " + option.getType());
+            }
+        }
     }
 
     @Override
@@ -68,22 +62,10 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     private void initializeComponent(final ComponentPattern component) {
         component.initialize();
-        System.out.println("INITIALIZE COMPONENT: " + component);
         if (component instanceof ContainerPattern) {
             ContainerPattern container = (ContainerPattern) component;
             for (ComponentPattern kids : container.getChildren().values()) {
                 initializeComponent(kids);
-            }
-        }
-    }
-
-    private void getBelongsToFieldDefinition() {
-        if (getScopeFieldDefinition() != null) {
-            if (HasManyType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
-                HasManyType hasManyType = (HasManyType) getScopeFieldDefinition().getType();
-                belongsToFieldDefinition = hasManyType.getDataDefinition().getField(hasManyType.getJoinFieldName());
-            } else {
-                throwIllegalStateException("Scope field for grid be a hasMany one");
             }
         }
     }
@@ -104,21 +86,12 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
         return innerFormPattern;
     }
 
-    // @Override
-    // public final ComponentState createComponentState(final ViewDefinitionState viewDefinitionState) {
-    // ContainerState componentState = (ContainerState) super.createComponentState(viewDefinitionState);
-    // return componentState;
-    // }
-
-    // @Override
-    // public Map<String, Object> prepareView(final Locale locale) {
-    // Map<String, Object> model = super.prepareView(locale);
-    // Map<String, Object> childrenModels = new LinkedHashMap<String, Object>();
-    //
-    // model.put("children", childrenModels);
-    //
-    // return model;
-    // }
+    @Override
+    protected JSONObject getJsOptions(final Locale locale) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("hasButtons", hasButtons);
+        return json;
+    }
 
     @Override
     protected Map<String, Object> getJspOptions(final Locale locale) {
@@ -144,13 +117,8 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     @Override
     protected ComponentState getComponentStateInstance() {
-        ComponentState listState = new AwesomeDynamicListState(belongsToFieldDefinition, innerFormPattern);
+        ComponentState listState = new AwesomeDynamicListState(innerFormPattern);
         return listState;
-    }
-
-    private void throwIllegalStateException(final String message) {
-        throw new IllegalStateException(getViewDefinition().getPluginIdentifier() + "." + getViewDefinition().getName() + "#"
-                + getPath() + ": " + message);
     }
 
 }
