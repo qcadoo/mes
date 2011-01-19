@@ -13,7 +13,7 @@
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 
 <qcd:views plugin="genealogies" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="orderGenealogies" model="genealogy" menuAccessible="true" dynamic="true">
+	<view name="orderGenealogies" model="genealogy" menuAccessible="true">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -25,29 +25,133 @@
 				<option type="searchable" value="batch" />
 				<option type="orderable" value="batch,quantity" />
 				<option type="height" value="100" />
-				<!--<listener event="select" bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>							
-				<listener event="initialize" bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>							
-			--></component>
+			</component>
 			<component type="form" name="genealogy" reference="form" field="#{grid}">
-				<component type="gridLayout" name="gridLayout" columns="2" rows="3" fixedRowHeight="false" reference="layout">
-					<layoutElement column="1" row="1">
-						<component type="input" name="batch" field="batch" />
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="input" name="quantity" field="quantity" />
-					</layoutElement>
-					<layoutElement column="1" row="2" width="2">
-					</layoutElement>
-					<layoutElement column="1" row="3" width="2">
-					</layoutElement>
+			
+				<component type="borderLayout" name="mainBorderLayout" reference="mainBorderLayout">
+					<component type="gridLayout" name="gridLayout" columns="2" rows="1" reference="layout">			
+						<layoutElement column="1" row="1">						
+							<component type="input" name="batch" field="batch" />
+						</layoutElement>
+						<layoutElement column="2" row="1">
+							<component type="input" name="quantity" field="quantity" />
+						</layoutElement>
+					</component>
 				</component>
+				
+				<component type="borderLayout" name="featureBorderLayout" reference="featureBorderLayout">
+					<component type="gridLayout" name="gridLayout" columns="1" rows="3" fixedRowHeight="false"  reference="featureGridLayout">			
+						<layoutElement column="1" row="1">						
+							<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures">
+								<components>
+									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+										<layoutElement column="1" row="1">
+											<component type="input" name="value" field="value" />
+										</layoutElement>
+										<layoutElement column="2" row="1">
+											<component type="input" name="worker" field="worker" />
+										</layoutElement>
+										<layoutElement column="3" row="1">
+											<component type="input" name="date" field="date" />
+										</layoutElement>
+									</component>				
+								</components>
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures">
+								<components>
+									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+										<layoutElement column="1" row="1">
+											<component type="input" name="value" field="value" />
+										</layoutElement>
+										<layoutElement column="2" row="1">
+											<component type="input" name="worker" field="worker" />
+										</layoutElement>
+										<layoutElement column="3" row="1">
+											<component type="input" name="date" field="date" />
+										</layoutElement>
+									</component>				
+								</components>
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures">
+								<components>
+									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+										<layoutElement column="1" row="1">
+											<component type="input" name="value" field="value" />
+										</layoutElement>
+										<layoutElement column="2" row="1">
+											<component type="input" name="worker" field="worker" />
+										</layoutElement>
+										<layoutElement column="3" row="1">
+											<component type="input" name="date" field="date" />
+										</layoutElement>
+									</component>				
+								</components>
+							</component>							
+						</layoutElement>
+					</component>
+				</component>
+				
+				<component type="borderLayout" name="productInComponentsBorderLayout" reference="productInComponentsBorderLayout">
+					<component type="gridLayout" name="mainGridLayout" columns="5" rows="2" fixedRowHeight="false" >
+						<layoutElement column="1" row="1">	
+							<!--<component type="label" name="productInLabel" />
+						--></layoutElement>
+						<layoutElement column="2" row="1">
+							<!--<component type="label" name="productInBatchLabel" />									
+						--></layoutElement>
+						<layoutElement column="3" row="1">
+							<!--<component type="label" name="productInQuantityLabel" />									
+						--></layoutElement>
+						<layoutElement column="4" row="1">
+							<!--<component type="label" name="productInWorkerLabel" />									
+						--></layoutElement>
+						<layoutElement column="5" row="1">				
+							<!--<component type="label" name="productInDateLabel" />					
+						--></layoutElement>
+						<layoutElement column="1" row="2" width="5">
+							<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents">
+								<components>
+									<component type="gridLayout" name="gridLayout" columns="5" rows="1" fixedRowHeight="false" >
+										<layoutElement column="1" row="1">
+											<component type="input" name="productInComponent" field="productInComponent" />									
+										</layoutElement>
+										<layoutElement column="2" row="1" width="4">
+											<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
+												<components>
+													<component type="gridLayout" name="gridLayout" columns="4" rows="1" fixedRowHeight="false" >
+														<layoutElement column="1" row="1">
+															<component type="input" name="batch" field="batch" />
+														</layoutElement>
+														<layoutElement column="2" row="1">
+															<component type="input" name="quantity" field="quantity" />
+														</layoutElement>
+														<layoutElement column="3" row="1">
+															<component type="input" name="worker" field="worker" />
+														</layoutElement>
+														<layoutElement column="4" row="1">
+															<component type="input" name="date" field="date" />
+														</layoutElement>
+													</component>
+												</components>
+											</component>
+										</layoutElement>
+									</component>
+								</components>
+								<option type="hasButtons" value="false"/>
+							</component>			
+						</layoutElement>
+					</component>
+				</component>
+				
 				<option type="expression" value="#batch" />
 				<option type="header" value="true" />
 			</component>
 			<option type="header" value="false" />
 		</component>
-		<postInitializeHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>
-		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>
-		<postConstructHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addProductInToForm"/>
 	</view>
+	
 </qcd:views>

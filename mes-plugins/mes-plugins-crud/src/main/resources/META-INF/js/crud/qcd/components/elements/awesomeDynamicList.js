@@ -21,7 +21,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	var firstLine;
 	
-	var BUTTONS_WIDTH = 50;
+	var BUTTONS_WIDTH = 70;
 	
 	var hasButtons = this.options.hasButtons;
 	
