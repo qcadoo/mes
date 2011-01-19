@@ -178,6 +178,7 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     @Override
     protected void registerComponentViews(final ViewDefinitionService viewDefinitionService) {
+        System.out.println(" ---> " + lookupViewDefinition.getName());
         viewDefinitionService.save(lookupViewDefinition);
     }
 

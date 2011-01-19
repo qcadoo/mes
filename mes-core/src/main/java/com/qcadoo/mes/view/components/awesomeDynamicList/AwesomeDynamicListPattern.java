@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ComponentDefinition;
@@ -28,9 +29,9 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     private FieldDefinition belongsToFieldDefinition;
 
-    private FormComponentPattern innerFormPattern;
+    private final FormComponentPattern innerFormPattern;
 
-    public AwesomeDynamicListPattern(ComponentDefinition componentDefinition) {
+    public AwesomeDynamicListPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
         ComponentDefinition formComponentDefinition = new ComponentDefinition();
         formComponentDefinition.setName("innerForm_@innerFormId");
@@ -60,7 +61,12 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
         System.out.println(" -- INITIALIZE LIST END");
     }
 
-    private void initializeComponent(ComponentPattern component) {
+    @Override
+    protected void registerComponentViews(final ViewDefinitionService viewDefinitionService) {
+        innerFormPattern.registerViews(viewDefinitionService);
+    }
+
+    private void initializeComponent(final ComponentPattern component) {
         component.initialize();
         System.out.println("INITIALIZE COMPONENT: " + component);
         if (component instanceof ContainerPattern) {
