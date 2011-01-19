@@ -29,7 +29,6 @@
 	<view name="currentAttribute" model="currentAttribute">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="navigation"/>
 				<group template="formSaveAction"/>
 			</ribbon>		
 			<component type="form" name="currentAttribute" reference="form">

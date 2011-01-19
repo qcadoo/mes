@@ -41,6 +41,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.plugins.internal.enums.PluginStatus;
+import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
@@ -73,16 +74,15 @@ public final class MenuServiceImpl implements MenuService {
     public void updateViewDefinitionDatabase() {
         DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
 
-        List<ViewDefinition> menuableViews = viewDefinitionService.listForMenu();
-        for (ViewDefinition view : menuableViews) {
-            int existingViewsNumber = viewDefinitionDD.find()
-                    .restrictedWith(Restrictions.eq("pluginIdentifier", view.getPluginIdentifier()))
-                    .restrictedWith(Restrictions.eq("viewName", view.getName())).list().getTotalNumberOfEntities();
+        List<Pair<String, String>> menuViews = viewDefinitionService.listForMenu();
+        for (Pair<String, String> view : menuViews) {
+            int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", view.getKey()))
+                    .restrictedWith(Restrictions.eq("viewName", view.getValue())).list().getTotalNumberOfEntities();
             if (existingViewsNumber == 0) {
                 Entity viewDefinitionEntity = new DefaultEntity("menu", "viewDefinition", null);
-                viewDefinitionEntity.setField("menuName", view.getName());
-                viewDefinitionEntity.setField("viewName", view.getName());
-                viewDefinitionEntity.setField("pluginIdentifier", view.getPluginIdentifier());
+                viewDefinitionEntity.setField("menuName", view.getValue());
+                viewDefinitionEntity.setField("viewName", view.getValue());
+                viewDefinitionEntity.setField("pluginIdentifier", view.getKey());
                 viewDefinitionDD.save(viewDefinitionEntity);
             }
         }

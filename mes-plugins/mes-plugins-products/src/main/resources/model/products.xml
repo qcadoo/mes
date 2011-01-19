@@ -40,9 +40,9 @@
 		</enum>
 		<string name="ean" />
 		<dictionary name="category" dictionary="categories" />
-		<string name="unit">
+		<dictionary name="unit" dictionary="units" >
 			<validatesPresence />
-		</string>
+		</dictionary>
 		<string name="batch">
 			<validatesLength max="255" />
 		</string>

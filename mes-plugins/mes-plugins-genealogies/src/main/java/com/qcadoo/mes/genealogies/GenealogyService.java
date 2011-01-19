@@ -113,7 +113,7 @@ public final class GenealogyService {
         ComponentDefinition formComponentDefinition = new ComponentDefinition();
         formComponentDefinition.setName("productIn" + productInComponent.getId() + "Form");
         formComponentDefinition.setReference("productIn" + productInComponent.getId() + "Form");
-        formComponentDefinition.setSourceFieldPath("#{form}.genealogyProductInComponents");
+        formComponentDefinition.setSourceFieldPath("#{form}.productInComponents");
         formComponentDefinition.setParent(layout);
         formComponentDefinition.setTranslationService(translationService);
         formComponentDefinition.setViewDefinition(viewDefinition);

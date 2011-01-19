@@ -47,6 +47,7 @@
 			<option type="header" value="false" />
 		</component>
 		<postInitializeHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>
+		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>
 		<postConstructHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addProductInToForm"/>
 	</view>
 </qcd:views>

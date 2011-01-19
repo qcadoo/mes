@@ -182,10 +182,11 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
     private void parseView(final Node viewNode, final String pluginIdentifier) {
         String name = getStringAttribute(viewNode, "name");
 
+        boolean menuAccessible = getBooleanAttribute(viewNode, "menuAccessible", false);
         boolean dynamic = getBooleanAttribute(viewNode, "dynamic", false);
 
         if (dynamic) {
-            viewDefinitionService.saveDynamic(pluginIdentifier, name, viewNode);
+            viewDefinitionService.saveDynamic(pluginIdentifier, name, menuAccessible, viewNode);
         } else {
             viewDefinitionService.save(parseViewDefinition(viewNode, pluginIdentifier, name));
         }
