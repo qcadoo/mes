@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -35,6 +36,9 @@ public class ProductsTestEntity1 {
     private String category;
 
     private String unit;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProductsTestEntity3 testEntity3;
 
     @OneToMany(mappedBy = "testEntity1", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
@@ -102,6 +106,14 @@ public class ProductsTestEntity1 {
 
     public void setTestEntity2(List<ProductsTestEntity2> testEntity2) {
         this.testEntity2 = testEntity2;
+    }
+
+    public ProductsTestEntity3 getTestEntity3() {
+        return testEntity3;
+    }
+
+    public void setTestEntity3(ProductsTestEntity3 testEntity3) {
+        this.testEntity3 = testEntity3;
     }
 
 }

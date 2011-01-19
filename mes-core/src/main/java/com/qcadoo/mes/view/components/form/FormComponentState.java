@@ -120,6 +120,7 @@ public final class FormComponentState extends AbstractContainerState {
 
         copyEntityToFields(entity, entity.isValid());
         setEntityId(entity.getId());
+        setFieldsRequiredAndDisables();
 
     }
 
@@ -203,6 +204,20 @@ public final class FormComponentState extends AbstractContainerState {
         for (String field : getDataDefinition().getFields().keySet()) {
             if (context.containsKey(field)) {
                 entity.setField(field, convertFieldFromString(context.get(field), field));
+            }
+        }
+    }
+
+    private void setFieldsRequiredAndDisables() {
+        for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
+            FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
+
+            if (fieldDefinition.isRequired() || (entityId == null && fieldDefinition.isRequiredOnCreate())) {
+                field.getValue().setRequired(true);
+            }
+
+            if (fieldDefinition.isReadOnly() || (entityId != null && fieldDefinition.isReadOnlyOnUpdate())) {
+                field.getValue().setEnabled(false);
             }
         }
     }
@@ -387,20 +402,6 @@ public final class FormComponentState extends AbstractContainerState {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
                 field.getValue().setFieldValue(null);
                 field.getValue().requestComponentUpdateState();
-            }
-        }
-
-        private void setFieldsRequiredAndDisables() {
-            for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {
-                FieldDefinition fieldDefinition = getDataDefinition().getField(field.getKey());
-
-                if (fieldDefinition.isRequired() || (entityId == null && fieldDefinition.isRequiredOnCreate())) {
-                    field.getValue().setRequired(true);
-                }
-
-                if (fieldDefinition.isReadOnly() || (entityId != null && fieldDefinition.isReadOnlyOnUpdate())) {
-                    field.getValue().setEnabled(false);
-                }
             }
         }
 
