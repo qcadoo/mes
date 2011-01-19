@@ -18,6 +18,8 @@ public final class ComponentDefinition {
 
     private boolean hasDescription;
 
+    private boolean hasLabel;
+
     private TranslationService translationService;
 
     private ViewDefinition viewDefinition;
@@ -102,6 +104,14 @@ public final class ComponentDefinition {
 
     public void setViewDefinition(final ViewDefinition viewDefinition) {
         this.viewDefinition = viewDefinition;
+    }
+
+    public boolean isHasLabel() {
+        return hasLabel;
+    }
+
+    public void setHasLabel(boolean hasLabel) {
+        this.hasLabel = hasLabel;
     }
 
 }

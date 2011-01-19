@@ -37,7 +37,6 @@
 /** labels **/
 
 .component_form_element .labelbox {
-	//width: 150px;
 	width: 85px;
 	height: 100%;
 	display: inline-block;
@@ -47,6 +46,9 @@
 	position: absolute;
 	left: 10px;
 	top:0;
+}
+.component_form_element .labelbox.noLabel {
+	width: 30px;
 }
 
 .component_form_element .label_h {
@@ -59,7 +61,6 @@
 .component_form_element .label {
 	display: inline-block;
 	vertical-align: middle;
-	//margin-right: 10px;
 }
 
 .required .component_form_element .label {
@@ -90,10 +91,12 @@
 	vertical-align: middle;
 	display: inline-block;
 	position: absolute;
-	//left: 170px;
 	left: 100px;
 	right: 10px;
 	height: 100%;
+}
+.component_container_form_w.noLabel {
+	left: 25px;
 }
 .component_container_form_inner_h {
 	height: 100%;
