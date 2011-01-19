@@ -27,6 +27,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicListInnerForm").children();
 		awesomeDynamicListContent = $("#"+_this.elementSearchName+" > .awesomeDynamicListContent");
 		formObjects = new Array();
+		formObjectsMap = new Object();
 		updateButtons();
 	}
 	
@@ -48,19 +49,26 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	this.setComponentValue = function(value) {
 		var forms = value.forms;
-		formObjects = new Array();
-		awesomeDynamicListContent.empty();
-		this.components = new Object();
-		formObjectsIndex = 1;
-		for (var i in forms) {
-			var formValue = forms[i];
-			var formObject = getFormCopy(formObjectsIndex);
-			formObject.setValue(formValue);
-			formObjects[formObjectsIndex] = formObject;
-			this.components[formObject.elementName] = formObject;
-			formObjectsIndex++;
+		if (forms) {
+			formObjects = new Array();
+			awesomeDynamicListContent.empty();
+			this.components = new Object();
+			formObjectsIndex = 1;
+			for (var i in forms) {
+				var formValue = forms[i];
+				var formObject = getFormCopy(formObjectsIndex);
+				formObject.setValue(formValue);
+				formObjects[formObjectsIndex] = formObject;
+				this.components[formObject.elementName] = formObject;
+				formObjectsIndex++;
+			}
+			updateButtons();
+		} else {
+			var innerFormChanges = value.innerFormChanges;
+			for (var i in innerFormChanges) {
+				this.components[i].setValue(innerFormChanges[i]);
+			}
 		}
-		updateButtons();
 	}
 	
 	this.setComponentState = function(state) {
