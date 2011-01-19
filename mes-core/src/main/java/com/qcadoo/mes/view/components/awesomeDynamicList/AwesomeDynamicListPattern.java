@@ -62,6 +62,7 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     private void initializeComponent(ComponentPattern component) {
         component.initialize();
+        System.out.println("INITIALIZE COMPONENT: " + component);
         if (component instanceof ContainerPattern) {
             ContainerPattern container = (ContainerPattern) component;
             for (ComponentPattern kids : container.getChildren().values()) {
@@ -138,7 +139,6 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     @Override
     protected ComponentState getComponentStateInstance() {
         ComponentState listState = new AwesomeDynamicListState(belongsToFieldDefinition, innerFormPattern);
-
         return listState;
     }
 
