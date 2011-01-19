@@ -13,9 +13,11 @@ public class GenealogiesCurrentAttribute {
     @GeneratedValue
     private Long id;
 
-    private String name;
+    private String shift;
 
-    private String value;
+    private String post;
+
+    private String other;
 
     public Long getId() {
         return id;
@@ -25,20 +27,28 @@ public class GenealogiesCurrentAttribute {
         this.id = id;
     }
 
-    public String getValue() {
-        return value;
+    public String getShift() {
+        return shift;
     }
 
-    public void setValue(final String value) {
-        this.value = value;
+    public void setShift(String shift) {
+        this.shift = shift;
     }
 
-    public String getName() {
-        return name;
+    public String getPost() {
+        return post;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setPost(String post) {
+        this.post = post;
+    }
+
+    public String getOther() {
+        return other;
+    }
+
+    public void setOther(String other) {
+        this.other = other;
     }
 
 }

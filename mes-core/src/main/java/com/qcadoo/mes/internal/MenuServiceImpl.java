@@ -160,6 +160,9 @@ public final class MenuServiceImpl implements MenuService {
                     "menu.menu.administration.menu", locale), "menu", "menuCategories"));
         }
 
+        administrationCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
+                "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
+
         return menuDef;
     }
 
