@@ -34,6 +34,7 @@ public class AutocompleteGenealogyService {
     private SecurityService securityService;
 
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
+        fillUserAndDate(entity);
         // TODO masz why we get hibernate entities here?
         ProductsProduct product = ((GenealogiesGenealogyProductInComponent) entity.getField("productInComponent"))
                 .getProductInComponent().getProduct();
@@ -44,6 +45,7 @@ public class AutocompleteGenealogyService {
     }
 
     public void fillLastUsedBatchForGenealogy(final DataDefinition dataDefinition, final Entity entity) {
+        fillUserAndDate(entity);
         // TODO masz why we get hibernate entities here?
         ProductsProduct product = ((ProductsOrder) entity.getField("order")).getProduct();
         DataDefinition productInDef = dataDefinitionService.get("products", "product");
@@ -74,12 +76,8 @@ public class AutocompleteGenealogyService {
         }
     }
 
-    public void fillUserAndDate(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("date", new Date());
-        entity.setField("worker", securityService.getCurrentUserName());
-    }
-
     public void fillLastUsedShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
+        fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
         SearchResult searchResult = featureDef.find().withMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
@@ -90,6 +88,7 @@ public class AutocompleteGenealogyService {
     }
 
     public void fillLastPostShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
+        fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
         SearchResult searchResult = featureDef.find().withMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
@@ -100,6 +99,7 @@ public class AutocompleteGenealogyService {
     }
 
     public void fillLastUsedOtherFeature(final DataDefinition dataDefinition, final Entity entity) {
+        fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
         SearchResult searchResult = featureDef.find().withMaxResults(1).list();
         if (searchResult.getEntities().size() > 0) {
@@ -107,6 +107,11 @@ public class AutocompleteGenealogyService {
             currentAttribute.setField("otherUsedShift", entity.getField("value"));
             featureDef.save(currentAttribute);
         }
+    }
+
+    private void fillUserAndDate(final Entity entity) {
+        entity.setField("date", new Date());
+        entity.setField("worker", securityService.getCurrentUserName());
     }
 
     private void createGenealogy(final Entity order, final boolean lastUsedMode) {

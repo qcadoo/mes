@@ -46,7 +46,6 @@
 		<hasMany name="postFeatures" model="postFeature" joinField="genealogy" cascade="delete"/>
 		<hasMany name="productInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete"/>
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForGenealogy" />
-		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillUserAndDate" />
 	</model>
 	<model name="genealogyProductInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
@@ -67,7 +66,6 @@
 		<string name="worker" readonly="true" />
 		<belongsTo name="productInComponent" model="genealogyProductInComponent" lookupField="productInComponent" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForProduct" />
-		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillUserAndDate" />
 	</model>
 	<model name="shiftFeature">
 		<string name="value">
@@ -76,7 +74,6 @@
 		<date name="date" readonly="true" />
 		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
-		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillUserAndDate" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedShiftFeature" />
 	</model>
 	<model name="postFeature">
@@ -86,7 +83,6 @@
 		<date name="date" readonly="true" />
 		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
-		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillUserAndDate" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedPostFeature" />
 	</model>
 	<model name="otherFeature">
@@ -96,7 +92,6 @@
 		<date name="date" readonly="true" />
 		<string name="worker" readonly="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
-		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillUserAndDate" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedOtherFeature" />
 	</model>
 	<model name="currentAttribute">
