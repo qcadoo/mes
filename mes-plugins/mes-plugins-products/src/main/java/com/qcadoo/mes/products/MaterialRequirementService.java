@@ -289,8 +289,7 @@ public final class MaterialRequirementService {
         materialReqComponent.setField("order", order);
         materialReqComponent.setField("materialRequirement", saved);
 
-        DataDefinition workPlanComponentDef = dataDefinitionService.get("products", "materialRequirementComponent");
-        workPlanComponentDef.save(materialReqComponent);
+        dataDefinitionService.get("products", "materialRequirementComponent").save(materialReqComponent);
 
         return saved;
     }
