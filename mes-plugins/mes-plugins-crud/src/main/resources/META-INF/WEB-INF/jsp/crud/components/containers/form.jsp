@@ -34,16 +34,7 @@
 
 <tiles:useAttribute name="component" />
 
-<div id="${component['path']}_formComponents" class="form_components component_container_form">
-	
-	<c:forEach items="${component['children']}" var="component">
-		<tiles:insertTemplate template="../component.jsp">
-			<tiles:putAttribute name="component" value="${component.value}" />
-		</tiles:insertTemplate>
-	</c:forEach>
-	
-</div>
-	
+<span id="${component['path']}" class="component_label">TODO</span>	
 
 
 
