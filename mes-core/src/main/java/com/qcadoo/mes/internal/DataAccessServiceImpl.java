@@ -132,44 +132,48 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 System.out.println("FOUND HAS MANY TYPE: " + fieldEntry.getKey());
                 System.out.println(genericEntityToSave);
                 List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
-                List<Entity> savedEntities = new LinkedList<Entity>();
-                if (entities != null) {
-                    System.out.println("NOT NULL!");
-                    HasManyType hmt = (HasManyType) fieldEntry.getValue().getType();
-                    for (Entity innerEntity : entities) {
-                        System.out.println("HAS ENTITY: " + innerEntity);
-                        innerEntity.setField(hmt.getJoinFieldName(), savedEntity.getId());
-                        Entity savedInnerEntity = save((InternalDataDefinition) hmt.getDataDefinition(), innerEntity);
-                        savedEntities.add(savedInnerEntity);
-                        System.out.println("AFTER SAVE INNER ENTITY");
-                        if (!savedInnerEntity.isValid()) {
-                            // savedEntity.addGlobalError("lalalala");
-                        }
-                        System.out.println(savedInnerEntity.isValid());
-                    }
 
-                    List<Entity> dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
-                    System.out.println("dbEntities:");
-                    System.out.println(dbEntities);
-                    System.out.println(entities);
-                    for (Entity dbEntity : dbEntities) {
-                        boolean exists = false;
-                        for (Entity exisingEntity : savedEntities) {
-                            System.out.println("comparing - " + exisingEntity + " to " + dbEntity);
-                            if (dbEntity.getId() == exisingEntity.getId()) {
-                                exists = true;
-                                break;
-                            }
-                        }
-                        if (!exists) {
-                            System.out.println("NOT FOUND ENTITY: " + dbEntity);
-                            delete((InternalDataDefinition) hmt.getDataDefinition(), dbEntity.getId());
-                        }
-                    }
-
-                } else {
+                if (entities == null || entities instanceof EntityList) {
                     System.out.println("BUT LIST OF ENTITIES IS NULL");
+                    savedEntity.setField(fieldEntry.getKey(), entities);
+                    continue;
                 }
+
+                List<Entity> savedEntities = new LinkedList<Entity>();
+
+                System.out.println("NOT NULL!");
+                HasManyType hmt = (HasManyType) fieldEntry.getValue().getType();
+                for (Entity innerEntity : entities) {
+                    System.out.println("HAS ENTITY: " + innerEntity);
+                    innerEntity.setField(hmt.getJoinFieldName(), savedEntity.getId());
+                    Entity savedInnerEntity = save((InternalDataDefinition) hmt.getDataDefinition(), innerEntity);
+                    savedEntities.add(savedInnerEntity);
+                    System.out.println("AFTER SAVE INNER ENTITY");
+                    if (!savedInnerEntity.isValid()) {
+                        // savedEntity.addGlobalError("lalalala");
+                    }
+                    System.out.println(savedInnerEntity.isValid());
+                }
+
+                List<Entity> dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
+                System.out.println("dbEntities:");
+                System.out.println(dbEntities);
+                System.out.println(entities);
+                for (Entity dbEntity : dbEntities) {
+                    boolean exists = false;
+                    for (Entity exisingEntity : savedEntities) {
+                        System.out.println("comparing - " + exisingEntity + " to " + dbEntity);
+                        if (dbEntity.getId() == exisingEntity.getId()) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        System.out.println("NOT FOUND ENTITY: " + dbEntity);
+                        delete((InternalDataDefinition) hmt.getDataDefinition(), dbEntity.getId());
+                    }
+                }
+
                 savedEntity.setField(fieldEntry.getKey(), savedEntities);
             }
         }
