@@ -46,6 +46,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="2" width="3">
 						<component type="awesomeDynamicList" name="entitiesList" source="#{form}.testEntity2">
+							<option type="hasButtons" value="false"/>
 							<components>
 								<component type="gridLayout" name="gridLayout" columns="4" rows="1" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
