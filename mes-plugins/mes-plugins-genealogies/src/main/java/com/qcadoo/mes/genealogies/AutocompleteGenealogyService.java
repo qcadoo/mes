@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
@@ -14,13 +15,14 @@ import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 
 @Service
-public final class AutocompleteGenealogyService {
+public class AutocompleteGenealogyService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -50,6 +52,7 @@ public final class AutocompleteGenealogyService {
         productInDef.save(productEntity);
     }
 
+    @Transactional
     public void autocompleteGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() instanceof Long) {
@@ -68,6 +71,41 @@ public final class AutocompleteGenealogyService {
                 state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
                         MessageType.FAILURE);
             }
+        }
+    }
+
+    public void fillUserAndDate(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("date", new Date());
+        entity.setField("worker", securityService.getCurrentUserName());
+    }
+
+    public void fillLastUsedShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
+        DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
+        SearchResult searchResult = featureDef.find().withMaxResults(1).list();
+        if (searchResult.getEntities().size() > 0) {
+            Entity currentAttribute = searchResult.getEntities().get(0);
+            currentAttribute.setField("lastUsedShift", entity.getField("value"));
+            featureDef.save(currentAttribute);
+        }
+    }
+
+    public void fillLastPostShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
+        DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
+        SearchResult searchResult = featureDef.find().withMaxResults(1).list();
+        if (searchResult.getEntities().size() > 0) {
+            Entity currentAttribute = searchResult.getEntities().get(0);
+            currentAttribute.setField("postUsedShift", entity.getField("value"));
+            featureDef.save(currentAttribute);
+        }
+    }
+
+    public void fillLastUsedOtherFeature(final DataDefinition dataDefinition, final Entity entity) {
+        DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
+        SearchResult searchResult = featureDef.find().withMaxResults(1).list();
+        if (searchResult.getEntities().size() > 0) {
+            Entity currentAttribute = searchResult.getEntities().get(0);
+            currentAttribute.setField("otherUsedShift", entity.getField("value"));
+            featureDef.save(currentAttribute);
         }
     }
 
@@ -98,38 +136,45 @@ public final class AutocompleteGenealogyService {
         Entity savedGenealogy = genealogyDef.save(genealogy);
         completeAttributesForGenealogy(technology, savedGenealogy, lastUsedMode);
         completeBatchForComponents(technology, savedGenealogy, lastUsedMode);
-
-    }
-
-    public void fillUserAndDate(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("date", new Date());
-        entity.setField("worker", securityService.getCurrentUserName());
     }
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
-        // TODO MADY autocomplete parameters active/last used
-        if ((Boolean) technology.getField("shiftFeatureRequired")) {
-            Entity shift = new DefaultEntity("genealogies", "shiftFeature");
-            shift.setField("genealogy", genealogy);
-            shift.setField("value", "");
-            DataDefinition shiftInDef = dataDefinitionService.get("genealogies", "shiftFeature");
-            shiftInDef.save(shift);
-        }
-        if ((Boolean) technology.getField("otherFeatureRequired")) {
-            Entity other = new DefaultEntity("genealogies", "otherFeature");
-            other.setField("genealogy", genealogy);
-            other.setField("value", "");
-            DataDefinition otherInDef = dataDefinitionService.get("genealogies", "otherFeature");
-            otherInDef.save(other);
-        }
-        if ((Boolean) technology.getField("postFeatureRequired")) {
-            Entity post = new DefaultEntity("genealogies", "postFeature");
-            post.setField("genealogy", genealogy);
-            post.setField("value", "");
-            post.setField("date", new Date());
-            post.setField("worker", securityService.getCurrentUserName());
-            DataDefinition postInDef = dataDefinitionService.get("genealogies", "postFeature");
-            postInDef.save(post);
+        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
+        if (searchResult.getEntities().size() > 0) {
+            Entity currentAttribute = searchResult.getEntities().get(0);
+            if ((Boolean) technology.getField("shiftFeatureRequired")) {
+                Entity shift = new DefaultEntity("genealogies", "shiftFeature");
+                shift.setField("genealogy", genealogy);
+                if (lastUsedMode) {
+                    shift.setField("value", currentAttribute.getField("lastUsedShift"));
+                } else {
+                    shift.setField("value", currentAttribute.getField("shift"));
+                }
+                DataDefinition shiftInDef = dataDefinitionService.get("genealogies", "shiftFeature");
+                shiftInDef.save(shift);
+            }
+            if ((Boolean) technology.getField("otherFeatureRequired")) {
+                Entity other = new DefaultEntity("genealogies", "otherFeature");
+                other.setField("genealogy", genealogy);
+                if (lastUsedMode) {
+                    other.setField("value", currentAttribute.getField("lastUsedOther"));
+                } else {
+                    other.setField("value", currentAttribute.getField("other"));
+                }
+                DataDefinition otherInDef = dataDefinitionService.get("genealogies", "otherFeature");
+                otherInDef.save(other);
+            }
+            if ((Boolean) technology.getField("postFeatureRequired")) {
+                Entity post = new DefaultEntity("genealogies", "postFeature");
+                post.setField("genealogy", genealogy);
+                if (lastUsedMode) {
+                    post.setField("value", currentAttribute.getField("lastUsedPost"));
+                } else {
+                    post.setField("value", currentAttribute.getField("post"));
+                }
+                DataDefinition postInDef = dataDefinitionService.get("genealogies", "postFeature");
+                postInDef.save(post);
+            }
         }
     }
 
