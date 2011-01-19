@@ -22,6 +22,9 @@ public class ProductsTestEntity3 {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductsTestEntity2 testEntity2;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProductsProduct product;
+
     public Long getId() {
         return id;
     }
@@ -44,6 +47,14 @@ public class ProductsTestEntity3 {
 
     public void setTestEntity2(ProductsTestEntity2 testEntity2) {
         this.testEntity2 = testEntity2;
+    }
+
+    public ProductsProduct getProduct() {
+        return product;
+    }
+
+    public void setProduct(ProductsProduct product) {
+        this.product = product;
     }
 
 }

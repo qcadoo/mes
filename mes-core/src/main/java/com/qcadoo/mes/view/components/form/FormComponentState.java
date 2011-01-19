@@ -309,20 +309,6 @@ public final class FormComponentState extends AbstractContainerState {
                     addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
                 }
             }
-            // if (!entity.isValid()) {
-            // valid = false;
-            // requestRender();
-            // copyMessages(entity.getGlobalErrors());
-            // }
-            //
-            // copyEntityToFields(entity, entity.isValid());
-            //
-            // if (entity.isValid()) {
-            // setFieldValue(entity.getId());
-            // addMessage(translateMessage("saveMessage"), MessageType.SUCCESS);
-            // } else {
-            // addMessage(translateMessage("saveFailedMessage"), MessageType.FAILURE);
-            // }
 
             setFieldsRequiredAndDisables();
         }
