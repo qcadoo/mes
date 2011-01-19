@@ -98,20 +98,20 @@
 				<component type="borderLayout" name="productInComponentsBorderLayout" reference="productInComponentsBorderLayout">
 					<component type="gridLayout" name="mainGridLayout" columns="5" rows="2" fixedRowHeight="false" >
 						<layoutElement column="1" row="1">	
-							<!--<component type="label" name="productInLabel" />
-						--></layoutElement>
+							<component type="label" name="productInLabel" />
+						</layoutElement>
 						<layoutElement column="2" row="1">
-							<!--<component type="label" name="productInBatchLabel" />									
-						--></layoutElement>
+							<component type="label" name="productInBatchLabel" />									
+						</layoutElement>
 						<layoutElement column="3" row="1">
-							<!--<component type="label" name="productInQuantityLabel" />									
-						--></layoutElement>
+							<component type="label" name="productInQuantityLabel" />									
+						</layoutElement>
 						<layoutElement column="4" row="1">
-							<!--<component type="label" name="productInWorkerLabel" />									
-						--></layoutElement>
+							<component type="label" name="productInWorkerLabel" />									
+						</layoutElement>
 						<layoutElement column="5" row="1">				
-							<!--<component type="label" name="productInDateLabel" />					
-						--></layoutElement>
+							<component type="label" name="productInDateLabel" />					
+						</layoutElement>
 						<layoutElement column="1" row="2" width="5">
 							<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents">
 								<components>
