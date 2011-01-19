@@ -119,6 +119,7 @@ public final class FormComponentState extends AbstractContainerState {
         }
 
         copyEntityToFields(entity, entity.isValid());
+        setEntityId(entity.getId());
 
     }
 
@@ -381,7 +382,6 @@ public final class FormComponentState extends AbstractContainerState {
                 }
             }
         }
-
 
         private void clearFields() {
             for (Map.Entry<String, FieldComponentState> field : getFieldComponents().entrySet()) {

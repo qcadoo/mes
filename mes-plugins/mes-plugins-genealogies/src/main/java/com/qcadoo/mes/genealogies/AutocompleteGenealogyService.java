@@ -96,7 +96,7 @@ public final class AutocompleteGenealogyService {
         }
         DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
         Entity savedGenealogy = genealogyDef.save(genealogy);
-        completeAttributesForGenealogy(technology, savedGenealogy);
+        completeAttributesForGenealogy(technology, savedGenealogy, lastUsedMode);
         completeBatchForComponents(technology, savedGenealogy, lastUsedMode);
 
     }
@@ -106,7 +106,7 @@ public final class AutocompleteGenealogyService {
         entity.setField("worker", securityService.getCurrentUserName());
     }
 
-    private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy) {
+    private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
         // TODO MADY autocomplete parameters active/last used
         if ((Boolean) technology.getField("shiftFeatureRequired")) {
             Entity shift = new DefaultEntity("genealogies", "shiftFeature");
