@@ -393,6 +393,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonGroup.setName("actions");
         ribbonGroup.addItem(createFormSaveAction(parser));
         ribbonGroup.addItem(createFormSaveAndBackAction(parser));
+        ribbonGroup.addItem(createFormSaveAndNewAction(parser));
         ribbonGroup.addItem(createFormCopyAction(parser));
         ribbonGroup.addItem(createFormCancelAction(parser));
         ribbonGroup.addItem(createFormDeleteAction(parser));
@@ -469,6 +470,16 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonSaveBackAction.setEnabled(true);
         ribbonSaveBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
         return ribbonSaveBackAction;
+    }
+
+    private RibbonActionItem createFormSaveAndNewAction(final ViewDefinitionParser parser) {
+        RibbonActionItem ribbonSaveNewAction = new RibbonActionItem();
+        ribbonSaveNewAction.setAction(translateRibbonAction("#{form}.performSaveAndClear;", parser));
+        ribbonSaveNewAction.setIcon("saveIcon24.png");
+        ribbonSaveNewAction.setName("saveNew");
+        ribbonSaveNewAction.setEnabled(true);
+        ribbonSaveNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
+        return ribbonSaveNewAction;
     }
 
     private RibbonActionItem createFormSaveAction(final ViewDefinitionParser parser) {
