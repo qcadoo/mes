@@ -147,6 +147,14 @@ public final class ProxyEntity implements Entity {
     }
 
     @Override
+    public void setNotValid() {
+        if (entity == null) {
+            loadEntity();
+        }
+        entity.setNotValid();
+    }
+
+    @Override
     public boolean isFieldValid(final String fieldName) {
         if (entity == null) {
             loadEntity();

@@ -68,9 +68,20 @@
 									<layoutElement column="4" row="1">
 										<component type="awesomeDynamicList" name="entitiesInnerList" source="testEntity3">
 											<components>
-												<component type="gridLayout" name="gridLayout" columns="1" rows="1" fixedRowHeight="false">
+												<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="true">
 													<layoutElement column="1" row="1">
 														<component type="input" name="number" field="number" />
+													</layoutElement>
+													<layoutElement column="1" row="2">
+														<component type="lookup" name="product" field="product">
+															<option type="column" name="name" fields="name" link="true"
+																width="300" />
+															<option type="column" name="category" fields="category" />
+															<option type="searchable" value="name,category" />
+															<option type="orderable" value="name,category" />
+															<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+															<option type="fieldCode" value="number" />
+														</component>
 													</layoutElement>
 												</component>
 											</components>

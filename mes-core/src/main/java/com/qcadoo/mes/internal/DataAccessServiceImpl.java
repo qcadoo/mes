@@ -45,7 +45,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
@@ -78,11 +80,24 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataAccessServiceImpl.class);
 
-    @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    @Monitorable
     public Entity save(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
+        Entity resultEntity = performSave(dataDefinition, genericEntity, true);
+        try {
+            if (TransactionAspectSupport.currentTransactionStatus().isRollbackOnly()) {
+                resultEntity.setNotValid();
+            }
+        } catch (NoTransactionException e) {
+            // nothing - test purpose only
+        }
+        return resultEntity;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Monitorable
+    private Entity performSave(final InternalDataDefinition dataDefinition, final Entity genericEntity,
+            final boolean shouldRollback) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkNotNull(genericEntity, "Entity must be given");
 
@@ -126,8 +141,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         LOG.info(savedEntity + " has been saved");
         System.out.println("SAVED");
-
+        // boolean isAllInnerEntitiesValid = true;
         for (Entry<String, FieldDefinition> fieldEntry : dataDefinition.getFields().entrySet()) {
+
             if (fieldEntry.getValue().getType() instanceof HasManyType) {
                 System.out.println("FOUND HAS MANY TYPE: " + fieldEntry.getKey());
                 System.out.println(genericEntityToSave);
@@ -144,6 +160,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
                         System.out.println("AFTER SAVE INNER ENTITY");
                         if (!savedInnerEntity.isValid()) {
                             // savedEntity.addGlobalError("lalalala");
+                            //
+                            //
+                            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
                         }
                         System.out.println(savedInnerEntity.isValid());
                     }

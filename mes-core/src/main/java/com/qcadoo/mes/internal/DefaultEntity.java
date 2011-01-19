@@ -50,6 +50,8 @@ public final class DefaultEntity implements Entity {
 
     private final Map<String, ErrorMessage> errors = new HashMap<String, ErrorMessage>();
 
+    private boolean notValidFlag = false;
+
     public DefaultEntity(final String pluginIdentifier, final String name, final Long id, final Map<String, Object> fields) {
         this.pluginIdentifier = pluginIdentifier;
         this.name = name;
@@ -112,12 +114,17 @@ public final class DefaultEntity implements Entity {
 
     @Override
     public boolean isValid() {
-        return errors.isEmpty() && globalErrors.isEmpty();
+        return !notValidFlag && errors.isEmpty() && globalErrors.isEmpty();
     }
 
     @Override
     public boolean isFieldValid(final String fieldName) {
         return errors.get(fieldName) == null;
+    }
+
+    @Override
+    public void setNotValid() {
+        notValidFlag = true;
     }
 
     @Override

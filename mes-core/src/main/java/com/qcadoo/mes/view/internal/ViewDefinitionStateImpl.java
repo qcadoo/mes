@@ -75,13 +75,17 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     }
 
     private ComponentState getComponentByPath(final String path) {
+        System.out.println("-----getComponentByPath - " + path);
         ComponentState componentState = this;
         String[] pathParts = path.split("\\.");
         for (int i = 0; i < pathParts.length; i++) {
+            System.out.println(pathParts[i]);
             ContainerState container = (ContainerState) componentState;
+            System.out.println(container);
             componentState = container.getChild(pathParts[i]);
-
+            System.out.println(componentState);
             if (componentState == null) {
+                System.out.println("RETURN");
                 return null;
             }
         }
