@@ -213,41 +213,49 @@ public class AutocompleteGenealogyService {
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
         SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
+        Entity currentAttribute = null;
         if (searchResult.getEntities().size() > 0) {
-            Entity currentAttribute = searchResult.getEntities().get(0);
-            if ((Boolean) technology.getField("shiftFeatureRequired")) {
-                Entity shift = new DefaultEntity("genealogies", "shiftFeature");
-                shift.setField("genealogy", genealogy);
-                if (lastUsedMode) {
-                    shift.setField("value", currentAttribute.getField("lastUsedShift"));
-                } else {
-                    shift.setField("value", currentAttribute.getField("shift"));
-                }
-                DataDefinition shiftInDef = dataDefinitionService.get("genealogies", "shiftFeature");
-                shiftInDef.save(shift);
+            currentAttribute = searchResult.getEntities().get(0);
+        }
+
+        if ((Boolean) technology.getField("shiftFeatureRequired")) {
+            Entity shift = new DefaultEntity("genealogies", "shiftFeature");
+            shift.setField("genealogy", genealogy);
+            if (currentAttribute == null) {
+                shift.setField("value", null);
+            } else if (lastUsedMode) {
+                shift.setField("value", currentAttribute.getField("lastUsedShift"));
+            } else {
+                shift.setField("value", currentAttribute.getField("shift"));
             }
-            if ((Boolean) technology.getField("otherFeatureRequired")) {
-                Entity other = new DefaultEntity("genealogies", "otherFeature");
-                other.setField("genealogy", genealogy);
-                if (lastUsedMode) {
-                    other.setField("value", currentAttribute.getField("lastUsedOther"));
-                } else {
-                    other.setField("value", currentAttribute.getField("other"));
-                }
-                DataDefinition otherInDef = dataDefinitionService.get("genealogies", "otherFeature");
-                otherInDef.save(other);
+            DataDefinition shiftInDef = dataDefinitionService.get("genealogies", "shiftFeature");
+            shiftInDef.save(shift);
+        }
+        if ((Boolean) technology.getField("otherFeatureRequired")) {
+            Entity other = new DefaultEntity("genealogies", "otherFeature");
+            other.setField("genealogy", genealogy);
+            if (currentAttribute == null) {
+                other.setField("value", null);
+            } else if (lastUsedMode) {
+                other.setField("value", currentAttribute.getField("lastUsedOther"));
+            } else {
+                other.setField("value", currentAttribute.getField("other"));
             }
-            if ((Boolean) technology.getField("postFeatureRequired")) {
-                Entity post = new DefaultEntity("genealogies", "postFeature");
-                post.setField("genealogy", genealogy);
-                if (lastUsedMode) {
-                    post.setField("value", currentAttribute.getField("lastUsedPost"));
-                } else {
-                    post.setField("value", currentAttribute.getField("post"));
-                }
-                DataDefinition postInDef = dataDefinitionService.get("genealogies", "postFeature");
-                postInDef.save(post);
+            DataDefinition otherInDef = dataDefinitionService.get("genealogies", "otherFeature");
+            otherInDef.save(other);
+        }
+        if ((Boolean) technology.getField("postFeatureRequired")) {
+            Entity post = new DefaultEntity("genealogies", "postFeature");
+            post.setField("genealogy", genealogy);
+            if (currentAttribute == null) {
+                post.setField("value", null);
+            } else if (lastUsedMode) {
+                post.setField("value", currentAttribute.getField("lastUsedPost"));
+            } else {
+                post.setField("value", currentAttribute.getField("post"));
             }
+            DataDefinition postInDef = dataDefinitionService.get("genealogies", "postFeature");
+            postInDef.save(post);
         }
     }
 
