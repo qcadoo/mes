@@ -1,8 +1,10 @@
 package com.qcadoo.mes.view.components.awesomeDynamicList;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,13 +15,15 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.view.ComponentState;
+import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.internal.ViewDefinitionStateImpl;
 
-public class AwesomeDynamicListState extends FieldComponentState {
+public class AwesomeDynamicListState extends FieldComponentState implements ContainerState {
 
     public static final String JSON_FORM_VALUES = "forms";
 
@@ -42,21 +46,28 @@ public class AwesomeDynamicListState extends FieldComponentState {
     @Override
     protected void initializeContent(JSONObject json) throws JSONException {
 
+        System.out.println("-----BEGIN----initializeContent - " + getTranslationPath());
+
         if (json.has(JSON_FORM_VALUES)) {
+            System.out.println("HAS FORM VALUES");
             forms = new LinkedList<FormComponentState>();
             JSONArray formValues = json.getJSONArray(JSON_FORM_VALUES);
             for (int i = 0; i < formValues.length(); i++) {
-                JSONObject formValue = formValues.getJSONObject(i);
-
+                JSONObject value = formValues.getJSONObject(i);
+                String formName = value.getString("name");
+                JSONObject formValue = value.getJSONObject("value");
+                System.out.println("-----" + formValue);
                 ViewDefinitionState innerFormState = new ViewDefinitionStateImpl();
                 FormComponentState formState = (FormComponentState) innerFormPattern.createComponentState(innerFormState);
+                formState.setName(formName);
                 innerFormPattern.updateComponentStateListeners(innerFormState);
                 formState.initialize(formValue, getLocale());
                 forms.add(formState);
+
             }
         }
 
-        requestRender();
+        System.out.println("-----END----initializeContent - " + getTranslationPath());
     }
 
     @SuppressWarnings("unchecked")
@@ -111,6 +122,17 @@ public class AwesomeDynamicListState extends FieldComponentState {
         }
     }
 
+    // @Override
+    // public JSONObject render() throws JSONException {
+    // JSONObject json = super.render();
+    // JSONObject childerJson = new JSONObject();
+    // for (FormComponentState form : forms) {
+    // childerJson.put(form.getName(), form.render());
+    // }
+    // json.put(JSON_CHILDREN, childerJson);
+    // return json;
+    // }
+
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
@@ -156,5 +178,33 @@ public class AwesomeDynamicListState extends FieldComponentState {
                 forms = Collections.emptyList();
             }
         }
+    }
+
+    @Override
+    public Map<String, ComponentState> getChildren() {
+        Map<String, ComponentState> children = new HashMap<String, ComponentState>();
+        for (FormComponentState form : forms) {
+            children.put(form.getName(), form);
+        }
+        return children;
+    }
+
+    @Override
+    public ComponentState getChild(String name) {
+        System.out.println("------ADL - getChild");
+        System.out.println(forms);
+        for (FormComponentState form : forms) {
+            System.out.println(form.getName());
+            if (name.equals(form.getName())) {
+                System.out.println("FOUND");
+                return form;
+            }
+        }
+        System.out.println("NOT FOUND");
+        return null;
+    }
+
+    @Override
+    public void addChild(ComponentState state) {
     }
 }
