@@ -8,4 +8,4 @@
 
 <tiles:useAttribute name="component" />
 
-<span id="${component['path']}" class="component_label">TODO</span>
+<span id="${component['path']}" class="component_label">${component['jspOptions']['translations']['label']}</span>
