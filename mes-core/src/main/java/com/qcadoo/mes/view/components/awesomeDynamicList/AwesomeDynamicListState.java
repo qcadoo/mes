@@ -63,13 +63,17 @@ public class AwesomeDynamicListState extends FieldComponentState {
     @Override
     public void setFieldValue(final Object value) {
         // this.value = value != null ? value.toString() : null;
-        // requestRender();
-        System.out.println("---------setFieldValue");
+        requestRender();
+        System.out.println("-----BEGIN----setFieldValue - " + getTranslationPath());
         System.out.println(value);
         forms = new LinkedList<FormComponentState>();
         if (value != null) {
             List<Entity> entities = (List<Entity>) value;
             for (Entity entity : entities) {
+                System.out.println("LOOP");
+                System.out.println(entity);
+                System.out.println(entity.isValid());
+                System.out.println(entity.getErrors());
                 ViewDefinitionState innerFormState = new ViewDefinitionStateImpl();
                 FormComponentState formState = (FormComponentState) innerFormPattern.createComponentState(innerFormState);
                 innerFormPattern.updateComponentStateListeners(innerFormState);
@@ -78,12 +82,13 @@ public class AwesomeDynamicListState extends FieldComponentState {
                 } catch (JSONException e) {
                     throw new IllegalStateException(e);
                 }
-
-                formState.setEntityId(entity.getId());
-                formState.performEvent(innerFormState, "initialize");
+                formState.setEntity(entity);
+                // formState.setEntityId(entity.getId());
+                // formState.performEvent(innerFormState, "initialize");
                 forms.add(formState);
             }
         }
+        System.out.println("-----END----setFieldValue - " + getTranslationPath());
     }
 
     @Override

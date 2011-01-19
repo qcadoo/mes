@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 0.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+
+<qcd:views plugin="genealogies" xmlns:qcd="http://www.qcadoo.com/view">
+	<view name="orderGenealogies" model="genealogy" menuAccessible="true" dynamic="true">
+		<component type="window" name="window" reference="window">
+			<ribbon>
+				<group template="navigation"/>
+			</ribbon>
+			<component type="grid" name="genealogies" reference="grid">				
+				<option type="column" name="batch" fields="batch" />
+				<option type="column" name="quantity" fields="quantity" />
+				<option type="order" column="batch" direction="desc" />
+				<option type="searchable" value="batch" />
+				<option type="orderable" value="batch,quantity" />
+				<option type="height" value="100" />
+				<!--<listener event="select" bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>							
+				<listener event="initialize" bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>							
+			--></component>
+			<component type="form" name="genealogy" reference="form" field="#{grid}">
+				<component type="gridLayout" name="gridLayout" columns="2" rows="3" fixedRowHeight="false" reference="layout">
+					<layoutElement column="1" row="1">
+						<component type="input" name="batch" field="batch" />
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="input" name="quantity" field="quantity" />
+					</layoutElement>
+					<layoutElement column="1" row="2" width="2">
+					</layoutElement>
+					<layoutElement column="1" row="3" width="2">
+					</layoutElement>
+				</component>
+				<option type="expression" value="#batch" />
+				<option type="header" value="true" />
+			</component>
+			<option type="header" value="false" />
+		</component>
+		<postInitializeHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addBelongsToEntityToProductIn"/>
+		<postConstructHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="addProductInToForm"/>
+	</view>
+</qcd:views>

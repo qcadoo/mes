@@ -43,13 +43,7 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
         Preconditions.checkNotNull(columns, "columns nod definied");
         Preconditions.checkNotNull(rows, "rows nod definied");
 
-        cells = new GridLayoutCell[rows][];
-        for (int row = 0; row < cells.length; row++) {
-            cells[row] = new GridLayoutCell[columns];
-            for (int col = 0; col < cells[row].length; col++) {
-                cells[row][col] = new GridLayoutCell();
-            }
-        }
+        createCells(columns, rows);
 
         NodeList childNodes = componentNode.getChildNodes();
 
@@ -65,6 +59,16 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
             GridLayoutCell cell = createGridLayoutCell(child, parser);
 
             insertCell(cell, column, row);
+        }
+    }
+
+    public void createCells(final int columns, final int rows) {
+        cells = new GridLayoutCell[rows][];
+        for (int row = 0; row < cells.length; row++) {
+            cells[row] = new GridLayoutCell[columns];
+            for (int col = 0; col < cells[row].length; col++) {
+                cells[row][col] = new GridLayoutCell();
+            }
         }
 
         updateBorders();
@@ -147,6 +151,10 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
         }
 
         cells[row - 1][column - 1] = cell;
+    }
+
+    public GridLayoutCell[][] getCells() {
+        return cells;
     }
 
     private Integer getIntAttribute(final Node node, final String attribute, final ViewDefinitionParser parser) {

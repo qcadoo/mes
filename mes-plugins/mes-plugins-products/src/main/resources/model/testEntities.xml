@@ -29,5 +29,13 @@
 		</date>
 		<belongsTo name="testEntity1" model="testEntity1" lookupField="name" lazy="false" />
 		<belongsTo name="product" model="product" lookupField="name" lazy="false" />
+		<hasMany name="testEntity3" model="testEntity3" joinField="testEntity2" cascade="delete" copyable="true" />
+	</model>
+	<model name="testEntity3">
+		<string name="number">
+			<validatesPresence />
+			<validatesLength max="40" />
+		</string>
+		<belongsTo name="testEntity2" model="testEntity2" lookupField="name" lazy="false" />
 	</model>
 </qcd:models>

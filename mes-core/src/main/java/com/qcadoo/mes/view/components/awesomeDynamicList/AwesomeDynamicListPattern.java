@@ -46,23 +46,29 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     protected void initializeComponent() throws JSONException {
         getBelongsToFieldDefinition();
         System.out.println(" -- INITIALIZE LIST BEGIN");
-        innerFormPattern.initialize();
-        for (ComponentPattern formComponent : innerFormPattern.getChildren().values()) {
-            formComponent.initialize();
-            if (formComponent instanceof ContainerPattern) {
-                ContainerPattern formComponentConteiner = (ContainerPattern) formComponent;
-                for (ComponentPattern formComponentConteinerKid : formComponentConteiner.getChildren().values()) {
-                    formComponentConteinerKid.initialize();
-                }
+        initializeComponent(innerFormPattern);
+        // innerFormPattern.initialize();
+        // for (ComponentPattern formComponent : innerFormPattern.getChildren().values()) {
+        // formComponent.initialize();
+        // if (formComponent instanceof ContainerPattern) {
+        // ContainerPattern formComponentConteiner = (ContainerPattern) formComponent;
+        // for (ComponentPattern formComponentConteinerKid : formComponentConteiner.getChildren().values()) {
+        // formComponentConteinerKid.initialize();
+        // }
+        // }
+        // }
+        System.out.println(" -- INITIALIZE LIST END");
+    }
+
+    private void initializeComponent(ComponentPattern component) {
+        component.initialize();
+        System.out.println("INITIALIZE COMPONENT: " + component);
+        if (component instanceof ContainerPattern) {
+            ContainerPattern container = (ContainerPattern) component;
+            for (ComponentPattern kids : container.getChildren().values()) {
+                initializeComponent(kids);
             }
         }
-        // innerFormPattern.updateComponentStateListeners(viewDefinitionState);
-        System.out.println(" -- INITIALIZE LIST END");
-        // parseOptions();
-
-        // if (correspondingView != null && correspondingComponent == null) {
-        // throwIllegalStateException("Missing correspondingComponent for grid");
-        // }
     }
 
     private void getBelongsToFieldDefinition() {
@@ -133,7 +139,6 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     @Override
     protected ComponentState getComponentStateInstance() {
         ComponentState listState = new AwesomeDynamicListState(belongsToFieldDefinition, innerFormPattern);
-
         return listState;
     }
 
