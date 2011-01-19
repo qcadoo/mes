@@ -221,8 +221,8 @@ public class ProductReportService {
                             "operationProductOutComponents");
                     List<Entity> operationProductInComponents = entryComponent.getKey().getHasManyField(
                             "operationProductInComponents");
-                    addProductSeries(table, operationProductOutComponents, decimalFormat, operation);
-                    addProductSeries(table, operationProductInComponents, decimalFormat, operation);
+                    addProductSeries(table, operationProductOutComponents, decimalFormat, singleOperationComponent);
+                    addProductSeries(table, operationProductInComponents, decimalFormat, singleOperationComponent);
                 }
             }
             document.add(table);
@@ -277,13 +277,14 @@ public class ProductReportService {
         for (Entity operationProductComponent : operationProductComponents) {
             ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
             Object unit = product.getField("unit");
-            products.append(product.getField("number").toString()
-                    + " "
-                    + product.getField("name").toString()
-                    + " x "
-                    + df.format(Double.parseDouble(operationProductComponent.getField("quantity").toString())
-                            * Double.parseDouble(entity.getField("plannedQuantity").toString())) + " ["
-                    + (unit != null ? unit.toString() : "") + "] \n\n");
+
+            Double quantity = Double.parseDouble(operationProductComponent.getField("quantity").toString())
+                    * Double.parseDouble(entity.getField("plannedQuantity").toString());
+
+            // operationProductComponent.getField("quantity")
+
+            products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
+                    + df.format(quantity) + " [" + (unit != null ? unit.toString() : "") + "] \n\n");
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
