@@ -97,7 +97,8 @@
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillUserAndDate" />
 	</model>
 	<model name="currentAttribute">
-		<string name="name"></string>
-		<string name="value"></string>
+		<dictionary name="shift" dictionary="shifts" />
+		<dictionary name="post" dictionary="posts" />
+		<string name="other"/>
 	</model>
 </qcd:models>
