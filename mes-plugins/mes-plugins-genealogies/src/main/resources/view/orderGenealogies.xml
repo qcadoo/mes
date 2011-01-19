@@ -17,6 +17,7 @@
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
+				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="grid" name="genealogies" reference="grid">				
 				<option type="column" name="batch" fields="batch" />
