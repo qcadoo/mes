@@ -117,23 +117,23 @@
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="5" rows="1" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
-											<component type="input" name="productInComponent" field="productInComponent" />									
+											<component type="input" name="productInComponent" field="productInComponent" hasLabel="false" />								
 										</layoutElement>
 										<layoutElement column="2" row="1" width="4">
 											<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
 												<components>
 													<component type="gridLayout" name="gridLayout" columns="4" rows="1" fixedRowHeight="false" >
 														<layoutElement column="1" row="1">
-															<component type="input" name="batch" field="batch" />
+															<component type="input" name="batch" field="batch" hasLabel="false" />
 														</layoutElement>
 														<layoutElement column="2" row="1">
-															<component type="input" name="quantity" field="quantity" />
+															<component type="input" name="quantity" field="quantity" hasLabel="false" />
 														</layoutElement>
 														<layoutElement column="3" row="1">
-															<component type="input" name="worker" field="worker" />
+															<component type="input" name="worker" field="worker" hasLabel="false" />
 														</layoutElement>
 														<layoutElement column="4" row="1">
-															<component type="input" name="date" field="date" />
+															<component type="input" name="date" field="date" hasLabel="false" />
 														</layoutElement>
 													</component>
 												</components>

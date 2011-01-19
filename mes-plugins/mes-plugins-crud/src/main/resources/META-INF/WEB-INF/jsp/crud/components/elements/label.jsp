@@ -8,17 +8,4 @@
 
 <tiles:useAttribute name="component" />
 
-<tiles:insertTemplate template="formComponent.jsp">
-	<tiles:putAttribute name="component" value="${component}" />
-	<tiles:putAttribute name="componentType" value="input" />
-	<tiles:putAttribute name="componentBody">
-		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
-			<c:set var="displayHiddenIfTextRepresentationOnDisabled" value="display: none" />
-		</c:if>
-		<input type="text" id="${component['path']}_input" style="${displayHiddenIfTextRepresentationOnDisabled}" tabindex="${component['indexOrder']}" />
-		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
-			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
-			<span id="${componentFullName}_textHeight" style="display: inline-block; height: 100%; vertical-align: middle;">&nbsp;</span>
-		</c:if>
-	</tiles:putAttribute>
-</tiles:insertTemplate>
+<span id="${component['path']}" class="component_label">TODO</span>

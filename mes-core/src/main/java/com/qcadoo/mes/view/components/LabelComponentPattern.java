@@ -5,11 +5,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.qcadoo.mes.view.ComponentDefinition;
+import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 
 @ViewComponent("label")
-public abstract class LabelComponentPattern extends AbstractComponentPattern {
+public class LabelComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.Label";
 
@@ -31,6 +32,11 @@ public abstract class LabelComponentPattern extends AbstractComponentPattern {
     }
 
     @Override
+    protected ComponentState getComponentStateInstance() {
+        return new EmptyComponentState();
+    }
+
+    @Override
     public String getJspFilePath() {
         return JSP_PATH;
     }
@@ -44,4 +50,5 @@ public abstract class LabelComponentPattern extends AbstractComponentPattern {
     public String getJsObjectName() {
         return JS_OBJECT;
     }
+
 }
