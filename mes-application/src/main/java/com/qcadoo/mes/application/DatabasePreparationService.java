@@ -205,6 +205,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
 
     private void addDictionaries() {
         addDictionary("categories");
+        addDictionary("shifts");
+        addDictionary("posts");
     }
 
     private void addDictionary(final String name) {
