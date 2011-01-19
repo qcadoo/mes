@@ -19,6 +19,12 @@ public class GenealogiesCurrentAttribute {
 
     private String other;
 
+    private String lastUsedShift;
+
+    private String lastUsedPost;
+
+    private String lastUsedOther;
+
     public Long getId() {
         return id;
     }
@@ -31,7 +37,7 @@ public class GenealogiesCurrentAttribute {
         return shift;
     }
 
-    public void setShift(String shift) {
+    public void setShift(final String shift) {
         this.shift = shift;
     }
 
@@ -39,7 +45,7 @@ public class GenealogiesCurrentAttribute {
         return post;
     }
 
-    public void setPost(String post) {
+    public void setPost(final String post) {
         this.post = post;
     }
 
@@ -47,8 +53,32 @@ public class GenealogiesCurrentAttribute {
         return other;
     }
 
-    public void setOther(String other) {
+    public void setOther(final String other) {
         this.other = other;
+    }
+
+    public String getLastUsedShift() {
+        return lastUsedShift;
+    }
+
+    public void setLastUsedShift(final String lastUsedShift) {
+        this.lastUsedShift = lastUsedShift;
+    }
+
+    public String getLastUsedPost() {
+        return lastUsedPost;
+    }
+
+    public void setLastUsedPost(final String lastUsedPost) {
+        this.lastUsedPost = lastUsedPost;
+    }
+
+    public String getLastUsedOther() {
+        return lastUsedOther;
+    }
+
+    public void setLastUsedOther(final String lastUsedOther) {
+        this.lastUsedOther = lastUsedOther;
     }
 
 }

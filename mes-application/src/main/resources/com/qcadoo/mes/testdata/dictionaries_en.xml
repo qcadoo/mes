@@ -30,4 +30,11 @@
 	<row NAME="categories" ITEM="category 2" />
 	<row NAME="categories" ITEM="category 3" />
 	<row NAME="categories" ITEM="category 4" />
+	<row NAME="shifts" ITEM="shift 1" />
+	<row NAME="shifts" ITEM="shift 2" />
+	<row NAME="posts" ITEM="post 1" />
+	<row NAME="posts" ITEM="post 2" />
+	<row NAME="units" ITEM="kg" />
+	<row NAME="units" ITEM="units" />
+	<row NAME="units" ITEM="m2" />
 </categories>

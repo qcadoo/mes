@@ -29,6 +29,7 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.w3c.dom.Node;
 
+import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 
 /**
@@ -78,7 +79,7 @@ public interface ViewDefinitionService {
      * 
      * @return the data definitions
      */
-    List<ViewDefinition> listForMenu();
+    List<Pair<String, String>> listForMenu();
 
     /**
      * Save the data definition.
@@ -94,7 +95,7 @@ public interface ViewDefinitionService {
      * @param viewDefinition
      *            view definition
      */
-    void saveDynamic(String pluginIdentifier, String viewName, Node viewNode);
+    void saveDynamic(String pluginIdentifier, String viewName, boolean isMenuAccessible, Node viewNode);
 
     /**
      * Delete the data definition.

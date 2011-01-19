@@ -26,7 +26,6 @@ package com.qcadoo.mes.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +36,7 @@ import org.w3c.dom.Node;
 
 import com.qcadoo.mes.api.ViewDefinitionService;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
+import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
@@ -45,6 +45,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
 
     @Autowired
     private ViewDefinitionParser viewDefinitionParser;
+
+    private final List<Pair<String, String>> menuViews = new ArrayList<Pair<String, String>>();
 
     private final Map<String, ViewDefinition> viewDefinitions = new HashMap<String, ViewDefinition>();
 
@@ -74,14 +76,8 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Override
     @Transactional(readOnly = true)
     @Monitorable
-    public List<ViewDefinition> listForMenu() {
-        List<ViewDefinition> menuableViews = new LinkedList<ViewDefinition>();
-        for (ViewDefinition viewDefinition : viewDefinitions.values()) {
-            if (viewDefinition.isMenuAccessible()) {
-                menuableViews.add(viewDefinition);
-            }
-        }
-        return menuableViews;
+    public List<Pair<String, String>> listForMenu() {
+        return menuViews;
     }
 
     @Override
@@ -96,12 +92,19 @@ public final class ViewDefinitionServiceImpl implements ViewDefinitionService {
     @Monitorable
     public void save(final ViewDefinition viewDefinition) {
         viewDefinitions.put(viewDefinition.getPluginIdentifier() + "." + viewDefinition.getName(), viewDefinition);
+        if (viewDefinition.isMenuAccessible()) {
+            menuViews.add(new Pair<String, String>(viewDefinition.getPluginIdentifier(), viewDefinition.getName()));
+        }
     }
 
     @Override
     @Monitorable
-    public void saveDynamic(final String pluginIdentifier, final String viewName, final Node viewNode) {
+    public void saveDynamic(final String pluginIdentifier, final String viewName, final boolean isMenuAccessible,
+            final Node viewNode) {
         dynamicViewDefinitions.put(pluginIdentifier + "." + viewName, viewNode);
+        if (isMenuAccessible) {
+            menuViews.add(new Pair<String, String>(pluginIdentifier, viewName));
+        }
     }
 
     @Override
