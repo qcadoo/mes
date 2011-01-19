@@ -31,10 +31,8 @@ import static com.google.common.base.Preconditions.checkState;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,9 +101,9 @@ public final class DataAccessServiceImpl implements DataAccessService {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkNotNull(genericEntity, "Entity must be given");
 
-        if (alreadySavedEntities.contains(genericEntity)) {
-            return genericEntity;
-        }
+        // if (alreadySavedEntities.contains(genericEntity)) {
+        // return genericEntity;
+        // }
 
         Entity genericEntityToSave = genericEntity.copy();
 
@@ -142,50 +140,49 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         LOG.info(savedEntity + " has been saved");
 
-        for (Entry<String, FieldDefinition> fieldEntry : dataDefinition.getFields().entrySet()) {
+        // for (Entry<String, FieldDefinition> fieldEntry : dataDefinition.getFields().entrySet()) {
+        // if (fieldEntry.getValue().getType() instanceof HasManyType) {
+        // List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
+        //
+        // if (entities == null || entities instanceof EntityList) {
+        // savedEntity.setField(fieldEntry.getKey(), entities);
+        // continue;
+        // }
+        //
+        // List<Entity> savedEntities = new LinkedList<Entity>();
+        //
+        // HasManyType hmt = (HasManyType) fieldEntry.getValue().getType();
+        //
+        // for (Entity innerEntity : entities) {
+        // innerEntity.setField(hmt.getJoinFieldName(), savedEntity.getId());
+        // Entity savedInnerEntity = performSave((InternalDataDefinition) hmt.getDataDefinition(), innerEntity,
+        // alreadySavedEntities);
+        // savedEntities.add(savedInnerEntity);
+        // if (!savedInnerEntity.isValid()) {
+        // TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        // }
+        // }
+        //
+        // List<Entity> dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
+        //
+        // for (Entity dbEntity : dbEntities) {
+        // boolean exists = false;
+        // for (Entity exisingEntity : savedEntities) {
+        // if (dbEntity.getId() == exisingEntity.getId()) {
+        // exists = true;
+        // break;
+        // }
+        // }
+        // if (!exists) {
+        // delete((InternalDataDefinition) hmt.getDataDefinition(), dbEntity.getId());
+        // }
+        // }
+        //
+        // savedEntity.setField(fieldEntry.getKey(), savedEntities);
+        // }
+        // }
 
-            if (fieldEntry.getValue().getType() instanceof HasManyType) {
-                List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
-
-                if (entities == null || entities instanceof EntityList) {
-                    savedEntity.setField(fieldEntry.getKey(), entities);
-                    continue;
-                }
-
-                List<Entity> savedEntities = new LinkedList<Entity>();
-
-                HasManyType hmt = (HasManyType) fieldEntry.getValue().getType();
-
-                for (Entity innerEntity : entities) {
-                    innerEntity.setField(hmt.getJoinFieldName(), savedEntity.getId());
-                    Entity savedInnerEntity = performSave((InternalDataDefinition) hmt.getDataDefinition(), innerEntity,
-                            alreadySavedEntities);
-                    savedEntities.add(savedInnerEntity);
-                    if (!savedInnerEntity.isValid()) {
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    }
-                }
-
-                List<Entity> dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
-
-                for (Entity dbEntity : dbEntities) {
-                    boolean exists = false;
-                    for (Entity exisingEntity : savedEntities) {
-                        if (dbEntity.getId() == exisingEntity.getId()) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    if (!exists) {
-                        delete((InternalDataDefinition) hmt.getDataDefinition(), dbEntity.getId());
-                    }
-                }
-
-                savedEntity.setField(fieldEntry.getKey(), savedEntities);
-            }
-        }
-
-        alreadySavedEntities.add(savedEntity);
+        // alreadySavedEntities.add(savedEntity);
 
         return savedEntity;
     }
