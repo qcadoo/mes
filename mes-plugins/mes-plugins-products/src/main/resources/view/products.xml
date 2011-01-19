@@ -73,7 +73,7 @@
 						<component type="select" name="category" field="category" />
 					</layoutElement>
 					<layoutElement column="2" row="3">
-						<component type="input" name="unit" field="unit" />
+						<component type="select" name="unit" field="unit" />
 					</layoutElement>
 					<layoutElement column="2" row="4">
 						<component type="input" name="batch" field="batch" />
