@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.view.ComponentPattern;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerState;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -24,10 +25,13 @@ public class AwesomeDynamicListState extends FieldComponentState implements Cont
 
     private final FormComponentPattern innerFormPattern;
 
+    private final ComponentPattern headerPattern;
+
     private List<FormComponentState> forms;
 
-    public AwesomeDynamicListState(final FormComponentPattern innerFormPattern) {
+    public AwesomeDynamicListState(final FormComponentPattern innerFormPattern, ComponentPattern headerPattern) {
         this.innerFormPattern = innerFormPattern;
+        this.headerPattern = headerPattern;
     }
 
     @Override

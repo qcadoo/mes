@@ -154,7 +154,6 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
-		QCD.info("form update size "+_width);
 		for (var i in this.components) {
 			this.components[i].updateSize(_width, _height);
 		}
