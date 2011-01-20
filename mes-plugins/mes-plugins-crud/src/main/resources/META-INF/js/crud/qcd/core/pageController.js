@@ -330,6 +330,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			pageComponents[i].updateSize(width, height);
 		}
 	}
+	this.updateSize = updateSize;
 	
 	constructor(this);
 }
