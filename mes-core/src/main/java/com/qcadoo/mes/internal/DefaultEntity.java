@@ -129,8 +129,7 @@ public final class DefaultEntity implements Entity {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 41).append(id).append(name).append(pluginIdentifier).append(fields).append(globalErrors)
-                .append(errors).toHashCode();
+        return new HashCodeBuilder(23, 41).append(id).append(name).append(pluginIdentifier).toHashCode();
     }
 
     @Override
@@ -146,7 +145,7 @@ public final class DefaultEntity implements Entity {
         }
         DefaultEntity other = (DefaultEntity) obj;
         return new EqualsBuilder().append(id, other.id).append(name, other.name).append(pluginIdentifier, other.pluginIdentifier)
-                .append(fields, other.fields).append(globalErrors, other.globalErrors).append(errors, this.errors).isEquals();
+                .isEquals();
     }
 
     @Override

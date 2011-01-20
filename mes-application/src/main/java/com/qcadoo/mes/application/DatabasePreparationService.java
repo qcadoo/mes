@@ -35,6 +35,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.beans.basic.BasicParameter;
 import com.qcadoo.mes.beans.dictionaries.DictionariesDictionary;
 import com.qcadoo.mes.beans.menu.MenuMenuCategory;
 import com.qcadoo.mes.beans.menu.MenuMenuViewDefinitionItem;
@@ -76,6 +77,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
             addGroups();
             addUsers();
             addDictionaries();
+            addParameters();
 
             if (addTestData) {
                 addTestData();
@@ -174,6 +176,14 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         group.setDescription(null);
         sessionFactory.getCurrentSession().save(group);
         return group;
+    }
+
+    private void addParameters() {
+        LOG.info("Adding parameters");
+        BasicParameter parameter = new BasicParameter();
+        parameter.setCheckDoneOrderForQuality(false);
+        parameter.setBatchForDoneOrder("01active");
+        sessionFactory.getCurrentSession().save(parameter);
     }
 
     private void addUsers() {
