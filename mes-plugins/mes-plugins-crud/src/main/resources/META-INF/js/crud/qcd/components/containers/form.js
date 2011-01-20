@@ -65,6 +65,8 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
+		QCD.info("setComponentValue");
+		QCD.info(value);
 		if(value.valid) {
 			if(hasHeader) {
 				if(value.headerEntityIdentifier) {

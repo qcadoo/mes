@@ -475,7 +475,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     private RibbonActionItem createFormSaveAndNewAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonSaveNewAction = new RibbonActionItem();
         ribbonSaveNewAction.setAction(translateRibbonAction("#{form}.performSaveAndClear;", parser));
-        ribbonSaveNewAction.setIcon("saveIcon24.png");
+        ribbonSaveNewAction.setIcon("saveNewIcon24.png");
         ribbonSaveNewAction.setName("saveNew");
         ribbonSaveNewAction.setEnabled(true);
         ribbonSaveNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);

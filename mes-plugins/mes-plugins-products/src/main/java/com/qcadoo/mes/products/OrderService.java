@@ -117,6 +117,20 @@ public final class OrderService {
         }
     }
 
+    public void setAndDisableState(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        FieldComponentState orderState = (FieldComponentState) state.getComponentByReference("state");
+
+        if (form.getEntityId() != null) {
+            return;
+        }
+
+        orderState.setEnabled(false);
+        orderState.setFieldValue("01pending");
+    }
+
+    // public void activateOrder
+
     public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         FieldComponentState number = (FieldComponentState) state.getComponentByReference("number");
