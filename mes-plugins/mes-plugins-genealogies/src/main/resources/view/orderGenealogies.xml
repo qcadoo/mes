@@ -129,7 +129,7 @@
 							<component type="label" name="productInDateLabel" />					
 						</layoutElement>
 						<layoutElement column="1" row="2" width="5">
-							<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents">
+							<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents" reference="productInComponentsList">
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="5" rows="1" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
@@ -184,9 +184,11 @@
 				</script>
 				
 				<listener event="newBatch" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newBatch"/>
-				
+					
 			</component>
 		</component>
+		
+		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="fillProductInComponents"/>
 	</view>
 	
 </qcd:views>
