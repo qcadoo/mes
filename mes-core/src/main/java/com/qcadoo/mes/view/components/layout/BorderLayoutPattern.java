@@ -1,11 +1,17 @@
 package com.qcadoo.mes.view.components.layout;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.json.JSONException;
 
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewComponent;
+import com.qcadoo.mes.view.components.EmptyContainerState;
 
 @ViewComponent("borderLayout")
 public class BorderLayoutPattern extends AbstractLayoutPattern {
@@ -32,8 +38,16 @@ public class BorderLayoutPattern extends AbstractLayoutPattern {
     }
 
     @Override
+    protected Map<String, Object> getJspOptions(final Locale locale) {
+        Map<String, Object> options = super.getJspOptions(locale);
+        List<String> codes = Arrays.asList(new String[] { getTranslationPath() + "." + label, label });
+        options.put("label", label != null ? getTranslationService().translate(codes, locale) : null);
+        return options;
+    }
+
+    @Override
     protected ComponentState getComponentStateInstance() {
-        return new BorderLayoutComponentState(label);
+        return new EmptyContainerState();
     }
 
     @Override

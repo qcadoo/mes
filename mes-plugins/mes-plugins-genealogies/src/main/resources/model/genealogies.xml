@@ -49,7 +49,7 @@
 	</model>
 	<model name="genealogyProductInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
-		<belongsTo name="productInComponent" plugin="products" model="operationProductInComponent" lookupField="operationComponent" />
+		<belongsTo name="productInComponent" plugin="products" model="operationProductInComponent" lookupField="operationComponent" readonly="true" readonlyOnCreate="true" />
 		<hasMany name="batch" model="productInBatch" joinField="productInComponent" cascade="delete" copyable="true" />
 	</model>
 	<model name="productInBatch">

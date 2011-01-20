@@ -8,8 +8,6 @@ QCD.components.containers.layout.BorderLayout = function(_element, _mainControll
 
 	function constructor(_this) {
 		_this.constructChildren(_this.getLayoutChildren());
-		var labelElement = $("#"+_this.elementSearchName+"_layoutComponents > .borderLayoutLabel");
-		labelElement.html("LABEL:");
 	}
 	
 	this.getLayoutChildren = function() {
