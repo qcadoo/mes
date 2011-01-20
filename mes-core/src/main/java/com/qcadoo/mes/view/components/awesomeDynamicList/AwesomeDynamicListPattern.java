@@ -17,6 +17,7 @@ import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewComponent;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
+import com.qcadoo.mes.view.components.layout.FlowLayoutPattern;
 import com.qcadoo.mes.view.patterns.AbstractComponentPattern;
 import com.qcadoo.mes.view.xml.ViewDefinitionParser;
 
@@ -28,6 +29,8 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     private static final String JSP_PATH = "elements/awesomeDynamicList.jsp";
 
     private final FormComponentPattern innerFormPattern;
+
+    private ComponentPattern headerFormPattern;
 
     private boolean hasButtons = true;
 
@@ -46,6 +49,9 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     @Override
     protected void initializeComponent() throws JSONException {
         initializeComponent(innerFormPattern);
+        if (headerFormPattern != null) {
+            initializeComponent(headerFormPattern);
+        }
         for (ComponentOption option : getOptions()) {
             if ("hasButtons".equals(option.getType())) {
                 hasButtons = Boolean.parseBoolean(option.getValue());
@@ -58,6 +64,9 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     @Override
     protected void registerComponentViews(final ViewDefinitionService viewDefinitionService) {
         innerFormPattern.registerViews(viewDefinitionService);
+        if (headerFormPattern != null) {
+            headerFormPattern.registerViews(viewDefinitionService);
+        }
     }
 
     private void initializeComponent(final ComponentPattern component) {
@@ -78,6 +87,16 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
             Node child = childNodes.item(i);
             if ("components".equals(child.getNodeName())) {
                 innerFormPattern.parse(child, parser);
+            } else if ("header".equals(child.getNodeName())) {
+                ComponentDefinition formComponentDefinition = new ComponentDefinition();
+                formComponentDefinition.setName("header");
+                formComponentDefinition.setFieldPath(null);
+                formComponentDefinition.setSourceFieldPath(null);
+                formComponentDefinition.setTranslationService(getTranslationService());
+                formComponentDefinition.setViewDefinition(getViewDefinition());
+                formComponentDefinition.setParent(this);
+                headerFormPattern = new FlowLayoutPattern(formComponentDefinition);
+                headerFormPattern.parse(child, parser);
             }
         }
     }
@@ -97,6 +116,9 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     protected Map<String, Object> getJspOptions(final Locale locale) {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("innerForm", innerFormPattern.prepareView(locale));
+        if (headerFormPattern != null) {
+            options.put("header", headerFormPattern.prepareView(locale));
+        }
         return options;
     }
 
@@ -117,7 +139,7 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     @Override
     protected ComponentState getComponentStateInstance() {
-        ComponentState listState = new AwesomeDynamicListState(innerFormPattern);
+        ComponentState listState = new AwesomeDynamicListState(innerFormPattern, headerFormPattern);
         return listState;
     }
 

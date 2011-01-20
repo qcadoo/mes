@@ -8,15 +8,21 @@
 
 <tiles:useAttribute name="component" />
 
-<div>
-	AWESOME!!!
-</div>
-
-<div class="awesomeDynamicListInnerForm" style="display: none;">
-	<tiles:insertTemplate template="../component.jsp">
-		<tiles:putAttribute name="component" value="${component.jspOptions.innerForm}" />
-	</tiles:insertTemplate>
-</div>
-
-<div class="awesomeDynamicListContent">
+<div class="awesomeDynamicList">
+	<c:if test="${component.jspOptions.header != null}">
+		<div class="awesomeDynamicListHeader">
+			<tiles:insertTemplate template="../component.jsp">
+				<tiles:putAttribute name="component" value="${component.jspOptions.header}" />
+			</tiles:insertTemplate>
+		</div>
+	</c:if>
+	
+	<div class="awesomeDynamicListInnerForm" style="display: none;">
+		<tiles:insertTemplate template="../component.jsp">
+			<tiles:putAttribute name="component" value="${component.jspOptions.innerForm}" />
+		</tiles:insertTemplate>
+	</div>
+	
+	<div class="awesomeDynamicListContent">
+	</div>
 </div>
