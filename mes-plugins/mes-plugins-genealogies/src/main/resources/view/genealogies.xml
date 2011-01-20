@@ -43,7 +43,7 @@
 						<component type="input" name="other" field="other" defaultEnabled="true"/>
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
+				<option type="header" value="true" />
 				<option type="expression" value="' '"/>
 			</component>
 		</component>

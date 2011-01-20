@@ -13,7 +13,7 @@
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 
 <qcd:views plugin="genealogies" xmlns:qcd="http://www.qcadoo.com/view">
-	<view name="orderGenealogies" plugin="products" model="order" menuAccessible="true">
+	<view name="orderGenealogies" plugin="products" model="order">
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation"/>
@@ -53,6 +53,7 @@
 							<component type="input" name="quantity" field="quantity" />
 						</layoutElement>
 					</component>
+					<option type="label" value="genealogyLabel" />
 				</component>
 				
 				<component type="borderLayout" name="featureBorderLayout" reference="featureBorderLayout">
@@ -109,33 +110,38 @@
 							</component>							
 						</layoutElement>
 					</component>
+					<option type="label" value="featuresLabel" />
 				</component>
 				
 				<component type="borderLayout" name="productInComponentsBorderLayout" reference="productInComponentsBorderLayout">
-					<component type="gridLayout" name="mainGridLayout" columns="5" rows="2" fixedRowHeight="false" >
-						<layoutElement column="1" row="1">	
+					<component type="gridLayout" name="mainGridLayout" columns="6" rows="2" fixedRowHeight="false" >
+						<layoutElement column="1" row="1" width="2">	
 							<component type="label" name="productInLabel" />
 						</layoutElement>
-						<layoutElement column="2" row="1">
+						<layoutElement column="3" row="1">
 							<component type="label" name="productInBatchLabel" />									
 						</layoutElement>
-						<layoutElement column="3" row="1">
+						<layoutElement column="4" row="1">
 							<component type="label" name="productInQuantityLabel" />									
 						</layoutElement>
-						<layoutElement column="4" row="1">
+						<layoutElement column="5" row="1">
 							<component type="label" name="productInWorkerLabel" />									
 						</layoutElement>
-						<layoutElement column="5" row="1">				
+						<layoutElement column="6" row="1">				
 							<component type="label" name="productInDateLabel" />					
 						</layoutElement>
-						<layoutElement column="1" row="2" width="5">
+						<layoutElement column="1" row="2" width="6">
 							<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents" reference="productInComponentsList">
 								<components>
-									<component type="gridLayout" name="gridLayout" columns="5" rows="1" fixedRowHeight="false" >
-										<layoutElement column="1" row="1">
-											<component type="input" name="productInComponent" field="productInComponent" hasLabel="false" />								
+									<component type="gridLayout" name="gridLayout" columns="6" rows="1" fixedRowHeight="false" >
+										<layoutElement column="1" row="1" width="2">
+											<component type="lookup" name="productInComponent" field="productInComponent" hasLabel="false">
+												<option type="expression" value="#operationComponent['operation'].getField('name') + ': ' + #quantity + ' x &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']"/>
+												<option type="fieldCode" value="product" />
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
 										</layoutElement>
-										<layoutElement column="2" row="1" width="4">
+										<layoutElement column="3" row="1" width="4">
 											<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
 												<components>
 													<component type="gridLayout" name="gridLayout" columns="4" rows="1" fixedRowHeight="false" >
@@ -161,6 +167,7 @@
 							</component>			
 						</layoutElement>
 					</component>
+					<option type="label" value="productInComponentsLabel" />
 				</component>
 				
 				<script>

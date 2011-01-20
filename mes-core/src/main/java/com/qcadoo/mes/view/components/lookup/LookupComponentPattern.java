@@ -39,6 +39,8 @@ public final class LookupComponentPattern extends FieldComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.Lookup";
 
+    private boolean textRepresentationOnDisabled;
+
     private String expression;
 
     private String fieldCode;
@@ -83,6 +85,8 @@ public final class LookupComponentPattern extends FieldComponentPattern {
                 expression = option.getValue();
             } else if ("fieldCode".equals(option.getType())) {
                 fieldCode = option.getValue();
+            } else if ("textRepresentationOnDisabled".equals(option.getType())) {
+                textRepresentationOnDisabled = Boolean.parseBoolean(option.getValue());
             }
         }
 
@@ -108,6 +112,8 @@ public final class LookupComponentPattern extends FieldComponentPattern {
             if ("expression".equals(option.getType())) {
                 continue;
             } else if ("fieldCode".equals(option.getType())) {
+                continue;
+            } else if ("textRepresentationOnDisabled".equals(option.getType())) {
                 continue;
             } else if ("orderable".equals(option.getType())) {
                 Map<String, String> newAttributes = new HashMap<String, String>();
@@ -174,6 +180,13 @@ public final class LookupComponentPattern extends FieldComponentPattern {
         json.put("translations", translations);
 
         return json;
+    }
+
+    @Override
+    protected Map<String, Object> getJspOptions(final Locale locale) {
+        Map<String, Object> options = super.getJspOptions(locale);
+        options.put("textRepresentationOnDisabled", textRepresentationOnDisabled);
+        return options;
     }
 
     @Override

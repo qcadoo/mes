@@ -90,6 +90,10 @@ QCD.components.elements.FormComponent = function(_element, _mainController) {
 	this.setComponentState = function(state) {
 		this.setComponentData(state);
 		setComponentRequired(state.required);
+		this.setComponentBaseValue(state);
+	}
+	
+	this.setComponentBaseValue = function(state) {
 		if (state.baseValue != undefined) {
 			baseValue = state.baseValue;
 		}

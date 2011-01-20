@@ -37,14 +37,20 @@
 	<tiles:putAttribute name="component" value="${component}" />
 	<tiles:putAttribute name="componentType" value="lookup" />
 	<tiles:putAttribute name="componentBody">
-		<div class=lookupValueWrapper>
+		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
+			<c:set var="displayHiddenIfTextRepresentationOnDisabled" value="display: none" />
+		</c:if>
+		<div class="lookupValueWrapper" style="${displayHiddenIfTextRepresentationOnDisabled}">
 			<div class="lookupInputWrapper">
 				<input type="text" id="${component['path']}_input" tabindex="${component['indexOrder']}"/>
 			</div>
-			<!--<div class="lookupValue" id="${component['path']}_valueDiv"></div>-->
 			<div class="lookupLoading" id="${component['path']}_loadingDiv"></div>
 			<div class="lookupButton" id="${component['path']}_openLookupButton"></div>
 			<div class="lookupDropdown" id="${component['path']}_lookupDropdown" style="display: none;"></div>
-		</div>
+		</div>	
+		<c:if test="${component['jspOptions']['textRepresentationOnDisabled']}">
+			<span id="${component['path']}_text" class="component_container_form_textRepresentation">&nbsp;</span>
+			<span id="${componentFullName}_textHeight" style="display: inline-block; height: 100%; vertical-align: middle;">&nbsp;</span>
+		</c:if>
 	</tiles:putAttribute>
 </tiles:insertTemplate>

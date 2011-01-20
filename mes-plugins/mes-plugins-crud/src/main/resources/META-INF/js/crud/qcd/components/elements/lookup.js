@@ -21,6 +21,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var elements = {
 		input: this.input,
+		text: $("#"+this.elementSearchName+"_text"),
 		loading: $("#"+this.elementSearchName+"_loadingDiv"),
 		label: $("#"+this.elementSearchName+"_labelDiv"),
 		openLookupButton: $("#"+this.elementSearchName+"_openLookupButton"),
@@ -173,6 +174,14 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		onDataStateChange();
 	}
 	
+	this.setComponentBaseValue = function(state) {
+		if (state.currentCode != undefined) {
+			baseValue = {
+				currentCode: state.currentCode
+			};
+		}
+	}
+	
 	this.performUpdateState = function() {
 		baseValue = {
 			currentCode: dataState.currentCode
@@ -221,6 +230,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 					dataState.currentCode = lookupDropdown.getSelected().code;
 				}
 				elements.input.val(stripHTML(dataState.selectedEntity.value));
+				elements.text.html(dataState.selectedEntity.value);
 			} else {
 				_this.addMessage({
 					title: "",
@@ -247,6 +257,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 			lookupDropdown.show();
 		} else {
 			elements.input.val(stripHTML(dataState.selectedEntity.value));
+			elements.text.html(dataState.selectedEntity.value);
 		}
 	}
 	
