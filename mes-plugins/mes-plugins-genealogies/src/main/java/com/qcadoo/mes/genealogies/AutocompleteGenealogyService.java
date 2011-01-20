@@ -90,7 +90,16 @@ public class AutocompleteGenealogyService {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                createGenealogy(order, Boolean.parseBoolean(args[0]));
+                boolean success = createGenealogy(order, Boolean.parseBoolean(args[0]));
+                if (success) {
+                    state.addMessage(
+                            translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
+                            MessageType.SUCCESS);
+                } else {
+                    state.addMessage(
+                            translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+                            MessageType.INFO);
+                }
             }
         } else {
             if (state instanceof FormComponentState) {
@@ -182,11 +191,11 @@ public class AutocompleteGenealogyService {
         entity.setField("worker", securityService.getCurrentUserName());
     }
 
-    private void createGenealogy(final Entity order, final boolean lastUsedMode) {
+    private boolean createGenealogy(final Entity order, final boolean lastUsedMode) {
         Entity mainProduct = (Entity) order.getField("product");
         Entity technology = (Entity) order.getField("technology");
         if (mainProduct == null || technology == null) {
-            return;
+            return false;
         }
         Object mainBatch = null;
         if (lastUsedMode) {
@@ -195,7 +204,7 @@ public class AutocompleteGenealogyService {
             mainBatch = mainProduct.getField("batch");
         }
         if (mainBatch == null) {
-            return;
+            return false;
         }
         Entity genealogy = new DefaultEntity("genealogies", "genealogy");
         genealogy.setField("order", order);
@@ -209,6 +218,7 @@ public class AutocompleteGenealogyService {
         Entity savedGenealogy = genealogyDef.save(genealogy);
         completeAttributesForGenealogy(technology, savedGenealogy, lastUsedMode);
         completeBatchForComponents(technology, savedGenealogy, lastUsedMode);
+        return true;
     }
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {

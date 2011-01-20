@@ -62,8 +62,8 @@
 			<validatesPrecision max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<date name="date" readonly="true" />
-		<string name="worker" readonly="true" />
+		<date name="date" readonly="true" readonlyOnCreate="true" />
+		<string name="worker" readonly="true" readonlyOnCreate="true" />
 		<belongsTo name="productInComponent" model="genealogyProductInComponent" lookupField="productInComponent" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForProduct" />
 	</model>
@@ -71,8 +71,8 @@
 		<string name="value">
 			<validatesLength max="255" />
 		</string>
-		<date name="date" readonly="true" />
-		<string name="worker" readonly="true" />
+		<date name="date" readonly="true" readonlyOnCreate="true" />
+		<string name="worker" readonly="true" readonlyOnCreate="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedShiftFeature" />
 	</model>
@@ -80,8 +80,8 @@
 		<string name="value">
 			<validatesLength max="255" />
 		</string>
-		<date name="date" readonly="true" />
-		<string name="worker" readonly="true" />
+		<date name="date" readonly="true" readonlyOnCreate="true" />
+		<string name="worker" readonly="true" readonlyOnCreate="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedPostFeature" />
 	</model>

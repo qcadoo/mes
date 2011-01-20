@@ -509,7 +509,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
             genericEntityToSave.addGlobalError(error.getMessage(), error.getVars());
         }
         for (Map.Entry<String, ErrorMessage> error : genericEntity.getErrors().entrySet()) {
-            System.out.println("VALIDATION ERROR: " + error.getKey() + " - " + error.getValue().getMessage());
             genericEntityToSave.addError(dataDefinition.getField(error.getKey()), error.getValue().getMessage(), error.getValue()
                     .getVars());
         }

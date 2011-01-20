@@ -45,7 +45,7 @@
 					<smallButton name="xlsProduct" icon="xlsIcon16.png"
 						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
 				</group>
-				<group name="genealogyAutocomplete">
+				<group name="autoGenealogy">
 					<smallButton name="activeComplete"
 						action="#{grid}.fireEvent(autocompleteGenealogy,false);" state="disabled" />
 					<smallButton name="lastUsedComplete"
@@ -64,8 +64,8 @@
 						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
 						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
 						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
-						var activeComplete = #{window}.getRibbonItem("genealogyAutocomplete.activeComplete");
-						var lastUsedComplete = #{window}.getRibbonItem("genealogyAutocomplete.lastUsedComplete");
+						var activeComplete = #{window}.getRibbonItem("autoGenealogy.activeComplete");
+						var lastUsedComplete = #{window}.getRibbonItem("autoGenealogy.lastUsedComplete");
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
@@ -148,6 +148,13 @@
 			<ribbon>
 				<group template="navigation"/>
 				<group template="formSaveCopyAndRemoveActions"/>
+				<group name="genealogy">
+					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" state="disabled" />
+					<smallButton name="activeComplete"
+						action="#{form}.fireEvent(autocompleteGenealogy,false);" state="disabled" />
+					<smallButton name="lastUsedComplete"
+						action="#{form}.fireEvent(autocompleteGenealogy,true);" state="disabled" />
+				</group>
 			</ribbon>
 			<component type="form" name="order" reference="form">
 				<script>
@@ -156,8 +163,12 @@
 						var saveBack = #{window}.getRibbonItem("actions.saveBack");
 						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var del = #{window}.getRibbonItem("actions.delete");
+						var genealogy = #{window}.getRibbonItem("genealogy.genealogy");
+						var genealogyActiveComplete = #{window}.getRibbonItem("genealogy.activeComplete");
+						var genealogyLastUsedComplete = #{window}.getRibbonItem("genealogy.lastUsedComplete");
+						
 						this.addOnChangeListener({
-							onSetValue: function(selectedRecord) {
+							onSetValue: function(value) {
 								var state = #{state}.getValue().content.value;
 								if (state && state == "03done") {
 									save.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
@@ -167,13 +178,20 @@
 								} else {
 									save.enable();
 									saveBack.enable();
-									if (!selectedRecord) {
-										cancel.disable();
-										del.disable();
-									} else {
+									
+									if (value && value.content && value.content.entityId) {
 										cancel.enable();
 										del.enable();
+									} else {
+										cancel.disable();
+										del.disable();
 									}
+								}
+								
+								if (value && value.content && value.content.entityId) {
+									genealogy.enable();
+									genealogyActiveComplete.enable();
+									genealogyLastUsedComplete.enable();
 								}
 							}
 						});
@@ -250,8 +268,10 @@
 							defaultEnabled="false" />
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
+				<option type="header" value="true" />
 				<option type="expression" value="#name + ' - ' + #number" />
+				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
+				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="autocompleteGenealogy" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="generateOrderNumber" />		
