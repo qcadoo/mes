@@ -121,15 +121,50 @@ public final class OrderService {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         FieldComponentState orderState = (FieldComponentState) state.getComponentByReference("state");
 
+        orderState.setEnabled(false);
+
         if (form.getEntityId() != null) {
             return;
         }
 
-        orderState.setEnabled(false);
         orderState.setFieldValue("01pending");
     }
 
-    // public void activateOrder
+    public void activateOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (state.getFieldValue() instanceof Long) {
+            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+
+            FieldComponentState orderState = (FieldComponentState) viewDefinitionState.getComponentByReference("state");
+
+            boolean newOrderState = Boolean.parseBoolean(args[0]);
+
+            if (newOrderState) {
+
+                if (orderState != null) {
+                    orderState.setFieldValue("02inProgress");
+                }
+                order.setField("state", "02inProgress");
+            } else {
+
+                if (orderState != null) {
+                    orderState.setFieldValue("03done");
+                }
+                order.setField("state", "03done");
+            }
+
+            DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
+            dataDefinition.save(order);
+
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
 
     public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");

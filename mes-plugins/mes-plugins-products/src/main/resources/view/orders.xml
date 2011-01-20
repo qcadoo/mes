@@ -51,6 +51,12 @@
 					<smallButton name="lastUsedComplete"
 						action="#{grid}.fireEvent(autocompleteGenealogy,true);" state="disabled" />
 				</group>
+				<group name="status">
+					<smallButton name="activateOrder"
+						action="#{grid}.fireEvent(activateOrder,true);" state="disabled" />
+					<smallButton name="finishOrder"
+						action="#{grid}.fireEvent(activateOrder,false);" state="disabled" />
+				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
 				<script>
@@ -66,6 +72,8 @@
 						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
 						var activeComplete = #{window}.getRibbonItem("autoGenealogy.activeComplete");
 						var lastUsedComplete = #{window}.getRibbonItem("autoGenealogy.lastUsedComplete");
+						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
+						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
 						var listener = {
 							onChange: function(selectedRecord) {
 								if (!selectedRecord) {
@@ -80,6 +88,8 @@
 									xlsProduct.disable();
 									activeComplete.disable();
 									lastUsedComplete.disable();
+									activateOrder.disable();
+									finishOrder.disable();
 								} else {
 									print.enable();
 									pdfMaterialReq.enable();
@@ -92,6 +102,17 @@
 									xlsProduct.enable();
 									activeComplete.enable();
 									lastUsedComplete.enable();
+									
+									if(selectedRecord.fields.state == '01pending') {
+										activateOrder.enable();
+										finishOrder.disable();
+									} else if(selectedRecord.fields.state == '02inProgress') {							
+										activateOrder.disable();
+										finishOrder.enable();
+									} else {
+										activateOrder.disable();
+										finishOrder.disable();									
+									}
 								}
 							}
 						}
@@ -138,6 +159,7 @@
 				<listener event="printMaterialReqForOrder" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialReqForOrder" />
 				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlanForOrder" />
 				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="autocompleteGenealogy" />
+				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -151,9 +173,9 @@
 				<group name="genealogy">
 					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" state="disabled" />
 					<smallButton name="activeComplete"
-						action="#{form}.fireEvent(autocompleteGenealogy,false);" state="disabled" />
+						action="#{form}.fireEvent(autocompleteGenealogy,false);" state="enabled" />
 					<smallButton name="lastUsedComplete"
-						action="#{form}.fireEvent(autocompleteGenealogy,true);" state="disabled" />
+						action="#{form}.fireEvent(autocompleteGenealogy,true);" state="enabled" />
 				</group>
 				<group name="status">
 					<smallButton name="activateOrder"
@@ -167,11 +189,14 @@
 					<![CDATA[
 						var save = #{window}.getRibbonItem("actions.save");
 						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
 						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var del = #{window}.getRibbonItem("actions.delete");
 						var genealogy = #{window}.getRibbonItem("genealogy.genealogy");
 						var genealogyActiveComplete = #{window}.getRibbonItem("genealogy.activeComplete");
 						var genealogyLastUsedComplete = #{window}.getRibbonItem("genealogy.lastUsedComplete");
+						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
+						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
 						
 						this.addOnChangeListener({
 							onSetValue: function(value) {
@@ -179,11 +204,21 @@
 								if (state && state == "03done") {
 									save.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
 									saveBack.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									saveNew.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
 									cancel.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
 									del.disable("#{translate(products.order.ribbon.message.stateIsDone)}");
+									activateOrder.disable();
+									finishOrder.disable();
+								} else if (state && state == "02inProgress") { 
+									activateOrder.disable();
+									finishOrder.enable();
+								} else if (state && state == "01pending" && value && value.content && value.content.entityId) {
+									activateOrder.enable();
+									finishOrder.disable();
 								} else {
 									save.enable();
 									saveBack.enable();
+									saveNew.enable();
 									
 									if (value && value.content && value.content.entityId) {
 										cancel.enable();
