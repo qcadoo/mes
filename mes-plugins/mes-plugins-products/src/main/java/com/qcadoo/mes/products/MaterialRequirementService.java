@@ -291,6 +291,8 @@ public final class MaterialRequirementService {
 
         dataDefinitionService.get("products", "materialRequirementComponent").save(materialReqComponent);
 
+        saved = data.get(saved.getId());
+
         return saved;
     }
 
