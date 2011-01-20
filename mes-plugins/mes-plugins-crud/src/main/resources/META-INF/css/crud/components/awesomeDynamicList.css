@@ -1,11 +1,39 @@
 
+.awesomeDynamicList {
+	//margin: 0px;
+	border: solid #A7A7A7 1px;
+	border-bottom: none;
+	//border-top: none;
+}
+.awesomeDynamicList .awesomeDynamicList {
+	margin: 10px;
+	//border-top: solid #A7A7A7 1px;
+	//border-left: solid #A7A7A7 1px;
+	//border-right: solid #A7A7A7 1px;
+}
+
+.awesomeDynamicListContent {
+	//border-top: solid #A7A7A7 1px;
+}
+
 .awesomeListLine {
 	text-align: left;
+	border-bottom: solid #A7A7A7 1px;
+}
+
+.awesomeDynamicListHeader {
+	border-bottom: solid #A7A7A7 1px;
+	border-right: solid #A7A7A7 1px;
+	//border-top: solid #A7A7A7 1px;
+	vertical-align: middle;
+	height: 20px;
+	background: #f0f0f0; 
 }
 
 .awesomeListLine .awesomeListFormContainer {
 	display: inline-block;
 	vertical-align: middle;
+	border-right: solid #A7A7A7 1px;
 }
 
 .awesomeListLine .awesomeListButtons {
@@ -13,6 +41,8 @@
 	//display: none;
 	vertical-align: middle;
 	text-align: left;
+	height: 27px;
+	padding-top: 12px;
 }
 
 .awesomeListLine .awesomeListButtons .awesomeListButton {
@@ -21,6 +51,7 @@
 	height: 16px;
 	vertical-align: middle;
 	background-position: 0px 16px;
+	margin-left: 5px;
 	filter:alpha(opacity=60); /* filtr dla IE*/
 	opacity: 0.6; /* filtr dla Opera*/
 	-moz-opacity: 0.6; /* filtr dla Mozilla Firefox */
@@ -39,7 +70,6 @@
 
 .awesomeListLine .awesomeListButtons .awesomeListButton.awesomeListPlusButton {
 	background-image: url('/img/core/icons/newIcon16_dis.png');
-	margin-left: 5px;
 }
 
 .awesomeListLine .awesomeListButtons .awesomeListButton.awesomeListMinusButton {

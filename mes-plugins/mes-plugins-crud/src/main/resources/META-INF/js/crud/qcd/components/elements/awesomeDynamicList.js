@@ -13,6 +13,9 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	var innerFormContainer;
 	var awesomeDynamicListContent;
 	
+	var awesomeDynamicListHeader;
+	var awesomeDynamicListHeaderObject;
+	
 	var formObjects;
 	var formObjectsIndex = 1;
 	
@@ -26,8 +29,14 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	var hasButtons = this.options.hasButtons;
 	
 	function constructor(_this) {
-		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicListInnerForm").children();
-		awesomeDynamicListContent = $("#"+_this.elementSearchName+" > .awesomeDynamicListContent");
+		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListInnerForm").children();
+		awesomeDynamicListContent = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListContent");
+		awesomeDynamicListHeader = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListHeader");
+		if (awesomeDynamicListHeader && awesomeDynamicListHeader.length > 0) {
+			awesomeDynamicListHeaderObject = QCDPageConstructor.getChildrenComponents(awesomeDynamicListHeader.children(), mainController)["header"];
+			awesomeDynamicListHeaderObject.setEnabled(true, true);
+		}
+		
 		formObjects = new Array();
 		formObjectsMap = new Object();
 		if (!hasButtons) {
@@ -77,6 +86,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	}
 	
 	this.setComponentState = function(state) {
+		this.setComponentValue(state);
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
@@ -92,6 +102,10 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		QCD.info("updateSize - "+_width);
 		for (var i in formObjects) {
 			formObjects[i].updateSize(_width-BUTTONS_WIDTH, _height);
+		}
+		if (awesomeDynamicListHeaderObject) {
+			awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH+1);
+			awesomeDynamicListHeaderObject.updateSize(_width-BUTTONS_WIDTH, _height);
 		}
 	}
 	

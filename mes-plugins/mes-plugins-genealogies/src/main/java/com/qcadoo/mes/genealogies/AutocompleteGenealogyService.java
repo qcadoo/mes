@@ -187,8 +187,12 @@ public class AutocompleteGenealogyService {
     }
 
     private void fillUserAndDate(final Entity entity) {
-        entity.setField("date", new Date());
-        entity.setField("worker", securityService.getCurrentUserName());
+        if (entity.getField("date") == null) {
+            entity.setField("date", new Date());
+        }
+        if (entity.getField("worker") == null) {
+            entity.setField("worker", securityService.getCurrentUserName());
+        }
     }
 
     private boolean createGenealogy(final Entity order, final boolean lastUsedMode) {

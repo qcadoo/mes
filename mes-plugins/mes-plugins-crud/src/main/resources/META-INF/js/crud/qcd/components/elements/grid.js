@@ -244,9 +244,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentState = function(state) {
-		if (state.selectedEntityId) {
-			currentState.selectedEntityId = state.selectedEntityId;
-		}
+		currentState.selectedEntityId = state.selectedEntityId;
+		
 		if (state.belongsToEntityId) {
 			currentState.belongsToEntityId = state.belongsToEntityId;
 		}
@@ -281,9 +280,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.setComponentValue = function(value) {
-		if (value.selectedEntityId) {
-			currentState.selectedEntityId = value.selectedEntityId;
-		}
+		currentState.selectedEntityId = value.selectedEntityId;
+
 		if (value.belongsToEntityId) {
 			currentState.belongsToEntityId = value.belongsToEntityId;
 		}

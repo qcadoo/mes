@@ -193,7 +193,6 @@ public final class OrderService {
             technology.setRequired(false);
             plannedQuantity.setRequired(false);
         } else {
-            technology.setEnabled(true);
             technology.setRequired(true);
             plannedQuantity.setRequired(true);
         }
@@ -201,6 +200,7 @@ public final class OrderService {
 
     public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
         FormComponentState order = (FormComponentState) state.getComponentByReference("form");
+        LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
 
         boolean disabled = false;
 
@@ -213,6 +213,7 @@ public final class OrderService {
         }
 
         order.setEnabledWithChildren(!disabled);
+        technology.setEnabled(!disabled);
     }
 
     public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {

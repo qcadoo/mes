@@ -3,7 +3,7 @@ QCD.components = QCD.components || {};
 QCD.components.containers = QCD.components.containers || {};
 QCD.components.containers.layout = QCD.components.containers.layout || {};
 
-QCD.components.containers.layout.BorderLayout = function(_element, _mainController) {
+QCD.components.containers.layout.FlowLayout = function(_element, _mainController) {
 	$.extend(this, new QCD.components.containers.layout.Layout(_element, _mainController));
 
 	function constructor(_this) {
@@ -15,8 +15,10 @@ QCD.components.containers.layout.BorderLayout = function(_element, _mainControll
 	}
 	
 	this.updateSize = function(_width, _height) {
+		QCD.info("FlowLayout update size - "+_width);
+		QCD.info(this.components);
 		for (var i in this.components) {
-			this.components[i].updateSize(_width-20, _height-20);
+			this.components[i].updateSize(_width, _height);
 		}
 	}
 	
