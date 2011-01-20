@@ -114,7 +114,7 @@ public class AutocompleteGenealogyService {
         }
     }
 
-    public void fillLastPostShiftFeature(final DataDefinition dataDefinition, final Entity entity) {
+    public void fillLastUsedPostFeature(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         DataDefinition featureDef = dataDefinitionService.get("genealogies", "currentAttribute");
         SearchResult searchResult = featureDef.find().withMaxResults(1).list();

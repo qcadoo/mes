@@ -143,9 +143,6 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     public ComponentState createComponentState(final ViewDefinitionState viewDefinitionState) {
         AbstractComponentState state = (AbstractComponentState) getComponentStateInstance();
         state.setDataDefinition(dataDefinition);
-        System.out.println(getName());
-        System.out.println(getPath());
-        System.out.println(name);
         state.setName(name);
         state.setEnabled(isDefaultEnabled());
         state.setVisible(isDefaultVisible());

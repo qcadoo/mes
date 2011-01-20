@@ -42,7 +42,9 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	var header = null;
 	
-	translations = this.options.translations;
+	var translations = this.options.translations;
+	
+	var hasHeader = this.options.header;
 	
 	if (this.options.referenceName) {
 		mainController.registerReferenceName(this.options.referenceName, this);
@@ -64,10 +66,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	
 	this.setComponentValue = function(value) {
 		if(value.valid) {
-			if(value.headerEntityIdentifier) {
-				mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
-			} else {
-				mainController.setWindowHeader(value.header);
+			if(hasHeader) {
+				if(value.headerEntityIdentifier) {
+					mainController.setWindowHeader(value.header + ' <span>' + value.headerEntityIdentifier + '</span>');
+				} else {
+					mainController.setWindowHeader(value.header);
+				}
 			}
 		}
 		headerEntityIdentifier = value.headerEntityIdentifier;
@@ -77,10 +81,12 @@ QCD.components.containers.Form = function(_element, _mainController) {
 	}
 	
 	this.setComponentState = function(state) {
-		if(state.headerEntityIdentifier) {
-			mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
-		} else {
-			mainController.setWindowHeader(state.header);
+		if(hasHeader) {
+			if(state.headerEntityIdentifier) {
+				mainController.setWindowHeader(state.header + ' <span>' + state.headerEntityIdentifier + '</span>');
+			} else {
+				mainController.setWindowHeader(state.header);
+			}
 		}
 		headerEntityIdentifier = state.headerEntityIdentifier;
 		header = state.header;

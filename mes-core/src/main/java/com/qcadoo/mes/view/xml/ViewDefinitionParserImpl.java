@@ -141,7 +141,9 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         DataDefinition dataDefinition = null;
 
         if (getStringAttribute(viewNode, "model") != null) {
-            dataDefinition = dataDefinitionService.get(pluginIdentifier, getStringAttribute(viewNode, "model"));
+            String modelPluginIdentifier = getStringAttribute(viewNode, "plugin") != null ? getStringAttribute(viewNode, "plugin")
+                    : pluginIdentifier;
+            dataDefinition = dataDefinitionService.get(modelPluginIdentifier, getStringAttribute(viewNode, "model"));
         }
 
         ViewDefinitionImpl viewDefinition = new ViewDefinitionImpl(name, pluginIdentifier, dataDefinition, menuAccessible,
