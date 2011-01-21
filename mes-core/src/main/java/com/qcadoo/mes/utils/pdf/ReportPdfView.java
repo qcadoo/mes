@@ -60,13 +60,20 @@ public abstract class ReportPdfView extends AbstractPdfView {
 
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
-            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+            final HttpServletRequest request, final HttpServletResponse response) {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         Object value = model.get("value");
-        String fileName = addContent(document, value, locale, writer);
+        String fileName;
+        try {
+            fileName = addContent(document, value, locale, writer);
+        } catch (DocumentException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
         response.setHeader("Content-disposition", "inline; filename=" + fileName + PdfUtil.PDF_EXTENSION);
         writer.addJavaScript("this.print(false);", false);
     }

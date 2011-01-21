@@ -48,7 +48,7 @@ public class LogicalOperatorRestriction extends BaseRestriction {
         }
     }
 
-    private Criterion createAndRestriction(List<Criterion> criterions) {
+    private Criterion createAndRestriction(final List<Criterion> criterions) {
         if (criterions.size() == 1) {
             return criterions.get(0);
         } else {
@@ -58,7 +58,7 @@ public class LogicalOperatorRestriction extends BaseRestriction {
         }
     }
 
-    private Criterion createOrRestriction(List<Criterion> criterions) {
+    private Criterion createOrRestriction(final List<Criterion> criterions) {
         if (criterions.size() == 1) {
             return criterions.get(0);
         } else {
@@ -78,18 +78,23 @@ public class LogicalOperatorRestriction extends BaseRestriction {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         LogicalOperatorRestriction other = (LogicalOperatorRestriction) obj;
-        if (operator != other.operator)
+        if (operator != other.operator) {
             return false;
-        if (!Arrays.equals(restrictions, other.restrictions))
+        }
+        if (!Arrays.equals(restrictions, other.restrictions)) {
             return false;
+        }
         return true;
     }
 

@@ -22,11 +22,19 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	var currentWidth;
 	var currentHeight;
 	
+	var buttonsArray = new Array();
+	
 	var firstLine;
 	
 	var BUTTONS_WIDTH = 70;
 	
 	var hasButtons = this.options.hasButtons;
+	
+	var enabled = true;
+	
+	var isChanged = false;
+	
+	var components = new Object();
 	
 	function constructor(_this) {
 		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListInnerForm").children();
@@ -67,6 +75,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			formObjects = new Array();
 			awesomeDynamicListContent.empty();
 			this.components = new Object();
+			components = this.components;
 			formObjectsIndex = 1;
 			for (var i in forms) {
 				var formValue = forms[i];
@@ -83,6 +92,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				this.components[i].setValue(innerFormChanges[i]);
 			}
 		}
+		mainController.updateSize();
 	}
 	
 	this.setComponentState = function(state) {
@@ -90,6 +100,36 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	}
 	
 	this.setComponentEnabled = function(isEnabled) {
+		enabled = isEnabled;
+		if (isEnabled) {
+			for (var i in buttonsArray) {
+				if (buttonsArray[i]) {
+					buttonsArray[i].addClass("enabled");
+				}
+			}
+		} else {
+			for (var i in buttonsArray) {
+				if (buttonsArray[i]) {
+					buttonsArray[i].removeClass("enabled");
+				}
+			}
+		}
+	}
+	
+	this.isComponentChanged = function() {
+		if (isChanged) {
+			return true;
+		}
+		for (var i in formObjects) {
+			if (formObjects[i] && formObjects[i].isChanged()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	this.performUpdateState = function() {
+		isChanged = false;
 	}
 	
 	this.setComponentLoading = function(isLoadingVisible) {
@@ -98,10 +138,10 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	this.updateSize = function(_width, _height) {
 		currentWidth = _width;
 		currentHeight = _height;
-		//this.element.width(currentWidth);
-		QCD.info("updateSize - "+_width);
 		for (var i in formObjects) {
-			formObjects[i].updateSize(_width-BUTTONS_WIDTH, _height);
+			if (formObjects[i]) {
+				formObjects[i].updateSize(_width-BUTTONS_WIDTH, _height);
+			}
 		}
 		if (awesomeDynamicListHeaderObject) {
 			awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH+1);
@@ -119,6 +159,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		if (hasButtons) {
 			var buttons = $("<div>").addClass("awesomeListButtons");
 		
+			buttonsArray.push(removeLineButton);
 			var removeLineButton = $("<a>").addClass("awesomeListButton").addClass("awesomeListMinusButton").addClass("enabled").attr("id", elementPath+"_line_"+formId+"_removeButton");
 			removeLineButton.css("display", "none");
 			removeLineButton.click(function(e) {
@@ -138,6 +179,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				}
 			});
 			addLineButton.css("display", "none");
+			buttonsArray.push(addLineButton);
 			buttons.append(addLineButton);
 			
 			line.append(buttons);
@@ -152,15 +194,20 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	function addRowClicked(rowId) {
 		var formObject = getFormCopy(formObjectsIndex);
 		formObjects[formObjectsIndex] = formObject;
+		components[formObject.elementName] = formObject;
+		isChanged = true;
 		formObjectsIndex++;
 		updateButtons();
+		mainController.updateSize();
 	}
 	
 	function removeRowClicked(rowId) {
 		var line = $("#"+elementSearchName+"_line_"+rowId);
 		line.remove();
+		isChanged = true;
 		formObjects[rowId] = null;
 		updateButtons();
+		mainController.updateSize();
 	}
 	
 	function updateButtons() {
@@ -196,7 +243,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		} else {
 			firstLine = $("<div>").addClass("awesomeListLine").attr("id", elementPath+"_line_0");
 			var buttons = $("<div>").addClass("awesomeListButtons");
-			var addLineButton = $("<a>").addClass("awesomeListButton").addClass("awesomeListPlusButton").addClass("enabled").attr("id", elementPath+"_line_0_addButton");
+			var addLineButton = $("<a>").addClass("awesomeListButton").addClass("awesomeListPlusButton").attr("id", elementPath+"_line_0_addButton");
 			addLineButton.click(function(e) {
 				var button = $(e.target);
 				if (button.hasClass("enabled")) {
@@ -205,6 +252,10 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				}
 			});
 			buttons.append(addLineButton);
+			buttonsArray.push(addLineButton);
+			if (enabled) {
+				addLineButton.addClass("enabled");
+			}
 			firstLine.append(buttons);
 			awesomeDynamicListContent.append(firstLine);
 		}

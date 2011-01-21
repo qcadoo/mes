@@ -20,6 +20,8 @@ import java.util.Set;
 import org.krysalis.barcode4j.impl.code128.Code128Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 import org.krysalis.barcode4j.tools.UnitConv;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,8 @@ import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 @Service
 public class ProductReportService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProductReportService.class);
 
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateType.DATE_FORMAT);
 
@@ -248,12 +252,12 @@ public class ProductReportService {
 
             canvas.finish();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } finally {
             try {
                 out.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
         }
 
@@ -263,9 +267,9 @@ public class ProductReportService {
 
             return image;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
 
         return null;
@@ -333,7 +337,7 @@ public class ProductReportService {
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity;
+            plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
             table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             if (product != null) {
@@ -369,7 +373,7 @@ public class ProductReportService {
                     }
                     table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                     BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-                    plannedQuantity = (plannedQuantity == null) ? new BigDecimal(0) : plannedQuantity;
+                    plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
                     table.addCell(new Phrase(df.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
                     table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                     if (product != null) {

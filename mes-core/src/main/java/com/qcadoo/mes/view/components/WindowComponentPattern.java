@@ -163,7 +163,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     }
 
     private Ribbon parseRibbon(final Node ribbonNode, final ViewDefinitionParser parser) {
-        Ribbon ribbon = new Ribbon();
+        Ribbon windowRibbon = new Ribbon();
 
         NodeList childNodes = ribbonNode.getChildNodes();
 
@@ -171,11 +171,11 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             Node child = childNodes.item(i);
 
             if ("group".equals(child.getNodeName())) {
-                ribbon.addGroup(parseRibbonGroup(child, parser));
+                windowRibbon.addGroup(parseRibbonGroup(child, parser));
             }
         }
 
-        return ribbon;
+        return windowRibbon;
     }
 
     private RibbonGroup parseRibbonGroup(final Node groupNode, final ViewDefinitionParser parser) {
@@ -241,7 +241,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
         item.setIcon(parser.getStringAttribute(itemNode, "icon"));
         item.setName(parser.getStringAttribute(itemNode, "name"));
-        item.setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action"), parser));
+        item.setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action")));
         item.setType(type);
         String state = parser.getStringAttribute(itemNode, "state");
         if (state != null) {
@@ -284,13 +284,13 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
                 }
             }
         } else {
-            (item).setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action"), parser));
+            (item).setAction(translateRibbonAction(parser.getStringAttribute(itemNode, "action")));
         }
 
         return item;
     }
 
-    private String translateRibbonAction(final String action, final ViewDefinitionParser parser) {
+    private String translateRibbonAction(final String action) {
         if (action == null) {
             return null;
         }
@@ -316,7 +316,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonGroup createNavigationTemplate(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonBackAction = new RibbonActionItem();
-        ribbonBackAction.setAction(translateRibbonAction("#{window}.performBack", parser));
+        ribbonBackAction.setAction(translateRibbonAction("#{window}.performBack"));
         ribbonBackAction.setIcon("backIcon24.png");
         ribbonBackAction.setName("back");
         ribbonBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -355,7 +355,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createGridDeleteAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
-        ribbonDeleteAction.setAction(translateRibbonAction("#{grid}.performDelete;", parser));
+        ribbonDeleteAction.setAction(translateRibbonAction("#{grid}.performDelete;"));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
@@ -368,7 +368,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createGridCopyAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonCopyAction = new RibbonActionItem();
-        ribbonCopyAction.setAction(translateRibbonAction("#{grid}.performCopy;", parser));
+        ribbonCopyAction.setAction(translateRibbonAction("#{grid}.performCopy;"));
         ribbonCopyAction.setIcon("copyIcon16.png");
         ribbonCopyAction.setName("copy");
         ribbonCopyAction.setEnabled(false);
@@ -381,7 +381,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createGridNewAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonNewAction = new RibbonActionItem();
-        ribbonNewAction.setAction(translateRibbonAction("#{grid}.performNew;", parser));
+        ribbonNewAction.setAction(translateRibbonAction("#{grid}.performNew;"));
         ribbonNewAction.setIcon("newIcon24.png");
         ribbonNewAction.setName("new");
         ribbonNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -412,7 +412,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonGroup createFormSaveActionTemplate(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonSaveAction = new RibbonActionItem();
-        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack", parser));
+        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack"));
         ribbonSaveAction.setIcon("saveBackIcon24.png");
         ribbonSaveAction.setName("save");
         ribbonSaveAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -426,7 +426,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createFormDeleteAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonDeleteAction = new RibbonActionItem();
-        ribbonDeleteAction.setAction(translateRibbonAction("#{form}.performDelete; #{window}.performBack", parser));
+        ribbonDeleteAction.setAction(translateRibbonAction("#{form}.performDelete; #{window}.performBack"));
         ribbonDeleteAction.setIcon("deleteIcon16.png");
         ribbonDeleteAction.setName("delete");
         ribbonDeleteAction.setType(RibbonActionItem.Type.SMALL_BUTTON);
@@ -440,7 +440,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createFormCancelAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonCancelAction = new RibbonActionItem();
-        ribbonCancelAction.setAction(translateRibbonAction("#{form}.performCancel;", parser));
+        ribbonCancelAction.setAction(translateRibbonAction("#{form}.performCancel;"));
         ribbonCancelAction.setIcon("cancelIcon16.png");
         ribbonCancelAction.setName("cancel");
         ribbonCancelAction.setEnabled(true);
@@ -450,7 +450,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createFormCopyAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonCopyAction = new RibbonActionItem();
-        ribbonCopyAction.setAction(translateRibbonAction("#{form}.performCopy;", parser));
+        ribbonCopyAction.setAction(translateRibbonAction("#{form}.performCopy;"));
         ribbonCopyAction.setIcon("copyIcon24.png");
         ribbonCopyAction.setName("copy");
         ribbonCopyAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -464,7 +464,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createFormSaveAndBackAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonSaveBackAction = new RibbonActionItem();
-        ribbonSaveBackAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack;", parser));
+        ribbonSaveBackAction.setAction(translateRibbonAction("#{form}.performSave; #{window}.performBack;"));
         ribbonSaveBackAction.setIcon("saveBackIcon24.png");
         ribbonSaveBackAction.setName("saveBack");
         ribbonSaveBackAction.setEnabled(true);
@@ -474,8 +474,8 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createFormSaveAndNewAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonSaveNewAction = new RibbonActionItem();
-        ribbonSaveNewAction.setAction(translateRibbonAction("#{form}.performSaveAndClear;", parser));
-        ribbonSaveNewAction.setIcon("saveIcon24.png");
+        ribbonSaveNewAction.setAction(translateRibbonAction("#{form}.performSaveAndClear;"));
+        ribbonSaveNewAction.setIcon("saveNewIcon24.png");
         ribbonSaveNewAction.setName("saveNew");
         ribbonSaveNewAction.setEnabled(true);
         ribbonSaveNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
@@ -484,7 +484,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     private RibbonActionItem createFormSaveAction(final ViewDefinitionParser parser) {
         RibbonActionItem ribbonSaveAction = new RibbonActionItem();
-        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave;", parser));
+        ribbonSaveAction.setAction(translateRibbonAction("#{form}.performSave;"));
         ribbonSaveAction.setIcon("saveIcon24.png");
         ribbonSaveAction.setName("save");
         ribbonSaveAction.setEnabled(true);

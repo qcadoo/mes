@@ -65,8 +65,6 @@ public class ProductController {
         response.setHeader("Content-disposition", "inline; filename=" + translatedFileName);
     }
 
-    public String hello;
-
     @RequestMapping(value = "products/materialRequirement.pdf", method = RequestMethod.GET)
     public void materialRequirementPdf(@RequestParam("id") final String id, final HttpServletResponse response,
             final Locale locale) {

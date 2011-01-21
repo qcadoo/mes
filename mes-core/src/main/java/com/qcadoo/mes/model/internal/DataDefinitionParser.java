@@ -235,6 +235,7 @@ public final class DataDefinitionParser {
         fieldDefinition.withReadOnlyOnUpdate(getBooleanAttribute(reader, "readonlyOnCreate", false));
         fieldDefinition.withDefaultValue(getStringAttribute(reader, "default"));
         fieldDefinition.setPersistent(getBooleanAttribute(reader, "persistent", true));
+        fieldDefinition.setExpression(getStringAttribute(reader, "expression"));
         FieldType type = getFieldType(reader, pluginIdentifier, modelTag, fieldType);
         fieldDefinition.withType(type);
 

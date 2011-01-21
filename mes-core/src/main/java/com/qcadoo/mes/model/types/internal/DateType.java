@@ -112,7 +112,7 @@ public final class DateType implements FieldType {
         return value;
     }
 
-    public static Date parseDate(String dateExpression, boolean roundToUp) throws ParseException {
+    public static Date parseDate(final String dateExpression, final boolean roundToUp) throws ParseException {
         String[] dateExpressionParts = dateExpression.split("-");
 
         Calendar cal = Calendar.getInstance();

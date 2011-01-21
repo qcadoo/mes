@@ -258,11 +258,7 @@ public final class PluginManagementServiceImpl implements PluginManagementServic
     @Monitorable
     public boolean pluginIsInstalled(final Long id) {
         PluginsPlugin databasePlugin = get(id);
-        if (databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue())) {
-            return false;
-        } else {
-            return true;
-        }
+        return !databasePlugin.getStatus().equals(PluginStatus.DOWNLOADED.getValue());
     }
 
     @Override

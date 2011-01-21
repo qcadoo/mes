@@ -115,6 +115,13 @@ public interface FieldDefinition {
     boolean isPersistent();
 
     /**
+     * Get expression to get the field value.
+     * 
+     * @return expression
+     */
+    String getExpression();
+
+    /**
      * Return data definition which this field belongs to.
      * 
      * @return data definition
