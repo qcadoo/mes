@@ -100,10 +100,14 @@
 											<component type="input" name="value" field="value" />
 										</layoutElement>
 										<layoutElement column="2" row="1">
-											<component type="input" name="worker" field="worker" defaultEnabled="false" />
+											<component type="input" name="worker" field="worker" defaultEnabled="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
 										</layoutElement>
 										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" defaultEnabled="false" />
+											<component type="input" name="date" field="date" defaultEnabled="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
 										</layoutElement>
 									</component>				
 								</components>
@@ -113,25 +117,19 @@
 					<option type="label" value="featuresLabel" />
 				</component>
 				
-				<component type="borderLayout" name="productInComponentsBorderLayout" reference="productInComponentsBorderLayout">
-					<component type="gridLayout" name="mainGridLayout" columns="6" rows="2" fixedRowHeight="false" >
-						<layoutElement column="1" row="1" width="2">	
-							<component type="label" name="productInLabel" />
-						</layoutElement>
-						<layoutElement column="3" row="1">
-							<component type="label" name="productInBatchLabel" />									
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="label" name="productInQuantityLabel" />									
-						</layoutElement>
-						<layoutElement column="5" row="1">
-							<component type="label" name="productInWorkerLabel" />									
-						</layoutElement>
-						<layoutElement column="6" row="1">				
-							<component type="label" name="productInDateLabel" />					
-						</layoutElement>
-						<layoutElement column="1" row="2" width="6">
+					<component type="gridLayout" name="mainGridLayout" columns="1" rows="1" fixedRowHeight="false" >
+						<layoutElement column="1" row="1">
 							<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents" reference="productInComponentsList">
+								<header>
+									<component type="gridLayout" name="mainGridLayout" columns="6" rows="1" fixedRowHeight="false" >
+										<layoutElement column="1" row="1" width="2">	
+											<component type="label" name="productInLabel" />
+										</layoutElement>
+										<layoutElement column="3" row="1" width="4">
+											<component type="label" name="productInBatchLabel" />
+										</layoutElement>
+									</component>
+								</header>
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="6" rows="1" fixedRowHeight="false" >
 										<layoutElement column="1" row="1" width="2">
@@ -144,18 +142,20 @@
 										<layoutElement column="3" row="1" width="4">
 											<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
 												<components>
-													<component type="gridLayout" name="gridLayout" columns="4" rows="1" fixedRowHeight="false" >
+													<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
 														<layoutElement column="1" row="1">
-															<component type="input" name="batch" field="batch" hasLabel="false" />
+															<component type="input" name="batch" field="batch" hasLabel="true" />
 														</layoutElement>
 														<layoutElement column="2" row="1">
-															<component type="input" name="quantity" field="quantity" hasLabel="false" />
+															<component type="input" name="quantity" field="quantity" hasLabel="true" />
 														</layoutElement>
 														<layoutElement column="3" row="1">
-															<component type="input" name="worker" field="worker" hasLabel="false" defaultEnabled="false" />
-														</layoutElement>
-														<layoutElement column="4" row="1">
-															<component type="input" name="date" field="date" hasLabel="false" defaultEnabled="false" />
+															<component type="input" name="worker" field="worker" defaultEnabled="false">
+																<option type="textRepresentationOnDisabled" value="true" />
+															</component>
+															<component type="input" name="date" field="date" defaultEnabled="false">
+																<option type="textRepresentationOnDisabled" value="true" />
+															</component>
 														</layoutElement>
 													</component>
 												</components>
@@ -167,8 +167,6 @@
 							</component>			
 						</layoutElement>
 					</component>
-					<option type="label" value="productInComponentsLabel" />
-				</component>
 				
 				<script>
 					<![CDATA[

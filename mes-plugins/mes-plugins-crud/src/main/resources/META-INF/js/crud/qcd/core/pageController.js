@@ -129,7 +129,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			} else {
 				setValueData(response);
 			}
-			if (actionsPerformer && response.content.status == "ok") {
+			if (actionsPerformer && ! (response.content && response.content.status != "ok")) {
 				actionsPerformer.performNext();
 			}
 		}, function() {
@@ -330,6 +330,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			pageComponents[i].updateSize(width, height);
 		}
 	}
+	this.updateSize = updateSize;
 	
 	constructor(this);
 }

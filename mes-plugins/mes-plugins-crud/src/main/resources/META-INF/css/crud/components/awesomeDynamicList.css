@@ -5,11 +5,16 @@
 	border-bottom: none;
 	//border-top: none;
 }
-.awesomeDynamicList .awesomeDynamicList {
-	margin: 10px;
+.awesomeDynamicList .awesomeDynamicList,
+.awesomeDynamicList .awesomeDynamicList .awesomeListLine {
+	//margin: 10px;
+	border: none;
 	//border-top: solid #A7A7A7 1px;
 	//border-left: solid #A7A7A7 1px;
 	//border-right: solid #A7A7A7 1px;
+}
+.awesomeDynamicList .awesomeDynamicList .awesomeListLine .awesomeListFormContainer {
+	border-right: solid #A7A7A7 1px;
 }
 
 .awesomeDynamicListContent {
@@ -23,7 +28,7 @@
 
 .awesomeDynamicListHeader {
 	border-bottom: solid #A7A7A7 1px;
-	border-right: solid #A7A7A7 1px;
+	//border-right: solid #A7A7A7 1px;
 	//border-top: solid #A7A7A7 1px;
 	vertical-align: middle;
 	height: 20px;
@@ -33,7 +38,7 @@
 .awesomeListLine .awesomeListFormContainer {
 	display: inline-block;
 	vertical-align: middle;
-	border-right: solid #A7A7A7 1px;
+	
 }
 
 .awesomeListLine .awesomeListButtons {
