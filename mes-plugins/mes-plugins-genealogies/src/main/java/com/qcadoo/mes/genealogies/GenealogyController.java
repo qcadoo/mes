@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
@@ -31,4 +32,11 @@ public class GenealogyController {
         return crudController.prepareView("genealogies", "currentAttribute", arguments, locale);
     }
 
+    @RequestMapping(value = "genealogies/genealogyForComponent.pdf", method = RequestMethod.GET)
+    public ModelAndView genealogyForComponentPdf(@RequestParam("value") final String value) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("genealogyForComponentView");
+        mav.addObject("value", value);
+        return mav;
+    }
 }
