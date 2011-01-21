@@ -122,6 +122,7 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("innerForm", innerFormPattern.prepareView(locale));
         options.put("hasBorder", hasBorder);
+        options.put("hasButtons", hasButtons);
         if (headerFormPattern != null) {
             options.put("header", headerFormPattern.prepareView(locale));
         }
