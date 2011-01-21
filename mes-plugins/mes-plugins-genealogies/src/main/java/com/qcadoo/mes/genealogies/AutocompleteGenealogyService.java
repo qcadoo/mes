@@ -1,7 +1,6 @@
 package com.qcadoo.mes.genealogies;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogyProductInComponent;
-import com.qcadoo.mes.beans.products.ProductsOperationProductInComponent;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -54,31 +52,6 @@ public class AutocompleteGenealogyService {
         Entity productEntity = productInDef.get(product.getId());
         productEntity.setField("lastUsedBatch", entity.getField("batch"));
         productInDef.save(productEntity);
-    }
-
-    public void checkRequiredBatchForGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        // TODO masz why we get hibernate entities here?
-        if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
-            if (order == null) {
-                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                if (!checkRequiredBatch(order)) {
-                    state.addMessage(translationService.translate("core.message.batchNotFound", state.getLocale()),
-                            MessageType.FAILURE);
-                }
-            }
-        } else {
-            if (state instanceof FormComponentState) {
-                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-        }
     }
 
     @Transactional
@@ -143,47 +116,6 @@ public class AutocompleteGenealogyService {
             currentAttribute.setField("lastUsedOther", entity.getField("value"));
             featureDef.save(currentAttribute);
         }
-    }
-
-    private boolean checkRequiredBatch(final Entity order) {
-        Entity technology = (Entity) order.getField("technology");
-        if (technology != null) {
-            for (Entity genealogy : order.getHasManyField("genealogies")) {
-                if ((Boolean) technology.getField("batchRequired")) {
-                    if (genealogy.getField("batch") == null) {
-                        return false;
-                    }
-                }
-                if ((Boolean) technology.getField("shiftFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");
-                    if (entityList.size() == 0) {
-                        return false;
-                    }
-                }
-                if ((Boolean) technology.getField("postFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("postFeatures");
-                    if (entityList.size() == 0) {
-                        return false;
-                    }
-                }
-                if ((Boolean) technology.getField("otherFeatureRequired")) {
-                    List<Entity> entityList = genealogy.getHasManyField("otherFeatures");
-                    if (entityList.size() == 0) {
-                        return false;
-                    }
-                }
-                for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
-                    if (((ProductsOperationProductInComponent) genealogyProductIn.getField("productInComponent"))
-                            .getBatchRequired()) {
-                        List<Entity> entityList = genealogyProductIn.getHasManyField("banch");
-                        if (entityList.size() == 0) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     private void fillUserAndDate(final Entity entity) {
