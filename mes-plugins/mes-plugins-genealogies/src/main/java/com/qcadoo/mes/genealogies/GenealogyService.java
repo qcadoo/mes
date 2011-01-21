@@ -40,10 +40,10 @@ public final class GenealogyService {
 
     public void hideComponents(final ViewDefinitionState state, final Locale locale) {
         FormComponentState orderForm = (FormComponentState) state.getComponentByReference("order");
-        ComponentState featureBorderLayout = state.getComponentByReference("featureBorderLayout");
-        ComponentState shiftFeaturesList = state.getComponentByReference("shiftFeaturesList");
-        ComponentState postFeaturesList = state.getComponentByReference("postFeaturesList");
-        ComponentState otherFeaturesList = state.getComponentByReference("otherFeaturesList");
+        ComponentState featuresLayout = state.getComponentByReference("featuresLayout");
+        ComponentState shiftList = state.getComponentByReference("shiftBorderLayout");
+        ComponentState postList = state.getComponentByReference("postBorderLayout");
+        ComponentState otherList = state.getComponentByReference("otherBorderLayout");
 
         Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
         Entity technology = order.getBelongsToField("technology");
@@ -53,26 +53,26 @@ public final class GenealogyService {
         boolean otherFeatureRequired = (Boolean) technology.getField("otherFeatureRequired");
 
         if (!shiftFeatureRequired) {
-            shiftFeaturesList.setVisible(false);
+            shiftList.setVisible(false);
         }
 
         if (!postFeatureRequired) {
-            postFeaturesList.setVisible(false);
+            postList.setVisible(false);
         }
 
         if (!otherFeatureRequired) {
-            otherFeaturesList.setVisible(false);
+            otherList.setVisible(false);
         }
 
         if (!(otherFeatureRequired || shiftFeatureRequired || postFeatureRequired)) {
-            featureBorderLayout.setVisible(false);
+            featuresLayout.setVisible(false);
         }
     }
 
     public void fillProductInComponents(final ViewDefinitionState state, final Locale locale) {
         FormComponentState orderForm = (FormComponentState) state.getComponentByReference("order");
         FormComponentState genealogyForm = (FormComponentState) state.getComponentByReference("form");
-        ComponentState productInComponentsBorderLayout = state.getComponentByReference("productInComponentsBorderLayout");
+        ComponentState productGridLayout = state.getComponentByReference("productGridLayout");
         AwesomeDynamicListState productInComponentsList = (AwesomeDynamicListState) state
                 .getComponentByReference("productInComponentsList");
 
@@ -101,7 +101,7 @@ public final class GenealogyService {
         productInComponentsList.setFieldValue(targetProductInComponents);
 
         if (targetProductInComponents.isEmpty()) {
-            productInComponentsBorderLayout.setVisible(false);
+            productGridLayout.setVisible(false);
         }
     }
 

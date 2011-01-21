@@ -16,17 +16,15 @@
 	<view name="orderGenealogies" plugin="products" model="order">
 		<component type="window" name="window" reference="window">
 			<ribbon>
-				<group template="navigation"/>
+				<group template="navigation" />
 				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png"
-						action="#{form}.fireEvent(newBatch);" />
-					<bigButton name="save" icon="saveIcon24.png"
-						action="#{form}.performSave;" />
-					<bigButton name="copy" icon="copyIcon24.png"
-						action="#{grid}.performCopy;" state="disabled" />
-					<smallButton name="cancel" icon="cancelIcon16.png" 
+					<bigButton name="new" icon="newIcon24.png" action="#{form}.fireEvent(newBatch);" />
+					<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
+					<bigButton name="copy" icon="copyIcon24.png" action="#{grid}.performCopy;"
+						state="disabled" />
+					<smallButton name="cancel" icon="cancelIcon16.png"
 						action="#{form}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png" 
+					<smallButton name="delete" icon="deleteIcon16.png"
 						action="#{grid}.performDelete;" state="disabled" />
 				</group>
 			</ribbon>
@@ -34,7 +32,8 @@
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
-			<component type="grid" name="genealogies" reference="grid" source="#{order}.genealogies">				
+			<component type="grid" name="genealogies" reference="grid"
+				source="#{order}.genealogies">
 				<option type="column" name="batch" fields="batch" />
 				<option type="column" name="quantity" fields="quantity" />
 				<option type="order" column="batch" direction="desc" />
@@ -42,11 +41,14 @@
 				<option type="orderable" value="batch,quantity" />
 				<option type="height" value="100" />
 			</component>
-			<component type="form" name="genealogy" reference="form" field="#{grid}">
-			
-				<component type="borderLayout" name="mainBorderLayout" reference="mainBorderLayout">
-					<component type="gridLayout" name="gridLayout" columns="2" rows="1" reference="layout">			
-						<layoutElement column="1" row="1">						
+			<component type="form" name="genealogy" reference="form"
+				field="#{grid}">
+
+				<component type="borderLayout" name="mainBorderLayout"
+					reference="mainBorderLayout">
+					<component type="gridLayout" name="gridLayout" columns="2"
+						rows="1" reference="layout">
+						<layoutElement column="1" row="1">
 							<component type="input" name="batch" field="batch" />
 						</layoutElement>
 						<layoutElement column="2" row="1">
@@ -55,70 +57,86 @@
 					</component>
 					<option type="label" value="genealogyLabel" />
 				</component>
-				
-				<component type="verticalLayout" name="verticalLayout" reference="featureGridLayout">			
-					<component type="borderLayout" name="shiftBorderLayout" reference="shiftBorderLayout">
-						<option type="label" value="shiftLabel" />						
-						<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures">
+
+				<component type="verticalLayout" name="verticalLayout"
+					reference="featuresLayout">
+					<component type="borderLayout" name="shiftBorderLayout"
+						reference="shiftBorderLayout">
+						<option type="label" value="shiftLabel" />
+						<component type="awesomeDynamicList" name="shiftFeaturesList"
+							source="#{form}.shiftFeatures">
 							<option type="hasBorder" value="false" />
 							<components>
-								<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
+								<component type="gridLayout" name="gridLayout"
+									columns="1" rows="2" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
 										<component type="input" name="value" field="value" />
 									</layoutElement>
 									<layoutElement column="1" row="2">
-										<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+										<component type="input" name="workerAndDate" field="workerAndDate"
+											defaultEnabled="false">
 											<option type="textRepresentationOnDisabled" value="true" />
 										</component>
 									</layoutElement>
-								</component>				
+								</component>
 							</components>
 						</component>
 					</component>
-					<component type="borderLayout" name="postBorderLayout" reference="postBorderLayout">
+					<component type="borderLayout" name="postBorderLayout"
+						reference="postBorderLayout">
 						<option type="label" value="postLabel" />
-						<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures">
+						<component type="awesomeDynamicList" name="postFeaturesList"
+							source="#{form}.postFeatures">
 							<option type="hasBorder" value="false" />
 							<components>
-								<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
+								<component type="gridLayout" name="gridLayout"
+									columns="1" rows="2" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
 										<component type="input" name="value" field="value" />
 									</layoutElement>
 									<layoutElement column="1" row="2">
-										<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+										<component type="input" name="workerAndDate" field="workerAndDate"
+											defaultEnabled="false">
 											<option type="textRepresentationOnDisabled" value="true" />
 										</component>
 									</layoutElement>
-								</component>				
+								</component>
 							</components>
 						</component>
 					</component>
-					<component type="borderLayout" name="otherBorderLayout" reference="otherBorderLayout">
+					<component type="borderLayout" name="otherBorderLayout"
+						reference="otherBorderLayout">
 						<option type="label" value="otherLabel" />
-						<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures">
+						<component type="awesomeDynamicList" name="otherFeaturesList"
+							source="#{form}.otherFeatures">
 							<option type="hasBorder" value="false" />
 							<components>
-								<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
+								<component type="gridLayout" name="gridLayout"
+									columns="1" rows="2" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
 										<component type="input" name="value" field="value" />
 									</layoutElement>
 									<layoutElement column="1" row="2">
-										<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+										<component type="input" name="workerAndDate" field="workerAndDate"
+											defaultEnabled="false">
 											<option type="textRepresentationOnDisabled" value="true" />
 										</component>
 									</layoutElement>
-								</component>				
+								</component>
 							</components>
 						</component>
-					</component>												
+					</component>
 				</component>
-			
-				<component type="gridLayout" name="mainGridLayout" columns="1" rows="1" fixedRowHeight="false">
+
+				<component type="gridLayout" name="mainGridLayout"
+					columns="1" rows="1" fixedRowHeight="false" reference="productGridLayout">
 					<layoutElement column="1" row="1">
-						<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents" reference="productInComponentsList">
+						<component type="awesomeDynamicList" name="productInComponentsList"
+							source="#{form}.productInComponents" reference="productInComponentsList">
 							<header>
-								<component type="gridLayout" name="mainGridLayout" columns="6" rows="1" fixedRowHeight="false" >
-									<layoutElement column="1" row="1" width="2">	
+								<component type="gridLayout" name="mainGridLayout"
+									columns="6" rows="1" fixedRowHeight="false">
+									<layoutElement column="1" row="1" width="2">
 										<component type="label" name="productInLabel" />
 									</layoutElement>
 									<layoutElement column="3" row="1" width="4">
@@ -127,27 +145,35 @@
 								</component>
 							</header>
 							<components>
-								<component type="gridLayout" name="gridLayout" columns="6" rows="1" fixedRowHeight="false" >
+								<component type="gridLayout" name="gridLayout"
+									columns="6" rows="1" fixedRowHeight="false">
 									<layoutElement column="1" row="1" width="2">
-										<component type="lookup" name="productInComponent" field="productInComponent" hasLabel="false">
-											<option type="expression" value="#operationComponent['operation'].getField('name') + ': ' + #quantity + ' x &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']"/>
+										<component type="lookup" name="productInComponent"
+											field="productInComponent" hasLabel="false">
+											<option type="expression"
+												value="#operationComponent['operation'].getField('name') + ': ' + #quantity + ' x &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']" />
 											<option type="fieldCode" value="product" />
 											<option type="textRepresentationOnDisabled" value="true" />
 										</component>
 									</layoutElement>
 									<layoutElement column="3" row="1" width="4">
-										<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
+										<component type="awesomeDynamicList" name="productInComponentsBatchList"
+											source="batch">
 											<option type="hasBorder" value="false" />
 											<components>
-												<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+												<component type="gridLayout" name="gridLayout"
+													columns="3" rows="1" fixedRowHeight="false">
 													<layoutElement column="1" row="1">
-														<component type="input" name="batch" field="batch" hasLabel="true" />
+														<component type="input" name="batch" field="batch"
+															hasLabel="true" />
 													</layoutElement>
 													<layoutElement column="2" row="1">
-														<component type="input" name="quantity" field="quantity" hasLabel="true" />
+														<component type="input" name="quantity" field="quantity"
+															hasLabel="true" />
 													</layoutElement>
 													<layoutElement column="3" row="1">
-														<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+														<component type="input" name="workerAndDate"
+															field="workerAndDate" defaultEnabled="false">
 															<option type="textRepresentationOnDisabled" value="true" />
 														</component>
 													</layoutElement>
@@ -157,11 +183,11 @@
 									</layoutElement>
 								</component>
 							</components>
-							<option type="hasButtons" value="false"/>
-						</component>			
+							<option type="hasButtons" value="false" />
+						</component>
 					</layoutElement>
 				</component>
-				
+
 				<script>
 					<![CDATA[
 						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
@@ -181,13 +207,17 @@
 						});
 					]]>
 				</script>
-				
-				<listener event="newBatch" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newBatch"/>
-					
+
+				<listener event="newBatch"
+					bean="com.qcadoo.mes.genealogies.GenealogyService" method="newBatch" />
+
 			</component>
 		</component>
-		
-		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="fillProductInComponents"/>
+
+		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService"
+			method="fillProductInComponents" />
+		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService"
+			method="hideComponents" />
 	</view>
-	
+
 </qcd:views>

@@ -16,7 +16,7 @@ QCD.components.containers.layout.FlowLayout = function(_element, _mainController
 	
 	this.updateSize = function(_width, _height) {
 		for (var i in this.components) {
-			this.components[i].updateSize(_width-20, _height-20);
+			this.components[i].updateSize(_width, _height);
 		}
 	}
 	
