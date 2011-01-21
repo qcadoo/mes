@@ -171,7 +171,7 @@
 				<group template="navigation"/>
 				<group template="formSaveCopyAndRemoveActions"/>
 				<group name="genealogy">
-					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" state="disabled" />
+					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 					<smallButton name="activeComplete"
 						action="#{form}.fireEvent(autocompleteGenealogy,false);" state="enabled" />
 					<smallButton name="lastUsedComplete"
