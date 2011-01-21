@@ -301,6 +301,8 @@ public final class WorkPlanService {
         DataDefinition workPlanComponentDef = dataDefinitionService.get("products", "workPlanComponent");
         workPlanComponentDef.save(workPlanComponent);
 
+        saved = data.get(saved.getId());
+
         return saved;
     }
 
