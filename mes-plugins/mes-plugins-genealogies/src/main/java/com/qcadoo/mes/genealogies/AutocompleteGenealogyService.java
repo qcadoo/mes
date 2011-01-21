@@ -292,6 +292,7 @@ public class AutocompleteGenealogyService {
                     if (batch != null) {
                         Entity productBatch = new DefaultEntity("genealogies", "productInBatch");
                         productBatch.setField("batch", batch);
+                        productBatch.setField("product", product);
                         productBatch.setField("productInComponent", savedProductIn);
                         DataDefinition batchDef = dataDefinitionService.get("genealogies", "productInBatch");
                         batchDef.save(productBatch);
@@ -300,5 +301,4 @@ public class AutocompleteGenealogyService {
             }
         }
     }
-
 }

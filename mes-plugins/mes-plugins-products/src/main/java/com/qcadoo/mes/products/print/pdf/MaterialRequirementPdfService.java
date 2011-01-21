@@ -47,7 +47,7 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.ProductReportService;
-import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
+import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
@@ -63,7 +63,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         String documenTitle = getTranslationService().translate("products.materialRequirement.report.title", locale);
         String documentAuthor = getTranslationService().translate("products.materialRequirement.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, entity, documenTitle, documentAuthor, (Date) entity.getField("date"), user);
+        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
+                (Date) entity.getField("date"), user);
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("products.materialRequirement.report.paragrah", locale),
                 PdfUtil.getArialBold11Dark()));

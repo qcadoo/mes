@@ -64,6 +64,9 @@
 		</decimal>
 		<date name="date" readonly="true" readonlyOnCreate="true" />
 		<string name="worker" readonly="true" readonlyOnCreate="true" />
+		<belongsTo name="product" plugin="products" model="product" lookupField="name">
+			<validatesPresence /> 
+		</belongsTo>
 		<belongsTo name="productInComponent" model="genealogyProductInComponent" lookupField="productInComponent" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForProduct" />
 	</model>

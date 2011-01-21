@@ -8,8 +8,9 @@ import com.qcadoo.mes.view.ViewDefinitionState;
 @Service
 public class ReportService {
 
-    public void generateReport(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-
+    public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        viewDefinitionState.redirectTo("/genealogies/genealogyForComponent.pdf?value=" + state.getFieldValue(), true);
     }
 
 }

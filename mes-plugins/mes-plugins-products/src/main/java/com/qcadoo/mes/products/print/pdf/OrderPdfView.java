@@ -39,24 +39,26 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
-import com.qcadoo.mes.products.print.pdf.util.TableBorderEvent;
+import com.qcadoo.mes.utils.pdf.PdfUtil;
+import com.qcadoo.mes.utils.pdf.ReportPdfView;
+import com.qcadoo.mes.utils.pdf.TableBorderEvent;
 
-public final class OrderPdfView extends ProductsPdfView {
+public final class OrderPdfView extends ReportPdfView {
 
     @Autowired
     private SecurityService securityService;
 
     @Override
-    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
+    protected String addContent(final Document document, final Object value, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
+        Entity entity = (Entity) value;
         String documentTitle = getTranslationService().translate("products.order.report.order", locale);
         String documentAuthor = getTranslationService().translate("products.order.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, entity, documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documentTitle, documentAuthor, new Date(), user);
         addMainTable(document, entity, locale);
         addDetailTable(document, entity, locale);
-        String text = getTranslationService().translate("products.report.endOfReport", locale);
+        String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
         return getTranslationService().translate("products.order.report.fileName", locale) + "_" + entity.getField("number");
     }

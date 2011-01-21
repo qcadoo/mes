@@ -22,8 +22,8 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
-import com.qcadoo.mes.products.print.xls.util.XlsUtil;
+import com.qcadoo.mes.utils.pdf.PdfUtil;
+import com.qcadoo.mes.utils.xls.XlsUtil;
 
 @Controller
 public class ProductController {
@@ -62,7 +62,7 @@ public class ProductController {
             final HttpServletResponse response) {
         Object date = entity.getField("date");
         String translatedFileName = fileName + "_" + PdfUtil.D_T_F.format((Date) date) + "_" + suffix + extension;
-        response.setHeader("Content-disposition", "attachment; filename=" + translatedFileName);
+        response.setHeader("Content-disposition", "inline; filename=" + translatedFileName);
     }
 
     public String hello;
@@ -94,7 +94,7 @@ public class ProductController {
         DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
         ModelAndView mav = new ModelAndView();
         mav.setViewName("orderPdfView");
-        mav.addObject("entity", dataDefinition.get(Long.parseLong(id)));
+        mav.addObject("value", dataDefinition.get(Long.parseLong(id)));
         return mav;
     }
 

@@ -38,7 +38,7 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.ProxyEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
-import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
+import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 @Service
 public class ProductReportService {
@@ -294,7 +294,8 @@ public class ProductReportService {
         String documenTitle = translationService.translate("products.workPlan.report.title", locale);
         String documentAuthor = translationService.translate("products.materialRequirement.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, entity, documenTitle, documentAuthor, (Date) entity.getField("date"), user);
+        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
+                (Date) entity.getField("date"), user);
         document.add(generateBarcode(entity.getField("name").toString()));
         document.add(new Paragraph(translationService.translate("products.workPlan.report.paragrah", locale), PdfUtil
                 .getArialBold11Dark()));
