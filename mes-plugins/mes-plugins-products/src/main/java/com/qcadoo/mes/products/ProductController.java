@@ -62,7 +62,7 @@ public class ProductController {
             final HttpServletResponse response) {
         Object date = entity.getField("date");
         String translatedFileName = fileName + "_" + PdfUtil.D_T_F.format((Date) date) + "_" + suffix + extension;
-        response.setHeader("Content-disposition", "inline; filename=" + translatedFileName);
+        response.setHeader("Content-disposition", "attachment; filename=" + translatedFileName);
     }
 
     @RequestMapping(value = "products/materialRequirement.pdf", method = RequestMethod.GET)
