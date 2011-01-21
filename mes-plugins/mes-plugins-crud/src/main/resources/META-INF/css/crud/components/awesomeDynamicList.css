@@ -11,7 +11,7 @@
 .awesomeDynamicList.noBorder .awesomeListLine {
 	margin: 0px;
 }
-.awesomeDynamicList .awesomeListLine.lastLine {
+.awesomeDynamicList.noBorder .awesomeListLine.lastLine {
 	margin: 0px;
 	border-bottom: none;
 }
