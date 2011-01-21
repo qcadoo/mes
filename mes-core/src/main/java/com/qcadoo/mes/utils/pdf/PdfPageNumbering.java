@@ -22,7 +22,7 @@
  * ***************************************************************************
  */
 
-package com.qcadoo.mes.products.print.pdf.util;
+package com.qcadoo.mes.utils.pdf;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.ExceptionConverter;

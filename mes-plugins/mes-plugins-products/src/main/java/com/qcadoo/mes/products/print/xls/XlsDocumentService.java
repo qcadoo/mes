@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.DocumentService;
-import com.qcadoo.mes.products.print.xls.util.XlsUtil;
+import com.qcadoo.mes.utils.xls.XlsUtil;
 
 @Service
 public abstract class XlsDocumentService extends DocumentService {
