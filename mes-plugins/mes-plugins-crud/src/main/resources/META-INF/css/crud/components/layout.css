@@ -1,3 +1,10 @@
+.verticalLayout {
+	width: 100%;		
+}
+
+.verticalLayout > div {
+	float: left;	
+}
 
 .borderLayout {    
 	margin: 10px;

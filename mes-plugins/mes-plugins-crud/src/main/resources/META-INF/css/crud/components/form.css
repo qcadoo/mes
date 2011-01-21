@@ -537,3 +537,11 @@
 	background-color: #A7A7A7;
 	margin: 5px 0;
 }
+
+.component_label {
+	font-family: arial;
+	font-size: 11px;
+	font-style: normal;
+	font-weight: bold;
+	line-height: 20px;
+}
