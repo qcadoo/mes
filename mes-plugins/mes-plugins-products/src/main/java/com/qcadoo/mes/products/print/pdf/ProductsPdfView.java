@@ -24,6 +24,7 @@
 
 package com.qcadoo.mes.products.print.pdf;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Map;
@@ -68,7 +69,14 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         Entity entity = (Entity) model.get("entity");
-        String fileName = addContent(document, entity, locale, writer);
+        String fileName;
+        try {
+            fileName = addContent(document, entity, locale, writer);
+        } catch (DocumentException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);
         writer.addJavaScript("this.print(false);", false);
     }
@@ -97,13 +105,10 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         PdfUtil.addMetaData(document);
     }
 
-    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer) {
-        try {
-            document.add(new Paragraph("", PdfUtil.getArialRegular9Dark()));
-            return "document";
-        } catch (DocumentException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
+    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
+            throws DocumentException, IOException {
+        document.add(new Paragraph("", PdfUtil.getArialRegular9Dark()));
+        return "document";
     }
 
     protected final TranslationService getTranslationService() {

@@ -66,10 +66,10 @@
 											<component type="input" name="value" field="value" />
 										</layoutElement>
 										<layoutElement column="2" row="1">
-											<component type="input" name="worker" field="worker" />
+											<component type="input" name="worker" field="worker" defaultEnabled="false" />
 										</layoutElement>
 										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" />
+											<component type="input" name="date" field="date" defaultEnabled="false" />
 										</layoutElement>
 									</component>				
 								</components>
@@ -83,10 +83,10 @@
 											<component type="input" name="value" field="value" />
 										</layoutElement>
 										<layoutElement column="2" row="1">
-											<component type="input" name="worker" field="worker" />
+											<component type="input" name="worker" field="worker" defaultEnabled="false" />
 										</layoutElement>
 										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" />
+											<component type="input" name="date" field="date" defaultEnabled="false" />
 										</layoutElement>
 									</component>				
 								</components>
@@ -100,10 +100,10 @@
 											<component type="input" name="value" field="value" />
 										</layoutElement>
 										<layoutElement column="2" row="1">
-											<component type="input" name="worker" field="worker" />
+											<component type="input" name="worker" field="worker" defaultEnabled="false" />
 										</layoutElement>
 										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" />
+											<component type="input" name="date" field="date" defaultEnabled="false" />
 										</layoutElement>
 									</component>				
 								</components>
@@ -135,7 +135,7 @@
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="6" rows="1" fixedRowHeight="false" >
 										<layoutElement column="1" row="1" width="2">
-											<component type="lookup" name="productInComponent" field="productInComponent" hasLabel="false">
+											<component type="lookup" name="productInComponent" field="productInComponent" hasLabel="false" defaultEnabled="false">
 												<option type="expression" value="#operationComponent['operation'].getField('name') + ': ' + #quantity + ' x &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']"/>
 												<option type="fieldCode" value="product" />
 												<option type="textRepresentationOnDisabled" value="true" />
@@ -152,10 +152,10 @@
 															<component type="input" name="quantity" field="quantity" hasLabel="false" />
 														</layoutElement>
 														<layoutElement column="3" row="1">
-															<component type="input" name="worker" field="worker" hasLabel="false" />
+															<component type="input" name="worker" field="worker" hasLabel="false" defaultEnabled="false" />
 														</layoutElement>
 														<layoutElement column="4" row="1">
-															<component type="input" name="date" field="date" hasLabel="false" />
+															<component type="input" name="date" field="date" hasLabel="false" defaultEnabled="false" />
 														</layoutElement>
 													</component>
 												</components>

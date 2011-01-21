@@ -39,8 +39,8 @@
 		<belongsTo name="order" plugin="products" lookupField="number" model="order" lazy="false">
 			<validatesPresence />
 		</belongsTo>
-		<date name="date" readonly="true" />
-		<string name="worker" readonly="true" />
+		<date name="date" readonly="true" readonlyOnCreate="true" />
+		<string name="worker" readonly="true" readonlyOnCreate="true" />
 		<hasMany name="shiftFeatures" model="shiftFeature" joinField="genealogy" cascade="delete" copyable="true" />
 		<hasMany name="otherFeatures" model="otherFeature" joinField="genealogy" cascade="delete" copyable="true" />
 		<hasMany name="postFeatures" model="postFeature" joinField="genealogy" cascade="delete" copyable="true" />
@@ -49,7 +49,7 @@
 	</model>
 	<model name="genealogyProductInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
-		<belongsTo name="productInComponent" plugin="products" model="operationProductInComponent" lookupField="operationComponent" readonly="true" readonlyOnCreate="true" />
+		<belongsTo name="productInComponent" plugin="products" model="operationProductInComponent" lookupField="operationComponent" />
 		<hasMany name="batch" model="productInBatch" joinField="productInComponent" cascade="delete" copyable="true" />
 	</model>
 	<model name="productInBatch">
@@ -89,8 +89,8 @@
 		<string name="value">
 			<validatesLength max="255" />
 		</string>
-		<date name="date" readonly="true" />
-		<string name="worker" readonly="true" />
+		<date name="date" readonly="true" readonlyOnCreate="true" />
+		<string name="worker" readonly="true" readonlyOnCreate="true" />
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedOtherFeature" />
 	</model>
