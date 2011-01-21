@@ -1,5 +1,12 @@
+.verticalLayout {
+	width: 100%;		
+}
 
-.borderLayout {    
+.verticalLayout > div {
+	float: left;	
+}
+
+.borderLayout {
 	margin: 10px;
 	border: solid #A7A7A7 1px;
 	padding: 0px;	

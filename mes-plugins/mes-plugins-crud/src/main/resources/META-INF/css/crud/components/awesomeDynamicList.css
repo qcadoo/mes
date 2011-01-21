@@ -17,7 +17,7 @@
 }
 
 .awesomeDynamicList.hasButtons .awesomeListLine .awesomeListFormContainer {
-	border-right: solid #A7A7A7 1px;
+	border-right: dotted #A7A7A7 1px;
 }
 
 .awesomeDynamicListContent {
