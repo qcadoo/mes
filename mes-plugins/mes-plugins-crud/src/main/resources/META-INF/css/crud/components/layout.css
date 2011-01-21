@@ -2,8 +2,9 @@
 .borderLayout {    
 	margin: 10px;
 	border: solid #A7A7A7 1px;
-	padding: 5px;	
+	padding: 0px;	
 	text-align: left;
+	position: relative;
 }
 
 .borderLayoutLabel {
@@ -15,9 +16,9 @@
 	left: 5px;
 	line-height: 20px;
 	padding: 0px 7px;
-	position: relative;
+	position: absolute;
 	text-align: left;
-	top: -15px;
+	top: -11px;
 }
 
 .gridLayoutTable {

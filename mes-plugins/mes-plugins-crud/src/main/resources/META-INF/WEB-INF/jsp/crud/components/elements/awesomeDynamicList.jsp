@@ -8,7 +8,14 @@
 
 <tiles:useAttribute name="component" />
 
-<div class="awesomeDynamicList">
+<c:if test="${! component.jspOptions.hasBorder}">
+	<c:set var="borderStyle" value="noBorder" />
+</c:if>
+<c:if test="${component.jspOptions.hasButtons}">
+	<c:set var="hasButtonsStyle" value="hasButtons" />
+</c:if>
+	
+<div class="awesomeDynamicList ${borderStyle} ${hasButtonsStyle}">
 	<c:if test="${component.jspOptions.header != null}">
 		<div class="awesomeDynamicListHeader">
 			<tiles:insertTemplate template="../component.jsp">
