@@ -137,6 +137,13 @@ public final class FormComponentState extends AbstractContainerState {
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(JSON_ENTITY_ID, entityId);
+        // TODO mady: well this should work with saveAndClear so the form knows we want to make a new entity after the save and
+        // not to edit the old onw
+        // problem is, it doesnt work
+        // if (entityId == null) {
+        // json.put("clear", true);
+        // json.put(JSON_ENTITY_ID, JSONObject.NULL);
+        // }
         json.put(JSON_VALID, isValid());
         if (entityId != null) {
             json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerEdit", getLocale()));
