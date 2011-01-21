@@ -52,6 +52,7 @@
 		<hasMany name="substitutes" model="substitute" joinField="product" cascade="delete" copyable="true" />
 		<hasMany name="technologies" model="technology" joinField="product" cascade="nullify" />
 		<hasMany name="orders" model="order" joinField="product" cascade="nullify"/>
+		<hasMany name="genealogyBatch" plugin="genealogies" model="productInBatch" joinField="product" cascade="nullify"/>
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="product" cascade="nullify"/>
 		<hasMany name="substituteComponents" model="substituteComponent" joinField="product" cascade="nullify"/>

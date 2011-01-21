@@ -39,8 +39,8 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.DocumentService;
-import com.qcadoo.mes.products.print.pdf.util.PdfPageNumbering;
-import com.qcadoo.mes.products.print.pdf.util.PdfUtil;
+import com.qcadoo.mes.utils.pdf.PdfPageNumbering;
+import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 public abstract class PdfDocumentService extends DocumentService {
 
@@ -67,15 +67,15 @@ public abstract class PdfDocumentService extends DocumentService {
             FileOutputStream fileOutputStream = new FileOutputStream((String) entity.getField("fileName") + getSuffix()
                     + PdfUtil.PDF_EXTENSION);
             PdfWriter writer = PdfWriter.getInstance(document, fileOutputStream);
-            writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("products.report.page", locale),
-                    getTranslationService().translate("products.report.in", locale), PdfUtil.getFontsPath(windowsFontsPath,
+            writer.setPageEvent(new PdfPageNumbering(getTranslationService().translate("core.report.page", locale),
+                    getTranslationService().translate("core.report.in", locale), PdfUtil.getFontsPath(windowsFontsPath,
                             macosFontsPath, linuxFontsPath)));
             document.setMargins(40, 40, 60, 60);
             buildPdfMetadata(document, locale);
             writer.createXmpMetadata();
             document.open();
             buildPdfContent(document, entity, locale);
-            PdfUtil.addEndOfDocument(document, writer, getTranslationService().translate("products.report.endOfReport", locale));
+            PdfUtil.addEndOfDocument(document, writer, getTranslationService().translate("core.report.endOfReport", locale));
             document.close();
         } catch (DocumentException e) {
             LOG.error("Problem with generating document - " + e.getMessage());

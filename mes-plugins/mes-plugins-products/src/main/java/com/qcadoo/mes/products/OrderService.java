@@ -25,6 +25,7 @@
 package com.qcadoo.mes.products;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +82,7 @@ public final class OrderService {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), false);
+                viewDefinitionState.redirectTo("/products/order." + args[0] + "?id=" + state.getFieldValue(), true);
             }
 
         } else {
@@ -145,6 +146,12 @@ public final class OrderService {
                 }
                 order.setField("state", "02inProgress");
             } else {
+
+                if (!checkRequiredBatch(order)) {
+                    state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
+                            MessageType.FAILURE);
+                    return;
+                }
 
                 if (orderState != null) {
                     orderState.setFieldValue("03done");
@@ -228,6 +235,7 @@ public final class OrderService {
             technology.setRequired(false);
             plannedQuantity.setRequired(false);
         } else {
+            technology.setEnabled(true);
             technology.setRequired(true);
             plannedQuantity.setRequired(true);
         }
@@ -235,7 +243,6 @@ public final class OrderService {
 
     public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
         FormComponentState order = (FormComponentState) state.getComponentByReference("form");
-        LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
 
         boolean disabled = false;
 
@@ -248,7 +255,6 @@ public final class OrderService {
         }
 
         order.setEnabledWithChildren(!disabled);
-        technology.setEnabled(!disabled);
     }
 
     public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {
@@ -390,6 +396,67 @@ public final class OrderService {
         } else {
             return true;
         }
+    }
+
+    private boolean checkRequiredBatch(final Entity order) {
+        Entity technology = (Entity) order.getField("technology");
+        if (technology != null) {
+            if (order.getHasManyField("genealogies").size() == 0) {
+                if ((Boolean) technology.getField("batchRequired")) {
+                    return false;
+                }
+                if ((Boolean) technology.getField("shiftFeatureRequired")) {
+                    return false;
+                }
+                if ((Boolean) technology.getField("postFeatureRequired")) {
+                    return false;
+                }
+                if ((Boolean) technology.getField("otherFeatureRequired")) {
+                    return false;
+                }
+                for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+                    for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
+                        if ((Boolean) operationProductComponent.getField("batchRequired")) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            for (Entity genealogy : order.getHasManyField("genealogies")) {
+                if ((Boolean) technology.getField("batchRequired")) {
+                    if (genealogy.getField("batch") == null) {
+                        return false;
+                    }
+                }
+                if ((Boolean) technology.getField("shiftFeatureRequired")) {
+                    List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");
+                    if (entityList.size() == 0) {
+                        return false;
+                    }
+                }
+                if ((Boolean) technology.getField("postFeatureRequired")) {
+                    List<Entity> entityList = genealogy.getHasManyField("postFeatures");
+                    if (entityList.size() == 0) {
+                        return false;
+                    }
+                }
+                if ((Boolean) technology.getField("otherFeatureRequired")) {
+                    List<Entity> entityList = genealogy.getHasManyField("otherFeatures");
+                    if (entityList.size() == 0) {
+                        return false;
+                    }
+                }
+                for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
+                    if ((Boolean) ((Entity) genealogyProductIn.getField("productInComponent")).getField("batchRequired")) {
+                        List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
+                        if (entityList.size() == 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }

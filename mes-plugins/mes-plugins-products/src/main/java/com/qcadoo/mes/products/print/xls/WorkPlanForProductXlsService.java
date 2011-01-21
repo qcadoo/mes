@@ -33,7 +33,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
-import com.qcadoo.mes.products.print.xls.util.XlsUtil;
+import com.qcadoo.mes.utils.xls.XlsUtil;
 
 @Service
 public final class WorkPlanForProductXlsService extends XlsDocumentService {

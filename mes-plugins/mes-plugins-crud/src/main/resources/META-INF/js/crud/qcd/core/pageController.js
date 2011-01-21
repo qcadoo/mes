@@ -129,7 +129,7 @@ QCD.PageController = function(_viewName, _pluginIdentifier, _hasDataDefinition, 
 			} else {
 				setValueData(response);
 			}
-			if (actionsPerformer && ! (response.content && response.content.status != "ok")) {
+			if (actionsPerformer && ! (response.content && response.content.status && response.content.status != "ok")) {
 				actionsPerformer.performNext();
 			}
 		}, function() {
