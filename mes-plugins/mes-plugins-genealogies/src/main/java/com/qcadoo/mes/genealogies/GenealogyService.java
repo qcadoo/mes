@@ -38,10 +38,43 @@ public final class GenealogyService {
         }
     }
 
+    public void hideComponents(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState orderForm = (FormComponentState) state.getComponentByReference("order");
+        ComponentState featureBorderLayout = state.getComponentByReference("featureBorderLayout");
+        ComponentState shiftFeaturesList = state.getComponentByReference("shiftFeaturesList");
+        ComponentState postFeaturesList = state.getComponentByReference("postFeaturesList");
+        ComponentState otherFeaturesList = state.getComponentByReference("otherFeaturesList");
+
+        Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
+        Entity technology = order.getBelongsToField("technology");
+
+        boolean shiftFeatureRequired = (Boolean) technology.getField("shiftFeatureRequired");
+        boolean postFeatureRequired = (Boolean) technology.getField("postFeatureRequired");
+        boolean otherFeatureRequired = (Boolean) technology.getField("otherFeatureRequired");
+
+        if (!shiftFeatureRequired) {
+            shiftFeaturesList.setVisible(false);
+        }
+
+        if (!postFeatureRequired) {
+            postFeaturesList.setVisible(false);
+        }
+
+        if (!otherFeatureRequired) {
+            otherFeaturesList.setVisible(false);
+        }
+
+        if (!(otherFeatureRequired && shiftFeatureRequired && postFeatureRequired)) {
+            featureBorderLayout.setVisible(false);
+        }
+    }
+
     public void fillProductInComponents(final ViewDefinitionState state, final Locale locale) {
         FormComponentState orderForm = (FormComponentState) state.getComponentByReference("order");
         FormComponentState genealogyForm = (FormComponentState) state.getComponentByReference("form");
-        AwesomeDynamicListState list = (AwesomeDynamicListState) state.getComponentByReference("productInComponentsList");
+        ComponentState productInComponentsBorderLayout = state.getComponentByReference("productInComponentsBorderLayout");
+        AwesomeDynamicListState productInComponentsList = (AwesomeDynamicListState) state
+                .getComponentByReference("productInComponentsList");
 
         Entity genealogy = null;
         List<Entity> existingProductInComponents = Collections.emptyList();
@@ -65,7 +98,11 @@ public final class GenealogyService {
             }
         }
 
-        list.setFieldValue(targetProductInComponents);
+        productInComponentsList.setFieldValue(targetProductInComponents);
+
+        if (targetProductInComponents.isEmpty()) {
+            productInComponentsBorderLayout.setVisible(false);
+        }
     }
 
     private Entity createGenealogyProductInComponent(final Entity genealogy, final Entity operationProductInComponent,

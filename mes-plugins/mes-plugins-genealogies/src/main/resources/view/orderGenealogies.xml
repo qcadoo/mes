@@ -57,9 +57,9 @@
 				</component>
 				
 				<component type="borderLayout" name="featureBorderLayout" reference="featureBorderLayout">
-					<component type="gridLayout" name="gridLayout" columns="1" rows="3" fixedRowHeight="false"  reference="featureGridLayout">			
+					<component type="gridLayout" name="gridLayout" columns="1" rows="3" fixedRowHeight="false" reference="featureGridLayout">			
 						<layoutElement column="1" row="1">						
-							<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures">
+							<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures" reference="shiftFeaturesList">
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
@@ -76,7 +76,7 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="1" row="2">
-							<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures">
+							<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures" reference="postFeaturesList">
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
@@ -93,7 +93,7 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="1" row="3">
-							<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures">
+							<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures" reference="otherFeaturesList">
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
@@ -196,6 +196,7 @@
 		</component>
 		
 		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="fillProductInComponents"/>
+		<preRenderHook bean="com.qcadoo.mes.genealogies.GenealogyService" method="hideComponents"/>
 	</view>
 	
 </qcd:views>
