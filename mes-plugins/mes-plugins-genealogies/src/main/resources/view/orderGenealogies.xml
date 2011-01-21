@@ -57,116 +57,97 @@
 				</component>
 				
 				<component type="borderLayout" name="featureBorderLayout" reference="featureBorderLayout">
-					<component type="gridLayout" name="gridLayout" columns="1" rows="3" fixedRowHeight="false" reference="featureGridLayout">			
-						<layoutElement column="1" row="1">						
-							<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures" reference="shiftFeaturesList">
-								<components>
-									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
-										<layoutElement column="1" row="1">
-											<component type="input" name="value" field="value" />
-										</layoutElement>
-										<layoutElement column="2" row="1">
-											<component type="input" name="worker" field="worker" defaultEnabled="false" />
-										</layoutElement>
-										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" defaultEnabled="false" />
-										</layoutElement>
-									</component>				
-								</components>
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="2">
-							<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures" reference="postFeaturesList">
-								<components>
-									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
-										<layoutElement column="1" row="1">
-											<component type="input" name="value" field="value" />
-										</layoutElement>
-										<layoutElement column="2" row="1">
-											<component type="input" name="worker" field="worker" defaultEnabled="false" />
-										</layoutElement>
-										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" defaultEnabled="false" />
-										</layoutElement>
-									</component>				
-								</components>
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="3">
-							<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures" reference="otherFeaturesList">
-								<components>
-									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
-										<layoutElement column="1" row="1">
-											<component type="input" name="value" field="value" />
-										</layoutElement>
-										<layoutElement column="2" row="1">
-											<component type="input" name="worker" field="worker" defaultEnabled="false">
-												<option type="textRepresentationOnDisabled" value="true" />
-											</component>
-										</layoutElement>
-										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" defaultEnabled="false">
-												<option type="textRepresentationOnDisabled" value="true" />
-											</component>
-										</layoutElement>
-									</component>				
-								</components>
-							</component>							
-						</layoutElement>
+					<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures" reference="shiftFeaturesList">
+						<components>
+							<component type="gridLayout" name="gridLayout" columns="2" rows="1" fixedRowHeight="false" >
+								<layoutElement column="1" row="1">
+									<component type="input" name="value" field="value" />
+								</layoutElement>
+								<layoutElement column="2" row="1">
+									<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+							</component>				
+						</components>
 					</component>
-					<option type="label" value="featuresLabel" />
+					<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures" reference="postFeaturesList">
+						<components>
+							<component type="gridLayout" name="gridLayout" columns="2" rows="1" fixedRowHeight="false" >
+								<layoutElement column="1" row="1">
+									<component type="input" name="value" field="value" />
+								</layoutElement>
+								<layoutElement column="2" row="1">
+									<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+							</component>				
+						</components>
+					</component>
+					<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures" reference="otherFeaturesList">
+						<components>
+							<component type="gridLayout" name="gridLayout" columns="2" rows="1" fixedRowHeight="false" >
+								<layoutElement column="1" row="1">
+									<component type="input" name="value" field="value" />
+								</layoutElement>
+								<layoutElement column="2" row="1">
+									<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+							</component>				
+						</components>
+					</component>							
 				</component>
 				
-					<component type="gridLayout" name="mainGridLayout" columns="1" rows="1" fixedRowHeight="false" >
-						<layoutElement column="1" row="1">
-							<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents" reference="productInComponentsList">
-								<header>
-									<component type="gridLayout" name="mainGridLayout" columns="6" rows="1" fixedRowHeight="false" >
-										<layoutElement column="1" row="1" width="2">	
-											<component type="label" name="productInLabel" />
-										</layoutElement>
-										<layoutElement column="3" row="1" width="4">
-											<component type="label" name="productInBatchLabel" />
-										</layoutElement>
-									</component>
-								</header>
-								<components>
-									<component type="gridLayout" name="gridLayout" columns="6" rows="1" fixedRowHeight="false" >
-										<layoutElement column="1" row="1" width="2">
-											<component type="lookup" name="productInComponent" field="productInComponent" hasLabel="false" defaultEnabled="false">
-												<option type="expression" value="#operationComponent['operation'].getField('name') + ': ' + #quantity + ' x &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']"/>
-												<option type="fieldCode" value="product" />
-												<option type="textRepresentationOnDisabled" value="true" />
-											</component>
-										</layoutElement>
-										<layoutElement column="3" row="1" width="4">
-											<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
-												<components>
-													<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
-														<layoutElement column="1" row="1">
-															<component type="input" name="batch" field="batch" hasLabel="true" />
-														</layoutElement>
-														<layoutElement column="2" row="1">
-															<component type="input" name="quantity" field="quantity" hasLabel="true" />
-														</layoutElement>
-														<layoutElement column="3" row="1">
-															<component type="input" name="worker" field="worker" defaultEnabled="false">
-																<option type="textRepresentationOnDisabled" value="true" />
-															</component>
-															<component type="input" name="date" field="date" defaultEnabled="false">
-																<option type="textRepresentationOnDisabled" value="true" />
-															</component>
-														</layoutElement>
-													</component>
-												</components>
-											</component>
-										</layoutElement>
-									</component>
-								</components>
-								<option type="hasButtons" value="false"/>
-							</component>			
-						</layoutElement>
-					</component>
+				<component type="gridLayout" name="mainGridLayout" columns="1" rows="1" fixedRowHeight="false" >
+					<layoutElement column="1" row="1">
+						<component type="awesomeDynamicList" name="productInComponentsList" source="#{form}.productInComponents" reference="productInComponentsList">
+							<header>
+								<component type="gridLayout" name="mainGridLayout" columns="6" rows="1" fixedRowHeight="false" >
+									<layoutElement column="1" row="1" width="2">	
+										<component type="label" name="productInLabel" />
+									</layoutElement>
+									<layoutElement column="3" row="1" width="4">
+										<component type="label" name="productInBatchLabel" />
+									</layoutElement>
+								</component>
+							</header>
+							<components>
+								<component type="gridLayout" name="gridLayout" columns="6" rows="1" fixedRowHeight="false" >
+									<layoutElement column="1" row="1" width="2">
+										<component type="lookup" name="productInComponent" field="productInComponent" hasLabel="false" defaultEnabled="false">
+											<option type="expression" value="#operationComponent['operation'].getField('name') + ': ' + #quantity + ' x &lt;b&gt;' + #product['number'] + '&lt;/b&gt; - ' + #product['name']"/>
+											<option type="fieldCode" value="product" />
+											<option type="textRepresentationOnDisabled" value="true" />
+										</component>
+									</layoutElement>
+									<layoutElement column="3" row="1" width="4">
+										<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
+											<components>
+												<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+													<layoutElement column="1" row="1">
+														<component type="input" name="batch" field="batch" />
+													</layoutElement>
+													<layoutElement column="2" row="1">
+														<component type="input" name="quantity" field="quantity" />
+													</layoutElement>
+													<layoutElement column="3" row="1">
+														<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+															<option type="textRepresentationOnDisabled" value="true" />
+														</component>
+													</layoutElement>
+												</component>
+											</components>
+										</component>
+									</layoutElement>
+								</component>
+							</components>
+							<option type="hasButtons" value="false"/>
+						</component>			
+					</layoutElement>
+				</component>
 				
 				<script>
 					<![CDATA[

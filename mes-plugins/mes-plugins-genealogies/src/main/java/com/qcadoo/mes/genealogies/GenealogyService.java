@@ -64,7 +64,7 @@ public final class GenealogyService {
             otherFeaturesList.setVisible(false);
         }
 
-        if (!(otherFeatureRequired && shiftFeatureRequired && postFeatureRequired)) {
+        if (!(otherFeatureRequired || shiftFeatureRequired || postFeatureRequired)) {
             featureBorderLayout.setVisible(false);
         }
     }
