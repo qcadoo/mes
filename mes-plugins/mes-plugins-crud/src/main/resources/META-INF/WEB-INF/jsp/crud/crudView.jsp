@@ -74,6 +74,7 @@
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/core/qcd/core/messagesController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/core/pageController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/core/actionEvaluator.js"></script>
+			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/core/tabController.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/component.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/container.js"></script>
 			<script type="text/javascript" src="${pageContext.request.contextPath}/js/crud/qcd/components/containers/layout/layout.js"></script>

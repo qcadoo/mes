@@ -188,6 +188,10 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		var formObject = QCDPageConstructor.getChildrenComponents(copy, mainController)["innerForm_"+formId];
 		formObject.updateSize(currentWidth-BUTTONS_WIDTH, currentHeight);
 		formObject.setEnabled(true, true);
+		
+		var tabController = mainController.getTabController();
+		tabController.getTabIndexInfo(copy);
+		
 		return formObject;
 	}
 	
