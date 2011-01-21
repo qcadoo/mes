@@ -53,15 +53,24 @@
 			<ribbon>
 				<group name="report">
 					<smallButton name="printReport"
-						action="#{form}.fireEvent(generateReportForComponent);" state="enabled" />
+						action="#{form}.fireEvent(generateReportForComponent);" state="disabled" message="genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
+						<script>
+							<![CDATA[
+								#{batch}.addOnChangeListener({
+									onChange: function(selectedRecord) {
+										if (selectedRecord) {
+											this.enable();
+										} else {
+											this.disable("#{translate(genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo)}");
+										}
+									}
+								});
+							]]>
+						</script>
+					</smallButton>
 				</group>
 			</ribbon>		
 			<component type="form" name="genealogyForComponent" reference="form">
-				<script>
-					<![CDATA[
-						var printReport = #{window}.getRibbonItem("actions.printReport");
-					]]>
-				</script>
 				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
 					<layoutElement column="1" row="1">
 					  <component type="lookup" name="product" reference="product">

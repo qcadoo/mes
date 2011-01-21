@@ -10,6 +10,8 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 	
 	var translations = this.options.translations;
 	
+	var fireOnChangeListeners = this.fireOnChangeListeners;
+	
 	var AUTOCOMPLETE_TIMEOUT = 100;
 	
 	var keyboard = {
@@ -282,6 +284,7 @@ QCD.components.elements.Lookup = function(_element, _mainController) {
 		if (callEvent == undefined) {
 			callEvent = true;
 		}
+		fireOnChangeListeners("onChange", [entity]);
 		if (entity) {
 			dataState.selectedEntity.id = entity.id;
 			dataState.selectedEntity.code = entity.code;
