@@ -29,7 +29,7 @@ public final class GenealogyService {
 
     public void showGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        Long orderId = ((FormComponentState) triggerState).getEntityId();
+        Long orderId = (Long) triggerState.getFieldValue();
 
         if (orderId != null) {
             String url = "../page/genealogies/orderGenealogies.html?context={\"order.id\":\"" + orderId + "\",\"form.order\":\""

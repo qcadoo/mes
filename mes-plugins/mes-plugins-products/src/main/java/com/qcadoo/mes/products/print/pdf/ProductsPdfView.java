@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.products.print.pdf;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Map;
@@ -63,7 +62,7 @@ public abstract class ProductsPdfView extends AbstractPdfView {
 
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
-            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+            final HttpServletRequest request, final HttpServletResponse response) {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
@@ -98,10 +97,13 @@ public abstract class ProductsPdfView extends AbstractPdfView {
         PdfUtil.addMetaData(document);
     }
 
-    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer)
-            throws DocumentException, IOException {
-        document.add(new Paragraph("", PdfUtil.getArialRegular9Dark()));
-        return "document";
+    protected String addContent(final Document document, final Entity entity, final Locale locale, final PdfWriter writer) {
+        try {
+            document.add(new Paragraph("", PdfUtil.getArialRegular9Dark()));
+            return "document";
+        } catch (DocumentException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
     protected final TranslationService getTranslationService() {

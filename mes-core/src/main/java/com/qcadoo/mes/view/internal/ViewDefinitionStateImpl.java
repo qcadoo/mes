@@ -32,7 +32,7 @@ public final class ViewDefinitionStateImpl extends AbstractContainerState implem
     }
 
     @Override
-    public final JSONObject render() throws JSONException {
+    public JSONObject render() throws JSONException {
         if (redirectToUrl != null) {
             JSONObject json = new JSONObject();
             JSONObject jsonRedirect = new JSONObject();

@@ -271,14 +271,16 @@ public final class WorkPlanService {
         return generatedNumber;
     }
 
-    private void generateWorkPlanDocuments(final ComponentState state, Entity workPlan) throws IOException, DocumentException {
-        workPlan = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "Work_plan"), "workPlan");
-        workPlanForMachinePdfService.generateDocument(workPlan, state.getLocale());
-        workPlanForMachineXlsService.generateDocument(workPlan, state.getLocale());
-        workPlanForWorkerPdfService.generateDocument(workPlan, state.getLocale());
-        workPlanForWorkerXlsService.generateDocument(workPlan, state.getLocale());
-        workPlanForProductPdfService.generateDocument(workPlan, state.getLocale());
-        workPlanForProductXlsService.generateDocument(workPlan, state.getLocale());
+    private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
+            DocumentException {
+        Entity workPlanWithFileName = updateFileName(workPlan, getFullFileName((Date) workPlan.getField("date"), "Work_plan"),
+                "workPlan");
+        workPlanForMachinePdfService.generateDocument(workPlanWithFileName, state.getLocale());
+        workPlanForMachineXlsService.generateDocument(workPlanWithFileName, state.getLocale());
+        workPlanForWorkerPdfService.generateDocument(workPlanWithFileName, state.getLocale());
+        workPlanForWorkerXlsService.generateDocument(workPlanWithFileName, state.getLocale());
+        workPlanForProductPdfService.generateDocument(workPlanWithFileName, state.getLocale());
+        workPlanForProductXlsService.generateDocument(workPlanWithFileName, state.getLocale());
     }
 
     private Entity createNewWorkPlan(final Entity order, final ComponentState state) {
@@ -306,11 +308,11 @@ public final class WorkPlanService {
         return saved;
     }
 
-    private final String getFullFileName(final Date date, final String fileName) {
+    private String getFullFileName(final Date date, final String fileName) {
         return path + fileName + "_" + new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT).format(date) + "_";
     }
 
-    private final Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
+    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
         entity.setField("fileName", fileName);
         return dataDefinitionService.get("products", entityName).save(entity);
     }
