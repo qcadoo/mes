@@ -144,8 +144,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			}
 		}
 		if (awesomeDynamicListHeaderObject) {
-			awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH+1);
-			awesomeDynamicListHeaderObject.updateSize(_width-BUTTONS_WIDTH, _height);
+			awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH-21);
+			awesomeDynamicListHeaderObject.updateSize(_width-BUTTONS_WIDTH-30, _height);
 		}
 	}
 	

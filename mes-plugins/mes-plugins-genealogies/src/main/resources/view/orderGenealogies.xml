@@ -56,62 +56,61 @@
 					<option type="label" value="genealogyLabel" />
 				</component>
 				
-				<component type="borderLayout" name="featureBorderLayout" reference="featureBorderLayout">
-					<component type="gridLayout" name="gridLayout" columns="1" rows="3" fixedRowHeight="false"  reference="featureGridLayout">			
-						<layoutElement column="1" row="1">						
+				
+					<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false"  reference="featureGridLayout">			
+						<layoutElement column="1" row="1">
+							<component type="borderLayout" name="shiftBorderLayout" reference="shiftBorderLayout">
+								<option type="label" value="shiftLabel" />						
 							<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures">
 								<components>
-									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+									<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
 											<component type="input" name="value" field="value" />
 										</layoutElement>
-										<layoutElement column="2" row="1">
+										<layoutElement column="1" row="2">
 											<component type="input" name="worker" field="worker" />
-										</layoutElement>
-										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" />
 										</layoutElement>
 									</component>				
 								</components>
 							</component>
+							</component>
 						</layoutElement>
-						<layoutElement column="1" row="2">
+						<layoutElement column="2" row="1">
+							<component type="borderLayout" name="postBorderLayout" reference="postBorderLayout">
+								<option type="label" value="postLabel" />
 							<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures">
 								<components>
-									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+									<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
 											<component type="input" name="value" field="value" />
 										</layoutElement>
-										<layoutElement column="2" row="1">
+										<layoutElement column="1" row="2">
 											<component type="input" name="worker" field="worker" />
-										</layoutElement>
-										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" />
 										</layoutElement>
 									</component>				
 								</components>
 							</component>
+							</component>
 						</layoutElement>
-						<layoutElement column="1" row="3">
+						<layoutElement column="3" row="1">
+							<component type="borderLayout" name="otherBorderLayout" reference="otherBorderLayout">
+								<option type="label" value="otherLabel" />
 							<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures">
 								<components>
-									<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
+									<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
 											<component type="input" name="value" field="value" />
 										</layoutElement>
-										<layoutElement column="2" row="1">
+										<layoutElement column="1" row="2">
 											<component type="input" name="worker" field="worker" />
-										</layoutElement>
-										<layoutElement column="3" row="1">
-											<component type="input" name="date" field="date" />
 										</layoutElement>
 									</component>				
 								</components>
-							</component>							
+							</component>
+							</component>						
 						</layoutElement>
 					</component>
-					<option type="label" value="featuresLabel" />
-				</component>
+					
 				
 					<component type="gridLayout" name="mainGridLayout" columns="1" rows="1" fixedRowHeight="false" >
 						<layoutElement column="1" row="1">
@@ -148,9 +147,6 @@
 														<layoutElement column="3" row="1">
 															<component type="input" name="worker" field="worker" hasLabel="false" />
 														</layoutElement>
-														<!--<layoutElement column="4" row="1">
-															<component type="input" name="date" field="date" hasLabel="false" />
-														</layoutElement>-->
 													</component>
 												</components>
 											</component>
