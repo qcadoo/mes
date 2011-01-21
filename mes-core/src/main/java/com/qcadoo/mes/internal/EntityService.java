@@ -25,6 +25,7 @@
 package com.qcadoo.mes.internal;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -39,6 +40,7 @@ import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.PasswordType;
+import com.qcadoo.mes.utils.ExpressionUtil;
 
 @Service
 public final class EntityService {
@@ -84,6 +86,13 @@ public final class EntityService {
         if (dataDefinition.isPrioritizable()) {
             genericEntity.setField(dataDefinition.getPriorityField().getName(),
                     getField(databaseEntity, dataDefinition.getPriorityField()));
+        }
+
+        for (Entry<String, FieldDefinition> fieldDefinitionEntry : dataDefinition.getFields().entrySet()) {
+            if (fieldDefinitionEntry.getValue().getExpression() != null) {
+                genericEntity.setField(fieldDefinitionEntry.getKey(),
+                        ExpressionUtil.getValue(genericEntity, fieldDefinitionEntry.getValue().getExpression(), Locale.ENGLISH));
+            }
         }
 
         return genericEntity;

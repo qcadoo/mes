@@ -185,7 +185,7 @@ QCD.components.Component = function(_element, _mainController) {
 		} else {
 			if (isVisible) {
 				element.show();
-			} else {
+			} else {				
 				element.hide();
 			}
 		}

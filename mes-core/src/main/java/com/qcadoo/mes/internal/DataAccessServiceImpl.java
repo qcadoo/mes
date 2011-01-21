@@ -170,7 +170,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 for (Entity dbEntity : dbEntities) {
                     boolean exists = false;
                     for (Entity exisingEntity : savedEntities) {
-                        if (dbEntity.getId() == exisingEntity.getId()) {
+                        if (dbEntity.getId().equals(exisingEntity.getId())) {
                             exists = true;
                             break;
                         }

@@ -34,6 +34,8 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
 
     private boolean hasButtons = true;
 
+    private boolean hasBorder = true;
+
     public AwesomeDynamicListPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
         ComponentDefinition formComponentDefinition = new ComponentDefinition();
@@ -55,6 +57,8 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
         for (ComponentOption option : getOptions()) {
             if ("hasButtons".equals(option.getType())) {
                 hasButtons = Boolean.parseBoolean(option.getValue());
+            } else if ("hasBorder".equals(option.getType())) {
+                hasBorder = Boolean.parseBoolean(option.getValue());
             } else {
                 throw new IllegalStateException("Unknown option for AwesomeDynamicList: " + option.getType());
             }
@@ -109,6 +113,7 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     protected JSONObject getJsOptions(final Locale locale) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("hasButtons", hasButtons);
+        json.put("hasBorder", hasBorder);
         return json;
     }
 
@@ -116,6 +121,7 @@ public class AwesomeDynamicListPattern extends AbstractComponentPattern {
     protected Map<String, Object> getJspOptions(final Locale locale) {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("innerForm", innerFormPattern.prepareView(locale));
+        options.put("hasBorder", hasBorder);
         if (headerFormPattern != null) {
             options.put("header", headerFormPattern.prepareView(locale));
         }

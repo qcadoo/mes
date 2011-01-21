@@ -62,13 +62,16 @@
 							<component type="borderLayout" name="shiftBorderLayout" reference="shiftBorderLayout">
 								<option type="label" value="shiftLabel" />						
 							<component type="awesomeDynamicList" name="shiftFeaturesList" source="#{form}.shiftFeatures">
+								<option type="hasBorder" value="false" />
 								<components>
 									<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
 										<layoutElement column="1" row="1">
 											<component type="input" name="value" field="value" />
 										</layoutElement>
 										<layoutElement column="1" row="2">
-											<component type="input" name="worker" field="worker" />
+											<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
 										</layoutElement>
 									</component>				
 								</components>
@@ -85,7 +88,9 @@
 											<component type="input" name="value" field="value" />
 										</layoutElement>
 										<layoutElement column="1" row="2">
-											<component type="input" name="worker" field="worker" />
+											<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
 										</layoutElement>
 									</component>				
 								</components>
@@ -102,7 +107,9 @@
 											<component type="input" name="value" field="value" />
 										</layoutElement>
 										<layoutElement column="1" row="2">
-											<component type="input" name="worker" field="worker" />
+											<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
 										</layoutElement>
 									</component>				
 								</components>
@@ -136,6 +143,7 @@
 										</layoutElement>
 										<layoutElement column="3" row="1" width="4">
 											<component type="awesomeDynamicList" name="productInComponentsBatchList" source="batch">
+												<option type="hasBorder" value="false" />
 												<components>
 													<component type="gridLayout" name="gridLayout" columns="3" rows="1" fixedRowHeight="false" >
 														<layoutElement column="1" row="1">
@@ -145,7 +153,9 @@
 															<component type="input" name="quantity" field="quantity" hasLabel="true" />
 														</layoutElement>
 														<layoutElement column="3" row="1">
-															<component type="input" name="worker" field="worker" hasLabel="false" />
+															<component type="input" name="workerAndDate" field="workerAndDate" defaultEnabled="false" >
+																<option type="textRepresentationOnDisabled" value="true" />
+															</component>
 														</layoutElement>
 													</component>
 												</components>

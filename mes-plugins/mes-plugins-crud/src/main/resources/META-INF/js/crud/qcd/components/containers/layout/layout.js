@@ -11,6 +11,7 @@ QCD.components.containers.layout.Layout = function(_element, _mainController) {
 	}
 	this.setComponentValue = function(value) {
 	}
+	
 	this.setComponentState = function(state) {
 	}
 	

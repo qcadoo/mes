@@ -4,8 +4,8 @@
 	border-bottom: none;
 	margin: 10px;
 }
-.awesomeDynamicList .awesomeDynamicList,
-.awesomeDynamicList .awesomeDynamicList .awesomeListLine {
+.awesomeDynamicList.noBorder,
+.awesomeDynamicList.noBorder .awesomeListLine {
 	border: none;
 	margin: 0px;
 }

@@ -261,12 +261,12 @@ public final class MaterialRequirementService {
         return generatedNumber;
     }
 
-    private void generateMaterialReqDocuments(final ComponentState state, Entity materialRequirement) throws IOException,
+    private void generateMaterialReqDocuments(final ComponentState state, final Entity materialRequirement) throws IOException,
             DocumentException {
-        materialRequirement = updateFileName(materialRequirement,
+        Entity materialRequirementWithFileName = updateFileName(materialRequirement,
                 getFullFileName((Date) materialRequirement.getField("date"), "Material_requirement"), "materialRequirement");
-        materialRequirementPdfService.generateDocument(materialRequirement, state.getLocale());
-        materialRequirementXlsService.generateDocument(materialRequirement, state.getLocale());
+        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, state.getLocale());
+        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, state.getLocale());
     }
 
     private Entity createNewMaterialReq(final Entity order, final ComponentState state) {
@@ -296,11 +296,11 @@ public final class MaterialRequirementService {
         return saved;
     }
 
-    private final String getFullFileName(final Date date, final String fileName) {
+    private String getFullFileName(final Date date, final String fileName) {
         return path + fileName + "_" + new SimpleDateFormat(DateType.REPORT_DATE_TIME_FORMAT).format(date) + "_";
     }
 
-    private final Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
+    private Entity updateFileName(final Entity entity, final String fileName, final String entityName) {
         entity.setField("fileName", fileName);
         return dataDefinitionService.get("products", entityName).save(entity);
     }

@@ -65,6 +65,8 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     private final DataDefinition dataDefinition;
 
+    private String expression;
+
     public FieldDefinitionImpl(final DataDefinition dataDefinition, final String name) {
         this.dataDefinition = dataDefinition;
         this.name = name;
@@ -120,7 +122,7 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     @Override
     public boolean isReadOnlyOnUpdate() {
-        return readOnlyOnUpdate;
+        return readOnlyOnUpdate || expression != null;
     }
 
     public FieldDefinition withReadOnlyOnUpdate(final boolean readOnlyOnUpdate) {
@@ -135,17 +137,17 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     @Override
     public boolean isReadOnly() {
-        return readOnly;
+        return readOnly || expression != null;
     }
 
     @Override
     public boolean isRequired() {
-        return required;
+        return required && expression == null;
     }
 
     @Override
     public boolean isRequiredOnCreate() {
-        return requiredOnCreate;
+        return requiredOnCreate && expression == null;
     }
 
     public void setCustomField(final boolean customField) {
@@ -164,7 +166,7 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     @Override
     public boolean isUnique() {
-        return unique;
+        return unique && expression == null;
     }
 
     public void setPersistent(final boolean persistent) {
@@ -173,14 +175,23 @@ public final class FieldDefinitionImpl implements FieldDefinition {
 
     @Override
     public boolean isPersistent() {
-        return persistent;
+        return persistent && expression == null;
+    }
+
+    public void setExpression(final String expression) {
+        this.expression = expression;
+    }
+
+    @Override
+    public String getExpression() {
+        return expression;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(13, 31).append(customField).append(defaultValue).append(readOnlyOnUpdate).append(name)
                 .append(required).append(type).append(unique).append(validators).append(readOnly).append(requiredOnCreate)
-                .toHashCode();
+                .append(expression).toHashCode();
     }
 
     @Override
@@ -198,7 +209,8 @@ public final class FieldDefinitionImpl implements FieldDefinition {
         return new EqualsBuilder().append(customField, other.customField).append(defaultValue, other.defaultValue)
                 .append(readOnlyOnUpdate, other.readOnlyOnUpdate).append(name, other.name).append(required, other.required)
                 .append(type, other.type).append(unique, other.unique).append(validators, other.validators)
-                .append(readOnly, other.readOnly).append(requiredOnCreate, other.requiredOnCreate).isEquals();
+                .append(readOnly, other.readOnly).append(requiredOnCreate, other.requiredOnCreate)
+                .append(expression, other.expression).isEquals();
     }
 
     @Override

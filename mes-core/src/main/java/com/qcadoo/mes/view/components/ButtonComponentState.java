@@ -66,7 +66,7 @@ public class ButtonComponentState extends AbstractComponentState {
         return json;
     }
 
-    private final void refreshValue() {
+    private void refreshValue() {
         value = null;
 
         if (url != null) {

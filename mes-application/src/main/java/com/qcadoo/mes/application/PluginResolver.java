@@ -42,7 +42,7 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
 
     private final Set<String> identifiers = new HashSet<String>();
 
-    private static final Pattern pattern = Pattern.compile(".*/([^/]+\\.jar).*");
+    private static final Pattern PATTERN = Pattern.compile(".*/([^/]+\\.jar).*");
 
     @Override
     @Transactional
@@ -104,7 +104,7 @@ public final class PluginResolver implements ApplicationListener<ContextRefreshe
 
             identifiers.add(identifier);
 
-            Matcher matcher = pattern.matcher(path);
+            Matcher matcher = PATTERN.matcher(path);
 
             if (matcher.find()) {
                 addPlugin(identifier, name, packageName, version, vendor, description, matcher.group(1));

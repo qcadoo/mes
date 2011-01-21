@@ -63,13 +63,20 @@ public abstract class ProductsPdfView extends AbstractPdfView {
 
     @Override
     protected final void buildPdfDocument(final Map<String, Object> model, final Document document, final PdfWriter writer,
-            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+            final HttpServletRequest request, final HttpServletResponse response) {
         Locale locale = PdfUtil.retrieveLocaleFromRequestCookie(request);
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setMaximumFractionDigits(3);
         decimalFormat.setMinimumFractionDigits(3);
         Entity entity = (Entity) model.get("entity");
-        String fileName = addContent(document, entity, locale, writer);
+        String fileName;
+        try {
+            fileName = addContent(document, entity, locale, writer);
+        } catch (DocumentException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
         response.setHeader("Content-disposition", "attachment; filename=" + fileName + PdfUtil.PDF_EXTENSION);
         writer.addJavaScript("this.print(false);", false);
     }
