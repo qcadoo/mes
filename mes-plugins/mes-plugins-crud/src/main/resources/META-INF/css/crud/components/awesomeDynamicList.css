@@ -4,12 +4,19 @@
 	border-bottom: none;
 	margin: 10px;
 }
-.awesomeDynamicList.noBorder,
-.awesomeDynamicList.noBorder .awesomeListLine {
+.awesomeDynamicList.noBorder {
 	border: none;
 	margin: 0px;
 }
-.awesomeDynamicList .awesomeDynamicList .awesomeListLine .awesomeListFormContainer {
+.awesomeDynamicList.noBorder .awesomeListLine {
+	margin: 0px;
+}
+.awesomeDynamicList .awesomeListLine.lastLine {
+	margin: 0px;
+	border-bottom: none;
+}
+
+.awesomeDynamicList.hasButtons .awesomeListLine .awesomeListFormContainer {
 	border-right: solid #A7A7A7 1px;
 }
 

@@ -78,6 +78,7 @@
 					<component type="borderLayout" name="postBorderLayout" reference="postBorderLayout">
 						<option type="label" value="postLabel" />
 						<component type="awesomeDynamicList" name="postFeaturesList" source="#{form}.postFeatures">
+							<option type="hasBorder" value="false" />
 							<components>
 								<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
 									<layoutElement column="1" row="1">
@@ -95,6 +96,7 @@
 					<component type="borderLayout" name="otherBorderLayout" reference="otherBorderLayout">
 						<option type="label" value="otherLabel" />
 						<component type="awesomeDynamicList" name="otherFeaturesList" source="#{form}.otherFeatures">
+							<option type="hasBorder" value="false" />
 							<components>
 								<component type="gridLayout" name="gridLayout" columns="1" rows="2" fixedRowHeight="false" >
 									<layoutElement column="1" row="1">
@@ -108,7 +110,7 @@
 								</component>				
 							</components>
 						</component>
-					</component>						
+					</component>												
 				</component>
 			
 				<component type="gridLayout" name="mainGridLayout" columns="1" rows="1" fixedRowHeight="false">

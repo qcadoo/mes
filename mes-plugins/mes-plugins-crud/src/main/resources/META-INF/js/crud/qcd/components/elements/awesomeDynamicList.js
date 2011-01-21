@@ -144,7 +144,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			}
 		}
 		if (awesomeDynamicListHeaderObject) {
-			awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH-21);
+			awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH-20);
 			awesomeDynamicListHeaderObject.updateSize(_width-BUTTONS_WIDTH-30, _height);
 		}
 	}
@@ -231,17 +231,20 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				if (! formObjects[i]) {
 					continue;
 				}
+				var line = $("#"+elementSearchName+"_line_"+i);
 				var removeButton = $("#"+elementSearchName+"_line_"+i+"_removeButton");
 				var addButton = $("#"+elementSearchName+"_line_"+i+"_addButton");
 				removeButton.show();
 				if (i == lastObject) {
 					addButton.show();
+					line.addClass("lastLine");
 				} else {
 					addButton.hide();
+					line.removeClass("lastLine");
 				}
-			}	
+			}
 		} else {
-			firstLine = $("<div>").addClass("awesomeListLine").attr("id", elementPath+"_line_0");
+			firstLine = $("<div>").addClass("awesomeListLine").addClass("lastLine").attr("id", elementPath+"_line_0");
 			var buttons = $("<div>").addClass("awesomeListButtons");
 			var addLineButton = $("<a>").addClass("awesomeListButton").addClass("awesomeListPlusButton").attr("id", elementPath+"_line_0_addButton");
 			addLineButton.click(function(e) {
