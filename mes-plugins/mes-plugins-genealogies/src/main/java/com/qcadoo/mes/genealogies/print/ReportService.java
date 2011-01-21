@@ -9,6 +9,7 @@ import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @Service
 public class ReportService {
@@ -32,7 +33,33 @@ public class ReportService {
             state.addMessage(translationService.translate("genealogies.genealogyForComponent.report.noBatch", state.getLocale()),
                     MessageType.FAILURE);
         }
-
     }
 
+    public void changeBatch(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        if (!(state instanceof LookupComponentState)) {
+            return;
+        }
+        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batch");
+
+        if (batchState != null) {
+            batchState.setFieldValue(null);
+        }
+    }
+
+    public void generateReportForProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batch");
+        if (state instanceof FormComponentState) {
+            if (batchState != null && batchState.getFieldValue() != null) {
+                viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true);
+            } else {
+                state.addMessage(
+                        translationService.translate("genealogies.genealogyForProduct.report.noBatch", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        } else {
+            state.addMessage(translationService.translate("genealogies.genealogyForProduct.report.noBatch", state.getLocale()),
+                    MessageType.FAILURE);
+        }
+    }
 }
