@@ -29,10 +29,10 @@ public class LogicalOperatorRestriction extends BaseRestriction {
     }
 
     @Override
-    public final Criterion getHibernateCriteria() {
+    public final Criterion getHibernateCriteria(final String propertyName) {
         List<Criterion> criterions = new LinkedList<Criterion>();
         for (Restriction r : restrictions) {
-            criterions.add(((BaseRestriction) r).getHibernateCriteria());
+            criterions.add(((BaseRestriction) r).getHibernateCriteria(propertyName));
         }
 
         switch (operator) {
