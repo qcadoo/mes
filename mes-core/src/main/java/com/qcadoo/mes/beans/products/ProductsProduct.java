@@ -37,8 +37,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import com.qcadoo.mes.beans.genealogies.GenealogiesProductInBatch;
-
 @Entity
 @Table(name = "products_product")
 public class ProductsProduct {
@@ -72,9 +70,6 @@ public class ProductsProduct {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsTechnology> technologies;
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<GenealogiesProductInBatch> genealogyBatch;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductsOrder> orders;
@@ -206,14 +201,6 @@ public class ProductsProduct {
 
     public void setLastUsedBatch(final String lastUsedBatch) {
         this.lastUsedBatch = lastUsedBatch;
-    }
-
-    public List<GenealogiesProductInBatch> getGenealogyBatch() {
-        return genealogyBatch;
-    }
-
-    public void setGenealogyBatch(final List<GenealogiesProductInBatch> genealogyBatch) {
-        this.genealogyBatch = genealogyBatch;
     }
 
 }

@@ -13,8 +13,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.qcadoo.mes.beans.products.ProductsProduct;
-
 @Entity
 @Table(name = "genealogies_product_in_batch")
 public class GenealogiesProductInBatch {
@@ -27,9 +25,6 @@ public class GenealogiesProductInBatch {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private GenealogiesGenealogyProductInComponent productInComponent;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ProductsProduct product;
 
     @Column(scale = 3, precision = 10)
     private BigDecimal quantity;
@@ -85,13 +80,5 @@ public class GenealogiesProductInBatch {
 
     public void setProductInComponent(final GenealogiesGenealogyProductInComponent productInComponent) {
         this.productInComponent = productInComponent;
-    }
-
-    public ProductsProduct getProduct() {
-        return product;
-    }
-
-    public void setProduct(final ProductsProduct product) {
-        this.product = product;
     }
 }
