@@ -9,7 +9,6 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -52,7 +51,6 @@ public class GenealogyForComponentView extends ReportPdfView {
     }
 
     private void addTables(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        document.add(Chunk.NEWLINE);
         List<String> orderHeader = new ArrayList<String>();
         orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.name.label", locale));

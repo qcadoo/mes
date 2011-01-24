@@ -43,11 +43,8 @@ public class ReportService {
 
     public void changeProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof LookupComponentState)) {
-            System.out.println(" !!!!!! :( ");
             return;
         }
-
-        System.out.println(" !!!!!! :) ");
 
         GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
 
@@ -57,6 +54,15 @@ public class ReportService {
     public void addRestrictionToGenealogyGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
         final LookupComponentState product = (LookupComponentState) viewDefinitionState.getComponentByReference("product");
         final GridComponentState batches = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
+
+        batches.setCustomRestriction(new CustomRestriction() {
+
+            @Override
+            public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
+                searchCriteriaBuilder.restrictedWith(Restrictions.eq("order.product.id", product.getFieldValue()));
+            }
+
+        });
     }
 
     public void addRestrictionToComponentGrid(final ViewDefinitionState viewDefinitionState, final Locale locale) {
