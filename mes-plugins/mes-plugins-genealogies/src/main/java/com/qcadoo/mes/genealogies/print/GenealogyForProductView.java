@@ -9,7 +9,6 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -53,7 +52,6 @@ public class GenealogyForProductView extends ReportPdfView {
     }
 
     private void addTables(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        document.add(Chunk.NEWLINE);
         List<String> orderHeader = new ArrayList<String>();
         orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.name.label", locale));
@@ -65,11 +63,8 @@ public class GenealogyForProductView extends ReportPdfView {
 
     private void addComponentSeries(final Document document, final List<Entity> orders, final Locale locale)
             throws DocumentException {
-        boolean firstPage = true;
         for (Entity order : orders) {
-            if (!firstPage) {
-                document.newPage();
-            }
+            document.newPage();
             Paragraph title = new Paragraph(new Phrase(getTranslationService().translate(
                     "genealogies.genealogyForProduct.report.paragrah", locale), PdfUtil.getArialBold11Light()));
             title.add(new Phrase(" " + order.getField("number").toString(), PdfUtil.getArialBold19Dark()));
@@ -81,16 +76,16 @@ public class GenealogyForProductView extends ReportPdfView {
             componentHeader.add(getTranslationService().translate("genealogies.productInBatch.batch.label", locale));
             PdfPTable table = PdfUtil.createTableWithHeader(4, componentHeader, false);
             for (Entity batch : getBatchList(order)) {
-                table.addCell(new Phrase(((Entity) batch.getField("product")).getField("number").toString(), PdfUtil
-                        .getArialRegular9Dark()));
-                table.addCell(new Phrase(((Entity) batch.getField("product")).getField("name").toString(), PdfUtil
-                        .getArialRegular9Dark()));
+                Entity product = (Entity) ((Entity) ((Entity) batch.getField("productInComponent"))
+                        .getField("productInComponent")).getField("product");
+                table.addCell(new Phrase(product.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 BigDecimal quantity = (BigDecimal) batch.getField("quantity");
                 quantity = (quantity == null) ? BigDecimal.ZERO : quantity;
                 table.addCell(new Phrase(getDecimalFormat().format(quantity), PdfUtil.getArialRegular9Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                table.addCell(new Phrase(((Entity) batch.getField("batch")).toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(batch.getField("batch").toString(), PdfUtil.getArialRegular9Dark()));
             }
             document.add(table);
         }
