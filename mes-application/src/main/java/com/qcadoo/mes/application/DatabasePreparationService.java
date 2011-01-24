@@ -102,6 +102,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition workPlanGridView = getMenuViewDefinition("workPlans");
         MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
         MenuViewDefinition genealogyForComponentFormView = getMenuViewDefinition("genealogyForComponent");
+        MenuViewDefinition genealogyForProductFormView = getMenuViewDefinition("genealogyForProduct");
 
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 1);
         MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 2);
@@ -120,6 +121,8 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         addMenuViewDefinitionItem("workPlans", "products.menu.products.workPlans", menuCategoryReports, workPlanGridView, 2);
         addMenuViewDefinitionItem("genealogyForComponent", "genealogies.menu.reports.genealogyForComponent", menuCategoryReports,
                 genealogyForComponentFormView, 3);
+        addMenuViewDefinitionItem("genealogyForProduct", "genealogies.menu.reports.genealogyForProduct", menuCategoryReports,
+                genealogyForProductFormView, 4);
 
         if (addAdministrationMenuToDatabase) {
             addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);

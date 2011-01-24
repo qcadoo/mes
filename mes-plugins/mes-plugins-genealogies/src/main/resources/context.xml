@@ -38,5 +38,8 @@
 	
 	<bean id="genealogyForComponentView"
   		class="com.qcadoo.mes.genealogies.print.GenealogyForComponentView"/>
+  		
+  	<bean id="genealogyForProductView"
+  		class="com.qcadoo.mes.genealogies.print.GenealogyForProductView"/>
 
 </beans>

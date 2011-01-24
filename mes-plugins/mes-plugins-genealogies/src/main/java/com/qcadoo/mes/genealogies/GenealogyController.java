@@ -39,4 +39,12 @@ public class GenealogyController {
         mav.addObject("value", value);
         return mav;
     }
+
+    @RequestMapping(value = "genealogies/genealogyForProduct.pdf", method = RequestMethod.GET)
+    public ModelAndView genealogyForProductPdf(@RequestParam("value") final String value) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("genealogyForProductView");
+        mav.addObject("value", value);
+        return mav;
+    }
 }

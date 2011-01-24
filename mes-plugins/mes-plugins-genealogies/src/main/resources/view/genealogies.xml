@@ -81,6 +81,7 @@
 							<option type="orderable" value="name,category" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.genealogies.print.ReportService" method="changeBatch"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
@@ -97,6 +98,47 @@
 				<option type="header" value="false" />
 				<option type="expression" value="' '"/>
 				<listener event="generateReportForComponent" bean="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForComponent" />
+			</component>
+		</component>
+	</view>
+	<view name="genealogyForProduct" plugin="products" model="product" menuAccessible="true">
+		<component type="window" name="window">
+			<ribbon>
+					<smallButton name="printReport"
+						action="#{form}.fireEvent(generateReportForProduct);" state="disabled" message="genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
+						<script>
+							<![CDATA[
+								#{batch}.addOnChangeListener({
+									onChange: function(selectedRecord) {
+										if (selectedRecord) {
+											this.enable();
+										} else {
+											this.disable("#{translate(genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo)}");
+										}
+									}
+								});
+							]]>
+						</script>
+					</smallButton>
+			</ribbon>		
+			<component type="form" name="genealogyForProduct" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+					<layoutElement column="1" row="1">
+					  <component type="lookup" name="product" reference="product">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="column" name="category" fields="category" />
+							<option type="searchable" value="name,category" />
+							<option type="orderable" value="name,category" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.genealogies.print.ReportService" method="changeBatch"/>
+						</component>
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="' '"/>
+				<listener event="generateReportForProduct" bean="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForProduct" />
 			</component>
 		</component>
 	</view>
