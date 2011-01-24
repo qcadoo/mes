@@ -85,14 +85,14 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="lookup" name="batch" reference="batch" source="#{product}.genealogyBatch">
+						<!--  <component type="lookup" name="batch" reference="batch" source="#{product}.genealogyBatch">
 							<option type="column" name="batch" fields="batch" link="true"
 								width="300" />
 							<option type="searchable" value="batch" />
 							<option type="orderable" value="batch" />
 							<option type="expression" value="'&lt;b&gt;' + #batch"/>
 							<option type="fieldCode" value="batch" />
-						</component>
+						</component>-->
 					</layoutElement>
 				</component>
 				<option type="header" value="false" />
