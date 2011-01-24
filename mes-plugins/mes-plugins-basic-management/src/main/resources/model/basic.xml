@@ -58,7 +58,9 @@
 		<string name="post"/>
 	</model>
 	<model name="parameter" deletable="false">
-		<boolean name="checkDoneOrderForQuality"/>
+		<boolean name="checkDoneOrderForQuality">
+			<validatesPresence />
+		</boolean>
 		<enum name="batchForDoneOrder" values="01active,02lastUsed">
 			<validatesPresence />
 		</enum>
