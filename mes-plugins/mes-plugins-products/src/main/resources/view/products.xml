@@ -79,6 +79,7 @@
 						<component type="input" name="batch" field="batch" />
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="6">
@@ -134,6 +135,7 @@
 						<component type="input" name="priority" field="priority" defaultEnabled="false" />
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 		</component>
@@ -161,6 +163,7 @@
 						<component type="input" name="quantity" field="quantity" />
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>

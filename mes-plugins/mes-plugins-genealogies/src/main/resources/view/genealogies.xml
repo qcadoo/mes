@@ -43,6 +43,7 @@
 						<component type="input" name="other" field="other" defaultEnabled="true"/>
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="' '"/>
 			</component>
 		</component>
@@ -84,7 +85,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="lookup" name="batch" reference="batch" source="#{product}.genealogyBatch">
+						<component type="lookup" name="batch" reference="batch" model="productInBatch">
 							<option type="column" name="batch" fields="batch" link="true"
 								width="300" />
 							<option type="searchable" value="batch" />
@@ -94,7 +95,7 @@
 						</component>
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
+				<option type="header" value="true"/>
 				<option type="expression" value="' '"/>
 				<listener event="generateReportForComponent" bean="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForComponent" />
 			</component>
@@ -135,7 +136,7 @@
 						</component>
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
+				<option type="header" value="true"/>
 				<option type="expression" value="' '"/>
 				<listener event="generateReportForProduct" bean="com.qcadoo.mes.genealogies.print.ReportService" method="generateReportForProduct" />
 			</component>

@@ -85,6 +85,7 @@
 						</component>
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 		</component>
@@ -154,6 +155,7 @@
 						<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="otherFeatureRequired" />
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
 			</component>
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="5">
@@ -219,6 +221,7 @@
 						</component>
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#operation['name']" />
 			</component>
 		</component>
@@ -249,6 +252,7 @@
 						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
@@ -276,6 +280,7 @@
 						<component type="input" name="quantity" field="quantity" />
 					</layoutElement>
 				</component>
+				<option type="header" value="true"/>
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>
