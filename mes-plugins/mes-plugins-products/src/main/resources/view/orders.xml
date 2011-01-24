@@ -163,13 +163,9 @@
 				<listener event="printMaterialReqForOrder" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialReqForOrder" />
 				<listener event="printWorkPlanForOrder" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlanForOrder" />
 				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="autocompleteGenealogy" />
-<<<<<<< HEAD
 				<listener event="activateOrder" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone"/>
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
-=======
-				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
->>>>>>> 3571604b2b30592f51338596fa88d658a1cbd158
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />

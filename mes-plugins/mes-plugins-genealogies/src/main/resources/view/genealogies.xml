@@ -135,6 +135,16 @@
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.genealogies.print.ReportService" method="changeBatch"/>
 						</component>
 					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="lookup" name="batch" reference="batch" model="genealogy">
+							<option type="column" name="batch" fields="batch" link="true"
+								width="300" />
+							<option type="searchable" value="batch" />
+							<option type="orderable" value="batch" />
+							<option type="expression" value="'&lt;b&gt;' + #batch"/>
+							<option type="fieldCode" value="batch" />
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="' '"/>
