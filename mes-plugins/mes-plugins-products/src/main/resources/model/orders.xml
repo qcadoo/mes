@@ -65,7 +65,6 @@
 		<hasMany name="materialRequirements" model="materialRequirementComponent" joinField="order" cascade="nullify" />
 		<hasMany name="workPlans" model="workPlanComponent" joinField="order" cascade="nullify" />
 		<hasMany name="genealogies" plugin="genealogies" model="genealogy" joinField="order" cascade="delete"/>
-		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkIfStateChangeIsCorrect" />
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderDates" />
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderPlannedQuantity" />
 		<validatesWith bean="com.qcadoo.mes.products.OrderService" method="checkOrderTechnology" />
