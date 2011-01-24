@@ -107,11 +107,9 @@ public class GenealogyForProductView extends ReportPdfView {
         for (Entity genealogy : entity.getHasManyField("genealogies")) {
             for (Entity productInComponent : genealogy.getHasManyField("productInComponents")) {
                 for (Entity batch : productInComponent.getHasManyField("batch")) {
-                    if() {
-                        
-                    } else {
-                    batchList.add(batch);
-                    }
+                    /*
+                     * if (batchList.contains(o)) { } else { batchList.add(batch); }
+                     */
                 }
             }
         }
