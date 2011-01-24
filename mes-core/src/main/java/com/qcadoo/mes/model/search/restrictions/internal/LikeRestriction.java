@@ -36,8 +36,8 @@ public final class LikeRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criterion getHibernateCriteria() {
-        return Restrictions.ilike(getFieldName(), getValue());
+    public Criterion getHibernateCriteria(final String propertyName) {
+        return Restrictions.ilike(propertyName, getValue());
     }
 
     @Override
