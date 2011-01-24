@@ -33,6 +33,8 @@ public final class FormComponentState extends AbstractContainerState {
 
     private Long entityId;
 
+    private Long contextEntityId;
+
     private boolean valid = true;
 
     private final Map<String, Object> context = new HashMap<String, Object>();
@@ -62,8 +64,12 @@ public final class FormComponentState extends AbstractContainerState {
 
     @Override
     protected void initializeContent(final JSONObject json) throws JSONException {
-        if (json.has(JSON_ENTITY_ID) && !json.isNull(JSON_ENTITY_ID)) {
-            entityId = json.getLong(JSON_ENTITY_ID);
+        if (json.has(JSON_ENTITY_ID)) {
+            if (!json.isNull(JSON_ENTITY_ID)) {
+                entityId = json.getLong(JSON_ENTITY_ID);
+            } else {
+                entityId = null;
+            }
         }
     }
 
@@ -74,10 +80,9 @@ public final class FormComponentState extends AbstractContainerState {
         while (iterator.hasNext()) {
             String field = iterator.next();
             if ("id".equals(field)) {
-                if (entityId != null) {
-                    continue;
+                if (entityId == null) {
+                    contextEntityId = json.getLong(field);
                 }
-                entityId = json.getLong(field);
             } else if (!json.isNull(field)) {
                 context.put(field, json.get(field));
             }
@@ -136,7 +141,6 @@ public final class FormComponentState extends AbstractContainerState {
     @Override
     protected JSONObject renderContent() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_ENTITY_ID, entityId);
         // TODO mady: well this should work with saveAndClear so the form knows we want to make a new entity after the save and
         // not to edit the old onw
         // problem is, it doesnt work
@@ -144,12 +148,15 @@ public final class FormComponentState extends AbstractContainerState {
         // json.put("clear", true);
         // json.put(JSON_ENTITY_ID, JSONObject.NULL);
         // }
+        // mina: now it does :D
         json.put(JSON_VALID, isValid());
         if (entityId != null) {
+            json.put(JSON_ENTITY_ID, entityId);
             json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerEdit", getLocale()));
             json.put(JSON_HEADER_ENTITY_IDENTIFIER, getHeader());
         } else {
             json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerNew", getLocale()));
+            json.put(JSON_ENTITY_ID, JSONObject.NULL);
         }
         return json;
     }
@@ -350,8 +357,11 @@ public final class FormComponentState extends AbstractContainerState {
         }
 
         public void initialize(final String[] args) {
-            Entity entity = getFormEntity();
+            if (contextEntityId != null) {
+                entityId = contextEntityId;
 
+            }
+            Entity entity = getFormEntity();
             if (entity != null) {
                 copyEntityToFields(entity, true);
                 setFieldValue(entity.getId());
