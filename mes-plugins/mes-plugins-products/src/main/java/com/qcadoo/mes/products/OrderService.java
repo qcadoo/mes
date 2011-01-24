@@ -39,7 +39,6 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.model.DataDefinition;
-import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
@@ -146,7 +145,6 @@ public final class OrderService {
                 }
                 order.setField("state", "02inProgress");
             } else {
-
                 if (!checkRequiredBatch(order)) {
                     state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
                             MessageType.FAILURE);
@@ -235,7 +233,6 @@ public final class OrderService {
             technology.setRequired(false);
             plannedQuantity.setRequired(false);
         } else {
-            technology.setEnabled(true);
             technology.setRequired(true);
             plannedQuantity.setRequired(true);
         }
@@ -243,6 +240,7 @@ public final class OrderService {
 
     public void disableFormForDoneOrder(final ViewDefinitionState state, final Locale locale) {
         FormComponentState order = (FormComponentState) state.getComponentByReference("form");
+        LookupComponentState technology = (LookupComponentState) state.getComponentByReference("technology");
 
         boolean disabled = false;
 
@@ -255,20 +253,7 @@ public final class OrderService {
         }
 
         order.setEnabledWithChildren(!disabled);
-    }
-
-    public boolean checkIfStateChangeIsCorrect(final DataDefinition dataDefinition, final Entity entity) {
-        SearchCriteriaBuilder searchCriteria = dataDefinition.find().withMaxResults(1)
-                .restrictedWith(Restrictions.eq(dataDefinition.getField("state"), "02inProgress"))
-                .restrictedWith(Restrictions.idRestriction(entity.getId(), RestrictionOperator.EQ));
-
-        SearchResult searchResult = searchCriteria.list();
-
-        if (entity.getField("state").toString().equals("01pending") && searchResult.getTotalNumberOfEntities() > 0) {
-            entity.addError(dataDefinition.getField("state"), "products.validate.global.error.illegalStateChange");
-            return false;
-        }
-        return true;
+        technology.setEnabled(!disabled);
     }
 
     public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity entity) {
@@ -282,7 +267,7 @@ public final class OrderService {
         }
         Object o = entity.getField("plannedQuantity");
         if (o == null) {
-            entity.addError(dataDefinition.getField("plannedQuantity"), "products.validate.global.error.illegalStateChange");
+            entity.addError(dataDefinition.getField("plannedQuantity"), "products.validate.global.error.plannedQuantityError");
             return false;
         } else {
             return true;
@@ -313,12 +298,6 @@ public final class OrderService {
             entity.setField("effectiveDateTo", new Date());
             entity.setField("endWorker", securityService.getCurrentUserName());
 
-        }
-        // TODO MADY autocomplete genealogy last used/active based on parameter
-        if (entity.getField("effectiveDateTo") != null) {
-            entity.setField("state", "03done");
-        } else if (entity.getField("effectiveDateFrom") != null) {
-            entity.setField("state", "02inProgress");
         }
     }
 

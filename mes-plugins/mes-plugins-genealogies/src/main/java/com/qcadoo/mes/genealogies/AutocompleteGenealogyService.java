@@ -33,6 +33,51 @@ public class AutocompleteGenealogyService {
     @Autowired
     private SecurityService securityService;
 
+    public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
+            final ComponentState state, final String[] args) {
+        if (state.getFieldValue() instanceof Long) {
+            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+            if (order == null) {
+                state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                boolean inProgressState = Boolean.parseBoolean(args[0]);
+                if (!inProgressState) {
+                    boolean success = false;
+                    SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
+                    Entity parameter = null;
+                    if (searchResult.getEntities().size() > 0) {
+                        parameter = searchResult.getEntities().get(0);
+                    }
+                    if (parameter != null) {
+                        if (parameter.getField("batchForDoneOrder").toString().equals("01active")) {
+                            success = createGenealogy(order, false);
+                        } else {
+                            success = createGenealogy(order, true);
+                        }
+                    }
+                    if (success) {
+                        state.addMessage(
+                                translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
+                                MessageType.SUCCESS);
+                    } else {
+                        state.addMessage(
+                                translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+                                MessageType.INFO);
+                    }
+                }
+            }
+        } else {
+            if (state instanceof FormComponentState) {
+                state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),
+                        MessageType.FAILURE);
+            } else {
+                state.addMessage(translationService.translate("core.grid.noRowSelectedError", state.getLocale()),
+                        MessageType.FAILURE);
+            }
+        }
+    }
+
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         // TODO masz why we get hibernate entities here?
