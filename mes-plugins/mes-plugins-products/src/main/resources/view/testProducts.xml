@@ -94,7 +94,6 @@
 					</layoutElement>
 				</component>
 				<option type="expression" value="#name" />
-				<option type="header" value="false" />
 			</component>
 		</component>
 	</view>
@@ -199,7 +198,6 @@
 					</layoutElement>
 				</component>
 				<option type="expression" value="#name" />
-				<option type="header" value="false" />
 			</component>	
 		</component>
 	</view>
@@ -419,7 +417,6 @@
 							defaultEnabled="false" />
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#name + ' - ' + #number" />
 			</component>
 		</component>

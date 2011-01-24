@@ -99,6 +99,7 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         this.defaultEnabled = componentDefinition.isDefaultEnabled();
         this.defaultVisible = componentDefinition.isDefaultVisible();
         this.translationService = componentDefinition.getTranslationService();
+        this.dataDefinition = componentDefinition.getDataDefinition();
         this.viewDefinition = componentDefinition.getViewDefinition();
         this.viewDefinition.registerComponent(getReference(), getPath(), this);
     }
@@ -255,29 +256,31 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
         AbstractComponentPattern fieldComponent = null;
         AbstractComponentPattern scopeFieldComponent = null;
 
-        if (fieldPath != null) {
-            field = getComponentAndField(fieldPath);
-            fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition
-                    .getComponentByReference(field[0]));
-            checkNotNull(fieldComponent, "Cannot find field component for " + getPath() + ": " + fieldPath);
-            fieldComponent.addFieldEntityIdChangeListener(field[1], this);
+        if (dataDefinition == null) {
+            if (fieldPath != null) {
+                field = getComponentAndField(fieldPath);
+                fieldComponent = (AbstractComponentPattern) (field[0] == null ? parent : viewDefinition
+                        .getComponentByReference(field[0]));
+                checkNotNull(fieldComponent, "Cannot find field component for " + getPath() + ": " + fieldPath);
+                fieldComponent.addFieldEntityIdChangeListener(field[1], this);
+            }
+
+            if (scopeFieldPath != null) {
+                scopeField = getComponentAndField(scopeFieldPath);
+                scopeFieldComponent = (AbstractComponentPattern) (scopeField[0] == null ? parent : viewDefinition
+                        .getComponentByReference(scopeField[0]));
+                checkNotNull(scopeFieldComponent, "Cannot find sourceField component for " + getPath() + ": " + scopeFieldPath);
+                scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
+            }
+
+            if (isComponentInitialized(fieldComponent) && isComponentInitialized(scopeFieldComponent)) {
+                initialized = true;
+            } else {
+                return false;
+            }
         }
 
-        if (scopeFieldPath != null) {
-            scopeField = getComponentAndField(scopeFieldPath);
-            scopeFieldComponent = (AbstractComponentPattern) (scopeField[0] == null ? parent : viewDefinition
-                    .getComponentByReference(scopeField[0]));
-            checkNotNull(scopeFieldComponent, "Cannot find sourceField component for " + getPath() + ": " + scopeFieldPath);
-            scopeFieldComponent.addScopeEntityIdChangeListener(scopeField[1], this);
-        }
-
-        if (isComponentInitialized(fieldComponent) && isComponentInitialized(scopeFieldComponent)) {
-            initialized = true;
-        } else {
-            return false;
-        }
-
-        getDataDefinition(viewDefinition, fieldComponent, scopeFieldComponent);
+        getDataDefinition(viewDefinition, fieldComponent, scopeFieldComponent, dataDefinition);
 
         getFieldAndScopeFieldDefinitions(field, fieldComponent, scopeField, scopeFieldComponent);
 
@@ -436,11 +439,13 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     private void getDataDefinition(final ViewDefinition viewDefinition, final AbstractComponentPattern fieldComponent,
-            final AbstractComponentPattern scopeFieldComponent) {
-        if (fieldPath != null) {
+            final AbstractComponentPattern scopeFieldComponent, final DataDefinition localDataDefinition) {
+        if (fieldPath != null && fieldComponent != null) {
             dataDefinition = fieldComponent.getDataDefinition();
-        } else if (scopeFieldPath != null) {
+        } else if (scopeFieldPath != null && scopeFieldComponent != null) {
             dataDefinition = scopeFieldComponent.getDataDefinition();
+        } else if (localDataDefinition != null) {
+            dataDefinition = localDataDefinition;
         } else if (parent != null) {
             dataDefinition = ((AbstractComponentPattern) parent).getDataDefinition();
         } else {
@@ -457,10 +462,10 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     }
 
     private String[] getComponentAndField(final String path) {
-        Pattern p = Pattern.compile("^#\\{(.+)\\}(\\.(\\w+))?");
-        Matcher m = p.matcher(path);
-        if (m.find()) {
-            return new String[] { m.group(1), m.group(3) };
+        Pattern pField = Pattern.compile("^#\\{(.+)\\}(\\.(\\w+))?");
+        Matcher mField = pField.matcher(path);
+        if (mField.find()) {
+            return new String[] { mField.group(1), mField.group(3) };
         } else {
             return new String[] { null, path };
         }
