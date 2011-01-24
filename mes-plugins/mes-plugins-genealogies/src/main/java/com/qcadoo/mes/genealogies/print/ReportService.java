@@ -25,7 +25,7 @@ public class ReportService {
 
     public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batch");
+        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponentState) {
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState
@@ -82,7 +82,7 @@ public class ReportService {
 
     public void generateReportForProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batch");
+        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponentState) {
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true);
