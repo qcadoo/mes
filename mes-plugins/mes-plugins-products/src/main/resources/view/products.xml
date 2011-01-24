@@ -80,7 +80,6 @@
 					</layoutElement>
 				</component>
 				<option type="expression" value="#name" />
-				<option type="header" value="false" />
 			</component>
 			<component type="gridLayout" name="gridsLayout" columns="3" rows="6">
 				<layoutElement column="1" row="1" height="6">
@@ -135,7 +134,6 @@
 						<component type="input" name="priority" field="priority" defaultEnabled="false" />
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
 		</component>
@@ -163,7 +161,6 @@
 						<component type="input" name="quantity" field="quantity" />
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#product['name'] + ' x ' + #quantity" />
 			</component>
 		</component>

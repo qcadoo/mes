@@ -191,7 +191,6 @@
 						</component>
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 				<listener event="printMaterialRequirement" bean="com.qcadoo.mes.products.MaterialRequirementService" method="printMaterialRequirement" />
 				<listener event="generateMaterialRequirement" bean="com.qcadoo.mes.products.MaterialRequirementService" method="generateMaterialRequirement" />
@@ -218,7 +217,6 @@
 						</component>
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
 		</component>

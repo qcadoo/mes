@@ -49,7 +49,7 @@ QCD.components.elements.TextInput = function(_element, _mainController) {
 			textRepresentation.html(data.value);
 		} else {
 			this.input.val("");
-			textRepresentation.html("");
+			textRepresentation.html("-");
 		}
 	}
 	

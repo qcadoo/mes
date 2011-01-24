@@ -1,6 +1,7 @@
 package com.qcadoo.mes.view;
 
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.DataDefinition;
 
 public final class ComponentDefinition {
 
@@ -25,6 +26,8 @@ public final class ComponentDefinition {
     private ViewDefinition viewDefinition;
 
     private ComponentPattern parent;
+
+    private DataDefinition dataDefinition;
 
     public String getName() {
         return name;
@@ -110,8 +113,16 @@ public final class ComponentDefinition {
         return hasLabel;
     }
 
-    public void setHasLabel(boolean hasLabel) {
+    public void setHasLabel(final boolean hasLabel) {
         this.hasLabel = hasLabel;
+    }
+
+    public DataDefinition getDataDefinition() {
+        return dataDefinition;
+    }
+
+    public void setDataDefinition(final DataDefinition dataDefinition) {
+        this.dataDefinition = dataDefinition;
     }
 
 }

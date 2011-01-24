@@ -157,7 +157,7 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
             Node child = childNodes.item(i);
 
             if ("component".equals(child.getNodeName())) {
-                root = parseComponent(child, viewDefinition, null);
+                root = parseComponent(child, viewDefinition, null, pluginIdentifier);
             } else if ("preInitializeHook".equals(child.getNodeName())) {
                 viewDefinition.addPreInitializeHook(parseHook(child));
             } else if ("postConstructHook".equals(child.getNodeName())) {
@@ -252,8 +252,18 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
     }
 
     public ComponentPattern parseComponent(final Node componentNode, final ViewDefinition viewDefinition,
-            final ContainerPattern parent) {
+            final ContainerPattern parent, final String pluginIdentifier) {
         String type = getStringAttribute(componentNode, "type");
+        String plugin = getStringAttribute(componentNode, "plugin");
+        String model = getStringAttribute(componentNode, "model");
+
+        DataDefinition customDataDefinition = null;
+
+        if (model != null) {
+            String modelPluginIdentifier = plugin != null ? plugin : pluginIdentifier;
+            customDataDefinition = dataDefinitionService.get(modelPluginIdentifier, model);
+        }
+
         String name = getStringAttribute(componentNode, "name");
         String fieldPath = getStringAttribute(componentNode, "field");
         String sourceFieldPath = getStringAttribute(componentNode, "source");
@@ -274,6 +284,7 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
         componentDefinition.setDefaultVisible(getBooleanAttribute(componentNode, "defaultVisible", true));
         componentDefinition.setHasLabel(getBooleanAttribute(componentNode, "hasLabel", true));
         componentDefinition.setHasDescription(getBooleanAttribute(componentNode, "hasDescription", false));
+        componentDefinition.setDataDefinition(customDataDefinition);
 
         ComponentPattern component = viewComponentsResolver.getViewComponentInstance(type, componentDefinition);
 
@@ -284,7 +295,8 @@ public final class ViewDefinitionParserImpl implements ViewDefinitionParser {
 
     @Override
     public ComponentPattern parseComponent(final Node componentNode, final ContainerPattern parent) {
-        return parseComponent(componentNode, ((AbstractComponentPattern) parent).getViewDefinition(), parent);
+        return parseComponent(componentNode, ((AbstractComponentPattern) parent).getViewDefinition(), parent,
+                ((AbstractComponentPattern) parent).getViewDefinition().getPluginIdentifier());
     }
 
     @Override

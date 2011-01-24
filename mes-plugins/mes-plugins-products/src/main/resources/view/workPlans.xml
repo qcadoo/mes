@@ -246,7 +246,6 @@
 						</component>
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 				<listener event="printWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="printWorkPlan" />
 				<listener event="generateWorkPlan" bean="com.qcadoo.mes.products.WorkPlanService" method="generateWorkPlan" />
@@ -273,7 +272,6 @@
 						</component>
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
 				<option type="expression" value="#name" />
 			</component>
 		</component>
