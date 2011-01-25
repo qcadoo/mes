@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.beans.genealogies.GenealogiesGenealogy;
+import com.qcadoo.mes.beans.genealogies.GenealogiesProductInBatch;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.aop.internal.Monitorable;
@@ -343,6 +346,40 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         List<?> results = criteria.list();
 
+        // FIXME masz
+
+        if (searchCriteria.isDistinct()) {
+            Class<?> entityClass = ((InternalDataDefinition) searchCriteria.getDataDefinition()).getClassForEntity();
+            Set<String> batches = new HashSet<String>();
+            List<Object> uniqueResults = new ArrayList<Object>();
+
+            if (GenealogiesGenealogy.class.equals(entityClass)) {
+                for (Object o : results) {
+                    String batch = ((GenealogiesGenealogy) o).getBatch();
+
+                    if (!batches.contains(batch)) {
+                        uniqueResults.add(o);
+                        batches.add(batch);
+                    }
+                }
+
+                results = uniqueResults;
+                totalNumberOfEntities = results.size();
+            } else if (GenealogiesProductInBatch.class.equals(entityClass)) {
+                for (Object o : results) {
+                    String batch = ((GenealogiesProductInBatch) o).getBatch();
+
+                    if (!batches.contains(batch)) {
+                        uniqueResults.add(o);
+                        batches.add(batch);
+                    }
+                }
+
+                results = uniqueResults;
+                totalNumberOfEntities = results.size();
+            }
+        }
+
         LOG.info("There are " + totalNumberOfEntities + " entities matching criteria " + searchCriteria);
 
         return getResultSet(searchCriteria, dataDefinition, totalNumberOfEntities, results);
@@ -445,11 +482,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         Criteria criteria = getCurrentSession().createCriteria(dataDefinition.getClassForEntity());
 
         for (Restriction restriction : searchCriteria.getRestrictions()) {
-            addRestrictionToCriteria(restriction, criteria);
-        }
-
-        if (searchCriteria.isDistinct()) {
-            criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+            criteria.add(addRestrictionToCriteria(restriction, criteria));
         }
 
         return criteria;
@@ -475,7 +508,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
         return resultSet;
     }
 
-    private Criteria addRestrictionToCriteria(final Restriction restriction, final Criteria criteria) {
+    private Criterion addRestrictionToCriteria(final Restriction restriction, final Criteria criteria) {
         return restriction.addToHibernateCriteria(criteria);
     }
 

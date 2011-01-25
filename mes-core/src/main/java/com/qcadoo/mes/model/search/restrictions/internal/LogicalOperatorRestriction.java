@@ -48,8 +48,8 @@ public class LogicalOperatorRestriction implements Restriction {
             return innerRestrictions.get(0).addToHibernateCriteria(criteria);
         } else {
             Criterion first = innerRestrictions.get(0).addToHibernateCriteria(criteria);
-            innerRestrictions.remove(0);
-            return Restrictions.and(first, createAndRestriction(criteria, innerRestrictions));
+            return Restrictions.and(first,
+                    createAndRestriction(criteria, innerRestrictions.subList(0, innerRestrictions.size() - 1)));
         }
     }
 
@@ -58,8 +58,8 @@ public class LogicalOperatorRestriction implements Restriction {
             return innerRestrictions.get(0).addToHibernateCriteria(criteria);
         } else {
             Criterion first = innerRestrictions.get(0).addToHibernateCriteria(criteria);
-            innerRestrictions.remove(0);
-            return Restrictions.or(first, createOrRestriction(criteria, innerRestrictions));
+            return Restrictions.or(first,
+                    createOrRestriction(criteria, innerRestrictions.subList(0, innerRestrictions.size() - 1)));
         }
     }
 
