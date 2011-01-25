@@ -88,7 +88,7 @@ public final class TestDataLoader {
 
     private static final List<String> UNITS = new ArrayList<String>();
 
-    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "product_id", "ean", "name", "product_nr" };
+    private static final String[] PRODUCT_ATTRIBUTES = new String[] { "product_id", "ean", "name", "product_nr", "batch" };
 
     private static final String[] DICTIONARY_ATTRIBUTES = new String[] { "name", "item" };
 
@@ -254,7 +254,9 @@ public final class TestDataLoader {
         }
         if (!values.get("name").isEmpty()) {
             product.setName(values.get("name"));
-            product.setBatch(RANDOM.nextInt(50) + values.get("name"));
+        }
+        if (!values.get("batch").isEmpty()) {
+            product.setBatch(values.get("batch"));
         }
         if (!values.get("product_nr").isEmpty()) {
             product.setNumber(values.get("product_nr"));
@@ -521,7 +523,7 @@ public final class TestDataLoader {
                 productComponent.setOperationComponent(component);
                 productComponent.setQuantity(new BigDecimal(100 * RANDOM.nextDouble()));
                 productComponent.setProduct(getRandomProduct());
-                productComponent.setBatchRequired(false);
+                productComponent.setBatchRequired(true);
 
                 sessionFactory.getCurrentSession().save(productComponent);
 
