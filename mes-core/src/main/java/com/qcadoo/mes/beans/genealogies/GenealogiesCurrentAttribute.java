@@ -25,6 +25,8 @@ public class GenealogiesCurrentAttribute {
 
     private String lastUsedOther;
 
+    private Boolean genealogyBatchReq = false;
+
     public Long getId() {
         return id;
     }
@@ -81,4 +83,11 @@ public class GenealogiesCurrentAttribute {
         this.lastUsedOther = lastUsedOther;
     }
 
+    public Boolean getGenealogyBatchReq() {
+        return genealogyBatchReq;
+    }
+
+    public void setGenealogyBatchReq(Boolean genealogyBatchReq) {
+        this.genealogyBatchReq = genealogyBatchReq;
+    }
 }

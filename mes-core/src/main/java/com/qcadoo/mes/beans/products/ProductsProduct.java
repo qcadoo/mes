@@ -64,6 +64,8 @@ public class ProductsProduct {
 
     private String lastUsedBatch;
 
+    private Boolean genealogyBatchReq = false;
+
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsSubstitute> substitutes;
@@ -201,6 +203,14 @@ public class ProductsProduct {
 
     public void setLastUsedBatch(final String lastUsedBatch) {
         this.lastUsedBatch = lastUsedBatch;
+    }
+
+    public Boolean getGenealogyBatchReq() {
+        return genealogyBatchReq;
+    }
+
+    public void setGenealogyBatchReq(Boolean genealogyBatchReq) {
+        this.genealogyBatchReq = genealogyBatchReq;
     }
 
 }

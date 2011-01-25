@@ -32,7 +32,7 @@
 				<group template="formSaveAction"/>
 			</ribbon>		
 			<component type="form" name="currentAttribute" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
 					<layoutElement column="1" row="1">
 						<component type="select" name="shift" field="shift" />
 					</layoutElement>
@@ -41,6 +41,9 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="other" field="other" defaultEnabled="true"/>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="checkbox" name="genealogyBatchReq" field="genealogyBatchReq"/>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>

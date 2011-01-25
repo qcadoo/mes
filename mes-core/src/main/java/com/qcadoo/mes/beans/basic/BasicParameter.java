@@ -64,5 +64,4 @@ public class BasicParameter {
     public void setBatchForDoneOrder(final String batchForDoneOrder) {
         this.batchForDoneOrder = batchForDoneOrder;
     }
-
 }

@@ -137,6 +137,7 @@
 							<option type="orderable" value="name,category" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6" height="2">

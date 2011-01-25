@@ -105,5 +105,6 @@
 		<dictionary name="lastUsedShift" dictionary="shifts" />
 		<dictionary name="lastUsedPost" dictionary="posts" />
 		<string name="lastUsedOther" />
+		<boolean name="genealogyBatchReq" />
 	</model>
 </qcd:models>
