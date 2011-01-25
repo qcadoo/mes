@@ -189,10 +189,9 @@ public final class TechnologyService {
 
     public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        Entity technology = dataDefinitionService.get("products", "technology").get((Long) form.getFieldValue());
-        if (technology != null) {
+        if (form.getFieldValue() != null) {
             FieldComponentState batchRequired = (FieldComponentState) state.getComponentByReference("batchRequired");
-            if (checkProductInComponentsBatchRequired(technology)) {
+            if (checkProductInComponentsBatchRequired((Long) form.getFieldValue())) {
                 batchRequired.setEnabled(false);
                 batchRequired.setFieldValue("1");
                 batchRequired.requestComponentUpdateState();
@@ -203,9 +202,9 @@ public final class TechnologyService {
 
     }
 
-    private boolean checkProductInComponentsBatchRequired(final Entity entity) {
+    private boolean checkProductInComponentsBatchRequired(final Long entityId) {
         SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()
-                .restrictedWith(Restrictions.eq("operationComponent.technology.id", entity.getId()))
+                .restrictedWith(Restrictions.eq("operationComponent.technology.id", entityId))
                 .restrictedWith(Restrictions.eq("batchRequired", true)).withMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
