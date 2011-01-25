@@ -24,8 +24,12 @@
 
 package com.qcadoo.mes.model.search.restrictions.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
+import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.model.search.Restriction;
 
@@ -53,27 +57,20 @@ public abstract class BaseRestriction implements Restriction {
         return value;
     }
 
-    public abstract Criterion getHibernateCriteria(String propertyName);
+    protected abstract Criterion getHibernateCriteria();
 
     @Override
-    public final Criteria addToHibernateCriteria(final Criteria criteria) {
-        Criteria currentCriteria = criteria;
-        String propertyName = fieldName;
-
+    public final Criterion addToHibernateCriteria(final Criteria criteria) {
         if (fieldName != null) {
-            String[] path = fieldName.split("\\.");
+            List<String> path = Arrays.asList(fieldName.split("\\."));
 
-            if (path.length > 1) {
-                currentCriteria = criteria.createCriteria(path[0]);
-
-                for (int i = 1; i < path.length - 1; i++) {
-                    currentCriteria = currentCriteria.createCriteria(path[i]);
-                }
-
-                propertyName = path[path.length - 1];
+            if (path.size() > 1) {
+                path.remove(path.size() - 1);
+                criteria.createAlias(StringUtils.collectionToDelimitedString(path, "."),
+                        StringUtils.collectionToDelimitedString(path, "."));
             }
         }
 
-        return currentCriteria.add(getHibernateCriteria(propertyName));
+        return getHibernateCriteria();
     }
 }

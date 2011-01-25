@@ -49,6 +49,8 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
 
     private int maxResults = DEFAULT_MAX_RESULTS;
 
+    private boolean distinct;
+
     private int firstResult = 0;
 
     private Order order;
@@ -90,6 +92,10 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     @Override
     public Set<Restriction> getRestrictions() {
         return restrictions;
+    }
+
+    public boolean isDistinct() {
+        return distinct;
     }
 
     @Override
@@ -143,8 +149,13 @@ public final class SearchCriteriaImpl implements SearchCriteria, SearchCriteriaB
     @Override
     public String toString() {
         return "SearchCriteria[dataDefinition=" + dataDefinition.getPluginIdentifier() + "." + dataDefinition.getName()
-                + ", maxResults=" + maxResults + ", firstResult=" + firstResult + ", order=" + order + ", restrictions="
-                + restrictions + "]";
+                + ", maxResults=" + maxResults + ", firstResult=" + firstResult + ", order=" + order + ", distinct=" + distinct
+                + ", restrictions=" + restrictions + "]";
+    }
+
+    @Override
+    public void distinct() {
+        this.distinct = true;
     }
 
 }

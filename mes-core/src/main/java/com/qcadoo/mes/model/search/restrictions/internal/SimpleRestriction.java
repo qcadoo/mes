@@ -41,20 +41,20 @@ public final class SimpleRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criterion getHibernateCriteria(final String propertyName) {
+    public Criterion getHibernateCriteria() {
         switch (op) {
             case EQ:
-                return Restrictions.eq(propertyName, getValue());
+                return Restrictions.eq(getFieldName(), getValue());
             case GE:
-                return Restrictions.ge(propertyName, getValue());
+                return Restrictions.ge(getFieldName(), getValue());
             case GT:
-                return Restrictions.gt(propertyName, getValue());
+                return Restrictions.gt(getFieldName(), getValue());
             case LE:
-                return Restrictions.le(propertyName, getValue());
+                return Restrictions.le(getFieldName(), getValue());
             case LT:
-                return Restrictions.lt(propertyName, getValue());
+                return Restrictions.lt(getFieldName(), getValue());
             case NE:
-                return Restrictions.ne(propertyName, getValue());
+                return Restrictions.ne(getFieldName(), getValue());
             default:
                 throw new IllegalArgumentException("Unknown restriction operator");
         }

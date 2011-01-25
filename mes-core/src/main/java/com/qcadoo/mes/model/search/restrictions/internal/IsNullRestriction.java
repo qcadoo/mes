@@ -36,8 +36,8 @@ public final class IsNullRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criterion getHibernateCriteria(final String propertyName) {
-        return Restrictions.isNull(propertyName);
+    public Criterion getHibernateCriteria() {
+        return Restrictions.isNull(getFieldName());
     }
 
     @Override

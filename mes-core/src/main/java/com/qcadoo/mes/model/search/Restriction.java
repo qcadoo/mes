@@ -25,6 +25,7 @@
 package com.qcadoo.mes.model.search;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 
 /**
  * Restriction represents the part of WHERE clause in SQL query.
@@ -38,6 +39,6 @@ public interface Restriction {
      *            hibernate criteria
      * @return hibernate criteria
      */
-    Criteria addToHibernateCriteria(Criteria criteria);
+    Criterion addToHibernateCriteria(Criteria criteria);
 
 }

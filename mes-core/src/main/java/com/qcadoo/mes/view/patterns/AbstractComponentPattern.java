@@ -404,9 +404,9 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
             for (ComponentPattern listener : scopeEntityIdChangeListeners.values()) {
                 listeners.put(listener.getPath());
             }
-            if (customEvents.size() > 0) {
-                listeners.put(getPath());
-            }
+        }
+        if (customEvents.size() > 0) {
+            listeners.put(getPath());
         }
         jsOptions.put("listeners", listeners);
     }

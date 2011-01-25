@@ -36,8 +36,8 @@ public final class BelongsToRestriction extends BaseRestriction {
     }
 
     @Override
-    public Criterion getHibernateCriteria(final String propertyName) {
-        return Restrictions.eq(propertyName + ".id", getValue());
+    public Criterion getHibernateCriteria() {
+        return Restrictions.eq(getFieldName() + ".id", getValue());
     }
 
     @Override

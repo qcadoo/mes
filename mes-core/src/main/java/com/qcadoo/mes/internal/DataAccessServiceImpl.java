@@ -448,6 +448,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
             addRestrictionToCriteria(restriction, criteria);
         }
 
+        if (searchCriteria.isDistinct()) {
+            criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        }
+
         return criteria;
     }
 

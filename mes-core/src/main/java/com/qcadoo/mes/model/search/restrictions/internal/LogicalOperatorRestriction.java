@@ -5,16 +5,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.RestrictionLogicalOperator;
 
-public class LogicalOperatorRestriction extends BaseRestriction {
+public class LogicalOperatorRestriction implements Restriction {
 
     private final RestrictionLogicalOperator operator;
 
@@ -29,42 +29,37 @@ public class LogicalOperatorRestriction extends BaseRestriction {
     }
 
     @Override
-    public final Criterion getHibernateCriteria(final String propertyName) {
-        List<Criterion> criterions = new LinkedList<Criterion>();
-        for (Restriction r : restrictions) {
-            criterions.add(((BaseRestriction) r).getHibernateCriteria(propertyName));
-        }
-
+    public Criterion addToHibernateCriteria(final Criteria criteria) {
         switch (operator) {
             case NOT:
-                checkState(criterions.size() == 1, "not can only have one argument");
-                return Restrictions.not(criterions.get(0));
+                checkState(restrictions.length == 1, "not can only have one argument");
+                return Restrictions.not(restrictions[0].addToHibernateCriteria(criteria));
             case AND:
-                return createAndRestriction(criterions);
+                return createAndRestriction(criteria, Arrays.asList(restrictions));
             case OR:
-                return createOrRestriction(criterions);
+                return createOrRestriction(criteria, Arrays.asList(restrictions));
             default:
                 throw new IllegalArgumentException("Unknown restriction operator");
         }
     }
 
-    private Criterion createAndRestriction(final List<Criterion> criterions) {
-        if (criterions.size() == 1) {
-            return criterions.get(0);
+    private Criterion createAndRestriction(final Criteria criteria, final List<Restriction> innerRestrictions) {
+        if (innerRestrictions.size() == 1) {
+            return innerRestrictions.get(0).addToHibernateCriteria(criteria);
         } else {
-            Criterion first = criterions.get(0);
-            criterions.remove(0);
-            return Restrictions.and(first, createAndRestriction(criterions));
+            Criterion first = innerRestrictions.get(0).addToHibernateCriteria(criteria);
+            innerRestrictions.remove(0);
+            return Restrictions.and(first, createAndRestriction(criteria, innerRestrictions));
         }
     }
 
-    private Criterion createOrRestriction(final List<Criterion> criterions) {
-        if (criterions.size() == 1) {
-            return criterions.get(0);
+    private Criterion createOrRestriction(final Criteria criteria, final List<Restriction> innerRestrictions) {
+        if (innerRestrictions.size() == 1) {
+            return innerRestrictions.get(0).addToHibernateCriteria(criteria);
         } else {
-            Criterion first = criterions.get(0);
-            criterions.remove(0);
-            return Restrictions.or(first, createOrRestriction(criterions));
+            Criterion first = innerRestrictions.get(0).addToHibernateCriteria(criteria);
+            innerRestrictions.remove(0);
+            return Restrictions.or(first, createOrRestriction(criteria, innerRestrictions));
         }
     }
 
