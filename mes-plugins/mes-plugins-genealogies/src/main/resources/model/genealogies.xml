@@ -70,6 +70,7 @@
 	</model>
 	<model name="shiftFeature">
 		<string name="value">
+			<validatesPresence />
 			<validatesLength max="255" />
 		</string>
 		<date name="date" readonly="true" readonlyOnCreate="true" />
@@ -80,6 +81,7 @@
 	</model>
 	<model name="postFeature">
 		<string name="value">
+			<validatesPresence />
 			<validatesLength max="255" />
 		</string>
 		<date name="date" readonly="true" readonlyOnCreate="true" />
@@ -90,6 +92,7 @@
 	</model>
 	<model name="otherFeature">
 		<string name="value">
+			<validatesPresence />
 			<validatesLength max="255" />
 		</string>
 		<date name="date" readonly="true" readonlyOnCreate="true" />

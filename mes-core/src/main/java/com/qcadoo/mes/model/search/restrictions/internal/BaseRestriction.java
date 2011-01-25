@@ -53,27 +53,27 @@ public abstract class BaseRestriction implements Restriction {
         return value;
     }
 
-    public abstract Criterion getHibernateCriteria(String propertyName);
+    protected abstract Criterion getHibernateCriteria(String propertyName);
 
     @Override
-    public final Criteria addToHibernateCriteria(final Criteria criteria) {
-        Criteria currentCriteria = criteria;
+    public final Criterion addToHibernateCriteria(final Criteria criteria) {
         String propertyName = fieldName;
 
         if (fieldName != null) {
             String[] path = fieldName.split("\\.");
 
             if (path.length > 1) {
-                currentCriteria = criteria.createCriteria(path[0]);
+                String alias = "";
 
-                for (int i = 1; i < path.length - 1; i++) {
-                    currentCriteria = currentCriteria.createCriteria(path[i]);
+                for (int i = 0; i < path.length - 1; i++) {
+                    criteria.createAlias(alias + path[i], path[i] + "_" + i);
+                    alias = path[i] + "_" + i + ".";
                 }
 
-                propertyName = path[path.length - 1];
+                propertyName = alias + path[path.length - 1];
             }
         }
 
-        return currentCriteria.add(getHibernateCriteria(propertyName));
+        return getHibernateCriteria(propertyName);
     }
 }

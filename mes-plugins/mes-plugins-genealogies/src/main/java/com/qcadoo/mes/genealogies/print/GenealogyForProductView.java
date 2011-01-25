@@ -92,7 +92,6 @@ public class GenealogyForProductView extends ReportPdfView {
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(new Phrase(batch, PdfUtil.getArialRegular9Dark()));
             }
-
             document.add(table);
         }
     }

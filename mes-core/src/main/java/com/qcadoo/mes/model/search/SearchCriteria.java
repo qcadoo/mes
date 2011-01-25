@@ -75,4 +75,11 @@ public interface SearchCriteria {
      */
     DataDefinition getDataDefinition();
 
+    /**
+     * Is distinct enabled?
+     * 
+     * @return distinct
+     */
+    boolean isDistinct();
+
 }

@@ -92,4 +92,9 @@ public interface SearchCriteriaBuilder {
      */
     SearchCriteriaBuilder withFirstResult(int firstResult);
 
+    /**
+     * Set distinct option.
+     */
+    void distinct();
+
 }

@@ -76,32 +76,34 @@ public final class GenealogyService {
         AwesomeDynamicListState productInComponentsList = (AwesomeDynamicListState) state
                 .getComponentByReference("productInComponentsList");
 
-        Entity genealogy = null;
-        List<Entity> existingProductInComponents = Collections.emptyList();
+        if (genealogyForm.isValid()) {
+            Entity genealogy = null;
+            List<Entity> existingProductInComponents = Collections.emptyList();
 
-        if (genealogyForm.getEntityId() != null) {
-            genealogy = dataDefinitionService.get("genealogies", "genealogy").get(genealogyForm.getEntityId());
-            existingProductInComponents = genealogy.getHasManyField("productInComponents");
-        }
+            if (genealogyForm.getEntityId() != null) {
+                genealogy = dataDefinitionService.get("genealogies", "genealogy").get(genealogyForm.getEntityId());
+                existingProductInComponents = genealogy.getHasManyField("productInComponents");
+            }
 
-        Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
-        Entity technology = order.getBelongsToField("technology");
+            Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
+            Entity technology = order.getBelongsToField("technology");
 
-        List<Entity> targetProductInComponents = new ArrayList<Entity>();
+            List<Entity> targetProductInComponents = new ArrayList<Entity>();
 
-        for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
-            for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                if ((Boolean) operationProductInComponent.getField("batchRequired")) {
-                    targetProductInComponents.add(createGenealogyProductInComponent(genealogy, operationProductInComponent,
-                            existingProductInComponents));
+            for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+                for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
+                    if ((Boolean) operationProductInComponent.getField("batchRequired")) {
+                        targetProductInComponents.add(createGenealogyProductInComponent(genealogy, operationProductInComponent,
+                                existingProductInComponents));
+                    }
                 }
             }
-        }
 
-        productInComponentsList.setFieldValue(targetProductInComponents);
+            productInComponentsList.setFieldValue(targetProductInComponents);
 
-        if (targetProductInComponents.isEmpty()) {
-            productGridLayout.setVisible(false);
+            if (targetProductInComponents.isEmpty()) {
+                productGridLayout.setVisible(false);
+            }
         }
     }
 
