@@ -102,6 +102,13 @@ public final class TechnologyService {
 
     public void checkAttributesReq(final ViewDefinitionState viewDefinitionState, final Locale locale) {
 
+        FormComponentState form = (FormComponentState) viewDefinitionState.getComponentByReference("form");
+
+        if (form.getEntityId() != null) {
+            // form is already saved
+            return;
+        }
+
         SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
         Entity currentAttribute = null;
 
