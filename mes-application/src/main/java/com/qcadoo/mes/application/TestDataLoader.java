@@ -482,7 +482,7 @@ public final class TestDataLoader {
             technology.setName(values.get("name"));
             technology.setNumber(values.get("bom_nr"));
             technology.setProduct(product);
-            technology.setBatchRequired(false);
+            technology.setBatchRequired(true);
             technology.setPostFeatureRequired(false);
             technology.setOtherFeatureRequired(false);
             technology.setShiftFeatureRequired(false);

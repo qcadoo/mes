@@ -31,6 +31,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.beans.products.ProductsTechnology;
+import com.qcadoo.mes.beans.products.ProductsTechnologyOperationComponent;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -39,6 +41,7 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
+import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @Service
@@ -168,5 +171,44 @@ public final class TechnologyService {
         }
 
         return false;
+    }
+
+    public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        if ((Boolean) entity.getField("batchRequired")) {
+            // TODO masz why we get hibernate entities here?
+            ProductsTechnology technology = ((ProductsTechnologyOperationComponent) entity.getField("operationComponent"))
+                    .getTechnology();
+            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
+            Entity technologyEntity = technologyInDef.get(technology.getId());
+            if (!(Boolean) technologyEntity.getField("batchRequired")) {
+                technologyEntity.setField("batchRequired", true);
+                technologyInDef.save(technologyEntity);
+            }
+        }
+    }
+
+    public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        Entity technology = dataDefinitionService.get("products", "technology").get((Long) form.getFieldValue());
+        if (technology != null) {
+            FieldComponentState batchRequired = (FieldComponentState) state.getComponentByReference("batchRequired");
+            if (checkProductInComponentsBatchRequired(technology)) {
+                batchRequired.setEnabled(false);
+                batchRequired.setFieldValue("1");
+                batchRequired.requestComponentUpdateState();
+            } else {
+                batchRequired.setEnabled(true);
+            }
+        }
+
+    }
+
+    private boolean checkProductInComponentsBatchRequired(final Entity entity) {
+        SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()
+                .restrictedWith(Restrictions.eq("operationComponent.technology.id", entity.getId()))
+                .restrictedWith(Restrictions.eq("batchRequired", true)).withMaxResults(1).list();
+
+        return (searchResult.getTotalNumberOfEntities() > 0);
+
     }
 }

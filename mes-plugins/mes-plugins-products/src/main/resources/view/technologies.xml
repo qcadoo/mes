@@ -209,7 +209,11 @@
 				</layoutElement>
 			</component>
 		</component>
+<<<<<<< HEAD
 		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkAttributesReq" />
+=======
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="disableBatchRequiredForTechnology"/>	
+>>>>>>> cf4c1ccc301f71b252f000bfda9aa3819b6dd400
 	</view>
 	<view name="technologyOperationComponent" model="technologyOperationComponent">
 		<component type="window" name="window">

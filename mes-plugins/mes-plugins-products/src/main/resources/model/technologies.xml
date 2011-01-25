@@ -96,6 +96,7 @@
 		</decimal>
 		<boolean name="batchRequired" />
 		<hasMany name="genealogyProductInComponents" plugin="genealogies" model="genealogyProductInComponent" joinField="productInComponent" cascade="delete"/>
+		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="fillBatchRequiredForTechnology" />
 	</model>
 	<model name="operationProductOutComponent">
 		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">
