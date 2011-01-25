@@ -57,6 +57,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		if (!hasButtons) {
 			BUTTONS_WIDTH = 0;
 		}
+		
 		updateButtons();
 	}
 	
@@ -80,7 +81,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		var forms = value.forms;
 		if (forms) {
 			formObjects = new Array();
-			awesomeDynamicListContent.empty();
+			awesomeDynamicListContent.empty();	
 			this.components = new Object();
 			components = this.components;
 			formObjectsIndex = 1;
@@ -151,6 +152,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			}
 		}
 		if (awesomeDynamicListHeaderObject) {
+			//awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH);
+			//awesomeDynamicListHeaderObject.updateSize(_width-BUTTONS_WIDTH, _height);
 			awesomeDynamicListHeader.width(_width-BUTTONS_WIDTH-20);
 			awesomeDynamicListHeaderObject.updateSize(_width-BUTTONS_WIDTH-30, _height);
 		}
@@ -267,6 +270,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				removeButton.show();
 				if (i == lastObject) {
 					addButton.show();
+					addButton.css("display", "inline-block");
 					line.addClass("lastLine");
 				} else {
 					addButton.hide();

@@ -12,7 +12,6 @@ import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
-import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
@@ -25,7 +24,7 @@ public class ReportService {
 
     public void generateReportForComponent(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batches");
+        GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponentState) {
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState
@@ -60,6 +59,7 @@ public class ReportService {
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq("order.product.id", product.getFieldValue()));
+                searchCriteriaBuilder.distinct();
             }
 
         });
@@ -75,6 +75,7 @@ public class ReportService {
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq("productInComponent.productInComponent.product.id",
                         product.getFieldValue()));
+                searchCriteriaBuilder.distinct();
             }
 
         });
@@ -82,7 +83,7 @@ public class ReportService {
 
     public void generateReportForProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponentState batchState = (FieldComponentState) viewDefinitionState.getComponentByReference("batches");
+        GridComponentState batchState = (GridComponentState) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponentState) {
             if (batchState != null && batchState.getFieldValue() != null) {
                 viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true);

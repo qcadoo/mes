@@ -27,6 +27,8 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
 
     private boolean fixedRowHeight = true;
 
+    private boolean hasBorders = true;
+
     public GridLayoutPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
     }
@@ -39,6 +41,7 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
         Integer rows = getIntAttribute(componentNode, "rows", parser);
 
         fixedRowHeight = parser.getBooleanAttribute(componentNode, "fixedRowHeight", true);
+        hasBorders = parser.getBooleanAttribute(componentNode, "hasBorders", true);
 
         Preconditions.checkNotNull(columns, "columns nod definied");
         Preconditions.checkNotNull(rows, "rows nod definied");
@@ -66,8 +69,10 @@ public class GridLayoutPattern extends AbstractLayoutPattern {
 
             insertCell(cell, column, row);
         }
-        
-        updateBorders();
+
+        if (hasBorders) {
+            updateBorders();
+        }
     }
 
     private void updateBorders() {

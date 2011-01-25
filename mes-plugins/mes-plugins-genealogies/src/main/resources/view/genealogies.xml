@@ -52,7 +52,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="report">
-					<smallButton name="printReport"
+					<bigButton name="printReport" icon="pdfIcon24.png"
 						action="#{form}.fireEvent(generateReportForComponent);" state="disabled" message="genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
 						<script>
 							<![CDATA[
@@ -67,7 +67,7 @@
 								});
 							]]>
 						</script>
-					</smallButton>
+					</bigButton>
 				</group>
 			</ribbon>		
 			<component type="form" name="genealogyForComponent" reference="form">
@@ -103,7 +103,7 @@
 		<component type="window" name="window">
 			<ribbon>
 				<group name="report">
-					<smallButton name="printReport"
+					<bigButton name="printReport" icon="pdfIcon24.png"
 						action="#{form}.fireEvent(generateReportForProduct);" state="disabled" message="genealogies.genealogyForComponent.window.ribbon.report.printReport.noBatchInfo">
 						<script>
 							<![CDATA[
@@ -118,7 +118,7 @@
 								});
 							]]>
 						</script>
-					</smallButton>
+					</bigButton>
 				</group>
 			</ribbon>		
 			<component type="form" name="genealogyForProduct" reference="form">
