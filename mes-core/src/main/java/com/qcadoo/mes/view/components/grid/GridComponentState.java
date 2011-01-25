@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.search.CustomRestriction;
 import com.qcadoo.mes.model.search.Restriction;
 import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
@@ -76,6 +77,8 @@ public final class GridComponentState extends AbstractComponentState {
     private String orderColumn;
 
     private String orderDirection;
+
+    private CustomRestriction customRestriction;
 
     private final Map<String, String> filters = new HashMap<String, String>();
 
@@ -243,6 +246,10 @@ public final class GridComponentState extends AbstractComponentState {
         return getTranslationService().translate(codes, getLocale());
     }
 
+    public void setCustomRestriction(final CustomRestriction customRestriction) {
+        this.customRestriction = customRestriction;
+    }
+
     protected class GridEventPerformer {
 
         public void refresh(final String[] args) {
@@ -294,6 +301,10 @@ public final class GridComponentState extends AbstractComponentState {
                 try {
                     if (filtersEnabled) {
                         addFilters(criteria);
+                    }
+
+                    if (customRestriction != null) {
+                        customRestriction.addRestriction(criteria);
                     }
 
                     addOrder(criteria);
