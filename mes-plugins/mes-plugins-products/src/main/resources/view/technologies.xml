@@ -208,6 +208,7 @@
 				</layoutElement>
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="disableBatchRequiredForTechnology"/>	
 	</view>
 	<view name="technologyOperationComponent" model="technologyOperationComponent">
 		<component type="window" name="window">
