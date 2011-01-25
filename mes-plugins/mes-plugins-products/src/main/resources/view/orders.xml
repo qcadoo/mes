@@ -300,18 +300,18 @@
 					</layoutElement>
 					<layoutElement column="3" row="1">
 						<component type="calendar" name="effectiveDateFrom"
-							field="effectiveDateFrom" defaultEnabled="false" />
+							field="effectiveDateFrom" reference="effectiveDateFrom" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="3" row="2">
-						<component type="calendar" name="effectiveDateTo" field="effectiveDateTo"
+						<component type="calendar" name="effectiveDateTo" field="effectiveDateTo" reference="effectiveDateTo"
 							defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="3" row="3">
-						<component type="input" name="startWorker" field="startWorker"
+						<component type="input" name="startWorker" field="startWorker" reference="startWorker"
 							defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="3" row="4">
-						<component type="input" name="endWorker" field="endWorker"
+						<component type="input" name="endWorker" field="endWorker" reference="endWorker"
 							defaultEnabled="false" />
 					</layoutElement>
 				</component>
