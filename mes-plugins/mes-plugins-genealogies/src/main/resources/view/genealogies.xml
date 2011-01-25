@@ -42,8 +42,14 @@
 					<layoutElement column="1" row="3">
 						<component type="input" name="other" field="other" defaultEnabled="true"/>
 					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="checkbox" name="genealogyBatchReq" field="genealogyBatchReq"/>
+					<layoutElement column="2" row="1">
+						<component type="checkbox" name="shiftReq" field="shiftReq"/>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="checkbox" name="postReq" field="postReq"/>
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="checkbox" name="otherReq" field="otherReq"/>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>

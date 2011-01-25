@@ -209,6 +209,7 @@
 				</layoutElement>
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.TechnologyService" method="checkAttributesReq" />
 	</view>
 	<view name="technologyOperationComponent" model="technologyOperationComponent">
 		<component type="window" name="window">
@@ -251,6 +252,7 @@
 							<option type="orderable" value="name,category" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">

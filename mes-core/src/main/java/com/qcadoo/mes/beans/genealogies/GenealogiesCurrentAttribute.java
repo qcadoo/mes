@@ -25,7 +25,11 @@ public class GenealogiesCurrentAttribute {
 
     private String lastUsedOther;
 
-    private Boolean genealogyBatchReq = false;
+    private Boolean shiftReq = false;
+
+    private Boolean postReq = false;
+
+    private Boolean otherReq = false;
 
     public Long getId() {
         return id;
@@ -83,11 +87,27 @@ public class GenealogiesCurrentAttribute {
         this.lastUsedOther = lastUsedOther;
     }
 
-    public Boolean getGenealogyBatchReq() {
-        return genealogyBatchReq;
+    public Boolean getShiftReq() {
+        return shiftReq;
     }
 
-    public void setGenealogyBatchReq(Boolean genealogyBatchReq) {
-        this.genealogyBatchReq = genealogyBatchReq;
+    public void setShiftReq(Boolean shiftReq) {
+        this.shiftReq = shiftReq;
+    }
+
+    public Boolean getPostReq() {
+        return postReq;
+    }
+
+    public void setPostReq(Boolean postReq) {
+        this.postReq = postReq;
+    }
+
+    public Boolean getOtherReq() {
+        return otherReq;
+    }
+
+    public void setOtherReq(Boolean otherReq) {
+        this.otherReq = otherReq;
     }
 }

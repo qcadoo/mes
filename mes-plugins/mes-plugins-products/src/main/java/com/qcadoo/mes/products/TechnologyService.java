@@ -24,8 +24,8 @@
 
 package com.qcadoo.mes.products;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +43,6 @@ import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @Service
 public final class TechnologyService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TechnologyService.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -99,57 +97,74 @@ public final class TechnologyService {
         }
     }
 
-    public void checkBatchNrReq(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void checkAttributesReq(final ViewDefinitionState viewDefinitionState, final Locale locale) {
 
-        LOG.info("\n\n HELLO");
+        SearchResult searchResult = dataDefinitionService.get("genealogies", "currentAttribute").find().withMaxResults(1).list();
+        Entity currentAttribute = null;
+
+        if (searchResult.getEntities().size() > 0) {
+            currentAttribute = searchResult.getEntities().get(0);
+        }
+
+        if (currentAttribute != null) {
+
+            if ((Boolean) currentAttribute.getField("shiftReq")) {
+                FieldComponentState req = (FieldComponentState) viewDefinitionState
+                        .getComponentByReference("shiftFeatureRequired");
+                req.setFieldValue("1");
+            }
+
+            if ((Boolean) currentAttribute.getField("postReq")) {
+                FieldComponentState req = (FieldComponentState) viewDefinitionState
+                        .getComponentByReference("postFeatureRequired");
+                req.setFieldValue("1");
+            }
+
+            if ((Boolean) currentAttribute.getField("otherReq")) {
+                FieldComponentState req = (FieldComponentState) viewDefinitionState
+                        .getComponentByReference("otherFeatureRequired");
+                req.setFieldValue("1");
+            }
+        }
+
+    }
+
+    public void checkBatchNrReq(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
 
         if (!(state instanceof LookupComponentState)) {
             return;
         }
 
-        LOG.info("\n\n IN BATCH NR REQ");
-
         LookupComponentState product = (LookupComponentState) state;
 
         FieldComponentState batchReq = (FieldComponentState) viewDefinitionState.getComponentByReference("batchRequired");
 
-        LOG.info("\n\n GOT BATCH REQ");
-
         if (product.getFieldValue() != null) {
-
-            LOG.info("\n\n ITS NOT NULL");
-
             if (batchRequired(product.getFieldValue())) {
-
-                LOG.info("\n\n setting to true");
-
-                batchReq.setFieldValue(true);
+                batchReq.setFieldValue("1");
             } else {
-
-                LOG.info("\n\n setting to null");
-
-                batchReq.setFieldValue(false);
+                batchReq.setFieldValue("0");
             }
         }
     }
 
     private boolean batchRequired(final Long selectedProductId) {
-        DataDefinition instructionDD = dataDefinitionService.get("products", "technology");
+        DataDefinition instructionDD = dataDefinitionService.get("products", "product");
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.belongsTo(instructionDD.getField("product"), selectedProductId));
+                .restrictedWith(Restrictions.idRestriction(selectedProductId, RestrictionOperator.EQ));
 
         SearchResult searchResult = searchCriteria.list();
 
-        LOG.info("\n\n got the list");
-
         if (searchResult.getTotalNumberOfEntities() == 1) {
-
-            LOG.info("\n\n its not empty");
 
             Entity product = searchResult.getEntities().get(0);
 
-            return (Boolean) product.getField("genealogyBatchReq");
+            if (product != null) {
+                return (Boolean) product.getField("genealogyBatchReq");
+            } else {
+                return false;
+            }
         }
 
         return false;

@@ -103,11 +103,13 @@
 	</model>
 	<model name="currentAttribute">
 		<dictionary name="shift" dictionary="shifts" />
+		<boolean name="shiftReq" />
 		<dictionary name="post" dictionary="posts" />
+		<boolean name="postReq" />
 		<string name="other"/>
+		<boolean name="otherReq" />
 		<dictionary name="lastUsedShift" dictionary="shifts" />
 		<dictionary name="lastUsedPost" dictionary="posts" />
 		<string name="lastUsedOther" />
-		<boolean name="genealogyBatchReq" />
 	</model>
 </qcd:models>
