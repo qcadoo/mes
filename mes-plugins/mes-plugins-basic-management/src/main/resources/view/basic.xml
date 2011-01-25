@@ -131,12 +131,26 @@
 				</group>
 			</ribbon>				
 			<component type="form" name="parameter" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
-					<layoutElement column="1" row="1">
-						<component type="checkbox" name="checkDoneOrderForQuality" field="checkDoneOrderForQuality" />
+				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
+					<layoutElement column="1" row="1" height="2">
+						<component type="borderLayout" name="genealogyParametersBorderLayout">
+							<option type="label" value="genealogyParameters" />
+							<component type="gridLayout" name="gridLayout" columns="1" rows="1">
+								<layoutElement column="1" row="1">
+									<component type="checkbox" name="checkDoneOrderForQuality" field="checkDoneOrderForQuality" />
+								</layoutElement>
+							</component>
+						</component>
 					</layoutElement>
-					<layoutElement column="1" row="3">
-						<component type="select" name="batchForDoneOrder" field="batchForDoneOrder" reference="batchForDoneOrder"/>
+					<layoutElement column="1" row="3" height="2">
+						<component type="borderLayout" name="batchParametersBorderLayout">
+							<option type="label" value="batchParameters" />
+							<component type="gridLayout" name="gridLayout" columns="1" rows="1">
+								<layoutElement column="1" row="1">	
+									<component type="select" name="batchForDoneOrder" field="batchForDoneOrder" reference="batchForDoneOrder"/>
+								</layoutElement>
+							</component>
+						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>

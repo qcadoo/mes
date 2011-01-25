@@ -118,7 +118,7 @@
 				<group template="formSaveCopyAndRemoveActions"/>
 			</ribbon>
 			<component type="form" name="technology" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="3" rows="8">
+				<component type="gridLayout" name="gridsLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="master" field="master" />
 					</layoutElement>
@@ -139,20 +139,27 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="6">
-						<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
-					</layoutElement>
-					<layoutElement column="1" row="7" height="2">
+					<layoutElement column="1" row="6" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="checkbox" name="shiftFeatureRequired" reference="shiftFeatureRequired" field="shiftFeatureRequired" />
-					</layoutElement>
-					<layoutElement column="2" row="2">
-						<component type="checkbox" name="postFeatureRequired" reference="postFeatureRequired" field="postFeatureRequired" />
-					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="otherFeatureRequired" />
+					<layoutElement column="2" row="1" height="4">
+						<component type="borderLayout" name="featuresBorderLayout">
+							<option type="label" value="features" />
+							<component type="gridLayout" name="gridsLayout" columns="1" rows="4">
+								<layoutElement column="1" row="1">
+									<component type="checkbox" name="batchRequired" reference="batchRequired" field="batchRequired" />
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="checkbox" name="shiftFeatureRequired" reference="shiftFeatureRequired" field="shiftFeatureRequired" />
+								</layoutElement>
+								<layoutElement column="1" row="3">	
+									<component type="checkbox" name="postFeatureRequired" reference="postFeatureRequired" field="postFeatureRequired" />
+								</layoutElement>
+								<layoutElement column="1" row="4">
+									<component type="checkbox" name="otherFeatureRequired" reference="otherFeatureRequired" field="otherFeatureRequired" />
+								</layoutElement>
+							</component>
+						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true"/>

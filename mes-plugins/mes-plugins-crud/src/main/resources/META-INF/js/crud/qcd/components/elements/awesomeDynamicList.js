@@ -36,8 +36,15 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	var components = new Object();
 	
+	var lastIndexElement = null;
+	
 	function constructor(_this) {
 		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListInnerForm").children();
+		
+//		innerFormContainer.find('*[tabindex]').each(function(index, element){
+//			$(element).addClass("customTabIndex");
+//		});
+		
 		awesomeDynamicListContent = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListContent");
 		awesomeDynamicListHeader = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListHeader");
 		if (awesomeDynamicListHeader && awesomeDynamicListHeader.length > 0) {
@@ -151,6 +158,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	function getFormCopy(formId) {
 		var copy = innerFormContainer.clone();
+		
 		changeElementId(copy, formId);
 		var line = $("<div>").addClass("awesomeListLine").attr("id", elementPath+"_line_"+formId);
 		var formContainer = $("<div>").addClass("awesomeListFormContainer");
@@ -189,8 +197,26 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		formObject.updateSize(currentWidth-BUTTONS_WIDTH, currentHeight);
 		formObject.setEnabled(true, true);
 		
-		var tabController = mainController.getTabController();
-		tabController.getTabIndexInfo(copy);
+		
+		
+//		var indexObjects = copy.find('.customTabIndex');
+//		var indexObjectsArray = new Array();
+//		for (var i=0; i<indexObjects.length; i++) {
+//			if (indexObjects[i] && $(indexObjects[i]).is(":visible")) {
+//				indexObjectsArray.push(indexObjects[i]);
+//			}
+//		}
+//		if (lastIndexElement) {
+//			lastIndexElement.nextTabElement = indexObjectsArray[0];
+//		}
+//		for (var i=0; i<indexObjectsArray.length; i++) {
+//			if (indexObjectsArray[i+1]) {
+//				indexObjectsArray[i].nextTabElement = indexObjectsArray[i+1];
+//			} else {
+//				lastIndexElement = indexObjectsArray[i];
+//			}
+//		}
+
 		
 		return formObject;
 	}
