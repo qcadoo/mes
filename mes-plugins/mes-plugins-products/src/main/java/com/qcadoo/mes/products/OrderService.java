@@ -24,6 +24,7 @@
 
 package com.qcadoo.mes.products;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -144,6 +146,22 @@ public final class OrderService {
                     orderState.setFieldValue("02inProgress");
                 }
                 order.setField("state", "02inProgress");
+
+                order.setField("effectiveDateFrom", new Date());
+                order.setField("startWorker", securityService.getCurrentUserName());
+
+                FieldComponentState dateState = (FieldComponentState) viewDefinitionState
+                        .getComponentByReference("effectiveDateFrom");
+                FieldComponentState workerState = (FieldComponentState) viewDefinitionState
+                        .getComponentByReference("startWorker");
+
+                if (dateState != null) {
+                    dateState.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
+                }
+
+                if (workerState != null) {
+                    workerState.setFieldValue(securityService.getCurrentUserName());
+                }
             } else {
                 if (!checkRequiredBatch(order)) {
                     state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
@@ -155,6 +173,21 @@ public final class OrderService {
                     orderState.setFieldValue("03done");
                 }
                 order.setField("state", "03done");
+
+                order.setField("effectiveDateTo", new Date());
+                order.setField("endWorker", securityService.getCurrentUserName());
+
+                FieldComponentState dateState = (FieldComponentState) viewDefinitionState
+                        .getComponentByReference("effectiveDateTo");
+                FieldComponentState workerState = (FieldComponentState) viewDefinitionState.getComponentByReference("endWorker");
+
+                if (dateState != null) {
+                    dateState.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
+                }
+
+                if (workerState != null) {
+                    workerState.setFieldValue(securityService.getCurrentUserName());
+                }
             }
 
             DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
