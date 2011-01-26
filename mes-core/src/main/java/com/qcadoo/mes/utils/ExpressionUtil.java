@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -115,13 +117,34 @@ public final class ExpressionUtil {
     public static String getValue(final Entity entity, final String expression, final Locale locale) {
         checkState(!isEmpty(expression), "Expression must be defined");
 
-        String value = getValueWithExpression(entity, expression, locale);
+        String value = getValueWithExpression(entity, translate(expression, locale), locale);
 
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
         } else {
             return value;
         }
+    }
+
+    private static String translate(final String expression, final Locale locale) {
+        Matcher m = Pattern.compile("\\@([a-zA-Z0-9\\.]+)").matcher(expression);
+        StringBuffer sb = new StringBuffer();
+
+        int i = 0;
+
+        while (m.find()) {
+            sb.append(expression.substring(i, m.start()));
+            sb.append(translationService.translate(m.group(1), locale));
+            i = m.end();
+        }
+
+        if (i == 0) {
+            return expression;
+        }
+
+        sb.append(expression.substring(i, expression.length()));
+
+        return sb.toString();
     }
 
     private static String getValueWithExpression(final Entity entity, final String expression, final Locale locale) {

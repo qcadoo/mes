@@ -71,8 +71,9 @@
 							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
 					</smallButtons>
 				</group>
-				<group name="autoGenealogy">
+				<group name="genealogy">
 					<bigButton name="genealogy" action="#{grid}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
+					<bigButton name="newGenealogy" action="#{grid}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="grid" name="orders" reference="grid">
@@ -87,7 +88,8 @@
 						var xlsMachine = #{window}.getRibbonItem("exportPlan.pdfMachine.xlsMachine");
 						var pdfProduct = #{window}.getRibbonItem("exportPlan.pdfProduct");
 						var xlsProduct = #{window}.getRibbonItem("exportPlan.pdfProduct.xlsProduct");
-						var genealogy = #{window}.getRibbonItem("autoGenealogy.genealogy");
+						var genealogy = #{window}.getRibbonItem("genealogy.genealogy");
+						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
 						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
 						var listener = {
@@ -103,6 +105,7 @@
 									pdfProduct.disable();
 									xlsProduct.disable();
 									genealogy.disable();
+									newGenealogy.disable();
 									activateOrder.disable();
 									finishOrder.disable();
 								} else {
@@ -116,6 +119,7 @@
 									pdfProduct.enable();
 									xlsProduct.enable();
 									genealogy.enable();
+									newGenealogy.enable();
 									if(selectedRecord.fields.state == '01pending') {
 										activateOrder.enable();
 										finishOrder.disable();
@@ -174,6 +178,7 @@
 				<listener event="activateOrder" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone"/>
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
+				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
@@ -214,6 +219,7 @@
 				</group>
 				<group name="genealogy">
 					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
+					<bigButton name="newGenealogy" action="#{form}.fireEvent(newGenealogy);" icon="genealogyIcon24.png" state="disabled" />
 				</group>
 			</ribbon>
 			<component type="form" name="order" reference="form">
@@ -225,6 +231,7 @@
 						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var del = #{window}.getRibbonItem("actions.delete");
 						var genealogy = #{window}.getRibbonItem("genealogy.genealogy");
+						var newGenealogy = #{window}.getRibbonItem("genealogy.newGenealogy");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
 						var finishOrder = #{window}.getRibbonItem("status.finishOrder");
 						
@@ -261,6 +268,7 @@
 								
 								if (value && value.content && value.content.entityId) {
 									genealogy.enable();
+									newGenealogy.enable();
 								}
 							}
 						});
@@ -342,6 +350,7 @@
 				<listener event="activateOrder" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="generateGenalogyOnChangeOrderStatusForDone"/>
 				<listener event="activateOrder" bean="com.qcadoo.mes.products.OrderService" method="activateOrder"/>
 				<listener event="showGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="showGenealogy" />
+				<listener event="newGenealogy" bean="com.qcadoo.mes.genealogies.GenealogyService" method="newGenealogy" />
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.OrderService" method="generateOrderNumber" />		

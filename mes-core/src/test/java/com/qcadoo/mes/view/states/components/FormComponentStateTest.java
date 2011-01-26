@@ -77,7 +77,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         name.setName("name");
         name.initialize(new JSONObject(), Locale.ENGLISH);
 
-        form = new FormComponentState("'static expression'");
+        form = new FormComponentState(null, "'static expression'");
         ((AbstractContainerState) form).setDataDefinition(dataDefinition);
         ((AbstractContainerState) form).setTranslationService(translationService);
         ((AbstractContainerState) form).addFieldEntityIdChangeListener("name", name);
@@ -87,7 +87,7 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldInitialeFormWithEntityId() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState(null);
+        ComponentState componentState = new FormComponentState(null, null);
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
@@ -106,7 +106,7 @@ public class FormComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldInitialeFormWithNullEntityId() throws Exception {
         // given
-        ComponentState componentState = new FormComponentState(null);
+        ComponentState componentState = new FormComponentState(null, null);
 
         JSONObject json = new JSONObject();
         JSONObject jsonContent = new JSONObject();
@@ -127,7 +127,7 @@ public class FormComponentStateTest extends AbstractStateTest {
         // given
         TranslationService translationService = mock(TranslationService.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        AbstractComponentState componentState = new FormComponentState("2");
+        AbstractComponentState componentState = new FormComponentState(null, "2");
         componentState.setTranslationService(translationService);
         componentState.setDataDefinition(dataDefinition);
         componentState.setFieldValue(13L);
