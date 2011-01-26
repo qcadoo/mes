@@ -190,11 +190,6 @@ public class AutocompleteGenealogyService {
         Entity genealogy = new DefaultEntity("genealogies", "genealogy");
         genealogy.setField("order", order);
         genealogy.setField("batch", mainBatch);
-        if (order.getField("plannedQuantity") != null) {
-            genealogy.setField("quantity", order.getField("plannedQuantity"));
-        } else if (order.getField("doneQuantity") != null) {
-            genealogy.setField("quantity", order.getField("doneQuantity"));
-        }
         DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
         Entity savedGenealogy = genealogyDef.save(genealogy);
         completeAttributesForGenealogy(technology, savedGenealogy, lastUsedMode);
