@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,8 +44,10 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 
 /**
@@ -59,12 +62,23 @@ public final class ExpressionUtil {
 
     private static TranslationService translationService;
 
+    private static DataDefinitionService dataDefinitionService;
+
     public ExpressionUtil() {
     }
 
     @Autowired
     public void setTranslationService(final TranslationService translationService) {
         ExpressionUtil.setStaticTranslationService(translationService);
+    }
+
+    @Autowired
+    public void setDataDefinitionService(final DataDefinitionService dataDefinitionService) {
+        ExpressionUtil.setStaticDataDefinitionService(dataDefinitionService);
+    }
+
+    public static void setStaticDataDefinitionService(final DataDefinitionService dataDefinitionService) {
+        ExpressionUtil.dataDefinitionService = dataDefinitionService;
     }
 
     private static void setStaticTranslationService(final TranslationService translationService) {
@@ -100,7 +114,7 @@ public final class ExpressionUtil {
     public static String getValue(final Entity entity, final String expression, final Locale locale) {
         checkState(!isEmpty(expression), "Expression must be defined");
 
-        String value = getValueWithExpression(entity, expression);
+        String value = getValueWithExpression(entity, expression, locale);
 
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
@@ -109,22 +123,16 @@ public final class ExpressionUtil {
         }
     }
 
-    private static String getValueWithExpression(final Entity entity, final String expression) {
+    private static String getValueWithExpression(final Entity entity, final String expression, final Locale locale) {
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(expression);
         EvaluationContext context = new StandardEvaluationContext();
 
         if (entity != null) {
-            context.setVariable("id", entity.getId());
-            for (String fieldName : entity.getFields().keySet()) {
-                Object value = entity.getField(fieldName);
-                if (value instanceof Entity) {
-                    Map<String, Object> values = ((Entity) value).getFields();
-                    values.put("id", ((Entity) value).getId());
-                    context.setVariable(fieldName, values);
-                } else {
-                    context.setVariable(fieldName, value);
-                }
+            Map<String, Object> values = getValuesForEntity(entity, locale, 1);
+
+            for (Map.Entry<String, Object> entry : values.entrySet()) {
+                context.setVariable(entry.getKey(), entry.getValue());
             }
         }
 
@@ -135,6 +143,30 @@ public final class ExpressionUtil {
         }
 
         return value;
+    }
+
+    private static Map<String, Object> getValuesForEntity(final Entity entity, final Locale locale, int level) {
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.put("id", entity.getId());
+
+        if (level == 0) {
+            values.putAll(entity.getFields());
+            return values;
+        }
+
+        for (Map.Entry<String, Object> entry : entity.getFields().entrySet()) {
+            DataDefinition dataDefinition = dataDefinitionService.get(entity.getPluginIdentifier(), entity.getName());
+
+            if (entry.getValue() instanceof Entity) {
+                values.put(entry.getKey(), getValuesForEntity((Entity) entry.getValue(), locale, --level));
+            } else {
+                String value = dataDefinition.getField(entry.getKey()).getType().toString(entry.getValue(), locale);
+                System.out.println(" ---> " + entity.getName() + "." + entry.getKey() + ": " + entry.getValue() + " > " + value);
+                values.put(entry.getKey(), value);
+            }
+        }
+
+        return values;
     }
 
     private static String getValueWithoutExpression(final Entity entity, final List<FieldDefinition> fieldDefinitions,
