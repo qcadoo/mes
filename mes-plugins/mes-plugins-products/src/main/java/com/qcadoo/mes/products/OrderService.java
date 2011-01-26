@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.products;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -43,13 +42,13 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
-import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.grid.GridComponentState;
 import com.qcadoo.mes.view.components.lookup.LookupComponentState;
 
 @Service
@@ -133,66 +132,43 @@ public final class OrderService {
     }
 
     public void activateOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Entity order = dataDefinitionService.get("products", "order").get((Long) state.getFieldValue());
+        if (state.getFieldValue() != null) {
+            DataDefinition orderDataDefinition = dataDefinitionService.get("products", "order");
+            Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
-            FieldComponentState orderState = (FieldComponentState) viewDefinitionState.getComponentByReference("state");
+            if (state instanceof FormComponentState) {
+                FieldComponentState orderState = (FieldComponentState) viewDefinitionState.getComponentByReference("state");
 
-            boolean newOrderState = Boolean.parseBoolean(args[0]);
-
-            if (newOrderState) {
-
-                if (orderState != null) {
+                if (Boolean.parseBoolean(args[0])) {
                     orderState.setFieldValue("02inProgress");
-                }
-                order.setField("state", "02inProgress");
+                } else {
+                    if (!checkRequiredBatch(order)) {
+                        state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
+                                MessageType.FAILURE);
+                        return;
+                    }
 
-                order.setField("effectiveDateFrom", new Date());
-                order.setField("startWorker", securityService.getCurrentUserName());
-
-                FieldComponentState dateState = (FieldComponentState) viewDefinitionState
-                        .getComponentByReference("effectiveDateFrom");
-                FieldComponentState workerState = (FieldComponentState) viewDefinitionState
-                        .getComponentByReference("startWorker");
-
-                if (dateState != null) {
-                    dateState.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
-                }
-
-                if (workerState != null) {
-                    workerState.setFieldValue(securityService.getCurrentUserName());
-                }
-            } else {
-                if (!checkRequiredBatch(order)) {
-                    state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                            MessageType.FAILURE);
-                    return;
-                }
-
-                if (orderState != null) {
                     orderState.setFieldValue("03done");
                 }
-                order.setField("state", "03done");
 
-                order.setField("effectiveDateTo", new Date());
-                order.setField("endWorker", securityService.getCurrentUserName());
+                ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
+            } else {
+                if (Boolean.parseBoolean(args[0])) {
+                    order.setField("state", "02inProgress");
+                } else {
+                    if (!checkRequiredBatch(order)) {
+                        state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
+                                MessageType.FAILURE);
+                        return;
+                    }
 
-                FieldComponentState dateState = (FieldComponentState) viewDefinitionState
-                        .getComponentByReference("effectiveDateTo");
-                FieldComponentState workerState = (FieldComponentState) viewDefinitionState.getComponentByReference("endWorker");
-
-                if (dateState != null) {
-                    dateState.setFieldValue(new SimpleDateFormat(DateType.DATE_FORMAT).format(new Date()));
+                    order.setField("state", "03done");
                 }
 
-                if (workerState != null) {
-                    workerState.setFieldValue(securityService.getCurrentUserName());
-                }
+                orderDataDefinition.save(order);
+
+                ((GridComponentState) state).performEvent(viewDefinitionState, "refresh", new String[0]);
             }
-
-            DataDefinition dataDefinition = dataDefinitionService.get("products", "order");
-            dataDefinition.save(order);
-
         } else {
             if (state instanceof FormComponentState) {
                 state.addMessage(translationService.translate("core.form.entityWithoutIdentifier", state.getLocale()),

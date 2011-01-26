@@ -116,7 +116,7 @@ public final class FormComponentState extends AbstractContainerState {
         return entity;
     }
 
-    public void setEntity(Entity entity) {
+    public void setEntity(final Entity entity) {
         if (!entity.isValid()) {
             valid = false;
             requestRender();
@@ -265,7 +265,7 @@ public final class FormComponentState extends AbstractContainerState {
 
     private Object convertFieldToString(final Object value, final String field) {
         if (value instanceof String) {
-            return (String) value;
+            return value;
         } else if (value != null) {
             if (value instanceof Collection) {
                 return value;

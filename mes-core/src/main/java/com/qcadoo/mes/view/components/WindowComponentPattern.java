@@ -228,6 +228,8 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             type = RibbonActionItem.Type.SMALL_BUTTON;
         } else if ("combobox".equals(stringType)) {
             type = RibbonActionItem.Type.COMBOBOX;
+        } else if ("smallEmptySpace".equals(stringType)) {
+            type = RibbonActionItem.Type.SMALL_EMPTY_SPACE;
         }
 
         RibbonActionItem item = null;

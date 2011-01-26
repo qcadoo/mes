@@ -26,20 +26,38 @@ package com.qcadoo.mes.utils;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
+import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.types.internal.StringType;
 
 public class ExpressionUtilTest {
+
+    private DataDefinition dataDefinition;
+
+    @Before
+    public void init() {
+        dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+        given(dataDefinitionService.get(anyString(), anyString())).willReturn(dataDefinition);
+        ExpressionUtil.setStaticDataDefinitionService(dataDefinitionService);
+    }
 
     @Test
     public void shouldReturnStringRepresentationOfOneFieldWithoutExpression() throws Exception {
@@ -82,11 +100,13 @@ public class ExpressionUtilTest {
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("name", "Mr T");
 
+        given(dataDefinition.getField(eq("name")).getType().toString(eq("Mr T"), eq(Locale.ENGLISH))).willReturn("Mr X");
+
         // when
-        String value = ExpressionUtil.getValue(entity, "#name.toUpperCase()", null);
+        String value = ExpressionUtil.getValue(entity, "#name.toUpperCase()", Locale.ENGLISH);
 
         // then
-        assertEquals("MR T", value);
+        assertEquals("MR X", value);
     }
 
     @Test
@@ -110,12 +130,16 @@ public class ExpressionUtilTest {
         entity.setField("age", 33);
         entity.setField("sex", "F");
 
+        given(dataDefinition.getField(eq("name")).getType().toString(eq("Mr T"), eq(Locale.ENGLISH))).willReturn("Mr X");
+        given(dataDefinition.getField(eq("sex")).getType().toString(eq("F"), eq(Locale.ENGLISH))).willReturn("F");
+        given(dataDefinition.getField(eq("age")).getType().toString(eq(33), eq(Locale.ENGLISH))).willReturn("34");
+
         // when
         String value = ExpressionUtil.getValue(entity,
-                "#name + \" -> (\" + (#age+1) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")", null);
+                "#name + \" -> (\" + (#age) + \") -> \" + (#sex == \"F\" ? \"female\" : \"male\")", Locale.ENGLISH);
 
         // then
-        assertEquals("Mr T -> (34) -> female", value);
+        assertEquals("Mr X -> (34) -> female", value);
     }
 
     @Test
@@ -124,11 +148,13 @@ public class ExpressionUtilTest {
         Entity product = new DefaultEntity("", "", 1L);
         product.setField("name", "P1");
 
+        given(dataDefinition.getField(eq("name")).getType().toString(eq("P1"), eq(Locale.ENGLISH))).willReturn("P1");
+
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("product", product);
 
         // when
-        String value = ExpressionUtil.getValue(entity, "#product['name']", null);
+        String value = ExpressionUtil.getValue(entity, "#product['name']", Locale.ENGLISH);
 
         // then
         assertEquals("P1", value);

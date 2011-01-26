@@ -80,6 +80,6 @@ public interface SearchCriteria {
      * 
      * @return distinct
      */
-    boolean isDistinct();
+    String getDistinctProperty();
 
 }
