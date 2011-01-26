@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -23,6 +25,7 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
+import com.qcadoo.mes.utils.pdf.TableBorderEvent;
 
 public class GenealogyForProductView extends ReportPdfView {
 
@@ -56,9 +59,28 @@ public class GenealogyForProductView extends ReportPdfView {
         orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.name.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.dateFrom.label", locale));
+        PdfPTable headerData = createHeaderTable();
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.order.product.label", locale), entity
+                .getBelongsToField("order").getBelongsToField("product").getField("number"), "", PdfUtil.getArialBold10Dark(),
+                PdfUtil.getArialRegular10Dark());
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.genealogy.batch.label", locale),
+                entity.getField("batch"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        document.add(headerData);
         List<Entity> orders = getOrders(entity);
         addOrderSeries(document, orders, orderHeader);
         addComponentSeries(document, orders, locale);
+    }
+
+    private PdfPTable createHeaderTable() {
+        PdfPTable mainData = new PdfPTable(2);
+        mainData.setWidthPercentage(100f);
+        mainData.setSpacingBefore(20);
+        mainData.getDefaultCell().setBackgroundColor(PdfUtil.getBackgroundColor());
+        mainData.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        mainData.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+        mainData.getDefaultCell().setPadding(8.0f);
+        mainData.setTableEvent(new TableBorderEvent());
+        return mainData;
     }
 
     private void addComponentSeries(final Document document, final List<Entity> orders, final Locale locale)
