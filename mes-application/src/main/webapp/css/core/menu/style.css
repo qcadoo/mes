@@ -740,17 +740,18 @@ ul.ribbon_list li.enabled .hasIcon {
 }
 ul.ribbon_list li.btnOne.enabled:hover  {
 	background-image:url('/css/core/menu/images/lt_hover_l.png');
-	background-position: left;
+	background-position: 0px -1px;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.btnOne.enabled:hover > a  {
 	background-image:url('/css/core/menu/images/lt_1Up.png');
-	background-position: right;
+	background-position: right -1px;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.btnOne.enabled:hover a span  {
 	display:block;
 	background-image:url('/css/core/menu/images/lt_hover_c.png');
+	background-position: 0px -1px;
 	background-repeat:repeat-x;
 }
 ul.ribbon_list li.arrow:hover a {
@@ -795,34 +796,36 @@ ul.ribbon_list li.twoB.enabled a {
 ul.ribbon_list > li.twoB.enabled:hover {
 	background-image:url('/css/core/menu/images/lt_twoB_c.png') !important;
 	background-repeat:repeat-x;
+	background-position: left -1px;
  }
 ul.ribbon_list li.twoB.enabled:hover > span {
 	display:block;
 	height: 23px;
 	background-image:url('/css/core/menu/images/lt_twoB_l.png') !important;
 	background-repeat:no-repeat;
-	background-position: left;
+	background-position: left -1px;
 }
 ul.ribbon_list li.twoB.enabled:hover > span > div {
 	display:block;
 	height: 23px;
 	background-image:url('/css/core/menu/images/lt_twoB_r.png');
 	background-repeat:no-repeat;
-	background-position: right; 
+	background-position: 1px -1px; 
 }
 ul.ribbon_list li.twoB.enabled span div ul li:hover {
 	background-image:url('/css/core/menu/images/lt_hover_l.png');
-	background-position: left;
+	background-position: left -1px;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.twoB.enabled span div ul li:hover a {
 	background-image:url('/css/core/menu/images/lt_1Up.png');
-	background-position: right;
+	background-position: right -1px;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.twoB.enabled span div ul li:hover a span {
 	display:block;
 	background-image:url('/css/core/menu/images/lt_hover_c.png');
+	background-position: left -1px;
 	background-repeat:repeat-x; 
 }
 /* [LIST icon] */
@@ -864,10 +867,12 @@ ul.ribbon_list li.twoB ul li a.twoB_down {
 	width:15px;
 	height:23px;
 	background-image:url('/css/core/menu/images/lt_twoB_down.png');
+	background-position: 0px -1px;
 	background-repeat:no-repeat;
 }
 ul.ribbon_list li.twoB.enabled ul li a.twoB_down:hover {
 	background-image:url('/css/core/menu/images/lt_twoB_downClick.png') !important;
+	background-position: 0px -1px;
 }
 /* SUBMENU */
 .m_warp {
