@@ -249,7 +249,7 @@
 								} else if (state && state == "02inProgress") { 
 									activateOrder.disable();
 									finishOrder.enable();
-								} else if (state && state == "01pending" && value && value.content && value.content.entityId) {
+								} else if (state && state == "01pending") {
 									activateOrder.enable();
 									finishOrder.disable();
 								} else {
@@ -265,8 +265,9 @@
 										del.disable();
 									}
 								}
-								
-								if (value && value.content && value.content.entityId) {
+								if (value && value.content && ! value.content.entityId) {
+									genealogy.disable();
+								} else {
 									genealogy.enable();
 									newGenealogy.enable();
 								}
