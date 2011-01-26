@@ -69,10 +69,10 @@
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForProduct" />
 	</model>
 	<model name="shiftFeature">
-		<string name="value">
+		<dictionary name="value" dictionary="shifts">
 			<validatesPresence />
 			<validatesLength max="255" />
-		</string>
+		</dictionary>
 		<date name="date" readonly="true" readonlyOnCreate="true" />
 		<string name="worker" readonly="true" readonlyOnCreate="true" />
 		<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />		
@@ -80,10 +80,10 @@
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedShiftFeature" />
 	</model>
 	<model name="postFeature">
-		<string name="value">
+		<dictionary name="value" dictionary="posts">
 			<validatesPresence />
 			<validatesLength max="255" />
-		</string>
+		</dictionary>
 		<date name="date" readonly="true" readonlyOnCreate="true" />
 		<string name="worker" readonly="true" readonlyOnCreate="true" />
 		<string name="workerAndDate" expression="#worker + ' (' + #date + ')'" default="-" />

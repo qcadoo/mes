@@ -348,7 +348,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         // FIXME masz
 
-        if (searchCriteria.isDistinct()) {
+        if (searchCriteria.getDistinctProperty() != null) {
             Class<?> entityClass = ((InternalDataDefinition) searchCriteria.getDataDefinition()).getClassForEntity();
             Set<String> batches = new HashSet<String>();
             List<Object> uniqueResults = new ArrayList<Object>();

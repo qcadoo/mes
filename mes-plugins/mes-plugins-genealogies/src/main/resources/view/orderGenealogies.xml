@@ -70,7 +70,7 @@
 								<component type="gridLayout" name="gridLayout"
 									columns="1" rows="2" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
-										<component type="input" name="value" field="value" />
+										<component type="select" name="value" field="value" />
 									</layoutElement>
 									<layoutElement column="1" row="2">
 										<component type="input" name="workerAndDate" field="workerAndDate"
@@ -92,7 +92,7 @@
 								<component type="gridLayout" name="gridLayout"
 									columns="1" rows="2" fixedRowHeight="false">
 									<layoutElement column="1" row="1">
-										<component type="input" name="value" field="value" />
+										<component type="select" name="value" field="value" />
 									</layoutElement>
 									<layoutElement column="1" row="2">
 										<component type="input" name="workerAndDate" field="workerAndDate"
