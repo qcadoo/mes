@@ -48,30 +48,28 @@
 				<group name="export">
 					<smallButton name="print" icon="pdfIcon16.png"
 						action="#{grid}.fireEvent(printOrder,pdf);" state="disabled" />
+					<smallButtons name="pdfMaterialReq" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" state="disabled">
+						<smallButton name="xlsMaterialReq" icon="xlsIcon16.png"
+							action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" />
+					</smallButtons>
 				</group>
-				<group name="exportMaterialReq">
-					<smallButton name="pdf" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printMaterialReqForOrder,pdf);" state="disabled" />
-					<smallButton name="xls" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printMaterialReqForOrder,xls);" state="disabled" />
-				</group>
-				<group name="exportWorker">
-					<smallButton name="pdfWorker" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" state="disabled" />
-					<smallButton name="xlsWorker" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled" />
-				</group>
-				<group name="exportMachine">
-					<smallButton name="pdfMachine" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" state="disabled" />
-					<smallButton name="xlsMachine" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" state="disabled" />
-				</group>
-				<group name="exportProduct">
-					<smallButton name="pdfProduct" icon="pdfIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" state="disabled" />
-					<smallButton name="xlsProduct" icon="xlsIcon16.png"
-						action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
+				<group name="exportPlan">
+					<smallButtons name="pdfWorker" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForWorker);" state="disabled">
+						<smallButton name="xlsWorker" icon="xlsIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForWorker);" state="disabled" />
+					</smallButtons>
+					<smallButtons name="pdfMachine" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForMachine);" state="disabled">
+						<smallButton name="xlsMachine" icon="xlsIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForMachine);" state="disabled" />
+					</smallButtons>
+					<smallButtons name="pdfProduct" icon="pdfIcon16.png"
+						action="#{grid}.fireEvent(printWorkPlanForOrder,pdf,ForProduct);" state="disabled">
+						<smallButton name="xlsProduct" icon="xlsIcon16.png"
+							action="#{grid}.fireEvent(printWorkPlanForOrder,xls,ForProduct);" state="disabled" />
+					</smallButtons>
 				</group>
 				<group name="autoGenealogy">
 					<bigButton name="genealogy" action="#{grid}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />
@@ -81,14 +79,14 @@
 				<script>
 					<![CDATA[
 						var print = #{window}.getRibbonItem("export.print");
-						var pdfMaterialReq = #{window}.getRibbonItem("exportMaterialReq.pdf");
-						var xlsMaterialReq = #{window}.getRibbonItem("exportMaterialReq.xls");
-						var pdfWorker = #{window}.getRibbonItem("exportWorker.pdfWorker");
-						var xlsWorker = #{window}.getRibbonItem("exportWorker.xlsWorker");
-						var pdfMachine = #{window}.getRibbonItem("exportMachine.pdfMachine");
-						var xlsMachine = #{window}.getRibbonItem("exportMachine.xlsMachine");
-						var pdfProduct = #{window}.getRibbonItem("exportProduct.pdfProduct");
-						var xlsProduct = #{window}.getRibbonItem("exportProduct.xlsProduct");
+						var pdfMaterialReq = #{window}.getRibbonItem("export.pdfMaterialReq");
+						var xlsMaterialReq = #{window}.getRibbonItem("export.pdfMaterialReq.xlsMaterialReq");
+						var pdfWorker = #{window}.getRibbonItem("exportPlan.pdfWorker");
+						var xlsWorker = #{window}.getRibbonItem("exportPlan.pdfWorker.xlsWorker");
+						var pdfMachine = #{window}.getRibbonItem("exportPlan.pdfMachine");
+						var xlsMachine = #{window}.getRibbonItem("exportPlan.pdfMachine.xlsMachine");
+						var pdfProduct = #{window}.getRibbonItem("exportPlan.pdfProduct");
+						var xlsProduct = #{window}.getRibbonItem("exportPlan.pdfProduct.xlsProduct");
 						var genealogy = #{window}.getRibbonItem("autoGenealogy.genealogy");
 						var activateOrder = #{window}.getRibbonItem("status.activateOrder");
 						var finishOrder = #{window}.getRibbonItem("status.finishOrder");

@@ -51,7 +51,11 @@ public class RibbonActionItem {
         /**
          * combobox
          */
-        COMBOBOX
+        COMBOBOX,
+        /**
+         * small empty space
+         */
+        SMALL_EMPTY_SPACE
     }
 
     private String name;

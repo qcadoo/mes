@@ -78,6 +78,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 					} else if (itemModel.type == "COMBOBOX") {
 						itemElement = createComboBox(groupModel.name, itemModel);
 						isSmall = true;
+					} else if (itemModel.type == "SMALL_EMPTY_SPACE") {
+						itemElement = $("<div>");
+						isSmall = true;
 					}
 					
 					if (itemElement) {
