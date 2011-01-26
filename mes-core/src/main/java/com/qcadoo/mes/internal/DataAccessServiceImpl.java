@@ -88,10 +88,14 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @Override
     @Transactional
     public Entity save(final InternalDataDefinition dataDefinition, final Entity genericEntity) {
-        Entity resultEntity = performSave(dataDefinition, genericEntity, new HashSet<Entity>());
+        Set<Entity> newlySavedEntities = new HashSet<Entity>();
+        Entity resultEntity = performSave(dataDefinition, genericEntity, new HashSet<Entity>(), newlySavedEntities);
         try {
             if (TransactionAspectSupport.currentTransactionStatus().isRollbackOnly()) {
                 resultEntity.setNotValid();
+                for (Entity e : newlySavedEntities) {
+                    e.setId(null);
+                }
             }
         } catch (NoTransactionException e) {
             // nothing - test purpose only
@@ -102,7 +106,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
     @SuppressWarnings("unchecked")
     @Monitorable
     private Entity performSave(final InternalDataDefinition dataDefinition, final Entity genericEntity,
-            final Set<Entity> alreadySavedEntities) {
+            final Set<Entity> alreadySavedEntities, final Set<Entity> newlySavedEntities) {
         checkNotNull(dataDefinition, "DataDefinition must be given");
         checkNotNull(genericEntity, "Entity must be given");
 
@@ -161,7 +165,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 for (Entity innerEntity : entities) {
                     innerEntity.setField(hmt.getJoinFieldName(), savedEntity.getId());
                     Entity savedInnerEntity = performSave((InternalDataDefinition) hmt.getDataDefinition(), innerEntity,
-                            alreadySavedEntities);
+                            alreadySavedEntities, newlySavedEntities);
                     savedEntities.add(savedInnerEntity);
                     if (!savedInnerEntity.isValid()) {
                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -188,6 +192,10 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         alreadySavedEntities.add(savedEntity);
+
+        if (genericEntity.getId() == null && savedEntity.getId() != null) {
+            newlySavedEntities.add(savedEntity);
+        }
 
         return savedEntity;
     }
