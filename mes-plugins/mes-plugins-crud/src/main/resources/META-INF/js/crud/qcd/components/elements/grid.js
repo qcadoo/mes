@@ -32,6 +32,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	var mainController = _mainController;
 	var element = _element;
 	
+	var options = this.options;
+	
 	var headerController;
 	
 	var elementPath = this.elementPath;
@@ -422,6 +424,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (gridParameters.isLookup) {
 			headerController.setFilterActive();
 			currentState.filtersEnabled = true;
+			$("#gs_"+options.columns[0].name).focus();
 		} else {
 			grid[0].toggleToolbar();
 			currentState.filtersEnabled = false;
@@ -519,7 +522,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		currentState.filtersEnabled = ! currentState.filtersEnabled;
 		if (currentState.filtersEnabled) {
 			currentGridHeight -= 23;
-			updateSearchFields();
+			updateSearchFields()
+			$("#gs_"+options.columns[0].name).focus();
 		} else {
 			currentGridHeight += 23;
 		}
@@ -566,6 +570,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		currentState.filters = new Object();
 		currentState.filters[column] = filterText;
 		$("#gs_"+column).val(filterText);
+		$("#gs_"+column).focus();
 		updateSearchFields();
 	}
 	
@@ -598,6 +603,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 				currentGridHeight -= 23	;
 				grid.setGridHeight(currentGridHeight);
 				grid[0].toggleToolbar();
+				$("#gs_"+options.columns[0].name).focus();
 			}
 			headerController.setFilterActive();
 			currentState.filtersEnabled = true;

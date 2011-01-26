@@ -58,6 +58,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			BUTTONS_WIDTH = 0;
 		}
 		
+		_this.components = components; 
+		
 		updateButtons();
 	}
 	
