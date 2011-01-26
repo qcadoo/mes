@@ -752,6 +752,10 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	var performCopy = this.performCopy;
 	
+	this.performEvent = function(eventName, args) {
+		this.fireEvent(null, eventName, args);
+	}
+	
 	this.fireEvent = function(actionsPerformer, eventName, args) {
 		blockGrid();
 		mainController.callEvent(eventName, elementPath, function() {
