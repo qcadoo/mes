@@ -18,10 +18,32 @@
 			<ribbon>
 				<group template="gridNewCopyAndRemoveAction"/>
 				<group name="status">
-					<bigButton name="activateOrder" icon="startIcon24.png"
-						action="#{grid}.fireEvent(activateOrder,true);" state="disabled" />
-					<bigButton name="finishOrder" icon="acceptIcon24.png"
-						action="#{grid}.fireEvent(activateOrder,false);" state="disabled" />
+					<bigButton name="activateOrder" icon="startIcon24.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (window.confirm("#{translate(products.orders.window.ribbon.status.activateOrder.confirm)}")) {
+											#{grid}.performEvent('activateOrder', [true]);
+										};
+									}
+								});
+							]]>
+						</script>
+					</bigButton>
+					<bigButton name="finishOrder" icon="acceptIcon24.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+											#{grid}.performEvent('activateOrder', [false]);
+										};
+									}
+								});
+							]]>
+						</script>
+					</bigButton>
 				</group>
 				<group name="export">
 					<smallButton name="print" icon="pdfIcon16.png"
@@ -165,10 +187,32 @@
 				<group template="navigation"/>
 				<group template="formSaveCopyAndRemoveActions"/>
 				<group name="status">
-					<bigButton name="activateOrder" icon="startIcon24.png"
-						action="#{form}.fireEvent(activateOrder,true);" state="disabled" />
-					<bigButton name="finishOrder" icon="acceptIcon24.png"
-						action="#{form}.fireEvent(activateOrder,false);" state="disabled" />
+					<bigButton name="activateOrder" icon="startIcon24.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (window.confirm("#{translate(products.orders.window.ribbon.status.activateOrder.confirm)}")) {
+											#{form}.performEvent('activateOrder', [true]);
+										};
+									}
+								});
+							]]>
+						</script>
+					</bigButton>
+					<bigButton name="finishOrder" icon="acceptIcon24.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (window.confirm("#{translate(products.orders.window.ribbon.status.finishOrder.confirm)}")) {
+											#{form}.performEvent('activateOrder', [false]);
+										};
+									}
+								});
+							]]>
+						</script>
+					</bigButton>
 				</group>
 				<group name="genealogy">
 					<bigButton name="genealogy" action="#{form}.fireEvent(showGenealogy);" icon="genealogyIcon24.png" state="disabled" />

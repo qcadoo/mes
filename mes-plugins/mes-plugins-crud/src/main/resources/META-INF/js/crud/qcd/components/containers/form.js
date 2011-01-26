@@ -142,6 +142,10 @@ QCD.components.containers.Form = function(_element, _mainController) {
 		}
 	}
 	
+	this.performEvent = function(eventName, args) {
+		this.fireEvent(null, eventName, args);
+	}
+	
 	this.fireEvent = function(actionsPerformer, eventName, args) {
 		callEvent(eventName, actionsPerformer, args);
 	}
