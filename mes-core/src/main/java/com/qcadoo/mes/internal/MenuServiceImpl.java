@@ -115,6 +115,7 @@ public final class MenuServiceImpl implements MenuService {
         List<Entity> categories = menuDD.find().list().getEntities();
 
         MenulItemsGroup administrationCategory = null;
+        MenulItemsGroup basicDataCategory = null;
         boolean hasMenuCategoryGridView = false;
 
         for (Entity categoryEntity : categories) {
@@ -127,6 +128,8 @@ public final class MenuServiceImpl implements MenuService {
             MenulItemsGroup category = new MenulItemsGroup(categoryName, getLabel(categoryName, categoryTranslationName, locale));
             if ("core.menu.administration".equals(categoryTranslationName)) {
                 administrationCategory = category;
+            } else if ("core.menu.basic".equals(categoryTranslationName)) {
+                basicDataCategory = category;
             }
 
             for (Entity itemEntity : categoryEntity.getHasManyField("viewDefinitionItems")) {
@@ -160,8 +163,13 @@ public final class MenuServiceImpl implements MenuService {
                     "menu.menu.administration.menu", locale), "menu", "menuCategories"));
         }
 
-        administrationCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
-                "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
+        if (basicDataCategory != null) {
+            basicDataCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
+                    "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
+        } else {
+            administrationCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
+                    "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
+        }
         administrationCategory.addItem(new UrlMenuItem("parameter", translationService.translate("basic.menu.parameter", locale),
                 null, "parameter.html"));
 
