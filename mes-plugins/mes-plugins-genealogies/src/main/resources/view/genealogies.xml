@@ -29,7 +29,10 @@
 	<view name="currentAttribute" model="currentAttribute">
 		<component type="window" name="window">
 			<ribbon>
-				<group template="formSaveAction"/>
+				<group name="actions">
+					<bigButton name="save" icon="saveIcon24.png"
+						action="#{form}.performSave;" />
+				</group>
 			</ribbon>		
 			<component type="form" name="currentAttribute" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
