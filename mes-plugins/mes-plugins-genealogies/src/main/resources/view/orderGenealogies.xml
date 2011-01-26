@@ -42,10 +42,9 @@
 			<component type="grid" name="genealogies" reference="grid"
 				source="#{order}.genealogies">
 				<option type="column" name="batch" fields="batch" />
-				<option type="column" name="quantity" fields="quantity" />
 				<option type="order" column="batch" direction="desc" />
 				<option type="searchable" value="batch" />
-				<option type="orderable" value="batch,quantity" />
+				<option type="orderable" value="batch" />
 				<option type="height" value="100" />
 			</component>
 			<component type="form" name="genealogy" reference="form"
@@ -53,13 +52,10 @@
 
 				<component type="borderLayout" name="mainBorderLayout"
 					reference="mainBorderLayout">
-					<component type="gridLayout" name="gridLayout" columns="2"
+					<component type="gridLayout" name="gridLayout" columns="3"
 						rows="1" reference="layout">
 						<layoutElement column="1" row="1">
 							<component type="input" name="batch" field="batch" />
-						</layoutElement>
-						<layoutElement column="2" row="1">
-							<component type="input" name="quantity" field="quantity" />
 						</layoutElement>
 					</component>
 					<option type="label" value="genealogyLabel" />
@@ -175,10 +171,6 @@
 															hasLabel="true" />
 													</layoutElement>
 													<layoutElement column="2" row="1">
-														<component type="input" name="quantity" field="quantity"
-															hasLabel="true" />
-													</layoutElement>
-													<layoutElement column="3" row="1">
 														<component type="input" name="workerAndDate"
 															field="workerAndDate" defaultEnabled="false">
 															<option type="textRepresentationOnDisabled" value="true" />

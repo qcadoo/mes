@@ -1,21 +1,16 @@
 package com.qcadoo.mes.genealogies.print;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
@@ -77,19 +72,14 @@ public class GenealogyForProductView extends ReportPdfView {
             List<String> componentHeader = new ArrayList<String>();
             componentHeader.add(getTranslationService().translate("products.product.number.label", locale));
             componentHeader.add(getTranslationService().translate("products.product.name.label", locale));
-            componentHeader.add(getTranslationService().translate("genealogies.productInBatch.quantity.label", locale));
             componentHeader.add(getTranslationService().translate("genealogies.productInBatch.batch.label", locale));
-            PdfPTable table = PdfUtil.createTableWithHeader(4, componentHeader, false);
+            PdfPTable table = PdfUtil.createTableWithHeader(3, componentHeader, false);
 
-            for (Entry<Pair<String, Entity>, BigDecimal> entry : getBatchMap(order).entrySet()) {
-                String batch = entry.getKey().getKey();
-                Entity product = entry.getKey().getValue();
-                BigDecimal quantity = entry.getValue();
+            for (Pair<String, Entity> pair : getBatchList(order)) {
+                String batch = pair.getKey();
+                Entity product = pair.getValue();
                 table.addCell(new Phrase(product.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                table.addCell(new Phrase(getDecimalFormat().format(quantity), PdfUtil.getArialRegular9Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(new Phrase(batch, PdfUtil.getArialRegular9Dark()));
             }
             document.add(table);
@@ -107,26 +97,20 @@ public class GenealogyForProductView extends ReportPdfView {
         document.add(table);
     }
 
-    private Map<Pair<String, Entity>, BigDecimal> getBatchMap(final Entity entity) {
-        Map<Pair<String, Entity>, BigDecimal> batchMap = new HashMap<Pair<String, Entity>, BigDecimal>();
+    private List<Pair<String, Entity>> getBatchList(final Entity entity) {
+        List<Pair<String, Entity>> batchList = new ArrayList<Pair<String, Entity>>();
         for (Entity genealogy : entity.getHasManyField("genealogies")) {
             for (Entity productInComponent : genealogy.getHasManyField("productInComponents")) {
                 Entity product = (Entity) ((Entity) productInComponent.getField("productInComponent")).getField("product");
                 for (Entity batch : productInComponent.getHasManyField("batch")) {
-                    BigDecimal quantity = (BigDecimal) batch.getField("quantity");
-                    quantity = (quantity == null) ? BigDecimal.ZERO : quantity;
                     Pair<String, Entity> pair = Pair.of(batch.getField("batch").toString(), product);
-                    if (batchMap.containsKey(pair)) {
-                        BigDecimal oldQuantity = batchMap.get(pair);
-                        oldQuantity = oldQuantity.add(quantity);
-                        batchMap.put(pair, oldQuantity);
-                    } else {
-                        batchMap.put(pair, quantity);
+                    if (!batchList.contains(pair)) {
+                        batchList.add(pair);
                     }
                 }
             }
         }
-        return batchMap;
+        return batchList;
     }
 
     private List<Entity> getOrders(final Entity entity) {
