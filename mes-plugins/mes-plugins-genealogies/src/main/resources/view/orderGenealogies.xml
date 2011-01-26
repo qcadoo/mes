@@ -166,11 +166,11 @@
 											<components>
 												<component type="gridLayout" name="gridLayout"
 													columns="3" rows="1" fixedRowHeight="false">
-													<layoutElement column="1" row="1">
+													<layoutElement column="1" row="1" width="2">
 														<component type="input" name="batch" field="batch"
 															hasLabel="true" />
 													</layoutElement>
-													<layoutElement column="2" row="1">
+													<layoutElement column="3" row="1">
 														<component type="input" name="workerAndDate"
 															field="workerAndDate" defaultEnabled="false">
 															<option type="textRepresentationOnDisabled" value="true" />
