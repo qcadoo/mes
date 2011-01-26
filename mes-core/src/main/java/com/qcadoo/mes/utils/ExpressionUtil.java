@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -129,7 +130,7 @@ public final class ExpressionUtil {
         EvaluationContext context = new StandardEvaluationContext();
 
         if (entity != null) {
-            Map<String, Object> values = getValuesForEntity(entity, locale, 1);
+            Map<String, Object> values = getValuesForEntity(entity, locale, 2);
 
             for (Map.Entry<String, Object> entry : values.entrySet()) {
                 context.setVariable(entry.getKey(), entry.getValue());
@@ -159,9 +160,11 @@ public final class ExpressionUtil {
 
             if (entry.getValue() instanceof Entity) {
                 values.put(entry.getKey(), getValuesForEntity((Entity) entry.getValue(), locale, --level));
+            } else if (entry.getValue() instanceof Collection) {
+                values.put(entry.getKey(), entry.getValue());
             } else {
-                String value = dataDefinition.getField(entry.getKey()).getType().toString(entry.getValue(), locale);
-                System.out.println(" ---> " + entity.getName() + "." + entry.getKey() + ": " + entry.getValue() + " > " + value);
+                String value = entry.getValue() != null ? dataDefinition.getField(entry.getKey()).getType()
+                        .toString(entry.getValue(), locale) : null;
                 values.put(entry.getKey(), value);
             }
         }
@@ -176,17 +179,6 @@ public final class ExpressionUtil {
         if (fieldDefinitions.size() == 1) {
             FieldDefinition field = fieldDefinitions.get(0);
             value = field.getValue(entity.getField(field.getName()), locale);
-            // if (field.getType() instanceof BooleanType) {
-            // if ("0".equals(value)) {
-            // value = translationService.translate("commons.false", locale);
-            // } else {
-            // value = translationService.translate("commons.true", locale);
-            // }
-            // } else if (field.getType() instanceof EnumType) {
-            // String messageCode = translationService.getEntityFieldBaseMessageCode(field.getDataDefinition(), field.getName())
-            // + ".value." + value;
-            // value = translationService.translate(messageCode, locale);
-            // }
         } else {
             List<String> values = new ArrayList<String>();
             for (FieldDefinition fieldDefinition : fieldDefinitions) {

@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.internal.DefaultEntity;
@@ -40,6 +42,7 @@ import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.internal.StringType;
+import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.FieldEntityIdChangeListener;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -623,6 +626,12 @@ public class GridComponentStateTest extends AbstractStateTest {
     @Test
     public void shouldGetValueUsingExpression() throws Exception {
         // given
+        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
+        given(
+                dataDefinitionService.get(anyString(), anyString()).getField(anyString()).getType()
+                        .toString(anyString(), any(Locale.class))).willReturn("John");
+
+        ExpressionUtil.setStaticDataDefinitionService(dataDefinitionService);
         GridComponentColumn column = new GridComponentColumn("name");
         column.setExpression("#name + ' ' + #id");
 
