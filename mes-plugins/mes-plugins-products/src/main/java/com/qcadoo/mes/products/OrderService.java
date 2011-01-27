@@ -30,7 +30,6 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
@@ -42,6 +41,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.utils.ExpressionUtil;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -62,6 +62,9 @@ public final class OrderService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     public boolean clearOrderDatesAndWorkersOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("state", "01pending");
@@ -181,37 +184,7 @@ public final class OrderService {
     }
 
     public void generateOrderNumber(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
-        FieldComponentState number = (FieldComponentState) state.getComponentByReference("number");
-
-        if (form.getEntityId() != null) {
-            // form is already saved
-            return;
-        }
-
-        if (StringUtils.hasText((String) number.getFieldValue())) {
-            // number is already choosen
-            return;
-        }
-
-        if (number.isHasError()) {
-            // there is a validation message for that field
-            return;
-        }
-
-        SearchResult results = dataDefinitionService.get("products", "order").find().withMaxResults(1).orderDescBy("id").list();
-
-        long longValue = 0;
-
-        if (results.getEntities().isEmpty()) {
-            longValue++;
-        } else {
-            longValue = results.getEntities().get(0).getId() + 1;
-        }
-
-        String generatedNumber = String.format("%06d", longValue);
-
-        number.setFieldValue(generatedNumber);
+        numberGeneratorService.generateAndInsertNumber(state, "order");
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state, final Locale locale) {

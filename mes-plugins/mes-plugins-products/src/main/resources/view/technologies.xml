@@ -123,7 +123,7 @@
 						<component type="checkbox" name="master" field="master" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="number" field="number" />
+						<component type="input" name="number" field="number" reference="number" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="3" height="2">
 						<component type="textarea" name="name" field="name" />
@@ -138,6 +138,7 @@
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="checkBatchNrReq"/>
+							<listener event="onSelectedEntityChange" bean="com.qcadoo.mes.products.TechnologyService" method="generateTechnologyNumber"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6" height="2">
