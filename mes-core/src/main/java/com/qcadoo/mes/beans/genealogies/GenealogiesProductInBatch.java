@@ -23,7 +23,7 @@ public class GenealogiesProductInBatch {
 
     private String batch;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private GenealogiesGenealogyProductInComponent productInComponent;
 
     @Column(scale = 3, precision = 10)

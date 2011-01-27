@@ -21,7 +21,7 @@ public class GenealogiesOtherFeature {
 
     private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private GenealogiesGenealogy genealogy;
 
     @Temporal(TemporalType.DATE)

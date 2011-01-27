@@ -118,19 +118,22 @@ public final class TechnologyService {
 
         if (currentAttribute != null) {
 
-            if ((Boolean) currentAttribute.getField("shiftReq")) {
+            Boolean shiftReq = (Boolean) currentAttribute.getField("shiftReq");
+            if (shiftReq != null && shiftReq) {
                 FieldComponentState req = (FieldComponentState) viewDefinitionState
                         .getComponentByReference("shiftFeatureRequired");
                 req.setFieldValue("1");
             }
 
-            if ((Boolean) currentAttribute.getField("postReq")) {
+            Boolean postReq = (Boolean) currentAttribute.getField("postReq");
+            if (postReq != null && postReq) {
                 FieldComponentState req = (FieldComponentState) viewDefinitionState
                         .getComponentByReference("postFeatureRequired");
                 req.setFieldValue("1");
             }
 
-            if ((Boolean) currentAttribute.getField("otherReq")) {
+            Boolean otherReq = (Boolean) currentAttribute.getField("otherReq");
+            if (otherReq != null && otherReq) {
                 FieldComponentState req = (FieldComponentState) viewDefinitionState
                         .getComponentByReference("otherFeatureRequired");
                 req.setFieldValue("1");
@@ -167,7 +170,6 @@ public final class TechnologyService {
         } else {
             return false;
         }
-        // }
 
     }
 

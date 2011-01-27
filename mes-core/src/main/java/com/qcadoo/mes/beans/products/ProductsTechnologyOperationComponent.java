@@ -45,10 +45,10 @@ public class ProductsTechnologyOperationComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsTechnology technology;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOperation operation;
 
     @ManyToOne(fetch = FetchType.LAZY)

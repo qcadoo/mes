@@ -39,10 +39,10 @@ public class ProductsWorkPlanComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private ProductsOrder order;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private ProductsWorkPlan workPlan;
 
     public Long getId() {

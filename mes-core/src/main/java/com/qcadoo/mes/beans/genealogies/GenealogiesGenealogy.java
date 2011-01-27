@@ -33,7 +33,7 @@ public class GenealogiesGenealogy {
     @Column(scale = 3, precision = 10)
     private BigDecimal quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOrder order;
 
     @OneToMany(mappedBy = "genealogy", fetch = FetchType.LAZY)
