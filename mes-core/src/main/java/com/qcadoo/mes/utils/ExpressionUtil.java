@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -50,6 +52,8 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.FieldType;
 
 /**
  * Helper class that contains methods to evaluate expression value.
@@ -115,13 +119,34 @@ public final class ExpressionUtil {
     public static String getValue(final Entity entity, final String expression, final Locale locale) {
         checkState(!isEmpty(expression), "Expression must be defined");
 
-        String value = getValueWithExpression(entity, expression, locale);
+        String value = getValueWithExpression(entity, translate(expression, locale), locale);
 
         if (StringUtils.isEmpty(value) || "null".equals(value)) {
             return null;
         } else {
             return value;
         }
+    }
+
+    private static String translate(final String expression, final Locale locale) {
+        Matcher m = Pattern.compile("\\@([a-zA-Z0-9\\.]+)").matcher(expression);
+        StringBuffer sb = new StringBuffer();
+
+        int i = 0;
+
+        while (m.find()) {
+            sb.append(expression.substring(i, m.start()));
+            sb.append(translationService.translate(m.group(1), locale));
+            i = m.end();
+        }
+
+        if (i == 0) {
+            return expression;
+        }
+
+        sb.append(expression.substring(i, expression.length()));
+
+        return sb.toString();
     }
 
     private static String getValueWithExpression(final Entity entity, final String expression, final Locale locale) {
@@ -147,6 +172,10 @@ public final class ExpressionUtil {
     }
 
     private static Map<String, Object> getValuesForEntity(final Entity entity, final Locale locale, int level) {
+        if (entity == null) {
+            return null;
+        }
+
         Map<String, Object> values = new HashMap<String, Object>();
         values.put("id", entity.getId());
 
@@ -158,18 +187,32 @@ public final class ExpressionUtil {
         for (Map.Entry<String, Object> entry : entity.getFields().entrySet()) {
             DataDefinition dataDefinition = dataDefinitionService.get(entity.getPluginIdentifier(), entity.getName());
 
-            if (entry.getValue() instanceof Entity) {
-                values.put(entry.getKey(), getValuesForEntity((Entity) entry.getValue(), locale, --level));
-            } else if (entry.getValue() instanceof Collection) {
+            if (entry.getValue() instanceof Collection) {
                 values.put(entry.getKey(), entry.getValue());
             } else {
-                String value = entry.getValue() != null ? dataDefinition.getField(entry.getKey()).getType()
-                        .toString(entry.getValue(), locale) : null;
-                values.put(entry.getKey(), value);
+                FieldType type = dataDefinition.getField(entry.getKey()).getType();
+
+                if (type instanceof BelongsToType) {
+                    Entity belongsToEntity = getBelongsToEntity(entry.getValue(), (BelongsToType) type);
+                    values.put(entry.getKey(), getValuesForEntity(belongsToEntity, locale, --level));
+                } else {
+                    String value = entry.getValue() != null ? type.toString(entry.getValue(), locale) : null;
+                    values.put(entry.getKey(), value);
+                }
             }
         }
 
         return values;
+    }
+
+    private static Entity getBelongsToEntity(final Object value, final BelongsToType type) {
+        if (value instanceof Entity) {
+            return (Entity) value;
+        } else if (value instanceof Number || value instanceof String) {
+            return type.getDataDefinition().get(Long.parseLong(value.toString()));
+        } else {
+            return null;
+        }
     }
 
     private static String getValueWithoutExpression(final Entity entity, final List<FieldDefinition> fieldDefinitions,

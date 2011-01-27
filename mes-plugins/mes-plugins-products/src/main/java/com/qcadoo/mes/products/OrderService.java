@@ -155,7 +155,7 @@ public final class OrderService {
                 }
 
                 ((FormComponentState) state).performEvent(viewDefinitionState, "save", new String[0]);
-            } else {
+            } else if (state instanceof GridComponentState) {
                 if (Boolean.parseBoolean(args[0])) {
                     order.setField("state", "02inProgress");
                 } else {

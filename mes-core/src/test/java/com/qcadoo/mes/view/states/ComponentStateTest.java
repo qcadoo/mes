@@ -82,7 +82,7 @@ public class ComponentStateTest {
         // given
         TranslationService translationService = mock(TranslationService.class);
         DataDefinition dataDefinition = mock(DataDefinition.class);
-        AbstractComponentState componentState = new FormComponentState("2");
+        AbstractComponentState componentState = new FormComponentState(null, "2");
         componentState.setTranslationService(translationService);
         componentState.setDataDefinition(dataDefinition);
         componentState.setFieldValue(13L);
@@ -99,7 +99,7 @@ public class ComponentStateTest {
     public void shouldNotHaveRequestUpdateStateIfNotValid() throws Exception {
         // given
         TranslationService translationService = mock(TranslationService.class);
-        AbstractComponentState componentState = new FormComponentState(null);
+        AbstractComponentState componentState = new FormComponentState(null, null);
         componentState.setTranslationService(translationService);
         componentState.initialize(new JSONObject(ImmutableMap.of("components", new JSONObject())), Locale.ENGLISH);
         componentState.addMessage("test", MessageType.FAILURE);
