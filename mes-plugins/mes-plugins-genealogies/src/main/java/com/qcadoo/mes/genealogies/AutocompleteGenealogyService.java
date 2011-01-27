@@ -15,6 +15,7 @@ import com.qcadoo.mes.beans.products.ProductsOrder;
 import com.qcadoo.mes.beans.products.ProductsProduct;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
+import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
@@ -43,7 +44,6 @@ public class AutocompleteGenealogyService {
             } else {
                 boolean inProgressState = Boolean.parseBoolean(args[0]);
                 if (!inProgressState) {
-                    boolean success = false;
                     SearchResult searchResult = dataDefinitionService.get("basic", "parameter").find().withMaxResults(1).list();
                     Entity parameter = null;
                     if (searchResult.getEntities().size() > 0) {
@@ -51,19 +51,10 @@ public class AutocompleteGenealogyService {
                     }
                     if (parameter != null) {
                         if (parameter.getField("batchForDoneOrder").toString().equals("01active")) {
-                            success = createGenealogy(order, false);
+                            createGenealogy(state, order, false);
                         } else {
-                            success = createGenealogy(order, true);
+                            createGenealogy(state, order, true);
                         }
-                    }
-                    if (success) {
-                        state.addMessage(
-                                translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
-                                MessageType.SUCCESS);
-                    } else {
-                        state.addMessage(
-                                translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
-                                MessageType.INFO);
                     }
                 }
             }
@@ -108,16 +99,7 @@ public class AutocompleteGenealogyService {
                 state.addMessage(translationService.translate("core.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else {
-                boolean success = createGenealogy(order, Boolean.parseBoolean(args[0]));
-                if (success) {
-                    state.addMessage(
-                            translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
-                            MessageType.SUCCESS);
-                } else {
-                    state.addMessage(
-                            translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
-                            MessageType.INFO);
-                }
+                createGenealogy(state, order, Boolean.parseBoolean(args[0]));
             }
         } else {
             if (state instanceof FormComponentState) {
@@ -172,11 +154,13 @@ public class AutocompleteGenealogyService {
         }
     }
 
-    private boolean createGenealogy(final Entity order, final boolean lastUsedMode) {
+    private void createGenealogy(final ComponentState state, final Entity order, final boolean lastUsedMode) {
         Entity mainProduct = (Entity) order.getField("product");
         Entity technology = (Entity) order.getField("technology");
         if (mainProduct == null || technology == null) {
-            return false;
+            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+                    MessageType.INFO);
+            return;
         }
         Object mainBatch = null;
         if (lastUsedMode) {
@@ -185,21 +169,34 @@ public class AutocompleteGenealogyService {
             mainBatch = mainProduct.getField("batch");
         }
         if (mainBatch == null) {
-            return false;
+            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+                    MessageType.INFO);
+            return;
+        }
+        if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
+            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", state.getLocale()),
+                    MessageType.INFO);
+            return;
         }
         Entity genealogy = new DefaultEntity("genealogies", "genealogy");
         genealogy.setField("order", order);
         genealogy.setField("batch", mainBatch);
-        if (order.getField("plannedQuantity") != null) {
-            genealogy.setField("quantity", order.getField("plannedQuantity"));
-        } else if (order.getField("doneQuantity") != null) {
-            genealogy.setField("quantity", order.getField("doneQuantity"));
-        }
         DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
         Entity savedGenealogy = genealogyDef.save(genealogy);
         completeAttributesForGenealogy(technology, savedGenealogy, lastUsedMode);
         completeBatchForComponents(technology, savedGenealogy, lastUsedMode);
-        return true;
+        state.addMessage(translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
+                MessageType.SUCCESS);
+    }
+
+    private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {
+        SearchResult searchResult = dataDefinitionService.get("genealogies", "genealogy").find()
+                .restrictedWith(Restrictions.eq("batch", batch)).restrictedWith(Restrictions.eq("order.id", order.getId()))
+                .withMaxResults(1).list();
+        if (searchResult.getEntities().size() > 0) {
+            return true;
+        }
+        return false;
     }
 
     private void completeAttributesForGenealogy(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {

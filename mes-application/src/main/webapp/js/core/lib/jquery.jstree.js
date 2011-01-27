@@ -2152,6 +2152,7 @@
 				else {
 					this.dnd_prepare();
 					this.move_node(o, r, this.dnd_show(), e[this._get_settings().dnd.copy_modifier + "Key"]);
+					this._get_settings().dnd.drag_finish.call(this, { "o" : o, "r" : r });
 				}
 				o = false;
 				r = false;

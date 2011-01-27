@@ -78,6 +78,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 					} else if (itemModel.type == "COMBOBOX") {
 						itemElement = createComboBox(groupModel.name, itemModel);
 						isSmall = true;
+					} else if (itemModel.type == "SMALL_EMPTY_SPACE") {
+						itemElement = $("<div>");
+						isSmall = true;
 					}
 					
 					if (itemElement) {
@@ -286,7 +289,15 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 		}
 		var action = e.data.clickAction;
 		var name = e.data.itemName;
-		mainController.getActionEvaluator().performRibbonAction(action);
+		var onChangeListeners = e.data.itemElement.onChangeListeners;
+		if (onChangeListeners) {
+			for (var i in onChangeListeners) {
+				onChangeListeners[i].onClick();
+			} 
+		}
+		if (action) {
+			mainController.getActionEvaluator().performRibbonAction(action);
+		}
 	}
 	
 	function createJsObject(item) {
@@ -327,6 +338,12 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 				} else {
 					iconEl.removeClass("hasIcon");
 				}
+			},
+			addOnChangeListener: function(listener) {
+				if (! this.element.onChangeListeners) {
+					this.element.onChangeListeners = new Array();
+				}
+				this.element.onChangeListeners.push(listener);
 			}
 		}
 	}

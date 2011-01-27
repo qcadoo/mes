@@ -59,7 +59,7 @@ public class ReportService {
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq("order.product.id", product.getFieldValue()));
-                searchCriteriaBuilder.distinct();
+                searchCriteriaBuilder.withDistinctProperty("batch");
             }
 
         });
@@ -75,7 +75,7 @@ public class ReportService {
             public void addRestriction(final SearchCriteriaBuilder searchCriteriaBuilder) {
                 searchCriteriaBuilder.restrictedWith(Restrictions.eq("productInComponent.productInComponent.product.id",
                         product.getFieldValue()));
-                searchCriteriaBuilder.distinct();
+                searchCriteriaBuilder.withDistinctProperty("batch");
             }
 
         });

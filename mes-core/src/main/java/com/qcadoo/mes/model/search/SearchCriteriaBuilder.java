@@ -95,6 +95,6 @@ public interface SearchCriteriaBuilder {
     /**
      * Set distinct option.
      */
-    void distinct();
+    void withDistinctProperty(String distinctProperty);
 
 }

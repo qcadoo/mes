@@ -48,23 +48,27 @@ public final class GenealogyService {
         Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
         Entity technology = order.getBelongsToField("technology");
 
-        boolean shiftFeatureRequired = (Boolean) technology.getField("shiftFeatureRequired");
-        boolean postFeatureRequired = (Boolean) technology.getField("postFeatureRequired");
-        boolean otherFeatureRequired = (Boolean) technology.getField("otherFeatureRequired");
+        if (technology != null) {
+            boolean shiftFeatureRequired = (Boolean) technology.getField("shiftFeatureRequired");
+            boolean postFeatureRequired = (Boolean) technology.getField("postFeatureRequired");
+            boolean otherFeatureRequired = (Boolean) technology.getField("otherFeatureRequired");
 
-        if (!shiftFeatureRequired) {
-            shiftList.setVisible(false);
-        }
+            if (!shiftFeatureRequired) {
+                shiftList.setVisible(false);
+            }
 
-        if (!postFeatureRequired) {
-            postList.setVisible(false);
-        }
+            if (!postFeatureRequired) {
+                postList.setVisible(false);
+            }
 
-        if (!otherFeatureRequired) {
-            otherList.setVisible(false);
-        }
+            if (!otherFeatureRequired) {
+                otherList.setVisible(false);
+            }
 
-        if (!(otherFeatureRequired || shiftFeatureRequired || postFeatureRequired)) {
+            if (!(otherFeatureRequired || shiftFeatureRequired || postFeatureRequired)) {
+                featuresLayout.setVisible(false);
+            }
+        } else {
             featuresLayout.setVisible(false);
         }
     }
@@ -88,20 +92,24 @@ public final class GenealogyService {
             Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
             Entity technology = order.getBelongsToField("technology");
 
-            List<Entity> targetProductInComponents = new ArrayList<Entity>();
+            if (technology != null) {
+                List<Entity> targetProductInComponents = new ArrayList<Entity>();
 
-            for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
-                for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                    if ((Boolean) operationProductInComponent.getField("batchRequired")) {
-                        targetProductInComponents.add(createGenealogyProductInComponent(genealogy, operationProductInComponent,
-                                existingProductInComponents));
+                for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+                    for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
+                        if ((Boolean) operationProductInComponent.getField("batchRequired")) {
+                            targetProductInComponents.add(createGenealogyProductInComponent(genealogy,
+                                    operationProductInComponent, existingProductInComponents));
+                        }
                     }
                 }
-            }
 
-            productInComponentsList.setFieldValue(targetProductInComponents);
+                productInComponentsList.setFieldValue(targetProductInComponents);
 
-            if (targetProductInComponents.isEmpty()) {
+                if (targetProductInComponents.isEmpty()) {
+                    productGridLayout.setVisible(false);
+                }
+            } else {
                 productGridLayout.setVisible(false);
             }
         }
