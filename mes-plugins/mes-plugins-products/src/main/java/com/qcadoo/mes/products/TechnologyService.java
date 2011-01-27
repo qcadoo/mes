@@ -159,25 +159,31 @@ public final class TechnologyService {
     }
 
     private boolean batchRequired(final Long selectedProductId) {
+
+        Entity product = getProductWithId(selectedProductId);
+
+        if (product != null) {
+            return (Boolean) product.getField("genealogyBatchReq");
+        } else {
+            return false;
+        }
+        // }
+
+    }
+
+    private Entity getProductWithId(final Long id) {
         DataDefinition instructionDD = dataDefinitionService.get("products", "product");
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.idRestriction(selectedProductId, RestrictionOperator.EQ));
+                .restrictedWith(Restrictions.idRestriction(id, RestrictionOperator.EQ));
 
         SearchResult searchResult = searchCriteria.list();
 
         if (searchResult.getTotalNumberOfEntities() == 1) {
-
-            Entity product = searchResult.getEntities().get(0);
-
-            if (product != null) {
-                return (Boolean) product.getField("genealogyBatchReq");
-            } else {
-                return false;
-            }
+            return searchResult.getEntities().get(0);
+        } else {
+            return null;
         }
-
-        return false;
     }
 
     public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
