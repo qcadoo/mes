@@ -17,16 +17,7 @@
 		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group template="navigation" />
-				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" action="#{form}.fireEvent(newBatch);" />
-					<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
-					<bigButton name="copy" icon="copyIcon24.png" action="#{grid}.performCopy;"
-						state="disabled" />
-					<smallButton name="cancel" icon="cancelIcon16.png"
-						action="#{form}.performCancel;" />
-					<smallButton name="delete" icon="deleteIcon16.png"
-						action="#{grid}.performDelete;" state="disabled" />
-				</group>
+				<group template="gridNewCopyAndRemoveAction"/>
 				<group name="autoGenealogy">
 					<bigButton name="activeComplete" icon="genealogyClockIcon24.png"
 						action="#{order}.fireEvent(autocompleteGenealogy,false);" state="enabled" />
@@ -35,30 +26,36 @@
 				</group>
 			</ribbon>
 			<component type="form" name="order" reference="order">
-				<option type="header" value="true" />
-				<option type="expression" value="#name + ' (' + (#doneQuantity != null ? #doneQuantity : #plannedQuantity) + ' x ' + #product['number'] + ' - ' + #product['name'] + ')'" />
 				<listener event="autocompleteGenealogy" bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="autocompleteGenealogy" />
 			</component>
-			<component type="grid" name="genealogies" reference="grid"
-				source="#{order}.genealogies">
-				<option type="column" name="batch" fields="batch" />
+			<component type="grid" name="genealogies" reference="grid" source="#{order}.genealogies">
+				<option type="column" name="batch" fields="batch" link="true" />
 				<option type="order" column="batch" direction="desc" />
 				<option type="searchable" value="batch" />
 				<option type="orderable" value="batch" />
+				<option type="correspondingView" value="genealogies/orderGenealogy" />
+				<option type="correspondingComponent" value="form" />
 				<option type="height" value="100" />
+				<option type="fullscreen" value="true" />
 			</component>
-			<component type="form" name="genealogy" reference="form"
-				field="#{grid}">
+			<option type="fixedHeight" value="true" />
+			<option type="header" value="false" />
+		</component>
+	</view>
+	
+	<view name="orderGenealogy" model="genealogy">
+		<component type="window" name="window" reference="window">
+			<ribbon>
+				<group template="navigation" />
+				<group template="formSaveCopyAndRemoveActions"/>
+			</ribbon>	
+			<component type="form" name="genealogy" reference="form">
 
-				<component type="borderLayout" name="mainBorderLayout"
-					reference="mainBorderLayout">
-					<component type="gridLayout" name="gridLayout" columns="3"
-						rows="1" reference="layout">
-						<layoutElement column="1" row="1">
-							<component type="input" name="batch" field="batch" />
-						</layoutElement>
-					</component>
-					<option type="label" value="genealogyLabel" />
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="1" reference="layout">
+					<layoutElement column="1" row="1">
+						<component type="input" name="batch" field="batch" />
+					</layoutElement>
 				</component>
 
 				<component type="verticalLayout" name="verticalLayout"
@@ -186,30 +183,10 @@
 						</component>
 					</layoutElement>
 				</component>
-
-				<script>
-					<![CDATA[
-						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-						var deleteRibbonItem = #{window}.getRibbonItem("actions.delete");
-						var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
-						
-						this.addOnChangeListener({
-							onSetValue: function(value) {
-								if (value && value.content && value.content.entityId) {
-									copyRibbonItem.enable();
-									deleteRibbonItem.enable();
-								} else {
-									copyRibbonItem.disable();
-									deleteRibbonItem.disable();
-								}
-							}
-						});
-					]]>
-				</script>
-
-				<listener event="newBatch"
-					bean="com.qcadoo.mes.genealogies.GenealogyService" method="newBatch" />
-
+				
+				<option type="header" value="true"/>
+				<option type="expression" value="#batch + ' @genealogies.orderGenealogy.window.genealogy.headerOrder ' + #order['name'] + ( #order['product'] != null ? ' (' + (#order['doneQuantity'] != null ? #order['doneQuantity'] : #order['plannedQuantity']) + ' x ' + #order['product']['number'] + ' - ' + #order['product']['name'] + ')' : '' )" />
+				<option type="expressionNew" value="#order['name'] + ( #order['product'] != null ? ' (' + (#order['doneQuantity'] != null ? #order['doneQuantity'] : #order['plannedQuantity']) + ' x ' + #order['product']['number'] + ' - ' + #order['product']['name'] + ')' : '' )" />
 			</component>
 		</component>
 

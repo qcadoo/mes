@@ -58,7 +58,7 @@
 			<component type="form" name="product" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" />
+						<component type="input" name="number" field="number" reference="number" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="textarea" name="name" field="name" hasDescription="true" />
@@ -119,6 +119,7 @@
 				</layoutElement>
 			</component>
 		</component>
+		<preRenderHook bean="com.qcadoo.mes.products.ProductService" method="generateProductNumber" />
 	</view>
 	<view name="substitute" model="substitute">
 		<component type="window" name="window">

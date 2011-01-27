@@ -96,7 +96,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		element.append(container);
 		element.css("padding", "10px");
 		
-		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", /*"hotkeys"*/ ],
+		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", "dnd"/*"hotkeys"*/ ],
 			"themes" : {
 				"theme": "classic",
 				"dots" : false,
@@ -124,6 +124,15 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 //			},
 			"ui": {
 				"select_limit": 1
+			},
+			"dnd": {
+				"drag_finish": function (data) {
+					QCD.info("drag_finish")
+					QCD.info(data.o); // what
+					QCD.info(data.r); // where
+				},
+			 	"drop_target" : false,
+			 	"drag_target" : false
 			},
 			core : {
 				html_titles: true,

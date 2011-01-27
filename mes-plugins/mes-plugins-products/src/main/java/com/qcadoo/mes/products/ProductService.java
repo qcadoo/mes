@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.products;
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +37,21 @@ import com.qcadoo.mes.beans.products.ProductsTechnology;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.products.util.NumberGeneratorService;
+import com.qcadoo.mes.view.ViewDefinitionState;
 
 @Service
 public final class ProductService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    public void generateProductNumber(final ViewDefinitionState state, final Locale locale) {
+        numberGeneratorService.generateAndInsertNumber(state, "product");
+    }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
         ProductsSubstitute substitute = (ProductsSubstitute) entity.getField("substitute");
@@ -116,5 +127,4 @@ public final class ProductService {
             return true;
         }
     }
-
 }

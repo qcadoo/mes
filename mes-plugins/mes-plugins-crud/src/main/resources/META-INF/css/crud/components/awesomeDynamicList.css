@@ -32,7 +32,9 @@
 	border-bottom: solid #A7A7A7 1px;
 	vertical-align: middle;
 	height: 20px;
-	background: #f0f0f0; 
+	color: #ffffff;
+	//background: #f0f0f0;
+	background: transparent url('/css/crud/images/grid/gradientygrid/gradient_header.png') repeat-x 0 -5px;
 }
 
 .awesomeListLine .awesomeListFormContainer {

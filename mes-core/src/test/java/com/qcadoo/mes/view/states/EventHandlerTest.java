@@ -17,7 +17,7 @@ public class EventHandlerTest {
         // given
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
-        FormComponentState component = new FormComponentState(null);
+        FormComponentState component = new FormComponentState(null, null);
         component.setFieldValue(13L);
 
         // when
@@ -34,7 +34,7 @@ public class EventHandlerTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
         CustomEventBean bean = mock(CustomEventBean.class);
-        FormComponentState component = new FormComponentState(null);
+        FormComponentState component = new FormComponentState(null, null);
         component.registerCustomEvent("custom", bean, "customMethod");
 
         // when
@@ -49,7 +49,7 @@ public class EventHandlerTest {
         // given
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
-        FormComponentState component = new FormComponentState(null);
+        FormComponentState component = new FormComponentState(null, null);
         component.setFieldValue(13L);
 
         CustomEventBean bean1 = mock(CustomEventBean.class);
@@ -72,7 +72,7 @@ public class EventHandlerTest {
         // given
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
 
-        FormComponentState component = new FormComponentState(null);
+        FormComponentState component = new FormComponentState(null, null);
         component.setFieldValue(13L);
 
         // when
