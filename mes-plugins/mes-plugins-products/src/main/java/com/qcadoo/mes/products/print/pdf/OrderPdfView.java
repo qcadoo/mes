@@ -41,7 +41,6 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
-import com.qcadoo.mes.utils.pdf.TableBorderEvent;
 
 public final class OrderPdfView extends ReportPdfView {
 
@@ -64,7 +63,8 @@ public final class OrderPdfView extends ReportPdfView {
     }
 
     private void addMainTable(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        PdfPTable mainData = createMainTable();
+        PdfPTable mainData = PdfUtil.createPanelTable(2);
+        mainData.setSpacingBefore(20);
         PdfUtil.addTableCellAsTable(mainData, getTranslationService().translate("products.order.number.label", locale),
                 entity.getField("number"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(mainData, getTranslationService().translate("products.order.dateFrom.label", locale),
@@ -85,18 +85,6 @@ public final class OrderPdfView extends ReportPdfView {
                 getTranslationService().translate("products.order.state.value." + entity.getField("state"), locale), "",
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         document.add(mainData);
-    }
-
-    private PdfPTable createMainTable() {
-        PdfPTable mainData = new PdfPTable(2);
-        mainData.setWidthPercentage(100f);
-        mainData.setSpacingBefore(20);
-        mainData.getDefaultCell().setBackgroundColor(PdfUtil.getBackgroundColor());
-        mainData.getDefaultCell().setBorder(Rectangle.NO_BORDER);
-        mainData.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
-        mainData.getDefaultCell().setPadding(8.0f);
-        mainData.setTableEvent(new TableBorderEvent());
-        return mainData;
     }
 
     private void addDetailTable(final Document document, final Entity entity, final Locale locale) throws DocumentException {

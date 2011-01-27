@@ -11,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.api.DataDefinitionService;
@@ -25,7 +23,6 @@ import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
-import com.qcadoo.mes.utils.pdf.TableBorderEvent;
 
 public class GenealogyForProductView extends ReportPdfView {
 
@@ -42,7 +39,7 @@ public class GenealogyForProductView extends ReportPdfView {
         String documentTitle = getTranslationService().translate("genealogies.genealogyForProduct.report.title", locale);
         String documentAuthor = getTranslationService().translate("genealogies.genealogyForProduct.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, entity.getField("batch").toString(), documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
         addTables(document, entity, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
@@ -59,28 +56,27 @@ public class GenealogyForProductView extends ReportPdfView {
         orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.name.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.dateFrom.label", locale));
-        PdfPTable headerData = createHeaderTable();
-        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.order.product.label", locale), entity
-                .getBelongsToField("order").getBelongsToField("product").getField("number"), "", PdfUtil.getArialBold10Dark(),
-                PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.genealogy.batch.label", locale),
+        Paragraph productTitle = new Paragraph(new Phrase(getTranslationService().translate(
+                "genealogies.genealogyForProduct.report.paragrah.product", locale), PdfUtil.getArialBold11Light()));
+        productTitle.setSpacingBefore(20);
+        document.add(productTitle);
+        PdfPTable headerData = PdfUtil.createPanelTable(3);
+        headerData.setSpacingBefore(7);
+        Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.product.number.label", locale),
+                product.getField("number"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.product.name.label", locale),
+                product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("genealogies.genealogy.batch.label", locale),
                 entity.getField("batch"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         document.add(headerData);
+        Paragraph orderTitle = new Paragraph(new Phrase(getTranslationService().translate(
+                "genealogies.genealogyForProduct.report.paragrah.order", locale), PdfUtil.getArialBold11Light()));
+        orderTitle.setSpacingBefore(20);
+        document.add(orderTitle);
         List<Entity> orders = getOrders(entity);
         addOrderSeries(document, orders, orderHeader);
         addComponentSeries(document, orders, locale);
-    }
-
-    private PdfPTable createHeaderTable() {
-        PdfPTable mainData = new PdfPTable(2);
-        mainData.setWidthPercentage(100f);
-        mainData.setSpacingBefore(20);
-        mainData.getDefaultCell().setBackgroundColor(PdfUtil.getBackgroundColor());
-        mainData.getDefaultCell().setBorder(Rectangle.NO_BORDER);
-        mainData.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
-        mainData.getDefaultCell().setPadding(8.0f);
-        mainData.setTableEvent(new TableBorderEvent());
-        return mainData;
     }
 
     private void addComponentSeries(final Document document, final List<Entity> orders, final Locale locale)
