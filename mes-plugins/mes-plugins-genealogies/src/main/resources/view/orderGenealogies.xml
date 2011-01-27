@@ -51,15 +51,11 @@
 			</ribbon>	
 			<component type="form" name="genealogy" reference="form">
 
-				<component type="borderLayout" name="mainBorderLayout"
-					reference="mainBorderLayout">
-					<component type="gridLayout" name="gridLayout" columns="3"
-						rows="1" reference="layout">
-						<layoutElement column="1" row="1">
-							<component type="input" name="batch" field="batch" />
-						</layoutElement>
-					</component>
-					<option type="label" value="genealogyLabel" />
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="1" reference="layout">
+					<layoutElement column="1" row="1">
+						<component type="input" name="batch" field="batch" />
+					</layoutElement>
 				</component>
 
 				<component type="verticalLayout" name="verticalLayout"
