@@ -39,7 +39,7 @@ public class GenealogyForProductView extends ReportPdfView {
         String documentTitle = getTranslationService().translate("genealogies.genealogyForProduct.report.title", locale);
         String documentAuthor = getTranslationService().translate("genealogies.genealogyForProduct.report.author", locale);
         UsersUser user = securityService.getCurrentUser();
-        PdfUtil.addDocumentHeader(document, entity.getField("batch").toString(), documentTitle, documentAuthor, new Date(), user);
+        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), user);
         addTables(document, entity, locale);
         String text = getTranslationService().translate("core.report.endOfReport", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
@@ -56,6 +56,24 @@ public class GenealogyForProductView extends ReportPdfView {
         orderHeader.add(getTranslationService().translate("products.order.number.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.name.label", locale));
         orderHeader.add(getTranslationService().translate("products.order.dateFrom.label", locale));
+        Paragraph productTitle = new Paragraph(new Phrase(getTranslationService().translate(
+                "genealogies.genealogyForProduct.report.paragrah.product", locale), PdfUtil.getArialBold11Light()));
+        productTitle.setSpacingBefore(20);
+        document.add(productTitle);
+        PdfPTable headerData = PdfUtil.createPanelTable(3);
+        headerData.setSpacingBefore(7);
+        Entity product = entity.getBelongsToField("order").getBelongsToField("product");
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.product.number.label", locale),
+                product.getField("number"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("products.product.name.label", locale),
+                product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        PdfUtil.addTableCellAsTable(headerData, getTranslationService().translate("genealogies.genealogy.batch.label", locale),
+                entity.getField("batch"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        document.add(headerData);
+        Paragraph orderTitle = new Paragraph(new Phrase(getTranslationService().translate(
+                "genealogies.genealogyForProduct.report.paragrah.order", locale), PdfUtil.getArialBold11Light()));
+        orderTitle.setSpacingBefore(20);
+        document.add(orderTitle);
         List<Entity> orders = getOrders(entity);
         addOrderSeries(document, orders, orderHeader);
         addComponentSeries(document, orders, locale);
