@@ -1,10 +1,18 @@
 package com.qcadoo.mes.genealogies;
 
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
@@ -17,6 +25,7 @@ import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.model.validators.ErrorMessage;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ComponentState.MessageType;
 import com.qcadoo.mes.view.ViewDefinitionState;
@@ -34,6 +43,7 @@ public class AutocompleteGenealogyService {
     @Autowired
     private SecurityService securityService;
 
+    @Transactional(propagation = REQUIRES_NEW)
     public void generateGenalogyOnChangeOrderStatusForDone(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
         if (state.getFieldValue() instanceof Long) {
@@ -169,7 +179,8 @@ public class AutocompleteGenealogyService {
             mainBatch = mainProduct.getField("batch");
         }
         if (mainBatch == null) {
-            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+            state.addMessage(
+                    translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale()),
                     MessageType.INFO);
             return;
         }
@@ -182,11 +193,31 @@ public class AutocompleteGenealogyService {
         genealogy.setField("order", order);
         genealogy.setField("batch", mainBatch);
         DataDefinition genealogyDef = dataDefinitionService.get("genealogies", "genealogy");
-        Entity savedGenealogy = genealogyDef.save(genealogy);
-        completeAttributesForGenealogy(technology, savedGenealogy, lastUsedMode);
-        completeBatchForComponents(technology, savedGenealogy, lastUsedMode);
-        state.addMessage(translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
-                MessageType.SUCCESS);
+        completeAttributesForGenealogy(technology, genealogy, lastUsedMode);
+        completeBatchForComponents(technology, genealogy, lastUsedMode);
+
+        if (genealogy.isValid()) {
+            genealogy = genealogyDef.save(genealogy);
+        }
+
+        if (!genealogy.isValid()) {
+            if (!genealogy.getGlobalErrors().isEmpty()) {
+                Set<String> errors = new HashSet<String>();
+                for (ErrorMessage error : genealogy.getGlobalErrors()) {
+                    if (!errors.contains(error.getMessage())) {
+                        state.addMessage(translationService.translate(error.getMessage(), state.getLocale()), MessageType.INFO);
+                        errors.add(error.getMessage());
+                    }
+                }
+            } else {
+                state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+                        MessageType.INFO);
+            }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        } else {
+            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.success", state.getLocale()),
+                    MessageType.SUCCESS);
+        }
     }
 
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {
@@ -205,7 +236,6 @@ public class AutocompleteGenealogyService {
         if (searchResult.getEntities().size() > 0) {
             currentAttribute = searchResult.getEntities().get(0);
         }
-
         if ((Boolean) technology.getField("shiftFeatureRequired")) {
             Entity shift = new DefaultEntity("genealogies", "shiftFeature");
             shift.setField("genealogy", genealogy);
@@ -216,8 +246,11 @@ public class AutocompleteGenealogyService {
             } else {
                 shift.setField("value", currentAttribute.getField("shift"));
             }
-            DataDefinition shiftInDef = dataDefinitionService.get("genealogies", "shiftFeature");
-            shiftInDef.save(shift);
+            if (shift.getField("value") != null) {
+                genealogy.setField("shiftFeatures", Collections.singletonList(shift));
+            } else {
+                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingShift");
+            }
         }
         if ((Boolean) technology.getField("otherFeatureRequired")) {
             Entity other = new DefaultEntity("genealogies", "otherFeature");
@@ -229,8 +262,11 @@ public class AutocompleteGenealogyService {
             } else {
                 other.setField("value", currentAttribute.getField("other"));
             }
-            DataDefinition otherInDef = dataDefinitionService.get("genealogies", "otherFeature");
-            otherInDef.save(other);
+            if (other.getField("value") != null) {
+                genealogy.setField("otherFeatures", Collections.singletonList(other));
+            } else {
+                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingOther");
+            }
         }
         if ((Boolean) technology.getField("postFeatureRequired")) {
             Entity post = new DefaultEntity("genealogies", "postFeature");
@@ -242,20 +278,25 @@ public class AutocompleteGenealogyService {
             } else {
                 post.setField("value", currentAttribute.getField("post"));
             }
-            DataDefinition postInDef = dataDefinitionService.get("genealogies", "postFeature");
-            postInDef.save(post);
+            if (post.getField("value") != null) {
+                genealogy.setField("postFeatures", Collections.singletonList(post));
+            } else {
+                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingPost");
+            }
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
+        genealogy.setField("productInComponents", new ArrayList<Entity>());
+
         for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
                     Entity productIn = new DefaultEntity("genealogies", "genealogyProductInComponent");
                     productIn.setField("genealogy", genealogy);
                     productIn.setField("productInComponent", operationProductComponent);
-                    DataDefinition productInDef = dataDefinitionService.get("genealogies", "genealogyProductInComponent");
-                    Entity savedProductIn = productInDef.save(productIn);
+
                     Entity product = (Entity) operationProductComponent.getField("product");
                     Object batch = null;
                     if (lastUsedMode) {
@@ -263,13 +304,17 @@ public class AutocompleteGenealogyService {
                     } else {
                         batch = product.getField("batch");
                     }
+
                     if (batch != null) {
                         Entity productBatch = new DefaultEntity("genealogies", "productInBatch");
                         productBatch.setField("batch", batch);
-                        productBatch.setField("productInComponent", savedProductIn);
-                        DataDefinition batchDef = dataDefinitionService.get("genealogies", "productInBatch");
-                        batchDef.save(productBatch);
+                        productBatch.setField("productInComponent", productIn);
+                        productIn.setField("batch", Collections.singletonList(productBatch));
+                    } else {
+                        genealogy.addGlobalError("genealogies.message.autoGenealogy.missingBatch");
                     }
+
+                    ((List<Entity>) genealogy.getField("productInComponents")).add(productIn);
                 }
             }
         }

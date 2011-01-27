@@ -225,7 +225,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		if (linkListener) {
 			linkListener.onGridLinkClicked(entityId);
 		} else {
-			var params = new Object();
+			var params = {};
 			params[gridParameters.correspondingComponent+".id"] = entityId;
 			redirectToCorrespondingPage(params);	
 		}
@@ -233,11 +233,8 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	
 	function redirectToCorrespondingPage(params) {
 		if (gridParameters.correspondingViewName && gridParameters.correspondingViewName != '') {
-			var url = gridParameters.correspondingViewName + ".html";
-			if (params) {
-				url += "?context="+JSON.stringify(params);
-			}
-			mainController.goToPage(url);
+			params[gridParameters.correspondingComponent+"."+belongsToFieldName] = currentState.belongsToEntityId;
+			mainController.goToPage(gridParameters.correspondingViewName + ".html?context="+JSON.stringify(params));
 		}
 	}
 	
@@ -716,9 +713,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 	}
 	
 	this.performNew = function(actionsPerformer) {
-		var params = new Object();
-		params[gridParameters.correspondingComponent+"."+belongsToFieldName] = currentState.belongsToEntityId;
-		redirectToCorrespondingPage(params);	
+		redirectToCorrespondingPage({});	
 		if (actionsPerformer) {
 			actionsPerformer.performNext();
 		}

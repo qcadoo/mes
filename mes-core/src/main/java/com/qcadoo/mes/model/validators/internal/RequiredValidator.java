@@ -36,7 +36,11 @@ public final class RequiredValidator implements FieldValidator {
 
     private static final String MISSING_ERROR = "core.validate.field.error.missing";
 
+    private static final String MISSING_RELATION_ERROR = "core.validate.field.error.missingRelation";
+
     private String errorMessage = MISSING_ERROR;
+
+    private String errorRelationMessage = MISSING_RELATION_ERROR;
 
     @Override
     @SuppressWarnings("rawtypes")
@@ -46,7 +50,7 @@ public final class RequiredValidator implements FieldValidator {
         if (fieldDefinition.getType() instanceof HasManyType) {
             if (validatedEntity.getField(fieldDefinition.getName()) == null
                     || ((List) validatedEntity.getField(fieldDefinition.getName())).isEmpty()) {
-                validatedEntity.addError(fieldDefinition, errorMessage);
+                validatedEntity.addError(fieldDefinition, errorRelationMessage);
                 return false;
             }
         } else if (value == null) {
@@ -65,6 +69,7 @@ public final class RequiredValidator implements FieldValidator {
     @Override
     public FieldValidator customErrorMessage(final String errorMessage) {
         this.errorMessage = errorMessage;
+        this.errorRelationMessage = errorMessage;
         return this;
     }
 
