@@ -24,9 +24,12 @@
 
 package com.qcadoo.mes.model.validators.internal;
 
+import java.util.List;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class RequiredValidator implements FieldValidator {
@@ -36,12 +39,21 @@ public final class RequiredValidator implements FieldValidator {
     private String errorMessage = MISSING_ERROR;
 
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
             final Entity validatedEntity) {
-        if (value == null) {
+
+        if (fieldDefinition.getType() instanceof HasManyType) {
+            if (validatedEntity.getField(fieldDefinition.getName()) == null
+                    || ((List) validatedEntity.getField(fieldDefinition.getName())).isEmpty()) {
+                validatedEntity.addError(fieldDefinition, errorMessage);
+                return false;
+            }
+        } else if (value == null) {
             validatedEntity.addError(fieldDefinition, errorMessage);
             return false;
         }
+
         return true;
     }
 

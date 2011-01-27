@@ -36,16 +36,24 @@
 		</belongsTo>
 		<date name="date" readonly="true" readonlyOnCreate="true" />
 		<string name="worker" readonly="true" readonlyOnCreate="true" />
-		<hasMany name="shiftFeatures" model="shiftFeature" joinField="genealogy" cascade="delete" copyable="true" />
-		<hasMany name="otherFeatures" model="otherFeature" joinField="genealogy" cascade="delete" copyable="true" />
-		<hasMany name="postFeatures" model="postFeature" joinField="genealogy" cascade="delete" copyable="true" />
+		<hasMany name="shiftFeatures" model="shiftFeature" joinField="genealogy" cascade="delete" copyable="true">
+			<validatesPresence /> 
+		</hasMany>
+		<hasMany name="otherFeatures" model="otherFeature" joinField="genealogy" cascade="delete" copyable="true">
+			<validatesPresence />
+		</hasMany>
+		<hasMany name="postFeatures" model="postFeature" joinField="genealogy" cascade="delete" copyable="true">
+			<validatesPresence />
+		</hasMany>
 		<hasMany name="productInComponents" model="genealogyProductInComponent" joinField="genealogy" cascade="delete" copyable="true" />
 		<onSave bean="com.qcadoo.mes.genealogies.AutocompleteGenealogyService" method="fillLastUsedBatchForGenealogy" />
 	</model>
 	<model name="genealogyProductInComponent">
 		<belongsTo name="genealogy" model="genealogy" lookupField="batch" />
 		<belongsTo name="productInComponent" plugin="products" model="operationProductInComponent" lookupField="operationComponent" />
-		<hasMany name="batch" model="productInBatch" joinField="productInComponent" cascade="delete" copyable="true" />
+		<hasMany name="batch" model="productInBatch" joinField="productInComponent" cascade="delete" copyable="true">
+			<validatesPresence />
+		</hasMany>
 	</model>
 	<model name="productInBatch">
 		<string name="batch">
