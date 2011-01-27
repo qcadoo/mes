@@ -158,8 +158,9 @@ public final class FormComponentState extends AbstractContainerState {
             json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerEdit", getLocale()));
             json.put(JSON_HEADER_ENTITY_IDENTIFIER, getHeaderEdit());
         } else {
+            json.put(JSON_ENTITY_ID, JSONObject.NULL);
             json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerNew", getLocale()));
-            json.put(JSON_ENTITY_ID, getHeaderNew());
+            json.put(JSON_HEADER_ENTITY_IDENTIFIER, getHeaderNew());
         }
         return json;
     }

@@ -190,7 +190,7 @@
 				
 				<option type="header" value="true"/>
 				<option type="expression" value="#batch + ' @genealogies.orderGenealogy.window.genealogy.headerOrder ' + #order['name'] + ( #order['product'] != null ? ' (' + (#order['doneQuantity'] != null ? #order['doneQuantity'] : #order['plannedQuantity']) + ' x ' + #order['product']['number'] + ' - ' + #order['product']['name'] + ')' : '' )" />
-				<option type="expressionNew" value="'' + #order['name'] + ( #order['product'] != null ? ' (' + (#order['doneQuantity'] != null ? #order['doneQuantity'] : #order['plannedQuantity']) + ' x ' + #order['product']['number'] + ' - ' + #order['product']['name'] + ')' : '' )" />
+				<option type="expressionNew" value="#order['name'] + ( #order['product'] != null ? ' (' + (#order['doneQuantity'] != null ? #order['doneQuantity'] : #order['plannedQuantity']) + ' x ' + #order['product']['number'] + ' - ' + #order['product']['name'] + ')' : '' )" />
 			</component>
 		</component>
 

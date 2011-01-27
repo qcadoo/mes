@@ -44,6 +44,7 @@ import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.FieldDefinitionImpl;
+import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.internal.IntegerType;
 import com.qcadoo.mes.model.types.internal.StringType;
 
@@ -148,7 +149,11 @@ public class ExpressionUtilTest {
         Entity product = new DefaultEntity("", "", 1L);
         product.setField("name", "P1");
 
+        BelongsToType belongsToType = mock(BelongsToType.class);
         given(dataDefinition.getField(eq("name")).getType().toString(eq("P1"), eq(Locale.ENGLISH))).willReturn("P1");
+        given(dataDefinition.getField(eq("product")).getType()).willReturn(belongsToType);
+        given(dataDefinition.getField(eq("product")).getType()).willReturn(belongsToType);
+        given(belongsToType.getDataDefinition()).willReturn(dataDefinition);
 
         Entity entity = new DefaultEntity("", "", 1L);
         entity.setField("product", product);

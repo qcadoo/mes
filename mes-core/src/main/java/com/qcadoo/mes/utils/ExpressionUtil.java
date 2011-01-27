@@ -52,6 +52,8 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.BelongsToType;
+import com.qcadoo.mes.model.types.FieldType;
 
 /**
  * Helper class that contains methods to evaluate expression value.
@@ -170,6 +172,10 @@ public final class ExpressionUtil {
     }
 
     private static Map<String, Object> getValuesForEntity(final Entity entity, final Locale locale, int level) {
+        if (entity == null) {
+            return null;
+        }
+
         Map<String, Object> values = new HashMap<String, Object>();
         values.put("id", entity.getId());
 
@@ -181,18 +187,32 @@ public final class ExpressionUtil {
         for (Map.Entry<String, Object> entry : entity.getFields().entrySet()) {
             DataDefinition dataDefinition = dataDefinitionService.get(entity.getPluginIdentifier(), entity.getName());
 
-            if (entry.getValue() instanceof Entity) {
-                values.put(entry.getKey(), getValuesForEntity((Entity) entry.getValue(), locale, --level));
-            } else if (entry.getValue() instanceof Collection) {
+            if (entry.getValue() instanceof Collection) {
                 values.put(entry.getKey(), entry.getValue());
             } else {
-                String value = entry.getValue() != null ? dataDefinition.getField(entry.getKey()).getType()
-                        .toString(entry.getValue(), locale) : null;
-                values.put(entry.getKey(), value);
+                FieldType type = dataDefinition.getField(entry.getKey()).getType();
+
+                if (type instanceof BelongsToType) {
+                    Entity belongsToEntity = getBelongsToEntity(entry.getValue(), (BelongsToType) type);
+                    values.put(entry.getKey(), getValuesForEntity(belongsToEntity, locale, --level));
+                } else {
+                    String value = entry.getValue() != null ? type.toString(entry.getValue(), locale) : null;
+                    values.put(entry.getKey(), value);
+                }
             }
         }
 
         return values;
+    }
+
+    private static Entity getBelongsToEntity(final Object value, final BelongsToType type) {
+        if (value instanceof Entity) {
+            return (Entity) value;
+        } else if (value instanceof Number || value instanceof String) {
+            return type.getDataDefinition().get(Long.parseLong(value.toString()));
+        } else {
+            return null;
+        }
     }
 
     private static String getValueWithoutExpression(final Entity entity, final List<FieldDefinition> fieldDefinitions,
