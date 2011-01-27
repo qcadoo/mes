@@ -38,6 +38,7 @@ import com.qcadoo.mes.model.search.RestrictionOperator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
 import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.products.util.NumberGeneratorService;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.FieldComponentState;
@@ -49,6 +50,9 @@ public final class TechnologyService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("master", false);
@@ -161,30 +165,42 @@ public final class TechnologyService {
         }
     }
 
+    public void generateTechnologyNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
+        FieldComponentState number = (FieldComponentState) state.getComponentByReference("number");
+        FieldComponentState productState = (FieldComponentState) componentState;
+
+        if (!numberGeneratorService.checkIfShouldInsertNumber(state)) {
+            return;
+        }
+        if (productState.getFieldValue() != null) {
+            Entity product = getProductById((Long) productState.getFieldValue());
+            if (product != null) {
+                String numberValue = product.getField("number") + "-"
+                        + numberGeneratorService.generateNumber(state, "technology", 3);
+                number.setFieldValue(numberValue);
+            }
+        }
+    }
+
+    private Entity getProductById(final Long productId) {
+        DataDefinition instructionDD = dataDefinitionService.get("products", "product");
+
+        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
+                .restrictedWith(Restrictions.idRestriction(productId, RestrictionOperator.EQ));
+
+        SearchResult searchResult = searchCriteria.list();
+        if (searchResult.getTotalNumberOfEntities() == 1) {
+            return searchResult.getEntities().get(0);
+        }
+        return null;
+    }
+
     private boolean batchRequired(final Long selectedProductId) {
-
-        Entity product = getProductWithId(selectedProductId);
-
+        Entity product = getProductById(selectedProductId);
         if (product != null) {
             return (Boolean) product.getField("genealogyBatchReq");
         } else {
             return false;
-        }
-
-    }
-
-    private Entity getProductWithId(final Long id) {
-        DataDefinition instructionDD = dataDefinitionService.get("products", "product");
-
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().withMaxResults(1)
-                .restrictedWith(Restrictions.idRestriction(id, RestrictionOperator.EQ));
-
-        SearchResult searchResult = searchCriteria.list();
-
-        if (searchResult.getTotalNumberOfEntities() == 1) {
-            return searchResult.getEntities().get(0);
-        } else {
-            return null;
         }
     }
 

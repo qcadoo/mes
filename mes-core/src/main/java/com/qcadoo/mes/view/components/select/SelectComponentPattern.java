@@ -1,6 +1,5 @@
 package com.qcadoo.mes.view.components.select;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,7 +76,7 @@ public final class SelectComponentPattern extends FieldComponentPattern {
 
     @Override
     protected Map<String, Object> getJspOptions(final Locale locale) {
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Object> options = super.getJspOptions(locale);
         options.put("values", getValuesMap(locale));
         return options;
     }

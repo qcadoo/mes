@@ -348,4 +348,15 @@ public final class PdfUtil {
         }
         return null;
     }
+
+    public static PdfPTable createPanelTable(final int column) {
+        PdfPTable mainData = new PdfPTable(column);
+        mainData.setWidthPercentage(100f);
+        mainData.getDefaultCell().setBackgroundColor(PdfUtil.getBackgroundColor());
+        mainData.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        mainData.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+        mainData.getDefaultCell().setPadding(8.0f);
+        mainData.setTableEvent(new TableBorderEvent());
+        return mainData;
+    }
 }

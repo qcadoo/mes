@@ -32,20 +32,29 @@ public final class GenealogyService {
         Long orderId = (Long) triggerState.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/genealogies/orderGenealogies.html?context={\"order.id\":\"" + orderId + "\",\"form.order\":\""
-                    + orderId + "\"}";
+            String url = "../page/genealogies/orderGenealogies.html?context={\"order.id\":\"" + orderId + "\"}";
+            viewDefinitionState.redirectTo(url, false);
+        }
+    }
+
+    public void newGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
+        Long orderId = (Long) triggerState.getFieldValue();
+
+        if (orderId != null) {
+            String url = "../page/genealogies/orderGenealogy.html?context={\"form.order\":\"" + orderId + "\"}";
             viewDefinitionState.redirectTo(url, false);
         }
     }
 
     public void hideComponents(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState orderForm = (FormComponentState) state.getComponentByReference("order");
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         ComponentState featuresLayout = state.getComponentByReference("featuresLayout");
         ComponentState shiftList = state.getComponentByReference("shiftBorderLayout");
         ComponentState postList = state.getComponentByReference("postBorderLayout");
         ComponentState otherList = state.getComponentByReference("otherBorderLayout");
 
-        Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
+        Entity order = dataDefinitionService.get("products", "order").get(
+                Long.valueOf(form.getEntity().getField("order").toString()));
         Entity technology = order.getBelongsToField("technology");
 
         if (technology != null) {
@@ -74,22 +83,22 @@ public final class GenealogyService {
     }
 
     public void fillProductInComponents(final ViewDefinitionState state, final Locale locale) {
-        FormComponentState orderForm = (FormComponentState) state.getComponentByReference("order");
-        FormComponentState genealogyForm = (FormComponentState) state.getComponentByReference("form");
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         ComponentState productGridLayout = state.getComponentByReference("productGridLayout");
         AwesomeDynamicListState productInComponentsList = (AwesomeDynamicListState) state
                 .getComponentByReference("productInComponentsList");
 
-        if (genealogyForm.isValid()) {
+        if (form.isValid()) {
             Entity genealogy = null;
             List<Entity> existingProductInComponents = Collections.emptyList();
 
-            if (genealogyForm.getEntityId() != null) {
-                genealogy = dataDefinitionService.get("genealogies", "genealogy").get(genealogyForm.getEntityId());
+            if (form.getEntityId() != null) {
+                genealogy = dataDefinitionService.get("genealogies", "genealogy").get(form.getEntityId());
                 existingProductInComponents = genealogy.getHasManyField("productInComponents");
             }
 
-            Entity order = dataDefinitionService.get("products", "order").get(orderForm.getEntityId());
+            Entity order = dataDefinitionService.get("products", "order").get(
+                    Long.valueOf(form.getEntity().getField("order").toString()));
             Entity technology = order.getBelongsToField("technology");
 
             if (technology != null) {

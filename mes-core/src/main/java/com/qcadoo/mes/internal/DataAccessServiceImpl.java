@@ -134,6 +134,15 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
             LOG.info(genericEntityToSave + " hasn't been saved, bacause of validation errors");
 
+            if (LOG.isDebugEnabled()) {
+                for (ErrorMessage error : genericEntityToSave.getGlobalErrors()) {
+                    LOG.debug(" --- " + error.getMessage());
+                }
+                for (Map.Entry<String, ErrorMessage> error : genericEntityToSave.getErrors().entrySet()) {
+                    LOG.debug(" --- " + error.getKey() + ": " + error.getValue().getMessage());
+                }
+            }
+
             return genericEntityToSave;
         }
 

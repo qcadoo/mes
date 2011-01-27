@@ -22,7 +22,9 @@ public final class FormComponentPattern extends AbstractContainerPattern {
 
     private boolean header;
 
-    private String expression = "#id";
+    private String expressionEdit = "#id";
+
+    private String expressionNew;
 
     public FormComponentPattern(final ComponentDefinition componentDefinition) {
         super(componentDefinition);
@@ -32,7 +34,9 @@ public final class FormComponentPattern extends AbstractContainerPattern {
     protected void initializeComponent() throws JSONException {
         for (ComponentOption option : getOptions()) {
             if ("expression".equals(option.getType())) {
-                expression = option.getValue();
+                expressionEdit = option.getValue();
+            } else if ("expressionNew".equals(option.getType())) {
+                expressionNew = option.getValue();
             } else if ("header".equals(option.getType())) {
                 header = Boolean.parseBoolean(option.getValue());
             } else {
@@ -66,7 +70,7 @@ public final class FormComponentPattern extends AbstractContainerPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new FormComponentState(expression);
+        return new FormComponentState(expressionNew, expressionEdit);
     }
 
     @Override

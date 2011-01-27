@@ -41,12 +41,15 @@ public final class FormComponentState extends AbstractContainerState {
 
     private final FormEventPerformer eventPerformer = new FormEventPerformer();
 
-    private final String expression;
+    private final String expressionEdit;
 
     private Map<String, FieldComponentState> fieldComponents;
 
-    public FormComponentState(final String expression) {
-        this.expression = expression;
+    private final String expressionNew;
+
+    public FormComponentState(final String expressionNew, final String expressionEdit) {
+        this.expressionNew = expressionNew;
+        this.expressionEdit = expressionEdit;
         registerEvent("clear", eventPerformer, "clear");
         registerEvent("save", eventPerformer, "save");
         registerEvent("saveAndClear", eventPerformer, "saveAndClear");
@@ -87,10 +90,6 @@ public final class FormComponentState extends AbstractContainerState {
                 context.put(field, json.get(field));
             }
         }
-    }
-
-    public void addContext(final String field, final Object value) {
-        context.put(field, value);
     }
 
     public Long getEntityId() {
@@ -153,17 +152,26 @@ public final class FormComponentState extends AbstractContainerState {
         if (entityId != null) {
             json.put(JSON_ENTITY_ID, entityId);
             json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerEdit", getLocale()));
-            json.put(JSON_HEADER_ENTITY_IDENTIFIER, getHeader());
+            json.put(JSON_HEADER_ENTITY_IDENTIFIER, getHeaderEdit());
         } else {
-            json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerNew", getLocale()));
             json.put(JSON_ENTITY_ID, JSONObject.NULL);
+            json.put(JSON_HEADER, getTranslationService().translate(getTranslationPath() + ".headerNew", getLocale()));
+            json.put(JSON_HEADER_ENTITY_IDENTIFIER, getHeaderNew());
         }
         return json;
     }
 
-    private String getHeader() {
+    private String getHeaderEdit() {
         Entity entity = getDataDefinition().get(entityId);
-        return ExpressionUtil.getValue(entity, expression, getLocale());
+        return ExpressionUtil.getValue(entity, expressionEdit, getLocale());
+    }
+
+    private Object getHeaderNew() {
+        if (expressionNew != null) {
+            return ExpressionUtil.getValue(getEntity(), expressionNew, getLocale());
+        } else {
+            return JSONObject.NULL;
+        }
     }
 
     private String translateMessage(final String key) {
