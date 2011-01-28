@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -128,9 +129,9 @@ public class ProductReportService {
                                 } else {
                                     products.put(
                                             product,
-                                            ((BigDecimal) operationProductInComponent.getField("quantity")).divide(
-                                                    (BigDecimal) productOutComponent.getField("quantity")).multiply(
-                                                    plannedQuantity));
+                                            ((BigDecimal) operationProductInComponent.getField("quantity"))
+                                                    .divide((BigDecimal) productOutComponent.getField("quantity"),
+                                                            MathContext.DECIMAL128).multiply(plannedQuantity));
                                 }
                             }
                         }
@@ -139,10 +140,6 @@ public class ProductReportService {
             }
         }
         return products;
-    }
-
-    private void aggregateQuantityForProducts() {
-
     }
 
     private Map<Entity, Map<Entity, List<Entity>>> getOperationSeries(final Entity entity, final String type) {

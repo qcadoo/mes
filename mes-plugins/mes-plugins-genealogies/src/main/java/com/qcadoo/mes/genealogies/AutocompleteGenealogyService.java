@@ -167,8 +167,15 @@ public class AutocompleteGenealogyService {
     private void createGenealogy(final ComponentState state, final Entity order, final boolean lastUsedMode) {
         Entity mainProduct = (Entity) order.getField("product");
         Entity technology = (Entity) order.getField("technology");
-        if (mainProduct == null || technology == null) {
-            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.failure", state.getLocale()),
+        if (mainProduct == null) {
+            state.addMessage(
+                    translationService.translate("genealogies.message.autoGenealogy.failure.product", state.getLocale()),
+                    MessageType.INFO);
+            return;
+        }
+        if (technology == null) {
+            state.addMessage(
+                    translationService.translate("genealogies.message.autoGenealogy.failure.technology", state.getLocale()),
                     MessageType.INFO);
             return;
         }
@@ -180,13 +187,13 @@ public class AutocompleteGenealogyService {
         }
         if (mainBatch == null) {
             state.addMessage(
-                    translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale()),
-                    MessageType.INFO);
+                    translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale())
+                            + mainProduct.getField("number") + "/" + mainProduct.getField("name"), MessageType.INFO);
             return;
         }
         if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
-            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", state.getLocale()),
-                    MessageType.INFO);
+            state.addMessage(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", state.getLocale())
+                    + " " + mainBatch, MessageType.INFO);
             return;
         }
         Entity genealogy = new DefaultEntity("genealogies", "genealogy");

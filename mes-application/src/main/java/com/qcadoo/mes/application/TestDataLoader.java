@@ -400,7 +400,7 @@ public final class TestDataLoader {
         }
         order.setStartWorker(getRandomUser().getUserName());
 
-        String state = (RANDOM.nextDouble() > 0.4) ? "03done" : "01pending";
+        String state = (RANDOM.nextDouble() > 0.4) ? "02inProgress" : "01pending";
 
         order.setState(state);
 
@@ -486,6 +486,7 @@ public final class TestDataLoader {
             technology.setPostFeatureRequired(false);
             technology.setOtherFeatureRequired(false);
             technology.setShiftFeatureRequired(false);
+            technology.setComponentQuantityAlgorithm("02perTechnology");
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getName() + ", number="
