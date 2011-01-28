@@ -71,6 +71,9 @@ public class ProductsTechnology {
 
     private Boolean otherFeatureRequired;
 
+    @Column(nullable = false)
+    private String componentQuantityAlgorithm;
+
     @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
     private List<ProductsTechnologyOperationComponent> operationComponents;
@@ -172,6 +175,14 @@ public class ProductsTechnology {
 
     public void setOtherFeatureRequired(final Boolean otherFeatureRequired) {
         this.otherFeatureRequired = otherFeatureRequired;
+    }
+
+    public String getComponentQuantityAlgorithm() {
+        return componentQuantityAlgorithm;
+    }
+
+    public void setComponentQuantityAlgorithm(final String componentQuantityAlgorithm) {
+        this.componentQuantityAlgorithm = componentQuantityAlgorithm;
     }
 
 }

@@ -57,6 +57,10 @@ public class ProductReportService {
 
     private static final String MATERIAL_COMPONENT = "01component";
 
+    private static final String MATERIAL_WASTE = "04waste";
+
+    private static final String COMPONENT_QUANTITY_ALGORITHM = "02perTechnology";
+
     public final Map<Entity, BigDecimal> getTechnologySeries(final Entity entity, final List<Entity> orders) {
         Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         for (Entity component : orders) {
@@ -65,20 +69,65 @@ public class ProductReportService {
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
             if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 List<Entity> operationComponents = technology.getHasManyField("operationComponents");
-                for (Entity operationComponent : operationComponents) {
-                    List<Entity> operationProductComponents = operationComponent.getHasManyField("operationProductInComponents");
-                    for (Entity operationProductComponent : operationProductComponents) {
-                        Entity product = (Entity) operationProductComponent.getField("product");
-                        if (!(Boolean) entity.getField("onlyComponents")
-                                || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
-                            if (products.containsKey(product)) {
-                                BigDecimal quantity = products.get(product);
-                                quantity = ((BigDecimal) operationProductComponent.getField("quantity"))
-                                        .multiply(plannedQuantity).add(quantity);
-                                products.put(product, quantity);
-                            } else {
-                                products.put(product,
-                                        ((BigDecimal) operationProductComponent.getField("quantity")).multiply(plannedQuantity));
+                if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
+                    for (Entity operationComponent : operationComponents) {
+                        List<Entity> operationProductComponents = operationComponent
+                                .getHasManyField("operationProductInComponents");
+                        for (Entity operationProductComponent : operationProductComponents) {
+                            Entity product = (Entity) operationProductComponent.getField("product");
+                            if (!(Boolean) entity.getField("onlyComponents")
+                                    || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
+                                if (products.containsKey(product)) {
+                                    BigDecimal quantity = products.get(product);
+                                    quantity = ((BigDecimal) operationProductComponent.getField("quantity")).multiply(
+                                            plannedQuantity).add(quantity);
+                                    products.put(product, quantity);
+                                } else {
+                                    products.put(product, ((BigDecimal) operationProductComponent.getField("quantity"))
+                                            .multiply(plannedQuantity));
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    for (Entity operationComponent : operationComponents) {
+                        List<Entity> operationProductOutComponents = operationComponent
+                                .getHasManyField("operationProductOutComponents");
+                        Entity productOutComponent = null;
+                        if (operationProductOutComponents.size() == 0) {
+                            continue;
+                        } else {
+                            int productCount = 0;
+                            for (Entity operationProductOutComponent : operationProductOutComponents) {
+                                Entity product = (Entity) operationProductOutComponent.getField("product");
+                                if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))) {
+                                    productOutComponent = operationProductOutComponent;
+                                    productCount++;
+                                }
+                            }
+                            if (productCount != 1) {
+                                continue;
+                            }
+                        }
+                        List<Entity> operationProductInComponents = operationComponent
+                                .getHasManyField("operationProductInComponents");
+                        for (Entity operationProductInComponent : operationProductInComponents) {
+                            Entity product = (Entity) operationProductInComponent.getField("product");
+                            if (!(Boolean) entity.getField("onlyComponents")
+                                    || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
+                                if (products.containsKey(product)) {
+                                    BigDecimal quantity = products.get(product);
+                                    quantity = ((BigDecimal) operationProductInComponent.getField("quantity"))
+                                            .divide((BigDecimal) productOutComponent.getField("quantity"))
+                                            .multiply(plannedQuantity).add(quantity);
+                                    products.put(product, quantity);
+                                } else {
+                                    products.put(
+                                            product,
+                                            ((BigDecimal) operationProductInComponent.getField("quantity")).divide(
+                                                    (BigDecimal) productOutComponent.getField("quantity")).multiply(
+                                                    plannedQuantity));
+                                }
                             }
                         }
                     }
@@ -86,6 +135,10 @@ public class ProductReportService {
             }
         }
         return products;
+    }
+
+    private void aggregateQuantityForProducts() {
+
     }
 
     private Map<Entity, Map<Entity, List<Entity>>> getOperationSeries(final Entity entity, final String type) {

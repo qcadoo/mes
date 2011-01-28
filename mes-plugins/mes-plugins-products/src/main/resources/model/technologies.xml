@@ -62,6 +62,10 @@
 		<boolean name="shiftFeatureRequired" />
 		<boolean name="postFeatureRequired" />
 		<boolean name="otherFeatureRequired" />
+		<boolean name="componentQuantityAlgorithm" />
+		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology">
+			<validatesPresence />
+		</enum>
 		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
