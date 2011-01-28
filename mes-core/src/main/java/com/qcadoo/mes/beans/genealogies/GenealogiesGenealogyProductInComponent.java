@@ -23,10 +23,10 @@ public class GenealogiesGenealogyProductInComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private GenealogiesGenealogy genealogy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsOperationProductInComponent productInComponent;
 
     @OneToMany(mappedBy = "productInComponent", fetch = FetchType.LAZY)

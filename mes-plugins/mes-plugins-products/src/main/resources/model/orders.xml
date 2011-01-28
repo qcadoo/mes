@@ -50,12 +50,12 @@
 		<belongsTo name="technology" model="technology" lookupField="name" />
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" inclusive="false" />
-			<validatesPrecision max="7" />
+			<validatesPrecision max="8" />
 			<validatesScale max="3" />
 		</decimal>
 		<decimal name="doneQuantity">
 			<validatesRange from="0" inclusive="false" />
-			<validatesPrecision max="7" />
+			<validatesPrecision max="8" />
 			<validatesScale max="3" />
 		</decimal>
 		<date name="effectiveDateFrom" readonly="true" />

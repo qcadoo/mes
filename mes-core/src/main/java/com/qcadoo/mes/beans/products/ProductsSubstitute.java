@@ -46,7 +46,7 @@ public class ProductsSubstitute {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsProduct product;
 
     private Integer priority;

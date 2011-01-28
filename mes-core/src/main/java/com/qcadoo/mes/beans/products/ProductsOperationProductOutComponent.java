@@ -18,10 +18,10 @@ public class ProductsOperationProductOutComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsTechnologyOperationComponent operationComponent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsProduct product;
 
     @Column(scale = 3, precision = 10)

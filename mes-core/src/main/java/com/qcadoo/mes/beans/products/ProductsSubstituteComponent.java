@@ -42,10 +42,10 @@ public class ProductsSubstituteComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsProduct product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private ProductsSubstitute substitute;
 
     @Column(scale = 3, precision = 10, nullable = false)

@@ -52,6 +52,10 @@ import com.qcadoo.mes.utils.pdf.PdfUtil;
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
 
+    private final int[] defaultMatReqHeaderColumnWidth = new int[] { 25, 25, 24, 13, 13 };
+
+    private final int[] defaultOrderHeaderColumnWidth = new int[] { 37, 37, 13, 13 };
+
     @Autowired
     private SecurityService securityService;
 
@@ -90,7 +94,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
         Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
-        PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true);
+        PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField("name").toString(), PdfUtil.getArialRegular9Dark()));
@@ -110,7 +114,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
-        PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader, true);
+        PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
+
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
