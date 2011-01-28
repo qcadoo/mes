@@ -46,7 +46,7 @@ public class UsersUser {
     @Column(nullable = false, columnDefinition = "boolean DEFAULT TRUE")
     private boolean enabled = true;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private UsersGroup userGroup;
 
     private String email;

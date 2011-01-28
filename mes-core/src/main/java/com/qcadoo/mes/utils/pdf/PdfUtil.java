@@ -229,8 +229,23 @@ public final class PdfUtil {
     }
 
     public static PdfPTable createTableWithHeader(final int numOfColumns, final List<String> header,
+            final boolean lastColumnAligmentToLeft, final int[] columnWidths) {
+        PdfPTable table = new PdfPTable(numOfColumns);
+        try {
+            table.setWidths(columnWidths);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return setTableProperties(header, lastColumnAligmentToLeft, table);
+    }
+
+    public static PdfPTable createTableWithHeader(final int numOfColumns, final List<String> header,
             final boolean lastColumnAligmentToLeft) {
         PdfPTable table = new PdfPTable(numOfColumns);
+        return setTableProperties(header, lastColumnAligmentToLeft, table);
+    }
+
+    private static PdfPTable setTableProperties(final List<String> header, final boolean lastColumnAligmentToLeft, PdfPTable table) {
         table.setWidthPercentage(100f);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         table.setSpacingBefore(7.0f);
@@ -332,5 +347,16 @@ public final class PdfUtil {
             return linuxFontsPath;
         }
         return null;
+    }
+
+    public static PdfPTable createPanelTable(final int column) {
+        PdfPTable mainData = new PdfPTable(column);
+        mainData.setWidthPercentage(100f);
+        mainData.getDefaultCell().setBackgroundColor(PdfUtil.getBackgroundColor());
+        mainData.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        mainData.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+        mainData.getDefaultCell().setPadding(8.0f);
+        mainData.setTableEvent(new TableBorderEvent());
+        return mainData;
     }
 }

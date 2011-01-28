@@ -49,6 +49,10 @@ public class ProductReportService {
 
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateType.DATE_FORMAT);
 
+    private final int[] defaultWorkPlanColumnWidth = new int[] { 20, 20, 20, 13, 13, 13 };
+
+    private final int[] defaultWorkPlanOperationColumnWidth = new int[] { 10, 21, 23, 23, 23 };
+
     @Autowired
     private TranslationService translationService;
 
@@ -153,7 +157,8 @@ public class ProductReportService {
                 document.newPage();
             }
 
-            PdfPTable orderTable = PdfUtil.createTableWithHeader(6, getOrderHeader(document, entity, locale), false);
+            PdfPTable orderTable = PdfUtil.createTableWithHeader(6, getOrderHeader(document, entity, locale), false,
+                    defaultWorkPlanColumnWidth);
 
             if (type.equals("machine") || type.equals("worker")) {
                 addOrderSeries(orderTable, entity, decimalFormat);
@@ -211,7 +216,9 @@ public class ProductReportService {
                 document.add(title);
 
             }
-            PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale), false);
+            PdfPTable table = PdfUtil.createTableWithHeader(5, getOperationHeader(locale), false,
+                    defaultWorkPlanOperationColumnWidth);
+
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
             Map<Entity, List<Entity>> operationMap = entry.getValue();
             for (Entry<Entity, List<Entity>> entryComponent : operationMap.entrySet()) {

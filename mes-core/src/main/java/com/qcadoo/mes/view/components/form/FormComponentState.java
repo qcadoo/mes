@@ -92,10 +92,6 @@ public final class FormComponentState extends AbstractContainerState {
         }
     }
 
-    public void addContext(final String field, final Object value) {
-        context.put(field, value);
-    }
-
     public Long getEntityId() {
         return entityId;
     }

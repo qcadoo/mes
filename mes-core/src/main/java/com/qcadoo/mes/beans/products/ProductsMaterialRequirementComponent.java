@@ -39,10 +39,10 @@ public class ProductsMaterialRequirementComponent {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private ProductsOrder order;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private ProductsMaterialRequirement materialRequirement;
 
     public Long getId() {

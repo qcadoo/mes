@@ -24,24 +24,40 @@
 
 package com.qcadoo.mes.model.validators.internal;
 
+import java.util.List;
+
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
+import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class RequiredValidator implements FieldValidator {
 
     private static final String MISSING_ERROR = "core.validate.field.error.missing";
 
+    private static final String MISSING_RELATION_ERROR = "core.validate.field.error.missingRelation";
+
     private String errorMessage = MISSING_ERROR;
 
+    private String errorRelationMessage = MISSING_RELATION_ERROR;
+
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean validate(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Object value,
             final Entity validatedEntity) {
-        if (value == null) {
+
+        if (fieldDefinition.getType() instanceof HasManyType) {
+            if (validatedEntity.getField(fieldDefinition.getName()) == null
+                    || ((List) validatedEntity.getField(fieldDefinition.getName())).isEmpty()) {
+                validatedEntity.addError(fieldDefinition, errorRelationMessage);
+                return false;
+            }
+        } else if (value == null) {
             validatedEntity.addError(fieldDefinition, errorMessage);
             return false;
         }
+
         return true;
     }
 
@@ -53,6 +69,7 @@ public final class RequiredValidator implements FieldValidator {
     @Override
     public FieldValidator customErrorMessage(final String errorMessage) {
         this.errorMessage = errorMessage;
+        this.errorRelationMessage = errorMessage;
         return this;
     }
 
