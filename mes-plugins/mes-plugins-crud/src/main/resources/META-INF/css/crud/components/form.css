@@ -43,10 +43,16 @@
 	display: inline-block;
 	vertical-align: middle;
 	text-align: left;
-	font: 11px arial;
+	//font: 11px arial;
 	position: absolute;
 	left: 10px;
 	top:0;
+	
+	
+	font-weight: normal;
+	font-size: 11px;
+	font-family: "Lucida Grande"; /*EDISONDA NEW*/
+	color: #232323; /*EDISONDA NEW*/
 }
 .component_form_element .labelbox.noLabel {
 	width: 30px;
@@ -66,6 +72,7 @@
 
 .required .component_form_element .label {
 	font-weight: bold;
+	font-size: 12px; /*EDISONDA NEW*/
 }
 
 .component_element_textarea .label {
@@ -146,28 +153,44 @@
 	border-spacing: 0;
   	margin: 0;
   	space: 0;
-	color: #464646;
+	//color: #464646;
 	height: 22px;
-	font: 11px arial;
+	//font: 11px arial;
 	vertical-align: middle;
-	border-radius: 0;
-	-moz-border-radius: 0;
-	-webkit-boder-radius: 0;
+	//border-radius: 0;
+	//-moz-border-radius: 0;
+	//-webkit-boder-radius: 0;
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
-	border: 1px solid #959595;	
+	//border: 1px solid #959595;	
 	background: white url(/css/crud/images/form/input_c_transparent.png) no-repeat 0 0;
 	padding-left: 6px;
 	padding-top: 3px;
 	width: 100%;
+	
+	color: #464646; /*EDISONDA NEW*/
+	font: 11px "Lucida Grande"; /*EDISONDA NEW*/
+	border: solid #a1a1a1 1px; /*EDISONDA NEW*/
+	border-bottom: solid #d7d7d7 1px; /*EDISONDA NEW*/
+	border-radius: 2px; /*EDISONDA NEW*/
+	-moz-border-radius: 2px; /*EDISONDA NEW*/
+	-webkit-boder-radius: 2px; /*EDISONDA NEW*/
 }
 
 .disabled .component_container_form_inner input[type='text'],
 .disabled .component_container_form_inner input[type='password'],
 .disabled .component_container_form_inner textarea {
-	background-color: #F0F0F0;
-	color: #818181;
+	//background-color: #F0F0F0;
+	//color: #818181;
+	color: #959595; /*EDISONDA NEW*/
+	background-color: #f5f5f5; /*EDISONDA NEW*/
+	border: solid #cccccc 1px; /*EDISONDA NEW*/
+	border-bottom: solid #e8e8e8 1px; /*EDISONDA NEW*/
+}
+
+.disabled .labelbox {
+	color: #7d7d7d; /*EDISONDA NEW*/
 }
 
 .component_element_checkbox .component_container_form_w {
@@ -186,7 +209,7 @@
 .component_container_form .required input[type='text'],
 .component_container_form .required input[type='password'],
 .component_container_form .required textarea {
-	border: 1px solid #464646;	
+	//border: 1px solid #464646; /*EDISONDA NEW*/	
 }
 
 .component_container_form .error input[type='text'],
@@ -194,7 +217,9 @@
 .component_container_form .error textarea,
 .component_container_form .error .lookupValueWrapper,
 .component_container_form .required.error .component_container_form_w .lookupValueWrapper {
-	border: 1px solid #ec1c24;
+	//border: 1px solid #ec1c24;
+	border: 1px solid #ff0000; /*EDISONDA NEW*/
+	border-bottom: 1px solid #d7d7d7; /*EDISONDA NEW*/
 }
 
 .component_container_form textarea {
@@ -333,13 +358,17 @@
 	display: block;
 	position: relative;
 	height: 20px;
-	border: solid #959595 1px;
+	//border: solid #959595 1px;
+	border: solid #a1a1a1 1px; /*EDISONDA NEW*/
+	border-bottom: solid #d7d7d7 1px; /*EDISONDA NEW*/
 }
 .component_container_form .error .component_container_form_w .lookupValueWrapper {
 	border: 1px solid #ec1c24;
 }
 .component_container_form .required .component_container_form_w .lookupValueWrapper {
-	border: 1px solid #464646;	
+	//border: 1px solid #464646;
+	border: solid #a1a1a1 1px; /*EDISONDA NEW*/
+	border-bottom: solid #d7d7d7 1px; /*EDISONDA NEW*/	
 }
 
 .component_container_form_w .lookupValueWrapper .lookupInputWrapper {

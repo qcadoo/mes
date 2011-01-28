@@ -58,7 +58,13 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			BUTTONS_WIDTH = 0;
 		}
 		
-		_this.components = components; 
+		_this.components = components;
+		
+		var formObject = getFormCopy(formObjectsIndex, true);
+		formObjects[formObjectsIndex] = formObject;
+		_this.components[formObject.elementName] = formObject;
+		formObjectsIndex++;
+		
 		
 		updateButtons();
 	}
@@ -95,6 +101,15 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				this.components[formObject.elementName] = formObject;
 				formObjectsIndex++;
 			}
+			QCD.info(value);
+			
+			if (formObjectsIndex == 1) {
+				var formObject = getFormCopy(formObjectsIndex, true);
+				formObjects[formObjectsIndex] = formObject;
+				this.components[formObject.elementName] = formObject;
+				formObjectsIndex++;
+			}
+			
 			updateButtons();
 		} else {
 			var innerFormChanges = value.innerFormChanges;
@@ -161,7 +176,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		}
 	}
 	
-	function getFormCopy(formId) {
+	function getFormCopy(formId, isVirtual) {
+		isVirtual = isVirtual ? isVirtual : false;
 		var copy = innerFormContainer.clone();
 		
 		changeElementId(copy, formId);

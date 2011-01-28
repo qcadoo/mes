@@ -53,6 +53,43 @@ QCD.WindowController = function(_menuStructure) {
 		menuController = new QCD.menu.MenuController(menuStructure, _this);
 		
 		updateSize();
+		
+		if (Boolean(window.chrome)) {
+			var MINUTE = 1000*60;
+			var messages = [
+                "http://aboutonlinetips.com/wp-content/uploads/2009/02/firefox.png",
+                "http://www.mouserunner.com/images/ModernNavigation.jpg",
+                "http://www.mouserunner.com/images/FxOrange.jpg",
+                "http://www.mouserunner.com/images/FxStars.jpg",
+                "http://farm4.static.flickr.com/3265/2628097518_79a44f167e_o.jpg",
+                "http://farm2.static.flickr.com/1180/1208418812_a165325bbb_o.jpg",
+                "http://fc03.deviantart.com/fs7/i/2005/201/c/5/Firefox_by_FalconNL.jpg",
+                "http://3.bp.blogspot.com/_Ym3du2sG3R4/TGV_ZohxMGI/AAAAAAAACv8/_mmd0A8kaaM/s1600/firefox-girl-wallpaper.jpg",
+                "http://2.bp.blogspot.com/_gx7OZdt7Uhs/TPIFVc2I19I/AAAAAAAAFQo/ZV285-RgM9E/s1600/firefox+Sexy+Wallpaper.jpg",
+                "http://fc02.deviantart.net/fs6/i/2005/039/c/9/firefox_is_sexy_wallpaper_by_electroncat.jpg"
+			];
+			var st = function() {
+				var messageNo = Math.floor(Math.random()*messages.length)
+				var obj = {
+						pnotify_title: 'Get firefox!',
+						pnotify_width: '400px', 
+						pnotify_height: 'auto',
+						pnotify_hide: false,
+						pnotify_addclass: 'getFFClass',
+						pnotify_stack: pnotify_stack,
+				}
+				obj.pnotify_text = '<a href="'+messages[messageNo]+'" target="_blank"><img width="400" src="'+messages[messageNo]+'"></img></a>';
+				$.pnotify(obj);
+				var timeout = Math.floor(Math.random()*5*MINUTE)+(1*MINUTE);
+				setTimeout(function() {
+					st();
+				}, timeout);
+			}
+			var timeout = Math.floor(Math.random()*2*MINUTE);
+			setTimeout(function() {
+				st();
+			}, timeout);
+		}
 	}
 	
 	this.addMessage = function(type, content) {

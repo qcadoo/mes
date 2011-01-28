@@ -69,26 +69,35 @@
 .windowContainer .windowContent {
 	margin-left: auto;
 	margin-right: auto;
-	background: white;
+	//background: white;
+	background: #fafafa; /*EDISONDA NEW*/
 	border: solid #666666 1px;
 }
 
 .windowContainer .windowContent .windowHeader {
 	background: #ebebeb;
-	height: 33px;
-	font: bold 13px arial;
-	color: #7d7d7d;
+	//height: 33px;
+	//font: bold 13px arial;
+	//color: #7d7d7d;
 	border-bottom: 1px solid #a7a7a7;
 	padding-left: 20px;
-	line-height: 35px;
+	//line-height: 35px;
 	z-index: 110;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	
+	font-weight: normal; /*EDISONDA NEW*/
+	font-size: 17px; /*EDISONDA NEW*/
+	font-family: "Lucida Grande"; /*EDISONDA NEW*/
+	color: #959595; /*EDISONDA NEW*/
+	height: 45px; /*EDISONDA NEW*/
+	line-height: 45px; /*EDISONDA NEW*/
 }
 
 .windowContainer .windowContent .windowHeader span {
-	color: #555;
+	//color: #555;
+	color: #232323; /*EDISONDA NEW*/
 }
 
 .windowContainer .windowComponents {

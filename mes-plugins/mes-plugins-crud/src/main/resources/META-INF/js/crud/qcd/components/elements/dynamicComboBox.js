@@ -76,7 +76,7 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 			stateSelectedValue = data.value;
 			return;
 		}
-		var previousSelected = input.val();
+		//var previousSelected = input.val();
 		input.children().remove();
 		for (var i in data.values) {
 			var value = data.values[i];
@@ -90,7 +90,8 @@ QCD.components.elements.DynamicComboBox = function(_element, _mainController) {
 		}
 		
 		if (selected == undefined) {
-			input.val(previousSelected);
+			//input.val(previousSelected);
+			input.val("");
 		} else {
 			input.val(selected);
 		}
