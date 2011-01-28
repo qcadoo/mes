@@ -110,6 +110,8 @@ public class AwesomeDynamicListState extends FieldComponentState implements Cont
         }
         json.put(JSON_FORM_VALUES, formValues);
 
+        json.put(JSON_REQUIRED, isRequired());
+
         return json;
     }
 

@@ -36,7 +36,9 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	var components = new Object();
 	
-	var lastIndexElement = null;
+	//var lastIndexElement = null;
+	
+	var isRequired = false;
 	
 	function constructor(_this) {
 		innerFormContainer = $("#"+_this.elementSearchName+" > .awesomeDynamicList > .awesomeDynamicListInnerForm").children();
@@ -60,12 +62,6 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		
 		_this.components = components;
 		
-		var formObject = getFormCopy(formObjectsIndex, true);
-		formObjects[formObjectsIndex] = formObject;
-		_this.components[formObject.elementName] = formObject;
-		formObjectsIndex++;
-		
-		
 		updateButtons();
 	}
 	
@@ -87,6 +83,9 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 	
 	this.setComponentValue = function(value) {
 		var forms = value.forms;
+		if (value.required != undefined) {
+			isRequired = value.required;
+		}
 		if (forms) {
 			formObjects = new Array();
 			awesomeDynamicListContent.empty();	
@@ -101,9 +100,8 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				this.components[formObject.elementName] = formObject;
 				formObjectsIndex++;
 			}
-			QCD.info(value);
 			
-			if (formObjectsIndex == 1) {
+			if (isRequired && formObjectsIndex == 1) {
 				var formObject = getFormCopy(formObjectsIndex, true);
 				formObjects[formObjectsIndex] = formObject;
 				this.components[formObject.elementName] = formObject;
@@ -117,7 +115,9 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				this.components[i].setValue(innerFormChanges[i]);
 			}
 		}
+		//alert("1");
 		mainController.updateSize();
+		//alert("2");
 	}
 	
 	this.setComponentState = function(state) {
@@ -146,7 +146,7 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 			return true;
 		}
 		for (var i in formObjects) {
-			if (formObjects[i] && formObjects[i].isChanged()) {
+			if (formObjects[i] && !formObjects[i].isVirtual && formObjects[i].isChanged()) {
 				return true;
 			}
 		}
@@ -215,6 +215,9 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 		}
 		awesomeDynamicListContent.append(line);
 		var formObject = QCDPageConstructor.getChildrenComponents(copy, mainController)["innerForm_"+formId];
+		
+		formObject.isVirtual = isVirtual;
+		
 		formObject.updateSize(currentWidth-BUTTONS_WIDTH, currentHeight);
 		formObject.setEnabled(true, true);
 		
@@ -285,7 +288,12 @@ QCD.components.elements.AwesomeDynamicList = function(_element, _mainController)
 				var line = $("#"+elementSearchName+"_line_"+i);
 				var removeButton = $("#"+elementSearchName+"_line_"+i+"_removeButton");
 				var addButton = $("#"+elementSearchName+"_line_"+i+"_addButton");
-				removeButton.show();
+				if (!(isRequired && objectCounter<=1)){
+					removeButton.show();
+					removeButton.css("display", "inline-block");
+				} else {
+					removeButton.hide();
+				}
 				if (i == lastObject) {
 					addButton.show();
 					addButton.css("display", "inline-block");
