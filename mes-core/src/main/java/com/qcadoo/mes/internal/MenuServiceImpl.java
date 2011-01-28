@@ -130,20 +130,10 @@ public final class MenuServiceImpl implements MenuService {
 
         MenuDefinition menuDef = new MenuDefinition();
 
-        // MenulItemsGroup homeItem = new MenulItemsGroup("home", translationService.translate("core.menu.home", locale));
-        // homeItem.addItem(new UrlMenuItem("home", translationService.translate("core.menu.home", locale), null,
-        // "homePage.html"));
-        // homeItem.addItem(new UrlMenuItem("profile", translationService.translate("core.menu.profile", locale), null,
-        // "userProfile.html"));
-        // homeItem.addItem(new UrlMenuItem("systemInfo", translationService.translate("core.menu.systemInfo", locale), null,
-        // "systemInfo.html"));
-        // menuDef.addItem(homeItem);
-
         DataDefinition menuDD = dataDefinitionService.get("menu", "menuCategory");
         List<Entity> categories = menuDD.find().list().getEntities();
 
         MenulItemsGroup administrationCategory = null;
-        // MenulItemsGroup basicDataCategory = null;
         boolean hasMenuCategoryGridView = false;
 
         for (Entity categoryEntity : categories) {
@@ -156,8 +146,6 @@ public final class MenuServiceImpl implements MenuService {
             MenulItemsGroup category = new MenulItemsGroup(categoryName, getLabel(categoryName, categoryTranslationName, locale));
             if ("core.menu.administration".equals(categoryTranslationName)) {
                 administrationCategory = category;
-                // } else if ("core.menu.basic".equals(categoryTranslationName)) {
-                // basicDataCategory = category;
             }
 
             for (Entity itemEntity : categoryEntity.getHasManyField("viewDefinitionItems")) {
@@ -165,7 +153,6 @@ public final class MenuServiceImpl implements MenuService {
                     continue;
                 }
                 String itemName = itemEntity.getStringField("name");
-                System.out.println(itemName);
                 Entity viewDefinitionEntity = itemEntity.getBelongsToField("viewDefinition");
                 String viewName = viewDefinitionEntity.getStringField("viewName");
                 String pluginIdentifier = viewDefinitionEntity.getStringField("pluginIdentifier");
@@ -198,17 +185,6 @@ public final class MenuServiceImpl implements MenuService {
             administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", getLabel("menuCategories",
                     "menu.menu.administration.menu", locale), "menu", "menuCategories"));
         }
-
-        // if (basicDataCategory != null) {
-        // basicDataCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
-        // "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
-        // } else {
-        // administrationCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
-        // "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
-        // }
-        // administrationCategory.addItem(new UrlMenuItem("parameter", translationService.translate("basic.menu.parameter",
-        // locale),
-        // null, "parameter.html"));
 
         return menuDef;
     }
