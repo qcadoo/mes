@@ -161,7 +161,7 @@ public final class OrderService {
                 } else {
                     if (!checkRequiredBatch(order)) {
                         state.addMessage(translationService.translate("genealogies.message.batchNotFound", state.getLocale()),
-                                MessageType.FAILURE);
+                                MessageType.INFO);
                         return;
                     }
 

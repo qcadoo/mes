@@ -167,15 +167,9 @@ public class AutocompleteGenealogyService {
     private void createGenealogy(final ComponentState state, final Entity order, final boolean lastUsedMode) {
         Entity mainProduct = (Entity) order.getField("product");
         Entity technology = (Entity) order.getField("technology");
-        if (mainProduct == null) {
+        if (mainProduct == null || technology == null) {
             state.addMessage(
                     translationService.translate("genealogies.message.autoGenealogy.failure.product", state.getLocale()),
-                    MessageType.INFO);
-            return;
-        }
-        if (technology == null) {
-            state.addMessage(
-                    translationService.translate("genealogies.message.autoGenealogy.failure.technology", state.getLocale()),
                     MessageType.INFO);
             return;
         }
@@ -188,7 +182,7 @@ public class AutocompleteGenealogyService {
         if (mainBatch == null) {
             state.addMessage(
                     translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale())
-                            + mainProduct.getField("number") + "/" + mainProduct.getField("name"), MessageType.INFO);
+                            + mainProduct.getField("number") + "-" + mainProduct.getField("name"), MessageType.INFO);
             return;
         }
         if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
@@ -212,7 +206,12 @@ public class AutocompleteGenealogyService {
                 Set<String> errors = new HashSet<String>();
                 for (ErrorMessage error : genealogy.getGlobalErrors()) {
                     if (!errors.contains(error.getMessage())) {
-                        state.addMessage(translationService.translate(error.getMessage(), state.getLocale()), MessageType.INFO);
+                        StringBuilder message = new StringBuilder(translationService.translate(error.getMessage(),
+                                state.getLocale()));
+                        for (String var : error.getVars()) {
+                            message.append("\n" + var);
+                        }
+                        state.addMessage(message.toString(), MessageType.INFO);
                         errors.add(error.getMessage());
                     }
                 }
@@ -296,7 +295,7 @@ public class AutocompleteGenealogyService {
     @SuppressWarnings("unchecked")
     private void completeBatchForComponents(final Entity technology, final Entity genealogy, final boolean lastUsedMode) {
         genealogy.setField("productInComponents", new ArrayList<Entity>());
-
+        List<String> componentsWithoutBatch = new ArrayList<String>();
         for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
             for (Entity operationProductComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 if ((Boolean) operationProductComponent.getField("batchRequired")) {
@@ -318,12 +317,18 @@ public class AutocompleteGenealogyService {
                         productBatch.setField("productInComponent", productIn);
                         productIn.setField("batch", Collections.singletonList(productBatch));
                     } else {
-                        genealogy.addGlobalError("genealogies.message.autoGenealogy.missingBatch");
+                        String value = product.getField("number") + "-" + product.getField("name") + "; ";
+                        if (!componentsWithoutBatch.contains(value))
+                            componentsWithoutBatch.add(value);
                     }
 
                     ((List<Entity>) genealogy.getField("productInComponents")).add(productIn);
                 }
             }
+        }
+        if (componentsWithoutBatch.size() > 0) {
+            genealogy.addGlobalError("genealogies.message.autoGenealogy.missingBatch",
+                    (String[]) componentsWithoutBatch.toArray(new String[componentsWithoutBatch.size()]));
         }
     }
 }
