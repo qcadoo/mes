@@ -67,6 +67,7 @@
 		<string name="pluginIdentifier" >
 			<validatesPresence />
 		</string>
+		<boolean name="url"/>
 		<hasMany name="menuViewDefinitionItems" model="menuViewDefinitionItem" joinField="viewDefinition" cascade="delete" />
 	</model>
 	
