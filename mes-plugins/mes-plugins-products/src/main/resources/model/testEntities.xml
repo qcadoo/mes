@@ -16,7 +16,9 @@
 		<string name="unit">
 			<validatesPresence />
 		</string>
-		<hasMany name="testEntity2" model="testEntity2" joinField="testEntity1" cascade="delete" copyable="true" />
+		<hasMany name="testEntity2" model="testEntity2" joinField="testEntity1" cascade="delete" copyable="true">
+			<validatesPresence />
+		</hasMany>
 		<belongsTo name="testEntity3" model="testEntity3" lookupField="number" lazy="false" />
 	</model>
 	<model name="testEntity2">

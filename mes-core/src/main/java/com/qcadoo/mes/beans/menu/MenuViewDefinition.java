@@ -58,6 +58,8 @@ public class MenuViewDefinition {
     @Cascade({ CascadeType.DELETE })
     private List<MenuMenuViewDefinitionItem> menuViewDefinitionItems;
 
+    private boolean url;
+
     public Long getId() {
         return id;
     }
@@ -96,6 +98,14 @@ public class MenuViewDefinition {
 
     public void setMenuViewDefinitionItems(final List<MenuMenuViewDefinitionItem> menuViewDefinitionItems) {
         this.menuViewDefinitionItems = menuViewDefinitionItems;
+    }
+
+    public boolean isUrl() {
+        return url;
+    }
+
+    public void setUrl(boolean url) {
+        this.url = url;
     }
 
 }

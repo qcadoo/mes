@@ -88,6 +88,7 @@ public final class DatabasePreparationService implements ApplicationListener<Con
     }
 
     private void addMenus() {
+
         MenuViewDefinition menuCategoryGridView = getMenuViewDefinition("menuCategories");
         MenuViewDefinition technologyGridView = getMenuViewDefinition("technologies");
         MenuViewDefinition orderGridView = getMenuViewDefinition("orders");
@@ -104,15 +105,22 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition genealogyForComponentFormView = getMenuViewDefinition("genealogyForComponent");
         MenuViewDefinition genealogyForProductFormView = getMenuViewDefinition("genealogyForProduct");
 
-        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 1);
-        MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 2);
-        MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 3);
-        MenuMenuCategory menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 4);
-        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 5);
+        MenuMenuCategory menuCategoryHome = addMenuCategory("home", "core.menu.home", 1);
+        MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
+        MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 3);
+        MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 4);
+        MenuMenuCategory menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 5);
+        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 6);
+
+        addMenuViewDefinitionItem("home", "core.menu.home", menuCategoryHome, getMenuViewDefinition("homePage"), 1);
+        addMenuViewDefinitionItem("profile", "core.menu.profile", menuCategoryHome, getMenuViewDefinition("profile"), 2);
+        addMenuViewDefinitionItem("systemInfo", "core.menu.systemInfo", menuCategoryHome,
+                getMenuViewDefinition("systemInfoView"), 3);
 
         addMenuViewDefinitionItem("technologies", "products.menu.products.technologies", menuCategoryTechnology,
                 technologyGridView, 2);
         addMenuViewDefinitionItem("products", "products.menu.products.products", menuCategoryBasicData, productGridView, 4);
+
         addMenuViewDefinitionItem("productionOrders", "products.menu.products.productionOrders", menuCategoryOrders,
                 orderGridView, 1);
         addMenuViewDefinitionItem("materialRequirements", "products.menu.products.materialRequirements", menuCategoryReports,
@@ -123,6 +131,10 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                 genealogyForComponentFormView, 3);
         addMenuViewDefinitionItem("genealogyForProduct", "genealogies.menu.reports.genealogyForProduct", menuCategoryReports,
                 genealogyForProductFormView, 4);
+        addMenuViewDefinitionItem("systemParameters", "basic.menu.systemParameters", menuCategoryBasicData,
+                getMenuViewDefinition("systemParameters"), 4);
+        addMenuViewDefinitionItem("genealogyAttributes", "genealogy.menu.genealogyAttributes", menuCategoryBasicData,
+                getMenuViewDefinition("genealogyAttributes"), 5);
 
         if (addAdministrationMenuToDatabase) {
             addMenuViewDefinitionItem("users", "users.menu.administration.users", menuCategoryAdministration, userGridView, 2);

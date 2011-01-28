@@ -44,6 +44,7 @@ import com.qcadoo.mes.plugins.internal.enums.PluginStatus;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.menu.MenuDefinition;
+import com.qcadoo.mes.view.menu.MenuItem;
 import com.qcadoo.mes.view.menu.MenulItemsGroup;
 import com.qcadoo.mes.view.menu.items.UrlMenuItem;
 import com.qcadoo.mes.view.menu.items.ViewDefinitionMenuItemItem;
@@ -83,16 +84,42 @@ public final class MenuServiceImpl implements MenuService {
                 viewDefinitionEntity.setField("menuName", view.getValue());
                 viewDefinitionEntity.setField("viewName", view.getValue());
                 viewDefinitionEntity.setField("pluginIdentifier", view.getKey());
+                viewDefinitionEntity.setField("url", false);
                 viewDefinitionDD.save(viewDefinitionEntity);
             }
         }
 
         for (Entity viewDefinitionEntity : viewDefinitionDD.find().list().getEntities()) {
+            if ((Boolean) viewDefinitionEntity.getField("url")) {
+                continue;
+            }
             ViewDefinition vd = viewDefinitionService.getWithoutSession(viewDefinitionEntity.getStringField("pluginIdentifier"),
                     viewDefinitionEntity.getStringField("viewName"));
             if (vd == null || !vd.isMenuAccessible()) {
                 viewDefinitionDD.delete(viewDefinitionEntity.getId());
             }
+        }
+
+        addUrlItem("homePage", "homePage.html", "crud");
+        addUrlItem("profile", "userProfile.html", "crud");
+        addUrlItem("systemInfoView", "systemInfo.html", "crud");
+
+        addUrlItem("systemParameters", "parameter.html", "basic");
+        addUrlItem("genealogyAttributes", "genealogyAttribute.html", "genealogies");
+    }
+
+    private void addUrlItem(String name, String url, String pluginIdentifier) {
+        DataDefinition viewDefinitionDD = dataDefinitionService.get("menu", "viewDefinition");
+
+        int existingViewsNumber = viewDefinitionDD.find().restrictedWith(Restrictions.eq("pluginIdentifier", pluginIdentifier))
+                .restrictedWith(Restrictions.eq("viewName", url)).list().getTotalNumberOfEntities();
+        if (existingViewsNumber == 0) {
+            Entity viewDefinitionEntity = new DefaultEntity("menu", name, null);
+            viewDefinitionEntity.setField("menuName", name);
+            viewDefinitionEntity.setField("viewName", url);
+            viewDefinitionEntity.setField("pluginIdentifier", pluginIdentifier);
+            viewDefinitionEntity.setField("url", true);
+            viewDefinitionDD.save(viewDefinitionEntity);
         }
     }
 
@@ -103,19 +130,10 @@ public final class MenuServiceImpl implements MenuService {
 
         MenuDefinition menuDef = new MenuDefinition();
 
-        MenulItemsGroup homeItem = new MenulItemsGroup("home", translationService.translate("core.menu.home", locale));
-        homeItem.addItem(new UrlMenuItem("home", translationService.translate("core.menu.home", locale), null, "homePage.html"));
-        homeItem.addItem(new UrlMenuItem("profile", translationService.translate("core.menu.profile", locale), null,
-                "userProfile.html"));
-        homeItem.addItem(new UrlMenuItem("systemInfo", translationService.translate("core.menu.systemInfo", locale), null,
-                "systemInfo.html"));
-        menuDef.addItem(homeItem);
-
         DataDefinition menuDD = dataDefinitionService.get("menu", "menuCategory");
         List<Entity> categories = menuDD.find().list().getEntities();
 
         MenulItemsGroup administrationCategory = null;
-        MenulItemsGroup basicDataCategory = null;
         boolean hasMenuCategoryGridView = false;
 
         for (Entity categoryEntity : categories) {
@@ -128,8 +146,6 @@ public final class MenuServiceImpl implements MenuService {
             MenulItemsGroup category = new MenulItemsGroup(categoryName, getLabel(categoryName, categoryTranslationName, locale));
             if ("core.menu.administration".equals(categoryTranslationName)) {
                 administrationCategory = category;
-            } else if ("core.menu.basic".equals(categoryTranslationName)) {
-                basicDataCategory = category;
             }
 
             for (Entity itemEntity : categoryEntity.getHasManyField("viewDefinitionItems")) {
@@ -140,10 +156,17 @@ public final class MenuServiceImpl implements MenuService {
                 Entity viewDefinitionEntity = itemEntity.getBelongsToField("viewDefinition");
                 String viewName = viewDefinitionEntity.getStringField("viewName");
                 String pluginIdentifier = viewDefinitionEntity.getStringField("pluginIdentifier");
+                boolean isUrl = (Boolean) viewDefinitionEntity.getField("url");
                 if (belongsToActivePlugin(pluginIdentifier)) {
                     String itemTranslationName = itemEntity.getStringField("translationName");
-                    category.addItem(new ViewDefinitionMenuItemItem(itemName, getLabel(itemName, itemTranslationName, locale),
-                            pluginIdentifier, viewName));
+                    MenuItem item;
+                    String itemLabel = getLabel(itemName, itemTranslationName, locale);
+                    if (isUrl) {
+                        item = new UrlMenuItem(itemName, itemLabel, pluginIdentifier, viewName);
+                    } else {
+                        item = new ViewDefinitionMenuItemItem(itemName, itemLabel, pluginIdentifier, viewName);
+                    }
+                    category.addItem(item);
                 }
                 if ("menu".equals(pluginIdentifier) && "menuCategories".equals(viewName)) {
                     hasMenuCategoryGridView = true;
@@ -162,16 +185,6 @@ public final class MenuServiceImpl implements MenuService {
             administrationCategory.addItem(new ViewDefinitionMenuItemItem("menuCategories", getLabel("menuCategories",
                     "menu.menu.administration.menu", locale), "menu", "menuCategories"));
         }
-
-        if (basicDataCategory != null) {
-            basicDataCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
-                    "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
-        } else {
-            administrationCategory.addItem(new UrlMenuItem("attribute", translationService.translate(
-                    "genealogy.menu.genealogy.attribute", locale), null, "genealogyAttribute.html"));
-        }
-        administrationCategory.addItem(new UrlMenuItem("parameter", translationService.translate("basic.menu.parameter", locale),
-                null, "parameter.html"));
 
         return menuDef;
     }
