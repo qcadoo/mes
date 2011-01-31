@@ -161,8 +161,6 @@ public final class EntityService {
             if (value instanceof HibernateProxy) {
                 id = (Long) ((HibernateProxy) value).getHibernateLazyInitializer().getIdentifier();
             } else {
-                LOG.warn("Laziness of " + databaseEntity.getClass().getCanonicalName() + "#" + fieldDefinition.getName()
-                        + " in model.xml and hibernate bean is different.");
                 id = getId(getField(databaseEntity, fieldDefinition.getName()));
             }
 

@@ -13,6 +13,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.view.ComponentState;
 import com.qcadoo.mes.view.ViewDefinitionState;
+import com.qcadoo.mes.view.components.FieldComponentState;
 import com.qcadoo.mes.view.components.awesomeDynamicList.AwesomeDynamicListState;
 import com.qcadoo.mes.view.components.form.FormComponentState;
 import com.qcadoo.mes.view.components.grid.GridComponentState;
@@ -25,6 +26,11 @@ public final class GenealogyService {
 
     public void newBatch(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
         ((GridComponentState) viewDefinitionState.getComponentByReference("grid")).setSelectedEntityId(null);
+    }
+
+    public void copyGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+            final String[] args) {
+        Long genealogyId = (Long) triggerState.getFieldValue();
     }
 
     public void showGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
@@ -50,8 +56,11 @@ public final class GenealogyService {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         ComponentState featuresLayout = state.getComponentByReference("featuresLayout");
         ComponentState shiftList = state.getComponentByReference("shiftBorderLayout");
+        FieldComponentState shiftFeaturesList = (FieldComponentState) state.getComponentByReference("shiftFeaturesList");
         ComponentState postList = state.getComponentByReference("postBorderLayout");
+        FieldComponentState postFeaturesList = (FieldComponentState) state.getComponentByReference("postFeaturesList");
         ComponentState otherList = state.getComponentByReference("otherBorderLayout");
+        FieldComponentState otherFeaturesList = (FieldComponentState) state.getComponentByReference("otherFeaturesList");
 
         Entity order = dataDefinitionService.get("products", "order").get(
                 Long.valueOf(form.getEntity().getField("order").toString()));
@@ -64,14 +73,20 @@ public final class GenealogyService {
 
             if (!shiftFeatureRequired) {
                 shiftList.setVisible(false);
+            } else {
+                shiftFeaturesList.setRequired(true);
             }
 
             if (!postFeatureRequired) {
                 postList.setVisible(false);
+            } else {
+                postFeaturesList.setRequired(true);
             }
 
             if (!otherFeatureRequired) {
                 otherList.setVisible(false);
+            } else {
+                otherFeaturesList.setRequired(true);
             }
 
             if (!(otherFeatureRequired || shiftFeatureRequired || postFeatureRequired)) {

@@ -123,15 +123,16 @@ public class ProductReportService {
                                 if (products.containsKey(product)) {
                                     BigDecimal quantity = products.get(product);
                                     quantity = ((BigDecimal) operationProductInComponent.getField("quantity"))
-                                            .divide((BigDecimal) productOutComponent.getField("quantity"))
-                                            .multiply(plannedQuantity).add(quantity);
+                                            .multiply(plannedQuantity, MathContext.DECIMAL128)
+                                            .divide((BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128)
+                                            .add(quantity);
                                     products.put(product, quantity);
                                 } else {
                                     products.put(
                                             product,
-                                            ((BigDecimal) operationProductInComponent.getField("quantity"))
-                                                    .divide((BigDecimal) productOutComponent.getField("quantity"),
-                                                            MathContext.DECIMAL128).multiply(plannedQuantity));
+                                            ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(
+                                                    plannedQuantity, MathContext.DECIMAL128)).divide(
+                                            (BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128);
                                 }
                             }
                         }

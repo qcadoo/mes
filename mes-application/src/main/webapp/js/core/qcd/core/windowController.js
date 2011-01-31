@@ -54,7 +54,7 @@ QCD.WindowController = function(_menuStructure) {
 		
 		updateSize();
 		
-		if ($.browser.webkit) {
+		if (!$.browser.webkit) {
 			var MINUTE = 1000*60;
 			var messages = [
                 "http://www.mediabistro.com/fishbowldc/files/original/congratulations-idiot.gif",
