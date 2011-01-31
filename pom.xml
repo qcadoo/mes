@@ -30,6 +30,7 @@
 		<hibernate.version>3.5.5-Final</hibernate.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<profile.name>default</profile.name>
+		<sonar.host.url>http://localhost:9000/sonar</sonar.host.url>
 	</properties>
 
 	<dependencyManagement>
