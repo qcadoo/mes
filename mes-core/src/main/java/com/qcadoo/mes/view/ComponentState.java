@@ -29,6 +29,8 @@ public interface ComponentState {
 
     String JSON_MESSAGE_TYPE = "type";
 
+    String JSON_MESSAGE_AUTOCLOSE = "autoClose";
+
     public enum MessageType {
         FAILURE, SUCCESS, INFO
     }
@@ -46,6 +48,8 @@ public interface ComponentState {
     Object getFieldValue();
 
     void addMessage(String message, MessageType type);
+
+    void addMessage(String message, MessageType type, boolean autoClose);
 
     boolean isVisible();
 

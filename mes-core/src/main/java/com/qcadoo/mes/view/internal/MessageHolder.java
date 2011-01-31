@@ -26,7 +26,11 @@ public final class MessageHolder {
     }
 
     public void addMessage(final String title, final String message, final MessageType type) {
-        messages.add(new Object[] { getTranslatedTitle(title, type), message, type });
+        addMessage(title, message, type, true);
+    }
+
+    public void addMessage(final String title, final String message, final MessageType type, final boolean autoClose) {
+        messages.add(new Object[] { getTranslatedTitle(title, type), message, type, autoClose });
     }
 
     private Object getTranslatedTitle(final String title, final MessageType type) {
@@ -45,6 +49,7 @@ public final class MessageHolder {
             jsonMessage.put(ComponentState.JSON_MESSAGE_TITLE, message[0]);
             jsonMessage.put(ComponentState.JSON_MESSAGE_BODY, message[1]);
             jsonMessage.put(ComponentState.JSON_MESSAGE_TYPE, message[2]);
+            jsonMessage.put(ComponentState.JSON_MESSAGE_AUTOCLOSE, message[3]);
             json.put(jsonMessage);
         }
 

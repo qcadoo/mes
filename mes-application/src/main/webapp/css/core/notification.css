@@ -61,6 +61,17 @@ html>body .ui-pnotify {
 	-moz-border-radius: 0 0 0 0;
 }
 
+.ui-pnotify.noAutoCloseClass {
+	width: 400px;
+}
+.ui-pnotify.noAutoCloseClass .ui-pnotify-container {
+	width: 332px;
+	padding-left: 58px;
+	background-image: url(/img/core/icons/importantIcon48.png);
+	background-repeat: no-repeat;
+	background-position: 4px 0px;
+}
+
 .ui-pnotify .ui-state-error {
 	background: #FEF1EC; 
 	border: 1px solid #CD0A0A;

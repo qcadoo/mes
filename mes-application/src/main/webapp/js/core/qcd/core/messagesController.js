@@ -34,25 +34,36 @@ QCD.MessagesController = function() {
 	
 	this.addMessage = function(message) { // type = [info|error|success]
 		
+		QCD.info("addMessage");
+		QCD.info(message);
+		
 		type = message.type.toLowerCase();
 		if (type == "failure") {
 			type = "error";
 		}
 		
-		$.pnotify({
-			pnotify_title: message.title,
-			pnotify_text: message.content,
-			pnotify_stack: pnotify_stack,
-			pnotify_history: false,
-			pnotify_width: "300px",
-			pnotify_type: type,
-			pnotify_addclass: type == 'success' ? 'ui-state-success' : '',
-			pnotify_notice_icon: type == 'success' ? 'ui-icon ui-icon-success' : 'ui-icon ui-icon-notify',
-			pnotify_error_icon: 'ui-icon ui-icon-error',
-			pnotify_opacity: .9,
-			pnotify_delay: 4000,
-			pnotify_hide: true // type == 'error' ? false : true
-		});
+		var messageOptionsObject = {
+				pnotify_title: message.title,
+				pnotify_text: message.content,
+				pnotify_stack: pnotify_stack,
+				pnotify_history: false,
+				pnotify_width: "300px",
+				pnotify_type: type,
+				pnotify_addclass: type == 'success' ? 'ui-state-success' : '',
+				pnotify_notice_icon: type == 'success' ? 'ui-icon ui-icon-success' : 'ui-icon ui-icon-notify',
+				pnotify_error_icon: 'ui-icon ui-icon-error',
+				pnotify_opacity: .9,
+				pnotify_delay: 4000,
+				//pnotify_hide: true // type == 'error' ? false : true
+				pnotify_hide: message.autoClose
+			}; 
+		
+		if (! message.autoClose) {
+			messageOptionsObject.pnotify_width = "400px";
+			messageOptionsObject.pnotify_addclass = messageOptionsObject.pnotify_addclass + ' noAutoCloseClass';
+		}
+		
+		$.pnotify(messageOptionsObject);
 		
 	}
 
