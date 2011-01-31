@@ -35,6 +35,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	
 	this.element.css("height","100%");
 	
+	var currentWidth;
+	var currentHeight;
+	
 	function constructor(_this) {
 		
 		var childrenElement = $("#"+_this.elementSearchName+"_windowComponents");
@@ -58,6 +61,20 @@ QCD.components.containers.Window = function(_element, _mainController) {
 		return {};
 	}
 	this.setComponentValue = function(value) {
+		if (value.ribbon) {
+			ribbon.updateRibbonState(value.ribbon);
+		}
+		
+		
+//		ribbon = new QCD.components.Ribbon(value.ribbon, this.elementName, mainController, this.options.translations);
+//		var ribbonElement = ribbon.constructElement();
+//		var ribbonDiv = $("#"+this.elementPath+"_windowContainerRibbon");
+//		ribbonDiv.children().remove();
+//		ribbonDiv.append(ribbonElement);
+//		this.performComponentScript();
+//		if (currentWidth) {
+//			this.updateSize(currentWidth, currentHeight);
+//		}
 	}
 	this.setComponentState = function(state) {
 	}
@@ -74,6 +91,9 @@ QCD.components.containers.Window = function(_element, _mainController) {
 	}
 	
 	this.updateSize = function(_width, _height) {
+		
+		currentWidth = _width;
+		currentHeight = _height;
 		
 		var isMinWidth = ! mainController.isPopup();
 		

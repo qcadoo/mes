@@ -18,8 +18,8 @@ import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
-import com.qcadoo.mes.view.components.WindowComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
+import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.internal.ViewDefinitionImpl;
 
 public class InitializationTest extends AbstractPatternTest {

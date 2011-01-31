@@ -1,4 +1,4 @@
-package com.qcadoo.mes.view.components;
+package com.qcadoo.mes.view.components.window;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new EmptyContainerState();
+        return new WindowComponentState(this);
     }
 
     @Override
@@ -80,7 +80,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         return options;
     }
 
-    private JSONObject getJsRibbon(final Locale locale) throws JSONException {
+    public JSONObject translateRibbon(final Ribbon ribbon, final Locale locale) throws JSONException {
         JSONObject json = ribbon.getAsJson();
 
         for (int i = 0; i < json.getJSONArray("groups").length(); i++) {
@@ -90,6 +90,10 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         }
 
         return json;
+    }
+
+    private JSONObject getJsRibbon(final Locale locale) throws JSONException {
+        return translateRibbon(ribbon, locale);
     }
 
     private void translateRibbonItems(final JSONObject owner, final String prefix, final Locale locale) throws JSONException {
@@ -160,6 +164,10 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
     @Override
     public String getJsObjectName() {
         return JS_OBJECT;
+    }
+
+    public Ribbon getRibbonCopy() {
+        return ribbon.getCopy();
     }
 
     private Ribbon parseRibbon(final Node ribbonNode, final ViewDefinitionParser parser) {
@@ -254,6 +262,8 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
             } else {
                 throw new IllegalStateException("Unsupported ribbon item state : " + state);
             }
+        } else {
+            item.setEnabled(true);
         }
         String message = parser.getStringAttribute(itemNode, "message");
         if (message != null) {
@@ -321,6 +331,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonBackAction.setAction(translateRibbonAction("#{window}.performBack"));
         ribbonBackAction.setIcon("backIcon24.png");
         ribbonBackAction.setName("back");
+        ribbonBackAction.setEnabled(true);
         ribbonBackAction.setType(RibbonActionItem.Type.BIG_BUTTON);
 
         RibbonGroup ribbonGroup = new RibbonGroup();
@@ -386,6 +397,7 @@ public final class WindowComponentPattern extends AbstractContainerPattern {
         ribbonNewAction.setAction(translateRibbonAction("#{grid}.performNew;"));
         ribbonNewAction.setIcon("newIcon24.png");
         ribbonNewAction.setName("new");
+        ribbonNewAction.setEnabled(true);
         ribbonNewAction.setType(RibbonActionItem.Type.BIG_BUTTON);
         return ribbonNewAction;
     }

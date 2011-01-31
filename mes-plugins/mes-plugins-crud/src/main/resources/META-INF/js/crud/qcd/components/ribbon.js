@@ -50,7 +50,6 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 				var groupModel = ribbonModel.groups[groupIter];
 				var groupContent = $("<div>").addClass("ribbon_content");
 				var groupTitle = $("<div>").addClass("ribbon_title").html(groupModel.label);
-				
 				var ribbonMenu_right = $("<div>").addClass("ribbonMenu_right").append(groupTitle).append(groupContent);
 				var ribbonMenu_left = $("<div>").addClass("ribbonMenu_left").append(ribbonMenu_right);
 				var groupElement = $("<div>").addClass("ribbonMenu").append(ribbonMenu_left);
@@ -58,7 +57,6 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 				var smallElementsGroupElement = null;
 				for (var itemsIter in groupModel.items) {
 					var itemModel = groupModel.items[itemsIter];
-					
 					var itemElement = null;
 					var isSmall = false;
 					
@@ -327,6 +325,9 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 					}
 				}
 			},
+			isEnabled: function() {
+				return this.element.hasClass("enabled");
+			},
 			setLabel: function(label) {
 				this.element.find('.ribbonLabel').html(label);
 			},
@@ -356,6 +357,34 @@ QCD.components.Ribbon = function(_model, _elementName, _mainController, _transla
 				if (item.script) {
 					var scriptObject = createJsObject(item);
 					mainController.getActionEvaluator().performJsAction(item.script, scriptObject);
+				}
+			}
+		}
+	}
+	
+	this.updateRibbonState = function(ribbonState) {
+		QCD.info(ribbonState);
+		for (var g in ribbonState.groups) {
+			var group = ribbonState.groups[g];
+			for (var i in group.items) {
+				var item = group.items[i];
+				var itemObject = this.getRibbonItem(group.name+"."+item.name);
+				if (item.label) {
+					itemObject.setLabel(item.label);
+				}
+				if (item.enabled != undefined) {
+					if (item.enabled) {
+						itemObject.enable();
+					} else {
+						itemObject.disable();
+					}
+				}
+				if (item.message) {
+					if (itemObject.isEnabled()) {
+						itemObject.enable(item.message);
+					} else {
+						itemObject.disable(item.message);
+					}
 				}
 			}
 		}

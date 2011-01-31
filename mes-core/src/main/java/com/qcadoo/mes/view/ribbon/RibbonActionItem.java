@@ -68,9 +68,11 @@ public class RibbonActionItem {
 
     private String clickAction;
 
-    private boolean enabled = true;
+    private Boolean enabled;
 
     private String message;
+
+    private boolean shouldBeUpdated = false;
 
     /**
      * get defined item click action
@@ -176,11 +178,11 @@ public class RibbonActionItem {
         this.script = script;
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -192,4 +194,27 @@ public class RibbonActionItem {
         this.message = message;
     }
 
+    public RibbonActionItem getCopy() {
+        RibbonActionItem copy = new RibbonActionItem();
+        copyFields(copy);
+        return copy;
+    }
+
+    protected void copyFields(RibbonActionItem item) {
+        item.setName(name);
+        item.setType(type);
+        item.setIcon(icon);
+        item.setScript(script);
+        item.setAction(clickAction);
+        item.setEnabled(enabled);
+        item.setMessage(message);
+    }
+
+    public boolean isShouldBeUpdated() {
+        return shouldBeUpdated;
+    }
+
+    public void setShouldBeUpdated(boolean shouldBeUpdated) {
+        this.shouldBeUpdated = shouldBeUpdated;
+    }
 }

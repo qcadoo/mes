@@ -69,6 +69,20 @@ public final class RibbonGroup {
     }
 
     /**
+     * get item by name
+     * 
+     * @return item or null when no item witch such name
+     */
+    public RibbonActionItem getItemByName(String itemName) {
+        for (RibbonActionItem item : items) {
+            if (item.getName().equals(itemName)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
      * add item to this group
      * 
      * @param item
@@ -95,4 +109,28 @@ public final class RibbonGroup {
         return groupObject;
     }
 
+    public RibbonGroup getCopy() {
+        RibbonGroup copy = new RibbonGroup();
+        copy.setName(name);
+        for (RibbonActionItem item : items) {
+            copy.addItem(item.getCopy());
+        }
+        return copy;
+    }
+
+    public RibbonGroup getUpdate() {
+        RibbonGroup diff = new RibbonGroup();
+        boolean isDiffrence = false;
+        diff.setName(name);
+        for (RibbonActionItem item : items) {
+            if (item.isShouldBeUpdated()) {
+                diff.addItem(item);
+                isDiffrence = true;
+            }
+        }
+        if (isDiffrence) {
+            return diff;
+        }
+        return null;
+    }
 }
