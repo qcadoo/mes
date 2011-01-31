@@ -55,7 +55,7 @@
 
 		var QCD = QCD || {};
 		QCD.global = QCD.global || {};
-		QCD.global.isSonowOnPage = true;
+		QCD.global.isSonowOnPage = false;
 
 		var serverMessageType;
 		var serverMessageHeader;
