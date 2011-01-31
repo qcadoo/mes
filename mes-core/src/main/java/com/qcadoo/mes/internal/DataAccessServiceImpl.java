@@ -234,16 +234,16 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return null;
         }
 
-        targetEntity = save(dataDefinition, targetEntity);
-
-        if (!targetEntity.isValid()) {
-            throw new CopyException(targetEntity);
-        }
-
         LOG.info(sourceEntity + " has been copied to " + targetEntity);
 
         for (String fieldName : dataDefinition.getFields().keySet()) {
             copyHasManyField(sourceEntity, targetEntity, dataDefinition, fieldName);
+        }
+
+        targetEntity = save(dataDefinition, targetEntity);
+
+        if (!targetEntity.isValid()) {
+            throw new CopyException(targetEntity);
         }
 
         return targetEntity;

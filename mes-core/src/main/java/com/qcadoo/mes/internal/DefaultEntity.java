@@ -25,6 +25,7 @@
 package com.qcadoo.mes.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,7 +194,23 @@ public final class DefaultEntity implements Entity {
 
     @Override
     public String toString() {
-        return "Entity[" + pluginIdentifier + "." + name + "][id=" + id + ", " + getFields() + "]";
+        StringBuilder entity = new StringBuilder("Entity[" + pluginIdentifier + "." + name + "][id=" + id);
+        for (Map.Entry<String, Object> field : fields.entrySet()) {
+            if (field.getValue() instanceof Collection) {
+                continue;
+            }
+
+            entity.append(",").append(field.getKey()).append("=");
+
+            if (field.getValue() instanceof Entity) {
+                Entity belongsToEntity = (Entity) field.getValue();
+                entity.append("Entity[" + belongsToEntity.getPluginIdentifier() + "." + belongsToEntity.getName() + "][id="
+                        + belongsToEntity.getId() + "]");
+            } else {
+                entity.append(field.getValue());
+            }
+        }
+        return entity.append("]").toString();
     }
 
 }
