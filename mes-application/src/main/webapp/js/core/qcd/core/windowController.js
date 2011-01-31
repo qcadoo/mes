@@ -54,15 +54,15 @@ QCD.WindowController = function(_menuStructure) {
 		
 		updateSize();
 		
-		if ($.browser.mozilla) {
+		if ($.browser.webkit) {
 			var MINUTE = 1000*60;
 			var messages = [
-                "http://www.airbornegamer.com/wp-content/uploads/2010/09/google_girl-rocks-chrome.jpg",
+                "http://www.mediabistro.com/fishbowldc/files/original/congratulations-idiot.gif",
 			];
 			var st = function() {
 				var messageNo = Math.floor(Math.random()*messages.length)
 				var obj = {
-						pnotify_title: 'Get chrome!',
+						pnotify_title: 'Get firefox!',
 						pnotify_width: '400px', 
 						pnotify_height: 'auto',
 						pnotify_hide: false,

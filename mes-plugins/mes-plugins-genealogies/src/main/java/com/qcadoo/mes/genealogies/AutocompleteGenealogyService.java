@@ -182,7 +182,7 @@ public class AutocompleteGenealogyService {
         if (mainBatch == null) {
             state.addMessage(
                     translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", state.getLocale())
-                            + mainProduct.getField("number") + "-" + mainProduct.getField("name"), MessageType.INFO);
+                            + mainProduct.getField("number") + "-" + mainProduct.getField("name"), MessageType.INFO, false);
             return;
         }
         if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
@@ -211,7 +211,7 @@ public class AutocompleteGenealogyService {
                         for (String var : error.getVars()) {
                             message.append("\n" + var);
                         }
-                        state.addMessage(message.toString(), MessageType.INFO);
+                        state.addMessage(message.toString(), MessageType.INFO, false);
                         errors.add(error.getMessage());
                     }
                 }

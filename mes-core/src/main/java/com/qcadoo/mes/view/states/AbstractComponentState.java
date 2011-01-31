@@ -79,7 +79,12 @@ public abstract class AbstractComponentState implements ComponentState, FieldEnt
 
     @Override
     public final void addMessage(final String message, final MessageType type) {
-        messageHolder.addMessage(null, message, type);
+        addMessage(message, type, true);
+    }
+
+    @Override
+    public final void addMessage(final String message, final MessageType type, final boolean autoClose) {
+        messageHolder.addMessage(null, message, type, autoClose);
         if (MessageType.FAILURE.equals(type)) {
             hasError = true;
         }
