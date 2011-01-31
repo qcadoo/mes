@@ -24,8 +24,6 @@
 
 package com.qcadoo.mes.products;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,7 +147,9 @@ public final class TechnologyService {
     }
 
     public void checkBatchNrReq(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        checkState(state instanceof LookupComponentState);
+        if (!(state instanceof LookupComponentState)) {
+            throw new IllegalStateException("component is not lookup");
+        }
 
         LookupComponentState product = (LookupComponentState) state;
 
@@ -165,7 +165,9 @@ public final class TechnologyService {
     }
 
     public void generateTechnologyNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
-        checkState(componentState instanceof FieldComponentState);
+        if (!(componentState instanceof FieldComponentState)) {
+            throw new IllegalStateException("component is not FieldComponentState");
+        }
         FieldComponentState number = (FieldComponentState) state.getComponentByReference("number");
         FieldComponentState productState = (FieldComponentState) componentState;
 
