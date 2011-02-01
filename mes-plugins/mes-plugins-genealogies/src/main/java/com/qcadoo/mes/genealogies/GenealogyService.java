@@ -114,7 +114,7 @@ public final class GenealogyService {
             if (technology != null) {
                 List<Entity> targetProductInComponents = new ArrayList<Entity>();
 
-                for (Entity operationComponent : technology.getHasManyField("operationComponents")) {
+                for (Entity operationComponent : technology.getTreeField("operationComponents")) {
                     for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                         if ((Boolean) operationProductInComponent.getField("batchRequired")) {
                             targetProductInComponents.add(createGenealogyProductInComponent(genealogy,

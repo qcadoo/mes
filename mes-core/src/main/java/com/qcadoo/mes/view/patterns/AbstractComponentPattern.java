@@ -24,6 +24,7 @@ import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentPattern;
@@ -456,6 +457,8 @@ public abstract class AbstractComponentPattern implements ComponentPattern {
     private void getDataDefinitionFromFieldDefinition(final FieldDefinition fieldDefinition) {
         if (fieldDefinition.getType() instanceof HasManyType) {
             dataDefinition = ((HasManyType) fieldDefinition.getType()).getDataDefinition();
+        } else if (fieldDefinition.getType() instanceof TreeType) {
+            dataDefinition = ((TreeType) fieldDefinition.getType()).getDataDefinition();
         } else if (fieldDefinition.getType() instanceof BelongsToType) {
             dataDefinition = ((BelongsToType) fieldDefinition.getType()).getDataDefinition();
         }

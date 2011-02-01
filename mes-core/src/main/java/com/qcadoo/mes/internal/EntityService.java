@@ -38,6 +38,7 @@ import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.internal.InternalDataDefinition;
 import com.qcadoo.mes.model.types.BelongsToType;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.types.internal.PasswordType;
 import com.qcadoo.mes.utils.ExpressionUtil;
 
@@ -67,6 +68,8 @@ public final class EntityService {
             return getBelongsToField(databaseEntity, fieldDefinition);
         } else if (fieldDefinition.getType() instanceof HasManyType) {
             return getHasManyField(databaseEntity, fieldDefinition);
+        } else if (fieldDefinition.getType() instanceof TreeType) {
+            return getTreeField(databaseEntity, fieldDefinition);
         } else {
             return getPrimitiveField(databaseEntity, fieldDefinition);
         }
@@ -137,6 +140,14 @@ public final class EntityService {
         InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
 
         return new EntityList(referencedDataDefinition, hasManyFieldType.getJoinFieldName(), parentId);
+    }
+
+    private Object getTreeField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
+        Long parentId = getId(databaseEntity);
+        TreeType treeFieldType = (TreeType) fieldDefinition.getType();
+        InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) treeFieldType.getDataDefinition();
+
+        return new EntityTree(referencedDataDefinition, treeFieldType.getJoinFieldName(), parentId);
     }
 
     private Object getBelongsToField(final Object databaseEntity, final FieldDefinition fieldDefinition) {

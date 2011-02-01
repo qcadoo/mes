@@ -66,7 +66,7 @@
 		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology">
 			<validatesPresence />
 		</enum>
-		<hasMany name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
+		<tree name="operationComponents" model="technologyOperationComponent" joinField="technology" cascade="delete" copyable="true" />
 		<hasMany name="orders" model="order" joinField="technology" cascade="nullify"/>
 		<validatesWith bean="com.qcadoo.mes.products.TechnologyService" method="checkTechnologyDefault" />
 		<validatesWith bean="com.qcadoo.mes.products.ProductService" method="checkIfProductIsNotRemoved" />
@@ -80,7 +80,7 @@
 			<validatesPresence /> 
 		</belongsTo>
 		<belongsTo name="parent" model="technologyOperationComponent" lookupField="name" />
-		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
+		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" />
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="ignoreRootTechnology" />

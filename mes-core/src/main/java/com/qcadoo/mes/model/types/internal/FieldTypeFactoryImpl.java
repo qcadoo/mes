@@ -35,6 +35,7 @@ import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.LookupedType;
+import com.qcadoo.mes.model.types.TreeType;
 
 @Service
 public final class FieldTypeFactoryImpl implements FieldTypeFactory {
@@ -131,5 +132,11 @@ public final class FieldTypeFactoryImpl implements FieldTypeFactory {
     public FieldType hasManyType(final String pluginIdentifier, final String entityName, final String fieldName,
             final HasManyType.Cascade cascade, final boolean copyable) {
         return new HasManyEntitiesType(pluginIdentifier, entityName, fieldName, cascade, copyable, dataDefinitionService);
+    }
+
+    @Override
+    public FieldType treeType(final String pluginIdentifier, final String entityName, final String fieldName,
+            final TreeType.Cascade cascade, final boolean copyable) {
+        return new TreeEntitiesType(pluginIdentifier, entityName, fieldName, cascade, copyable, dataDefinitionService);
     }
 }

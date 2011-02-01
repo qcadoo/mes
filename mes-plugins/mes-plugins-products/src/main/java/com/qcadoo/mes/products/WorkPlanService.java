@@ -225,7 +225,7 @@ public final class WorkPlanService {
                 state.addMessage(
                         translationService.translate("products.validate.global.error.orderMustHaveTechnology", state.getLocale()),
                         MessageType.FAILURE);
-            } else if (order.getBelongsToField("technology").getHasManyField("operationComponents").isEmpty()) {
+            } else if (order.getBelongsToField("technology").getTreeField("operationComponents").isEmpty()) {
                 state.addMessage(
                         translationService.translate("products.validate.global.error.orderTechnologyMustHaveOperation",
                                 state.getLocale()), MessageType.FAILURE);

@@ -178,6 +178,11 @@ public final class DefaultEntity implements Entity {
     }
 
     @Override
+    public EntityTree getTreeField(final String fieldName) {
+        return (EntityTree) getField(fieldName);
+    }
+
+    @Override
     public Entity getBelongsToField(final String fieldName) {
         return (Entity) getField(fieldName);
     }

@@ -150,7 +150,7 @@ public class ProductReportService {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
-                List<Entity> operationComponents = technology.getHasManyField("operationComponents");
+                List<Entity> operationComponents = technology.getTreeField("operationComponents");
 
                 Entity entityKey = null;
 

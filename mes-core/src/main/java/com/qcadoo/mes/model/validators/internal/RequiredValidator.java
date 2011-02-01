@@ -30,6 +30,7 @@ import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.validators.FieldValidator;
 
 public final class RequiredValidator implements FieldValidator {
@@ -48,6 +49,12 @@ public final class RequiredValidator implements FieldValidator {
             final Entity validatedEntity) {
 
         if (fieldDefinition.getType() instanceof HasManyType) {
+            if (validatedEntity.getField(fieldDefinition.getName()) == null
+                    || ((List) validatedEntity.getField(fieldDefinition.getName())).isEmpty()) {
+                validatedEntity.addError(fieldDefinition, errorRelationMessage);
+                return false;
+            }
+        } else if (fieldDefinition.getType() instanceof TreeType) {
             if (validatedEntity.getField(fieldDefinition.getName()) == null
                     || ((List) validatedEntity.getField(fieldDefinition.getName())).isEmpty()) {
                 validatedEntity.addError(fieldDefinition, errorRelationMessage);

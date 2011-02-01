@@ -195,6 +195,14 @@ public final class ProxyEntity implements Entity {
     }
 
     @Override
+    public EntityTree getTreeField(final String fieldName) {
+        if (entity == null) {
+            loadEntity();
+        }
+        return entity.getTreeField(fieldName);
+    }
+
+    @Override
     public String getName() {
         return dataDefinition.getName();
     }

@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
 import com.qcadoo.mes.view.ComponentState;
@@ -88,11 +88,11 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     private void getBelongsToFieldDefinition() {
         if (getScopeFieldDefinition() != null) {
-            if (HasManyType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
-                HasManyType hasManyType = (HasManyType) getScopeFieldDefinition().getType();
-                belongsToFieldDefinition = hasManyType.getDataDefinition().getField(hasManyType.getJoinFieldName());
+            if (TreeType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
+                TreeType treeType = (TreeType) getScopeFieldDefinition().getType();
+                belongsToFieldDefinition = treeType.getDataDefinition().getField(treeType.getJoinFieldName());
             } else {
-                throw new IllegalStateException("Scope field for grid be a hasMany one");
+                throw new IllegalStateException("Scope field has to be a tree one");
             }
         }
     }

@@ -31,9 +31,9 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.model.DataDefinition;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 
-public final class HasManyEntitiesType implements HasManyType {
+public final class TreeEntitiesType implements TreeType {
 
     private final String entityName;
 
@@ -47,7 +47,7 @@ public final class HasManyEntitiesType implements HasManyType {
 
     private final boolean copyable;
 
-    public HasManyEntitiesType(final String pluginIdentifier, final String entityName, final String joinFieldName,
+    public TreeEntitiesType(final String pluginIdentifier, final String entityName, final String joinFieldName,
             final Cascade cascade, final boolean copyable, final DataDefinitionService dataDefinitionService) {
         this.pluginIdentifier = pluginIdentifier;
         this.entityName = entityName;

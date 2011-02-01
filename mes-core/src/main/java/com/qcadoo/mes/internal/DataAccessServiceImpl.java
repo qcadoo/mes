@@ -66,6 +66,7 @@ import com.qcadoo.mes.model.search.SearchCriteria;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.search.internal.SearchResultImpl;
 import com.qcadoo.mes.model.types.HasManyType;
+import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 
 @Service
@@ -198,6 +199,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
                 savedEntity.setField(fieldEntry.getKey(), savedEntities);
             }
+
+            // TODO save tree fields
         }
 
         alreadySavedEntities.add(savedEntity);
@@ -246,6 +249,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
             copyHasManyField(sourceEntity, targetEntity, dataDefinition, fieldName);
         }
 
+        // TODO copy tree fields
+
         return targetEntity;
     }
 
@@ -284,6 +289,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
                 throw new CopyException(sourceEntity);
             }
         } else if (fieldDefinition.getType() instanceof HasManyType) {
+            return null;
+        } else if (fieldDefinition.getType() instanceof TreeType) {
             return null;
         } else {
             return sourceEntity.getField(fieldName);
@@ -490,6 +497,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     }
                 }
             }
+
+            // TODO delete tree fields
         }
 
         getCurrentSession().delete(databaseEntity);

@@ -29,6 +29,7 @@ import com.qcadoo.mes.model.types.EnumeratedType;
 import com.qcadoo.mes.model.types.FieldType;
 import com.qcadoo.mes.model.types.HasManyType;
 import com.qcadoo.mes.model.types.LookupedType;
+import com.qcadoo.mes.model.types.TreeType;
 
 public interface FieldTypeFactory {
 
@@ -59,6 +60,9 @@ public interface FieldTypeFactory {
     LookupedType eagerBelongsToType(String pluginIdentifier, final String entityName, final String lookupFieldName);
 
     FieldType hasManyType(String pluginIdentifier, final String entityName, final String fieldName, HasManyType.Cascade cascade,
+            boolean copyable);
+
+    FieldType treeType(String pluginIdentifier, final String entityName, final String fieldName, TreeType.Cascade cascade,
             boolean copyable);
 
 }
