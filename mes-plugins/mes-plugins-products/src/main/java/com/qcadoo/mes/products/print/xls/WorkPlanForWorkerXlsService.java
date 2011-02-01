@@ -24,6 +24,8 @@
 
 package com.qcadoo.mes.products.print.xls;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,6 +35,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
 import com.qcadoo.mes.utils.xls.XlsUtil;
 
 @Service
@@ -68,7 +71,9 @@ public final class WorkPlanForWorkerXlsService extends XlsDocumentService {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
-                List<Entity> operationComponents = technology.getTreeField("operationComponents");
+                List<Entity> operationComponents = new ArrayList<Entity>(technology.getTreeField("operationComponents"));
+                Collections.sort(operationComponents, new EntityOperationNumberComparator());
+
                 for (Entity operationComponent : operationComponents) {
                     Entity operation = (Entity) operationComponent.getField("operation");
                     Entity staff = (Entity) operation.getField("staff");

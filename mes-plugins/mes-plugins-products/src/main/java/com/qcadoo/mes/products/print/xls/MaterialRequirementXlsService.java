@@ -38,6 +38,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.products.print.ProductReportService;
+import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.xls.XlsUtil;
 
 @Service
@@ -68,6 +70,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         int rowNum = 1;
         List<Entity> orders = entity.getHasManyField("orders");
         Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
+        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());

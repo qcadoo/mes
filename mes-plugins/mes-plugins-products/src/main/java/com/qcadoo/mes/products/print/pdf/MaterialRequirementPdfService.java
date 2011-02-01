@@ -26,6 +26,7 @@ package com.qcadoo.mes.products.print.pdf;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +48,9 @@ import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.DefaultEntity;
 import com.qcadoo.mes.products.print.ProductReportService;
+import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
+import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 @Service
@@ -94,6 +98,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             throws DocumentException {
         List<Entity> orders = entity.getHasManyField("orders");
         Map<Entity, BigDecimal> products = reportDataService.getTechnologySeries(entity, orders);
+        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
@@ -113,7 +118,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
-        List<Entity> orders = entity.getHasManyField("orders");
+        List<Entity> orders = new ArrayList<Entity>(entity.getHasManyField("orders"));
+        Collections.sort(orders, new EntityOrderNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
 
         for (Entity component : orders) {

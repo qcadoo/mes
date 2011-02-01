@@ -2,6 +2,7 @@ package com.qcadoo.mes.genealogies.print;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,8 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
+import com.qcadoo.mes.genealogies.print.util.BatchOrderNrComparator;
+import com.qcadoo.mes.genealogies.print.util.EntityNumberComparator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
@@ -75,6 +78,7 @@ public class GenealogyForProductView extends ReportPdfView {
         orderTitle.setSpacingBefore(20);
         document.add(orderTitle);
         List<Entity> orders = getOrders(entity);
+        Collections.sort(orders, new EntityNumberComparator());
         addOrderSeries(document, orders, orderHeader);
         addComponentSeries(document, orders, locale);
     }
@@ -93,7 +97,11 @@ public class GenealogyForProductView extends ReportPdfView {
             componentHeader.add(getTranslationService().translate("genealogies.productInBatch.batch.label", locale));
             PdfPTable table = PdfUtil.createTableWithHeader(3, componentHeader, false);
 
-            for (Pair<String, Entity> pair : getBatchList(order)) {
+            List<Pair<String, Entity>> batchList = getBatchList(order);
+
+            Collections.sort(batchList, new BatchOrderNrComparator());
+
+            for (Pair<String, Entity> pair : batchList) {
                 String batch = pair.getKey();
                 Entity product = pair.getValue();
                 table.addCell(new Phrase(product.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
