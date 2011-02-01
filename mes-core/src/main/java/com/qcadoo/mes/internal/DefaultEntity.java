@@ -196,11 +196,12 @@ public final class DefaultEntity implements Entity {
     public String toString() {
         StringBuilder entity = new StringBuilder("Entity[" + pluginIdentifier + "." + name + "][id=" + id);
         for (Map.Entry<String, Object> field : fields.entrySet()) {
-            if (field.getValue() instanceof Collection) {
-                continue;
-            }
 
             entity.append(",").append(field.getKey()).append("=");
+            if (field.getValue() instanceof Collection) {
+                entity.append("#collection");
+                continue;
+            }
 
             if (field.getValue() instanceof Entity) {
                 Entity belongsToEntity = (Entity) field.getValue();
@@ -212,5 +213,4 @@ public final class DefaultEntity implements Entity {
         }
         return entity.append("]").toString();
     }
-
 }

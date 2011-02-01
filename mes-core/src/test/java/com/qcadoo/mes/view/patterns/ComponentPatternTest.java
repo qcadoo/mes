@@ -27,9 +27,9 @@ import com.qcadoo.mes.view.ContainerPattern;
 import com.qcadoo.mes.view.ViewDefinition;
 import com.qcadoo.mes.view.ViewDefinitionState;
 import com.qcadoo.mes.view.components.TextInputComponentPattern;
-import com.qcadoo.mes.view.components.WindowComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentPattern;
 import com.qcadoo.mes.view.components.form.FormComponentState;
+import com.qcadoo.mes.view.components.window.WindowComponentPattern;
 import com.qcadoo.mes.view.internal.ComponentCustomEvent;
 import com.qcadoo.mes.view.internal.EventHandlerHolder;
 

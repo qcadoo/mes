@@ -59,22 +59,27 @@ public final class TechnologyService {
         return true;
     }
 
+    public boolean ignoreRootTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity.getField("parent") == null && entity.getField("technology") != null) {
+            return false;
+        }
+
+        return true;
+    }
+
     public boolean copyTechnologyFromParent(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("parent") == null) {
             return true;
         }
 
-        Object object = entity.getField("parent");
+        System.out.println(" $ " + ((ProductsTechnologyOperationComponent) entity.getField("parent")).getId());
+        System.out.println(" $ " + ((ProductsTechnologyOperationComponent) entity.getField("parent")).getTechnology().getId());
+        System.out.println(" $ " + ((ProductsTechnology) entity.getField("technology")).getId());
 
-        Entity parent = null;
+        entity.setField("parent", null);
+        // entity.setField("technology", ((ProductsTechnologyOperationComponent) entity.getField("parent")).getTechnology());
 
-        if (object instanceof Long) {
-            parent = dataDefinition.get((Long) object);
-        } else {
-            return false;
-        }
-
-        entity.setField("technology", parent.getField("technology"));
+        System.out.println(" @3 -----------> " + entity);
 
         return true;
     }

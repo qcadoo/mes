@@ -27,4 +27,15 @@ public class RibbonComboBox extends RibbonActionItem {
         obj.put("options", optionsArray);
         return obj;
     }
+
+    @Override
+    public RibbonActionItem getCopy() {
+        RibbonComboBox copy = new RibbonComboBox();
+        copyFields(copy);
+        for (String option : options) {
+            copy.addOption(option);
+        }
+        return copy;
+    }
+
 }

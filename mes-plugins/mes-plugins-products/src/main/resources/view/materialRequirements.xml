@@ -96,7 +96,7 @@
 						var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 						var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-						var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
+						//var generateRibbonItem = #{window}.getRibbonItem("actions.generate");
 						
 						var containsAtLeastOneOrder = false;
 						var entityExists = false;
@@ -133,23 +133,23 @@
 									xlsRibbonItem.enable();
 									pdfRibbonItem.enable();
 									saveRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
-									generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
+									// generateRibbonItem.disable("#{translate(products.ribbon.message.recordAlreadyGenerated)}");
 								} else {
 									xlsRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									pdfRibbonItem.disable("#{translate(products.ribbon.message.recordNotGenerated)}");
 									saveRibbonItem.enable();
-									if (containsAtLeastOneOrder) {
-										generateRibbonItem.enable();
-									} else {
-										generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
-									}
+									//if (containsAtLeastOneOrder) {
+										//generateRibbonItem.enable();
+									//} else {
+										//generateRibbonItem.disable("#{translate(products.ribbon.message.noOrders)}");
+									//}
 								}
 							} else {
 								copyRibbonItem.disable("#{translate(recordNotCreated)}");
 								xlsRibbonItem.disable("#{translate(recordNotCreated)}");
 								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
 								saveRibbonItem.enable();
-								generateRibbonItem.disable("#{translate(recordNotCreated)}");
+								//generateRibbonItem.disable("#{translate(recordNotCreated)}");
 							}
 						}
 					]]>
@@ -180,6 +180,7 @@
 						<component type="grid" name="materialRequirementComponents" reference="materialRequirementComponents" source="#{form}.orders">
 							<option type="column" name="number" fields="order" expression="#order['number']"/>
 							<option type="column" name="name" fields="order" expression="#order['name']"/>
+							<option type="column" name="state" fields="order" expression="#order['state']"/>
 							<option type="order" column="number" direction="desc"/>
 							<option type="correspondingView" value="products/materialRequirementComponent" />
 							<option type="correspondingComponent" value="form" />
@@ -198,6 +199,7 @@
 			</component>
 		</component>
 		<preRenderHook bean="com.qcadoo.mes.products.MaterialRequirementService" method="disableFormForExistingMaterialRequirement" />
+		<preRenderHook bean="com.qcadoo.mes.products.MaterialRequirementService" method="setGenerateButtonState" />
 	</view>	
 	<view name="materialRequirementComponent" model="materialRequirementComponent">
 		<component type="window" name="window">

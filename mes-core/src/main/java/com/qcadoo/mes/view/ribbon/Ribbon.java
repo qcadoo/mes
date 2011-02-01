@@ -69,6 +69,20 @@ public final class Ribbon {
     }
 
     /**
+     * get group by name of this ribbon
+     * 
+     * @return group or null when no group witch such name
+     */
+    public RibbonGroup getGroupByName(String groupName) {
+        for (RibbonGroup group : groups) {
+            if (group.getName().equals(groupName)) {
+                return group;
+            }
+        }
+        return null;
+    }
+
+    /**
      * add group to this ribbon
      * 
      * @param group
@@ -96,5 +110,33 @@ public final class Ribbon {
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
+    }
+
+    public Ribbon getCopy() {
+        Ribbon copy = new Ribbon();
+        copy.setName(name);
+        for (RibbonGroup group : groups) {
+            copy.addGroup(group.getCopy());
+        }
+        return copy;
+    }
+
+    public Ribbon getUpdate() {
+        Ribbon diff = new Ribbon();
+        boolean isDiffrence = false;
+        diff.setName(name);
+
+        for (RibbonGroup group : groups) {
+            RibbonGroup diffGroup = group.getUpdate();
+            if (diffGroup != null) {
+                diff.addGroup(diffGroup);
+                isDiffrence = true;
+            }
+
+        }
+        if (isDiffrence) {
+            return diff;
+        }
+        return null;
     }
 }

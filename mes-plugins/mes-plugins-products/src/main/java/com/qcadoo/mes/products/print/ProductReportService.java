@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +45,10 @@ import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
+import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
+import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 
@@ -165,8 +170,8 @@ public class ProductReportService {
         return productOutComponent;
     }
 
-    private Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> getOperationSeries(final Entity entity, final String type) {
-        Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> operations = new HashMap<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>>();
+    private Map<Entity, Map<Entity, List<Entity>>> getOperationSeries(final Entity entity, final String type) {
+        Map<Entity, Map<Entity, List<Entity>>> operations = new HashMap<Entity, Map<Entity, List<Entity>>>();
         List<Entity> orders = entity.getHasManyField("orders");
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
@@ -196,35 +201,29 @@ public class ProductReportService {
                         }
                     }
                     if (operations.containsKey(entityKey)) {
-                        Map<Entity, Pair<BigDecimal, List<Entity>>> operationMap = operations.get(entityKey);
+                        Map<Entity, List<Entity>> operationMap = operations.get(entityKey);
                         List<Entity> ordersList;
-                        BigDecimal quantity;
                         if (operationMap.containsKey(operationComponent)) {
-                            Pair<BigDecimal, List<Entity>> pair = operationMap.get(operationComponent);
-                            ordersList = pair.getValue();
-                            quantity = pair.getKey();
+                            ordersList = operationMap.get(operationComponent);
                         } else {
                             ordersList = new ArrayList<Entity>();
-                            quantity = new BigDecimal("0");
                         }
                         ordersList.add(order);
-                        Pair<BigDecimal, List<Entity>> pair = Pair.of(quantity, ordersList);
-                        operationMap.put(operationComponent, pair);
+                        operationMap.put(operationComponent, ordersList);
                     } else {
-                        Map<Entity, Pair<BigDecimal, List<Entity>>> operationMap = new HashMap<Entity, Pair<BigDecimal, List<Entity>>>();
+                        Map<Entity, List<Entity>> operationMap = new HashMap<Entity, List<Entity>>();
                         List<Entity> ordersList = new ArrayList<Entity>();
                         ordersList.add(order);
-                        Pair<BigDecimal, List<Entity>> pair = Pair.of(new BigDecimal("0"), ordersList);
-                        operationMap.put(operationComponent, pair);
+                        operationMap.put(operationComponent, ordersList);
                         operations.put(entityKey, operationMap);
                     }
-
                 }
             }
         }
         return operations;
     }
 
+    // FIXME KRNA: use it
     private void getOperationSeries(final Entity entity, final String type, final String algorithm) {
         Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> operations = new HashMap<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>>();
         List<Entity> orders = entity.getHasManyField("orders");
@@ -232,15 +231,16 @@ public class ProductReportService {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
-                TreeNodeTwo rootNode = buildTree(technology);
-                for (TreeNodeTwo node : rootNode.getChildren()) {
+                TreeNode rootNode = buildTree(technology);
+                for (TreeNode node : rootNode.getChildren()) {
                     aggregateTreeData(node, operations, type, order);
                 }
             }
         }
     }
 
-    private void aggregateTreeData(final TreeNodeTwo node,
+    // FIXME KRNA: use it
+    private void aggregateTreeData(final TreeNode node,
             final Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> operations, final String type, final Entity order) {
         Entity entityKey = null;
         Entity operationComponent = node.getEntity();
@@ -297,8 +297,9 @@ public class ProductReportService {
 
     }
 
-    private TreeNodeTwo buildTree(final Entity technology) {
-        TreeNodeTwo rootNode = new TreeNodeTwo(null);
+    // FIXME KRNA: use it
+    private TreeNode buildTree(final Entity technology) {
+        TreeNode rootNode = new TreeNode(null);
 
         SearchResult result = dataDefinitionService.get("products", "technologyOperationComponent").find()
                 .restrictedWith(Restrictions.eq("technology.id", technology.getId())).list();
@@ -323,14 +324,15 @@ public class ProductReportService {
         return rootNode;
     }
 
-    private void createChildrenNodes(final List<Pair<Entity, Boolean>> entities, final TreeNodeTwo parent) {
+    // FIXME KRNA: use it
+    private void createChildrenNodes(final List<Pair<Entity, Boolean>> entities, final TreeNode parent) {
         for (Pair<Entity, Boolean> entityPair : entities) {
             if (entityPair.getValue()) {
                 continue;
             }
             Entity ent = entityPair.getKey();
             if (isKid(parent, ent)) {
-                TreeNodeTwo childNode = new TreeNodeTwo(ent);
+                TreeNode childNode = new TreeNode(ent);
                 parent.addChild(childNode);
                 entityPair.setValue(true);
                 createChildrenNodes(entities, childNode);
@@ -338,7 +340,8 @@ public class ProductReportService {
         }
     }
 
-    private boolean isKid(final TreeNodeTwo parent, final Entity ent) {
+    // FIXME KRNA: use it
+    private boolean isKid(final TreeNode parent, final Entity ent) {
         Object entityParent = ent.getField("parent");
         if (entityParent == null) {
             if (parent.getEntity().getId() == null) {
@@ -401,14 +404,14 @@ public class ProductReportService {
                 Map<Entity, List<Entity>> values = entry.getValue();
                 List<List<Entity>> orders = new ArrayList<List<Entity>>(values.values());
 
-                Double totalQuantity = 0.0;
+                BigDecimal totalQuantity = new BigDecimal(0.0);
 
                 Set<String> addedOrders = new HashSet<String>();
 
                 for (List<Entity> singleOrderList : orders) {
                     for (Entity singleOrder : singleOrderList) {
                         if (!addedOrders.contains(singleOrder.getField("name").toString())) {
-                            totalQuantity += Double.parseDouble(singleOrder.getField("plannedQuantity").toString());
+                            totalQuantity = totalQuantity.add(totalQuantity);
                             addedOrders.add(singleOrder.getField("name").toString());
                         }
                     }
@@ -427,9 +430,15 @@ public class ProductReportService {
                     defaultWorkPlanOperationColumnWidth);
 
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
-            Map<Entity, List<Entity>> operationMap = entry.getValue();
+
+            Map<Entity, List<Entity>> operationMap = SortUtil.sortMapUsingComparator(entry.getValue(),
+                    new EntityOperationNumberComparator());
+
             for (Entry<Entity, List<Entity>> entryComponent : operationMap.entrySet()) {
-                for (Entity singleOperationComponent : entryComponent.getValue()) {
+
+                List<Entity> entryComponents = entryComponent.getValue();
+
+                for (Entity singleOperationComponent : entryComponents) {
                     Entity operation = (Entity) entryComponent.getKey().getField("operation");
                     table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                     table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
@@ -495,12 +504,14 @@ public class ProductReportService {
         for (Entity operationProductComponent : operationProductComponents) {
             Entity product = (Entity) operationProductComponent.getField("product");
 
-            Double quantity = Double.parseDouble(operationProductComponent.getField("quantity").toString())
-                    * Double.parseDouble(entity.getField("plannedQuantity").toString());
+            BigDecimal quantity = (BigDecimal) operationProductComponent.getField("quantity");
+            BigDecimal plannedQuantity = (BigDecimal) entity.getField("plannedQuantity");
+            BigDecimal totalQuantity = quantity.multiply(plannedQuantity);
 
             products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
-                    + df.format(quantity) + " [" + (product.getField("unit") != null ? product.getField("unit").toString() : "")
-                    + "] \n\n");
+                    + df.format(totalQuantity) + " ["
+                    + (product.getField("unit") != null ? product.getField("unit").toString() : "") + "] \n\n");
+
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
@@ -536,7 +547,8 @@ public class ProductReportService {
     }
 
     private void addOrderSeries(final PdfPTable table, final Entity entity, final DecimalFormat df) throws DocumentException {
-        List<Entity> orders = entity.getHasManyField("orders");
+        List<Entity> orders = new ArrayList<Entity>(entity.getHasManyField("orders"));
+        Collections.sort(orders, new EntityOrderNumberComparator());
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
@@ -572,8 +584,8 @@ public class ProductReportService {
         Set<String> added = new HashSet<String>();
 
         for (List<Entity> entry : values) {
-            List<Entity> orderList = entry;
-            for (Entity order : orderList) {
+            Collections.sort(entry, new EntityNumberComparator());
+            for (Entity order : entry) {
                 if (!added.contains(order.getField("name").toString())) {
                     table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                     table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));

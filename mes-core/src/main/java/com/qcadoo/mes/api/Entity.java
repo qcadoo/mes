@@ -27,6 +27,7 @@ package com.qcadoo.mes.api;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.internal.EntityList;
 import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.validators.ErrorMessage;
 
@@ -102,7 +103,7 @@ public interface Entity {
      *            field's name
      * @return the field's value
      */
-    List<Entity> getHasManyField(String fieldName);
+    EntityList getHasManyField(String fieldName);
 
     /**
      * Set the value of the field with given name.

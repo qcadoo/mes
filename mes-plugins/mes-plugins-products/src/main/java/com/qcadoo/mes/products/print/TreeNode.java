@@ -29,33 +29,33 @@ import java.util.List;
 
 import com.qcadoo.mes.api.Entity;
 
-public final class TreeNodeTwo {
+public final class TreeNode {
 
     private Entity entity;
 
-    private List<TreeNodeTwo> children;
+    private List<TreeNode> children;
 
-    public TreeNodeTwo() {
+    public TreeNode() {
 
     }
 
-    public TreeNodeTwo(final Entity entity) {
+    public TreeNode(final Entity entity) {
         this();
         this.entity = entity;
 
     }
 
-    public List<TreeNodeTwo> getChildren() {
+    public List<TreeNode> getChildren() {
         return children;
     }
 
-    public void setChildren(final List<TreeNodeTwo> children) {
+    public void setChildren(final List<TreeNode> children) {
         this.children = children;
     }
 
-    public void addChild(final TreeNodeTwo child) {
+    public void addChild(final TreeNode child) {
         if (children == null) {
-            children = new LinkedList<TreeNodeTwo>();
+            children = new LinkedList<TreeNode>();
         }
         children.add(child);
     }

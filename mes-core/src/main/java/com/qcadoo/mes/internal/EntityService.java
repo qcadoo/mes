@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.internal;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map.Entry;
 
@@ -134,11 +133,6 @@ public final class EntityService {
 
     private Object getHasManyField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         Long parentId = getId(databaseEntity);
-
-        if (parentId == null) {
-            return Collections.<Entity> emptyList();
-        }
-
         HasManyType hasManyFieldType = (HasManyType) fieldDefinition.getType();
         InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
 
@@ -161,8 +155,6 @@ public final class EntityService {
             if (value instanceof HibernateProxy) {
                 id = (Long) ((HibernateProxy) value).getHibernateLazyInitializer().getIdentifier();
             } else {
-                LOG.warn("Laziness of " + databaseEntity.getClass().getCanonicalName() + "#" + fieldDefinition.getName()
-                        + " in model.xml and hibernate bean is different.");
                 id = getId(getField(databaseEntity, fieldDefinition.getName()));
             }
 

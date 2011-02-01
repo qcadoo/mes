@@ -68,4 +68,14 @@ public final class RibbonComboItem extends RibbonActionItem {
         return itemObject;
     }
 
+    @Override
+    public RibbonComboItem getCopy() {
+        RibbonComboItem copy = new RibbonComboItem();
+        copyFields(copy);
+        for (RibbonActionItem item : items) {
+            copy.addItem(item.getCopy());
+        }
+        return copy;
+    }
+
 }
