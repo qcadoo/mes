@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +42,10 @@ import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.users.UsersUser;
 import com.qcadoo.mes.internal.ProxyEntity;
 import com.qcadoo.mes.model.types.internal.DateType;
+import com.qcadoo.mes.products.util.EntityNumberComparator;
+import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
+import com.qcadoo.mes.products.util.EntityOrderNumberComparator;
+import com.qcadoo.mes.products.util.SortUtil;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 @Service
@@ -245,14 +250,14 @@ public class ProductReportService {
                 Map<Entity, List<Entity>> values = entry.getValue();
                 List<List<Entity>> orders = new ArrayList<List<Entity>>(values.values());
 
-                Double totalQuantity = 0.0;
+                BigDecimal totalQuantity = new BigDecimal(0.0);
 
                 Set<String> addedOrders = new HashSet<String>();
 
                 for (List<Entity> singleOrderList : orders) {
                     for (Entity singleOrder : singleOrderList) {
                         if (!addedOrders.contains(singleOrder.getField("name").toString())) {
-                            totalQuantity += Double.parseDouble(singleOrder.getField("plannedQuantity").toString());
+                            totalQuantity = totalQuantity.add(totalQuantity);
                             addedOrders.add(singleOrder.getField("name").toString());
                         }
                     }
@@ -271,9 +276,15 @@ public class ProductReportService {
                     defaultWorkPlanOperationColumnWidth);
 
             table.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
-            Map<Entity, List<Entity>> operationMap = entry.getValue();
+
+            Map<Entity, List<Entity>> operationMap = SortUtil.sortMapUsingComparator(entry.getValue(),
+                    new EntityOperationNumberComparator());
+
             for (Entry<Entity, List<Entity>> entryComponent : operationMap.entrySet()) {
-                for (Entity singleOperationComponent : entryComponent.getValue()) {
+
+                List<Entity> entryComponents = entryComponent.getValue();
+
+                for (Entity singleOperationComponent : entryComponents) {
                     Entity operation = (Entity) entryComponent.getKey().getField("operation");
                     table.addCell(new Phrase(operation.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                     table.addCell(new Phrase(operation.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
@@ -340,13 +351,12 @@ public class ProductReportService {
             ProxyEntity product = (ProxyEntity) operationProductComponent.getField("product");
             Object unit = product.getField("unit");
 
-            Double quantity = Double.parseDouble(operationProductComponent.getField("quantity").toString())
-                    * Double.parseDouble(entity.getField("plannedQuantity").toString());
-
-            // operationProductComponent.getField("quantity")
+            BigDecimal quantity = (BigDecimal) operationProductComponent.getField("quantity");
+            BigDecimal plannedQuantity = (BigDecimal) entity.getField("plannedQuantity");
+            BigDecimal totalQuantity = quantity.multiply(plannedQuantity);
 
             products.append(product.getField("number").toString() + " " + product.getField("name").toString() + " x "
-                    + df.format(quantity) + " [" + (unit != null ? unit.toString() : "") + "] \n\n");
+                    + df.format(totalQuantity) + " [" + (unit != null ? unit.toString() : "") + "] \n\n");
         }
         table.addCell(new Phrase(products.toString(), PdfUtil.getArialRegular9Dark()));
     }
@@ -382,7 +392,8 @@ public class ProductReportService {
     }
 
     private void addOrderSeries(final PdfPTable table, final Entity entity, final DecimalFormat df) throws DocumentException {
-        List<Entity> orders = entity.getHasManyField("orders");
+        List<Entity> orders = new ArrayList<Entity>(entity.getHasManyField("orders"));
+        Collections.sort(orders, new EntityOrderNumberComparator());
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
@@ -418,8 +429,8 @@ public class ProductReportService {
         Set<String> added = new HashSet<String>();
 
         for (List<Entity> entry : values) {
-            List<Entity> orderList = entry;
-            for (Entity order : orderList) {
+            Collections.sort(entry, new EntityNumberComparator());
+            for (Entity order : entry) {
                 if (!added.contains(order.getField("name").toString())) {
                     table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
                     table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));

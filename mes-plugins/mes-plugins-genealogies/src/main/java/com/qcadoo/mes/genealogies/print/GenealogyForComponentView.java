@@ -2,6 +2,7 @@ package com.qcadoo.mes.genealogies.print;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +19,7 @@ import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.beans.users.UsersUser;
+import com.qcadoo.mes.genealogies.print.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.model.search.Restrictions;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 import com.qcadoo.mes.utils.pdf.ReportPdfView;
@@ -82,6 +84,7 @@ public class GenealogyForComponentView extends ReportPdfView {
             throws DocumentException {
         PdfPTable table = PdfUtil.createTableWithHeader(4, orderHeader, false);
         List<Entity> genealogies = getGenealogies(entity);
+        Collections.sort(genealogies, new EntityOrderNumberComparator());
         for (Entity genealogy : genealogies) {
             Entity order = (Entity) genealogy.getField("order");
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
