@@ -7,7 +7,6 @@ import java.util.Locale;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
@@ -22,8 +21,6 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     private static final String JS_OBJECT = "QCD.components.elements.Tree";
 
-    private FieldDefinition belongsToFieldDefinition;
-
     private String correspondingView;
 
     private String correspondingComponent;
@@ -36,12 +33,12 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TreeComponentState(belongsToFieldDefinition, nodeLabelExpression);
+        return new TreeComponentState(getScopeFieldDefinition(), nodeLabelExpression);
     }
 
     @Override
     protected void initializeComponent() throws JSONException {
-        getBelongsToFieldDefinition();
+        checkScopeFieldDefinition();
 
         for (ComponentOption option : getOptions()) {
             if ("correspondingView".equals(option.getType())) {
@@ -61,9 +58,7 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         JSONObject json = new JSONObject();
         json.put("correspondingView", correspondingView);
         json.put("correspondingComponent", correspondingComponent);
-        if (belongsToFieldDefinition != null) {
-            json.put("belongsToFieldName", belongsToFieldDefinition.getName());
-        }
+        json.put("belongsToFieldName", getScopeFieldDefinition().getName());
 
         JSONObject translations = new JSONObject();
 
@@ -86,15 +81,13 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         return getTranslationService().translate(codes, locale);
     }
 
-    private void getBelongsToFieldDefinition() {
+    private void checkScopeFieldDefinition() {
         if (getScopeFieldDefinition() != null) {
             if (TreeType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
-                TreeType treeType = (TreeType) getScopeFieldDefinition().getType();
-                belongsToFieldDefinition = treeType.getDataDefinition().getField(treeType.getJoinFieldName());
-            } else {
-                throw new IllegalStateException("Scope field has to be a tree one");
+                return;
             }
         }
+        throw new IllegalStateException("Scope field has to be a tree one");
     }
 
     @Override

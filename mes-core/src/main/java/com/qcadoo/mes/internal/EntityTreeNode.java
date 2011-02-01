@@ -122,8 +122,23 @@ public class EntityTreeNode implements Entity {
     }
 
     @Override
+    public String toString() {
+        return entity.toString();
+    }
+
+    @Override
     public EntityTreeNode copy() {
         return new EntityTreeNode(entity.copy());
+    }
+
+    @Override
+    public int hashCode() {
+        return entity.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return entity.equals(obj);
     }
 
 }

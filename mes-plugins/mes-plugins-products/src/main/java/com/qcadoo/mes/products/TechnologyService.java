@@ -72,14 +72,7 @@ public final class TechnologyService {
             return true;
         }
 
-        System.out.println(" $ " + ((ProductsTechnologyOperationComponent) entity.getField("parent")).getId());
-        System.out.println(" $ " + ((ProductsTechnologyOperationComponent) entity.getField("parent")).getTechnology().getId());
-        System.out.println(" $ " + ((ProductsTechnology) entity.getField("technology")).getId());
-
         entity.setField("parent", null);
-        // entity.setField("technology", ((ProductsTechnologyOperationComponent) entity.getField("parent")).getTechnology());
-
-        System.out.println(" @3 -----------> " + entity);
 
         return true;
     }

@@ -73,7 +73,7 @@ public final class EntityTree extends AbstractList<Entity> {
 
                 if (parent == null) {
                     if (root != null) {
-                        throw new IllegalStateException("Treen cannot have multiple roots");
+                        throw new IllegalStateException("Tree cannot have multiple roots");
                     }
 
                     root = entity;

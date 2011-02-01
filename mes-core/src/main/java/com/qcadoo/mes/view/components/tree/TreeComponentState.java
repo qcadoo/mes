@@ -9,12 +9,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.qcadoo.mes.api.Entity;
+import com.qcadoo.mes.internal.EntityTree;
+import com.qcadoo.mes.internal.EntityTreeNode;
 import com.qcadoo.mes.model.FieldDefinition;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchCriteriaBuilder;
-import com.qcadoo.mes.model.search.SearchResult;
 import com.qcadoo.mes.utils.ExpressionUtil;
-import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.view.states.AbstractComponentState;
 
 public final class TreeComponentState extends AbstractComponentState {
@@ -65,7 +63,7 @@ public final class TreeComponentState extends AbstractComponentState {
             }
         }
 
-        if (belongsToFieldDefinition != null && belongsToEntityId == null) {
+        if (belongsToEntityId == null) {
             setEnabled(false);
         }
 
@@ -97,15 +95,11 @@ public final class TreeComponentState extends AbstractComponentState {
 
     @Override
     public void onScopeEntityIdChange(final Long scopeEntityId) {
-        if (belongsToFieldDefinition != null) {
-            if (belongsToEntityId != null && !belongsToEntityId.equals(scopeEntityId)) {
-                setValue(null);
-            }
-            this.belongsToEntityId = scopeEntityId;
-            setEnabled(scopeEntityId != null);
-        } else {
-            throw new IllegalStateException("Tree doesn't have scopeField, it cannot set scopeEntityId");
+        if (belongsToEntityId != null && !belongsToEntityId.equals(scopeEntityId)) {
+            setValue(null);
         }
+        this.belongsToEntityId = scopeEntityId;
+        setEnabled(scopeEntityId != null);
     }
 
     public List<Long> getOpenedNodes() {
@@ -163,66 +157,26 @@ public final class TreeComponentState extends AbstractComponentState {
     }
 
     private void reload() {
-        rootNode = new TreeNode(null, getTranslationService().translate(getTranslationPath() + ".rootLabel", getLocale()));
+        if (belongsToEntityId != null) {
+            Entity entity = belongsToFieldDefinition.getDataDefinition().get(belongsToEntityId);
 
-        if (belongsToFieldDefinition == null || belongsToEntityId != null) {
-            SearchCriteriaBuilder criteria = getDataDefinition().find();
+            EntityTree tree = entity.getTreeField(belongsToFieldDefinition.getName());
 
-            if (belongsToFieldDefinition != null) {
-                criteria.restrictedWith(Restrictions.belongsTo(belongsToFieldDefinition, belongsToEntityId));
-            }
-
-            SearchResult result = criteria.list();
-
-            List<Pair<Entity, Boolean>> entities = new LinkedList<Pair<Entity, Boolean>>();
-            for (Entity entity : result.getEntities()) {
-                entities.add(Pair.of(entity, false));
-            }
-
-            createChildrenNodes(entities, rootNode);
-
-            boolean existNotUsedEntity = false;
-            for (Pair<Entity, Boolean> entityPair : entities) {
-                if (!entityPair.getValue()) {
-                    existNotUsedEntity = true;
-                    break;
-                }
-            }
-            if (existNotUsedEntity) {
-                throw new IllegalStateException("Tree is not consistent");
-            }
-
-        }
-    }
-
-    private void createChildrenNodes(final List<Pair<Entity, Boolean>> entities, final TreeNode parent) {
-        for (Pair<Entity, Boolean> entityPair : entities) {
-            if (entityPair.getValue()) {
-                continue;
-            }
-            Entity ent = entityPair.getKey();
-            if (isKid(parent, ent)) {
-                String nodeLabel = ExpressionUtil.getValue(ent, nodeLabelExpression, getLocale());
-                TreeNode childNode = new TreeNode(ent.getId(), nodeLabel);
-                parent.addChild(childNode);
-                entityPair.setValue(true);
-                createChildrenNodes(entities, childNode);
-            }
-        }
-    }
-
-    private boolean isKid(final TreeNode parent, final Entity ent) {
-        Object entityParent = ent.getField("parent");
-        if (entityParent == null) {
-            if (parent.getId() == null) {
-                return true;
-            }
+            rootNode = createNode(tree.getRoot());
         } else {
-            if (((Entity) entityParent).getId().equals(parent.getId())) {
-                return true;
-            }
+            rootNode = new TreeNode(null, getTranslationService().translate(getTranslationPath() + ".rootLabel", getLocale()));
         }
-        return false;
+    }
+
+    private TreeNode createNode(final EntityTreeNode entityTreeNode) {
+        String nodeLabel = ExpressionUtil.getValue(entityTreeNode, nodeLabelExpression, getLocale());
+        TreeNode node = new TreeNode(entityTreeNode.getId(), nodeLabel);
+
+        for (EntityTreeNode childEntityTreeNode : entityTreeNode.getChildren()) {
+            node.addChild(createNode(childEntityTreeNode));
+        }
+
+        return node;
     }
 
     protected class TreeEventPerformer {
