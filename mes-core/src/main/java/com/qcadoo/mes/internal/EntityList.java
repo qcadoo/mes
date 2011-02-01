@@ -25,6 +25,7 @@
 package com.qcadoo.mes.internal;
 
 import java.util.AbstractList;
+import java.util.Collections;
 import java.util.List;
 
 import com.qcadoo.mes.api.Entity;
@@ -47,6 +48,10 @@ public final class EntityList extends AbstractList<Entity> {
         this.dataDefinition = dataDefinition;
         this.joinFieldDefinition = dataDefinition.getField(joinFieldName);
         this.parentId = parentId;
+
+        if (this.parentId == null) {
+            entities = Collections.<Entity> emptyList();
+        }
     }
 
     private void loadEntities() {

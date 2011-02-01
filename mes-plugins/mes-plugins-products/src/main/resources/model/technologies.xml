@@ -83,7 +83,8 @@
 		<hasMany name="children" model="technologyOperationComponent" joinField="parent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductInComponents" model="operationProductInComponent" joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent" joinField="operationComponent" cascade="delete" copyable="true" />
-		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="copyTechnologyFromParent" />
+		<onCopy bean="com.qcadoo.mes.products.TechnologyService" method="ignoreRootTechnology" />
+		<onSave bean="com.qcadoo.mes.products.TechnologyService" method="copyTechnologyFromParent" />
 	</model>
 	<model name="operationProductInComponent">
 		<belongsTo name="operationComponent" model="technologyOperationComponent" lookupField="#operation['name']">

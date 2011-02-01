@@ -24,7 +24,6 @@
 
 package com.qcadoo.mes.internal;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map.Entry;
 
@@ -134,11 +133,6 @@ public final class EntityService {
 
     private Object getHasManyField(final Object databaseEntity, final FieldDefinition fieldDefinition) {
         Long parentId = getId(databaseEntity);
-
-        if (parentId == null) {
-            return Collections.<Entity> emptyList();
-        }
-
         HasManyType hasManyFieldType = (HasManyType) fieldDefinition.getType();
         InternalDataDefinition referencedDataDefinition = (InternalDataDefinition) hasManyFieldType.getDataDefinition();
 
