@@ -28,11 +28,6 @@ public final class GenealogyService {
         ((GridComponentState) viewDefinitionState.getComponentByReference("grid")).setSelectedEntityId(null);
     }
 
-    public void copyGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        Long genealogyId = (Long) triggerState.getFieldValue();
-    }
-
     public void showGenealogy(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
         Long orderId = (Long) triggerState.getFieldValue();

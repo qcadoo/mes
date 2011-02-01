@@ -181,7 +181,7 @@ public final class DataAccessServiceImpl implements DataAccessService {
                     }
                 }
 
-                List<Entity> dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
+                EntityList dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
 
                 for (Entity dbEntity : dbEntities) {
                     boolean exists = false;
@@ -220,6 +220,12 @@ public final class DataAccessServiceImpl implements DataAccessService {
             throw new IllegalStateException("Cannot copy " + sourceEntity);
         }
 
+        targetEntity = save(dataDefinition, targetEntity);
+
+        if (!targetEntity.isValid()) {
+            throw new CopyException(targetEntity);
+        }
+
         return targetEntity;
     }
 
@@ -232,12 +238,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         if (!dataDefinition.callCopyHook(targetEntity)) {
             return null;
-        }
-
-        targetEntity = save(dataDefinition, targetEntity);
-
-        if (!targetEntity.isValid()) {
-            throw new CopyException(targetEntity);
         }
 
         LOG.info(sourceEntity + " has been copied to " + targetEntity);
@@ -259,10 +259,18 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         HasManyType hasManyType = ((HasManyType) fieldDefinition.getType());
 
+        List<Entity> entities = new ArrayList<Entity>();
+
         for (Entity childEntity : sourceEntity.getHasManyField(fieldName)) {
-            childEntity.setField(hasManyType.getJoinFieldName(), targetEntity.getId());
-            copy((InternalDataDefinition) hasManyType.getDataDefinition(), childEntity);
+            childEntity.setField(hasManyType.getJoinFieldName(), null);
+            Entity belongsToEntity = copy((InternalDataDefinition) hasManyType.getDataDefinition(), childEntity);
+
+            if (belongsToEntity != null) {
+                entities.add(belongsToEntity);
+            }
         }
+
+        targetEntity.setField(fieldName, entities);
     }
 
     private Object getCopyValueOfSimpleField(final Entity sourceEntity, final DataDefinition dataDefinition,
