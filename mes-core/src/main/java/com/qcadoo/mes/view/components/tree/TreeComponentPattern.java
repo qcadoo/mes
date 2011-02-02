@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.qcadoo.mes.model.FieldDefinition;
 import com.qcadoo.mes.model.types.TreeType;
 import com.qcadoo.mes.view.ComponentDefinition;
 import com.qcadoo.mes.view.ComponentOption;
@@ -58,7 +59,7 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         JSONObject json = new JSONObject();
         json.put("correspondingView", correspondingView);
         json.put("correspondingComponent", correspondingComponent);
-        json.put("belongsToFieldName", getScopeFieldDefinition().getName());
+        json.put("belongsToFieldName", getBelongsToFieldDefinition().getName());
 
         JSONObject translations = new JSONObject();
 
@@ -85,6 +86,16 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         if (getScopeFieldDefinition() != null) {
             if (TreeType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
                 return;
+            }
+        }
+        throw new IllegalStateException("Scope field has to be a tree one");
+    }
+
+    private FieldDefinition getBelongsToFieldDefinition() {
+        if (getScopeFieldDefinition() != null) {
+            if (TreeType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
+                TreeType treeType = (TreeType) getScopeFieldDefinition().getType();
+                return treeType.getDataDefinition().getField(treeType.getJoinFieldName());
             }
         }
         throw new IllegalStateException("Scope field has to be a tree one");

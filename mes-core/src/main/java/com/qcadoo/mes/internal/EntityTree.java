@@ -86,7 +86,7 @@ public final class EntityTree extends AbstractList<Entity> {
                 }
             }
 
-            if (root == null) {
+            if (!entities.isEmpty() && root == null) {
                 throw new IllegalStateException("Root for tree not found");
             }
         }

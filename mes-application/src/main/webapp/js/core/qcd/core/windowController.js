@@ -53,34 +53,6 @@ QCD.WindowController = function(_menuStructure) {
 		menuController = new QCD.menu.MenuController(menuStructure, _this);
 		
 		updateSize();
-		
-		if ($.browser.webkit) {
-			var MINUTE = 1000*60;
-			var messages = [
-                "http://www.mediabistro.com/fishbowldc/files/original/congratulations-idiot.gif",
-			];
-			var st = function() {
-				var messageNo = Math.floor(Math.random()*messages.length)
-				var obj = {
-						pnotify_title: 'Get firefox!',
-						pnotify_width: '400px', 
-						pnotify_height: 'auto',
-						pnotify_hide: false,
-						pnotify_addclass: 'getFFClass',
-						pnotify_stack: pnotify_stack,
-				}
-				obj.pnotify_text = '<a href="'+messages[messageNo]+'" target="_blank"><img width="400" src="'+messages[messageNo]+'"></img></a>';
-				$.pnotify(obj);
-				var timeout = Math.floor(Math.random()*5*MINUTE)+(1*MINUTE);
-				setTimeout(function() {
-					st();
-				}, timeout);
-			}
-			var timeout = Math.floor(Math.random()*2*MINUTE);
-			setTimeout(function() {
-				st();
-			}, timeout);
-		}
 	}
 	
 	this.addMessage = function(type, content) {
