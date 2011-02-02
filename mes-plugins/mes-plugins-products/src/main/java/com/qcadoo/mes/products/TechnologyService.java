@@ -59,14 +59,6 @@ public final class TechnologyService {
         return true;
     }
 
-    public boolean ignoreRootTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("parent") == null && entity.getField("technology") != null) {
-            return false;
-        }
-
-        return true;
-    }
-
     public boolean copyTechnologyFromParent(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField("parent") == null) {
             return true;

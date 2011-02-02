@@ -170,37 +170,42 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
                 List<Entity> savedEntities = new LinkedList<Entity>();
 
-                HasManyType hmt = (HasManyType) fieldEntry.getValue().getType();
+                HasManyType hasManyType = (HasManyType) fieldEntry.getValue().getType();
 
-                for (Entity innerEntity : entities) {
-                    innerEntity.setField(hmt.getJoinFieldName(), savedEntity.getId());
-                    Entity savedInnerEntity = performSave((InternalDataDefinition) hmt.getDataDefinition(), innerEntity,
-                            alreadySavedEntities, newlySavedEntities);
-                    savedEntities.add(savedInnerEntity);
-                    if (!savedInnerEntity.isValid()) {
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    }
-                }
+                saveInnerEntities(alreadySavedEntities, newlySavedEntities, hasManyType.getJoinFieldName(), savedEntity.getId(),
+                        entities, savedEntities, (InternalDataDefinition) hasManyType.getDataDefinition());
 
                 EntityList dbEntities = savedEntity.getHasManyField(fieldEntry.getKey());
 
-                for (Entity dbEntity : dbEntities) {
-                    boolean exists = false;
-                    for (Entity exisingEntity : savedEntities) {
-                        if (dbEntity.getId().equals(exisingEntity.getId())) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    if (!exists) {
-                        delete((InternalDataDefinition) hmt.getDataDefinition(), dbEntity.getId());
-                    }
-                }
+                removeOrphans(savedEntities, (InternalDataDefinition) hasManyType.getDataDefinition(), dbEntities);
 
                 savedEntity.setField(fieldEntry.getKey(), savedEntities);
-            }
+            } else if (fieldEntry.getValue().getType() instanceof TreeType) {
+                List<Entity> entities = (List<Entity>) genericEntityToSave.getField(fieldEntry.getKey());
 
-            // TODO save tree fields
+                if (entities == null || entities instanceof EntityTree) {
+                    savedEntity.setField(fieldEntry.getKey(), entities);
+                    continue;
+                }
+
+                List<Entity> savedEntities = new LinkedList<Entity>();
+
+                TreeType treeType = (TreeType) fieldEntry.getValue().getType();
+
+                saveInnerEntities(alreadySavedEntities, newlySavedEntities, treeType.getJoinFieldName(), savedEntity.getId(),
+                        entities, savedEntities, (InternalDataDefinition) treeType.getDataDefinition());
+
+                EntityTree dbEntities = savedEntity.getTreeField(fieldEntry.getKey());
+
+                removeOrphans(savedEntities, (InternalDataDefinition) treeType.getDataDefinition(), dbEntities);
+
+                System.out.println(" ^^ " + dbEntities.getRoot());
+                System.out.println(" ^^ " + dbEntities.getRoot().getHasManyField("children"));
+
+                updateEntityTreeNodeJoinField(dbEntities.getRoot().getHasManyField("children"),
+                        (InternalDataDefinition) treeType.getDataDefinition(), treeType.getJoinFieldName(), savedEntity.getId());
+
+            }
         }
 
         alreadySavedEntities.add(savedEntity);
@@ -210,6 +215,47 @@ public final class DataAccessServiceImpl implements DataAccessService {
         }
 
         return savedEntity;
+    }
+
+    private void saveInnerEntities(final Set<Entity> alreadySavedEntities, final Set<Entity> newlySavedEntities,
+            final String joinFieldName, final Long id, final List<Entity> entities, final List<Entity> savedEntities,
+            final InternalDataDefinition dataDefinition) {
+        for (Entity innerEntity : entities) {
+            innerEntity.setField(joinFieldName, id);
+            Entity savedInnerEntity = performSave(dataDefinition, innerEntity, alreadySavedEntities, newlySavedEntities);
+            savedEntities.add(savedInnerEntity);
+            if (!savedInnerEntity.isValid()) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            }
+        }
+    }
+
+    private void removeOrphans(final List<Entity> savedEntities, final InternalDataDefinition dataDefinition,
+            final List<Entity> dbEntities) {
+        for (Entity dbEntity : dbEntities) {
+            boolean exists = false;
+            for (Entity exisingEntity : savedEntities) {
+                if (dbEntity.getId().equals(exisingEntity.getId())) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                delete(dataDefinition, dbEntity.getId());
+            }
+        }
+    }
+
+    private void updateEntityTreeNodeJoinField(final List<Entity> list, final InternalDataDefinition dataDefinition,
+            final String joinFieldName, final Long id) {
+        for (Entity node : list) {
+            System.out.println(" ^^^^ " + node + " -> " + joinFieldName + "=" + id);
+            node.setField(joinFieldName, id);
+            Entity savedNode = performSave(dataDefinition, node, new HashSet<Entity>(), new HashSet<Entity>());
+            System.out.println(" ^^^^ " + savedNode.getHasManyField("children"));
+            System.out.println(" ^^^^ " + savedNode.getHasManyField("children").size());
+            updateEntityTreeNodeJoinField(savedNode.getHasManyField("children"), dataDefinition, joinFieldName, id);
+        }
     }
 
     @Override
@@ -222,6 +268,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
         if (targetEntity == null) {
             throw new IllegalStateException("Cannot copy " + sourceEntity);
         }
+
+        LOG.info(sourceEntity + " has been copied to " + targetEntity);
 
         targetEntity = save(dataDefinition, targetEntity);
 
@@ -243,15 +291,41 @@ public final class DataAccessServiceImpl implements DataAccessService {
             return null;
         }
 
-        LOG.info(sourceEntity + " has been copied to " + targetEntity);
-
         for (String fieldName : dataDefinition.getFields().keySet()) {
             copyHasManyField(sourceEntity, targetEntity, dataDefinition, fieldName);
         }
 
-        // TODO copy tree fields
+        for (String fieldName : dataDefinition.getFields().keySet()) {
+            copyTreeField(sourceEntity, targetEntity, dataDefinition, fieldName);
+        }
 
         return targetEntity;
+    }
+
+    private void copyTreeField(final Entity sourceEntity, final Entity targetEntity, final DataDefinition dataDefinition,
+            final String fieldName) {
+        FieldDefinition fieldDefinition = dataDefinition.getField(fieldName);
+
+        if (!(fieldDefinition.getType() instanceof TreeType) || !((TreeType) fieldDefinition.getType()).isCopyable()) {
+            return;
+        }
+
+        TreeType treeType = ((TreeType) fieldDefinition.getType());
+
+        List<Entity> entities = new ArrayList<Entity>();
+
+        Entity root = sourceEntity.getTreeField(fieldName).getRoot();
+
+        if (root != null) {
+            root.setField(treeType.getJoinFieldName(), null);
+            root = copy((InternalDataDefinition) treeType.getDataDefinition(), root);
+
+            if (root != null) {
+                entities.add(root);
+            }
+        }
+
+        targetEntity.setField(fieldName, entities);
     }
 
     private void copyHasManyField(final Entity sourceEntity, final Entity targetEntity, final DataDefinition dataDefinition,
@@ -268,10 +342,11 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
         for (Entity childEntity : sourceEntity.getHasManyField(fieldName)) {
             childEntity.setField(hasManyType.getJoinFieldName(), null);
-            Entity belongsToEntity = copy((InternalDataDefinition) hasManyType.getDataDefinition(), childEntity);
 
-            if (belongsToEntity != null) {
-                entities.add(belongsToEntity);
+            Entity savedChildEntity = copy((InternalDataDefinition) hasManyType.getDataDefinition(), childEntity);
+
+            if (savedChildEntity != null) {
+                entities.add(savedChildEntity);
             }
         }
 
