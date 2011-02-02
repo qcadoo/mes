@@ -72,7 +72,7 @@ public final class TechnologyService {
             return true;
         }
 
-        entity.setField("parent", null);
+        // entity.setField("parent", null);
 
         return true;
     }

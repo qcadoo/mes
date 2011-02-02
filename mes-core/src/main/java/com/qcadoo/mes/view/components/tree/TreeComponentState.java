@@ -31,7 +31,7 @@ public final class TreeComponentState extends AbstractComponentState {
 
     private List<Long> openedNodes;
 
-    private Long selectedEntityId;
+    private Long selectedEntityId = 0L;
 
     private final FieldDefinition belongsToFieldDefinition;
 
@@ -162,9 +162,13 @@ public final class TreeComponentState extends AbstractComponentState {
 
             EntityTree tree = entity.getTreeField(belongsToFieldDefinition.getName());
 
-            rootNode = createNode(tree.getRoot());
+            if (tree.getRoot() != null) {
+                rootNode = createNode(tree.getRoot());
+            } else {
+                rootNode = new TreeNode(0L, getTranslationService().translate(getTranslationPath() + ".emptyRoot", getLocale()));
+            }
         } else {
-            rootNode = new TreeNode(null, getTranslationService().translate(getTranslationPath() + ".rootLabel", getLocale()));
+            rootNode = new TreeNode(0L, getTranslationService().translate(getTranslationPath() + ".emptyRoot", getLocale()));
         }
     }
 
