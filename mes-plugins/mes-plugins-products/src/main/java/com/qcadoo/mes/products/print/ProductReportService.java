@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,13 +36,12 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.api.DataDefinitionService;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.api.SecurityService;
 import com.qcadoo.mes.api.TranslationService;
 import com.qcadoo.mes.beans.users.UsersUser;
-import com.qcadoo.mes.model.search.Restrictions;
-import com.qcadoo.mes.model.search.SearchResult;
+import com.qcadoo.mes.internal.EntityTree;
+import com.qcadoo.mes.internal.EntityTreeNode;
 import com.qcadoo.mes.model.types.internal.DateType;
 import com.qcadoo.mes.products.util.EntityNumberComparator;
 import com.qcadoo.mes.products.util.EntityOperationNumberComparator;
@@ -69,9 +67,6 @@ public class ProductReportService {
     @Autowired
     private SecurityService securityService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     private static final String MATERIAL_COMPONENT = "01component";
 
     private static final String MATERIAL_WASTE = "04waste";
@@ -85,13 +80,17 @@ public class ProductReportService {
             Entity technology = (Entity) order.getField("technology");
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
             if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                List<Entity> operationComponents = technology.getHasManyField("operationComponents");
+                EntityTree operationComponents = technology.getTreeField("operationComponents");
                 if (COMPONENT_QUANTITY_ALGORITHM.equals(technology.getField("componentQuantityAlgorithm"))) {
                     countQuntityComponentPerTechnology(products, operationComponents,
                             (Boolean) entity.getField("onlyComponents"), plannedQuantity);
                 } else {
-                    countQuntityComponentPerOutProducts(products, operationComponents,
+                    Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
+                    boolean success = countQuntityComponentPerOutProducts(orderProducts, operationComponents.getRoot(),
                             (Boolean) entity.getField("onlyComponents"), plannedQuantity);
+                    if (success) {
+                        // TODO krna
+                    }
                 }
             }
         }
@@ -119,34 +118,40 @@ public class ProductReportService {
         }
     }
 
-    private void countQuntityComponentPerOutProducts(final Map<Entity, BigDecimal> products,
-            final List<Entity> operationComponents, final boolean onlyComponents, final BigDecimal plannedQuantity) {
-        for (Entity operationComponent : operationComponents) {
-            Entity productOutComponent = checkOutProducts(operationComponent);
-            if (productOutComponent == null) {
-                continue;
-            }
-            List<Entity> operationProductInComponents = operationComponent.getHasManyField("operationProductInComponents");
-            for (Entity operationProductInComponent : operationProductInComponents) {
-                Entity product = (Entity) operationProductInComponent.getField("product");
-                if (!(Boolean) onlyComponents || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
-                    if (products.containsKey(product)) {
-                        BigDecimal quantity = products.get(product);
-                        quantity = ((BigDecimal) operationProductInComponent.getField("quantity"))
-                                .multiply(plannedQuantity, MathContext.DECIMAL128)
-                                .divide((BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128)
-                                .add(quantity);
-                        products.put(product, quantity);
-                    } else {
-                        products.put(
-                                product,
-                                ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
-                                        MathContext.DECIMAL128)).divide((BigDecimal) productOutComponent.getField("quantity"),
-                                MathContext.DECIMAL128);
-                    }
+    private boolean countQuntityComponentPerOutProducts(final Map<Entity, BigDecimal> products, final EntityTreeNode node,
+            final boolean onlyComponents, final BigDecimal plannedQuantity) {
+        Entity productOutComponent = checkOutProducts(node);
+        if (productOutComponent == null) {
+            return false;
+        }
+        List<Entity> operationProductInComponents = node.getHasManyField("operationProductInComponents");
+        if (operationProductInComponents.size() == 0) {
+            return false;
+        }
+        for (Entity operationProductInComponent : operationProductInComponents) {
+            Entity product = (Entity) operationProductInComponent.getField("product");
+            if (!(Boolean) onlyComponents || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
+                Entity prevOperationOutProduct = findPrevOperationOutProduct(node, product);
+                BigDecimal quantity = new BigDecimal("0");
+                if (prevOperationOutProduct == null) {
+                    quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
+                            MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
+                            MathContext.DECIMAL128);
+                } else {
+                    quantity = ((BigDecimal) operationProductInComponent.getField("quantity"))
+                            .multiply(plannedQuantity, MathContext.DECIMAL128)
+                            .divide((BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128)
+                            .divide((BigDecimal) prevOperationOutProduct.getField("quantity"));
+                }
+                if (products.containsKey(product)) {
+                    products.put(product, products.get(product).add(quantity));
+                } else {
+                    products.put(product, quantity);
                 }
             }
         }
+        // TODO krna rekurencja
+        return true;
     }
 
     private Entity checkOutProducts(final Entity operationComponent) {
@@ -170,6 +175,21 @@ public class ProductReportService {
         return productOutComponent;
     }
 
+    private Entity findPrevOperationOutProduct(final EntityTreeNode node, final Entity product) {
+        List<EntityTreeNode> children = node.getChildren();
+        for (Entity operationComponent : children) {
+            List<Entity> operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
+            for (Entity operationProductOutComponent : operationProductOutComponents) {
+                Entity productOut = (Entity) operationProductOutComponent.getField("product");
+                if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))
+                        && productOut.getField("number").equals(product.getField("number"))) {
+                    return operationProductOutComponent;
+                }
+            }
+        }
+        return null;
+    }
+
     private Map<Entity, Map<Entity, List<Entity>>> getOperationSeries(final Entity entity, final String type) {
         Map<Entity, Map<Entity, List<Entity>>> operations = new HashMap<Entity, Map<Entity, List<Entity>>>();
         List<Entity> orders = entity.getHasManyField("orders");
@@ -177,7 +197,7 @@ public class ProductReportService {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
-                List<Entity> operationComponents = technology.getTreeField("operationComponents");
+                EntityTree operationComponents = technology.getTreeField("operationComponents");
 
                 Entity entityKey = null;
 
@@ -223,7 +243,6 @@ public class ProductReportService {
         return operations;
     }
 
-    // FIXME KRNA: use it
     private void getOperationSeries(final Entity entity, final String type, final String algorithm) {
         Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> operations = new HashMap<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>>();
         List<Entity> orders = entity.getHasManyField("orders");
@@ -231,25 +250,21 @@ public class ProductReportService {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
-                TreeNode rootNode = buildTree(technology);
-                for (TreeNode node : rootNode.getChildren()) {
-                    aggregateTreeData(node, operations, type, order);
-                }
+                EntityTree operationComponents = technology.getTreeField("operationComponents");
+                aggregateTreeData(operationComponents.getRoot(), operations, type, order);
             }
         }
     }
 
-    // FIXME KRNA: use it
-    private void aggregateTreeData(final TreeNode node,
+    private void aggregateTreeData(final EntityTreeNode node,
             final Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> operations, final String type, final Entity order) {
         Entity entityKey = null;
-        Entity operationComponent = node.getEntity();
-        Entity operation = (Entity) operationComponent.getField("operation");
-        List<Entity> operationProductInComponents = operationComponent.getHasManyField("operationProductInComponents");
+        Entity operation = (Entity) node.getField("operation");
+        List<Entity> operationProductInComponents = node.getHasManyField("operationProductInComponents");
         if (operationProductInComponents.size() == 0) {
             return;
         }
-        Entity productOutComponent = checkOutProducts(operationComponent);
+        Entity productOutComponent = checkOutProducts(node);
         if (productOutComponent == null) {
             return;
         }
@@ -275,8 +290,8 @@ public class ProductReportService {
             Map<Entity, Pair<BigDecimal, List<Entity>>> operationMap = operations.get(entityKey);
             List<Entity> ordersList;
             BigDecimal quantity;
-            if (operationMap.containsKey(operationComponent)) {
-                Pair<BigDecimal, List<Entity>> pair = operationMap.get(operationComponent);
+            if (operationMap.containsKey(node)) {
+                Pair<BigDecimal, List<Entity>> pair = operationMap.get(node);
                 ordersList = pair.getValue();
                 quantity = pair.getKey();
             } else {
@@ -285,74 +300,16 @@ public class ProductReportService {
             }
             ordersList.add(order);
             Pair<BigDecimal, List<Entity>> pair = Pair.of(quantity, ordersList);
-            operationMap.put(operationComponent, pair);
+            operationMap.put(node, pair);
         } else {
             Map<Entity, Pair<BigDecimal, List<Entity>>> operationMap = new HashMap<Entity, Pair<BigDecimal, List<Entity>>>();
             List<Entity> ordersList = new ArrayList<Entity>();
             ordersList.add(order);
             Pair<BigDecimal, List<Entity>> pair = Pair.of(((BigDecimal) order.getField("plannedQuantity")), ordersList);
-            operationMap.put(operationComponent, pair);
+            operationMap.put(node, pair);
             operations.put(entityKey, operationMap);
         }
 
-    }
-
-    // FIXME KRNA: use it
-    private TreeNode buildTree(final Entity technology) {
-        TreeNode rootNode = new TreeNode(null);
-
-        SearchResult result = dataDefinitionService.get("products", "technologyOperationComponent").find()
-                .restrictedWith(Restrictions.eq("technology.id", technology.getId())).list();
-
-        List<Pair<Entity, Boolean>> entities = new LinkedList<Pair<Entity, Boolean>>();
-        for (Entity entity : result.getEntities()) {
-            entities.add(Pair.of(entity, false));
-        }
-
-        createChildrenNodes(entities, rootNode);
-
-        boolean existNotUsedEntity = false;
-        for (Pair<Entity, Boolean> entityPair : entities) {
-            if (!entityPair.getValue()) {
-                existNotUsedEntity = true;
-                break;
-            }
-        }
-        if (existNotUsedEntity) {
-            throw new IllegalStateException("Tree is not consistent");
-        }
-        return rootNode;
-    }
-
-    // FIXME KRNA: use it
-    private void createChildrenNodes(final List<Pair<Entity, Boolean>> entities, final TreeNode parent) {
-        for (Pair<Entity, Boolean> entityPair : entities) {
-            if (entityPair.getValue()) {
-                continue;
-            }
-            Entity ent = entityPair.getKey();
-            if (isKid(parent, ent)) {
-                TreeNode childNode = new TreeNode(ent);
-                parent.addChild(childNode);
-                entityPair.setValue(true);
-                createChildrenNodes(entities, childNode);
-            }
-        }
-    }
-
-    // FIXME KRNA: use it
-    private boolean isKid(final TreeNode parent, final Entity ent) {
-        Object entityParent = ent.getField("parent");
-        if (entityParent == null) {
-            if (parent.getEntity().getId() == null) {
-                return true;
-            }
-        } else {
-            if (((Entity) entityParent).getId().equals(parent.getEntity().getId())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void addOperationSeries(final Document document, final Entity entity, final Locale locale, final String type)
@@ -411,7 +368,7 @@ public class ProductReportService {
                 for (List<Entity> singleOrderList : orders) {
                     for (Entity singleOrder : singleOrderList) {
                         if (!addedOrders.contains(singleOrder.getField("name").toString())) {
-                            totalQuantity = totalQuantity.add(totalQuantity);
+                            totalQuantity = totalQuantity.add((BigDecimal) singleOrder.getField("plannedQuantity"));
                             addedOrders.add(singleOrder.getField("name").toString());
                         }
                     }
