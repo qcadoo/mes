@@ -34,12 +34,12 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
 
     @Override
     public ComponentState getComponentStateInstance() {
-        return new TreeComponentState(getScopeFieldDefinition(), nodeLabelExpression);
+        return new TreeComponentState(getFieldDefinition(), nodeLabelExpression);
     }
 
     @Override
     protected void initializeComponent() throws JSONException {
-        checkScopeFieldDefinition();
+        checkFieldDefinition();
 
         for (ComponentOption option : getOptions()) {
             if ("correspondingView".equals(option.getType())) {
@@ -82,23 +82,23 @@ public final class TreeComponentPattern extends AbstractComponentPattern {
         return getTranslationService().translate(codes, locale);
     }
 
-    private void checkScopeFieldDefinition() {
-        if (getScopeFieldDefinition() != null) {
-            if (TreeType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
+    private void checkFieldDefinition() {
+        if (getFieldDefinition() != null) {
+            if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
                 return;
             }
         }
-        throw new IllegalStateException("Scope field has to be a tree one");
+        throw new IllegalStateException("Field has to be a tree one");
     }
 
     private FieldDefinition getBelongsToFieldDefinition() {
-        if (getScopeFieldDefinition() != null) {
-            if (TreeType.class.isAssignableFrom(getScopeFieldDefinition().getType().getClass())) {
-                TreeType treeType = (TreeType) getScopeFieldDefinition().getType();
+        if (getFieldDefinition() != null) {
+            if (TreeType.class.isAssignableFrom(getFieldDefinition().getType().getClass())) {
+                TreeType treeType = (TreeType) getFieldDefinition().getType();
                 return treeType.getDataDefinition().getField(treeType.getJoinFieldName());
             }
         }
-        throw new IllegalStateException("Scope field has to be a tree one");
+        throw new IllegalStateException("Field has to be a tree one");
     }
 
     @Override
