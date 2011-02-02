@@ -165,6 +165,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		gridParameters.paging = options.paginable;
 		gridParameters.filter = isfiltersEnabled;
 		gridParameters.orderable = options.prioritizable;
+		gridParameters.allowMultiselect = options.multiselect;
 		
 		gridParameters.fullScreen = options.fullscreen;
 		if (options.height) { 
@@ -188,13 +189,24 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		
 	};
 	function rowClicked(rowId) {
-		if (currentState.selectedEntityId == rowId) {
-			currentState.selectedEntityId = null;
-		} else {
-			if (currentState.selectedEntityId) {
-				grid.setSelection(currentState.selectedEntityId, false);
+		if (!gridParameters.allowMultiselect) {
+			if (currentState.selectedEntityId == rowId) {
+				currentState.selectedEntityId = null;
+			} else {
+				if (currentState.selectedEntityId) {
+					grid.setSelection(currentState.selectedEntityId, false);
+				}
+				currentState.selectedEntityId = rowId;
 			}
-			currentState.selectedEntityId = rowId;
+		} else {
+			if (! currentState.selectedEntityId) {
+				currentState.selectedEntityId = new Object();
+			}
+			if (currentState.selectedEntityId[rowId]) {
+				currentState.selectedEntityId[rowId] = null;
+			} else {
+				currentState.selectedEntityId[rowId] = true;
+			}
 		}
 		
 		var rowIndex = grid.jqGrid('getInd', currentState.selectedEntityId);
