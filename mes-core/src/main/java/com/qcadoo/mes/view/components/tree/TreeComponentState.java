@@ -141,8 +141,6 @@ public final class TreeComponentState extends FieldComponentState {
 
         EntityTree tree = entity.getTreeField(belongsToFieldDefinition.getName());
 
-        System.out.println(" ----------> entity " + new ArrayList<Entity>(tree));
-
         Map<Long, Entity> nodes = new HashMap<Long, Entity>();
 
         for (Entity node : tree) {
@@ -158,9 +156,20 @@ public final class TreeComponentState extends FieldComponentState {
                 reorganize(nodes, parent, treeStructure.getJSONArray("children"));
             }
 
+            printNode(parent, "");
+
             return Collections.singletonList(parent);
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    private void printNode(final Entity parent, final String path) {
+        System.out.println(" ----------> " + path + parent.getId());
+        if (parent.getField("children") != null) {
+            for (Entity e : (List<Entity>) parent.getField("children")) {
+                printNode(e, path + "   ");
+            }
         }
     }
 
@@ -168,7 +177,6 @@ public final class TreeComponentState extends FieldComponentState {
     private void reorganize(final Map<Long, Entity> nodes, final Entity parent, final JSONArray children) throws JSONException {
         for (int i = 0; i < children.length(); i++) {
             Entity entity = nodes.get(children.getJSONObject(i).getLong("id"));
-            System.out.println(" ###### " + parent + " < " + entity);
             ((List<Entity>) parent.getField("children")).add(entity);
             if (children.getJSONObject(i).has("children")) {
                 reorganize(nodes, entity, children.getJSONObject(i).getJSONArray("children"));
