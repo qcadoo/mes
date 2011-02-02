@@ -24,6 +24,7 @@
 
 package com.qcadoo.mes.beans.products;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -73,6 +74,13 @@ public class ProductsTechnology {
 
     @Column(nullable = false)
     private String componentQuantityAlgorithm;
+
+    private String qualityControlType;
+
+    @Column(scale = 3, precision = 10)
+    private BigDecimal unitSamplingNr;
+
+    private String qualityControlInstruction;
 
     @OneToMany(mappedBy = "technology", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.DELETE })
@@ -183,6 +191,30 @@ public class ProductsTechnology {
 
     public void setComponentQuantityAlgorithm(final String componentQuantityAlgorithm) {
         this.componentQuantityAlgorithm = componentQuantityAlgorithm;
+    }
+
+    public String getQualityControlType() {
+        return qualityControlType;
+    }
+
+    public void setQualityControlType(String qualityControlType) {
+        this.qualityControlType = qualityControlType;
+    }
+
+    public BigDecimal getUnitSamplingNr() {
+        return unitSamplingNr;
+    }
+
+    public void setUnitSamplingNr(BigDecimal unitSamplingNr) {
+        this.unitSamplingNr = unitSamplingNr;
+    }
+
+    public String getQualityControlInstruction() {
+        return qualityControlInstruction;
+    }
+
+    public void setQualityControlInstruction(String qualityControlInstruction) {
+        this.qualityControlInstruction = qualityControlInstruction;
     }
 
 }
