@@ -225,6 +225,20 @@ public final class TechnologyService {
         }
     }
 
+    public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
+        if ((Boolean) entity.getField("qualityControlRequired")) {
+            // TODO masz why we get hibernate entities here?
+            ProductsTechnology technology = (ProductsTechnology) entity.getField("technology");
+            DataDefinition technologyInDef = dataDefinitionService.get("products", "technology");
+            Entity technologyEntity = technologyInDef.get(technology.getId());
+            if (technologyEntity.getField("qualityControlType") == null
+                    || !technologyEntity.getField("qualityControlType").equals("04forOperation")) {
+                technologyEntity.setField("qualityControlType", "04forOperation");
+                technologyInDef.save(technologyEntity);
+            }
+        }
+    }
+
     public void disableBatchRequiredForTechnology(final ViewDefinitionState state, final Locale locale) {
         FormComponentState form = (FormComponentState) state.getComponentByReference("form");
         if (form.getFieldValue() != null) {
@@ -244,6 +258,30 @@ public final class TechnologyService {
         SearchResult searchResult = dataDefinitionService.get("products", "operationProductInComponent").find()
                 .restrictedWith(Restrictions.eq("operationComponent.technology.id", entityId))
                 .restrictedWith(Restrictions.eq("batchRequired", true)).withMaxResults(1).list();
+
+        return (searchResult.getTotalNumberOfEntities() > 0);
+
+    }
+
+    public void changeQualityControlType(final ViewDefinitionState state, final Locale locale) {
+        FormComponentState form = (FormComponentState) state.getComponentByReference("form");
+        if (form.getFieldValue() != null) {
+            FieldComponentState qualityControlType = (FieldComponentState) state.getComponentByReference("qualityControlType");
+            if (checkOperationQualityControlRequired((Long) form.getFieldValue())) {
+                qualityControlType.setFieldValue("04forOperation");
+                qualityControlType.setEnabled(false);
+                qualityControlType.requestComponentUpdateState();
+            } else {
+                qualityControlType.setEnabled(true);
+            }
+        }
+
+    }
+
+    private boolean checkOperationQualityControlRequired(final Long entityId) {
+        SearchResult searchResult = dataDefinitionService.get("products", "technologyOperationComponent").find()
+                .restrictedWith(Restrictions.eq("technology.id", entityId))
+                .restrictedWith(Restrictions.eq("qualityControlRequired", true)).withMaxResults(1).list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
 

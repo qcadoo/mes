@@ -104,13 +104,18 @@ public final class DatabasePreparationService implements ApplicationListener<Con
         MenuViewDefinition operationGridView = getMenuViewDefinition("operations");
         MenuViewDefinition genealogyForComponentFormView = getMenuViewDefinition("genealogyForComponent");
         MenuViewDefinition genealogyForProductFormView = getMenuViewDefinition("genealogyForProduct");
+        MenuViewDefinition qualityControlForOrderFormView = getMenuViewDefinition("qualityControlsForOrder");
+        MenuViewDefinition qualityControlForUnitFormView = getMenuViewDefinition("qualityControlsForUnit");
+        MenuViewDefinition qualityControlForBatchFormView = getMenuViewDefinition("qualityControlsForBatch");
+        MenuViewDefinition qualityControlForOperationFormView = getMenuViewDefinition("qualityControlsForOperation");
 
         MenuMenuCategory menuCategoryHome = addMenuCategory("home", "core.menu.home", 1);
         MenuMenuCategory menuCategoryBasicData = addMenuCategory("basic", "core.menu.basic", 2);
         MenuMenuCategory menuCategoryTechnology = addMenuCategory("technology", "core.menu.technology", 3);
         MenuMenuCategory menuCategoryOrders = addMenuCategory("orders", "core.menu.orders", 4);
         MenuMenuCategory menuCategoryReports = addMenuCategory("reports", "core.menu.reports", 5);
-        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 6);
+        MenuMenuCategory menuCategoryQuality = addMenuCategory("quality", "core.menu.quality", 6);
+        MenuMenuCategory menuCategoryAdministration = addMenuCategory("administration", "core.menu.administration", 7);
 
         addMenuViewDefinitionItem("home", "core.menu.home", menuCategoryHome, getMenuViewDefinition("homePage"), 1);
         addMenuViewDefinitionItem("profile", "core.menu.profile", menuCategoryHome, getMenuViewDefinition("profile"), 2);
@@ -149,6 +154,15 @@ public final class DatabasePreparationService implements ApplicationListener<Con
                 dictionaryGridView, 1);
         addMenuViewDefinitionItem("machines", "basic.menu.machines", menuCategoryBasicData, machineGridView, 2);
         addMenuViewDefinitionItem("staff", "basic.menu.staff", menuCategoryBasicData, staffGridView, 3);
+
+        addMenuViewDefinitionItem("forOrder", "products.menu.quality.forOrder", menuCategoryQuality,
+                qualityControlForOrderFormView, 1);
+        addMenuViewDefinitionItem("forUnits", "products.menu.quality.forUnits", menuCategoryQuality,
+                qualityControlForUnitFormView, 2);
+        addMenuViewDefinitionItem("forBatch", "products.menu.quality.forBatch", menuCategoryQuality,
+                qualityControlForBatchFormView, 3);
+        addMenuViewDefinitionItem("forOperation", "products.menu.quality.forOperation", menuCategoryQuality,
+                qualityControlForOperationFormView, 4);
     }
 
     private void addMenuViewDefinitionItem(final String name, final String translation, final MenuMenuCategory menuCategory,
