@@ -57,6 +57,29 @@ QCD.components.elements.utils.HeaderUtils.createHeaderButton = function(label, c
 	var itemElementButtonWrapper = $("<div>").addClass("headerActionButton").append(itemElementButton);
 	itemElementButtonWrapper.label = itemElementLabel;
 	
+	
+	var tooltipElement = $("<div>").addClass("ribbon_description_icon").css("display", "none");
+	//var tooltipElement = $("<div>").addClass("ribbon_description_icon");
+	var tooltipMessageElement = $("<div>").addClass("description_message").css("display", "none");
+	var tooltipMessageElementContent = $("<p>").html("");
+	tooltipMessageElement.append(tooltipMessageElementContent);
+	itemElementButtonWrapper.append(tooltipElement);
+	itemElementButtonWrapper.append(tooltipMessageElement);
+	tooltipElement.hover(function() {
+		tooltipMessageElement.show();
+	}, function() {
+		tooltipMessageElement.hide();
+	});
+	
+	itemElementButtonWrapper.setInfo = function(infoText) {
+		if (infoText && infoText != "") {
+			this.find(".ribbon_description_icon").show();
+			this.find(".description_message").html(infoText);
+		} else {
+			this.find(".ribbon_description_icon").hide();
+		}
+	};
+	
 	return itemElementButtonWrapper;
 }
 
