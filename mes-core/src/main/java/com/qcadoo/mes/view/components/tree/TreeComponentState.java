@@ -37,7 +37,7 @@ public final class TreeComponentState extends FieldComponentState {
 
     private List<Long> openedNodes;
 
-    private Long selectedEntityId = 0L;
+    private Long selectedEntityId;
 
     private JSONObject treeStructure;
 
@@ -51,10 +51,10 @@ public final class TreeComponentState extends FieldComponentState {
         belongsToFieldDefinition = scopeField;
         this.nodeLabelExpression = nodeLabelExpression;
         registerEvent("initialize", eventPerformer, "initialize");
+        registerEvent("initializeAfterBack", eventPerformer, "initialize");
         registerEvent("refresh", eventPerformer, "refresh");
         registerEvent("select", eventPerformer, "selectEntity");
         registerEvent("remove", eventPerformer, "removeSelectedEntity");
-        registerEvent("reorganize", eventPerformer, "reorganize");
     }
 
     @Override
@@ -81,9 +81,6 @@ public final class TreeComponentState extends FieldComponentState {
         if (belongsToEntityId == null) {
             setEnabled(false);
         }
-
-        requestRender();
-        requestUpdateState();
     }
 
     @Override
@@ -111,7 +108,7 @@ public final class TreeComponentState extends FieldComponentState {
     @Override
     public void onFieldEntityIdChange(final Long fieldEntityId) {
         if (belongsToEntityId != null && !belongsToEntityId.equals(fieldEntityId)) {
-            setValue(null);
+            setSelectedEntityId(null);
         }
         this.belongsToEntityId = fieldEntityId;
         setEnabled(fieldEntityId != null);
@@ -140,6 +137,8 @@ public final class TreeComponentState extends FieldComponentState {
 
         EntityTree tree = entity.getTreeField(belongsToFieldDefinition.getName());
 
+        System.out.println(" ----------> entity " + new ArrayList<Entity>(tree));
+
         Map<Long, Entity> nodes = new HashMap<Long, Entity>();
 
         for (Entity node : tree) {
@@ -152,7 +151,7 @@ public final class TreeComponentState extends FieldComponentState {
             Entity parent = nodes.get(treeStructure.getLong("id"));
 
             if (treeStructure.has("children")) {
-                reorgine(nodes, parent, treeStructure.getJSONArray("children"));
+                reorganize(nodes, parent, treeStructure.getJSONArray("children"));
             }
 
             return Collections.singletonList(parent);
@@ -162,27 +161,28 @@ public final class TreeComponentState extends FieldComponentState {
     }
 
     @SuppressWarnings("unchecked")
-    private void reorgine(final Map<Long, Entity> nodes, final Entity parent, final JSONArray children) throws JSONException {
+    private void reorganize(final Map<Long, Entity> nodes, final Entity parent, final JSONArray children) throws JSONException {
         for (int i = 0; i < children.length(); i++) {
             Entity entity = nodes.get(children.getJSONObject(i).getLong("id"));
-            System.out.println(" ###### " + parent.getId() + " < " + entity.getId());
+            System.out.println(" ###### " + parent + " < " + entity);
             ((List<Entity>) parent.getField("children")).add(entity);
             if (children.getJSONObject(i).has("children")) {
-                reorgine(nodes, entity, children.getJSONObject(i).getJSONArray("children"));
+                reorganize(nodes, entity, children.getJSONObject(i).getJSONArray("children"));
             }
         }
     }
 
     @Override
     public void setFieldValue(final Object value) {
-        // ignore
+        requestRender();
+        requestUpdateState();
     }
 
     public Long getSelectedEntityId() {
         return selectedEntityId;
     }
 
-    public void setValue(final Long selectedEntityId) {
+    public void setSelectedEntityId(final Long selectedEntityId) {
         this.selectedEntityId = selectedEntityId;
         notifyEntityIdChangeListeners(parseSelectedIdForListeners(selectedEntityId));
     }
@@ -242,15 +242,19 @@ public final class TreeComponentState extends FieldComponentState {
 
         public void initialize(final String[] args) {
             addOpenedNode(0L);
+            setSelectedEntityId(null);
+            requestRender();
+            requestUpdateState();
         }
 
         public void selectEntity(final String[] args) {
+            System.out.println(" -----> selectEntity");
             notifyEntityIdChangeListeners(parseSelectedIdForListeners(getSelectedEntityId()));
         }
 
         public void removeSelectedEntity(final String[] args) {
             getDataDefinition().delete(selectedEntityId);
-            setValue(null);
+            setSelectedEntityId(null);
             addMessage(translateMessage("deleteMessage"), MessageType.SUCCESS);
         }
 
