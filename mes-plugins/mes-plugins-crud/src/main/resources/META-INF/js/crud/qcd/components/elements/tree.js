@@ -85,16 +85,16 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				deleteClicked();
 			}, "deleteIcon16_dis.png");
 			buttons.moveUpButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("UP");
+				moveUpClicked();
 			}, "upIcon16_dis.png");
 			buttons.moveDownButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("DOWN");
+				moveDownClicked();
 			}, "downIcon16_dis.png");
 			buttons.moveLeftButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("LEFT");
+				moveLeftClicked();
 			}, "leftIcon16_dis.png");
 			buttons.moveRightButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("", function(e) {
-				alert("RIGHT");
+				moveRightClicked();
 			}, "rightIcon16_dis.png");
 			buttons.moveButton = QCD.components.elements.utils.HeaderUtils.createHeaderButton("MOVE OFF", function(e) {
 				if (buttons.moveButton.hasClass("headerButtonActive")) {
@@ -135,7 +135,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		tree = contentElement.jstree({ plugins : ["json_data", "themes", "crrm", "ui", "dnd"  /*"hotkeys"*/ ],
 			"themes" : {
 				"theme": "classic",
-				"dots" : false,
+				"dots" : true,
 				"icons" : false
 			},
 			"json_data" : {
@@ -192,7 +192,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			if (fireSelectEvent) {
 				updateButtons();
 				if (listeners.length > 0) {
-					onSelectChange();
+					//onSelectChange();
 				}
 			}
 		});
@@ -285,6 +285,7 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveRightButton.addClass("headerButtonEnabled");
 		
 		moveMode = true;
+		updateButtons();
 	}
 	
 	function diactiveMoveMode() {
@@ -300,11 +301,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 		buttons.moveRightButton.hide();
 		
 		moveMode = false;
+		updateButtons();
 	}
 	
 	function getTreeStructureData(childrensArray) {
 		if (! childrensArray) {
-			var childrensArray = tree.jstree("get_json");
+			var childrensArray = tree.jstree("get_json", -1);
 		}
 		var resultArray = new Array();
 		
@@ -337,6 +339,12 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			buttons.newButton.removeClass("headerButtonEnabled");
 			buttons.editButton.removeClass("headerButtonEnabled");
 			buttons.deleteButton.removeClass("headerButtonEnabled");
+			if (moveMode) {
+				buttons.moveUpButton.removeClass("headerButtonEnabled");
+				buttons.moveDownButton.removeClass("headerButtonEnabled");
+				buttons.moveLeftButton.removeClass("headerButtonEnabled");
+				buttons.moveRightButton.removeClass("headerButtonEnabled");
+			}
 		} else {
 			buttons.newButton.addClass("headerButtonEnabled");
 			if (selected != "0") {
@@ -345,6 +353,29 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 			} else {
 				buttons.editButton.removeClass("headerButtonEnabled");
 				buttons.deleteButton.removeClass("headerButtonEnabled");
+			}
+			if (moveMode) {
+				var selectedNode = tree.jstree("get_selected");
+				var parentNode = $.jstree._focused()._get_parent(selectedNode);
+				if (parentNode && parentNode != -1) {
+					buttons.moveLeftButton.addClass("headerButtonEnabled");	
+				} else {
+					buttons.moveLeftButton.removeClass("headerButtonEnabled");
+				}
+				var nextNode = $.jstree._focused()._get_next(selectedNode, true);
+				if (nextNode) {
+					buttons.moveDownButton.addClass("headerButtonEnabled");	
+				} else {
+					buttons.moveDownButton.removeClass("headerButtonEnabled");
+				}
+				var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
+				if (previousNode) {
+					buttons.moveUpButton.addClass("headerButtonEnabled");	
+					buttons.moveRightButton.addClass("headerButtonEnabled");	
+				} else {
+					buttons.moveUpButton.removeClass("headerButtonEnabled");
+					buttons.moveRightButton.removeClass("headerButtonEnabled");
+				}
 			}
 		}
 	}
@@ -394,7 +425,45 @@ QCD.components.elements.Tree = function(_element, _mainController) {
 				}, null, null);
 			}
 		}
-	}	
+	}
+	
+	function moveUpClicked() {
+		if (buttons.moveUpButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
+			moveNode(selectedNode, previousNode, "before");
+		}
+	}
+	
+	function moveDownClicked() {
+		if (buttons.moveDownButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var nextNode = $.jstree._focused()._get_next(selectedNode, true);
+			moveNode(selectedNode, nextNode, "after");
+		}
+	}
+
+	function moveLeftClicked() {
+		if (buttons.moveLeftButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var parentNode = $.jstree._focused()._get_parent(selectedNode);
+			moveNode(selectedNode, parentNode, "after");
+		}
+	}
+
+	function moveRightClicked() {
+		if (buttons.moveRightButton.hasClass("headerButtonEnabled")) {
+			var selectedNode = tree.jstree("get_selected");
+			var previousNode = $.jstree._focused()._get_prev(selectedNode, true);
+			moveNode(selectedNode, previousNode, "last");
+		}
+	}
+	
+	function moveNode(node, targetNode, position) {
+		tree.jstree("move_node", node, targetNode, position);
+		updateButtons();
+		treeStructureChanged = true;
+	}
 	
 	function onSelectChange() {
 		if (isEnabled) {
