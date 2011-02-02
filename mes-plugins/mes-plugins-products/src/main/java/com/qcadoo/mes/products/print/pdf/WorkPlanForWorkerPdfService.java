@@ -33,13 +33,13 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.api.Entity;
 import com.qcadoo.mes.internal.DefaultEntity;
-import com.qcadoo.mes.products.print.ProductReportService;
+import com.qcadoo.mes.products.print.ReportDataService;
 
 @Service
 public final class WorkPlanForWorkerPdfService extends PdfDocumentService {
 
     @Autowired
-    private ProductReportService productReportService;
+    private ReportDataService productReportService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {

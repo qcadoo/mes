@@ -51,9 +51,9 @@ import com.qcadoo.mes.utils.Pair;
 import com.qcadoo.mes.utils.pdf.PdfUtil;
 
 @Service
-public class ProductReportService {
+public class ReportDataService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductReportService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReportDataService.class);
 
     private static final SimpleDateFormat D_F = new SimpleDateFormat(DateType.DATE_FORMAT);
 
@@ -86,10 +86,19 @@ public class ProductReportService {
                             (Boolean) entity.getField("onlyComponents"), plannedQuantity);
                 } else {
                     Map<Entity, BigDecimal> orderProducts = new HashMap<Entity, BigDecimal>();
-                    boolean success = countQuntityComponentPerOutProducts(orderProducts, operationComponents.getRoot(),
-                            (Boolean) entity.getField("onlyComponents"), plannedQuantity);
-                    if (success) {
-                        // TODO krna
+                    EntityTreeNode rootNode = operationComponents.getRoot();
+                    if (rootNode != null) {
+                        boolean success = countQuntityComponentPerOutProducts(orderProducts, rootNode,
+                                (Boolean) entity.getField("onlyComponents"), plannedQuantity);
+                        if (success) {
+                            for (Entry<Entity, BigDecimal> entry : orderProducts.entrySet()) {
+                                if (products.containsKey(entry.getKey())) {
+                                    products.put(entry.getKey(), products.get(entry.getKey()).add(entry.getValue()));
+                                } else {
+                                    products.put(entry.getKey(), entry.getValue());
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -131,17 +140,15 @@ public class ProductReportService {
         for (Entity operationProductInComponent : operationProductInComponents) {
             Entity product = (Entity) operationProductInComponent.getField("product");
             if (!(Boolean) onlyComponents || MATERIAL_COMPONENT.equals(product.getField("typeOfMaterial"))) {
-                Entity prevOperationOutProduct = findPrevOperationOutProduct(node, product);
-                BigDecimal quantity = new BigDecimal("0");
-                if (prevOperationOutProduct == null) {
-                    quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
-                            MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
-                            MathContext.DECIMAL128);
-                } else {
-                    quantity = ((BigDecimal) operationProductInComponent.getField("quantity"))
-                            .multiply(plannedQuantity, MathContext.DECIMAL128)
-                            .divide((BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128)
-                            .divide((BigDecimal) prevOperationOutProduct.getField("quantity"));
+                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
+                        MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
+                        MathContext.DECIMAL128);
+                EntityTreeNode prevOperation = findPreviousOperation(node, product);
+                if (prevOperation != null) {
+                    boolean success = countQuntityComponentPerOutProducts(products, prevOperation, onlyComponents, quantity);
+                    if (!success) {
+                        return false;
+                    }
                 }
                 if (products.containsKey(product)) {
                     products.put(product, products.get(product).add(quantity));
@@ -150,7 +157,6 @@ public class ProductReportService {
                 }
             }
         }
-        // TODO krna rekurencja
         return true;
     }
 
@@ -175,15 +181,14 @@ public class ProductReportService {
         return productOutComponent;
     }
 
-    private Entity findPrevOperationOutProduct(final EntityTreeNode node, final Entity product) {
-        List<EntityTreeNode> children = node.getChildren();
-        for (Entity operationComponent : children) {
+    private EntityTreeNode findPreviousOperation(final EntityTreeNode node, final Entity product) {
+        for (EntityTreeNode operationComponent : node.getChildren()) {
             List<Entity> operationProductOutComponents = operationComponent.getHasManyField("operationProductOutComponents");
             for (Entity operationProductOutComponent : operationProductOutComponents) {
                 Entity productOut = (Entity) operationProductOutComponent.getField("product");
-                if (!MATERIAL_WASTE.equals(product.getField("typeOfMaterial"))
+                if (!MATERIAL_WASTE.equals(productOut.getField("typeOfMaterial"))
                         && productOut.getField("number").equals(product.getField("number"))) {
-                    return operationProductOutComponent;
+                    return operationComponent;
                 }
             }
         }
@@ -244,37 +249,37 @@ public class ProductReportService {
     }
 
     private void getOperationSeries(final Entity entity, final String type, final String algorithm) {
-        Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> operations = new HashMap<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>>();
+        Map<Entity, Map<Pair<EntityTreeNode, Entity>, Map<Entity, BigDecimal>>> operations = new HashMap<Entity, Map<Pair<EntityTreeNode, Entity>, Map<Entity, BigDecimal>>>();
         List<Entity> orders = entity.getHasManyField("orders");
         for (Entity component : orders) {
             Entity order = (Entity) component.getField("order");
             Entity technology = (Entity) order.getField("technology");
             if (technology != null) {
                 EntityTree operationComponents = technology.getTreeField("operationComponents");
-                aggregateTreeData(operationComponents.getRoot(), operations, type, order);
+                boolean success = aggregateTreeData(operationComponents.getRoot(), operations, type, order,
+                        (BigDecimal) order.getField("plannedQuantity"));
             }
         }
     }
 
-    private void aggregateTreeData(final EntityTreeNode node,
-            final Map<Entity, Map<Entity, Pair<BigDecimal, List<Entity>>>> operations, final String type, final Entity order) {
+    private boolean aggregateTreeData(final EntityTreeNode node,
+            final Map<Entity, Map<Pair<EntityTreeNode, Entity>, Map<Entity, BigDecimal>>> operations, final String type,
+            final Entity order, final BigDecimal plannedQuantity) {
         Entity entityKey = null;
         Entity operation = (Entity) node.getField("operation");
         List<Entity> operationProductInComponents = node.getHasManyField("operationProductInComponents");
         if (operationProductInComponents.size() == 0) {
-            return;
+            return false;
         }
         Entity productOutComponent = checkOutProducts(node);
         if (productOutComponent == null) {
-            return;
+            return false;
         }
 
         if (type.equals("product")) {
             Entity product = (Entity) order.getField("product");
             entityKey = product;
-        }
-
-        if (type.equals("machine")) {
+        } else if (type.equals("machine")) {
             Object machine = operation.getField("machine");
             if (machine != null) {
                 entityKey = (Entity) machine;
@@ -285,31 +290,30 @@ public class ProductReportService {
                 entityKey = (Entity) machine;
             }
         }
-
+        Map<Pair<EntityTreeNode, Entity>, Map<Entity, BigDecimal>> operationMap = null;
         if (operations.containsKey(entityKey)) {
-            Map<Entity, Pair<BigDecimal, List<Entity>>> operationMap = operations.get(entityKey);
-            List<Entity> ordersList;
-            BigDecimal quantity;
-            if (operationMap.containsKey(node)) {
-                Pair<BigDecimal, List<Entity>> pair = operationMap.get(node);
-                ordersList = pair.getValue();
-                quantity = pair.getKey();
-            } else {
-                ordersList = new ArrayList<Entity>();
-                quantity = new BigDecimal("0");
-            }
-            ordersList.add(order);
-            Pair<BigDecimal, List<Entity>> pair = Pair.of(quantity, ordersList);
-            operationMap.put(node, pair);
+            operationMap = operations.get(entityKey);
         } else {
-            Map<Entity, Pair<BigDecimal, List<Entity>>> operationMap = new HashMap<Entity, Pair<BigDecimal, List<Entity>>>();
-            List<Entity> ordersList = new ArrayList<Entity>();
-            ordersList.add(order);
-            Pair<BigDecimal, List<Entity>> pair = Pair.of(((BigDecimal) order.getField("plannedQuantity")), ordersList);
-            operationMap.put(node, pair);
-            operations.put(entityKey, operationMap);
+            operationMap = new HashMap<Pair<EntityTreeNode, Entity>, Map<Entity, BigDecimal>>();
         }
-
+        Map<Entity, BigDecimal> productsMap = new HashMap<Entity, BigDecimal>();
+        for (Entity operationProductInComponent : operationProductInComponents) {
+            Entity product = (Entity) operationProductInComponent.getField("product");
+            BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
+                    MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"), MathContext.DECIMAL128);
+            EntityTreeNode prevOperation = findPreviousOperation(node, product);
+            if (prevOperation != null) {
+                boolean success = aggregateTreeData(prevOperation, operations, type, order, quantity);
+                if (!success) {
+                    return false;
+                }
+            }
+            productsMap.put(product, quantity);
+        }
+        Pair<EntityTreeNode, Entity> pair = Pair.of(node, order);
+        operationMap.put(pair, productsMap);
+        operations.put(entityKey, operationMap);
+        return true;
     }
 
     public void addOperationSeries(final Document document, final Entity entity, final Locale locale, final String type)
