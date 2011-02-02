@@ -59,16 +59,6 @@ public final class TechnologyService {
         return true;
     }
 
-    public boolean copyTechnologyFromParent(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("parent") == null) {
-            return true;
-        }
-
-        // entity.setField("parent", null);
-
-        return true;
-    }
-
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
         Boolean master = (Boolean) entity.getField("master");
 

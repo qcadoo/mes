@@ -199,9 +199,6 @@ public final class DataAccessServiceImpl implements DataAccessService {
 
                 removeOrphans(savedEntities, (InternalDataDefinition) treeType.getDataDefinition(), dbEntities);
 
-                System.out.println(" ^^ " + dbEntities.getRoot());
-                System.out.println(" ^^ " + dbEntities.getRoot().getHasManyField("children"));
-
                 updateEntityTreeNodeJoinField(dbEntities.getRoot().getHasManyField("children"),
                         (InternalDataDefinition) treeType.getDataDefinition(), treeType.getJoinFieldName(), savedEntity.getId());
 
@@ -249,11 +246,8 @@ public final class DataAccessServiceImpl implements DataAccessService {
     private void updateEntityTreeNodeJoinField(final List<Entity> list, final InternalDataDefinition dataDefinition,
             final String joinFieldName, final Long id) {
         for (Entity node : list) {
-            System.out.println(" ^^^^ " + node + " -> " + joinFieldName + "=" + id);
             node.setField(joinFieldName, id);
             Entity savedNode = performSave(dataDefinition, node, new HashSet<Entity>(), new HashSet<Entity>());
-            System.out.println(" ^^^^ " + savedNode.getHasManyField("children"));
-            System.out.println(" ^^^^ " + savedNode.getHasManyField("children").size());
             updateEntityTreeNodeJoinField(savedNode.getHasManyField("children"), dataDefinition, joinFieldName, id);
         }
     }
