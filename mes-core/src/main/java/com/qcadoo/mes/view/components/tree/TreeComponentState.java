@@ -131,6 +131,10 @@ public final class TreeComponentState extends FieldComponentState {
 
     @Override
     public Object getFieldValue() {
+        if (treeStructure == null) {
+            return null;
+        }
+
         System.out.println(" ----------> get " + treeStructure);
 
         Entity entity = belongsToFieldDefinition.getDataDefinition().get(belongsToEntityId);
