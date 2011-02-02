@@ -388,7 +388,7 @@ QCD.components.elements.Grid = function(_element, _mainController) {
 		} else {
 			grid.addClass("componentNotEditable");
 		}
-		headerController.setEnabled(isEditable && isEnabled);
+		headerController.setEnabled(isEditable && componentEnabled);
 	}
 
 	
